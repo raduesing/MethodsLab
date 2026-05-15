@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sensitivität &amp; Spezifität — Diagnostik</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn.active{background:var(--ink);color:var(--bg)}
+#app{display:grid;grid-template-columns:290px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+select{font-family:'DM Mono',monospace;font-size:.82rem;background:var(--bg);color:var(--ink);
+  border:1px solid var(--border);padding:.3rem .5rem;width:100%;cursor:pointer;margin-bottom:.3rem}
+select:focus{outline:1px solid var(--accent)}
+.toggle-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem}
+.toggle-row label{font-family:'DM Mono',monospace;font-size:.85rem;color:var(--ink2);cursor:pointer}
+input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--accent)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+#cv-density{width:100%;display:block;cursor:crosshair}
+#cv-roc{display:block;width:100%;aspect-ratio:1/1}
+/* ROC two-column layout */
+.roc-layout{display:grid;grid-template-columns:minmax(240px,40%) 1fr;gap:1.4rem;align-items:start}
+.roc-canvas-col{min-width:0}
+.roc-controls{min-width:0}
+/* Vierfeldertafel */
+.vft-wrap{display:grid;grid-template-columns:1fr 1.35fr;gap:1.4rem;margin-top:.3rem;align-items:start}
+.vft-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.83rem}
+.vft-table th{font-size:.71rem;letter-spacing:.05em;color:var(--ink3);padding:.32rem .45rem;text-align:center;border:1px solid var(--grid)}
+.vft-table td{padding:.42rem .45rem;border:1px solid var(--grid);text-align:center;font-weight:500}
+.row-head{color:var(--ink2);font-size:.76rem;font-weight:400;background:var(--panel);text-align:left !important}
+.cell-tp,.cell-tn{color:var(--a3)}
+.cell-fp,.cell-fn{color:var(--a1)}
+.cell-sum{color:var(--ink2);font-size:.8rem;font-weight:400}
+:root .cell-tp,:root .cell-tn{background:rgba(80,160,40,.13)}
+:root .cell-fp,:root .cell-fn{background:rgba(200,74,42,.11)}
+[data-theme="dark"] .cell-tp,[data-theme="dark"] .cell-tn{background:rgba(128,203,82,.10)}
+[data-theme="dark"] .cell-fp,[data-theme="dark"] .cell-fn{background:rgba(232,97,74,.10)}
+.cell-lbl{display:block;font-size:.73rem;font-weight:700;line-height:1.2;margin-bottom:.06rem}
+.cell-sub{display:block;font-size:.64rem;font-weight:400;opacity:.65;line-height:1.2;margin-bottom:.2rem}
+.cell-num{display:block;font-size:1rem;font-weight:600}
+/* Kennwerte */
+.kw-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.8rem}
+.kw-table th{font-size:.71rem;letter-spacing:.06em;color:var(--ink3);padding:.28rem .45rem;
+  border-bottom:1px solid var(--grid);text-align:left}
+.kw-table td{padding:.3rem .45rem;border-bottom:1px solid var(--grid);vertical-align:middle}
+.kw-table td:last-child{text-align:right;font-weight:600;color:var(--accent);white-space:nowrap}
+.kw-formula{color:var(--ink3);font-size:.74rem}
+.kw-calc{color:var(--ink2);font-size:.74rem}
+.kw-hi td:last-child{color:var(--a5) !important}
+/* ROC */
+.roc-method-row{display:flex;gap:.5rem;align-items:center;margin-bottom:.45rem;flex-wrap:wrap}
+.roc-method-row label{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);white-space:nowrap}
+.roc-method-row select{flex:1;margin-bottom:0;min-width:180px}
+.roc-extra{background:var(--panel);border:1px solid var(--grid);padding:.5rem .7rem;margin-bottom:.45rem;
+  font-family:'DM Mono',monospace;font-size:.82rem}
+.roc-extra label{color:var(--ink2);display:block;margin-bottom:.2rem;font-size:.8rem}
+.roc-desc{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75;
+  background:var(--bg);border:1px solid var(--grid);padding:.5rem .7rem;margin:.45rem 0}
+.roc-opt{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink2);margin-top:.5rem}
+.roc-opt strong{color:var(--ink)}
+.adopt-btn{font-family:'DM Mono',monospace;font-size:.78rem;padding:.32rem .9rem;
+  border:1.5px solid var(--a6);background:transparent;cursor:pointer;color:var(--a6);
+  letter-spacing:.04em;transition:all .15s;margin-top:.5rem;display:inline-block}
+.adopt-btn:hover{background:var(--a6);color:var(--bg)}
+.pval-box{background:var(--bg);border:1px solid var(--a5);padding:.4rem .7rem;margin-top:.5rem;
+  font-family:'DM Mono',monospace;font-size:.82rem}
+.pval-label{color:var(--ink3);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.15rem}
+.pval-val{color:var(--a5);font-size:1.05rem;font-weight:500}
+/* help */
+.help-panel{background:var(--panel);border:1px solid var(--grid);padding:.8rem 1rem;margin-top:.8rem;display:none}
+.help-panel.open{display:block}
+.help-panel p{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75;margin-bottom:.5rem}
+.help-panel p:last-child{margin-bottom:0}
+.help-panel strong{color:var(--ink)}
+.help-formula{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--grid);
+  padding:.35rem .7rem;margin:.3rem 0;color:var(--a2)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Sensitivität &amp; <em>Spezifität</em> — Diagnostische Kennwerte</h1>
+  <button class="tbtn" id="help-btn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a1)">ADHS+ (Merkmalsträger)</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">μ₊</span><span class="slider-val" id="val-mu1">109</span></div>
+      <input type="range" id="sl-mu1" min="40" max="160" step="0.5" value="109" oninput="onSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">σ₊</span><span class="slider-val" id="val-s1">5</span></div>
+      <input type="range" id="sl-s1" min="1" max="40" step="0.5" value="5" oninput="onSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n₊</span><span class="slider-val" id="val-n1">100</span></div>
+      <input type="range" id="sl-n1" min="10" max="500" step="5" value="100" oninput="onSlider()">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a2)">ADHS− (Nicht-Merkmalsträger)</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">μ₋</span><span class="slider-val" id="val-mu2">90</span></div>
+      <input type="range" id="sl-mu2" min="40" max="160" step="0.5" value="90" oninput="onSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">σ₋</span><span class="slider-val" id="val-s2">15</span></div>
+      <input type="range" id="sl-s2" min="1" max="40" step="0.5" value="15" oninput="onSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n₋</span><span class="slider-val" id="val-n2">200</span></div>
+      <input type="range" id="sl-n2" min="10" max="500" step="5" value="200" oninput="onSlider()">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a5)">Cut-Off</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Schwellenwert</span><span class="slider-val" id="val-cut">102.5</span></div>
+      <input type="range" id="sl-cut" min="25" max="175" step="0.5" value="102.5" oninput="onCutSlider()">
+    </div>
+    <div class="pval-box">
+      <div class="pval-label">Prävalenz</div>
+      <div class="pval-val" id="val-prev">—</div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Darstellung</div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tog-areas" checked onchange="onToggle()">
+      <label for="tog-areas">TP/FP/TN/FN-Flächen</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tog-yafix" onchange="onToggleYFix()">
+      <label for="tog-yafix">Y-Achse fixieren</label>
+    </div>
+  </div>
+
+  <div class="help-panel" id="help-panel">
+    <p><strong>Sensitivität</strong> = Anteil echter Positiver, die korrekt erkannt werden.<br>
+    <strong>Spezifität</strong> = Anteil echter Negativer, die korrekt ausgeschlossen werden.</p>
+    <div class="help-formula">Sens = TP/(TP+FN) &nbsp; Spez = TN/(TN+FP)</div>
+    <p><strong>PPV</strong> (positiver prädiktiver Wert): Wahrscheinlichkeit, dass ein positives Testergebnis tatsächlich korrekt ist. Prävalenzabhängig.</p>
+    <p><strong>LR−</strong> hier: Spez/(1−Sens). Bei dieser Konvention zeigt LR− &gt; 1 einen guten Test an.</p>
+    <p><strong>ROC-Kurve</strong>: Sensitivität vs. 1−Spezifität für alle Cut-Offs. Die Fläche unter der Kurve (AUC) misst die Gesamttrennschärfe unabhängig vom Cut-Off.</p>
+    <p>Cut-Off-Linie auf dem <strong>Verteilungsplot</strong> direkt ziehen oder Sidebar-Slider verwenden.</p>
+  </div>
+
+</div>
+
+<div id="main">
+
+  <div class="sec-h" style="margin-top:0">① Verteilungsplot</div>
+  <canvas id="cv-density" height="340"></canvas>
+
+  <div class="sec-h">② Vierfeldertafel &amp; Kennwerte</div>
+  <div class="vft-wrap">
+    <div>
+      <table class="vft-table">
+        <thead>
+          <tr><th></th><th>Test +</th><th>Test −</th><th>Σ</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-head">Krit. ADHS+</td>
+            <td class="cell-tp"><span class="cell-lbl">TP</span><span class="cell-sub">richtig positiv</span><span id="c-tp" class="cell-num">—</span></td>
+            <td class="cell-fn"><span class="cell-lbl">FN</span><span class="cell-sub">falsch negativ</span><span id="c-fn" class="cell-num">—</span></td>
+            <td class="cell-sum" id="c-n1">—</td>
+          </tr>
+          <tr>
+            <td class="row-head">Krit. ADHS−</td>
+            <td class="cell-fp"><span class="cell-lbl">FP</span><span class="cell-sub">falsch positiv</span><span id="c-fp" class="cell-num">—</span></td>
+            <td class="cell-tn"><span class="cell-lbl">TN</span><span class="cell-sub">richtig negativ</span><span id="c-tn" class="cell-num">—</span></td>
+            <td class="cell-sum" id="c-n2">—</td>
+          </tr>
+          <tr>
+            <td class="row-head">Σ</td>
+            <td class="cell-sum" id="c-tpfp">—</td>
+            <td class="cell-sum" id="c-fntn">—</td>
+            <td class="cell-sum" id="c-n">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <table class="kw-table">
+        <thead>
+          <tr><th>Kennwert</th><th>Formel</th><th>Berechnung</th><th>Wert</th></tr>
+        </thead>
+        <tbody id="kw-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec-h">③ ROC-Analyse</div>
+  <div class="roc-layout">
+
+    <div class="roc-canvas-col">
+      <canvas id="cv-roc"></canvas>
+    </div>
+
+    <div class="roc-controls">
+      <div style="margin-bottom:.45rem">
+        <div style="font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.3rem">Optimaler Cut-Off</div>
+        <select id="roc-method" onchange="onMethodChange()">
+          <option value="youden">Youden-Index</option>
+          <option value="roc01">Minimale Distanz (ROC₀₁)</option>
+          <option value="cost">Kosten-Nutzen</option>
+          <option value="prev">Prävalenz-adjustiert</option>
+          <option value="f1">F1-Score</option>
+          <option value="mccost">Misklassifikationskosten</option>
+          <option value="sumpv">Sum PPV+NPV</option>
+        </select>
+      </div>
+
+      <div id="roc-extra-cost" class="roc-extra" style="display:none">
+        <label>Kosten FP / Kosten FN: <strong id="val-cost-ratio">1.0</strong></label>
+        <input type="range" id="sl-cost-ratio" min="0.1" max="10" step="0.1" value="1" oninput="onRocExtra()">
+      </div>
+      <div id="roc-extra-prev" class="roc-extra" style="display:none">
+        <label>Optimierungsziel:</label>
+        <select id="sel-prev-adj" onchange="onRocExtra()">
+          <option value="ppv">max PPV</option>
+          <option value="npv">max NPV</option>
+        </select>
+      </div>
+      <div id="roc-extra-mccost" class="roc-extra" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+          <div>
+            <label>Kosten FP: <strong id="val-cfp">1</strong></label>
+            <input type="range" id="sl-cfp" min="1" max="20" step="1" value="1" oninput="onRocExtra()">
+          </div>
+          <div>
+            <label>Kosten FN: <strong id="val-cfn">1</strong></label>
+            <input type="range" id="sl-cfn" min="1" max="20" step="1" value="1" oninput="onRocExtra()">
+          </div>
+        </div>
+      </div>
+
+      <div id="roc-desc" class="roc-desc"></div>
+      <div id="roc-opt" class="roc-opt"></div>
+      <button class="adopt-btn" onclick="adoptCut()">▶ Diesen Cut-Off übernehmen</button>
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script>
+// ── MATH ────────────────────────────────────────────────────────
+function normalPDF(x,mu,sig){
+  const z=(x-mu)/sig;
+  return Math.exp(-.5*z*z)/(sig*Math.sqrt(2*Math.PI));
+}
+function stdNormalCDF(z){
+  const t=1/(1+0.2316419*Math.abs(z));
+  const d=0.3989423*Math.exp(-z*z/2);
+  const p=d*t*(0.3193815+t*(-0.3565638+t*(1.7814779+t*(-1.8212560+t*1.3302744))));
+  return z>0?1-p:p;
+}
+function normalCDF(x,mu,sig){return stdNormalCDF((x-mu)/sig);}
+
+// ── STATE ───────────────────────────────────────────────────────
+const ST={
+  mu1:109,s1:5,n1:100,
+  mu2:90, s2:15,n2:200,
+  cut:102.5,
+  showAreas:true, fixY:false, fixedYMax:null,
+  rocMethod:'youden',
+  costRatio:1, prevAdj:'ppv', cFP:1, cFN:1,
+  optCut:97.5,
+};
+
+const cvD=document.getElementById('cv-density');
+const ctxD=cvD.getContext('2d');
+const cvR=document.getElementById('cv-roc');
+const ctxR=cvR.getContext('2d');
+
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+
+function xRange(){
+  const sp=Math.max(ST.s1,ST.s2);
+  return{lo:Math.min(ST.mu1,ST.mu2)-4*sp, hi:Math.max(ST.mu1,ST.mu2)+4*sp};
+}
+
+// ── COMPUTE ─────────────────────────────────────────────────────
+function compute(){
+  const tp=Math.round(ST.n1*(1-normalCDF(ST.cut,ST.mu1,ST.s1)));
+  const fn=ST.n1-tp;
+  const tn=Math.round(ST.n2*normalCDF(ST.cut,ST.mu2,ST.s2));
+  const fp=ST.n2-tn;
+  const sens=tp/(tp+fn)||0;
+  const spec=tn/(tn+fp)||0;
+  const prev=ST.n1/(ST.n1+ST.n2);
+  const ppv=tp/(tp+fp)||0;
+  const npv=tn/(tn+fn)||0;
+  const lrp=spec<1?sens/(1-spec):Infinity;
+  const lrm=sens<1?spec/(1-sens):Infinity;
+  const dor=(fp>0&&fn>0)?(tp*tn)/(fp*fn):Infinity;
+  const rr=ppv/((1-npv)||0.0001);
+  return{tp,fn,fp,tn,sens,spec,prev,ppv,npv,lrp,lrm,dor,rr};
+}
+
+function computeROC(){
+  const{lo,hi}=xRange();
+  const N=500, prev=ST.n1/(ST.n1+ST.n2), pts=[];
+  for(let i=0;i<=N;i++){
+    const c=lo+(i/N)*(hi-lo);
+    const sens=1-normalCDF(c,ST.mu1,ST.s1);
+    const spec=normalCDF(c,ST.mu2,ST.s2);
+    const pd=sens*prev+(1-spec)*(1-prev);
+    const ppv=pd>0?(sens*prev)/pd:0;
+    const nd=spec*(1-prev)+(1-sens)*prev;
+    const npv=nd>0?(spec*(1-prev))/nd:0;
+    pts.push({cut:c,sens,spec,ppv,npv});
+  }
+  return pts;
+}
+
+// Compute discrete metrics at c using same rounding as compute() / Kennwerte table
+function computeAt(c){
+  const tp=Math.round(ST.n1*(1-normalCDF(c,ST.mu1,ST.s1)));
+  const fn=ST.n1-tp;
+  const tn=Math.round(ST.n2*normalCDF(c,ST.mu2,ST.s2));
+  const fp=ST.n2-tn;
+  return{
+    cut:c,
+    sens:(tp+fn>0)?tp/(tp+fn):0,
+    spec:(tn+fp>0)?tn/(tn+fp):0,
+    ppv:(tp+fp>0)?tp/(tp+fp):0,
+    npv:(tn+fn>0)?tn/(tn+fn):0,
+  };
+}
+
+function findOpt(pts){
+  const m=ST.rocMethod;
+  let best=pts[0], bv=-Infinity;
+  if(m==='youden'){
+    pts.forEach(p=>{const v=p.sens+p.spec-1; if(v>bv){bv=v;best=p;}});
+  } else if(m==='roc01'){
+    bv=Infinity;
+    pts.forEach(p=>{const v=Math.sqrt((1-p.sens)**2+(1-p.spec)**2); if(v<bv){bv=v;best=p;}});
+  } else if(m==='cost'){
+    const cr=ST.costRatio;
+    pts.forEach(p=>{const v=p.sens-cr*(1-p.spec); if(v>bv){bv=v;best=p;}});
+  } else if(m==='prev'){
+    // Optimize the same discrete (rounded-count) formula shown in the Kennwerte table,
+    // sampled at slider step=0.5 so adoptCut never lands off the true maximum.
+    const key=ST.prevAdj==='ppv'?'ppv':'npv';
+    const{lo,hi}=xRange();
+    for(let c=lo;c<=hi+0.001;c+=0.5){
+      const p=computeAt(c);
+      if(p[key]>bv){bv=p[key];best=p;}
+    }
+  } else if(m==='f1'){
+    // Use discrete formula (same as table) so the result matches what is displayed
+    const{lo,hi}=xRange();
+    for(let c=lo;c<=hi+0.001;c+=0.5){
+      const p=computeAt(c);
+      const d=p.ppv+p.sens; const v=d>0?2*p.ppv*p.sens/d:0;
+      if(v>bv){bv=v;best=p;}
+    }
+  } else if(m==='mccost'){
+    bv=Infinity;
+    const prev=ST.n1/(ST.n1+ST.n2);
+    pts.forEach(p=>{const v=ST.cFP*(1-p.spec)*(1-prev)+ST.cFN*(1-p.sens)*prev; if(v<bv){bv=v;best=p;}});
+  } else if(m==='sumpv'){
+    // Use discrete formula (same as table) so the result matches what is displayed
+    const{lo,hi}=xRange();
+    for(let c=lo;c<=hi+0.001;c+=0.5){
+      const p=computeAt(c);
+      const v=p.ppv+p.npv;
+      if(v>bv){bv=v;best=p;}
+    }
+  }
+  return best;
+}
+
+function calcAUC(pts){
+  const roc=[...pts].sort((a,b)=>(1-a.spec)-(1-b.spec));
+  let a=0;
+  for(let i=1;i<roc.length;i++){
+    a+=((1-roc[i].spec)-(1-roc[i-1].spec))*(roc[i].sens+roc[i-1].sens)/2;
+  }
+  return Math.abs(a);
+}
+
+const ROC_DESC={
+  youden:  'Maximiert Sens + Spez − 1. Gewichtet beide Fehlerarten gleich. Sinnvoll für initiales Screening ohne starke Prävalenzverzerrung.',
+  roc01:   'Minimiert die euklidische Distanz zum idealen Punkt (0,1). Geometrisch motiviert, ähnlich dem Youden-Index.',
+  cost:    'Maximiert Sens − c × (1−Spez), wobei c = Kosten FP / Kosten FN. Nützlich wenn Fehlklassifikationen unterschiedlich schwerwiegend sind.',
+  prev:    'Optimiert PPV (wichtig wenn ein positives Ergebnis Konsequenzen hat) oder NPV (wichtig für sicheres Ausschließen). Stark prävalenzabhängig.',
+  f1:      'Harmonisches Mittel aus PPV und Sensitivität. Balanciert Präzision und Vollständigkeit; gebräuchlich in der Informationstheorie.',
+  mccost:  'Minimiert den gewichteten Gesamtfehler c_FP×FP + c_FN×FN in der Population. Ermöglicht flexible, absolute Fehlergewichtung.',
+  sumpv:   'Maximiert PPV + NPV. Bevorzugt Cut-Offs mit hoher Vorhersagegüte in beide Richtungen.',
+};
+
+// ── UPDATE UI ───────────────────────────────────────────────────
+function updateUI(){
+  const r=compute();
+  const pts=computeROC();
+  const opt=findOpt(pts);
+  ST.optCut=opt.cut;
+
+  // VFT
+  document.getElementById('c-tp').textContent=r.tp;
+  document.getElementById('c-fn').textContent=r.fn;
+  document.getElementById('c-fp').textContent=r.fp;
+  document.getElementById('c-tn').textContent=r.tn;
+  document.getElementById('c-n1').textContent=ST.n1;
+  document.getElementById('c-n2').textContent=ST.n2;
+  document.getElementById('c-tpfp').textContent=r.tp+r.fp;
+  document.getElementById('c-fntn').textContent=r.fn+r.tn;
+  document.getElementById('c-n').textContent=ST.n1+ST.n2;
+
+  // Prävalenz
+  document.getElementById('val-prev').textContent=(r.prev*100).toFixed(1)+'%';
+
+  // Kennwerte
+  const fmt=v=>isFinite(v)?v.toFixed(2):'∞';
+  const fmtp=v=>isFinite(v)?(v*100).toFixed(1)+'%':'∞';
+  const rows=[
+    {n:'Sensitivität',  f:'TP/(TP+FN)',       c:`${r.tp}/(${r.tp+r.fn})`,            v:fmtp(r.sens), hi:true},
+    {n:'Spezifität',    f:'TN/(TN+FP)',       c:`${r.tn}/(${r.tn+r.fp})`,            v:fmtp(r.spec), hi:true},
+    {n:'PPV',           f:'TP/(TP+FP)',       c:`${r.tp}/(${r.tp+r.fp})`,            v:fmtp(r.ppv)},
+    {n:'NPV',           f:'TN/(TN+FN)',       c:`${r.tn}/(${r.tn+r.fn})`,            v:fmtp(r.npv)},
+    {n:'LR+',           f:'Sens/(1−Spez)',    c:`${r.sens.toFixed(3)}/${(1-r.spec).toFixed(3)}`, v:fmt(r.lrp)},
+    {n:'LR−',           f:'Spez/(1−Sens)',    c:`${r.spec.toFixed(3)}/${(1-r.sens).toFixed(3)}`, v:fmt(r.lrm)},
+    {n:'Diagn. OR',     f:'(TP·TN)/(FP·FN)', c:`(${r.tp}·${r.tn})/(${r.fp}·${r.fn})`,         v:fmt(r.dor)},
+    {n:'Rel. Risiko',   f:'PPV/(1−NPV)',      c:`${r.ppv.toFixed(3)}/${(1-r.npv).toFixed(3)}`,  v:fmt(r.rr)},
+  ];
+  const tb=document.getElementById('kw-body');
+  tb.innerHTML='';
+  rows.forEach(row=>{
+    const tr=document.createElement('tr');
+    if(row.hi) tr.className='kw-hi';
+    tr.innerHTML=`<td>${row.n}</td><td class="kw-formula">${row.f}</td><td class="kw-calc">${row.c}</td><td>${row.v}</td>`;
+    tb.appendChild(tr);
+  });
+
+  // ROC desc + opt info
+  document.getElementById('roc-desc').textContent=ROC_DESC[ST.rocMethod]||'';
+  let optExtra='';
+  if(ST.rocMethod==='prev'){
+    const lbl=ST.prevAdj==='ppv'?'PPV':'NPV';
+    optExtra=` &nbsp;|&nbsp; ${lbl} = ${(opt[ST.prevAdj]*100).toFixed(1)}%`;
+  }
+  document.getElementById('roc-opt').innerHTML=
+    `<strong>Optimaler Cut-Off:</strong> ${opt.cut.toFixed(1)} &nbsp;|&nbsp; Sens = ${(opt.sens*100).toFixed(1)}% &nbsp;|&nbsp; Spez = ${(opt.spec*100).toFixed(1)}%${optExtra}`;
+
+  drawDensity(r);
+  drawROC(pts,opt,calcAUC(pts));
+}
+
+// ── DRAW DENSITY ────────────────────────────────────────────────
+function drawDensity(r){
+  const W=cvD.width, H=cvD.height;
+  const ctx=ctxD;
+  const ink2=css('--ink2'), ink3=css('--ink3'), paper=css('--paper');
+  const a1=css('--a1'), a2=css('--a2'), a5=css('--a5');
+  const pad={l:52,r:20,top:20,bot:28};
+  const plotW=W-pad.l-pad.r, plotH=H-pad.top-pad.bot;
+  const plotBot=pad.top+plotH;
+  const{lo,hi}=xRange();
+  const xS=v=>(v-lo)/(hi-lo)*plotW+pad.l;
+  const maxY=(ST.fixY && ST.fixedYMax)
+    ? ST.fixedYMax
+    : Math.max(ST.n1*normalPDF(ST.mu1,ST.mu1,ST.s1), ST.n2*normalPDF(ST.mu2,ST.mu2,ST.s2))*1.12;
+  const yS=v=>plotBot-v/maxY*plotH;
+  const N=500, dx=(hi-lo)/N;
+
+  ctx.fillStyle=paper; ctx.fillRect(0,0,W,H);
+
+  function fillSeg(mu,sig,n,color,from,to){
+    let fp=true;
+    ctx.beginPath(); ctx.fillStyle=color;
+    for(let i=0;i<=N;i++){
+      const xv=lo+i*dx;
+      if(xv<from||xv>to) continue;
+      const py=yS(n*normalPDF(xv,mu,sig));
+      const px=xS(xv);
+      if(fp){ctx.moveTo(px,plotBot);ctx.lineTo(px,py);fp=false;}
+      else ctx.lineTo(px,py);
+    }
+    if(!fp){ctx.lineTo(xS(Math.min(to,hi)),plotBot);ctx.closePath();ctx.fill();}
+  }
+
+  function drawCurve(mu,sig,n,color){
+    ctx.beginPath(); ctx.strokeStyle=color; ctx.lineWidth=2.5; ctx.setLineDash([]);
+    for(let i=0;i<=N;i++){
+      const xv=lo+i*dx;
+      i===0?ctx.moveTo(xS(xv),yS(n*normalPDF(xv,mu,sig))):ctx.lineTo(xS(xv),yS(n*normalPDF(xv,mu,sig)));
+    }
+    ctx.stroke();
+  }
+
+  if(ST.showAreas){
+    fillSeg(ST.mu2,ST.s2,ST.n2, a2+'44', lo,  ST.cut); // TN
+    fillSeg(ST.mu2,ST.s2,ST.n2, a2+'22', ST.cut, hi);  // FP
+    fillSeg(ST.mu1,ST.s1,ST.n1, a1+'22', lo,  ST.cut); // FN
+    fillSeg(ST.mu1,ST.s1,ST.n1, a1+'44', ST.cut, hi);  // TP
+  }
+
+  drawCurve(ST.mu2,ST.s2,ST.n2,a2);
+  drawCurve(ST.mu1,ST.s1,ST.n1,a1);
+
+  // Axes
+  ctx.strokeStyle=ink3; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,plotBot); ctx.lineTo(pad.l+plotW,plotBot); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.top); ctx.lineTo(pad.l,plotBot); ctx.stroke();
+
+  // X ticks
+  const range=hi-lo;
+  const rawStep=range/7;
+  const mag=Math.pow(10,Math.floor(Math.log10(rawStep)));
+  const step=Math.ceil(rawStep/mag)*mag;
+  const first=Math.ceil(lo/step)*step;
+  ctx.fillStyle=ink2; ctx.font=`12px 'DM Mono',monospace`; ctx.textAlign='center';
+  for(let xv=first;xv<=hi+.01;xv+=step){
+    const px=xS(xv);
+    ctx.strokeStyle=ink3; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(px,plotBot); ctx.lineTo(px,plotBot+4); ctx.stroke();
+    ctx.fillText(Math.round(xv),px,plotBot+pad.bot-4);
+  }
+
+  // Y axis label
+  ctx.save(); ctx.translate(13,pad.top+plotH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=ink3; ctx.font=`12px 'DM Mono',monospace`; ctx.textAlign='center';
+  ctx.fillText('Häufigkeit',0,0); ctx.restore();
+
+  // Cut-Off line
+  const pxC=xS(ST.cut);
+  ctx.save(); ctx.strokeStyle=a5; ctx.lineWidth=2; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(pxC,pad.top); ctx.lineTo(pxC,plotBot); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=a5; ctx.font=`bold 13px 'DM Mono',monospace`; ctx.textAlign='center';
+  ctx.fillText(`Cut-Off = ${ST.cut.toFixed(1)}`,pxC,pad.top+13); ctx.restore();
+
+  // Legend
+  const lx=W-pad.r-2, ly=pad.top+10;
+  [[a1,'ADHS+'],[a2,'ADHS−']].forEach(([c,lbl],i)=>{
+    const y=ly+i*16;
+    ctx.strokeStyle=c; ctx.lineWidth=2.5; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(lx-52,y); ctx.lineTo(lx-32,y); ctx.stroke();
+    ctx.fillStyle=ink2; ctx.font=`12px 'DM Mono',monospace`; ctx.textAlign='left';
+    ctx.fillText(lbl,lx-29,y+4);
+  });
+}
+
+// ── DRAW ROC ────────────────────────────────────────────────────
+function drawROC(pts,opt,aucVal){
+  const W=cvR.width, H=cvR.height;
+  const ctx=ctxR;
+  const ink2=css('--ink2'), ink3=css('--ink3'), paper=css('--paper'), grid=css('--grid');
+  const a2=css('--a2'), a5=css('--a5'), a6=css('--a6');
+  const pad={l:44,r:20,top:20,bot:32};
+  const plotW=W-pad.l-pad.r, plotH=H-pad.top-pad.bot;
+  const plotBot=pad.top+plotH;
+  const xS=v=>v*plotW+pad.l, yS=v=>plotBot-v*plotH;
+
+  ctx.fillStyle=paper; ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle=grid; ctx.lineWidth=1; ctx.setLineDash([2,3]);
+  [.25,.5,.75].forEach(v=>{
+    ctx.beginPath(); ctx.moveTo(xS(v),pad.top); ctx.lineTo(xS(v),plotBot); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l,yS(v)); ctx.lineTo(pad.l+plotW,yS(v)); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  // Diagonal
+  ctx.strokeStyle=ink3; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(xS(0),yS(0)); ctx.lineTo(xS(1),yS(1)); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // ROC fill + curve (sorted by FPR asc)
+  const roc=[...pts].sort((a,b)=>(1-a.spec)-(1-b.spec));
+  ctx.beginPath(); ctx.fillStyle=a2+'20';
+  ctx.moveTo(xS(0),yS(0));
+  roc.forEach(p=>ctx.lineTo(xS(1-p.spec),yS(p.sens)));
+  ctx.lineTo(xS(1),yS(0)); ctx.closePath(); ctx.fill();
+
+  ctx.beginPath(); ctx.strokeStyle=a2; ctx.lineWidth=2.5;
+  roc.forEach((p,i)=>{ const px=xS(1-p.spec),py=yS(p.sens); i===0?ctx.moveTo(px,py):ctx.lineTo(px,py); });
+  ctx.stroke();
+
+  // Current cut-off dot
+  const curSens=1-normalCDF(ST.cut,ST.mu1,ST.s1);
+  const curSpec=normalCDF(ST.cut,ST.mu2,ST.s2);
+  ctx.fillStyle=a5;
+  ctx.beginPath(); ctx.arc(xS(1-curSpec),yS(curSens),6,0,2*Math.PI); ctx.fill();
+  ctx.fillStyle=paper;
+  ctx.beginPath(); ctx.arc(xS(1-curSpec),yS(curSens),2.5,0,2*Math.PI); ctx.fill();
+
+  // Optimal dot
+  ctx.fillStyle=a6;
+  ctx.beginPath(); ctx.arc(xS(1-opt.spec),yS(opt.sens),7,0,2*Math.PI); ctx.fill();
+  ctx.fillStyle=paper;
+  ctx.beginPath(); ctx.arc(xS(1-opt.spec),yS(opt.sens),3,0,2*Math.PI); ctx.fill();
+
+  // Axes
+  ctx.strokeStyle=ink3; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.top); ctx.lineTo(pad.l,plotBot); ctx.lineTo(pad.l+plotW,plotBot); ctx.stroke();
+
+  ctx.fillStyle=ink2; ctx.font=`12px 'DM Mono',monospace`;
+  [0,.25,.5,.75,1].forEach(v=>{
+    ctx.textAlign='center'; ctx.fillText(v.toFixed(2),xS(v),plotBot+14);
+    ctx.textAlign='right';  ctx.fillText(v.toFixed(2),pad.l-4,yS(v)+4);
+  });
+
+  ctx.fillStyle=ink3; ctx.font=`12px 'DM Mono',monospace`; ctx.textAlign='center';
+  ctx.fillText('1 − Spezifität (FPR)',pad.l+plotW/2,H-4);
+  ctx.save(); ctx.translate(12,pad.top+plotH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Sensitivität (TPR)',0,0); ctx.restore();
+
+  // AUC + legend
+  ctx.fillStyle=ink2; ctx.font=`bold 13px 'DM Mono',monospace`; ctx.textAlign='left';
+  ctx.fillText(`AUC = ${aucVal.toFixed(3)}`,pad.l+6,pad.top+16);
+
+  [[a5,'aktueller Cut-Off'],[a6,'optimaler Cut-Off']].forEach(([c,lbl],i)=>{
+    const lx=W-pad.r-2, ly=pad.top+10+i*16;
+    ctx.fillStyle=c;
+    ctx.beginPath(); ctx.arc(lx-43,ly-1,5,0,2*Math.PI); ctx.fill();
+    ctx.fillStyle=ink2; ctx.font=`12px 'DM Mono',monospace`; ctx.textAlign='left';
+    ctx.fillText(lbl,lx-36,ly+3);
+  });
+}
+
+// ── RESIZE ──────────────────────────────────────────────────────
+function resize(){
+  const W=cvD.parentElement.clientWidth-4;
+  cvD.width=W;
+  // Buffer folgt der CSS-gerenderten Breite des Canvas (aspect-ratio:1/1 im CSS)
+  const rocW=Math.round(cvR.getBoundingClientRect().width)||Math.max(240,Math.round(W*0.4));
+  cvR.width=rocW; cvR.height=rocW;
+}
+
+// ── DRAG ────────────────────────────────────────────────────────
+let dragging=false;
+function pxToVal(clientX){
+  const rect=cvD.getBoundingClientRect();
+  const{lo,hi}=xRange();
+  const plotW=cvD.width-52-20;
+  return lo+((clientX-rect.left-52)/plotW)*(hi-lo);
+}
+cvD.addEventListener('mousedown',e=>{
+  const v=pxToVal(e.clientX);
+  const{lo,hi}=xRange();
+  if(Math.abs(v-ST.cut)<(hi-lo)*0.025) dragging=true;
+});
+cvD.addEventListener('mousemove',e=>{
+  const v=pxToVal(e.clientX);
+  const{lo,hi}=xRange();
+  if(!dragging){cvD.style.cursor=Math.abs(v-ST.cut)<(hi-lo)*0.025?'ew-resize':'crosshair';return;}
+  ST.cut=Math.max(lo,Math.min(hi,Math.round(v*2)/2));
+  document.getElementById('sl-cut').value=ST.cut;
+  document.getElementById('val-cut').textContent=ST.cut.toFixed(1);
+  updateUI();
+});
+cvD.addEventListener('mouseup',()=>{dragging=false;});
+cvD.addEventListener('mouseleave',()=>{dragging=false;});
+
+// ── EVENT HANDLERS ───────────────────────────────────────────────
+function onSlider(){
+  ST.mu1=+document.getElementById('sl-mu1').value; document.getElementById('val-mu1').textContent=ST.mu1;
+  ST.s1 =+document.getElementById('sl-s1').value;  document.getElementById('val-s1').textContent=ST.s1;
+  ST.n1 =+document.getElementById('sl-n1').value;  document.getElementById('val-n1').textContent=ST.n1;
+  ST.mu2=+document.getElementById('sl-mu2').value; document.getElementById('val-mu2').textContent=ST.mu2;
+  ST.s2 =+document.getElementById('sl-s2').value;  document.getElementById('val-s2').textContent=ST.s2;
+  ST.n2 =+document.getElementById('sl-n2').value;  document.getElementById('val-n2').textContent=ST.n2;
+  const{lo,hi}=xRange();
+  const slc=document.getElementById('sl-cut');
+  slc.min=lo.toFixed(1); slc.max=hi.toFixed(1);
+  ST.cut=Math.max(lo,Math.min(hi,ST.cut));
+  slc.value=ST.cut;
+  updateUI();
+}
+
+function onCutSlider(){
+  ST.cut=+document.getElementById('sl-cut').value;
+  document.getElementById('val-cut').textContent=ST.cut.toFixed(1);
+  updateUI();
+}
+
+function onToggle(){
+  ST.showAreas=document.getElementById('tog-areas').checked;
+  drawDensity(compute());
+}
+
+function onToggleYFix(){
+  ST.fixY=document.getElementById('tog-yafix').checked;
+  if(ST.fixY){
+    ST.fixedYMax=Math.max(ST.n1*normalPDF(ST.mu1,ST.mu1,ST.s1), ST.n2*normalPDF(ST.mu2,ST.mu2,ST.s2))*1.12;
+  }
+  drawDensity(compute());
+}
+
+function onMethodChange(){
+  ST.rocMethod=document.getElementById('roc-method').value;
+  document.getElementById('roc-extra-cost').style.display= ST.rocMethod==='cost'   ?'':'none';
+  document.getElementById('roc-extra-prev').style.display= ST.rocMethod==='prev'   ?'':'none';
+  document.getElementById('roc-extra-mccost').style.display=ST.rocMethod==='mccost'?'':'none';
+  updateUI();
+}
+
+function onRocExtra(){
+  ST.costRatio=+document.getElementById('sl-cost-ratio').value;
+  document.getElementById('val-cost-ratio').textContent=ST.costRatio.toFixed(1);
+  ST.prevAdj=document.getElementById('sel-prev-adj').value;
+  ST.cFP=+document.getElementById('sl-cfp').value; document.getElementById('val-cfp').textContent=ST.cFP;
+  ST.cFN=+document.getElementById('sl-cfn').value; document.getElementById('val-cfn').textContent=ST.cFN;
+  updateUI();
+}
+
+function adoptCut(){
+  const{lo,hi}=xRange();
+  ST.cut=Math.max(lo,Math.min(hi,Math.round(ST.optCut*2)/2));
+  document.getElementById('sl-cut').value=ST.cut;
+  document.getElementById('val-cut').textContent=ST.cut.toFixed(1);
+  updateUI();
+}
+
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  updateUI();
+}
+
+function toggleHelp(){
+  const p=document.getElementById('help-panel');
+  const b=document.getElementById('help-btn');
+  p.classList.toggle('open');
+  b.classList.toggle('active',p.classList.contains('open'));
+}
+
+// ── INIT ────────────────────────────────────────────────────────
+new ResizeObserver(()=>{resize();updateUI();}).observe(cvD.parentElement);
+resize();
+const{lo,hi}=xRange();
+const slc=document.getElementById('sl-cut');
+slc.min=lo.toFixed(1); slc.max=hi.toFixed(1);
+updateUI();
+</script>
+</body>
+</html>

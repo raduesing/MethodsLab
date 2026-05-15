@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ICC Lab — Intraklassenkorrelation interaktiv</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--warm:#c8a96e;
+  --accent:var(--a4);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;--warm:#c8a96e;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1.0rem;min-height:100vh}
+
+/* ── TOPBAR ── */
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn.accent{border-color:var(--accent);color:var(--accent)}
+
+/* ── LAYOUT ── */
+#app{display:grid;grid-template-columns:290px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+/* ── SIDEBAR ── */
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+
+/* MQ table */
+.mq-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.83rem;margin-top:.3rem}
+.mq-table td{padding:.2rem .3rem;border-bottom:1px solid var(--grid)}
+.mq-table td:first-child{color:var(--ink2)}
+.mq-table td:last-child{color:var(--ink);text-align:right;font-weight:500}
+.mq-label{color:var(--a4)!important}
+
+.sbtn{font-family:'DM Mono',monospace;font-size:.73rem;padding:.3rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);width:100%;margin-top:.4rem;transition:all .15s;text-align:center}
+.sbtn:hover{background:var(--accent);color:white;border-color:var(--accent)}
+
+/* ── SECTION HEADERS ── */
+.sec-div{border-top:2px solid var(--accent);margin:1.6rem 0 .9rem;padding-top:.5rem;display:flex;align-items:center;gap:.7rem}
+.sec-num{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.sec-title{font-size:1rem;font-weight:300;color:var(--ink)}
+.sec-title em{color:var(--accent);font-style:italic}
+
+/* ── CANVAS WRAPPER ── */
+.canvas-wrap{position:relative;width:100%;background:var(--panel);border:1px solid var(--grid)}
+canvas{display:block;width:100%;height:auto}
+
+/* ── ICC TABLE ── */
+.icc-table{width:100%;border-collapse:collapse;margin-top:.5rem}
+.icc-table th,.icc-table td{border:1px solid var(--grid);padding:.5rem .65rem;vertical-align:top}
+.icc-table th{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+  font-weight:500;text-align:center;background:var(--panel)}
+.th-agree{background:rgba(42,110,138,.12)!important;color:var(--a2)}
+.th-consist{background:rgba(90,138,42,.12)!important;color:var(--a3)}
+.th-row{background:rgba(122,58,138,.08)!important;color:var(--a4);font-size:.55rem}
+.icc-cell{background:var(--paper)}
+.icc-name{font-family:'DM Mono',monospace;font-size:.92rem;color:var(--a1);font-style:italic;font-weight:500;margin-bottom:.35rem}
+.frac{display:inline-flex;flex-direction:column;align-items:center;font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);vertical-align:middle}
+.fnum,.fden{padding:0 .2rem;line-height:1.5}
+.fline{width:100%;border-top:1px solid var(--ink2);margin:.05rem 0}
+.icc-nums{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink3);margin-top:.3rem;line-height:1.6}
+.icc-result{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;color:var(--accent);margin-top:.3rem}
+.gauge-bar{height:4px;background:var(--grid);border-radius:2px;margin-top:.3rem;overflow:hidden}
+.gauge-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+.eq-note{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--a3);margin-top:.3rem}
+
+
+/* ── QUIZ ── */
+.quiz-wrap{background:var(--panel);border:1px solid var(--grid);padding:.9rem 1rem}
+.quiz-q{font-family:'DM Mono',monospace;font-size:.86rem;color:var(--ink);margin-bottom:.6rem;line-height:1.7}
+.guess-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.5rem}
+.guess-lbl{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink2)}
+#guess-slider{flex:1}
+#guess-val{font-family:'DM Mono',monospace;font-size:.85rem;color:var(--accent);font-weight:500;min-width:2.5rem;text-align:right}
+.quiz-btns{display:flex;gap:.5rem;margin-top:.5rem}
+.qbtn{font-family:'DM Mono',monospace;font-size:.73rem;padding:.3rem .8rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s}
+.qbtn:hover{background:var(--ink);color:var(--bg)}
+.qbtn.primary{border-color:var(--accent);color:var(--accent)}
+.qbtn.primary:hover{background:var(--accent);color:white}
+#quiz-reveal{display:none;margin-top:.75rem;padding:.65rem .8rem;background:var(--paper);
+  border-left:3px solid var(--accent);font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2);line-height:1.8}
+#quiz-reveal strong{color:var(--ink)}
+.quiz-prog{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);margin-bottom:.5rem}
+
+/* ── HELP PANEL ── */
+#help-panel{display:none;position:fixed;right:1.5rem;top:50%;transform:translateY(-50%);
+  width:320px;z-index:600;background:#1c2438;border:2px solid #3a4558;
+  box-shadow:6px 6px 0 rgba(0,0,0,.4),0 2px 20px rgba(0,0,0,.35)}
+[data-theme="dark"] #help-panel{background:#1c2438;border-color:#3a4558}
+[data-theme="light"] #help-panel,html:not([data-theme="dark"]) #help-panel{background:var(--panel);border-color:var(--border)}
+#help-panel.open{display:block}
+.hp-head{display:flex;justify-content:space-between;align-items:center;
+  padding:.5rem .85rem;border-bottom:1px solid var(--grid)}
+.hp-title{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.hp-close{font-family:'DM Mono',monospace;font-size:.85rem;background:transparent;border:none;cursor:pointer;color:var(--ink2)}
+.hp-body{padding:.8rem .85rem;font-family:'DM Mono',monospace;font-size:.83rem;line-height:1.85;
+  color:var(--ink2);max-height:72vh;overflow-y:auto}
+.hp-body strong{color:var(--ink)}
+.hp-body em{color:var(--accent);font-style:normal}
+.hp-sect{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;margin-top:.85rem;margin-bottom:.3rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.18rem;color:var(--ink3)}
+.hp-sect:first-child{margin-top:0}
+.sigma-table{width:100%;border-collapse:collapse;margin-top:.35rem}
+.sigma-table td{padding:.22rem .35rem;border-bottom:1px solid var(--grid);font-size:.72rem}
+.sigma-table td:first-child{color:var(--accent)}
+
+@media(max-width:800px){
+  #app{grid-template-columns:1fr}
+  #sidebar{display:none}
+  .two-scatter,.use-cards,.analogy-box{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>ICC <em>Lab</em> — Intraklassenkorrelation interaktiv</h1>
+  <button class="tbtn" onclick="window.open('..','_self')">← Übersicht</button>
+  <button class="tbtn accent" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ═══ SIDEBAR ═══ -->
+<div id="sidebar">
+
+  <div class="scard" style="border-color:var(--accent);background:var(--panel)">
+    <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink2);line-height:1.7">
+      <strong style="color:var(--ink)">Stichprobe</strong> vs. <strong style="color:var(--ink3)">(wahrer Wert)</strong><br>
+      Slider = Populations-σ². Daten werden zufällig gezogen. Alle Ergebnisse: <strong style="color:var(--ink)">Stichprobe</strong> <span style="color:var(--ink3)">(analytisch wahr)</span>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Varianzkomponenten</div>
+
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">σ²<sub>B</sub> · Objektvarianz</span>
+        <span class="slider-val" id="v-sigB">2.00</span>
+      </div>
+      <input type="range" id="s-sigB" min="0.1" max="5" step="0.1" value="2">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">σ²<sub>R</sub> · Rater-Bias</span>
+        <span class="slider-val" id="v-sigR">0.50</span>
+      </div>
+      <input type="range" id="s-sigR" min="0" max="3" step="0.1" value="0.5">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">σ²<sub>E</sub> · Zufallsfehler</span>
+        <span class="slider-val" id="v-sigE">0.80</span>
+      </div>
+      <input type="range" id="s-sigE" min="0" max="4" step="0.1" value="0.8">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">k · Anzahl Rater</span>
+        <span class="slider-val" id="v-k">3</span>
+      </div>
+      <input type="range" id="s-k" min="2" max="6" step="1" value="3">
+    </div>
+
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">n · Anzahl Objekte</span>
+        <span class="slider-val" id="v-n">12</span>
+      </div>
+      <input type="range" id="s-n" min="5" max="20" step="1" value="12">
+    </div>
+
+    <button class="sbtn" onclick="regen()">⟳ Neue Daten</button>
+    <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);margin-top:.5rem;line-height:1.65;border-top:1px solid var(--grid);padding-top:.4rem">
+      σ²<sub>R</sub>=0: kein Rater-Bias, aber σ²<sub>E</sub> bleibt.<br>
+      Erst σ²<sub>R</sub>=0 <em>und</em> σ²<sub>E</sub>=0 → alle Ratings = wahrer Wert.
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">ANOVA-Mittlere Quadratsummen · <span style="color:var(--ink3)">Stichp. (wahr)</span></div>
+    <table class="mq-table">
+      <tr><td class="mq-label">MQ<sub>zw</sub></td><td id="mq-zw">—</td></tr>
+      <tr><td class="mq-label">MQ<sub>rat</sub></td><td id="mq-rat">—</td></tr>
+      <tr><td class="mq-label">MQ<sub>res</sub></td><td id="mq-res">—</td></tr>
+      <tr><td class="mq-label">MQ<sub>in</sub></td><td id="mq-in">—</td></tr>
+      <tr><td style="color:var(--ink3);font-size:.72rem">k</td><td id="mq-k" style="color:var(--ink3);font-size:.72rem">—</td></tr>
+      <tr><td style="color:var(--ink3);font-size:.72rem">n</td><td id="mq-n" style="color:var(--ink3);font-size:.72rem">—</td></tr>
+    </table>
+    <div style="font-family:'DM Mono',monospace;font-size:.65rem;color:var(--ink3);margin-top:.4rem;line-height:1.6">
+      MQ<sub>zw</sub> = Zwischen Objekten<br>
+      MQ<sub>rat</sub> = Zwischen Ratern<br>
+      MQ<sub>res</sub> = Residual (2-Wege)<br>
+      MQ<sub>in</sub> = Innerhalb (1-Wege, ICC 1)
+    </div>
+  </div>
+
+  <!-- Varianzanteile -->
+  <div class="scard">
+    <div class="scard-title">Varianzanteile</div>
+    <div style="height:14px;display:flex;border-radius:2px;overflow:hidden;margin-bottom:.4rem">
+      <div id="bar-sigB" style="background:var(--a4);transition:width .3s"></div>
+      <div id="bar-sigR" style="background:var(--a2);transition:width .3s"></div>
+      <div id="bar-sigE" style="background:var(--a1);transition:width .3s"></div>
+    </div>
+    <div style="display:flex;gap:.8rem;font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink2)">
+      <span><span style="color:var(--a4)">■</span> σ²<sub>B</sub> <span id="pct-B">—</span>%</span>
+      <span><span style="color:var(--a2)">■</span> σ²<sub>R</sub> <span id="pct-R">—</span>%</span>
+      <span><span style="color:var(--a1)">■</span> σ²<sub>E</sub> <span id="pct-E">—</span>%</span>
+    </div>
+  </div>
+
+</div><!-- /sidebar -->
+
+<!-- ═══ MAIN ═══ -->
+<div id="main">
+
+  <!-- ── SEKTION I: DATENMUSTER ── -->
+  <div class="sec-div">
+    <span class="sec-num">I</span>
+    <span class="sec-title"><em>Datenmuster</em> — Rohdaten und Varianzquellen</span>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:.85rem;margin-bottom:.4rem;flex-wrap:wrap">
+    <button class="tbtn" id="dot-toggle-btn" onclick="toggleDotMode()"
+      style="border-color:var(--a2);color:var(--a2);font-weight:500">
+      ⇄ Ansicht: Objekte auf X-Achse
+    </button>
+    <span style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);line-height:1.5">
+      Schaltet zwischen zwei Perspektiven: <strong style="color:var(--ink2)">Objekte</strong> (wie streuen die Rater pro Objekt?)
+      und <strong style="color:var(--ink2)">Rater</strong> (wie konsistent bewertet jeder Rater?).
+    </span>
+  </div>
+  <div class="canvas-wrap" style="height:260px">
+    <canvas id="c-dot"></canvas>
+  </div>
+  <div id="dot-legend" style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.35rem;line-height:1.7">
+    Jede Farbe = ein Rater · Gestrichelt = wahrer Wert (μ<sub>i</sub>) ·
+    Vertikale Streuung pro Objekt zeigt σ²<sub>E</sub> + σ²<sub>R</sub> ·
+    Parallele Versetzung aller Punkte eines Raters = Rater-Bias (σ²<sub>R</sub>)
+  </div>
+
+  <!-- ── SEKTION II: FORMELN ── -->
+  <div class="sec-div">
+    <span class="sec-num">II</span>
+    <span class="sec-title">ICC-<em>Formeln</em> mit aktuellen Werten</span>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);margin-bottom:.6rem;line-height:1.7">
+    Alle sechs Formen nach Shrout &amp; Fleiss (1979). Die Mittlere Quadratsummen aus der ANOVA-Tabelle (Sidebar)
+    werden direkt in die Formeln eingesetzt. Zahlen aktualisieren sich live mit den Slidern.
+  </div>
+
+  <table class="icc-table">
+    <thead>
+      <tr>
+        <th style="width:22%;background:var(--panel)"></th>
+        <th class="th-agree" colspan="1">ICC(1)<br><span style="font-weight:300;font-size:.65rem">k unterschiedliche Rater<br>Agreement</span></th>
+        <th class="th-agree" colspan="1">ICC(2)<br><span style="font-weight:300;font-size:.65rem">gleiche k Rater, Bias = Fehler<br>Agreement</span></th>
+        <th class="th-consist" colspan="1">ICC(3)<br><span style="font-weight:300;font-size:.65rem">gleiche k Rater, Bias justiert<br>Consistency</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="th-row" style="font-size:.9rem;line-height:1.6">Reliabilität des<br><strong>mittleren Raters</strong><br>(?,1)</td>
+        <td class="icc-cell" id="cell-11"></td>
+        <td class="icc-cell" id="cell-21"></td>
+        <td class="icc-cell" id="cell-31"></td>
+      </tr>
+      <tr>
+        <td class="th-row" style="font-size:.9rem;line-height:1.6">Reliabilität der<br><strong>gemittelten Ratings</strong><br>(?,k)</td>
+        <td class="icc-cell" id="cell-1k"></td>
+        <td class="icc-cell" id="cell-2k"></td>
+        <td class="icc-cell" id="cell-3k"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div id="note-equal" style="display:none;margin-top:.5rem;font-family:'DM Mono',monospace;font-size:.6rem;
+    padding:.4rem .65rem;border-left:3px solid var(--a3);background:var(--panel);color:var(--ink2)">
+    <strong style="color:var(--a3)">Hinweis:</strong> Wenn σ²<sub>R</sub> = 0, ist ICC(2) = ICC(3) —
+    kein Rater-Bias bedeutet: Agreement = Consistency.
+  </div>
+
+  <!-- ── SEKTION III: SCHÄTZAUFGABE ── -->
+  <div class="sec-div">
+    <span class="sec-num">III</span>
+    <span class="sec-title"><em>Schätzaufgabe</em> — Intuition trainieren</span>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);margin-bottom:.6rem;line-height:1.7">
+    Die Slider-Werte sind ausgeblendet. Schätze den angezeigten ICC anhand des Datenmuster-Plots allein.
+    Versuche, die Varianzstruktur zu erkennen — wie breit streuen die Rater-Punkte pro Objekt?
+    Wie unterschiedlich sind die Objekte voneinander?
+  </div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-prog">Aufgabe <span id="q-num">1</span> von 6</div>
+    <div class="canvas-wrap" style="height:220px"><canvas id="c-quiz"></canvas></div>
+    <div class="quiz-q" style="margin-top:.65rem">
+      Schätze: Wie hoch ist <em id="q-target-lbl" style="color:var(--accent)">ICC(?)</em> für diesen Datensatz?
+    </div>
+    <div class="guess-row">
+      <span class="guess-lbl">Meine Schätzung:</span>
+      <input type="range" id="guess-slider" min="0" max="1" step="0.01" value="0.5"
+        oninput="document.getElementById('guess-val').textContent=parseFloat(this.value).toFixed(2)">
+      <span id="guess-val">0.50</span>
+    </div>
+    <div class="quiz-btns">
+      <button class="qbtn primary" onclick="quizReveal()">Aufdecken</button>
+      <button class="qbtn" id="q-next" style="display:none" onclick="quizNext()">Nächste Aufgabe →</button>
+    </div>
+    <div id="quiz-reveal"></div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ HELP PANEL ══ -->
+<div id="help-panel">
+  <div class="hp-head">
+    <span class="hp-title">Hintergrund &amp; Notation</span>
+    <button class="hp-close" onclick="toggleHelp()">✕</button>
+  </div>
+  <div class="hp-body">
+    <div class="hp-sect">Varianzkomponenten (σ²-Notation)</div>
+    Das Tool steuert intern drei Varianzkomponenten. In den Formeln erscheinen diese
+    als Mittlere Quadratsummen (MQ), da die ANOVA die σ²-Werte nicht direkt liefert,
+    sondern über Erwartungswerte der MQ.<br><br>
+    <table class="sigma-table">
+      <tr><td>σ²<sub>B</sub></td><td>Varianz <strong>zwischen Objekten</strong> (true score variance). E[MQ<sub>zw</sub>] = σ²<sub>E</sub> + k·σ²<sub>B</sub></td></tr>
+      <tr><td>σ²<sub>R</sub></td><td>Varianz der <strong>Rater-Haupteffekte</strong> (Strenge/Milde-Bias). E[MQ<sub>rat</sub>] = σ²<sub>E</sub> + n·σ²<sub>R</sub></td></tr>
+      <tr><td>σ²<sub>E</sub></td><td>Zufälliger <strong>Residualfehler</strong>. E[MQ<sub>res</sub>] = σ²<sub>E</sub></td></tr>
+    </table>
+    <div class="hp-sect">Von σ² zu den ICC-Formeln</div>
+    Setzt man die Erwartungswerte ein, vereinfachen sich die ICC-Formeln zu intuitiven
+    Varianzanteilen:<br><br>
+    <strong>ICC(3,1)</strong> = σ²<sub>B</sub> / (σ²<sub>B</sub> + σ²<sub>E</sub>)<br>
+    <strong>ICC(2,1)</strong> = σ²<sub>B</sub> / (σ²<sub>B</sub> + σ²<sub>R</sub> + σ²<sub>E</sub>)<br>
+    <strong>ICC(3,k)</strong> = k·σ²<sub>B</sub> / (k·σ²<sub>B</sub> + σ²<sub>E</sub>)<br><br>
+    ICC(3) ignoriert σ²<sub>R</sub> (justiert den Bias heraus = Consistency).<br>
+    ICC(2) zählt σ²<sub>R</sub> als Fehler (= Agreement).
+    <div class="hp-sect">Stichprobe vs. wahrer Wert</div>
+    Die Slider setzen <em>Populations-Parameter</em> (σ²). Das Tool zieht daraus eine
+    zufällige Stichprobe (n Objekte × k Rater). Die berechneten MQ-Werte und ICCs sind
+    deshalb <em>Stichproben-Schätzer</em> — sie weichen von den wahren Werten ab.<br><br>
+    Überall im Tool gilt: <strong>Stichprobenwert</strong> <span style="color:var(--ink3)">(wahrer Wert)</span><br><br>
+    Die wahren (analytischen) MQ-Erwartungswerte sind:<br>
+    E[MQ<sub>zw</sub>] = σ²<sub>E</sub> + k·σ²<sub>B</sub><br>
+    E[MQ<sub>rat</sub>] = σ²<sub>E</sub> + n·σ²<sub>R</sub><br>
+    E[MQ<sub>res</sub>] = σ²<sub>E</sub><br>
+    E[MQ<sub>in</sub>] = σ²<sub>E</sub> + σ²<sub>R</sub><br><br>
+    Mit „Neue Daten" entstehen andere Stichproben — die wahren Werte bleiben konstant.
+    Bei großem n/k konvergieren Stichproben- gegen wahre Werte.
+    <div class="hp-sect">MQ-Berechnung (2-Wege-ANOVA)</div>
+    Das Tool generiert eine n×k-Datenmatrix und berechnet:<br><br>
+    <strong>MQ<sub>zw</sub></strong> = SS<sub>zw</sub> / (n−1)<br>
+    <strong>MQ<sub>rat</sub></strong> = SS<sub>rat</sub> / (k−1)<br>
+    <strong>MQ<sub>res</sub></strong> = SS<sub>res</sub> / ((n−1)(k−1))<br>
+    <strong>MQ<sub>in</sub></strong> = (SS<sub>rat</sub>+SS<sub>res</sub>) / n(k−1) &nbsp;[für ICC(1)]
+    <div class="hp-sect">Referenz</div>
+    Shrout, P. E., &amp; Fleiss, J. L. (1979). Intraclass correlations: Uses in assessing rater reliability.
+    <em>Psychological Bulletin, 86</em>(2), 420–428.
+  </div>
+</div>
+
+<script>
+// ── RNG + helpers ────────────────────────────────────────────
+function mkRng(s){let st=s>>>0;return()=>{st=(Math.imul(st,1664525)+1013904223)>>>0;return st/0x100000000}}
+function rnorm(r){return Math.sqrt(-2*Math.log(r()+1e-10))*Math.cos(2*Math.PI*r())}
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
+function fmt(v,d=3){return isFinite(v)?v.toFixed(d):'—'}
+
+// ── State ────────────────────────────────────────────────────
+let seed=42, data=[], trueScores=[], raterBias=[];
+let MQ={}, ICC={}, trueMQ={}, trueICC={};
+let dotMode='objects'; // 'objects' | 'raters'
+const RATER_COLS_KEYS=['--a2','--a1','--a3','--a5','--a6','--a4'];
+
+function P(){return{
+  sigB:+document.getElementById('s-sigB').value,
+  sigR:+document.getElementById('s-sigR').value,
+  sigE:+document.getElementById('s-sigE').value,
+  k:+document.getElementById('s-k').value|0,
+  n:+document.getElementById('s-n').value|0
+}}
+
+// ── Data generation ──────────────────────────────────────────
+function genData(p){
+  const r=mkRng(seed);
+  trueScores=Array.from({length:p.n},()=>rnorm(r)*Math.sqrt(p.sigB));
+  raterBias=Array.from({length:p.k},()=>rnorm(r)*Math.sqrt(p.sigR));
+  data=trueScores.map(ts=>raterBias.map(rb=>ts+rb+rnorm(r)*Math.sqrt(p.sigE)));
+}
+
+// ── ANOVA ────────────────────────────────────────────────────
+function computeMQ(){
+  const n=data.length, k=data[0].length;
+  const gm=data.flat().reduce((s,v)=>s+v,0)/(n*k);
+  const smeans=data.map(row=>row.reduce((s,v)=>s+v,0)/k);
+  const rmeans=Array.from({length:k},(_,j)=>data.reduce((s,row)=>s+row[j],0)/n);
+  const SS_zw=k*smeans.reduce((s,m)=>s+(m-gm)**2,0);
+  const SS_rat=n*rmeans.reduce((s,m)=>s+(m-gm)**2,0);
+  let SS_res=0;
+  for(let i=0;i<n;i++) for(let j=0;j<k;j++)
+    SS_res+=(data[i][j]-smeans[i]-rmeans[j]+gm)**2;
+  MQ={
+    zw:SS_zw/(n-1),
+    rat:(k>1?SS_rat/(k-1):0),
+    res:((n-1)*(k-1)>0?SS_res/((n-1)*(k-1)):0),
+    mqin:(SS_rat+SS_res)/(n*(k-1)),
+    n,k
+  };
+}
+
+// ── ICC calculation ──────────────────────────────────────────
+function computeICCs(){
+  const{zw,rat,res,mqin,n,k}=MQ;
+  const n11=zw-mqin, n23=zw-res;
+  const safe=v=>isFinite(v)&&v>-5?v:NaN;
+  ICC={
+    icc11:safe(n11/(zw+(k-1)*mqin)),
+    icc1k:safe(n11/zw),
+    icc21:safe(n23/(zw+(k-1)*res+k/n*(rat-res))),
+    icc2k:safe(n23/(zw+1/n*(rat-res))),
+    icc31:safe(n23/(zw+(k-1)*res)),
+    icc3k:safe(n23/zw)
+  };
+}
+
+// ── Analytische Wahrwerte (aus σ²) ───────────────────────────
+function computeTrueValues(p){
+  const{sigB,sigR,sigE,k,n}=p;
+  trueMQ={
+    zw:sigE+k*sigB,
+    rat:sigE+n*sigR,
+    res:sigE,
+    mqin:sigE+sigR
+  };
+  const safe=v=>isFinite(v)&&v>-5?v:NaN;
+  trueICC={
+    icc11:safe((k*sigB-sigR)/(k*sigB+k*sigE+(k-1)*sigR)),
+    icc1k:safe((k*sigB-sigR)/(k*sigB+sigE)),
+    icc21:safe(sigB/(sigB+sigR+sigE)),
+    icc2k:safe(k*sigB/(k*sigB+sigR+sigE)),
+    icc31:safe(sigB/(sigB+sigE)),
+    icc3k:safe(k*sigB/(k*sigB+sigE)),
+  };
+}
+
+// ── Full rebuild ─────────────────────────────────────────────
+function rebuild(){
+  const p=P();
+  genData(p);
+  computeMQ();
+  computeICCs();
+  computeTrueValues(p);
+  updateSidebar(p);
+  drawDot();
+  updateFormulas();
+}
+
+function regen(){seed=(Math.random()*99999)|0;rebuild()}
+
+// ── Sidebar update ───────────────────────────────────────────
+function updateSidebar(p){
+  // Slider display values
+  document.getElementById('v-sigB').textContent=p.sigB.toFixed(2);
+  document.getElementById('v-sigR').textContent=p.sigR.toFixed(2);
+  document.getElementById('v-sigE').textContent=p.sigE.toFixed(2);
+  document.getElementById('v-k').textContent=p.k;
+  document.getElementById('v-n').textContent=p.n;
+  // MQ table (Stichprobe + wahrer Erwartungswert in Klammern)
+  const tw=v=>`${fmt(v,2)} <span style="color:var(--ink3)">(${fmt(v,2)})</span>`;
+  document.getElementById('mq-zw').innerHTML=`${fmt(MQ.zw,2)} <span style="color:var(--ink3)">(${fmt(trueMQ.zw,2)})</span>`;
+  document.getElementById('mq-rat').innerHTML=`${fmt(MQ.rat,2)} <span style="color:var(--ink3)">(${fmt(trueMQ.rat,2)})</span>`;
+  document.getElementById('mq-res').innerHTML=`${fmt(MQ.res,2)} <span style="color:var(--ink3)">(${fmt(trueMQ.res,2)})</span>`;
+  document.getElementById('mq-in').innerHTML=`${fmt(MQ.mqin,2)} <span style="color:var(--ink3)">(${fmt(trueMQ.mqin,2)})</span>`;
+  document.getElementById('mq-k').textContent=p.k;
+  document.getElementById('mq-n').textContent=p.n;
+  // Variance bars
+  const tot=p.sigB+p.sigR+p.sigE;
+  document.getElementById('bar-sigB').style.width=(p.sigB/tot*100)+'%';
+  document.getElementById('bar-sigR').style.width=(p.sigR/tot*100)+'%';
+  document.getElementById('bar-sigE').style.width=(p.sigE/tot*100)+'%';
+  document.getElementById('pct-B').textContent=(p.sigB/tot*100).toFixed(0);
+  document.getElementById('pct-R').textContent=(p.sigR/tot*100).toFixed(0);
+  document.getElementById('pct-E').textContent=(p.sigE/tot*100).toFixed(0);
+}
+
+// ── Dotplot toggle ───────────────────────────────────────────
+function toggleDotMode(){
+  dotMode=dotMode==='objects'?'raters':'objects';
+  const btn=document.getElementById('dot-toggle-btn');
+  const leg=document.getElementById('dot-legend');
+  if(dotMode==='objects'){
+    btn.innerHTML='⇄ Ansicht: Objekte auf X-Achse';
+    leg.innerHTML='Jede Farbe = ein Rater · Gestrichelt = wahrer Wert (μ<sub>i</sub>) · Vertikale Streuung pro Objekt zeigt σ²<sub>E</sub> + σ²<sub>R</sub> · Parallele Versetzung aller Punkte eines Raters = Rater-Bias (σ²<sub>R</sub>)';
+  } else {
+    btn.innerHTML='⇄ Ansicht: Rater auf X-Achse';
+    leg.innerHTML='Jede Farbe = ein Objekt · Jede vertikale Spalte = ein Rater · Parallele Versetzung aller Linien einer Spalte = Rater-Bias (σ²<sub>R</sub>) · Streuung innerhalb einer Spalte = σ²<sub>E</sub>';
+  }
+  drawDot();
+}
+
+// ── Dotplot ──────────────────────────────────────────────────
+function drawDot(){
+  if(dotMode==='raters'){drawDotRaters();return;}
+  const c=document.getElementById('c-dot');
+  const W=c.offsetWidth||600, H=260;
+  c.width=W; c.height=H;
+  const ctx=c.getContext('2d');
+  const n=data.length, k=data[0].length;
+  const ink=cv('--ink'), ink2=cv('--ink2'), panel=cv('--panel'), grid=cv('--grid');
+  ctx.fillStyle=panel; ctx.fillRect(0,0,W,H);
+  // Determine y range
+  const allVals=[...data.flat(),...trueScores];
+  const ymin=Math.min(...allVals)-0.5, ymax=Math.max(...allVals)+0.5;
+  const pad={l:32,r:15,t:15,b:28};
+  const plotW=W-pad.l-pad.r, plotH=H-pad.t-pad.b;
+  function yx(v){return pad.t+plotH*(1-(v-ymin)/(ymax-ymin));}
+  function xx(i){return pad.l+((i+0.5)/n)*plotW;}
+  // Grid lines
+  ctx.strokeStyle=grid; ctx.lineWidth=1;
+  for(let t=-4;t<=4;t++){
+    if(t<ymin||t>ymax)continue;
+    const y=yx(t);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
+    ctx.fillStyle=ink2; ctx.font=`${Math.max(9,W/70)}px 'DM Mono',monospace`;
+    ctx.textAlign='right'; ctx.fillText(t,pad.l-4,y+3);
+  }
+  // X axis labels
+  ctx.fillStyle=ink2; ctx.font=`${Math.max(8,W/75)}px 'DM Mono',monospace`; ctx.textAlign='center';
+  for(let i=0;i<n;i++){
+    ctx.fillText(i+1, xx(i), H-6);
+  }
+  // True scores dashed line
+  ctx.strokeStyle=ink2; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  for(let i=0;i<n;i++){
+    const x=xx(i), y=yx(trueScores[i]);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+  // Rater lines + dots
+  const cols=RATER_COLS_KEYS.map(c=>cv(c));
+  for(let j=0;j<k;j++){
+    const col=cols[j%cols.length];
+    // Connect dots of same rater
+    ctx.strokeStyle=col+'88'; ctx.lineWidth=1; ctx.beginPath();
+    for(let i=0;i<n;i++){
+      const x=xx(i), y=yx(data[i][j]);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // Dots
+    ctx.fillStyle=col;
+    for(let i=0;i<n;i++){
+      ctx.beginPath();
+      ctx.arc(xx(i),yx(data[i][j]),3.5,0,2*Math.PI);
+      ctx.fill();
+    }
+  }
+  // True score dots
+  ctx.fillStyle=ink2;
+  for(let i=0;i<n;i++){
+    ctx.beginPath(); ctx.arc(xx(i),yx(trueScores[i]),3,0,2*Math.PI); ctx.fill();
+  }
+  // Legend
+  const leg=[...Array.from({length:k},(_,j)=>`Rater ${j+1}`),'Wahrer Wert'];
+  const lcols=[...cols.slice(0,k),ink2];
+  let lx=pad.l+4;
+  ctx.font=`${Math.max(8,W/80)}px 'DM Mono',monospace`; ctx.textAlign='left';
+  for(let i=0;i<leg.length;i++){
+    ctx.fillStyle=lcols[i]; ctx.fillRect(lx,pad.t+2,8,8); lx+=11;
+    ctx.fillStyle=ink2; ctx.fillText(leg[i],lx,pad.t+10); lx+=ctx.measureText(leg[i]).width+10;
+    if(lx>W-60){lx=pad.l+4;}
+  }
+}
+
+// ── Dotplot: Rater auf X-Achse ───────────────────────────────
+function drawDotRaters(){
+  const c=document.getElementById('c-dot');
+  const W=c.offsetWidth||600, H=260;
+  c.width=W; c.height=H;
+  const ctx=c.getContext('2d');
+  const n=data.length, k=data[0].length;
+  const ink2=cv('--ink2'), panel=cv('--panel'), grid=cv('--grid');
+  ctx.fillStyle=panel; ctx.fillRect(0,0,W,H);
+  const allVals=data.flat();
+  const ymin=Math.min(...allVals)-0.5, ymax=Math.max(...allVals)+0.5;
+  const pad={l:32,r:15,t:15,b:28};
+  const plotW=W-pad.l-pad.r, plotH=H-pad.t-pad.b;
+  function yx(v){return pad.t+plotH*(1-(v-ymin)/(ymax-ymin));}
+  function xx(j){return pad.l+((j+0.5)/k)*plotW;}
+  // Grid lines
+  ctx.strokeStyle=grid; ctx.lineWidth=1;
+  for(let t=-4;t<=4;t++){
+    if(t<ymin||t>ymax)continue;
+    const y=yx(t);
+    ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
+    ctx.fillStyle=ink2; ctx.font=`${Math.max(9,W/70)}px 'DM Mono',monospace`;
+    ctx.textAlign='right'; ctx.fillText(t,pad.l-4,y+3);
+  }
+  // X axis labels (rater numbers)
+  ctx.fillStyle=ink2; ctx.font=`${Math.max(8,W/75)}px 'DM Mono',monospace`; ctx.textAlign='center';
+  for(let j=0;j<k;j++) ctx.fillText(`R${j+1}`, xx(j), H-6);
+  // Object lines + dots (each object = one color)
+  const cols=RATER_COLS_KEYS.map(c=>cv(c));
+  for(let i=0;i<n;i++){
+    const col=cols[i%cols.length];
+    ctx.strokeStyle=col+'88'; ctx.lineWidth=1; ctx.beginPath();
+    for(let j=0;j<k;j++){
+      const x=xx(j), y=yx(data[i][j]);
+      j===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.fillStyle=col;
+    for(let j=0;j<k;j++){
+      ctx.beginPath(); ctx.arc(xx(j),yx(data[i][j]),3.5,0,2*Math.PI); ctx.fill();
+    }
+  }
+  // Rater means as dashed vertical ticks
+  const rmeans=Array.from({length:k},(_,j)=>data.reduce((s,row)=>s+row[j],0)/n);
+  ctx.strokeStyle=ink2+'cc'; ctx.lineWidth=2; ctx.setLineDash([5,3]);
+  for(let j=0;j<k;j++){
+    const x=xx(j), y=yx(rmeans[j]);
+    ctx.beginPath(); ctx.moveTo(x-8,y); ctx.lineTo(x+8,y); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+}
+
+// ── Formula cells ────────────────────────────────────────────
+function mkCell(name, numSym, denSym, numVal, denVal, result, agree, trueResult){
+  const col=agree?'var(--a2)':'var(--a3)';
+  const pct=clamp(isNaN(result)?0:result,0,1)*100;
+  const trueStr=(trueResult!==undefined&&!isNaN(trueResult))
+    ?` <span style="color:var(--ink3);font-size:.88em">(${trueResult.toFixed(3)})</span>`:'';
+  return `
+    <div class="icc-name" style="color:${col}">${name}</div>
+    <div class="frac">
+      <div class="fnum">${numSym}</div>
+      <div class="fline"></div>
+      <div class="fden">${denSym}</div>
+    </div>
+    <div class="icc-nums">
+      <span style="vertical-align:middle">= </span><div class="frac" style="font-size:.78rem;display:inline-flex">
+        <div class="fnum">${numVal}</div>
+        <div class="fline"></div>
+        <div class="fden">${denVal}</div>
+      </div>
+    </div>
+    <div class="icc-result" style="color:${col}">${isNaN(result)?'—':result.toFixed(3)}${trueStr}</div>
+    <div class="gauge-bar"><div class="gauge-fill" style="width:${pct}%;background:${col}"></div></div>`;
+}
+
+function updateFormulas(){
+  const{zw,rat,res,mqin,n,k}=MQ;
+  const z=fmt(zw,2), r=fmt(res,2), ra=fmt(rat,2), mi=fmt(mqin,2);
+  const k1=k-1, kn=fmt(k/n,2);
+
+  document.getElementById('cell-11').innerHTML=mkCell(
+    'ICC(1,1)',
+    'MQ<sub>zw</sub> − MQ<sub>in</sub>',
+    'MQ<sub>zw</sub> + (k−1)·MQ<sub>in</sub>',
+    `${z} − ${mi}`,`${z} + ${k1}·${mi}`,
+    ICC.icc11, true, trueICC.icc11);
+
+  document.getElementById('cell-1k').innerHTML=mkCell(
+    'ICC(1,k)',
+    'MQ<sub>zw</sub> − MQ<sub>in</sub>',
+    'MQ<sub>zw</sub>',
+    `${z} − ${mi}`,`${z}`,
+    ICC.icc1k, true, trueICC.icc1k);
+
+  document.getElementById('cell-21').innerHTML=mkCell(
+    'ICC(2,1)',
+    'MQ<sub>zw</sub> − MQ<sub>res</sub>',
+    'MQ<sub>zw</sub>+(k−1)·MQ<sub>res</sub>+k/n·(MQ<sub>rat</sub>−MQ<sub>res</sub>)',
+    `${z} − ${r}`,`${z}+${k1}·${r}+${kn}·(${ra}−${r})`,
+    ICC.icc21, true, trueICC.icc21);
+
+  document.getElementById('cell-2k').innerHTML=mkCell(
+    'ICC(2,k)',
+    'MQ<sub>zw</sub> − MQ<sub>res</sub>',
+    'MQ<sub>zw</sub> + 1/n·(MQ<sub>rat</sub>−MQ<sub>res</sub>)',
+    `${z} − ${r}`,`${z}+${fmt(1/n,2)}·(${ra}−${r})`,
+    ICC.icc2k, true, trueICC.icc2k);
+
+  document.getElementById('cell-31').innerHTML=mkCell(
+    'ICC(3,1)',
+    'MQ<sub>zw</sub> − MQ<sub>res</sub>',
+    'MQ<sub>zw</sub> + (k−1)·MQ<sub>res</sub>',
+    `${z} − ${r}`,`${z} + ${k1}·${r}`,
+    ICC.icc31, false, trueICC.icc31);
+
+  document.getElementById('cell-3k').innerHTML=mkCell(
+    'ICC(3,k)',
+    'MQ<sub>zw</sub> − MQ<sub>res</sub>',
+    'MQ<sub>zw</sub>',
+    `${z} − ${r}`,`${z}`,
+    ICC.icc3k, false, trueICC.icc3k);
+
+  // equality note
+  const p=P();
+  document.getElementById('note-equal').style.display=p.sigR<0.05?'block':'none';
+}
+
+// ── Quiz ─────────────────────────────────────────────────────
+const QUIZ=[
+  {sigB:3.0,sigR:0.1,sigE:0.4,k:3,n:6,seed:777,target:'icc31'},
+  {sigB:0.3,sigR:0.0,sigE:2.5,k:3,n:6,seed:888,target:'icc11'},
+  {sigB:1.5,sigR:0.8,sigE:0.6,k:4,n:6,seed:999,target:'icc21'},
+  {sigB:2.0,sigR:1.5,sigE:0.3,k:3,n:6,seed:111,target:'icc3k'},
+  {sigB:1.0,sigR:0.1,sigE:0.9,k:4,n:6,seed:222,target:'icc2k'},
+  {sigB:2.5,sigR:0.3,sigE:0.5,k:5,n:6,seed:333,target:'icc1k'},
+];
+const ICC_META={
+  icc11:{name:'ICC(1,1)'},
+  icc1k:{name:'ICC(1,k)'},
+  icc21:{name:'ICC(2,1)'},
+  icc2k:{name:'ICC(2,k)'},
+  icc31:{name:'ICC(3,1)'},
+  icc3k:{name:'ICC(3,k)'},
+};
+let qIdx=0, qRevealed=false;
+let qData=[], qTrue=[], qMQ={}, qICC={};
+
+function quizLoad(){
+  qRevealed=false;
+  document.getElementById('quiz-reveal').style.display='none';
+  document.getElementById('q-next').style.display='none';
+  document.getElementById('guess-slider').value=0.5;
+  document.getElementById('guess-val').textContent='0.50';
+  document.getElementById('q-num').textContent=qIdx+1;
+  const sc=QUIZ[qIdx];
+  document.getElementById('q-target-lbl').textContent=ICC_META[sc.target].name;
+  const r=mkRng(sc.seed);
+  const ts=Array.from({length:sc.n},()=>rnorm(r)*Math.sqrt(sc.sigB));
+  const rb=Array.from({length:sc.k},()=>rnorm(r)*Math.sqrt(sc.sigR));
+  qData=ts.map(t=>rb.map(b=>t+b+rnorm(r)*Math.sqrt(sc.sigE)));
+  qTrue=ts;
+  const n=sc.n, k=sc.k;
+  const gm=qData.flat().reduce((s,v)=>s+v,0)/(n*k);
+  const smeans=qData.map(row=>row.reduce((s,v)=>s+v,0)/k);
+  const rmeans=Array.from({length:k},(_,j)=>qData.reduce((s,row)=>s+row[j],0)/n);
+  const SS_zw=k*smeans.reduce((s,m)=>s+(m-gm)**2,0);
+  const SS_rat=n*rmeans.reduce((s,m)=>s+(m-gm)**2,0);
+  let SS_res=0;
+  for(let i=0;i<n;i++) for(let j=0;j<k;j++) SS_res+=(qData[i][j]-smeans[i]-rmeans[j]+gm)**2;
+  const mqin=(SS_rat+SS_res)/(n*(k-1));
+  qMQ={zw:SS_zw/(n-1),rat:SS_rat/(k-1),res:SS_res/((n-1)*(k-1)),mqin,n,k};
+  const{zw,rat,res}=qMQ; const mi=mqin;
+  const safe=v=>isFinite(v)&&v>-5?v:NaN;
+  qICC={
+    icc11:safe((zw-mi)/(zw+(k-1)*mi)),
+    icc1k:safe((zw-mi)/zw),
+    icc21:safe((zw-res)/(zw+(k-1)*res+k/n*(rat-res))),
+    icc2k:safe((zw-res)/(zw+1/n*(rat-res))),
+    icc31:safe((zw-res)/(zw+(k-1)*res)),
+    icc3k:safe((zw-res)/zw),
+  };
+  drawQuizDot();
+}
+
+function drawQuizDot(){
+  const c=document.getElementById('c-quiz');
+  const W=c.offsetWidth||550, H=220;
+  c.width=W; c.height=H;
+  const ctx=c.getContext('2d');
+  const n=qData.length, k=qData[0].length;
+  const panel=cv('--panel'), ink2=cv('--ink2'), grid=cv('--grid'), ink=cv('--ink');
+  ctx.fillStyle=panel; ctx.fillRect(0,0,W,H);
+  const allV=[...qData.flat(),...qTrue];
+  const ymin=Math.min(...allV)-0.4, ymax=Math.max(...allV)+0.4;
+  const pad={l:30,r:12,t:12,b:36};
+  const plotW=W-pad.l-pad.r, plotH=H-pad.t-pad.b;
+  function yx(v){return pad.t+plotH*(1-(v-ymin)/(ymax-ymin));}
+  function xx(i){return pad.l+((i+0.5)/n)*plotW;}
+  ctx.strokeStyle=grid; ctx.lineWidth=1;
+  for(let t=-4;t<=4;t++){
+    if(t<ymin-0.5||t>ymax+0.5)continue;
+    ctx.beginPath(); ctx.moveTo(pad.l,yx(t)); ctx.lineTo(W-pad.r,yx(t)); ctx.stroke();
+  }
+  // True scores dashed
+  ctx.strokeStyle=ink2; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  for(let i=0;i<n;i++){const y=yx(qTrue[i]); i===0?ctx.moveTo(xx(i),y):ctx.lineTo(xx(i),y);}
+  ctx.stroke(); ctx.setLineDash([]);
+  const cols=RATER_COLS_KEYS.map(c=>cv(c));
+  for(let j=0;j<k;j++){
+    const col=cols[j%cols.length];
+    ctx.fillStyle=col;
+    for(let i=0;i<n;i++){
+      ctx.beginPath(); ctx.arc(xx(i),yx(qData[i][j]),3.5,0,2*Math.PI); ctx.fill();
+    }
+  }
+  // X-axis: object numbers (large) + axis label
+  ctx.fillStyle=ink2; ctx.font=`bold 13px 'DM Mono',monospace`; ctx.textAlign='center';
+  for(let i=0;i<n;i++) ctx.fillText(i+1, xx(i), H-20);
+  ctx.font=`11px 'DM Mono',monospace`; ctx.fillStyle=ink2;
+  ctx.fillText('← Objekte →', pad.l+plotW/2, H-5);
+}
+
+function quizReveal(){
+  if(qRevealed)return;
+  qRevealed=true;
+  const sc=QUIZ[qIdx];
+  const target=sc.target;
+  const actual=qICC[target];
+  const guess=+document.getElementById('guess-slider').value;
+  const diff=Math.abs(guess-actual);
+  const quality=diff<0.05?'Ausgezeichnet!':(diff<0.1?'Sehr gut!':(diff<0.2?'Gut getroffen.':'Noch etwas Übung nötig.'));
+  const{zw,rat,res,mqin:mi,n,k}=qMQ;
+  const z=fmt(zw,2),r=fmt(res,2),ra=fmt(rat,2),m=fmt(mi,2),kn=fmt(k/n,2),k1=k-1,ni=fmt(1/n,2);
+  const formulae={
+    icc11:{sym:`(MQ<sub>zw</sub> − MQ<sub>in</sub>) / (MQ<sub>zw</sub> + (k−1)·MQ<sub>in</sub>)`,
+           num:`${z} − ${m}`, den:`${z} + ${k1}·${m}`},
+    icc1k:{sym:`(MQ<sub>zw</sub> − MQ<sub>in</sub>) / MQ<sub>zw</sub>`,
+           num:`${z} − ${m}`, den:`${z}`},
+    icc21:{sym:`(MQ<sub>zw</sub> − MQ<sub>res</sub>) / (MQ<sub>zw</sub> + (k−1)·MQ<sub>res</sub> + k/n·(MQ<sub>rat</sub>−MQ<sub>res</sub>))`,
+           num:`${z} − ${r}`, den:`${z} + ${k1}·${r} + ${kn}·(${ra}−${r})`},
+    icc2k:{sym:`(MQ<sub>zw</sub> − MQ<sub>res</sub>) / (MQ<sub>zw</sub> + 1/n·(MQ<sub>rat</sub>−MQ<sub>res</sub>))`,
+           num:`${z} − ${r}`, den:`${z} + ${ni}·(${ra}−${r})`},
+    icc31:{sym:`(MQ<sub>zw</sub> − MQ<sub>res</sub>) / (MQ<sub>zw</sub> + (k−1)·MQ<sub>res</sub>)`,
+           num:`${z} − ${r}`, den:`${z} + ${k1}·${r}`},
+    icc3k:{sym:`(MQ<sub>zw</sub> − MQ<sub>res</sub>) / MQ<sub>zw</sub>`,
+           num:`${z} − ${r}`, den:`${z}`},
+  };
+  const f=formulae[target];
+  const numVal=fmt(actual>-5?(+f.num.split(' − ')[0]-+f.num.split(' − ')[1]):NaN,3);
+  const div=document.getElementById('quiz-reveal');
+  div.style.display='block';
+  div.innerHTML=`<strong>Deine Schätzung: ${guess.toFixed(2)}</strong><br>
+    Tatsächlicher ${ICC_META[target].name}: <strong style="color:var(--accent)">${isNaN(actual)?'—':actual.toFixed(3)}</strong>
+    &nbsp;&nbsp;→ ${quality}<br><br>
+    <strong>Formel:</strong> ${ICC_META[target].name} = ${f.sym}<br>
+    = (${f.num}) / (${f.den})<br>
+    = <strong>${isNaN(actual)?'—':actual.toFixed(3)}</strong>`;
+  document.getElementById('q-next').style.display='inline-block';
+}
+
+function quizNext(){
+  qIdx=(qIdx+1)%QUIZ.length;
+  document.getElementById('q-num').textContent=qIdx+1;
+  quizLoad();
+}
+
+// ── Theme ────────────────────────────────────────────────────
+function toggleTheme(){
+  const d=document.documentElement;
+  const dark=d.getAttribute('data-theme')==='dark';
+  d.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  setTimeout(rebuild,50);
+}
+
+// ── Help panel ───────────────────────────────────────────────
+let helpOpen=false;
+function toggleHelp(){
+  helpOpen=!helpOpen;
+  document.getElementById('help-panel').classList.toggle('open',helpOpen);
+}
+document.addEventListener('click',e=>{
+  if(helpOpen&&!e.target.closest('#help-panel')&&!e.target.closest('.tbtn'))
+    {helpOpen=false;document.getElementById('help-panel').classList.remove('open');}
+});
+
+// ── Resize ───────────────────────────────────────────────────
+window.addEventListener('resize',()=>{
+  drawDot(); drawQuizDot();
+});
+
+// ── Listeners ───────────────────────────────────────────────
+['s-sigB','s-sigR','s-sigE','s-k','s-n'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',rebuild);
+});
+
+// ── Init ─────────────────────────────────────────────────────
+document.documentElement.style.setProperty('--topbar-h',
+  document.getElementById('topbar').offsetHeight+'px');
+
+requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  rebuild();
+  quizLoad();
+}));
+</script>
+</body>
+</html>

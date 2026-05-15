@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test Bias &amp; Fairness — Diagnostik</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a4);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+#app{display:grid;grid-template-columns:260px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.preset-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.3rem .65rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;width:100%;text-align:left;
+  display:block;margin-bottom:.3rem}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.preset-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.seed-btn{font-family:'DM Mono',monospace;font-size:.76rem;padding:.28rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .12s;width:100%;text-align:left;margin-top:.3rem}
+.seed-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+#cv-scatter{width:100%;display:block}
+.mod-header{font-family:'DM Mono',monospace;font-size:.82rem;padding:.65rem .85rem;
+  background:var(--panel);border:1px solid var(--grid);cursor:pointer;
+  display:flex;align-items:center;gap:.65rem;margin-bottom:0;user-select:none;
+  letter-spacing:.03em;transition:background .12s;margin-top:.7rem}
+.mod-header:hover{background:var(--grid)}
+.mod-header.open{border-bottom:none}
+.mod-icon{font-size:.68rem;color:var(--accent);width:12px;display:inline-block;flex-shrink:0}
+.mod-body{border:1px solid var(--grid);border-top:none;padding:.9rem 1rem 1rem;
+  background:var(--bg);display:none}
+.mod-body.open{display:block}
+.erklaer{background:var(--panel);border-left:3px solid var(--accent);
+  padding:.7rem .9rem;margin-bottom:.85rem;font-family:'DM Mono',monospace;
+  font-size:.78rem;color:var(--ink2);line-height:1.85}
+.erklaer strong{color:var(--ink)}
+.erklaer-h{font-family:'DM Mono',monospace;font-size:.71rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.formula-line{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+.reg-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.82rem;margin-bottom:.8rem}
+.reg-table th{font-size:.71rem;letter-spacing:.06em;color:var(--ink3);padding:.3rem .5rem;
+  border-bottom:2px solid var(--grid);text-align:left}
+.reg-table td{padding:.34rem .5rem;border-bottom:1px solid var(--grid);vertical-align:middle}
+.reg-table td.num{text-align:right;font-weight:600}
+.ftest-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.75rem}
+.ftest-box{background:var(--panel);border:1px solid var(--grid);padding:.6rem .75rem}
+.ftest-label{font-family:'DM Mono',monospace;font-size:.71rem;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink3);margin-bottom:.3rem;line-height:1.5}
+.ftest-val{font-family:'DM Mono',monospace;font-size:.95rem;font-weight:600;color:var(--ink);margin-bottom:.15rem}
+.ftest-p{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2)}
+.badge{display:inline-block;font-family:'DM Mono',monospace;font-size:.75rem;
+  padding:.22rem .65rem;letter-spacing:.06em;margin:.3rem 0}
+.badge-ok{background:rgba(90,138,42,.12);border:1px solid var(--a3);color:var(--a3)}
+.badge-warn{background:rgba(201,74,42,.12);border:1px solid var(--a1);color:var(--a1)}
+[data-theme="dark"] .badge-ok{background:rgba(128,203,82,.10)}
+[data-theme="dark"] .badge-warn{background:rgba(232,97,74,.10)}
+.interp-box{font-family:'DM Mono',monospace;font-size:.79rem;line-height:1.8;
+  background:var(--panel);border:1px solid var(--grid);padding:.55rem .8rem;margin-top:.5rem}
+.kw-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.8rem}
+.air-bar-wrap{background:var(--grid);height:7px;border-radius:4px;margin:.35rem 0 .6rem;position:relative;overflow:visible}
+.air-bar-fill{height:100%;border-radius:4px;transition:width .2s}
+.air-thresh{position:absolute;top:-4px;width:2px;height:15px;background:var(--a1);left:80%}
+/* Sticky plot */
+.plot-sticky{position:sticky;top:0;z-index:20;background:var(--bg);padding-bottom:.5rem;margin-bottom:.2rem;border-bottom:1px solid var(--grid)}
+/* Table alignment fix */
+.reg-table th:not(:first-child){text-align:right}
+.reg-table colgroup col:first-child{width:38%}
+.reg-table colgroup col{width:15%}
+/* Help button */
+.help-btn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.18rem .5rem;
+  border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);
+  transition:all .12s;letter-spacing:.04em;flex-shrink:0}
+.help-btn:hover{background:var(--a1);color:var(--bg)}
+/* Help modal */
+#help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;display:none}
+#help-overlay.open{display:block}
+#help-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;
+  background:var(--paper);border:1px solid var(--border);padding:1.3rem 1.5rem 1.2rem;
+  max-width:580px;width:92%;max-height:82vh;overflow-y:auto;
+  box-shadow:0 10px 40px rgba(0,0,0,.4);display:none}
+#help-modal.open{display:block}
+#help-modal h2{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:.8rem;padding-bottom:.5rem;
+  border-bottom:1px solid var(--grid)}
+#help-modal h3{font-family:'DM Mono',monospace;font-size:.74rem;letter-spacing:.06em;
+  color:var(--accent);margin:.9rem 0 .35rem;text-transform:uppercase}
+#help-modal p,#help-modal li{font-family:'DM Mono',monospace;font-size:.79rem;
+  color:var(--ink2);line-height:1.85;margin-bottom:.4rem}
+#help-modal ul{padding-left:1rem;margin:.3rem 0 .5rem}
+#help-modal .ref{font-size:.72rem;color:var(--ink3);margin-top:.9rem;border-top:1px solid var(--grid);padding-top:.6rem}
+#help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2)}
+#help-close:hover{background:var(--ink);color:var(--bg)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Test <em>Bias</em> &amp; Fairness — Cleary-Modell</h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);letter-spacing:.04em">Dr. R. Düsing</span>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- Help modal -->
+<div id="help-overlay" onclick="closeHelp()"></div>
+<div id="help-modal">
+  <button id="help-close" onclick="closeHelp()">✕ Schließen</button>
+  <h2 id="help-title"></h2>
+  <div id="help-body"></div>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Szenarien</div>
+    <button class="preset-btn" id="pre-none" onclick="setPreset('none')">⊡ Kein Bias</button>
+    <button class="preset-btn" id="pre-fig1" onclick="setPreset('fig1')">① Testverzerrung</button>
+    <button class="preset-btn" id="pre-fig2" onclick="setPreset('fig2')">② Kriteriumsverzerrung</button>
+    <button class="preset-btn" id="pre-fig3" onclick="setPreset('fig3')">③ Adverse Impact</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a1)">Gruppe A (Referenz)</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">μ_X_A</span><span class="slider-val" id="val-muXA">0.00</span></div>
+      <input type="range" id="sl-muXA" min="-3" max="3" step="0.1" value="0" oninput="onSl('muXA',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">α_A</span><span class="slider-val" id="val-alphaA">0.00</span></div>
+      <input type="range" id="sl-alphaA" min="-3" max="3" step="0.05" value="0" oninput="onSl('alphaA',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">β_A</span><span class="slider-val" id="val-betaA">0.50</span></div>
+      <input type="range" id="sl-betaA" min="-2" max="2" step="0.05" value="0.5" oninput="onSl('betaA',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n_A</span><span class="slider-val" id="val-nA">100</span></div>
+      <input type="range" id="sl-nA" min="20" max="300" step="10" value="100" oninput="onSl('nA',this)">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a2)">Gruppe B (Fokus)</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">μ_X_B</span><span class="slider-val" id="val-muXB">0.00</span></div>
+      <input type="range" id="sl-muXB" min="-3" max="3" step="0.1" value="0" oninput="onSl('muXB',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">α_B</span><span class="slider-val" id="val-alphaB">0.00</span></div>
+      <input type="range" id="sl-alphaB" min="-3" max="3" step="0.05" value="0" oninput="onSl('alphaB',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">β_B</span><span class="slider-val" id="val-betaB">0.50</span></div>
+      <input type="range" id="sl-betaB" min="-2" max="2" step="0.05" value="0.5" oninput="onSl('betaB',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n_B</span><span class="slider-val" id="val-nB">100</span></div>
+      <input type="range" id="sl-nB" min="20" max="300" step="10" value="100" oninput="onSl('nB',this)">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Simulation</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">σ (Residual)</span><span class="slider-val" id="val-sigma">0.87</span></div>
+      <input type="range" id="sl-sigma" min="0.1" max="1.5" step="0.05" value="0.87" oninput="onSl('sigma',this)">
+    </div>
+    <button class="seed-btn" onclick="newSeed()">⟳ Neue Stichprobe</button>
+  </div>
+
+</div><!-- /sidebar -->
+
+<div id="main">
+
+  <div class="plot-sticky">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.45rem">
+      <div class="sec-h" style="margin:0;border:none;padding:0">① Streudiagramm</div>
+      <div style="display:flex;gap:.45rem;align-items:center">
+        <button class="tbtn" id="btn-ellipse" onclick="toggleEllipses()" title="95%-Konfidenzellipsen ein-/ausblenden">⊡ Ellipsen</button>
+        <button class="tbtn" id="btn-proj" onclick="toggleProjections()" title="Projektionslinien der Gruppenmittelwerte auf X- und Y-Achse">⊡ Projektionen</button>
+        <button class="tbtn" id="btn-ylock" onclick="toggleYLock()" title="Y-Achse über Szenarien fixieren">⊡ Y-Achse fixieren</button>
+      </div>
+    </div>
+    <canvas id="cv-scatter" height="408"></canvas>
+  </div>
+
+  <!-- MODULE 1 -->
+  <div class="mod-header" id="hd1" onclick="toggleMod(1)" style="justify-content:space-between">
+    <span style="display:flex;align-items:center;gap:.65rem">
+      <span class="mod-icon" id="ic1">▶</span>
+      Modul 1 — Cleary-Test: Differentielle Prädiktion
+    </span>
+    <button class="help-btn" onclick="event.stopPropagation();openHelp(1)">? Hilfe</button>
+  </div>
+  <div class="mod-body" id="bd1">
+    <div class="erklaer">
+      <div class="erklaer-h">Cleary (1968) — Definition von Testverzerrung</div>
+      Ein Test gilt als <strong>verzerrt</strong>, wenn die Regressionsgleichung für die Gesamtstichprobe
+      für eine Gruppe systematisch falsche Vorhersagen erzeugt. Cleary prüft dies mit einem
+      hierarchischen Regressionsmodell in drei Schritten:<br><br>
+      <span class="formula-line">M1: Ŷ = b₀ + b₁·X &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(gemeinsame Regressionslinie)</span>
+      <span class="formula-line">M2: Ŷ = b₀ + b₁·X + b₂·G &nbsp;&nbsp;&nbsp;&nbsp;(gleiche Steigung, versch. Achsenabschnitte)</span>
+      <span class="formula-line">M3: Ŷ = b₀ + b₁·X + b₂·G + b₃·(X×G) &nbsp;(versch. Steigungen)</span>
+      M2 vs. M1 testet <strong>Achsenabschnittsunterschiede</strong> (intercept bias).<br>
+      M3 vs. M2 testet <strong>Steigungsunterschiede</strong> (slope bias).
+    </div>
+    <div id="mod1-content"></div>
+  </div>
+
+  <!-- MODULE 2 -->
+  <div class="mod-header" id="hd2" onclick="toggleMod(2)" style="justify-content:space-between">
+    <span style="display:flex;align-items:center;gap:.65rem">
+      <span class="mod-icon" id="ic2">▶</span>
+      Modul 2 — Meade &amp; Fetzer (2009): Was steckt dahinter?
+    </span>
+    <button class="help-btn" onclick="event.stopPropagation();openHelp(2)">? Hilfe</button>
+  </div>
+  <div class="mod-body" id="bd2">
+    <div class="erklaer">
+      <div class="erklaer-h">Differentielle Prädiktion ≠ Testverzerrung</div>
+      Ein signifikanter Achsenabschnittsunterschied (M2 vs. M1) kann vier verschiedene Ursachen haben.
+      Nur eine davon ist echte Testverzerrung nach Cleary.<br><br>
+      <strong>Quelle 1 — Testverzerrung:</strong> Der Test misst das Konstrukt für beide Gruppen unterschiedlich gut.<br>
+      <strong>Quelle 2 — Kriteriumsverzerrung:</strong> Das Kriterium Y bevorteilt/benachteiligt eine Gruppe unfair.<br>
+      <strong>Quelle 3 — Fehlende Variablen:</strong> Weitere Prädiktoren würden den Unterschied erklären.<br>
+      <strong>Quelle 4 — Stichprobenfehler:</strong> Zufällige Abweichungen, insbesondere bei kleinen n.<br><br>
+      <strong>Diagnose:</strong> Die standardisierten Mittelwertdifferenzen d_X und d_Y geben Hinweise auf die wahrscheinlichste Quelle (vgl. Meade &amp; Fetzer, 2009, Fig. 1–3).
+    </div>
+    <div id="mod2-content"></div>
+  </div>
+
+  <!-- MODULE 3 -->
+  <div class="mod-header" id="hd3" onclick="toggleMod(3)" style="justify-content:space-between">
+    <span style="display:flex;align-items:center;gap:.65rem">
+      <span class="mod-icon" id="ic3">▶</span>
+      Modul 3 — Adverse Impact &amp; 4/5-Regel
+    </span>
+    <button class="help-btn" onclick="event.stopPropagation();openHelp(3)">? Hilfe</button>
+  </div>
+  <div class="mod-body" id="bd3">
+    <div class="erklaer">
+      <div class="erklaer-h">Adverse Impact</div>
+      <strong>Adverse Impact</strong> liegt vor, wenn eine Gruppe bei einer Auswahlentscheidung
+      deutlich seltener ausgewählt wird als eine andere — auch wenn der Test selbst fair ist.
+      Die US-amerikanischen Uniform Guidelines (1978) formulieren die <strong>4/5-Regel</strong>:
+      Die Selektionsrate der benachteiligten Gruppe soll mindestens 80 % der Rate
+      der bevorzugten Gruppe betragen.<br><br>
+      <span class="formula-line">AIR = Selektionsrate_B / Selektionsrate_A</span>
+      Adverse Impact ≠ Test Bias. Ein fairer Test kann Adverse Impact erzeugen,
+      wenn echte Gruppenunterschiede auf dem Prädiktor bestehen.
+    </div>
+    <div class="slider-row" style="margin-bottom:.75rem">
+      <div class="slider-lbl"><span class="slider-name">Cut-Off</span><span class="slider-val" id="val-cutoff">0.0</span></div>
+      <input type="range" id="sl-cutoff" min="-3" max="3" step="0.1" value="0" oninput="onCutoff(this)">
+    </div>
+    <div id="mod3-stats"></div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ─── State ─────────────────────────────────────────────────────────────────
+const ST = {
+  muXA:0, alphaA:0, betaA:0.5, nA:100,
+  muXB:0, alphaB:0, betaB:0.5, nB:100,
+  sigma:0.87, sigmaX:1,
+  cutoff:0, seed:42,
+  mod1:false, mod2:false, mod3:false,
+  data:null, xRange:null, fixedYRange:null, showEllipses:false, showProjections:false
+};
+
+// ─── PRNG / Data ───────────────────────────────────────────────────────────
+function mulberry32(a){
+  return function(){
+    a|=0; a=a+0x6D2B79F5|0;
+    var t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return((t^t>>>14)>>>0)/4294967296;
+  };
+}
+
+function genData(){
+  const rand=mulberry32(ST.seed);
+  const gauss=()=>{
+    const u1=Math.max(rand(),1e-15), u2=rand();
+    return Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+  };
+  const ptsA=[],ptsB=[];
+  for(let i=0;i<ST.nA;i++){
+    const x=ST.muXA+ST.sigmaX*gauss();
+    ptsA.push({x, y:ST.alphaA+ST.betaA*x+ST.sigma*gauss(), g:0});
+  }
+  for(let i=0;i<ST.nB;i++){
+    const x=ST.muXB+ST.sigmaX*gauss();
+    ptsB.push({x, y:ST.alphaB+ST.betaB*x+ST.sigma*gauss(), g:1});
+  }
+  return{ptsA, ptsB, all:[...ptsA,...ptsB]};
+}
+
+// ─── OLS & MLR ─────────────────────────────────────────────────────────────
+function ols(pts){
+  const n=pts.length;
+  const mx=pts.reduce((s,p)=>s+p.x,0)/n;
+  const my=pts.reduce((s,p)=>s+p.y,0)/n;
+  const sxx=pts.reduce((s,p)=>s+(p.x-mx)**2,0);
+  const sxy=pts.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0);
+  const b=sxx===0?0:sxy/sxx, a=my-b*mx;
+  const yhat=pts.map(p=>a+b*p.x);
+  const sse=pts.reduce((s,p,i)=>s+(p.y-yhat[i])**2,0);
+  const sst=pts.reduce((s,p)=>s+(p.y-my)**2,0);
+  return{a,b,r2:sst===0?0:1-sse/sst,mx,my,sse,n};
+}
+
+function matSolve(A,bv){
+  const n=bv.length;
+  const M=A.map((row,i)=>[...row,bv[i]]);
+  for(let col=0;col<n;col++){
+    let mr=col;
+    for(let r=col+1;r<n;r++) if(Math.abs(M[r][col])>Math.abs(M[mr][col])) mr=r;
+    [M[col],M[mr]]=[M[mr],M[col]];
+    for(let r=col+1;r<n;r++){
+      const f=M[col][col]===0?0:M[r][col]/M[col][col];
+      for(let k=col;k<=n;k++) M[r][k]-=f*M[col][k];
+    }
+  }
+  const x=new Array(n).fill(0);
+  for(let i=n-1;i>=0;i--){
+    x[i]=M[i][n];
+    for(let k=i+1;k<n;k++) x[i]-=M[i][k]*x[k];
+    x[i]/=M[i][i]||1e-30;
+  }
+  return x;
+}
+
+function mlr(pts,getX){
+  const n=pts.length, X=pts.map(getX), p=X[0].length;
+  const XtX=Array.from({length:p},()=>new Array(p).fill(0));
+  const Xty=new Array(p).fill(0);
+  for(let i=0;i<n;i++){
+    for(let j=0;j<p;j++){
+      Xty[j]+=X[i][j]*pts[i].y;
+      for(let k=0;k<p;k++) XtX[j][k]+=X[i][j]*X[i][k];
+    }
+  }
+  const beta=matSolve(XtX,Xty);
+  const yhat=pts.map((_,i)=>X[i].reduce((s,v,j)=>s+v*beta[j],0));
+  const ybar=pts.reduce((s,p)=>s+p.y,0)/n;
+  const sse=pts.reduce((s,p,i)=>s+(p.y-yhat[i])**2,0);
+  const sst=pts.reduce((s,p)=>s+(p.y-ybar)**2,0);
+  return{beta,sse,r2:sst===0?0:1-sse/sst,n};
+}
+
+// ─── p-values ──────────────────────────────────────────────────────────────
+function lgamma(z){
+  const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,
+           771.32342877765313,-176.61502916214059,12.507343278686905,
+           -0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(z<0.5) return Math.log(Math.PI)-Math.log(Math.sin(Math.PI*z))-lgamma(1-z);
+  z--;
+  let x=c[0];
+  for(let i=1;i<9;i++) x+=c[i]/(z+i);
+  const t=z+7.5;
+  return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x);
+}
+
+function betainc(x,a,b){
+  if(x<=0) return 0; if(x>=1) return 1;
+  const lbeta=lgamma(a)+lgamma(b)-lgamma(a+b);
+  const front=Math.exp(Math.log(x)*a+Math.log(1-x)*b-lbeta)/a;
+  let f=1,c=1,d=1-(a+b)*x/(a+1);
+  if(Math.abs(d)<1e-30) d=1e-30;
+  d=1/d; f=d;
+  for(let m=1;m<=200;m++){
+    let aa=m*(b-m)*x/((a+2*m-1)*(a+2*m));
+    d=1+aa*d; if(Math.abs(d)<1e-30) d=1e-30;
+    c=1+aa/c; if(Math.abs(c)<1e-30) c=1e-30;
+    d=1/d; f*=c*d;
+    aa=-(a+m)*(a+b+m)*x/((a+2*m)*(a+2*m+1));
+    d=1+aa*d; if(Math.abs(d)<1e-30) d=1e-30;
+    c=1+aa/c; if(Math.abs(c)<1e-30) c=1e-30;
+    d=1/d; const del=c*d; f*=del;
+    if(Math.abs(del-1)<1e-10) break;
+  }
+  if(x<(a+1)/(a+b+2)) return front*f;
+  return 1-betainc(1-x,b,a);
+}
+
+function fPVal(F,df1,df2){
+  if(!isFinite(F)||F<=0) return 1;
+  return betainc(df2/(df2+df1*F), df2/2, df1/2);
+}
+
+function cohensD(pts1,pts2,key){
+  const m1=pts1.reduce((s,p)=>s+p[key],0)/pts1.length;
+  const m2=pts2.reduce((s,p)=>s+p[key],0)/pts2.length;
+  const v1=pts1.reduce((s,p)=>s+(p[key]-m1)**2,0)/(pts1.length-1);
+  const v2=pts2.reduce((s,p)=>s+(p[key]-m2)**2,0)/(pts2.length-1);
+  const sp=Math.sqrt(((pts1.length-1)*v1+(pts2.length-1)*v2)/(pts1.length+pts2.length-2));
+  return sp===0?0:(m1-m2)/sp;
+}
+
+// ─── Canvas ────────────────────────────────────────────────────────────────
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+
+function drawScatter(){
+  const cv=document.getElementById('cv-scatter');
+  const W=cv.offsetWidth; if(!W) return;
+  cv.width=W;
+  const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const {ptsA,ptsB,all}=ST.data;
+
+  const pad={l:58,r:18,t:22,b:52};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+
+  const allX=all.map(p=>p.x), allY=all.map(p=>p.y);
+  const xPad=(Math.max(...allX)-Math.min(...allX))*.12||0.3;
+  const xL=Math.min(...allX)-xPad, xR=Math.max(...allX)+xPad;
+  let yB,yT;
+  if(ST.fixedYRange){
+    yB=ST.fixedYRange.yB; yT=ST.fixedYRange.yT;
+  } else {
+    const yPad=(Math.max(...allY)-Math.min(...allY))*.12||0.3;
+    yB=Math.min(...allY)-yPad; yT=Math.max(...allY)+yPad;
+  }
+  ST.xRange={xL,xR,yB,yT,pad,cW,cH};
+
+  const sx=x=>pad.l+(x-xL)/(xR-xL)*cW;
+  const sy=y=>pad.t+(1-(y-yB)/(yT-yB))*cH;
+
+  const ink=css('--ink'),ink2=css('--ink2'),ink3=css('--ink3');
+  const grid=css('--grid'),bg=css('--bg');
+  const a1=css('--a1'),a2=css('--a2'),a4=css('--a4');
+
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  // Grid — nice x ticks centered on 0
+  ctx.strokeStyle=grid; ctx.lineWidth=1;
+  const xSpan=xR-xL;
+  const xStep=[0.25,0.5,1,2].find(s=>xSpan/s<=9)||2;
+  const xDec=xStep<1?2:xStep<1.5?1:0;
+  const xFirst=Math.ceil((xL+1e-9)/xStep)*xStep;
+  for(let v=xFirst;v<=xR+1e-9;v+=xStep){
+    const xv=Math.round(v/xStep)*xStep;
+    ctx.beginPath(); ctx.moveTo(sx(xv),pad.t); ctx.lineTo(sx(xv),pad.t+cH); ctx.stroke();
+    ctx.fillStyle=ink3; ctx.font='12px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(xv.toFixed(xDec),sx(xv),pad.t+cH+16);
+  }
+  for(let i=0;i<=5;i++){
+    const y=yB+(yT-yB)*i/5;
+    ctx.beginPath(); ctx.moveTo(pad.l,sy(y)); ctx.lineTo(pad.l+cW,sy(y)); ctx.stroke();
+    ctx.fillStyle=ink3; ctx.font='12px DM Mono,monospace'; ctx.textAlign='right';
+    ctx.fillText(y.toFixed(1),pad.l-6,sy(y)+4);
+  }
+
+  // Axis labels
+  ctx.fillStyle=ink2; ctx.textAlign='center'; ctx.font='bold 13px DM Mono,monospace';
+  ctx.fillText('Testwert / Prädiktor X (z)',pad.l+cW/2,H-5);
+  ctx.save(); ctx.translate(13,pad.t+cH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Kriterium Y (z)',0,0); ctx.restore();
+
+  // Confidence ellipses (95%)
+  if(ST.showEllipses){
+    const drawEllipse=(pts,color)=>{
+      const n=pts.length; if(n<4) return;
+      const mx=pts.reduce((s,p)=>s+p.x,0)/n;
+      const my=pts.reduce((s,p)=>s+p.y,0)/n;
+      const sxx=pts.reduce((s,p)=>s+(p.x-mx)**2,0)/(n-1);
+      const syy=pts.reduce((s,p)=>s+(p.y-my)**2,0)/(n-1);
+      const sxy=pts.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0)/(n-1);
+      const tr=sxx+syy, dt=sxx*syy-sxy*sxy;
+      const disc=Math.sqrt(Math.max(0,(tr/2)**2-dt));
+      const lam1=tr/2+disc, lam2=Math.max(0,tr/2-disc);
+      let cos1,sin1;
+      if(Math.abs(sxy)<1e-10){cos1=(sxx>=syy?1:0);sin1=(sxx>=syy?0:1);}
+      else{const len=Math.sqrt((lam1-sxx)**2+sxy**2);cos1=sxy/len;sin1=(lam1-sxx)/len;}
+      const sc95=Math.sqrt(5.991); // chi2(2, 0.95)
+      const a=sc95*Math.sqrt(lam1), b=sc95*Math.sqrt(lam2);
+      ctx.beginPath();
+      for(let i=0;i<=72;i++){
+        const t=2*Math.PI*i/72;
+        const dx=a*Math.cos(t)*cos1-b*Math.sin(t)*sin1;
+        const dy=a*Math.cos(t)*sin1+b*Math.sin(t)*cos1;
+        i===0?ctx.moveTo(sx(mx+dx),sy(my+dy)):ctx.lineTo(sx(mx+dx),sy(my+dy));
+      }
+      ctx.closePath();
+      ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash([5,3]);ctx.stroke();ctx.setLineDash([]);
+      ctx.globalAlpha=0.07;ctx.fillStyle=color;ctx.fill();ctx.globalAlpha=1;
+    };
+    drawEllipse(ptsA,a1);
+    drawEllipse(ptsB,a2);
+  }
+
+  // Projection lines from group centroids to axes
+  if(ST.showProjections){
+    const drawProj=(pts,color)=>{
+      const n=pts.length; if(!n) return;
+      const mx=pts.reduce((s,p)=>s+p.x,0)/n;
+      const my=pts.reduce((s,p)=>s+p.y,0)/n;
+      ctx.save();
+      ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.setLineDash([3,4]);
+      // vertical: bottom of plot up to centroid
+      ctx.beginPath(); ctx.moveTo(sx(mx),pad.t+cH); ctx.lineTo(sx(mx),sy(my)); ctx.stroke();
+      // horizontal: left edge to centroid
+      ctx.beginPath(); ctx.moveTo(pad.l,sy(my)); ctx.lineTo(sx(mx),sy(my)); ctx.stroke();
+      ctx.setLineDash([]);
+      // tick labels on axes
+      ctx.fillStyle=color; ctx.font='bold 11px DM Mono,monospace';
+      ctx.textAlign='center';
+      ctx.fillText(mx.toFixed(2),sx(mx),pad.t+cH+28);
+      ctx.textAlign='right';
+      ctx.fillText(my.toFixed(2),pad.l-4,sy(my)+4);
+      // centroid marker
+      ctx.globalAlpha=0.85;
+      ctx.beginPath(); ctx.arc(sx(mx),sy(my),4.5,0,2*Math.PI);
+      ctx.fillStyle=color; ctx.fill();
+      ctx.restore();
+    };
+    drawProj(ptsA,a1);
+    drawProj(ptsB,a2);
+  }
+
+  // Dots
+  ctx.globalAlpha=0.45;
+  for(const p of ptsA){ctx.beginPath();ctx.arc(sx(p.x),sy(p.y),3.2,0,2*Math.PI);ctx.fillStyle=a1;ctx.fill();}
+  for(const p of ptsB){ctx.beginPath();ctx.arc(sx(p.x),sy(p.y),3.2,0,2*Math.PI);ctx.fillStyle=a2;ctx.fill();}
+  ctx.globalAlpha=1;
+
+  // Regression lines
+  const olsA=ols(ptsA), olsB=ols(ptsB), olsAll=ols(all);
+  const drawLine=(a,b,color,dash,lw)=>{
+    ctx.beginPath();
+    ctx.moveTo(sx(xL),sy(a+b*xL));
+    ctx.lineTo(sx(xR),sy(a+b*xR));
+    ctx.strokeStyle=color; ctx.lineWidth=lw||2; ctx.setLineDash(dash||[]);
+    ctx.stroke(); ctx.setLineDash([]);
+  };
+  drawLine(olsAll.a,olsAll.b,ink2,[7,5],1.5);
+  drawLine(olsA.a,olsA.b,a1,[],2.5);
+  drawLine(olsB.a,olsB.b,a2,[],2.5);
+
+  // Cutoff line (Module 3)
+  if(ST.mod3){
+    const cx=sx(ST.cutoff);
+    ctx.beginPath(); ctx.moveTo(cx,pad.t); ctx.lineTo(cx,pad.t+cH);
+    ctx.strokeStyle=a4; ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=a4; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
+    const lx=cx+5 < pad.l+cW-70 ? cx+5 : cx-75;
+    ctx.fillText('Cut-Off='+ST.cutoff.toFixed(1),lx,pad.t+14);
+  }
+
+  // Legend (top-right)
+  const lx=pad.l+cW, ly=pad.t+12;
+  ctx.font='bold 11px DM Mono,monospace'; ctx.textAlign='right';
+  ctx.fillStyle=a1;   ctx.fillText('● Gruppe A',lx,ly);
+  ctx.fillStyle=a2;   ctx.fillText('● Gruppe B',lx,ly+16);
+  ctx.fillStyle=ink2; ctx.fillText('-- Gesamt',lx,ly+32);
+}
+
+// ─── Module 1: Cleary ──────────────────────────────────────────────────────
+function updateMod1(){
+  const {ptsA,ptsB,all}=ST.data;
+  const N=all.length;
+  const olsA=ols(ptsA), olsB=ols(ptsB);
+  const m1=mlr(all,p=>[1,p.x]);
+  const m2=mlr(all,p=>[1,p.x,p.g]);
+  const m3=mlr(all,p=>[1,p.x,p.g,p.x*p.g]);
+
+  const F_int=(m1.sse-m2.sse)/1/(m2.sse/(N-3));
+  const F_slp=(m2.sse-m3.sse)/1/(m3.sse/(N-4));
+  const p_int=fPVal(F_int,1,N-3);
+  const p_slp=fPVal(F_slp,1,N-4);
+
+  const f3=(v)=>isFinite(v)?v.toFixed(3):'—';
+  const fp=(p)=>{if(!isFinite(p))return'—';if(p<.001)return'&lt; .001';return p.toFixed(3);};
+  const sig=p=>p<.05;
+  const vcolor=s=>s?'var(--a1)':'var(--a3)';
+
+  document.getElementById('mod1-content').innerHTML=`
+    <table class="reg-table">
+      <colgroup><col style="width:36%"><col style="width:16%"><col style="width:16%"><col style="width:16%"><col style="width:16%"></colgroup>
+      <tr>
+        <th>Gruppe</th><th style="text-align:right">α̂</th><th style="text-align:right">β̂</th><th style="text-align:right">R²</th><th style="text-align:right">n</th>
+      </tr>
+      <tr>
+        <td style="color:var(--a1)">A (Referenz)</td>
+        <td class="num">${f3(olsA.a)}</td><td class="num">${f3(olsA.b)}</td>
+        <td class="num">${f3(olsA.r2)}</td><td class="num">${olsA.n}</td>
+      </tr>
+      <tr>
+        <td style="color:var(--a2)">B (Fokus)</td>
+        <td class="num">${f3(olsB.a)}</td><td class="num">${f3(olsB.b)}</td>
+        <td class="num">${f3(olsB.r2)}</td><td class="num">${olsB.n}</td>
+      </tr>
+      <tr style="color:var(--ink3)">
+        <td>Gesamt (M1)</td>
+        <td class="num">${f3(m1.beta[0])}</td><td class="num">${f3(m1.beta[1])}</td>
+        <td class="num">${f3(m1.r2)}</td><td class="num">${N}</td>
+      </tr>
+    </table>
+    <div class="ftest-row">
+      <div class="ftest-box">
+        <div class="ftest-label">Achsenabschnitt-Bias<br>(M2 vs. M1)</div>
+        <div class="ftest-val" style="color:${vcolor(sig(p_int))}">
+          F(1,${N-3}) = ${f3(F_int)}</div>
+        <div class="ftest-p">p = ${fp(p_int)} ${sig(p_int)?'<strong style="color:var(--a1)">✱</strong>':''}</div>
+      </div>
+      <div class="ftest-box">
+        <div class="ftest-label">Steigungsunterschied<br>(M3 vs. M2)</div>
+        <div class="ftest-val" style="color:${vcolor(sig(p_slp))}">
+          F(1,${N-4}) = ${f3(F_slp)}</div>
+        <div class="ftest-p">p = ${fp(p_slp)} ${sig(p_slp)?'<strong style="color:var(--a1)">✱</strong>':''}</div>
+      </div>
+    </div>
+    ${(sig(p_int)||sig(p_slp))
+      ?'<span class="badge badge-warn">Differentielle Prädiktion festgestellt (p &lt; .05)</span>'
+      :'<span class="badge badge-ok">Keine differentielle Prädiktion (p ≥ .05)</span>'
+    }
+    ${sig(p_int)&&!sig(p_slp)
+      ?'<div class="interp-box" style="color:var(--ink2)">Achsenabschnitt unterscheidet sich bei gemeinsamer Steigung — mögliche Testverzerrung oder andere Quelle (→ Modul 2).</div>'
+      :''
+    }
+    ${sig(p_slp)
+      ?'<div class="interp-box" style="color:var(--ink2)">Steigungsunterschied: Die Prädiktionskraft des Tests unterscheidet sich zwischen den Gruppen.</div>'
+      :''
+    }
+  `;
+}
+
+// ─── Module 2: Meade & Fetzer ──────────────────────────────────────────────
+function updateMod2(){
+  const {ptsA,ptsB,all}=ST.data;
+
+  const dX=cohensD(ptsA,ptsB,'x');
+  const dY=cohensD(ptsA,ptsB,'y');
+  const adX=Math.abs(dX), adY=Math.abs(dY);
+  const THR=0.2;
+  const dxBig=adX>=THR, dyBig=adY>=THR;
+
+  // Pooled r_YX
+  const mx=all.reduce((s,p)=>s+p.x,0)/all.length;
+  const my=all.reduce((s,p)=>s+p.y,0)/all.length;
+  const sxx=all.reduce((s,p)=>s+(p.x-mx)**2,0);
+  const syy=all.reduce((s,p)=>s+(p.y-my)**2,0);
+  const sxy=all.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0);
+  const ryx=sxx===0||syy===0?0:sxy/Math.sqrt(sxx*syy);
+
+  // Meade & Fetzer Eq. 4: expected dY given dX
+  const inner=ryx*dX/Math.sqrt(dX*dX+4);
+  const dY_exp=Math.abs(inner)>=1?Infinity:2*inner/Math.sqrt(Math.max(1e-15,1-inner*inner));
+
+  // Active cell
+  const cell=(cDxBig,cDyBig)=>{
+    const active=cDxBig===dxBig&&cDyBig===dyBig;
+    return`<div style="background:${active?'var(--accent)':'var(--bg)'};
+      color:${active?'var(--bg)':'var(--ink2)'};
+      padding:.5rem .55rem;text-align:center;font-size:.76rem;line-height:1.5;
+      ${active?'font-weight:700;':''}">${
+      cDxBig&&cDyBig?'Adverse Impact<br>(Fig. 3)':
+      cDxBig&&!cDyBig?'Testverzerrung<br>(Fig. 1)':
+      !cDxBig&&cDyBig?'Kriterium-<br>verzerrung (Fig. 2)':
+      'Kein Bias<br>Kein AI'
+    }${active?'<br><span style="font-size:.9rem">◉</span>':''}</div>`;
+  };
+
+  const f3=v=>isFinite(v)?v.toFixed(3):'—';
+  const mag=d=>Math.abs(d)<0.2?'klein':Math.abs(d)<0.5?'mittel':Math.abs(d)<0.8?'groß':'sehr groß';
+
+  let interp='', col='var(--ink2)';
+  if(!dxBig&&!dyBig){interp='Keine wesentlichen Gruppenunterschiede. Kein Hinweis auf Bias oder Adverse Impact.';col='var(--a3)';}
+  else if(dxBig&&!dyBig){interp='d_X groß, d_Y klein: Testverzerrungsmuster (Meade & Fetzer, Fig. 1). Die Gruppen unterscheiden sich auf dem Prädiktor, aber nicht auf dem Kriterium — der Test könnte das Konstrukt unterschiedlich gut messen.';col='var(--a1)';}
+  else if(!dxBig&&dyBig){interp='d_X klein, d_Y groß: Kriteriumsverzerrungsmuster (Fig. 2). Gleiche Prädiktorwerte, unterschiedliche Kriteriumswerte — mögliche fehlende Kovariablen oder unfaires Kriterium.';col='var(--a5)';}
+  else{interp='d_X und d_Y beide groß: Adverse-Impact-Muster (Fig. 3). Gruppenunterschiede auf Prädiktor und Kriterium sind proportional — ein gemeinsames Regressionsmodell passt für beide Gruppen.';col='var(--a2)';}
+
+  document.getElementById('mod2-content').innerHTML=`
+    <div class="kw-grid">
+      <div class="ftest-box">
+        <div class="ftest-label" style="color:var(--a1)">d_X (Prädiktor)</div>
+        <div class="ftest-val" style="color:${adX>=THR?'var(--a5)':'var(--a3)'}">${f3(dX)}</div>
+        <div class="ftest-p">${mag(dX)}</div>
+      </div>
+      <div class="ftest-box">
+        <div class="ftest-label" style="color:var(--a1)">d_Y (Kriterium)</div>
+        <div class="ftest-val" style="color:${adY>=THR?'var(--a5)':'var(--a3)'}">${f3(dY)}</div>
+        <div class="ftest-p">${mag(dY)}</div>
+      </div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);margin-bottom:.7rem">
+      r_YX (gepooled) = ${f3(ryx)} &nbsp;|&nbsp; erw. d̂_Y | d_X = ${isFinite(dY_exp)?f3(dY_exp):'∞'}
+      <span style="color:var(--ink3);font-size:.72rem;margin-left:.5rem">(Meade & Fetzer, Gl. 4)</span>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);
+      letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem">
+      Klassifikationsschema (Meade &amp; Fetzer, 2009)
+    </div>
+    <div style="display:grid;grid-template-columns:100px 1fr 1fr;gap:1px;
+      background:var(--grid);margin-bottom:.75rem;font-family:'DM Mono',monospace">
+      <div style="background:var(--panel);padding:.4rem .5rem"></div>
+      <div style="background:var(--panel);padding:.4rem .5rem;text-align:center;
+        font-size:.71rem;color:var(--ink3)">d_Y klein<br><span style="color:var(--ink3);font-size:.67rem">(|d_Y| &lt; .2)</span></div>
+      <div style="background:var(--panel);padding:.4rem .5rem;text-align:center;
+        font-size:.71rem;color:var(--ink3)">d_Y groß<br><span style="color:var(--ink3);font-size:.67rem">(|d_Y| ≥ .2)</span></div>
+      <div style="background:var(--panel);padding:.4rem .5rem;font-size:.71rem;color:var(--ink3)">
+        d_X klein<br><span style="font-size:.67rem">(|d_X| &lt; .2)</span></div>
+      ${cell(false,false)}${cell(false,true)}
+      <div style="background:var(--panel);padding:.4rem .5rem;font-size:.71rem;color:var(--ink3)">
+        d_X groß<br><span style="font-size:.67rem">(|d_X| ≥ .2)</span></div>
+      ${cell(true,false)}${cell(true,true)}
+    </div>
+    <div class="interp-box" style="color:${col}">${interp}</div>
+  `;
+}
+
+// ─── Module 3: Adverse Impact ──────────────────────────────────────────────
+function updateMod3(){
+  const {ptsA,ptsB}=ST.data;
+  const cut=ST.cutoff;
+  const selA=ptsA.filter(p=>p.x>=cut).length/ptsA.length;
+  const selB=ptsB.filter(p=>p.x>=cut).length/ptsB.length;
+  const AIR=selA===0?NaN:selB/selA;
+  const rule45=isFinite(AIR)&&AIR<0.8;
+  const barPct=Math.min(100,Math.max(0,(isFinite(AIR)?AIR:0)*100));
+
+  const pct=v=>(v*100).toFixed(1)+'%';
+  const fr=v=>isFinite(v)?v.toFixed(3):'—';
+
+  document.getElementById('mod3-stats').innerHTML=`
+    <div class="kw-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="ftest-box">
+        <div class="ftest-label" style="color:var(--a1)">SR Gruppe A</div>
+        <div class="ftest-val">${pct(selA)}</div>
+        <div class="ftest-p">${ptsA.filter(p=>p.x>=cut).length} / ${ptsA.length}</div>
+      </div>
+      <div class="ftest-box">
+        <div class="ftest-label" style="color:var(--a2)">SR Gruppe B</div>
+        <div class="ftest-val">${pct(selB)}</div>
+        <div class="ftest-p">${ptsB.filter(p=>p.x>=cut).length} / ${ptsB.length}</div>
+      </div>
+      <div class="ftest-box">
+        <div class="ftest-label">AIR</div>
+        <div class="ftest-val" style="color:${rule45?'var(--a1)':'var(--a3)'}">${fr(AIR)}</div>
+        <div class="ftest-p">SR_B / SR_A</div>
+      </div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.71rem;color:var(--ink3);margin-bottom:.3rem;letter-spacing:.04em">
+      AIR-Skala &nbsp;(4/5-Schwelle = 0.80 &nbsp;▼)
+    </div>
+    <div class="air-bar-wrap">
+      <div class="air-bar-fill" style="width:${barPct}%;background:${rule45?'var(--a1)':'var(--a3)'}"></div>
+      <div class="air-thresh"></div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.69rem;color:var(--ink3);
+      display:flex;justify-content:space-between;margin-bottom:.5rem">
+      <span>0</span><span>0.80</span><span>1.0+</span>
+    </div>
+    ${rule45
+      ?'<span class="badge badge-warn">Adverse Impact: AIR &lt; 0.80 (4/5-Regel verletzt)</span>'
+      :'<span class="badge badge-ok">Kein Adverse Impact nach 4/5-Regel (AIR ≥ 0.80)</span>'
+    }
+  `;
+}
+
+// ─── Presets ───────────────────────────────────────────────────────────────
+const PRESETS={
+  // No group difference: same X, same α, same β
+  none:{muXA:0,alphaA:0,betaA:0.5,nA:100, muXB:0,alphaB:0,betaB:0.5,nB:100, sigma:0.87, cutoff:0},
+  // Test bias (Cleary Fig.1): X_B << X_A but E[Y] identical → αB compensates
+  // E[Y|A]=0+0.5*0=0;  E[Y|B]=0.5+0.5*(−1.0)=0  — same criterion, lower predictor → bias
+  fig1:{muXA:0,alphaA:0,betaA:0.5,nA:100, muXB:-1.0,alphaB:0.5,betaB:0.5,nB:100, sigma:0.87, cutoff:0},
+  // Criterion bias (Cleary Fig.2): same X, different Y intercepts (biased criterion)
+  fig2:{muXA:0,alphaA:0.6,betaA:0.5,nA:100, muXB:0,alphaB:-0.6,betaB:0.5,nB:100, sigma:0.87, cutoff:0},
+  // Adverse impact, no bias (Cleary Fig.3): different X mean, same regression
+  fig3:{muXA:0,alphaA:0,betaA:0.5,nA:100, muXB:-1.0,alphaB:0,betaB:0.5,nB:100, sigma:0.87, cutoff:0},
+};
+
+function setPreset(name){
+  const p=PRESETS[name]; if(!p) return;
+  Object.assign(ST,p);
+  const keys=['muXA','alphaA','betaA','nA','muXB','alphaB','betaB','nB','sigma'];
+  for(const k of keys){
+    const sl=document.getElementById('sl-'+k);
+    if(sl){sl.value=ST[k]; fmtLabel(k);}
+  }
+  document.getElementById('sl-cutoff').value=ST.cutoff;
+  document.getElementById('val-cutoff').textContent=ST.cutoff.toFixed(1);
+  ['none','fig1','fig2','fig3'].forEach(id=>{
+    document.getElementById('pre-'+id).classList.toggle('active',id===name);
+  });
+  recompute();
+}
+
+// ─── Event handlers ────────────────────────────────────────────────────────
+function onSl(key,el){
+  ST[key]=parseFloat(el.value);
+  fmtLabel(key);
+  ['none','fig1','fig2','fig3'].forEach(id=>document.getElementById('pre-'+id).classList.remove('active'));
+  recompute();
+}
+
+function fmtLabel(key){
+  const el=document.getElementById('val-'+key); if(!el) return;
+  const v=ST[key];
+  if(key==='betaA'||key==='betaB') el.textContent=v.toFixed(2);
+  else if(key==='muXA'||key==='muXB') el.textContent=v.toFixed(2);
+  else if(key==='alphaA'||key==='alphaB'||key==='sigma') el.textContent=v.toFixed(2);
+  else el.textContent=Math.round(v);
+}
+
+function toggleEllipses(){
+  ST.showEllipses=!ST.showEllipses;
+  const btn=document.getElementById('btn-ellipse');
+  btn.classList.toggle('active',ST.showEllipses);
+  btn.textContent=ST.showEllipses?'⊠ Ellipsen':'⊡ Ellipsen';
+  drawScatter();
+}
+
+function toggleProjections(){
+  ST.showProjections=!ST.showProjections;
+  const btn=document.getElementById('btn-proj');
+  btn.classList.toggle('active',ST.showProjections);
+  btn.textContent=ST.showProjections?'⊠ Projektionen':'⊡ Projektionen';
+  drawScatter();
+}
+
+function toggleYLock(){
+  const btn=document.getElementById('btn-ylock');
+  if(ST.fixedYRange){
+    ST.fixedYRange=null;
+    btn.classList.remove('active');
+    btn.textContent='⊡ Y-Achse fixieren';
+  } else {
+    if(!ST.xRange) return;
+    ST.fixedYRange={yB:ST.xRange.yB, yT:ST.xRange.yT};
+    btn.classList.add('active');
+    btn.textContent='⊠ Y-Achse fixiert';
+  }
+  drawScatter();
+}
+
+function onCutoff(el){
+  ST.cutoff=parseFloat(el.value);
+  document.getElementById('val-cutoff').textContent=ST.cutoff.toFixed(1);
+  drawScatter();
+  if(ST.mod3) updateMod3();
+}
+
+function newSeed(){
+  ST.seed=Math.floor(Math.random()*999999);
+  recompute();
+}
+
+// ─── Help System ───────────────────────────────────────────────────────────
+const HELP_CONTENT={
+  1:{
+    title:'Modul 1 — Cleary-Test: Differentielle Prädiktion',
+    body:`
+<h3>Was testet das Modell?</h3>
+<p>Der Cleary-Test prüft, ob ein Test <strong>unterschiedliche Regressionsgeraden</strong> für verschiedene Gruppen produziert. Ein Test gilt nach Cleary (1968) als verzerrt, wenn die Vorhersagegleichung systematisch falsche Prognosen für eine Gruppe liefert.</p>
+<h3>Die drei Modelle</h3>
+<ul>
+  <li><strong>M1</strong> – gemeinsame Regressionslinie für alle: Ŷ = b₀ + b₁·X</li>
+  <li><strong>M2</strong> – gleiche Steigung, verschiedene Achsenabschnitte (gruppenspezifischer Intercept)</li>
+  <li><strong>M3</strong> – verschiedene Steigungen und Achsenabschnitte (vollständige Interaktion)</li>
+</ul>
+<h3>Was erkennt man woran?</h3>
+<ul>
+  <li><strong>F-Test M2 vs. M1 signifikant</strong> → Intercept-Bias: Die Gruppen unterscheiden sich systematisch im Achsenabschnitt. Der Test überschätzt (oder unterschätzt) die Kriteriumsleistung einer Gruppe.</li>
+  <li><strong>F-Test M3 vs. M2 signifikant</strong> → Slope-Bias: Die Prädiktionskraft des Tests ist in den Gruppen unterschiedlich (differentielle Validität).</li>
+  <li><strong>Beide nicht signifikant</strong> → Kein Hinweis auf differentielle Prädiktion.</li>
+</ul>
+<h3>Szenarien im Streudiagramm</h3>
+<ul>
+  <li><strong>⊡ Kein Bias:</strong> Die Regressionsgeraden beider Gruppen liegen übereinander.</li>
+  <li><strong>① Testverzerrung:</strong> Gruppe B erzielt niedrigere X-Werte, aber gleiche Y-Werte → Regressionsgerade von B liegt höher. Die gemeinsame Linie unterschätzt die Leistung von B.</li>
+  <li><strong>② Kriteriumsverzerrung:</strong> Gleiche X-Mittelwerte, aber unterschiedliche Y-Levels → parallele, verschobene Geraden.</li>
+  <li><strong>③ Adverse Impact:</strong> Gruppe B hat niedrigere X-Werte, aber die Geraden sind identisch → kein Bias, aber Selektionsrate unterscheidet sich.</li>
+</ul>
+<h3>Wichtige Hinweise</h3>
+<p>Statistische Signifikanz hängt stark von n ab. Bei großen Stichproben werden auch praktisch bedeutungslose Unterschiede signifikant. Immer Effektgröße (Δb₀, Δb₁) berichten. Die Testentscheidung betrifft <em>differentielle Prädiktion</em>, nicht direkt Testfairness im umfassenden Sinne.</p>
+<p class="ref">Referenzen: Cleary, T. A. (1968). <em>Educational and Psychological Measurement, 28</em>, 115–124. · Bartlett, C. J., Bobko, P., Mosier, S. B., &amp; Hannan, R. (1978). <em>Personnel Psychology, 31</em>, 233–248. · Linn, R. L. (1984). <em>Journal of Educational Measurement, 21</em>, 5–32.</p>`
+  },
+  2:{
+    title:'Modul 2 — Meade & Fetzer (2009): Diagnose der Ursache',
+    body:`
+<h3>Warum reicht der Cleary-Test allein nicht?</h3>
+<p>Ein signifikanter Intercept-Unterschied (M2 vs. M1) kann <strong>vier verschiedene Ursachen</strong> haben. Nur eine ist echte Testverzerrung im Sinne von Cleary. Meade &amp; Fetzer (2009) schlagen vor, die standardisierten Mittelwertdifferenzen d_X und d_Y zur Diagnose zu nutzen.</p>
+<h3>Das Klassifikationsschema</h3>
+<ul>
+  <li><strong>d_X groß, d_Y klein</strong> (Fig. 1 — Testverzerrung): Die Gruppen unterscheiden sich auf dem Prädiktor, aber kaum auf dem Kriterium. Der Test bewertet das zugrunde liegende Konstrukt für die beiden Gruppen unterschiedlich gut.</li>
+  <li><strong>d_X klein, d_Y groß</strong> (Fig. 2 — Kriteriumsverzerrung): Gleiche Prädiktorwerte, aber unterschiedliche Kriteriumsleistung. Das Kriterium selbst könnte verzerrt sein oder es fehlen wichtige Drittvariablen.</li>
+  <li><strong>d_X groß, d_Y groß</strong> (Fig. 3 — Adverse Impact): Beide Größen sind proportional erhöht. Die gemeinsame Regression passt gut für beide Gruppen — kein Testbias, aber unterschiedliche Selektionsraten möglich.</li>
+  <li><strong>d_X klein, d_Y klein</strong>: Kein wesentlicher Bias, kein Adverse Impact.</li>
+</ul>
+<h3>Erwartetes d_Y</h3>
+<p>Meade &amp; Fetzer leiten die erwartete Kriteriumsdifferenz aus d_X und der gepoolten Korrelation r_YX ab (Gl. 4). Wenn d_Y deutlich kleiner als erwartet ist, spricht das für Testverzerrung; wenn d_Y größer als erwartet, für Kriteriumsverzerrung oder fehlende Variablen.</p>
+<h3>Schwellenwert</h3>
+<p>Als Grenzwert gilt |d| ≥ 0.20 (entspricht einem kleinen bis mittleren Effekt nach Cohen). Dieser Wert ist konservativ; bei großen n können auch kleinere d-Werte bedeutsam sein.</p>
+<p class="ref">Referenzen: Meade, A. W., &amp; Fetzer, M. (2009). <em>Journal of Personnel Psychology, 8</em>, 1–13. · Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). LEA.</p>`
+  },
+  3:{
+    title:'Modul 3 — Adverse Impact & 4/5-Regel',
+    body:`
+<h3>Was ist Adverse Impact?</h3>
+<p>Adverse Impact (AI) liegt vor, wenn eine geschützte Gruppe bei einer Auswahlentscheidung deutlich seltener ausgewählt wird als eine Vergleichsgruppe — <strong>unabhängig davon, ob der Test selbst fair ist</strong>. AI ist ein rechtliches und ethisches Konzept, kein psychometrisches.</p>
+<h3>Die 4/5-Regel (80 %-Regel)</h3>
+<p>Die US-amerikanischen <em>Uniform Guidelines on Employee Selection Procedures</em> (EEOC, 1978) definieren: AI liegt vor, wenn die Selektionsrate der benachteiligten Gruppe weniger als 80 % der Selektionsrate der bevorzugten Gruppe beträgt.</p>
+<ul>
+  <li><strong>AIR = Selektionsrate_B / Selektionsrate_A</strong></li>
+  <li>AIR &lt; 0.80 → Adverse Impact (4/5-Regel verletzt)</li>
+  <li>AIR ≥ 0.80 → Kein Adverse Impact im Sinne der Uniform Guidelines</li>
+</ul>
+<h3>Cut-Off einstellen</h3>
+<p>Verschieben Sie den Cut-Off-Slider, um zu sehen, wie verschiedene Schwellenwerte die Selektionsraten und den AIR verändern. Bei niedrigem Cut-Off werden beide Gruppen fast vollständig selektiert (AIR → 1). Bei sehr hohem Cut-Off können die Raten stark divergieren.</p>
+<h3>Wichtige Unterscheidungen</h3>
+<ul>
+  <li><strong>AI ≠ Test Bias:</strong> Ein fairer Test (gleiche Regressionsgeraden) kann erheblichen AI erzeugen, wenn die Gruppen unterschiedliche Mittelwerte auf dem Prädiktor haben (Szenario ③).</li>
+  <li><strong>Kein AI trotz Bias möglich:</strong> Wenn die Gruppen ähnliche Prädiktorwerte haben, aber unterschiedliche Regressionslinien, gibt es möglicherweise keinen AI, obwohl der Test verzerrt ist.</li>
+  <li><strong>Die 4/5-Regel ist keine absolute Grenze</strong>, sondern ein Richtwert. Gerichte berücksichtigen auch Stichprobengröße und praktische Bedeutsamkeit.</li>
+</ul>
+<p class="ref">Referenzen: EEOC et al. (1978). <em>Uniform guidelines on employee selection procedures</em>. Federal Register, 43, 38290–38315. · Roth, P. L., Bobko, P., &amp; Switzer, F. S. (2006). <em>Personnel Psychology, 59</em>, 565–598. · Sackett, P. R., &amp; Wilk, S. L. (1994). <em>American Psychologist, 49</em>, 929–954.</p>`
+  }
+};
+
+function openHelp(n){
+  document.getElementById('help-title').textContent=HELP_CONTENT[n].title;
+  document.getElementById('help-body').innerHTML=HELP_CONTENT[n].body;
+  document.getElementById('help-modal').classList.add('open');
+  document.getElementById('help-overlay').classList.add('open');
+}
+function closeHelp(){
+  document.getElementById('help-modal').classList.remove('open');
+  document.getElementById('help-overlay').classList.remove('open');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeHelp();});
+
+function toggleMod(n){
+  ST['mod'+n]=!ST['mod'+n];
+  const open=ST['mod'+n];
+  document.getElementById('bd'+n).classList.toggle('open',open);
+  document.getElementById('hd'+n).classList.toggle('open',open);
+  document.getElementById('ic'+n).textContent=open?'▼':'▶';
+  if(open){
+    if(n===1) updateMod1();
+    if(n===2) updateMod2();
+    if(n===3) updateMod3();
+  }
+  drawScatter();
+}
+
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  drawScatter();
+}
+
+function recompute(){
+  ST.data=genData();
+  drawScatter();
+  if(ST.mod1) updateMod1();
+  if(ST.mod2) updateMod2();
+  if(ST.mod3) updateMod3();
+}
+
+window.addEventListener('resize',()=>drawScatter());
+
+// Init
+setPreset('none');
+</script>
+</body>
+</html>

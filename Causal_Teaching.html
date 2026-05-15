@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Causal Teaching — Kausalität &amp; Potential Outcomes</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a4);--topbar-h:54px;--nav-h:42px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh;overflow:hidden}
+/* Topbar */
+#topbar{position:fixed;top:0;left:0;right:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.55rem 1.2rem;display:flex;align-items:center;gap:.8rem;height:var(--topbar-h)}
+#topbar h1{font-size:1rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+/* Module nav */
+#mod-nav{position:fixed;top:var(--topbar-h);left:0;right:0;z-index:200;background:var(--paper);
+  border-bottom:2px solid var(--grid);display:flex;height:var(--nav-h)}
+.tab-btn{flex:1;font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.03em;
+  border:none;background:transparent;cursor:pointer;color:var(--ink3);
+  border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;padding:.2rem .3rem;white-space:nowrap}
+.tab-num{font-size:1.65em;vertical-align:-.12em;line-height:1}
+.tab-btn:hover{color:var(--ink);background:var(--grid)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+/* App layout */
+#app{display:grid;grid-template-columns:310px 1fr;
+  height:calc(100vh - var(--topbar-h) - var(--nav-h));
+  margin-top:calc(var(--topbar-h) + var(--nav-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:.85rem .8rem}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.6rem 4rem}
+/* Sidebar cards */
+.scard{background:var(--bg);border:1px solid var(--grid);padding:.7rem .8rem;margin-bottom:.65rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.69rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.5rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+.scenario-box{background:var(--panel);border:2px solid var(--accent);border-radius:0;padding:.75rem .85rem;margin-bottom:.75rem}
+.scenario-title{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.45rem}
+.scenario-body{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75}
+.scenario-body strong{color:var(--ink)}
+/* Controls */
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+.help-btn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.18rem .5rem;
+  border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .12s}
+.help-btn:hover{background:var(--a1);color:var(--bg)}
+.slider-row{margin-bottom:.5rem}
+.slider-lbl{display:flex;justify-content:space-between;margin-bottom:.15rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%}
+/* Step buttons */
+.step-btn{display:block;width:100%;font-family:'DM Mono',monospace;font-size:.75rem;
+  padding:.42rem .7rem;border:1.5px solid var(--border);background:transparent;cursor:pointer;
+  color:var(--ink2);transition:all .13s;text-align:left;margin-bottom:.3rem;letter-spacing:.02em}
+.step-btn:hover{border-color:var(--ink2);color:var(--ink)}
+.step-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(122,58,138,.07)}
+[data-theme="dark"] .step-btn.active{background:rgba(200,122,216,.07)}
+/* Main area */
+.module-header{margin-bottom:1rem}
+.mod-super{font-family:'DM Mono',monospace;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.28rem}
+.mod-title{font-size:1.35rem;font-weight:300;letter-spacing:-.02em;margin-bottom:.4rem}
+.mod-title em{color:var(--accent);font-style:italic}
+.mod-lead{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink2);line-height:1.8;max-width:780px}
+.mod-lead strong{color:var(--ink)}
+/* Problem/Solution boxes */
+.prob-box{background:rgba(201,74,42,.08);border-left:3px solid var(--a1);padding:.65rem .85rem;margin:.75rem 0;font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.75}
+.prob-box strong{color:var(--a1)}
+.sol-box{background:rgba(90,138,42,.07);border-left:3px solid var(--a3);padding:.65rem .85rem;margin:.75rem 0;font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.75}
+.sol-box strong{color:var(--a3)}
+[data-theme="dark"] .prob-box{background:rgba(232,97,74,.07)}
+[data-theme="dark"] .sol-box{background:rgba(128,203,82,.06)}
+/* Canvas */
+canvas{display:block;width:100%}
+/* Badges */
+.badge{display:inline-block;font-family:'DM Mono',monospace;font-size:.72rem;padding:.18rem .58rem;letter-spacing:.04em}
+.b-ok{background:rgba(90,138,42,.11);border:1px solid var(--a3);color:var(--a3)}
+.b-warn{background:rgba(201,74,42,.11);border:1px solid var(--a1);color:var(--a1)}
+.b-info{background:rgba(42,110,138,.11);border:1px solid var(--a2);color:var(--a2)}
+[data-theme="dark"] .b-ok{background:rgba(128,203,82,.09)}
+[data-theme="dark"] .b-warn{background:rgba(232,97,74,.09)}
+/* PO table */
+.po-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.82rem}
+.po-table th{font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);
+  padding:.4rem .6rem;border-bottom:2px solid var(--grid);text-align:center}
+.po-table td{padding:.38rem .6rem;border-bottom:1px solid var(--grid);text-align:center;vertical-align:middle}
+.po-qm{color:var(--border);cursor:help;border-bottom:1px dashed var(--border);position:relative}
+.po-qm:hover::after{content:attr(data-tip);position:absolute;bottom:115%;left:50%;transform:translateX(-50%);
+  background:var(--paper);border:1px solid var(--border);padding:.22rem .5rem;
+  font-size:.73rem;white-space:nowrap;z-index:50;color:var(--ink)}
+/* Stat cards row */
+.stat-row{display:flex;gap:.85rem;margin:.9rem 0;flex-wrap:wrap}
+.stat-card{background:var(--panel);border:1px solid var(--grid);padding:.6rem .9rem;flex:1;min-width:120px}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.stat-val{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:600;color:var(--accent);margin-top:.15rem}
+/* IPW estimand tabs */
+.est-tabs{display:flex;gap:.35rem;margin-bottom:.8rem}
+.est-tab{font-family:'DM Mono',monospace;font-size:.73rem;padding:.26rem .7rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);transition:all .12s}
+.est-tab.active{border-color:var(--accent);color:var(--accent)}
+/* two-col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.panel-box{background:var(--panel);border:1px solid var(--grid);padding:.85rem}
+.panel-title{font-family:'DM Mono',monospace;font-size:.82rem;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:.55rem}
+/* Instruction steps */
+.instr{display:flex;gap:.6rem;align-items:flex-start;margin:.45rem 0;font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2)}
+.instr-num{background:var(--accent);color:var(--bg);width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:600;flex-shrink:0;margin-top:.02rem}
+/* Help modal */
+#help-ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;display:none}
+#help-ov.open{display:block}
+#help-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;
+  background:var(--paper);border:1px solid var(--border);padding:1.3rem 1.5rem 1.2rem;
+  max-width:620px;width:92%;max-height:85vh;overflow-y:auto;
+  box-shadow:0 12px 45px rgba(0,0,0,.45);display:none}
+#help-modal.open{display:block}
+#help-modal h2{font-family:'DM Mono',monospace;font-size:.77rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.8rem;padding-bottom:.45rem;border-bottom:1px solid var(--grid)}
+#help-modal h3{font-family:'DM Mono',monospace;font-size:.73rem;letter-spacing:.06em;color:var(--accent);margin:.85rem 0 .32rem;text-transform:uppercase}
+#help-modal p,#help-modal li{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.85;margin-bottom:.38rem}
+#help-modal ul{padding-left:1rem;margin:.3rem 0 .5rem}
+#help-modal .formula{background:var(--bg);border:1px solid var(--grid);padding:.3rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.8rem;color:var(--a2);margin:.35rem 0;display:block}
+#help-modal .ref{font-size:.71rem;color:var(--ink3);margin-top:.85rem;border-top:1px solid var(--grid);padding-top:.55rem}
+#help-close{float:right;font-family:'DM Mono',monospace;font-size:.77rem;padding:.18rem .55rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2)}
+#help-close:hover{background:var(--ink);color:var(--bg)}
+/* module show/hide */
+.module{display:none}.module.active{display:block}
+.sb-mod{display:none}.sb-mod.active{display:block}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <h1>Kausal <em>Denken</em> — DAGs · Potential Outcomes · Konfundierung · IPW · G-Computation</h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.71rem;color:var(--ink3)">Dr. R. Düsing</span>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+<div id="mod-nav">
+  <button class="tab-btn active" onclick="goTo(1)"><span class="tab-num">①</span> DAG &amp; Struktur</button>
+  <button class="tab-btn" onclick="goTo(2)"><span class="tab-num">②</span> Potential Outcomes</button>
+  <button class="tab-btn" onclick="goTo(3)"><span class="tab-num">③</span> Konfundierung</button>
+  <button class="tab-btn" onclick="goTo(4)"><span class="tab-num">④</span> IPW</button>
+  <button class="tab-btn" onclick="goTo(5)"><span class="tab-num">⑤</span> G-Computation</button>
+</div>
+<div id="help-ov" onclick="closeHelp()"></div>
+<div id="help-modal"><button id="help-close" onclick="closeHelp()">✕ Schließen</button><h2 id="h-title"></h2><div id="h-body"></div></div>
+
+<div id="app">
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<div id="sidebar">
+  <!-- Persistent scenario -->
+  <div class="scenario-box">
+    <div class="scenario-title">🔬 Die Studie</div>
+    <div class="scenario-body">
+      Ein Forschungsteam untersucht, ob regelmäßiger <strong>Sport (T)</strong> die
+      <strong>Herzgesundheit (Y)</strong> verbessert.<br><br>
+      Aus Beobachtungsdaten von 300 Personen: Sporttreibende sind im Schnitt
+      <strong>~19 Punkte gesünder</strong>. Aber stimmt das wirklich?<br><br>
+      Der <strong>sozioökon. Status (SES)</strong> beeinflusst sowohl Sportgewohnheiten
+      als auch Gesundheit — ein klassisches Confounding-Problem. Wie sieht es mit
+      weiteren möglichen Variablenstrukturen aus (Mediator, Collider)?
+    </div>
+  </div>
+
+  <!-- Sidebar content per module (show/hide) -->
+
+  <div class="sb-mod active" id="sb-1">
+    <div class="scard">
+      <div class="scard-title">Schritte</div>
+      <button class="step-btn active" id="sb1-btn0" onclick="setStep(0)">A · Confounder entdecken</button>
+      <button class="step-btn" id="sb1-btn1" onclick="setStep(1)">B · Mediator verstehen</button>
+      <button class="step-btn" id="sb1-btn2" onclick="setStep(2)">C · Collider erkennen</button>
+      <button class="step-btn" id="sb1-btn3" onclick="setStep(3)">D · Das volle Modell</button>
+    </div>
+    <div class="scard" id="dag-sb-info">
+      <div class="scard-title">Interpretation</div>
+      <div id="dag-interp" style="font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.75"></div>
+    </div>
+    <div class="scard">
+      <div class="scard-title">Adjustierung testen</div>
+      <div id="dag-controls"></div>
+    </div>
+    <div style="margin-top:.5rem"><button class="help-btn" style="width:100%" onclick="openHelp('dag')">? Was ist ein DAG?</button></div>
+  </div>
+
+  <div class="sb-mod" id="sb-2">
+    <div class="scard">
+      <div class="scard-title">Stichprobe</div>
+      <button class="tbtn" style="width:100%;margin-bottom:.4rem" onclick="newSeed()">⟳ Neue Stichprobe (n=300)</button>
+      <button class="tbtn active" id="po-rev-btn" style="width:100%" onclick="toggleReveal()">⊡ Kontrafaktische zeigen</button>
+    </div>
+    <div class="scard" id="po-stats-sb">
+      <div class="scard-title">Schätzer</div>
+      <div id="po-stats-content" style="font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink2);line-height:1.9"></div>
+    </div>
+    <div style="margin-top:.5rem"><button class="help-btn" style="width:100%" onclick="openHelp('po')">? Potential Outcomes</button></div>
+  </div>
+
+  <div class="sb-mod" id="sb-3">
+    <div class="scard">
+      <div class="scard-title">Konfundierungsstärke</div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">Stärke</span><span class="slider-val" id="conf-lbl">sehr stark</span></div>
+        <input type="range" id="conf-sl" min="0" max="1" step="0.05" value="1.0" oninput="onConfSl(this)">
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin-top:.3rem">
+        Bestimmt, wie stark SES die Behandlungswahrscheinlichkeit beeinflusst.
+      </div>
+    </div>
+    <div class="scard" id="conf-nums-sb">
+      <div class="scard-title">Effektvergleich</div>
+      <div id="conf-nums" style="font-family:'DM Mono',monospace;font-size:.83rem;line-height:2;color:var(--ink2)"></div>
+    </div>
+    <div style="margin-top:.5rem;display:flex;gap:.3rem">
+      <button class="help-btn" style="flex:1" onclick="openHelp('conf')">? Konfundierung</button>
+      <button class="help-btn" style="flex:1" onclick="openHelp('ovb')">? OVB-Formel</button>
+    </div>
+  </div>
+
+  <div class="sb-mod" id="sb-4">
+    <div class="scard">
+      <div class="scard-title">Estimand wählen</div>
+      <div class="est-tabs" style="flex-direction:column;gap:.3rem">
+        <button class="est-tab active" id="et-ate" style="text-align:left" onclick="setEst('ate')">ATE — Gesamtpopulation</button>
+        <button class="est-tab" id="et-att" style="text-align:left" onclick="setEst('att')">ATT — Behandelte</button>
+        <button class="est-tab" id="et-atu" style="text-align:left" onclick="setEst('atu')">ATU — Unbehandelte</button>
+      </div>
+      <div id="est-desc" style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink3);margin-top:.4rem;line-height:1.65"></div>
+    </div>
+    <div class="scard">
+      <div class="scard-title">Aktion</div>
+      <button class="tbtn" id="btn-wt" style="width:100%;margin-bottom:.3rem" onclick="toggleWeight()">⊡ Gewichtung anwenden</button>
+      <div style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);margin-top:.3rem" id="wt-formula"></div>
+    </div>
+    <div class="scard" id="ipw-nums-sb">
+      <div class="scard-title">IPW-Schätzer</div>
+      <div id="ipw-nums" style="font-family:'DM Mono',monospace;font-size:.83rem;line-height:2;color:var(--ink2)"></div>
+    </div>
+    <div style="margin-top:.5rem;display:flex;gap:.3rem">
+      <button class="help-btn" style="flex:1" onclick="openHelp('pscore')">? P-Score</button>
+      <button class="help-btn" style="flex:1" onclick="openHelp('ipw')">? IPW</button>
+      <button class="help-btn" style="flex:1" onclick="openHelp('estimands')">? ATE/ATT</button>
+    </div>
+  </div>
+
+  <div class="sb-mod" id="sb-5">
+    <div class="scard">
+      <div class="scard-title">Estimand wählen</div>
+      <div class="est-tabs" style="flex-direction:column;gap:.3rem">
+        <button class="est-tab active" id="gc-ate" style="text-align:left" onclick="setGCEst('ate')">ATE — Gesamtpopulation</button>
+        <button class="est-tab" id="gc-att" style="text-align:left" onclick="setGCEst('att')">ATT — Behandelte</button>
+        <button class="est-tab" id="gc-atu" style="text-align:left" onclick="setGCEst('atu')">ATU — Unbehandelte</button>
+      </div>
+      <div id="gc-est-desc" style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);margin-top:.4rem;line-height:1.65">Standardisierung über alle 300 Personen</div>
+    </div>
+    <div class="scard">
+      <div class="scard-title">Aktion</div>
+      <button class="tbtn" id="btn-gc" style="width:100%" onclick="revealGC()">③ G-Computation zeigen</button>
+    </div>
+    <div class="scard" id="gc-nums-sb">
+      <div class="scard-title">Schätzervergleich</div>
+      <div id="gc-nums" style="font-family:'DM Mono',monospace;font-size:.83rem;line-height:2;color:var(--ink2)"></div>
+    </div>
+    <div style="margin-top:.5rem;display:flex;gap:.3rem">
+      <button class="help-btn" style="flex:1" onclick="openHelp('gcomp')">? G-Comp</button>
+      <button class="help-btn" style="flex:1" onclick="openHelp('dr')">? Doubly Robust</button>
+    </div>
+  </div>
+</div><!-- /sidebar -->
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div id="main">
+
+<!-- MODULE 1: DAG -->
+<div class="module active" id="mod-1">
+  <div class="module-header">
+    <div class="mod-super">Modul ① von ⑤</div>
+    <div class="mod-title">Kausale Struktur — <em>Directed Acyclic Graphs</em></div>
+    <div class="mod-lead">Ein DAG zeigt, <strong>wer wen kausal beeinflusst</strong>. Bevor wir irgendeinen Effekt schätzen, müssen wir die kausale Struktur kennen — denn sie bestimmt, für welche Variablen wir <em>dürfen</em>, <em>müssen</em> und <em>nicht dürfen</em> kontrollieren.</div>
+  </div>
+  <div class="prob-box"><strong>Das Problem:</strong> Nicht jede beobachtete Assoziation ist kausal. Und nicht jede Adjustierung hilft — manche verschlimmert die Verzerrung sogar.</div>
+  <div class="sol-box"><strong>Vorgehen:</strong> Schritt A–C erklärt die drei Grundtypen. Schritt D zeigt das vollständige Modell unserer Studie — die Grundlage für alle folgenden Module.</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.4rem">
+    <div id="dag-step-lbl" style="font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500"></div>
+    <div style="display:flex;gap:.4rem">
+      <button class="tbtn" onclick="dagNav(-1)">← Zurück</button>
+      <button class="tbtn" onclick="dagNav(1)">Weiter →</button>
+    </div>
+  </div>
+  <canvas id="cv-dag" height="552" style="border:1px solid var(--grid);background:var(--paper)"></canvas>
+  <div id="dag-legend" style="display:flex;gap:1.4rem;margin-top:.55rem;flex-wrap:wrap;font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3)"></div>
+  <div id="dag-verdict" style="margin-top:.65rem"></div>
+</div>
+
+<!-- MODULE 2: POTENTIAL OUTCOMES -->
+<div class="module" id="mod-2">
+  <div class="module-header">
+    <div class="mod-super">Modul ② von ⑤</div>
+    <div class="mod-title"><em>Potential Outcomes</em> — Das fundamentale Problem</div>
+    <div class="mod-lead">Was wäre passiert, wenn eine Person <em>nicht</em> Sport getrieben hätte — obwohl sie es tat? Diese Frage können wir nie direkt beantworten. Das Potential Outcomes Framework macht diese Unmöglichkeit mathematisch greifbar und zeigt, wie wir trotzdem kausale Schlüsse ziehen können.</div>
+  </div>
+  <div class="prob-box"><strong>Die Kernidee:</strong> Jede Person i hat <em>zwei</em> potenzielle Outcomes: <strong style="color:var(--a3)">Y_i(1)</strong> — ihr Gesundheitsscore, wenn sie Sport treibt — und <strong style="color:var(--a1)">Y_i(0)</strong> — ihr Score, wenn sie keinen Sport treibt. Der individuelle kausale Effekt wäre ITE_i = Y_i(1) − Y_i(0). Das Problem: Wir sehen immer nur <em>eine</em> dieser Welten — die andere ist kontrafaktisch und für immer unbeobachtbar. Wir können nie dieselbe Person gleichzeitig Sport treiben und nicht treiben lassen.</div>
+  <div class="sol-box"><strong>Die Lösung:</strong> Statt individueller Effekte schätzen wir <em>durchschnittliche</em> Effekte über Gruppen: <strong>ATE</strong> = E[Y(1) − Y(0)] für die Gesamtpopulation, <strong>ATT</strong> für die Behandelten, <strong>ATU</strong> für die Unbehandelten. Dafür brauchen wir Annahmen (SUTVA, Ignorierbarkeit) — und Methoden wie IPW oder G-Computation, die in Modulen ④ und ⑤ erklärt werden.</div>
+
+  <canvas id="cv-po-vis" height="200" style="border:1px solid var(--grid);background:var(--panel);margin-bottom:1rem"></canvas>
+
+  <div style="overflow-x:auto">
+    <table class="po-table">
+      <thead><tr>
+        <th style="text-align:left">Person</th>
+        <th>SES</th>
+        <th>T (Sport)</th>
+        <th style="color:var(--a3)">Y(1) — mit Sport</th>
+        <th style="color:var(--a1)">Y(0) — ohne Sport</th>
+        <th>ITE = Y(1)−Y(0)</th>
+        <th>beobachtetes Y</th>
+      </tr></thead>
+      <tbody id="po-tbody"></tbody>
+    </table>
+  </div>
+  <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin-top:.6rem">
+    Hover über „?" für den hypothetischen Wert · Skala: Herzgesundheits-Score (0–100)
+  </div>
+</div>
+
+<!-- MODULE 3: KONFUNDIERUNG -->
+<div class="module" id="mod-3">
+  <div class="module-header">
+    <div class="mod-super">Modul ③ von ⑤</div>
+    <div class="mod-title">Konfundierung — <em>Warum der naive Vergleich täuscht</em></div>
+    <div class="mod-lead">Ein einfacher Vergleich von T=1 vs. T=0 misst nicht den kausalen Effekt. Er misst den Effekt <strong>inklusive der gesamten Confounding-Verzerrung</strong>. Wie groß ist der Unterschied?</div>
+  </div>
+  <div class="prob-box"><strong>Das Problem:</strong> Personen mit hohem SES treiben häufiger Sport <em>und</em> sind von Natur aus gesünder. Der naive Vergleich schreibt den SES-Effekt fälschlicherweise dem Sport zu.</div>
+
+  <div style="margin-bottom:1rem">
+    <div class="instr"><div class="instr-num">1</div><div>Beobachte im <strong>linken Panel</strong> den naiven Gruppenvergleich. Erkennbar: T=1-Gruppe enthält viel mehr SES-hohe Personen (orange).</div></div>
+    <div class="instr"><div class="instr-num">2</div><div>Schaue im <strong>rechten Panel</strong> auf den Vergleich <em>innerhalb</em> jeder SES-Stufe. Der Effekt ist deutlich kleiner — das ist der wahre kausale Effekt.</div></div>
+    <div class="instr"><div class="instr-num">3</div><div>Verändere den <strong>Slider links</strong> und beobachte, wie die Verzerrung mit der Konfundierungsstärke wächst.</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel-box">
+      <div class="panel-title">Naiver Gruppenvergleich <span class="badge b-warn">verzerrt</span></div>
+      <canvas id="cv-naive" height="340"></canvas>
+      <div id="naive-est" style="font-family:'DM Mono',monospace;font-size:.84rem;margin-top:.5rem;text-align:center"></div>
+    </div>
+    <div class="panel-box">
+      <div class="panel-title">Stratifiziert nach SES <span class="badge b-ok">adjustiert</span></div>
+      <canvas id="cv-adj" height="340"></canvas>
+      <div id="adj-est" style="font-family:'DM Mono',monospace;font-size:.84rem;margin-top:.5rem;text-align:center"></div>
+    </div>
+  </div>
+  <div id="conf-msg" style="background:var(--panel);border:1px solid var(--grid);padding:.7rem .9rem;margin-top:.9rem;font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);line-height:1.8"></div>
+</div>
+
+<!-- MODULE 4: IPW -->
+<div class="module" id="mod-4">
+  <div class="module-header">
+    <div class="mod-super">Modul ④ von ⑤ — Lösung 1</div>
+    <div class="mod-title">Inverse Probability Weighting — <em>Pseudo-Population</em></div>
+    <div class="mod-lead">IPW erstellt eine gewichtete Pseudo-Population, in der T und SES statistisch unabhängig sind — als ob Sport zufällig vergeben worden wäre. Jede Beobachtung erhält ein Gewicht, das ihrer Seltenheit entspricht.</div>
+  </div>
+  <div class="prob-box"><strong>Das Problem:</strong> Im oberen Panel siehst du die massive Schieflage: Fast alle Hochsport-Personen kommen aus der High-SES-Gruppe, fast alle Nicht-Sporttreibenden aus Low-SES.</div>
+  <div class="sol-box"><strong>Die Lösung:</strong> Gewichte Einheiten, die sich „konträr" zu ihrer Erwartung verhalten, stärker. Eine Low-SES-Person, die trotzdem Sport treibt, ist besonders wertvoll für die Schätzung.</div>
+
+  <div style="margin-bottom:.8rem">
+    <div class="instr"><div class="instr-num">1</div><div>Oben: Propensity-Score-Verteilung — gespiegelt. <span style="color:var(--a3)">▲ Sport (T=1)</span> oben, <span style="color:var(--a1)">▼ Kein Sport (T=0)</span> unten. Die Schieflage ist deutlich sichtbar.</div></div>
+    <div class="instr"><div class="instr-num">2</div><div>Wähle einen Estimanden (ATE/ATT/ATU) links und klicke <strong>„Gewichtung anwenden"</strong>. Beobachte, wie die Verteilung sich symmetrisiert.</div></div>
+    <div class="instr"><div class="instr-num">3</div><div>Der IPW-Schätzer erscheint links — vergleiche mit dem naiven Wert aus Modul ③.</div></div>
+  </div>
+
+  <div class="panel-box" style="margin-bottom:.9rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem">
+      <div class="panel-title" style="margin:0">① Propensity-Score-Verteilung — Rohzählung</div>
+      <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3)">
+        <span style="color:var(--a3)">▲ Sport T=1</span> &nbsp;|&nbsp; <span style="color:var(--a1)">▼ Kein Sport T=0</span>
+      </div>
+    </div>
+    <canvas id="cv-ps" height="240"></canvas>
+    <div style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);text-align:center;margin-top:.35rem">Propensity Score p(T=1 | SES) — ungewichtet</div>
+  </div>
+
+  <div class="panel-box" style="margin-bottom:.9rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem">
+      <div class="panel-title" style="margin:0">② Gewichtete Pseudo-Population</div>
+      <span id="wt-state" style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3)"></span>
+    </div>
+    <canvas id="cv-wt" height="240"></canvas>
+    <div style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);text-align:center;margin-top:.35rem" id="wt-label">Klicke „Gewichtung anwenden" um die Pseudo-Population zu sehen</div>
+  </div>
+  <div id="ipw-guide" style="background:var(--panel);border:1px solid var(--grid);padding:.7rem .9rem;font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.8"></div>
+</div>
+
+<!-- MODULE 5: G-COMPUTATION -->
+<div class="module" id="mod-5">
+  <div class="module-header">
+    <div class="mod-super">Modul ⑤ von ⑤ — Lösung 2</div>
+    <div class="mod-title">G-Computation — <em>Standardisierung</em></div>
+    <div class="mod-lead">G-Computation ist das <em>statistische Gegenstück</em> zu den Potential Outcomes aus Modul ②. Dort wollten wir Y_i(1) und Y_i(0) für jede Person kennen — das ist unmöglich. G-Computation <em>schätzt</em> genau diese kontrafaktischen Welten aus einem Outcomemodell und standardisiert dann über die Covariate-Verteilung.</div>
+  </div>
+  <div class="prob-box"><strong>Die Verbindung zu Potential Outcomes:</strong> Ê[Y(1)] aus G-Computation entspricht direkt dem E[Y_i(1)] aus dem PO-Framework — dem mittleren Outcome, wenn <em>alle</em> Personen behandelt würden. Ê[Y(0)] entspricht E[Y_i(0)]. Die Differenz Ê[Y(1)] − Ê[Y(0)] ist der ATE. G-Computation macht das kontrafaktisch Unsichtbare schätzbar.</div>
+  <div class="sol-box"><strong>Vorgehen:</strong> Schritt ① fit das Outcomemodell E[Y|T,SES]. Schritte ② und ③ zeigen die zwei kontrafaktischen Welten (alle Sport vs. niemand Sport). Klicke „G-Computation zeigen" für den Schätzer und den Vergleich mit IPW und dem Doubly Robust Estimator.</div>
+
+  <div style="margin-bottom:.8rem">
+    <div class="instr"><div class="instr-num">1</div><div>Das Outcomemodell zeigt die vorhergesagten Y-Werte für T=1 und T=0, getrennt nach SES.</div></div>
+    <div class="instr"><div class="instr-num">2</div><div>Die zwei Welten unten zeigen: Ê[Y(1)] wenn alle Sport treiben, Ê[Y(0)] wenn niemand Sport treibt — mit derselben SES-Verteilung.</div></div>
+    <div class="instr"><div class="instr-num">3</div><div>Klicke <strong>„G-Computation zeigen"</strong> links — der Schätzer erscheint zusammen mit dem Vergleich zu IPW aus Modul ④.</div></div>
+  </div>
+
+  <div class="panel-box" style="margin-bottom:.9rem">
+    <div class="panel-title">① Outcomemodell: Ê[Y | T, SES]</div>
+    <canvas id="cv-gmod" height="260"></canvas>
+    <div style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);text-align:center;margin-top:.35rem">
+      <span style="color:var(--a3)">● T=1 (Sport)</span> &nbsp;·&nbsp; <span style="color:var(--a1)">● T=0 (kein Sport)</span> &nbsp;·&nbsp; Punkte = beobachtete Daten · Linien = Modellvorhersage
+    </div>
+  </div>
+
+  <div class="panel-box" style="margin-bottom:.9rem">
+    <div class="panel-title">① Individuelles Vorhersage-Panel — Ŷ(1) und Ŷ(0) für jede Person</div>
+    <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75;margin-bottom:.5rem">
+      Das Outcomemodell sagt für <strong>jede Person</strong> zwei Werte vorher: wie wäre ihr Score, wenn sie Sport treibt (Ŷ(1)), und wie, wenn sie es nicht tut (Ŷ(0))?
+      Diese Vorhersagen basieren auf der SES-Gruppe — jede Person bekommt den Gruppenmittelwert ihrer Kombinationsgruppe (T×SES) zugewiesen.
+      Die letzte Spalte (Ŷ(1)−Ŷ(0)) ist der <strong>geschätzte individuelle Effekt</strong> — genau das, was in Modul ② als ITE bezeichnet, aber dort unbeobachtbar war.
+    </div>
+    <div id="gc-pred-table"></div>
+  </div>
+
+  <div class="two-col" style="margin-bottom:.9rem">
+    <div class="panel-box">
+      <div class="panel-title" style="color:var(--a3)">② Kontrafaktische Welt T=1 — Alle treiben Sport</div>
+      <canvas id="cv-w1" height="220"></canvas>
+      <div id="gc-y1-lbl" style="font-family:'DM Mono',monospace;font-size:.88rem;text-align:center;margin-top:.5rem;color:var(--a3)"></div>
+    </div>
+    <div class="panel-box">
+      <div class="panel-title" style="color:var(--a1)">② Kontrafaktische Welt T=0 — Niemand treibt Sport</div>
+      <canvas id="cv-w0" height="220"></canvas>
+      <div id="gc-y0-lbl" style="font-family:'DM Mono',monospace;font-size:.88rem;text-align:center;margin-top:.5rem;color:var(--a1)"></div>
+    </div>
+  </div>
+  <div id="gc-result"></div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ═══ PRNG ════════════════════════════════════════════════════════════════════
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function mkGauss(r){return()=>{const u=Math.max(r(),1e-15);return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*r());};}
+
+// ═══ STATE ═══════════════════════════════════════════════════════════════════
+const ST={seed:42,data:null,dagStep:0,dagAdj:{ses:false,kg:false,ab:false},
+  poRevealed:false,confStr:1.0,estimand:'ate',weighted:false,gcRevealed:false,gcEstimand:'ate'};
+
+// ═══ DATA ════════════════════════════════════════════════════════════════════
+function genData(seed,cs){
+  const r=mulberry32(seed),g=mkGauss(r),N=300,D=[];
+  const beta=cs*4.5; // strong: logit(-2.25 + 4.5) = logit(2.25) ≈ 0.90; logit(-2.25) ≈ 0.10
+  for(let i=0;i<N;i++){
+    const ses=r()<0.5?0:1;
+    let p=1/(1+Math.exp(-(-2.25+beta*ses)));
+    p=Math.max(0.04,Math.min(0.96,p+0.08*g()));
+    const t=r()<p?1:0;
+    const y1=Math.round(Math.max(30,Math.min(99,58+11*ses+10+5*g()))); // ATE≈10
+    const y0=Math.round(Math.max(30,Math.min(99,58+11*ses+5*g())));
+    D.push({id:i+1,ses,p,t,y:t?y1:y0,y1,y0});
+  }
+  return D;
+}
+ST.data=genData(ST.seed,ST.confStr);
+
+// ═══ UTILS ═══════════════════════════════════════════════════════════════════
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function mean(arr,f=u=>u.y){return arr.length?arr.reduce((s,u)=>s+f(u),0)/arr.length:0;}
+function pct(v,d=1){return v.toFixed(d);}
+
+// ═══ NAV ═════════════════════════════════════════════════════════════════════
+function goTo(n){
+  document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));
+  document.querySelectorAll('.sb-mod').forEach(m=>m.classList.remove('active'));
+  document.getElementById('mod-'+n).classList.add('active');
+  document.getElementById('sb-'+n).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i+1===n));
+  setTimeout(()=>{
+    if(n===1)drawDAG();
+    if(n===2){drawPOVis();renderPO();}
+    if(n===3)drawConf();
+    if(n===4)drawIPW();
+    if(n===5)drawGComp();
+  },20);
+}
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  redrawAll();
+}
+function redrawAll(){
+  [1,2,3,4,5].forEach(n=>{if(document.getElementById('mod-'+n).classList.contains('active')){
+    if(n===1)drawDAG();if(n===2){drawPOVis();renderPO();}if(n===3)drawConf();if(n===4)drawIPW();if(n===5)drawGComp();
+  }});
+}
+window.addEventListener('resize',redrawAll);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MODULE 1: DAG
+// ═══════════════════════════════════════════════════════════════════════════
+const STEPS=[
+  {label:'A — Confounder: SES beeinflusst Sport und Gesundheit',
+   interp:'<strong>SES</strong> (sozioökon. Status) ist ein <em>Confounder</em>, weil er sowohl Sport (T) als auch Gesundheit (Y) kausal beeinflusst.<br><br>Der Backdoor-Pfad <strong>T ← SES → Y</strong> ist offen. Ein naiver Vergleich wäre verzerrt.<br><br><em>Konsequenz: Für SES adjustieren (kontrollieren)!</em><br><br>Teste es: Klicke unten auf "SES adjustieren" und beobachte, wie der Backdoor-Pfad sich schließt.',
+   nodes:[{id:'T',lbl:'T\nSport',x:.2,y:.55,c:'--a3'},{id:'Y',lbl:'Y\nGesundheit',x:.8,y:.55,c:'--a1'},{id:'SES',lbl:'SES\nStatus',x:.5,y:.18,c:'--a5'}],
+   edges:[{f:'SES',t:'T',tp:'back'},{f:'SES',t:'Y',tp:'back'},{f:'T',t:'Y',tp:'causal'}],
+   ctl:'ses',verdict:'<span class="badge b-warn">Backdoor offen</span> <span class="badge b-ok">→ SES adjustieren</span>'},
+  {label:'B — Mediator: Gewicht liegt auf dem Kausalweg',
+   interp:'<strong>Körpergewicht (KG)</strong> ist ein <em>Mediator</em>: Sport (T) reduziert das Gewicht → Gewicht verbessert Gesundheit (Y).<br><br><strong>Zwei Pfade von T nach Y:</strong><br>① Direkter Effekt: T → Y (Sport direkt auf Herzgesundheit)<br>② Indirekter Effekt: T → KG → Y (über Gewichtsreduktion)<br><br><strong>Gesamteffekt = Direkter + Indirekter Effekt</strong><br><br>Wenn wir für KG adjustieren:<br>• Indirekter Pfad T→KG→Y wird blockiert<br>• Wir messen nur den direkten Effekt<br><br><em>Wenn du den Gesamteffekt willst: KG NICHT adjustieren!</em><br>Wenn du nur den direkten Effekt willst: adjustieren.',
+   nodes:[{id:'T',lbl:'T\nSport',x:.15,y:.25,c:'--a3'},{id:'KG',lbl:'KG\nGewicht',x:.5,y:.72,c:'--a2'},{id:'Y',lbl:'Y\nGesundheit',x:.85,y:.25,c:'--a1'}],
+   edges:[{f:'T',t:'Y',tp:'causal'},{f:'T',t:'KG',tp:'med'},{f:'KG',t:'Y',tp:'med'}],
+   ctl:'kg',verdict:'<span class="badge b-warn">Für Gesamteffekt: KG NICHT adjustieren</span> <span class="badge b-info">Für direkten Effekt: adjustieren</span>'},
+  {label:'C — Collider: Arztbesuche werden durch T und Y verursacht',
+   interp:'<strong>Arztbesuch (AB)</strong> ist ein <em>Collider</em>: Sowohl Sport als auch schlechte Gesundheit führen zu mehr Arztbesuchen.<br><br>Der kausale Pfad T → Y ist vorhanden! Das Pfad T → AB ← Y ist initial <strong>blockiert</strong> — kein Problem!<br><br>Aber wenn wir für AB <em>konditionieren</em> (adjustieren, stratifizieren, selektieren), öffnen wir einen spuriösen Pfad zwischen T und Y — sogenannter M-Bias oder Berkson-Bias.<br><br><em>Konsequenz: AB NICHT adjustieren, auch wenn man es intuitiv für sinnvoll hält!</em><br><br>Teste es: Klicke "AB adjustieren" und beobachte den sich öffnenden spuriösen Pfad.',
+   nodes:[{id:'T',lbl:'T\nSport',x:.2,y:.28,c:'--a3'},{id:'Y',lbl:'Y\nGesundheit',x:.8,y:.28,c:'--a1'},{id:'AB',lbl:'AB\nArztbesuch',x:.5,y:.75,c:'--a4'}],
+   edges:[{f:'T',t:'Y',tp:'causal'},{f:'T',t:'AB',tp:'coll'},{f:'Y',t:'AB',tp:'coll'}],
+   ctl:'ab',verdict:'<span class="badge b-warn">Collider: NICHT adjustieren</span>'},
+  {label:'D — Komplexes Modell: Die vollständige Kausalstruktur unserer Studie',
+   interp:'Das vollständige Modell vereint alle drei Typen.<br><br><span style="color:var(--a5)">■ SES</span> → Confounder: <span class="badge b-ok">adjustieren</span><br><span style="color:var(--a2)">■ KG</span> → Mediator: <span class="badge b-warn">nicht adjustieren</span> (für Gesamteffekt)<br><span style="color:var(--a4)">■ AB</span> → Collider: <span class="badge b-warn">nicht adjustieren</span><br><br>Dieses Modell ist die Grundlage für <strong>alle folgenden Module</strong>. Adjustiere korrekt und falsch und beobachte die Unterschiede.',
+   nodes:[{id:'T',lbl:'T\nSport',x:.18,y:.32,c:'--a3'},{id:'Y',lbl:'Y\nGesundheit',x:.82,y:.32,c:'--a1'},{id:'SES',lbl:'SES\nStatus',x:.5,y:.10,c:'--a5'},{id:'KG',lbl:'KG\nGewicht',x:.5,y:.60,c:'--a2'},{id:'AB',lbl:'AB\nArztbesuch',x:.5,y:.87,c:'--a4'}],
+   edges:[{f:'SES',t:'T',tp:'back'},{f:'SES',t:'Y',tp:'back'},{f:'T',t:'Y',tp:'causal'},{f:'T',t:'KG',tp:'med'},{f:'KG',t:'Y',tp:'med'},{f:'T',t:'AB',tp:'coll'},{f:'Y',t:'AB',tp:'coll'}],
+   ctl:'complex',verdict:'<span class="badge b-ok">SES adjustieren</span> <span class="badge b-warn">KG + AB NICHT adjustieren</span>'},
+];
+
+function setStep(n){
+  ST.dagStep=n;ST.dagAdj={ses:false,kg:false,av:false};
+  [0,1,2,3].forEach(i=>{const b=document.getElementById('sb1-btn'+i);if(b)b.classList.toggle('active',i===n);});
+  const lbl=document.getElementById('dag-step-lbl');if(lbl)lbl.textContent=STEPS[n].label;
+  const interp=document.getElementById('dag-interp');if(interp)interp.innerHTML=STEPS[n].interp;
+  updateDagControls();drawDAG();
+}
+function dagNav(d){setStep(Math.max(0,Math.min(3,ST.dagStep+d)));}
+
+function updateDagControls(){
+  const cfg=STEPS[ST.dagStep];
+  const dc=document.getElementById('dag-controls');if(!dc)return;
+  let html='';
+  const adjBtn=(key,lbl,bad)=>{
+    const on=ST.dagAdj[key];
+    return `<button class="tbtn ${on?'active':''}" onclick="toggleAdj('${key}')" style="width:100%;margin-bottom:.3rem;text-align:left">${on?'⊠':'⊡'} ${lbl}${on&&bad?' ⚠':on?' ✓':''}</button>`;
+  };
+  if(cfg.ctl==='ses')html=adjBtn('ses','SES adjustieren',false);
+  else if(cfg.ctl==='kg')html=adjBtn('kg','KG adjustieren',true);
+  else if(cfg.ctl==='ab')html=adjBtn('ab','AB adjustieren',true);
+  else if(cfg.ctl==='complex'){
+    html=adjBtn('ses','SES adjustieren',false)+adjBtn('kg','KG adjustieren',true)+adjBtn('ab','AB adjustieren',true);
+  }
+  // Feedback
+  let fb='';
+  if(ST.dagAdj.kg&&cfg.ctl==='kg')fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a2);margin-top:.35rem">ℹ Indirekter Pfad T→KG→Y blockiert. Nur direkter Effekt T→Y bleibt messbar.</div>';
+  else if(ST.dagAdj.kg)fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a1);margin-top:.35rem">⚠ Mediatorpfad blockiert — Gesamteffekt unterschätzt!</div>';
+  if(ST.dagAdj.ab)fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a1);margin-top:.35rem">⚠ Spuriöser Pfad T ↔ Y geöffnet — M-Bias eingeführt!</div>';
+  if(ST.dagAdj.ses&&!ST.dagAdj.kg&&!ST.dagAdj.ab)fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a3);margin-top:.35rem">✓ Korrekt adjustiert — Backdoor geschlossen.</div>';
+  dc.innerHTML=html+fb;
+  const dv=document.getElementById('dag-verdict');if(dv)dv.innerHTML=cfg.verdict;
+}
+function toggleAdj(k){ST.dagAdj[k]=!ST.dagAdj[k];updateDagControls();drawDAG();}
+
+function drawDAG(){
+  const cv=document.getElementById('cv-dag');if(!cv)return;
+  const W=cv.offsetWidth||800;cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle=css('--paper');ctx.fillRect(0,0,W,H);
+  const cfg=STEPS[ST.dagStep];
+  const pos={};cfg.nodes.forEach(n=>{pos[n.id]={x:n.x*W,y:n.y*H};});
+  const r=38;
+  // Edges
+  cfg.edges.forEach(e=>{
+    const p1=pos[e.f],p2=pos[e.t];
+    const adjSES=ST.dagAdj.ses,adjKG=ST.dagAdj.kg,adjAB=ST.dagAdj.ab;
+    let col,dash=e.dash?[7,4]:[];
+    if(e.tp==='causal'){col=css('--a3');if(adjKG&&cfg.ctl==='kg')dash=[5,4];}
+    else if(e.tp==='back'){col=adjSES?css('--a3'):css('--a1');if(adjSES)dash=[4,4];}
+    else if(e.tp==='med'){col=adjKG?css('--ink3'):css('--a2');if(adjKG)dash=[4,4];}
+    else if(e.tp==='coll'){col=adjAB?css('--a1'):css('--ink3');if(adjAB)dash=[3,3];}
+    drawArrow(ctx,p1.x,p1.y,p2.x,p2.y,col,dash,r,3);
+  });
+  // Spurious path when collider adjusted
+  if(ST.dagAdj.ab&&pos['T']&&pos['Y']){
+    const p1=pos['T'],p2=pos['Y'];
+    ctx.save();ctx.strokeStyle=css('--a1');ctx.lineWidth=1.5;ctx.setLineDash([3,4]);
+    ctx.beginPath();const mx=(p1.x+p2.x)/2,my=Math.min(p1.y,p2.y)-70;
+    ctx.moveTo(p1.x+r,p1.y);ctx.quadraticCurveTo(mx,my,p2.x-r,p2.y);ctx.stroke();
+    ctx.setLineDash([]);ctx.fillStyle=css('--a1');ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('spuriöser Pfad (M-Bias)',mx,my-10);ctx.restore();
+  }
+  // Nodes
+  cfg.nodes.forEach(n=>{
+    const {x,y}=pos[n.id];
+    const adjThis=(n.id==='SES'&&ST.dagAdj.ses)||(n.id==='KG'&&ST.dagAdj.kg)||(n.id==='AB'&&ST.dagAdj.ab);
+    // outer ring if adjusted
+    if(adjThis){
+      ctx.beginPath();ctx.arc(x,y,r+7,0,2*Math.PI);
+      ctx.strokeStyle=css('--a3');ctx.lineWidth=1.5;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+    }
+    ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);
+    ctx.fillStyle=css('--paper');ctx.fill();
+    ctx.strokeStyle=adjThis?css('--a3'):css(n.c||'--border');ctx.lineWidth=adjThis?3:2.5;ctx.stroke();
+    const lines=n.lbl.split('\n');
+    ctx.fillStyle=css('--ink');ctx.font='bold 15px DM Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(lines[0],x,lines[1]?y-9:y);
+    if(lines[1]){ctx.font='11px DM Mono,monospace';ctx.fillStyle=css(n.c||'--ink2');ctx.fillText(lines[1],x,y+10);}
+  });
+  const leg=document.getElementById('dag-legend');
+  if(leg)leg.innerHTML=`<span style="color:var(--a3)">━ Kausalpfad</span><span style="color:var(--a1)">━ Backdoor-Pfad</span><span style="color:var(--a2)">━ Mediationspfad</span><span style="color:var(--ink3)">━ Collider (blockiert)</span><span style="color:var(--a3)">⊙ = adjustiert</span>`;
+}
+function drawArrow(ctx,x1,y1,x2,y2,col,dash,r,lw){
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);if(len<1)return;
+  const ux=dx/len,uy=dy/len;
+  const sx=x1+ux*r,sy=y1+uy*r,ex=x2-ux*r,ey=y2-uy*r;
+  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=lw||2;ctx.setLineDash(dash||[]);
+  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.stroke();ctx.setLineDash([]);
+  const a=Math.atan2(ey-sy,ex-sx),al=12,aw=0.4;
+  ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(ex-al*Math.cos(a-aw),ey-al*Math.sin(a-aw));
+  ctx.lineTo(ex-al*Math.cos(a+aw),ey-al*Math.sin(a+aw));ctx.closePath();ctx.fill();
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MODULE 2: POTENTIAL OUTCOMES
+// ═══════════════════════════════════════════════════════════════════════════
+function newSeed(){ST.seed=Math.floor(Math.random()*9999)+1;ST.data=genData(ST.seed,ST.confStr);drawPOVis();renderPO();}
+
+function toggleReveal(){
+  ST.poRevealed=!ST.poRevealed;
+  const b=document.getElementById('po-rev-btn');
+  if(b){b.textContent=ST.poRevealed?'⊠ Kontrafaktische verbergen':'⊡ Kontrafaktische zeigen';b.classList.toggle('active',ST.poRevealed);}
+  drawPOVis();renderPO();
+}
+
+function drawPOVis(){
+  const cv=document.getElementById('cv-po-vis');if(!cv)return;
+  const W=cv.offsetWidth||900;cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle=css('--panel');ctx.fillRect(0,0,W,H);
+  const D=ST.data.slice(0,24); // show first 24
+  const rng=mulberry32(99);
+  const cellW=W/D.length;
+  D.forEach((u,i)=>{
+    const x=cellW*i+cellW/2;
+    // Y(1) bar (top half)
+    const h1=(u.y1-40)/(60)*H*0.42;
+    ctx.fillStyle=css('--a3');ctx.globalAlpha=u.t?0.85:ST.poRevealed?0.35:0.08;
+    ctx.fillRect(cellW*i+2,H/2-h1,cellW-4,h1);
+    // Y(0) bar (bottom half)
+    const h0=(u.y0-40)/(60)*H*0.42;
+    ctx.fillStyle=css('--a1');ctx.globalAlpha=!u.t?0.85:ST.poRevealed?0.35:0.08;
+    ctx.fillRect(cellW*i+2,H/2,cellW-4,h0);
+    ctx.globalAlpha=1;
+  });
+  // Labels
+  ctx.fillStyle=css('--ink3');ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('Y(1) — mit Sport',4,14);
+  ctx.fillText('Y(0) — ohne Sport',4,H-4);
+  ctx.fillStyle=css('--ink2');ctx.textAlign='center';ctx.font='10px DM Mono,monospace';
+  ctx.fillText('← Person 1 bis 24 →',W/2,H/2-3);
+  // Midline
+  ctx.strokeStyle=css('--grid');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+}
+
+function renderPO(){
+  const D=ST.data.slice(0,14);
+  const rev=ST.poRevealed;
+  let html='';
+  D.forEach(u=>{
+    const sLbl=u.ses?`<span style="color:var(--a5)">hoch</span>`:`<span style="color:var(--ink3)">niedrig</span>`;
+    const tLbl=u.t?`<span style="color:var(--a3);font-weight:600">1 ✓</span>`:`<span style="color:var(--a1)">0 ✗</span>`;
+    const y1c=u.t?`<strong style="color:var(--a3)">${u.y1}</strong>`:rev?`<span style="color:var(--a3);opacity:.5">${u.y1}</span>`:`<span class="po-qm" data-tip="hypothetisch: ${u.y1}">?</span>`;
+    const y0c=!u.t?`<strong style="color:var(--a1)">${u.y0}</strong>`:rev?`<span style="color:var(--a1);opacity:.5">${u.y0}</span>`:`<span class="po-qm" data-tip="hypothetisch: ${u.y0}">?</span>`;
+    const ite=u.y1-u.y0;
+    const itec=rev?`<span style="color:${ite>=0?'var(--a3)':'var(--a1)'}">${ite>0?'+':''}${ite}</span>`:`<span class="po-qm" data-tip="ITE = ${ite}">?</span>`;
+    html+=`<tr><td style="text-align:left;color:var(--ink2);font-size:.75rem">P${u.id}</td><td>${sLbl}</td><td>${tLbl}</td><td>${y1c}</td><td>${y0c}</td><td>${itec}</td><td style="color:var(--ink2)">${u.y}</td></tr>`;
+  });
+  const tb=document.getElementById('po-tbody');if(tb)tb.innerHTML=html;
+  // Stats in sidebar
+  const al=ST.data;
+  const ate=mean(al,u=>u.y1-u.y0);
+  const att=mean(al.filter(u=>u.t),u=>u.y1-u.y0);
+  const atu=mean(al.filter(u=>!u.t),u=>u.y1-u.y0);
+  const naive=mean(al.filter(u=>u.t))-mean(al.filter(u=>!u.t));
+  const sc=document.getElementById('po-stats-content');
+  if(sc)sc.innerHTML=rev?`
+    <span style="color:var(--a3)">ATE:</span> <strong>${pct(ate)}</strong><br>
+    <span style="color:var(--a3)">ATT:</span> <strong>${pct(att)}</strong><br>
+    <span style="color:var(--a3)">ATU:</span> <strong>${pct(atu)}</strong><br>
+    <span style="color:var(--a1)">Naiv:</span> <strong>${pct(naive)}</strong> ← verzerrt!
+  `:`<span style="color:var(--ink3)">Kontrafaktische zeigen, um Schätzer zu sehen</span>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MODULE 3: KONFUNDIERUNG — Dot Plot
+// ═══════════════════════════════════════════════════════════════════════════
+function onConfSl(el){
+  ST.confStr=parseFloat(el.value);
+  const lbl=['keine','schwach','moderat','stark','sehr stark'];
+  document.getElementById('conf-lbl').textContent=lbl[Math.round(ST.confStr*4)];
+  ST.data=genData(ST.seed,ST.confStr);
+  drawConf();
+}
+
+function dotPlotNaive(ctx,W,H,D){
+  ctx.fillStyle=css('--panel');ctx.fillRect(0,0,W,H);
+  const pad={l:52,r:20,t:28,b:50};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const yMin=38,yMax=102;
+  const sy=y=>pad.t+cH-((y-yMin)/(yMax-yMin))*cH;
+  // grid
+  [50,60,70,80,90,100].forEach(v=>{
+    ctx.strokeStyle=css('--grid');ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,sy(v));ctx.lineTo(pad.l+cW,sy(v));ctx.stroke();
+    ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(v,pad.l-5,sy(v)+4);
+  });
+  // x groups: T=1 (left), T=0 (right)
+  const grp0=D.filter(u=>u.t),grp1=D.filter(u=>!u.t);
+  const cx0=pad.l+cW*0.27,cx1=pad.l+cW*0.73;
+  const rng=mulberry32(12);
+  [grp0,grp1].forEach((g,gi)=>{
+    const cx=gi===0?cx0:cx1;
+    g.forEach(u=>{
+      const jx=(rng()-0.5)*36;
+      ctx.beginPath();ctx.arc(cx+jx,sy(u.y),4,0,2*Math.PI);
+      ctx.fillStyle=u.t?css('--a3'):css('--a1');ctx.globalAlpha=0.5;
+      ctx.fill();
+      ctx.strokeStyle=u.ses?css('--a5'):css('--ink3');ctx.lineWidth=1.5;ctx.globalAlpha=1;
+      ctx.stroke();
+    });
+    const m=mean(g);
+    ctx.strokeStyle=gi===0?css('--a3'):css('--a1');ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(cx-36,sy(m));ctx.lineTo(cx+36,sy(m));ctx.stroke();
+    ctx.fillStyle=css('--ink');ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(m.toFixed(1),cx,sy(m)-11);
+  });
+  // effect arrow
+  const m0=mean(grp0),m1=mean(grp1),dy=sy(m0)-sy(m1);
+  ctx.save();ctx.strokeStyle=css('--a1');ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(pad.l+cW*0.5,sy(m1));ctx.lineTo(pad.l+cW*0.5,sy(m0));ctx.stroke();
+  ctx.setLineDash([]);ctx.fillStyle=css('--a1');ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText(`Δ = ${(m0-m1).toFixed(1)}`,pad.l+cW*0.5+32,sy((m0+m1)/2));ctx.restore();
+  // x labels
+  ctx.fillStyle=css('--a3');ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('T=1 (Sport)',cx0,H-32);
+  ctx.fillStyle=css('--a1');ctx.fillText('T=0 (kein Sport)',cx1,H-32);
+  ctx.fillStyle=css('--ink3');ctx.font='11px DM Mono,monospace';
+  ctx.fillText('orange Rand = SES hoch',W/2,H-14);
+  // y label
+  ctx.save();ctx.translate(14,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=css('--ink3');ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Herzgesundheits-Score',0,0);ctx.restore();
+}
+
+function dotPlotAdj(ctx,W,H,D){
+  ctx.fillStyle=css('--panel');ctx.fillRect(0,0,W,H);
+  const pad={l:52,r:20,t:28,b:58};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const yMin=38,yMax=102;
+  const sy=y=>pad.t+cH-((y-yMin)/(yMax-yMin))*cH;
+  [50,60,70,80,90,100].forEach(v=>{
+    ctx.strokeStyle=css('--grid');ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,sy(v));ctx.lineTo(pad.l+cW,sy(v));ctx.stroke();
+    ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(v,pad.l-5,sy(v)+4);
+  });
+  // 4 groups
+  const g11=D.filter(u=>u.t&&u.ses),g01=D.filter(u=>!u.t&&u.ses);
+  const g10=D.filter(u=>u.t&&!u.ses),g00=D.filter(u=>!u.t&&!u.ses);
+  const cxs=[pad.l+cW*.14,pad.l+cW*.35,pad.l+cW*.62,pad.l+cW*.83];
+  const rng=mulberry32(33);
+  [[g11,css('--a3'),1],[g01,css('--a1'),1],[g10,css('--a3'),0],[g00,css('--a1'),0]].forEach(([g,col,ses],gi)=>{
+    const cx=cxs[gi];
+    g.forEach(u=>{
+      const jx=(rng()-0.5)*22;
+      ctx.beginPath();ctx.arc(cx+jx,sy(u.y),3.5,0,2*Math.PI);
+      ctx.fillStyle=col;ctx.globalAlpha=0.5;ctx.fill();
+      ctx.globalAlpha=1;ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();
+    });
+    if(!g.length)return;
+    const m=mean(g);
+    ctx.strokeStyle=col;ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(cx-24,sy(m));ctx.lineTo(cx+24,sy(m));ctx.stroke();
+    ctx.fillStyle=css('--ink');ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(m.toFixed(1),cx,sy(m)-10);
+  });
+  // Within-SES effect arrows
+  [[g11,g01,cxs[0],cxs[1],'SES hoch'],[g10,g00,cxs[2],cxs[3],'SES niedrig']].forEach(([g1,g0,x1,x0,lbl])=>{
+    if(!g1.length||!g0.length)return;
+    const m1=mean(g1),m0=mean(g0),xm=(x1+x0)/2;
+    ctx.save();ctx.strokeStyle=css('--a3');ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(xm,sy(m0));ctx.lineTo(xm,sy(m1));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=css('--a3');ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(`Δ=${(m1-m0).toFixed(1)}`,xm,sy((m1+m0)/2)-6);ctx.restore();
+  });
+  // x labels
+  const lbls=['T=1','T=0','T=1','T=0'];
+  const sub=['SES hoch','SES hoch','SES niedrig','SES niedrig'];
+  lbls.forEach((l,i)=>{
+    ctx.fillStyle=i%2===0?css('--a3'):css('--a1');ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(l,cxs[i],H-40);
+    ctx.fillStyle=css('--ink3');ctx.font='11px DM Mono,monospace';
+    ctx.fillText(sub[i],cxs[i],H-25);
+  });
+  // brackets for SES groups
+  ctx.strokeStyle=css('--a5');ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.moveTo(cxs[0]-28,H-14);ctx.lineTo(cxs[1]+28,H-14);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cxs[2]-28,H-14);ctx.lineTo(cxs[3]+28,H-14);ctx.stroke();
+  ctx.fillStyle=css('--a5');ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('SES = hoch',(cxs[0]+cxs[1])/2,H-2);
+  ctx.fillText('SES = niedrig',(cxs[2]+cxs[3])/2,H-2);
+  ctx.save();ctx.translate(14,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=css('--ink3');ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Herzgesundheits-Score',0,0);ctx.restore();
+}
+
+function drawConf(){
+  const D=ST.data;
+  const cv1=document.getElementById('cv-naive'),cv2=document.getElementById('cv-adj');
+  if(!cv1||!cv2)return;
+  const W1=cv1.offsetWidth||500;cv1.width=W1;
+  const W2=cv2.offsetWidth||500;cv2.width=W2;
+  dotPlotNaive(cv1.getContext('2d'),W1,cv1.height,D);
+  dotPlotAdj(cv2.getContext('2d'),W2,cv2.height,D);
+  const t1=D.filter(u=>u.t),t0=D.filter(u=>!u.t);
+  const naive=mean(t1)-mean(t0);
+  const g11=D.filter(u=>u.t&&u.ses),g01=D.filter(u=>!u.t&&u.ses);
+  const g10=D.filter(u=>u.t&&!u.ses),g00=D.filter(u=>!u.t&&!u.ses);
+  const pSes1=(D.filter(u=>u.ses).length)/D.length;
+  const eff1=g11.length&&g01.length?mean(g11)-mean(g01):0;
+  const eff0=g10.length&&g00.length?mean(g10)-mean(g00):0;
+  const adj=pSes1*eff1+(1-pSes1)*eff0;
+  const bias=naive-adj;
+  const trueATE=mean(D,u=>u.y1-u.y0);
+  document.getElementById('naive-est').innerHTML=`Naiver Effekt: <strong style="color:var(--a1)">Δ = ${naive.toFixed(1)}</strong>`;
+  document.getElementById('adj-est').innerHTML=`Adjustierter Effekt: <strong style="color:var(--a3)">Δ = ${adj.toFixed(1)}</strong>`;
+  document.getElementById('conf-msg').innerHTML=`<strong>Konfundierungsverzerrung = ${Math.abs(bias).toFixed(1)} Punkte.</strong> Naiver Effekt: <strong style="color:var(--a1)">${naive.toFixed(1)}</strong> — Adjustierter Effekt: <strong style="color:var(--a3)">${adj.toFixed(1)}</strong> — Wahrer ATE (aus PO): <strong>${trueATE.toFixed(1)}</strong>.<br>Der Confounder SES erklärt ${(Math.abs(bias)/Math.abs(naive)*100).toFixed(0)} % des naiven Effekts. Der adjustierte Wert nähert sich dem wahren ATE, ist aber kein exakter Wert, weil er aus Beobachtungsdaten stammt (endliche Stichprobe, Schätzfehler).`;
+  document.getElementById('conf-nums').innerHTML=`Naiv: <strong style="color:var(--a1)">${naive.toFixed(1)}</strong><br>Adjustiert: <strong style="color:var(--a3)">${adj.toFixed(1)}</strong><br>Wahr (PO): <strong style="color:var(--accent)">${trueATE.toFixed(1)}</strong><br>Bias: <strong>${bias.toFixed(1)}</strong>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MODULE 4: IPW
+// ═══════════════════════════════════════════════════════════════════════════
+const EST_DESC={ate:'Welchen Effekt hätte Sport, wenn wir es der gesamten Population geben würden?',att:'Welchen Effekt hatte Sport für diejenigen, die tatsächlich Sport getrieben haben?',atu:'Welchen Effekt hätte Sport für die, die keinen Sport getrieben haben?'};
+const EST_W={ate:'w = T/p + (1−T)/(1−p)',att:'w = T·1 + (1−T)·p/(1−p)',atu:'w = T·(1−p)/p + (1−T)·1'};
+const EST_GUIDE={
+  ate:{raw:'<strong>Vor Gewichtung (ATE):</strong> Massive Schieflage sichtbar — fast alle T=1-Balken (oben) bei hohem p-Score, fast alle T=0-Balken (unten) bei niedrigem p-Score. Die Verteilungen sind spiegelbildlich <em>un</em>gleich.',wt:'<strong>Nach ATE-Gewichtung:</strong> Ideal sieht es so aus, dass beide Verteilungen (T=1 oben, T=0 unten) <em>spiegelbildlich gleich</em> über den gesamten p-Score-Bereich [0–1] aussehen. Jede Seite repräsentiert jetzt die Gesamtpopulation. Personen mit extremem p-Score (nahe 0 oder 1) erhalten sehr hohe Gewichte.'},
+  att:{raw:'<strong>Vor Gewichtung (ATT):</strong> Die T=1-Gruppe (oben) ist konzentriert bei hohem p-Score. Für ATT interessiert uns: Was wäre für diese T=1-Personen passiert, wenn sie kein Sport getrieben hätten?',wt:'<strong>Nach ATT-Gewichtung:</strong> Die T=1-Verteilung (oben) bleibt <em>unverändert</em> — sie ist die Referenz. Die T=0-Verteilung (unten) wird umgewichtet, sodass sie dieselbe p-Score-Verteilung wie T=1 bekommt. T=0-Personen mit hohem p-Score (die hätten Sport treiben können, haben es aber nicht) erhalten hohe Gewichte.'},
+  atu:{raw:'<strong>Vor Gewichtung (ATU):</strong> Die T=0-Gruppe (unten) ist konzentriert bei niedrigem p-Score. Für ATU interessiert uns: Was hätte Sport bewirkt für Menschen, die typischerweise keinen Sport treiben?',wt:'<strong>Nach ATU-Gewichtung:</strong> Die T=0-Verteilung (unten) bleibt <em>unverändert</em> — sie ist die Referenz. Die T=1-Verteilung (oben) wird umgewichtet, um dieselbe p-Score-Form wie T=0 anzunehmen. T=1-Personen mit niedrigem p-Score (eigentlich unwahrscheinliche Sporttreibende) erhalten hohe Gewichte.'}
+};
+
+function setEst(e){
+  ST.estimand=e;ST.weighted=false;
+  const btn=document.getElementById('btn-wt');if(btn){btn.textContent='⊡ Gewichtung anwenden';btn.classList.remove('active');}
+  ['ate','att','atu'].forEach(k=>{const b=document.getElementById('et-'+k);if(b)b.classList.toggle('active',k===e);});
+  document.getElementById('est-desc').textContent=EST_DESC[e];
+  document.getElementById('wt-formula').textContent='';
+  document.getElementById('ipw-nums').innerHTML='';
+  document.getElementById('wt-label').textContent='Klicke „Gewichtung anwenden" um die Pseudo-Population zu sehen';
+  const g=document.getElementById('ipw-guide');if(g)g.innerHTML=EST_GUIDE[e].raw;
+  drawIPW();
+}
+function toggleWeight(){
+  ST.weighted=!ST.weighted;
+  const btn=document.getElementById('btn-wt');if(btn){btn.textContent=ST.weighted?'⊠ Gewichtung aktiv':'⊡ Gewichtung anwenden';btn.classList.toggle('active',ST.weighted);}
+  document.getElementById('wt-formula').textContent=ST.weighted?EST_W[ST.estimand]:'';
+  document.getElementById('wt-label').textContent=ST.weighted?`Gewichtet (${ST.estimand.toUpperCase()}) — Verteilung balanciert`:'Klicke „Gewichtung anwenden" um die Pseudo-Population zu sehen';
+  const g=document.getElementById('ipw-guide');if(g)g.innerHTML=ST.weighted?EST_GUIDE[ST.estimand].wt:EST_GUIDE[ST.estimand].raw;
+  document.getElementById('wt-state').textContent=ST.weighted?'gewichtet':'ungewichtet';
+  drawIPW();
+  if(ST.weighted)showIPWNums();
+  else document.getElementById('ipw-nums').innerHTML='';
+}
+function ipwW(u,est){
+  const p=u.p;
+  if(est==='ate')return u.t?1/p:1/(1-p);
+  if(est==='att')return u.t?1:p/(1-p);
+  return u.t?(1-p)/p:1;
+}
+function mirrorHist(ctx,W,H,D,weighted,est){
+  ctx.fillStyle=css('--panel');ctx.fillRect(0,0,W,H);
+  const pad={l:45,r:20,t:20,b:20};
+  const cW=W-pad.l-pad.r,cH=(H-pad.t-pad.b)/2,midY=pad.t+cH;
+  const bins=12;
+  ctx.strokeStyle=css('--grid');ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,midY);ctx.lineTo(pad.l+cW,midY);ctx.stroke();
+  for(let i=0;i<=bins;i++){
+    const x=pad.l+i*(cW/bins);
+    ctx.fillStyle=css('--ink3');ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText((i/bins).toFixed(1),x,midY+16);
+  }
+  const b1=new Array(bins).fill(0),b0=new Array(bins).fill(0);
+  D.forEach(u=>{
+    const b=Math.min(bins-1,Math.floor(u.p*bins));
+    const w=weighted?ipwW(u,est):1;
+    if(u.t)b1[b]+=w;else b0[b]+=w;
+  });
+  const mx=Math.max(...b1,...b0,1);
+  const bW=cW/bins*0.72,bGap=cW/bins;
+  for(let i=0;i<bins;i++){
+    const bx=pad.l+i*bGap+(bGap-bW)/2;
+    const h1=(b1[i]/mx)*cH*0.9;
+    ctx.fillStyle=css('--a3');ctx.globalAlpha=0.82;
+    ctx.fillRect(bx,midY-h1,bW,h1);
+    const h0=(b0[i]/mx)*cH*0.9;
+    ctx.fillStyle=css('--a1');
+    ctx.fillRect(bx,midY,bW,h0);
+    ctx.globalAlpha=1;
+    // value labels for tall bars
+    if(h1>18){ctx.fillStyle=css('--a3');ctx.font='10px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(b1[i].toFixed(weighted?1:0),bx+bW/2,midY-h1-3);}
+    if(h0>18){ctx.fillStyle=css('--a1');ctx.fillText(b0[i].toFixed(weighted?1:0),bx+bW/2,midY+h0+12);}
+  }
+  ctx.fillStyle=css('--a3');ctx.font='12px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('T=1 (Sport)',pad.l+3,pad.t+16);
+  ctx.fillStyle=css('--a1');ctx.fillText('T=0 (kein Sport)',pad.l+3,H-pad.b-4);
+}
+function drawIPW(){
+  const D=ST.data;
+  const cv1=document.getElementById('cv-ps'),cv2=document.getElementById('cv-wt');
+  if(!cv1||!cv2)return;
+  const W1=cv1.offsetWidth||900;cv1.width=W1;
+  const W2=cv2.offsetWidth||900;cv2.width=W2;
+  mirrorHist(cv1.getContext('2d'),W1,cv1.height,D,false,'ate');
+  mirrorHist(cv2.getContext('2d'),W2,cv2.height,D,ST.weighted,ST.estimand);
+}
+function showIPWNums(){
+  const D=ST.data,e=ST.estimand;
+  let wty=0,wt=0,wcy=0,wc=0;
+  D.forEach(u=>{const w=ipwW(u,e);if(u.t){wty+=w*u.y;wt+=w;}else{wcy+=w*u.y;wc+=w;}});
+  const ipw=(wty/wt)-(wcy/wc);
+  const naive=mean(D.filter(u=>u.t))-mean(D.filter(u=>!u.t));
+  const trueEst=e==='ate'?mean(D,u=>u.y1-u.y0):e==='att'?mean(D.filter(u=>u.t),u=>u.y1-u.y0):mean(D.filter(u=>!u.t),u=>u.y1-u.y0);
+  document.getElementById('ipw-nums').innerHTML=`Naiv: <strong style="color:var(--a1)">${naive.toFixed(2)}</strong><br>IPW (${e.toUpperCase()}): <strong style="color:var(--a3)">${ipw.toFixed(2)}</strong><br>Wahr (${e.toUpperCase()}): <strong>${trueEst.toFixed(2)}</strong>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MODULE 5: G-COMPUTATION
+// ═══════════════════════════════════════════════════════════════════════════
+function gcGroupMeans(D){
+  const m={};
+  [[0,0],[0,1],[1,0],[1,1]].forEach(([t,s])=>{
+    const sub=D.filter(u=>u.t===t&&u.ses===s);
+    m[`${t}${s}`]=sub.length?mean(sub):null;
+  });
+  return m;
+}
+function renderGCompPredTable(D,gm){
+  const shown=D.slice(0,16);
+  let html='<div style="overflow-x:auto"><table class="po-table"><thead><tr>';
+  html+='<th style="text-align:left">Person</th><th>SES</th><th>T</th><th>Y beob.</th>';
+  html+=`<th style="color:var(--a3)">Ŷ(1) — Sport</th><th style="color:var(--a1)">Ŷ(0) — kein Sport</th><th>Ŷ(1)−Ŷ(0)</th>`;
+  html+='</tr></thead><tbody>';
+  shown.forEach(u=>{
+    const y1=gm[`1${u.ses}`],y0=gm[`0${u.ses}`];
+    const diff=(y1!=null&&y0!=null)?y1-y0:null;
+    const sLbl=u.ses?`<span style="color:var(--a5)">hoch</span>`:`<span style="color:var(--ink3)">niedrig</span>`;
+    const tLbl=u.t?`<span style="color:var(--a3)">1</span>`:`<span style="color:var(--a1)">0</span>`;
+    html+=`<tr><td style="text-align:left;color:var(--ink2);font-size:.75rem">P${u.id}</td>`;
+    html+=`<td>${sLbl}</td><td>${tLbl}</td><td style="color:var(--ink2)">${u.y}</td>`;
+    html+=`<td style="color:var(--a3);font-weight:600">${y1!=null?y1.toFixed(1):'—'}</td>`;
+    html+=`<td style="color:var(--a1);font-weight:600">${y0!=null?y0.toFixed(1):'—'}</td>`;
+    html+=`<td style="color:var(--accent);font-weight:600">${diff!=null?(diff>0?'+':'')+diff.toFixed(1):'—'}</td></tr>`;
+  });
+  html+='</tbody></table></div>';
+  html+=`<div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.45rem">`;
+  html+=`Ŷ(t) = Ê[Y|T=t, SES] = Gruppenmittelwert. Personen mit gleicher SES erhalten denselben Wert. `;
+  html+=`Das ist der G-Computation-Schätzer des individuellen Effekts — analog zum ITE aus Modul ②, aber <em>aus Daten geschätzt, nicht direkt beobachtet</em>.</div>`;
+  const el=document.getElementById('gc-pred-table');if(el)el.innerHTML=html;
+}
+function getGCRefPop(D){
+  if(ST.gcEstimand==='att')return D.filter(u=>u.t);
+  if(ST.gcEstimand==='atu')return D.filter(u=>!u.t);
+  return D;
+}
+function drawGComp(){
+  const D=ST.data,refPop=getGCRefPop(D);
+  const gm=gcGroupMeans(D);
+  drawGModel(D);drawWorld(D,1,refPop);drawWorld(D,0,refPop);renderGCompPredTable(D,gm);
+  document.getElementById('gc-result').innerHTML='';
+  document.getElementById('gc-y1-lbl').innerHTML='';document.getElementById('gc-y0-lbl').innerHTML='';
+  document.getElementById('gc-nums').innerHTML='';
+  const btn=document.getElementById('btn-gc');if(btn){btn.textContent='③ G-Computation zeigen';btn.classList.remove('active');}
+}
+const GC_DESC={ate:'Standardisierung über alle 300 Personen (Gesamtpopulation)',att:'Standardisierung über die SES-Verteilung der Behandelten (T=1)',atu:'Standardisierung über die SES-Verteilung der Unbehandelten (T=0)'};
+function setGCEst(e){
+  ST.gcEstimand=e;
+  ['ate','att','atu'].forEach(k=>{const b=document.getElementById('gc-'+k);if(b)b.classList.toggle('active',k===e);});
+  const d=document.getElementById('gc-est-desc');if(d)d.textContent=GC_DESC[e];
+  document.getElementById('gc-result').innerHTML='';
+  document.getElementById('gc-y1-lbl').innerHTML='';document.getElementById('gc-y0-lbl').innerHTML='';
+  document.getElementById('gc-nums').innerHTML='';
+  const btn=document.getElementById('btn-gc');if(btn){btn.textContent='③ G-Computation zeigen';btn.classList.remove('active');}
+  setTimeout(()=>{drawWorld(ST.data,1,getGCRefPop(ST.data));drawWorld(ST.data,0,getGCRefPop(ST.data));},20);
+}
+function drawGModel(D){
+  const cv=document.getElementById('cv-gmod');if(!cv)return;
+  const W=cv.offsetWidth||900;cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle=css('--panel');ctx.fillRect(0,0,W,H);
+  const pad={l:52,r:20,t:28,b:48};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const yMin=38,yMax=105;
+  const sy=y=>pad.t+cH-((y-yMin)/(yMax-yMin))*cH;
+  const sx=ses=>pad.l+(ses===0?cW*0.25:cW*0.75);
+  // grid
+  [50,60,70,80,90,100].forEach(v=>{
+    ctx.strokeStyle=css('--grid');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,sy(v));ctx.lineTo(pad.l+cW,sy(v));ctx.stroke();
+    ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='right';ctx.fillText(v,pad.l-5,sy(v)+4);
+  });
+  // raw dots with jitter
+  const rng=mulberry32(77);
+  D.forEach(u=>{
+    ctx.beginPath();ctx.arc(sx(u.ses)+(rng()-0.5)*60,sy(u.y),3.5,0,2*Math.PI);
+    ctx.fillStyle=u.t?css('--a3'):css('--a1');ctx.globalAlpha=0.32;ctx.fill();ctx.globalAlpha=1;
+  });
+  // Group means and model lines
+  const gMeans={};
+  [[0,0],[0,1],[1,0],[1,1]].forEach(([t,s])=>{
+    const sub=D.filter(u=>u.t===t&&u.ses===s);
+    gMeans[`${t}${s}`]=sub.length?mean(sub):null;
+  });
+  [[1,css('--a3')],[0,css('--a1')]].forEach(([t,col])=>{
+    const v0=gMeans[`${t}0`],v1=gMeans[`${t}1`];
+    if(v0==null||v1==null)return;
+    ctx.strokeStyle=col;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(sx(0),sy(v0));ctx.lineTo(sx(1),sy(v1));ctx.stroke();
+    [0,1].forEach(s=>{
+      const v=gMeans[`${t}${s}`];if(v==null)return;
+      ctx.beginPath();ctx.arc(sx(s),sy(v),9,0,2*Math.PI);ctx.fillStyle=col;ctx.fill();
+      ctx.fillStyle=css('--paper');ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(v.toFixed(0),sx(s),sy(v)+4);
+    });
+  });
+  // x axis labels
+  ['SES = 0\n(niedrig)','SES = 1\n(hoch)'].forEach((l,i)=>{
+    const lines=l.split('\n');
+    ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(lines[0],sx(i),H-28);ctx.fillText(lines[1],sx(i),H-13);
+  });
+  ctx.save();ctx.translate(14,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('Ø Gesundheitsscore',0,0);ctx.restore();
+}
+function drawWorld(D,t,refPop){
+  // refPop: population whose SES distribution is used for standardization (ATE=all, ATT=treated, ATU=control)
+  if(!refPop||!refPop.length)refPop=D;
+  const cvId=t?'cv-w1':'cv-w0';
+  const cv=document.getElementById(cvId);if(!cv)return;
+  const W=cv.offsetWidth||450;cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle=css('--panel');ctx.fillRect(0,0,W,H);
+  const pad={l:48,r:20,t:28,b:48};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const yMin=38,yMax=105;
+  const sy=y=>pad.t+cH-((y-yMin)/(yMax-yMin))*cH;
+  const col=t?css('--a3'):css('--a1');
+  const s0=D.filter(u=>u.ses===0),s1=D.filter(u=>u.ses===1);
+  const m0=mean(s0,u=>t?u.y1:u.y0),m1=mean(s1,u=>t?u.y1:u.y0);
+  // SES distribution from reference population
+  const rp1=refPop.filter(u=>u.ses===1).length,rp0=refPop.filter(u=>u.ses===0).length;
+  const pSes1=rp1/refPop.length;
+  const gMean=pSes1*m1+(1-pSes1)*m0;
+  const cx0=pad.l+cW*0.28,cx1=pad.l+cW*0.72;
+  // grid
+  [50,60,70,80,90,100].forEach(v=>{
+    ctx.strokeStyle=css('--grid');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,sy(v));ctx.lineTo(pad.l+cW,sy(v));ctx.stroke();
+    ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='right';ctx.fillText(v,pad.l-4,sy(v)+4);
+  });
+  // bars (heights from outcome model, labels show refPop SES weights)
+  const bW=50;
+  [[cx0,m0,`${(rp0/refPop.length*100).toFixed(0)}%`,'SES=0'],[cx1,m1,`${(pSes1*100).toFixed(0)}%`,'SES=1']].forEach(([cx,m,pct,lbl])=>{
+    const bh=((m-yMin)/(yMax-yMin))*cH;
+    ctx.fillStyle=col;ctx.globalAlpha=0.7;ctx.fillRect(cx-bW/2,sy(m),bW,bh);ctx.globalAlpha=1;
+    ctx.fillStyle=css('--ink');ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(m.toFixed(1),cx,sy(m)-9);
+    ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.fillText(lbl,cx,H-32);
+    ctx.fillStyle=css('--a5');ctx.fillText('w='+pct,cx,H-17);
+  });
+  // standardized mean line
+  ctx.strokeStyle=col;ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(pad.l,sy(gMean));ctx.lineTo(pad.l+cW,sy(gMean));ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=col;ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='right';
+  ctx.fillText(`Ê[Y(${t})] = ${gMean.toFixed(2)}`,pad.l+cW-4,sy(gMean)-8);
+  ctx.save();ctx.translate(14,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('Gesundheitsscore',0,0);ctx.restore();
+  cv._gcMean=gMean;
+}
+function revealGC(){
+  const D=ST.data,e=ST.gcEstimand;
+  const refPop=getGCRefPop(D);
+  const pSes1=refPop.filter(u=>u.ses===1).length/refPop.length;
+  // Outcome model group means
+  const mu1={0:0,1:0},mu0={0:0,1:0};
+  [[0,0],[0,1],[1,0],[1,1]].forEach(([t,s])=>{
+    const sub=D.filter(u=>u.t===t&&u.ses===s);
+    if(t===1)mu1[s]=sub.length?mean(sub):0;
+    else mu0[s]=sub.length?mean(sub):0;
+  });
+  // G-Computation (standardize over refPop SES distribution)
+  const gY1=pSes1*mu1[1]+(1-pSes1)*mu1[0];
+  const gY0=pSes1*mu0[1]+(1-pSes1)*mu0[0];
+  const gcEst=gY1-gY0;
+  // IPW for same estimand
+  let wty=0,wt=0,wcy=0,wc=0;
+  D.forEach(u=>{const w=ipwW(u,e);if(u.t){wty+=w*u.y;wt+=w;}else{wcy+=w*u.y;wc+=w;}});
+  const ipwEst=(wty/wt)-(wcy/wc);
+  // Doubly Robust (AIPW) for same estimand
+  const drEst=D.reduce((s,u)=>{
+    const aug1=mu1[u.ses]+(u.t?(u.y-mu1[u.ses])/u.p:0);
+    const aug0=mu0[u.ses]+(!u.t?(u.y-mu0[u.ses])/(1-u.p):0);
+    return s+(aug1-aug0);
+  },0)/D.length;
+  // True value for the selected estimand
+  const trueEst=e==='ate'?mean(D,u=>u.y1-u.y0):e==='att'?mean(D.filter(u=>u.t),u=>u.y1-u.y0):mean(D.filter(u=>!u.t),u=>u.y1-u.y0);
+  const naive=mean(D.filter(u=>u.t))-mean(D.filter(u=>!u.t));
+  const estLbl=e.toUpperCase();
+  document.getElementById('gc-y1-lbl').innerHTML=`Ê[Y(1)|${estLbl}] = <strong>${gY1.toFixed(2)}</strong>`;
+  document.getElementById('gc-y0-lbl').innerHTML=`Ê[Y(0)|${estLbl}] = <strong>${gY0.toFixed(2)}</strong>`;
+  document.getElementById('gc-nums').innerHTML=`Naiv: <strong style="color:var(--a1)">${naive.toFixed(2)}</strong><br>G-Comp (${estLbl}): <strong style="color:var(--a3)">${gcEst.toFixed(2)}</strong><br>IPW (${estLbl}): <strong style="color:var(--a2)">${ipwEst.toFixed(2)}</strong><br>DR-AIPW: <strong style="color:var(--a6)">${drEst.toFixed(2)}</strong><br>Wahr (${estLbl}): <strong>${trueEst.toFixed(2)}</strong>`;
+  document.getElementById('gc-result').innerHTML=`
+    <div style="background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem;font-family:'DM Mono',monospace;font-size:.81rem;line-height:2;color:var(--ink2)">
+      <strong style="color:var(--ink)">G-Computation ${estLbl}:</strong> Ê[Y(1)] − Ê[Y(0)] = ${gY1.toFixed(2)} − ${gY0.toFixed(2)} = <strong style="font-size:1rem;color:var(--a3)">${gcEst.toFixed(2)}</strong>
+      &nbsp;|&nbsp; <strong style="color:var(--a2)">IPW: ${ipwEst.toFixed(2)}</strong>
+      &nbsp;|&nbsp; <strong style="color:var(--a6)">DR-AIPW: ${drEst.toFixed(2)}</strong>
+      &nbsp;|&nbsp; Naiv: <strong style="color:var(--a1)">${naive.toFixed(2)}</strong>
+      &nbsp;|&nbsp; Wahr (${estLbl}): <strong>${trueEst.toFixed(2)}</strong><br>
+      <span style="color:var(--ink3);font-size:.74rem">Standardisierung über ${e==='att'?'Behandelte (T=1)':e==='atu'?'Unbehandelte (T=0)':'Gesamtpopulation'} · P(SES=1|Refpop) = ${pSes1.toFixed(2)} · DR-AIPW: konsistent wenn Outcome-Modell <em>oder</em> IPW korrekt</span>
+    </div>`;
+  const btn=document.getElementById('btn-gc');if(btn)btn.classList.add('active');
+}
+
+// ═══ HELP ════════════════════════════════════════════════════════════════════
+const HELP={
+  dag:{title:'DAG — Directed Acyclic Graph',body:`<h3>Was ist ein DAG?</h3><p>Ein DAG (Directed Acyclic Graph) ist eine formale Darstellung kausaler Annahmen. Knoten = Variablen, Pfeile = kausale Einflüsse. „Acyclic" bedeutet: keine Rückschleifen — Ursache und Wirkung werden klar getrennt.</p><h3>Drei kausale Rollen</h3><ul><li><strong>Confounder C:</strong> C→T und C→Y. Backdoor-Pfad offen → adjustieren!</li><li><strong>Mediator M:</strong> T→M→Y. Auf dem Kausalweg → nicht adjustieren!</li><li><strong>Collider K:</strong> T→K←Y. Blockiert → bei Adjustierung öffnet sich spuriöser Pfad!</li></ul><h3>d-Separation</h3><p>Zwei Variablen sind d-separiert (bedingt unabhängig), wenn alle verbindenden Pfade blockiert sind. Collider blockieren, Confounder und Mediatoren können durch Konditionieren blockiert werden.</p><p class="ref">Pearl, J. (2009). <em>Causality</em> (2nd ed.). Cambridge. · Hernán & Robins (2020). <em>Causal Inference: What If.</em></p>`},
+  po:{title:'Potential Outcomes Framework',body:`<h3>Das Framework (Rubin, 1974)</h3><p>Jede Person i hat zwei potenzielle Outcomes: Y_i(1) bei Behandlung, Y_i(0) ohne Behandlung. Der individuelle kausale Effekt (ITE) ist ITE_i = Y_i(1) − Y_i(0).</p><h3>Das fundamentale Problem</h3><p>Wir beobachten immer nur eines der beiden — das andere ist kontrafaktisch und für immer unbeobachtbar. Das ist kein statistisches, sondern ein logisches Problem.</p><h3>Populationsschätzer</h3><span class="formula">ATE = E[Y(1) − Y(0)]</span><span class="formula">ATT = E[Y(1) − Y(0) | T=1]</span><span class="formula">ATU = E[Y(1) − Y(0) | T=0]</span><p>Bei heterogenen Effekten gilt: ATE ≠ ATT ≠ ATU. Welcher Estimand relevant ist, hängt von der Forschungsfrage ab.</p><p class="ref">Rubin, D. B. (1974). <em>JASA, 69</em>, 689–701. · Imbens & Rubin (2015). <em>Causal Inference for Statistics.</em></p>`},
+  conf:{title:'Konfundierung und Omitted Variable Bias',body:`<h3>Definition</h3><p>Konfundierung liegt vor, wenn eine Variable C sowohl T als auch Y beeinflusst. Der naive Schätzer misst E[Y|T=1]−E[Y|T=0] — eine Mischung aus kausalem Effekt und Confounder-Effekt.</p><h3>Omitted Variable Bias</h3><span class="formula">Naiver Effekt = ATE + Bias</span><p>Der Bias ist: Corr(T,C) × Effekt(C→Y) / SD(T). Je stärker C mit T korreliert und je stärker C auf Y wirkt, desto größer der Bias.</p><h3>Wahrer ATE vs. adjustierter Wert</h3><p>In echten Daten ist der „wahre" ATE unbekannt. Im Tool können wir ihn aus den simulierten Potential Outcomes berechnen (mean(Y_i(1)−Y_i(0))). Der adjustierte Stratifikationsschätzer nähert sich dem wahren ATE, ist aber kein exakter Wert — er hat Stichprobenvarianz und kann leicht davon abweichen.</p><h3>Lösung</h3><p>Wenn alle Confounder beobachtet: Stratifizierung, Regression, IPW oder G-Computation. Wenn nicht: Instrumentalvariablen, DiD, RDD etc.</p><p class="ref">Hernán & Robins (2020). <em>Causal Inference: What If.</em> · VanderWeele (2015). <em>Explanation in Causal Inference.</em></p>`},
+  ovb:{title:'Omitted Variable Bias — Die Formel',body:`<h3>Formale Zerlegung</h3><p>Wenn Confounder C weggelassen wird, ergibt die OLS-Schätzung:</p><span class="formula">β̂_naiv = β_T + β_C · δ_TC</span><p>wobei β_T = wahrer kausaler Effekt von T, β_C = Effekt von C auf Y, δ_TC = Regressionskoeffizient von T auf C (= Corr(T,C)·SD(C)/SD(T)).</p><h3>Richtung des Bias</h3><ul><li>C und T positiv korreliert + C positiver Effekt auf Y → Bias positiv (Überschätzung)</li><li>C und T negativ korreliert oder C negativer Effekt → Bias negativ (Unterschätzung)</li></ul><h3>In diesem Tool</h3><p>SES ist positiv mit T korreliert (P(T=1|SES=1)≈0.91) und positiv mit Y (SES-Effekt ≈ +11 Punkte). Daher: Bias > 0, naiver Effekt überschätzt ATE.</p><span class="formula">Bias = Naiv − Adjustiert ≈ 9–10 Punkte</span><p class="ref">Angrist & Pischke (2009). <em>Mostly Harmless Econometrics.</em> Kap. 3.</p>`},
+  pscore:{title:'Propensity Score',body:`<h3>Definition</h3><p>Der Propensity Score ist die bedingte Wahrscheinlichkeit der Behandlung gegeben die Kovariaten:</p><span class="formula">e(X) = P(T=1 | X)</span><h3>Balancing Property</h3><p>Wenn X alle Confounder enthält, gilt: T ⊥ X | e(X). Innerhalb desselben Propensity-Score-Wertes sind Behandelte und Kontrollpersonen bzgl. X vergleichbar — wie in einer Randomisierung.</p><h3>Schätzung</h3><p>In der Praxis wird e(X) aus den Daten geschätzt, meist per logistischer Regression: P(T=1|X) = logistic(α + βX). In diesem Tool ist SES die einzige Kovariate.</p><p class="ref">Rosenbaum & Rubin (1983). <em>Biometrika, 70</em>, 41–55.</p>`},
+  ipw:{title:'Inverse Probability Weighting',body:`<h3>Idee</h3><p>Durch Gewichtung mit dem Inversen der Behandlungswahrscheinlichkeit entsteht eine Pseudo-Population, in der T und X unabhängig sind. Einheiten, die sich „konträr" zu ihrer erwarteten Behandlung verhalten, erhalten höhere Gewichte.</p><h3>Gewichte</h3><span class="formula">w_ATE = T/e(X) + (1−T)/(1−e(X))</span><span class="formula">w_ATT = T + (1−T)·e(X)/(1−e(X))</span><span class="formula">w_ATU = T·(1−e(X))/e(X) + (1−T)</span><h3>Schätzer</h3><span class="formula">τ̂ = Σ w_i·T_i·Y_i / Σ w_i·T_i − Σ w_i·(1−T_i)·Y_i / Σ w_i·(1−T_i)</span><p class="ref">Robins, Hernán & Brumback (2000). <em>Epidemiology, 11</em>, 550–560.</p>`},
+  estimands:{title:'ATE, ATT und ATU',body:`<h3>Drei verschiedene Fragen</h3><ul><li><strong>ATE</strong>: Welchen Effekt hätte die Behandlung im Durchschnitt, wenn wir <em>alle</em> Personen der Population behandeln? Referenz: Gesamtpopulation.</li><li><strong>ATT</strong>: Welchen Effekt hat die Behandlung für diejenigen, die <em>tatsächlich behandelt</em> wurden? Referenz: Behandelte.</li><li><strong>ATU</strong>: Welchen Effekt <em>hätte</em> die Behandlung für die Unbehandelten? Referenz: Kontrollgruppe.</li></ul><h3>Wann welcher?</h3><p>ATT: wenn wir die Effektivität einer Maßnahme für bisherige Nutzer beurteilen. ATE: wenn politische Entscheidungen für alle getroffen werden. Bei homogenen Effekten sind alle drei identisch.</p><p class="ref">Imbens (2004). <em>Review of Economics and Statistics, 86</em>. · Heiss (2024). andrewheiss.com/blog/2024/03/21/demystifying-ate-att-atu</p>`},
+  gcomp:{title:'G-Computation / Standardisierung',body:`<h3>Idee</h3><p>G-Computation schätzt den kausalen Effekt in zwei Schritten: (1) Passe ein Outcomemodell Ê[Y|T,X] an. (2) Standardisiere über die X-Verteilung.</p><span class="formula">Ê[Y(t)] = Σ_x Ê[Y | T=t, X=x] · P(X=x)</span><span class="formula">ATE = Ê[Y(1)] − Ê[Y(0)]</span><h3>Zwei kontrafaktische Welten</h3><p>Man erstellt zwei identische Kopien der Stichprobe — in der einen bekommt jede Person T=1, in der anderen T=0. Das Outcomemodell sagt Y für alle vorher. Der Unterschied der Mittelwerte ist der G-Comp-Schätzer.</p><p class="ref">Robins (1986). <em>Mathematical Modelling, 7</em>. · Snowden et al. (2011). <em>Am. J. Epidemiol., 173</em>.</p>`},
+  dr:{title:'Doubly Robust Estimation (AIPW)',body:`<h3>Idee</h3><p>Ein Doubly Robust (DR) Schätzer kombiniert IPW (Propensity-Modell) und G-Computation (Outcome-Modell). Er ist konsistent, wenn <em>mindestens eines</em> der beiden Modelle korrekt ist — daher „doubly robust".</p><h3>AIPW-Formel (implementiert in diesem Tool)</h3><span class="formula">Ê_DR[Y(t)] = 1/n Σ_i [ μ_t(X_i) + (𝟙(T=t)/p_t(X_i)) · (Y_i − μ_t(X_i)) ]</span><p>wobei μ_t(X) = Outcome-Modell (hier: Gruppenmerkmale) und p_t(X) = Propensity Score.</p><h3>Funktionsprinzip</h3><ul><li><strong>Erster Term</strong> μ_t(X_i): G-Computation-Anteil — Outcome-Modell für alle Personen</li><li><strong>Zweiter Term</strong>: IPW-Korrektur — korrigiert Bias im Outcome-Modell via Residuen gewichtet mit IP-Gewichten</li></ul><h3>Implikation</h3><p>DR hat günstige semiparametrische Effizienzeigenschaften. In der Praxis: AIPW, targeted MLE (TMLE), DML. Das Tool zeigt den DR-Schätzer bei „G-Computation zeigen".</p><p class="ref">Bang & Robins (2005). <em>Biometrics, 61</em>. · Funk et al. (2011). <em>Am. J. Epidemiol., 173</em>.</p>`},
+};
+function openHelp(k){const h=HELP[k];if(!h)return;document.getElementById('h-title').textContent=h.title;document.getElementById('h-body').innerHTML=h.body;document.getElementById('help-modal').classList.add('open');document.getElementById('help-ov').classList.add('open');}
+function closeHelp(){document.getElementById('help-modal').classList.remove('open');document.getElementById('help-ov').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
+
+// ═══ INIT ════════════════════════════════════════════════════════════════════
+setStep(0);
+document.getElementById('est-desc').textContent=EST_DESC['ate'];
+document.getElementById('conf-lbl').textContent='sehr stark';
+const _ig=document.getElementById('ipw-guide');if(_ig)_ig.innerHTML=EST_GUIDE['ate'].raw;
+setTimeout(()=>{drawDAG();},50);
+</script>
+</body>
+</html>

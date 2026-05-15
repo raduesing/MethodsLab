@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnostische Intervalle — Einzelfalldiagnostik</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--warm:#c8a96e;
+  --accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;--warm:#c8a96e;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn.active{background:var(--ink);color:var(--bg)}
+
+#app{display:grid;grid-template-columns:290px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+
+select{font-family:'DM Mono',monospace;font-size:.82rem;background:var(--bg);color:var(--ink);
+  border:1px solid var(--border);padding:.3rem .5rem;width:100%;cursor:pointer;margin-bottom:.3rem}
+select:focus{outline:1px solid var(--accent)}
+
+.info-box{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.7;
+  background:var(--bg);border:1px solid var(--grid);padding:.55rem .7rem;margin-top:.4rem}
+.info-box strong{color:var(--ink)}
+
+.p-above-box{background:var(--bg);border:1px solid var(--a2);padding:.5rem .7rem;margin-top:.5rem;
+  font-family:'DM Mono',monospace;font-size:.82rem}
+.p-above-label{color:var(--ink3);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem}
+.p-above-val{color:var(--a2);font-size:1.1rem;font-weight:500}
+.p-above-interp{color:var(--ink2);font-size:.75rem;margin-top:.25rem;line-height:1.5}
+
+/* canvas */
+#canvas-wrap{position:relative;width:100%;cursor:crosshair}
+#cv{width:100%;display:block}
+
+/* results table */
+.res-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.85rem;margin-top:1rem}
+.res-table th{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);
+  border-bottom:1px solid var(--grid);padding:.3rem .6rem;text-align:left}
+.res-table td{padding:.35rem .6rem;border-bottom:1px solid var(--grid)}
+.res-table th:not(:first-child){text-align:right}
+.res-table td:not(:first-child){text-align:right;font-weight:500}
+.res-table .row-aq td:not(:first-child){color:var(--a1)}
+.res-table .row-reg td:not(:first-child){color:var(--a3)}
+.res-table .row-cri td:not(:first-child){color:var(--a2)}
+.row-hd{background:var(--panel)}
+.row-hd td{color:var(--ink2);font-size:.77rem;font-style:italic}
+
+/* interpretation section */
+.interp-select-row{display:flex;gap:.6rem;align-items:center;margin-top:1.4rem;margin-bottom:.5rem}
+.interp-select-row label{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);white-space:nowrap}
+.interp-select-row select{flex:1;margin-bottom:0}
+
+#text-output{font-family:'Fraunces',Georgia,serif;font-size:.92rem;line-height:1.8;color:var(--ink);
+  background:var(--panel);border:1px solid var(--grid);padding:1rem 1.2rem;white-space:pre-wrap}
+
+.copy-btn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.25rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);margin-top:.4rem;letter-spacing:.04em}
+.copy-btn:hover{background:var(--ink);color:var(--bg)}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;margin-bottom:.6rem;font-family:'DM Mono',monospace;font-size:.75rem}
+.legend-item{display:flex;align-items:center;gap:.35rem}
+.legend-line{width:22px;height:3px;border-radius:1px}
+.legend-dash{width:22px;height:2px;border-top:2px dashed}
+
+/* section heading */
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.5rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+/* help panel */
+.help-panel{background:var(--panel);border:1px solid var(--grid);padding:.8rem 1rem;margin-top:.8rem;display:none}
+.help-panel.open{display:block}
+.help-panel p{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75;margin-bottom:.5rem}
+.help-panel p:last-child{margin-bottom:0}
+.help-panel strong{color:var(--ink)}
+.help-formula{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--grid);
+  padding:.35rem .7rem;margin:.35rem 0;color:var(--a2)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Diagnostische <em>Intervalle</em> — Einzelfalldiagnostik</h1>
+  <button class="tbtn" id="help-btn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Skala</div>
+    <select id="sel-scale" onchange="onScaleChange()">
+      <option value="iq">IQ-Werte (μ=100, σ=15)</option>
+      <option value="sw">SW-Werte (μ=100, σ=10)</option>
+      <option value="t">T-Werte (μ=50, σ=10)</option>
+      <option value="z">z-Werte (μ=0, σ=1)</option>
+      <option value="stan">Stanine (μ=5, σ=2)</option>
+      <option value="wp">Wertpunkte (μ=10, σ=3)</option>
+      <option value="c">C-Werte (μ=5, σ=2)</option>
+      <option value="custom">— Eigene Skalierung —</option>
+    </select>
+    <div id="custom-scale-row" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.35rem">
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.12rem">Mittelwert μ</div>
+          <input type="number" id="inp-mu" value="100" step="1"
+            oninput="onCustomScale()"
+            style="font-family:'DM Mono',monospace;font-size:.82rem;background:var(--bg);color:var(--ink);border:1px solid var(--border);padding:.28rem .4rem;width:100%;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.12rem">Streuung σ</div>
+          <input type="number" id="inp-sigma" value="15" min="0.01" step="1"
+            oninput="onCustomScale()"
+            style="font-family:'DM Mono',monospace;font-size:.82rem;background:var(--bg);color:var(--ink);border:1px solid var(--border);padding:.28rem .4rem;width:100%;outline:none;box-sizing:border-box">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Eingabe</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">Testwert X</span>
+        <span class="slider-val" id="lbl-x">115</span>
+      </div>
+      <input type="range" id="sl-x" min="55" max="145" step="1" value="115" oninput="onInput()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">Reliabilität r<sub>xx</sub></span>
+        <span class="slider-val" id="lbl-rxx">0.85</span>
+      </div>
+      <input type="range" id="sl-rxx" min="0.50" max="0.99" step="0.01" value="0.85" oninput="onInput()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">Prior SD</span>
+        <span class="slider-val" id="lbl-sdp">15</span>
+      </div>
+      <input type="range" id="sl-sdp" min="1" max="100" step="0.5" value="15" oninput="onInput()">
+      <div style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);margin-top:.25rem">
+        Standard: σ = <span id="note-sigma">15</span> (≡ Regressionshypothese wenn ≈ σ·√r<sub>xx</sub>)
+      </div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Bayesianischer Trennwert T</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">Trennwert T</span>
+        <span class="slider-val" id="lbl-t">112</span>
+      </div>
+      <input type="range" id="sl-t" min="55" max="145" step="1" value="112" oninput="onInput()">
+    </div>
+    <div class="p-above-box">
+      <div class="p-above-label">P(wahrer Wert &gt; T | X)</div>
+      <div class="p-above-val" id="p-above">—</div>
+      <div class="p-above-interp" id="p-above-interp"></div>
+    </div>
+    <div class="info-box" style="margin-top:.5rem">
+      Linie auch per Klick/Drag im Plot verschieben.
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Kennwerte</div>
+    <table class="res-table" id="kw-table">
+      <tr><td colspan="2" style="color:var(--ink3);font-size:.7rem;font-family:'DM Mono',monospace;padding-bottom:.1rem">Messfehler</td></tr>
+      <tr><td style="color:var(--ink2);font-size:.8rem">SEM</td><td id="kw-sem">—</td></tr>
+      <tr><td colspan="2" style="color:var(--ink3);font-size:.7rem;font-family:'DM Mono',monospace;padding-top:.35rem;padding-bottom:.1rem">Regressionshypothese</td></tr>
+      <tr><td style="color:var(--a3);font-size:.8rem">X′ (Schätzwert)</td><td id="kw-xreg" style="color:var(--a3)">—</td></tr>
+      <tr><td style="color:var(--ink2);font-size:.8rem">SE<sub>reg</sub></td><td id="kw-sereg">—</td></tr>
+      <tr><td colspan="2" style="color:var(--ink3);font-size:.7rem;font-family:'DM Mono',monospace;padding-top:.35rem;padding-bottom:.1rem">Bayesianischer Posterior</td></tr>
+      <tr><td style="color:var(--a2);font-size:.8rem">τ̂ (Posterior-Mittelwert)</td><td id="kw-taubayes" style="color:var(--a2)">—</td></tr>
+      <tr><td style="color:var(--ink2);font-size:.8rem">SD<sub>posterior</sub></td><td id="kw-sdbayes">—</td></tr>
+      <tr id="kw-equiv-note" style="display:none"><td colspan="2" style="color:var(--a6);font-size:.72rem;font-family:'DM Mono',monospace;font-style:italic">≡ Regressionshypothese (Prior SD ≈ σ·√r<sub>xx</sub>)</td></tr>
+      <tr><td colspan="2" style="color:var(--ink3);font-size:.7rem;font-family:'DM Mono',monospace;padding-top:.35rem;padding-bottom:.1rem">Beobachtung</td></tr>
+      <tr><td style="color:var(--ink2);font-size:.8rem">Prozentrang (X)</td><td id="kw-pr">—</td></tr>
+    </table>
+  </div>
+
+</div><!-- /sidebar -->
+
+<div id="main">
+
+  <div class="help-panel" id="help-panel">
+    <p><strong>Drei Intervall-Methoden im Vergleich:</strong></p>
+    <p><strong>KI Äquivalenzhypothese:</strong> Das Intervall liegt um den beobachteten Testwert X. Annahme: X ist unverzerrter Schätzer des wahren Werts.</p>
+    <div class="help-formula">KI = X ± 1.96 · SEM,  SEM = σ · √(1 − r_xx)</div>
+    <p><strong>KI Regressionshypothese:</strong> Das Intervall liegt um den regredierten Schätzwert X′. Berücksichtigt die Regression zur Mitte.</p>
+    <div class="help-formula">X′ = μ + r_xx · (X − μ),  SE_reg = σ · √(r_xx · (1 − r_xx))</div>
+    <p><strong>Bayesianisches CrI (flexibler Prior):</strong> Prior N(μ, SD_prior), Likelihood N(X, SEM). Die Präzisionen werden kombiniert:</p>
+    <div class="help-formula">w_data = 1/SEM²,  w_prior = 1/SD_prior²
+τ̂ = (μ·w_prior + X·w_data) / (w_prior + w_data)
+SD_post = √(1 / (w_prior + w_data))
+P(wahr &gt; T | X) = 1 − Φ((T − τ̂) / SD_post)</div>
+    <p>Mit <strong>SD_prior = σ</strong> (Standard) entspricht die Prior-Unsicherheit der Skalenunsicherheit. Bei sehr großem SD_prior (flacher Prior) nähert sich das CrI dem KI der Äquivalenzhypothese an. Mit SD_prior = σ·√r_xx ist das CrI <em>identisch</em> mit der Regressionshypothese. Kleinere Prior SD = stärkeres Vorwissen → Posterior näher am Prior-Mittelwert. Der Bayesianische Vorteil: direkte Wahrscheinlichkeitsaussage über den Trennwert.</p>
+    <p style="margin-top:.6rem;padding-top:.5rem;border-top:1px solid var(--grid);color:var(--ink3);font-size:.74rem;line-height:1.6"><strong style="color:var(--ink2)">Quelle:</strong> Wagenmakers, E.-J., Morey, R. D., &amp; Lee, M. D. (2016). Bayesian benefits for the pragmatic researcher. <em>Current Directions in Psychological Science, 25</em>, 169–176. doi:10.1177/0963721416643289</p>
+  </div>
+
+  <div class="sec-h">Verteilungen &amp; Intervalle</div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dash" style="border-color:var(--ink3)"></span> Populationsverteilung</span>
+    <span class="legend-item"><span class="legend-dash" style="border-color:var(--a4)"></span> Prior (Vorwissen)</span>
+    <span class="legend-item"><span class="legend-line" style="background:var(--a1);opacity:.9"></span> Likelihood</span>
+    <span class="legend-item"><span class="legend-line" style="background:var(--a2)"></span> Posterior / CrI</span>
+  </div>
+
+  <div id="canvas-wrap">
+    <canvas id="cv" height="420"></canvas>
+  </div>
+
+  <div class="sec-h">Ergebnistabelle</div>
+
+  <table class="res-table">
+    <thead>
+      <tr>
+        <th>Methode</th>
+        <th>Punktschätzer</th>
+        <th>Untere Grenze</th>
+        <th>Obere Grenze</th>
+        <th>Breite</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-hd"><td colspan="5">95%-Intervalle</td></tr>
+      <tr class="row-aq">
+        <td>KI Äquivalenzhypothese</td>
+        <td id="t-aq-est">—</td>
+        <td id="t-aq-lo">—</td>
+        <td id="t-aq-hi">—</td>
+        <td id="t-aq-w">—</td>
+      </tr>
+      <tr class="row-reg">
+        <td>KI Regressionshypothese</td>
+        <td id="t-reg-est">—</td>
+        <td id="t-reg-lo">—</td>
+        <td id="t-reg-hi">—</td>
+        <td id="t-reg-w">—</td>
+      </tr>
+      <tr class="row-cri">
+        <td>Bayesianisches CrI</td>
+        <td id="t-cri-est">—</td>
+        <td id="t-cri-lo">—</td>
+        <td id="t-cri-hi">—</td>
+        <td id="t-cri-w">—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="interp-select-row">
+    <label>Interpretationsmodell:</label>
+    <select id="sel-model" onchange="onInput()">
+      <option value="std">Standardmodell (±1σ / ±2σ)</option>
+      <option value="mar">Marburger Modell (±0.5σ / ±1.5σ)</option>
+      <option value="stan">Stanine-Modell (±0.75σ / ±1.75σ)</option>
+    </select>
+    <label>Intervall:</label>
+    <select id="sel-interp-ki" onchange="onInput()">
+      <option value="aq">KI Äquivalenz</option>
+      <option value="reg">KI Regression</option>
+      <option value="cri">CrI (Bayes)</option>
+    </select>
+  </div>
+
+  <div id="text-output"></div>
+  <button class="copy-btn" onclick="copyText()">Kopieren</button>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ── SCALES ──────────────────────────────────────────────────────
+const SCALES={
+  iq:  {label:'IQ-Wert',   mu:100,sigma:15,step:1,   dec:0, sdpMin:1,  sdpMax:30,sdpStep:0.5},
+  sw:  {label:'SW-Wert',   mu:100,sigma:10,step:1,   dec:0, sdpMin:1,  sdpMax:20,sdpStep:0.5},
+  t:   {label:'T-Wert',    mu:50, sigma:10,step:1,   dec:0, sdpMin:1,  sdpMax:20,sdpStep:0.5},
+  z:   {label:'z-Wert',    mu:0,  sigma:1, step:0.1, dec:2, sdpMin:0.1,sdpMax:3, sdpStep:0.05},
+  stan:{label:'Stanine',   mu:5,  sigma:2, step:0.1, dec:0, clamp:[1,9], fixedMin:1,fixedMax:9,  sdpMin:0.1,sdpMax:5, sdpStep:0.1},
+  wp:  {label:'Wertpunkt', mu:10, sigma:3, step:0.5, dec:1, sdpMin:0.5,sdpMax:6, sdpStep:0.25},
+  c:   {label:'C-Wert',    mu:5,  sigma:2, step:0.1, dec:0, clamp:[0,10],fixedMin:0,fixedMax:10, sdpMin:0.1,sdpMax:5, sdpStep:0.1},
+};
+
+// Classification boundaries in z-score units: [very_low, low, avg_lo, avg_hi, high, very_high]
+const MODELS={
+  std: {name:'Standardmodell', bounds:[-2,-1,1,2], labels:['weit unterdurchschnittlich','unterdurchschnittlich','durchschnittlich','überdurchschnittlich','weit überdurchschnittlich']},
+  mar: {name:'Marburger Modell', bounds:[-1.5,-0.5,0.5,1.5], labels:['sehr niedrig','niedrig','durchschnittlich','hoch','sehr hoch']},
+  stan:{name:'Stanine-Modell', bounds:[-1.75,-0.75,0.75,1.75], labels:['sehr niedrig','niedrig','durchschnittlich','hoch','sehr hoch']},
+};
+
+let sc = SCALES.iq;
+let scKey = 'iq';
+
+// ── HELPERS ─────────────────────────────────────────────────────
+function normalPDF(x,mu,sigma){
+  const z=(x-mu)/sigma;
+  return Math.exp(-0.5*z*z)/(sigma*Math.sqrt(2*Math.PI));
+}
+function normalCDF(z){
+  // Abramowitz & Stegun approximation
+  const t=1/(1+0.2316419*Math.abs(z));
+  const d=0.3989423*Math.exp(-z*z/2);
+  const p=d*t*(0.3193815+t*(-0.3565638+t*(1.7814779+t*(-1.8212560+t*1.3302744))));
+  return z>0?1-p:p;
+}
+function fmt(v,d){
+  if(isNaN(v)) return '—';
+  const dec=d??sc.dec;
+  if(dec===0 && sc.clamp) v=Math.round(Math.max(sc.clamp[0],Math.min(sc.clamp[1],v)));
+  return v.toFixed(dec);
+}
+function fmtPR(z){return (normalCDF(z)*100).toFixed(1)+'%'}
+
+function classifyZ(z,modelKey){
+  const m=MODELS[modelKey];
+  const b=m.bounds;
+  if(z<b[0]) return m.labels[0];
+  if(z<b[1]) return m.labels[1];
+  if(z<=b[2]) return m.labels[2];
+  if(z<=b[3]) return m.labels[3];
+  return m.labels[4];
+}
+function classifyInterval(zLo,zHi,modelKey){
+  const lo=classifyZ(zLo,modelKey);
+  const hi=classifyZ(zHi,modelKey);
+  return lo===hi?lo:lo+' bis '+hi;
+}
+
+// ── TOPBAR ──────────────────────────────────────────────────────
+function toggleTheme(){
+  const d=document.documentElement;
+  const dark=d.getAttribute('data-theme')==='dark';
+  d.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  draw();
+}
+function toggleHelp(){
+  const p=document.getElementById('help-panel');
+  const b=document.getElementById('help-btn');
+  const open=p.classList.toggle('open');
+  b.classList.toggle('active',open);
+}
+
+// ── SCALE CHANGE ────────────────────────────────────────────────
+function buildSc(){
+  const key   = document.getElementById('sel-scale').value;
+  const mu    = parseFloat(document.getElementById('inp-mu').value);
+  const sigma = parseFloat(document.getElementById('inp-sigma').value);
+  if(isNaN(mu) || isNaN(sigma) || sigma <= 0) return;
+
+  const base   = SCALES[key] || SCALES.iq;
+  const dec    = sigma >= 5 ? 0 : sigma >= 1 ? 1 : 2;
+  const step   = sigma >= 5 ? 1 : sigma >= 1 ? 0.5 : 0.1;
+  const isCustom = !SCALES[key]
+    || Math.abs(mu - SCALES[key].mu) > 0.001
+    || Math.abs(sigma - SCALES[key].sigma) > 0.001;
+
+  sc = {
+    ...base,
+    mu, sigma, dec, step,
+    min: base.fixedMin !== undefined ? base.fixedMin : (step >= 1 ? Math.floor(mu - 3.5*sigma) : mu - 3.5*sigma),
+    max: base.fixedMax !== undefined ? base.fixedMax : (step >= 1 ? Math.ceil(mu + 3.5*sigma)  : mu + 3.5*sigma),
+    sdpMin:  base.sdpMin  ?? Math.max(0.1, +(sigma*0.1).toFixed(2)),
+    sdpMax:  base.sdpMax  ?? +(sigma*3).toFixed(1),
+    sdpStep: base.sdpStep ?? Math.max(0.05, +(sigma/20).toFixed(2)),
+    label: isCustom ? 'Test' : base.label,
+  };
+  scKey = key;
+
+  const slx  = document.getElementById('sl-x');
+  const slt  = document.getElementById('sl-t');
+  const slsdp= document.getElementById('sl-sdp');
+  slx.min=sc.min;  slx.max=sc.max;  slx.step=sc.step;
+  slt.min=sc.min;  slt.max=sc.max;  slt.step=sc.step;
+  slsdp.min=sc.sdpMin; slsdp.max=sc.sdpMax; slsdp.step=sc.sdpStep;
+  document.getElementById('note-sigma').textContent = sigma.toFixed(dec>0?dec+1:0);
+}
+
+function onScaleChange(){
+  const key       = document.getElementById('sel-scale').value;
+  const customRow = document.getElementById('custom-scale-row');
+  if(key === 'custom'){
+    customRow.style.display = '';
+    onCustomScale(); // rebuild sc from current inp-mu/inp-sigma, clamp sliders, redraw
+    return;
+  }
+  customRow.style.display = 'none';
+  const s = SCALES[key];
+  document.getElementById('inp-mu').value    = s.mu;
+  document.getElementById('inp-sigma').value = s.sigma;
+  buildSc();
+  const defX={iq:115,sw:112,t:57,z:1.0,stan:6.5,wp:12,c:6.5};
+  const defT={iq:112,sw:110,t:55,z:0.8,stan:6,wp:11,c:6};
+  const slx  = document.getElementById('sl-x');
+  const slt  = document.getElementById('sl-t');
+  const slsdp= document.getElementById('sl-sdp');
+  slx.value  = defX[key] ?? sc.mu + sc.sigma;
+  slt.value  = defT[key] ?? sc.mu + 0.5*sc.sigma;
+  slsdp.value= sc.sigma;
+  onInput();
+}
+
+function onCustomScale(){
+  buildSc();
+  // clamp slider values into new range
+  const slx  = document.getElementById('sl-x');
+  const slt  = document.getElementById('sl-t');
+  const slsdp= document.getElementById('sl-sdp');
+  slx.value  = Math.max(sc.min, Math.min(sc.max, parseFloat(slx.value)  || sc.mu));
+  slt.value  = Math.max(sc.min, Math.min(sc.max, parseFloat(slt.value)  || sc.mu));
+  slsdp.value= Math.max(sc.sdpMin, Math.min(sc.sdpMax, parseFloat(slsdp.value) || sc.sigma));
+  onInput();
+}
+
+// ── MAIN COMPUTE ────────────────────────────────────────────────
+let lastRes={};
+
+function compute(){
+  const X   = parseFloat(document.getElementById('sl-x').value);
+  const rxx = parseFloat(document.getElementById('sl-rxx').value);
+  const T   = parseFloat(document.getElementById('sl-t').value);
+  const sdp = parseFloat(document.getElementById('sl-sdp').value);
+  const {mu,sigma} = sc;
+
+  // KI Äquivalenzhypothese
+  const sem    = sigma * Math.sqrt(1 - rxx);
+  const ki_aq  = [X - 1.96*sem, X + 1.96*sem];
+
+  // KI Regressionshypothese
+  const s_true    = sigma * Math.sqrt(rxx);
+  const x_reg     = mu + rxx*(X - mu);
+  const s_post_reg= sigma * Math.sqrt(rxx*(1 - rxx));
+  const ki_reg    = [x_reg - 1.96*s_post_reg, x_reg + 1.96*s_post_reg];
+
+  // Flexible Bayesian CrI: Prior N(mu, sdp), Likelihood N(X, sem)
+  const w_data    = 1/(sem*sem);
+  const w_prior   = 1/(sdp*sdp);
+  const tau_bayes = (mu*w_prior + X*w_data) / (w_prior + w_data);
+  const sd_bayes  = Math.sqrt(1/(w_prior + w_data));
+  const cri       = [tau_bayes - 1.96*sd_bayes, tau_bayes + 1.96*sd_bayes];
+
+  const p_above   = 1 - normalCDF((T - tau_bayes)/sd_bayes);
+  const zX        = (X - mu)/sigma;
+  const pr        = normalCDF(zX)*100;
+
+  return {X,rxx,T,sdp,mu,sigma,sem,s_true,x_reg,s_post_reg,ki_aq,ki_reg,tau_bayes,sd_bayes,cri,p_above,zX,pr};
+}
+
+function onInput(){
+  const r = compute();
+  lastRes = r;
+  const dp2 = sc.dec>0 ? sc.dec+1 : 2;
+
+  // slider labels
+  document.getElementById('lbl-x').textContent   = fmt(r.X, sc.dec);
+  document.getElementById('lbl-rxx').textContent = parseFloat(document.getElementById('sl-rxx').value).toFixed(2);
+  document.getElementById('lbl-t').textContent   = fmt(r.T, sc.dec);
+  document.getElementById('lbl-sdp').textContent = fmt(r.sdp, dp2);
+
+  // p above
+  const pct = (r.p_above*100).toFixed(1);
+  document.getElementById('p-above').textContent = pct+'%';
+  document.getElementById('p-above-interp').textContent =
+    `Laut Posteriorverteilung liegt der wahre Wert mit ${pct}% Wahrscheinlichkeit über dem Trennwert ${fmt(r.T,sc.dec)}.`;
+
+  // sidebar stats
+  document.getElementById('kw-sem').textContent      = fmt(r.sem, dp2);
+  document.getElementById('kw-xreg').textContent     = fmt(r.x_reg, sc.dec);
+  document.getElementById('kw-sereg').textContent    = fmt(r.s_post_reg, dp2);
+  document.getElementById('kw-taubayes').textContent = fmt(r.tau_bayes, sc.dec);
+  document.getElementById('kw-sdbayes').textContent  = fmt(r.sd_bayes, dp2);
+  document.getElementById('kw-pr').textContent       = r.pr.toFixed(1)+'%';
+
+  // equiv note: sdp ≈ s_true → Bayes ≡ Regression
+  const s_true_eq = r.sigma * Math.sqrt(r.rxx);
+  document.getElementById('kw-equiv-note').style.display =
+    Math.abs(r.sdp - s_true_eq) < s_true_eq*0.05 ? '' : 'none';
+
+  // result table
+  const d = sc.dec;
+  function setRow(pfx,est,lo,hi){
+    document.getElementById(`t-${pfx}-est`).textContent = fmt(est,d);
+    document.getElementById(`t-${pfx}-lo`).textContent  = fmt(lo,d);
+    document.getElementById(`t-${pfx}-hi`).textContent  = fmt(hi,d);
+    document.getElementById(`t-${pfx}-w`).textContent   = fmt(hi-lo, d>0?d:1);
+  }
+  setRow('aq',  r.X,         r.ki_aq[0],  r.ki_aq[1]);
+  setRow('reg', r.x_reg,     r.ki_reg[0], r.ki_reg[1]);
+  setRow('cri', r.tau_bayes, r.cri[0],    r.cri[1]);
+
+  updateText(r);
+  draw();
+}
+
+// ── TEXT OUTPUT ─────────────────────────────────────────────────
+function updateText(r){
+  const modelKey = document.getElementById('sel-model').value;
+  const kiSel    = document.getElementById('sel-interp-ki').value;
+  const m   = MODELS[modelKey];
+  const {mu,sigma} = sc;
+  const d   = sc.dec;
+  const dp2 = d>0 ? d+1 : 2;
+
+  let estVal, kiLo, kiHi, kiLabel, methodName;
+  if(kiSel==='aq'){
+    estVal=r.X;         kiLo=r.ki_aq[0];  kiHi=r.ki_aq[1];
+    kiLabel='95%-Konfidenzintervall (Äquivalenzhypothese)'; methodName='Äquivalenzhypothese';
+  } else if(kiSel==='reg'){
+    estVal=r.x_reg;     kiLo=r.ki_reg[0]; kiHi=r.ki_reg[1];
+    kiLabel='95%-Konfidenzintervall (Regressionshypothese)'; methodName='Regressionshypothese';
+  } else {
+    estVal=r.tau_bayes; kiLo=r.cri[0];    kiHi=r.cri[1];
+    kiLabel='95%-Credible-Interval (Bayesianisch)'; methodName='Bayesianischer Schätzer';
+  }
+
+  const zEst  = (estVal - mu)/sigma;
+  const zLo   = (kiLo - mu)/sigma;
+  const zHi   = (kiHi - mu)/sigma;
+  const prEst = (normalCDF(zEst)*100).toFixed(1);
+  const prX   = r.pr.toFixed(1);
+  const pct   = (r.p_above*100).toFixed(1);
+
+  const classEst = classifyZ(zEst, modelKey);
+  const classKI  = classifyInterval(zLo, zHi, modelKey);
+  const isCrI    = kiSel==='cri';
+  const isReg    = kiSel==='reg';
+
+  let txt = `Beobachteter Testwert: ${sc.label} = ${fmt(r.X,d)} (PR = ${prX}%).\n`;
+  if(!isCrI && !isReg){
+    txt += `Geschätzter wahrer Wert (${methodName}): ${sc.label} = ${fmt(estVal,d)} (PR = ${prEst}%) `;
+    txt += `mit einem ${kiLabel} [${fmt(kiLo,d)}, ${fmt(kiHi,d)}].\n`;
+  } else {
+    txt += `Geschätzter wahrer Wert (${methodName}): ${sc.label} = ${fmt(estVal,d)} (PR = ${prEst}%) `;
+    txt += `mit einem ${kiLabel} [${fmt(kiLo,d)}, ${fmt(kiHi,d)}].\n`;
+    txt += `Dieser Schätzwert berücksichtigt die Regression zur Mitte `;
+    txt += `(Beobachtung: ${fmt(r.X,d)}, Populationsmittelwert: ${fmt(mu,d)}).\n`;
+  }
+  txt += `Gemäß dem ${m.name} ist die Schätzung als „${classEst}" einzustufen. `;
+  txt += `Das ${isCrI?'Credible Interval':'Konfidenzintervall'} [${fmt(kiLo,d)}, ${fmt(kiHi,d)}] `;
+  txt += `entspricht dem Bereich „${classKI}".`;
+  if(isCrI){
+    txt += `\n\nNach den vorliegenden Daten und dem Prior (SD = ${fmt(r.sdp,dp2)}) `;
+    txt += `liegen die plausibelsten 95% der wahren Werte zwischen ${fmt(r.cri[0],d)} und ${fmt(r.cri[1],d)}. `;
+    txt += `Mit ${pct}%iger Wahrscheinlichkeit liegt der wahre Wert über dem Trennwert ${fmt(r.T,d)}.`;
+  }
+  document.getElementById('text-output').textContent = txt;
+}
+
+function copyText(){
+  navigator.clipboard.writeText(document.getElementById('text-output').textContent);
+}
+
+// ── CANVAS ──────────────────────────────────────────────────────
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+
+function cssVar(name){
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function draw(){
+  const r = lastRes;
+  if(r.X === undefined) return;
+
+  const dpr = window.devicePixelRatio||1;
+  const W   = cv.parentElement.clientWidth;
+  const H   = 490;
+  cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px';
+  ctx.scale(dpr,dpr);
+
+  const ink   = cssVar('--ink');
+  const ink2  = cssVar('--ink2');
+  const ink3  = cssVar('--ink3');
+  const a1    = cssVar('--a1');
+  const a2    = cssVar('--a2');
+  const a3    = cssVar('--a3');
+  const a4    = cssVar('--a4');
+  const paper = cssVar('--paper');
+  const grid  = cssVar('--grid');
+
+  const pad         = {l:48, r:20, top:20};
+  const densH       = 250;
+  const axH         = 26;
+  const whiskerStep = 58;
+  const barsTop     = pad.top + densH + axH + 10;
+  const plotW       = W - pad.l - pad.r;
+
+  const {mu, sigma} = sc;
+  const xMin   = sc.min;
+  const xMax   = sc.max;
+  const xScale = v => (v-xMin)/(xMax-xMin)*plotW + pad.l;
+  const densBot = pad.top + densH;
+
+  // Dynamic Y scale: max density across all four curves + 8% headroom
+  const maxDens = Math.max(
+    normalPDF(mu,        mu,        sigma),
+    normalPDF(mu,        mu,        r.sdp),
+    normalPDF(r.X,       r.X,       r.sem),
+    normalPDF(r.tau_bayes, r.tau_bayes, r.sd_bayes)
+  ) * 1.08;
+  const scaleY = v => densBot - v*(densH-10)/maxDens;
+
+  // clear
+  ctx.fillStyle = paper;
+  ctx.fillRect(0,0,W,H);
+
+  // x axis
+  ctx.strokeStyle = ink3; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.l,densBot); ctx.lineTo(pad.l+plotW,densBot); ctx.stroke();
+
+  ctx.fillStyle = ink2; ctx.font = `11px 'DM Mono',monospace`; ctx.textAlign = 'center';
+  for(let z=-3; z<=3; z++){
+    const xv = mu + z*sigma;
+    const px = xScale(xv);
+    ctx.strokeStyle = ink3; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(px,densBot); ctx.lineTo(px,densBot+5); ctx.stroke();
+    ctx.fillText(fmt(xv,sc.dec), px, densBot+axH-4);
+  }
+
+  // ─ density curve drawing helpers ─
+  const N  = 500;
+  const dx = (xMax-xMin)/N;
+
+  function drawCurve(muC, sigC, color, lw, dash){
+    ctx.beginPath();
+    ctx.setLineDash(dash||[]);
+    ctx.strokeStyle = color; ctx.lineWidth = lw||1.5;
+    for(let i=0; i<=N; i++){
+      const xv = xMin+i*dx;
+      const py = scaleY(normalPDF(xv,muC,sigC));
+      i===0 ? ctx.moveTo(xScale(xv),py) : ctx.lineTo(xScale(xv),py);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function fillCurveSplit(muC, sigC, color, splitAt){
+    // lighter fill left of threshold, stronger fill right of threshold
+    [[xMin, splitAt,'2a'],[splitAt, xMax,'66']].forEach(([from,to,alpha])=>{
+      let fp = true;
+      ctx.beginPath(); ctx.fillStyle = color+alpha;
+      for(let i=0; i<=N; i++){
+        const xv = xMin+i*dx;
+        if(xv < from || xv > to) continue;
+        const py = scaleY(normalPDF(xv,muC,sigC));
+        if(fp){ ctx.moveTo(xScale(xv),densBot); ctx.lineTo(xScale(xv),py); fp=false; }
+        else ctx.lineTo(xScale(xv),py);
+      }
+      if(!fp){ ctx.lineTo(xScale(Math.min(to,xMax)),densBot); ctx.closePath(); ctx.fill(); }
+    });
+  }
+
+  // Population — dashed gray
+  drawCurve(mu, sigma, ink3, 1, [5,4]);
+  // Prior N(mu, sdp) — dashed purple
+  drawCurve(mu, r.sdp, a4, 1.5, [3,3]);
+  // Likelihood N(X, sem) — red
+  drawCurve(r.X, r.sem, a1, 2);
+  // Posterior fill then curve — blue (tool accent)
+  fillCurveSplit(r.tau_bayes, r.sd_bayes, a2, r.T);
+  drawCurve(r.tau_bayes, r.sd_bayes, a2, 2.5);
+
+  // ─ vertical markers ─
+  const lineBot = barsTop + 3*whiskerStep;
+
+  // Threshold T
+  const px_T = xScale(r.T);
+  ctx.save();
+  ctx.strokeStyle = ink; ctx.lineWidth = 1.5; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(px_T, pad.top); ctx.lineTo(px_T, lineBot); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = ink; ctx.font = `bold 11px 'DM Mono',monospace`; ctx.textAlign = 'center';
+  ctx.fillText('T='+fmt(r.T,sc.dec), px_T, pad.top+11);
+  ctx.restore();
+
+  // Observed X — thin dashed red
+  const px_X = xScale(r.X);
+  ctx.save();
+  ctx.strokeStyle = a1; ctx.lineWidth = 1.2; ctx.setLineDash([3,4]);
+  ctx.beginPath(); ctx.moveTo(px_X, pad.top+16); ctx.lineTo(px_X, densBot); ctx.stroke();
+  ctx.setLineDash([]);
+  // offset label if X and T are close
+  const labelOffX = Math.abs(px_X-px_T)<32 ? (px_X<px_T?-16:16) : 0;
+  ctx.fillStyle = a1; ctx.font = `bold 11px 'DM Mono',monospace`; ctx.textAlign = 'center';
+  ctx.fillText('X='+fmt(r.X,sc.dec), px_X+labelOffX, pad.top+27);
+  ctx.restore();
+
+  // Posterior mean — thin dashed blue
+  const px_tau = xScale(r.tau_bayes);
+  ctx.save();
+  ctx.strokeStyle = a2; ctx.lineWidth = 1; ctx.setLineDash([2,4]);
+  ctx.beginPath(); ctx.moveTo(px_tau, pad.top+30); ctx.lineTo(px_tau, densBot); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  // ─ whisker CI/CrI plots ─
+  function drawWhisker(rowIdx, lo, hi, center, color, label){
+    const midY  = barsTop + rowIdx*whiskerStep + 24;
+    const capH  = 8;
+    const pxLo  = xScale(lo);
+    const pxHi  = xScale(hi);
+    const pxC   = xScale(center);
+
+    // row label above whisker
+    ctx.fillStyle = ink2; ctx.font = `11px 'DM Mono',monospace`; ctx.textAlign = 'left';
+    ctx.fillText(label, pad.l+2, barsTop+rowIdx*whiskerStep+10);
+
+    // horizontal line
+    ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(pxLo,midY); ctx.lineTo(pxHi,midY); ctx.stroke();
+
+    // end caps
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(pxLo,midY-capH); ctx.lineTo(pxLo,midY+capH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pxHi,midY-capH); ctx.lineTo(pxHi,midY+capH); ctx.stroke();
+
+    // center dot (filled circle with paper core)
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(pxC,midY,5.5,0,2*Math.PI); ctx.fill();
+    ctx.fillStyle = paper;
+    ctx.beginPath(); ctx.arc(pxC,midY,2.5,0,2*Math.PI); ctx.fill();
+
+    // center value above dot
+    ctx.fillStyle = color; ctx.font = `bold 11px 'DM Mono',monospace`; ctx.textAlign = 'center';
+    ctx.fillText(fmt(center,sc.dec), pxC, midY-capH-5);
+
+    // bound values below
+    ctx.font = `10px 'DM Mono',monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText(fmt(lo,sc.dec), pxLo, midY+capH+13);
+    ctx.fillText(fmt(hi,sc.dec), pxHi, midY+capH+13);
+  }
+
+  drawWhisker(0, r.ki_aq[0],  r.ki_aq[1],  r.X,         a1, 'KI Äquivalenzhypothese');
+  drawWhisker(1, r.ki_reg[0], r.ki_reg[1], r.x_reg,     a3, 'KI Regressionshypothese');
+  drawWhisker(2, r.cri[0],    r.cri[1],    r.tau_bayes, a2, 'CrI Bayesianisch (95%)');
+
+  // y axis label
+  ctx.save();
+  ctx.translate(13, pad.top+densH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillStyle = ink3; ctx.font = `10px 'DM Mono',monospace`; ctx.textAlign = 'center';
+  ctx.fillText('Dichte (relativ)', 0, 0);
+  ctx.restore();
+}
+
+// ── CANVAS INTERACTION ──────────────────────────────────────────
+let dragging=false;
+
+function canvasX_to_value(clientX){
+  const rect=cv.getBoundingClientRect();
+  const px=clientX-rect.left;
+  const W=rect.width;
+  const pad_l=48, pad_r=20;
+  const plotW=W-pad_l-pad_r;
+  const xMin=sc.min, xMax=sc.max;
+  const frac=(px-pad_l)/plotW;
+  return xMin+frac*(xMax-xMin);
+}
+
+function setThresholdFromCanvas(clientX){
+  const val=canvasX_to_value(clientX);
+  const sl=document.getElementById('sl-t');
+  const clamped=Math.max(sc.min,Math.min(sc.max,val));
+  const stepped=Math.round(clamped/sc.step)*sc.step;
+  sl.value=stepped;
+  onInput();
+}
+
+cv.addEventListener('mousedown',e=>{dragging=true; setThresholdFromCanvas(e.clientX);});
+cv.addEventListener('mousemove',e=>{if(dragging) setThresholdFromCanvas(e.clientX);});
+cv.addEventListener('mouseup',()=>dragging=false);
+cv.addEventListener('mouseleave',()=>dragging=false);
+cv.addEventListener('touchstart',e=>{dragging=true; setThresholdFromCanvas(e.touches[0].clientX); e.preventDefault();},{passive:false});
+cv.addEventListener('touchmove',e=>{if(dragging) setThresholdFromCanvas(e.touches[0].clientX); e.preventDefault();},{passive:false});
+cv.addEventListener('touchend',()=>dragging=false);
+
+// ── INIT ────────────────────────────────────────────────────────
+window.addEventListener('resize',()=>draw());
+document.documentElement.style.setProperty('--topbar-h',
+  document.getElementById('topbar').offsetHeight+'px');
+
+buildSc();
+onInput();
+</script>
+</body>
+</html>
