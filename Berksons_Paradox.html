@@ -40,7 +40,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .slider-row{margin-bottom:.55rem}
 .slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
 .slider-name{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink)}
-.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500;min-width:3.2rem;text-align:right;display:inline-block}
 input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
 input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
 input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
@@ -139,9 +139,9 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="scard">
     <div class="scard-title">Szenarien</div>
     <button class="preset-btn" id="pre-A" onclick="setPreset('A')">A — Keine Selektion (Referenz)</button>
-    <button class="preset-btn active" id="pre-B" onclick="setPreset('B')">B — Beide Extreme 25%</button>
-    <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — Starke Selektion (10%)</button>
-    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — Nur Top selektiert</button>
+    <button class="preset-btn active" id="pre-B" onclick="setPreset('B')">B — Nur Top 25% (klassisch)</button>
+    <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — Beide Extreme — Kontrast</button>
+    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — Starke Selektion (10%)</button>
   </div>
 
   <div class="scard">
@@ -209,30 +209,30 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
         </marker>
       </defs>
       <!-- X→Z arrow -->
-      <line x1="109" y1="58" x2="258" y2="58" stroke="var(--a2)" stroke-width="2.5" marker-end="url(#darr)"/>
+      <line x1="112" y1="62" x2="258" y2="62" stroke="var(--a2)" stroke-width="2.5" marker-end="url(#darr)"/>
       <!-- Y→Z arrow -->
-      <line x1="471" y1="58" x2="322" y2="58" stroke="var(--a3)" stroke-width="2.5" marker-end="url(#darr)"/>
+      <line x1="468" y1="62" x2="322" y2="62" stroke="var(--a3)" stroke-width="2.5" marker-end="url(#darr)"/>
       <!-- Z→Selection (conditioning) -->
-      <line x1="290" y1="92" x2="290" y2="111" stroke="var(--a1)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#darr)"/>
-      <!-- No-edge label between X and Y -->
-      <text x="290" y="18" text-anchor="middle" fill="var(--ink3)" font-size="9.5" font-family="DM Mono,monospace" font-style="italic">keine direkte Verbindung (X ⊥ Y)</text>
+      <line x1="290" y1="104" x2="290" y2="113" stroke="var(--a1)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#darr)"/>
+      <!-- No-edge label -->
+      <text x="290" y="20" text-anchor="middle" fill="var(--ink3)" font-size="12" font-family="DM Mono,monospace" font-style="italic">keine direkte Verbindung  (X ⊥ Y)</text>
       <!-- X node -->
-      <circle cx="75" cy="58" r="32" fill="var(--panel)" stroke="var(--a2)" stroke-width="2.2"/>
-      <text x="75" y="51" text-anchor="middle" fill="var(--a2)" font-size="9.5" font-family="DM Mono,monospace">Talent</text>
-      <text x="75" y="68" text-anchor="middle" fill="var(--a2)" font-size="17" font-family="DM Mono,monospace" font-weight="600">X</text>
+      <circle cx="80" cy="62" r="32" fill="var(--panel)" stroke="var(--a2)" stroke-width="2.2"/>
+      <text x="80" y="55" text-anchor="middle" fill="var(--a2)" font-size="12" font-family="DM Mono,monospace">Talent</text>
+      <text x="80" y="73" text-anchor="middle" fill="var(--a2)" font-size="18" font-family="DM Mono,monospace" font-weight="600">X</text>
       <!-- Z node (collider) -->
-      <circle cx="290" cy="58" r="32" fill="var(--panel)" stroke="var(--a5)" stroke-width="2.2"/>
-      <circle cx="290" cy="58" r="40" fill="none" stroke="var(--a1)" stroke-width="1.4" stroke-dasharray="6,4"/>
-      <text x="290" y="49" text-anchor="middle" fill="var(--a5)" font-size="8.5" font-family="DM Mono,monospace">Berufserfolg</text>
-      <text x="290" y="63" text-anchor="middle" fill="var(--a5)" font-size="16" font-family="DM Mono,monospace" font-weight="600">Z</text>
-      <text x="290" y="75" text-anchor="middle" fill="var(--a1)" font-size="8" font-family="DM Mono,monospace" font-style="italic">Collider</text>
+      <circle cx="290" cy="62" r="32" fill="var(--panel)" stroke="var(--a5)" stroke-width="2.2"/>
+      <circle cx="290" cy="62" r="40" fill="none" stroke="var(--a1)" stroke-width="1.4" stroke-dasharray="6,4"/>
+      <text x="290" y="53" text-anchor="middle" fill="var(--a5)" font-size="12" font-family="DM Mono,monospace">Erfolg</text>
+      <text x="290" y="68" text-anchor="middle" fill="var(--a5)" font-size="18" font-family="DM Mono,monospace" font-weight="600">Z</text>
+      <text x="290" y="80" text-anchor="middle" fill="var(--a1)" font-size="11" font-family="DM Mono,monospace" font-style="italic">Collider</text>
       <!-- Y node -->
-      <circle cx="505" cy="58" r="32" fill="var(--panel)" stroke="var(--a3)" stroke-width="2.2"/>
-      <text x="505" y="51" text-anchor="middle" fill="var(--a3)" font-size="9.5" font-family="DM Mono,monospace">Fleiß</text>
-      <text x="505" y="68" text-anchor="middle" fill="var(--a3)" font-size="17" font-family="DM Mono,monospace" font-weight="600">Y</text>
+      <circle cx="500" cy="62" r="32" fill="var(--panel)" stroke="var(--a3)" stroke-width="2.2"/>
+      <text x="500" y="55" text-anchor="middle" fill="var(--a3)" font-size="12" font-family="DM Mono,monospace">Fleiß</text>
+      <text x="500" y="73" text-anchor="middle" fill="var(--a3)" font-size="18" font-family="DM Mono,monospace" font-weight="600">Y</text>
       <!-- Selection box -->
-      <rect x="218" y="113" width="144" height="24" rx="3" fill="none" stroke="var(--a1)" stroke-width="1.5" stroke-dasharray="5,4"/>
-      <text x="290" y="128" text-anchor="middle" fill="var(--a1)" font-size="9.5" font-family="DM Mono,monospace" letter-spacing="1.5">KONDITIONIERUNG</text>
+      <rect x="218" y="115" width="144" height="26" rx="3" fill="none" stroke="var(--a1)" stroke-width="1.5" stroke-dasharray="5,4"/>
+      <text x="290" y="131" text-anchor="middle" fill="var(--a1)" font-size="12" font-family="DM Mono,monospace" letter-spacing="1.5">KONDITIONIERUNG</text>
     </svg>
   </div>
 
@@ -311,8 +311,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
         <div class="lcard-body">Die Selektionsschwelle entspricht X + Y ≈ c (Konstante). Das ist die Gleichung einer Gerade mit Steigung −1. Personen im selektierten Band erfüllen näherungsweise X + Y = c, d.h. wer ein hohes X hat, muss ein niedrigeres Y haben. Die orangefarbenen Grenzlinien im linken Plot zeigen genau diese Anti-Diagonalen. Bei zunehmendem Rauschen in Z werden die Grenzen unschärfer — und der Berkson-Effekt schwächer.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Einseitige vs. beidseitige Selektion</div>
-        <div class="lcard-body">Bei <strong>einseitiger Selektion</strong> (nur Top oder nur Bottom) entsteht ebenfalls eine negative Korrelation, aber schwächer als bei beidseitiger. Bei der beidseitigen Selektion kommen zwei negative Wolken zusammen (obere Extremgruppe + untere Extremgruppe), was die negative Korrelation verstärkt. Mit Preset D ("Nur Top") lässt sich der einseitige Fall isoliert betrachten.</div>
+        <div class="lcard-h">Einseitig vs. beidseitig — zwei Effekte</div>
+        <div class="lcard-body"><strong>Einseitige Selektion</strong> (Preset B/D — nur Top oder nur Bottom) zeigt den klassischen Berkson-Effekt: innerhalb der Gruppe gilt X + Y ≈ Konstante → wer hohes X hat, muss niedrigeres Y haben → <strong>negative</strong> Scheinkorrelation. <strong>Beidseitige Selektion</strong> (Preset C — Top + Bottom gemeinsam) erzeugt dagegen eine <strong>positive</strong> Scheinkorrelation: die obere Gruppe hat hohe Mittelwerte auf X und Y, die untere Gruppe niedrige — der Zwischen-Gruppen-Effekt dominiert den Berkson-Effekt innerhalb der Gruppen. Berksons Krankenhaus-Beispiel (1946) ist ein einseitiger Fall.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Konsequenzen für Forschung</div>
@@ -320,7 +320,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Positive Grundkorrelation aufheben</div>
-        <div class="lcard-body">Mit Preset D und dem ρ_XY-Slider auf +0.40 lässt sich zeigen: selbst wenn X und Y in der Bevölkerung <em>positiv</em> korreliert sind, kann starke Selektion auf Z die Richtung umkehren. Bei ausreichend engem Selektionsfenster (kleines selPct) und geringem Rauschen in Z wird die Berkson-induzierte negative Korrelation stark genug, die ursprünglich positive zu überwältigen.</div>
+        <div class="lcard-body">Mit Preset D (starke einseitige Selektion 10%) und dem ρ_XY-Slider auf +0.40 lässt sich zeigen: selbst wenn X und Y in der Bevölkerung <em>positiv</em> korreliert sind, kann starke Selektion auf Z die Richtung umkehren. Bei ausreichend engem Selektionsfenster und geringem Rauschen in Z wird der Berkson-Effekt stark genug, die ursprünglich positive Korrelation zu überwältigen — die selektierte Gruppe zeigt dann eine negative Korrelation.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Abgrenzung von Konfundierung</div>
@@ -488,22 +488,22 @@ function drawCanvas(){
     ctx.strokeRect(xOff,MT,panW,PH);
 
     // Title
-    ctx.font='bold 11px DM Mono,monospace';ctx.fillStyle=col;ctx.textAlign='center';
+    ctx.font='bold 13px DM Mono,monospace';ctx.fillStyle=col;ctx.textAlign='center';
     ctx.fillText(title,xOff+panW/2,MT-12);
 
     // r label inside panel (bottom center)
     const rShow=showSelOnly?rSel:rAll;
     const rLabel=(showSelOnly?'r':'r')+'(X,Y) = '+f2u(rShow);
-    ctx.font='10.5px DM Mono,monospace';
+    ctx.font='12.5px DM Mono,monospace';
     ctx.fillStyle=showSelOnly?cA1:cInk2;
     ctx.textAlign='center';
-    ctx.fillText(rLabel,xOff+panW/2,MT+PH-8);
+    ctx.fillText(rLabel,xOff+panW/2,MT+PH-10);
 
     // X axis ticks
-    ctx.fillStyle=cInk3;ctx.font='9.5px DM Mono,monospace';ctx.textAlign='center';
-    for(let v=-3;v<=3;v++) ctx.fillText(v===0?'0':v,txFn(v),MT+PH+16);
-    ctx.fillStyle=cInk2;ctx.font='10px DM Mono,monospace';
-    ctx.fillText('Talent X',xOff+panW/2,MT+PH+30);
+    ctx.fillStyle=cInk3;ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+    for(let v=-3;v<=3;v++) ctx.fillText(v===0?'0':v,txFn(v),MT+PH+17);
+    ctx.fillStyle=cInk2;ctx.font='12px DM Mono,monospace';
+    ctx.fillText('Talent X',xOff+panW/2,MT+PH+32);
   }
 
   drawPanel(txL,ML,
@@ -514,34 +514,35 @@ function drawCanvas(){
     cA1,false,true,true);
 
   // Y axis label
-  ctx.fillStyle=cInk3;ctx.font='9.5px DM Mono,monospace';ctx.textAlign='right';
+  ctx.fillStyle=cInk3;ctx.font='11px DM Mono,monospace';ctx.textAlign='right';
   for(let v=-3;v<=3;v++) ctx.fillText(v===0?'0':v,ML-5,ty(v)+4);
   ctx.save();ctx.translate(13,MT+PH/2);ctx.rotate(-Math.PI/2);
-  ctx.fillStyle=cInk2;ctx.font='10px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillStyle=cInk2;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
   ctx.fillText('Fleiß Y',0,0);ctx.restore();
 
   // Legend (bottom right of right panel)
-  const lx=ML+panW+gap+8,ly=MT+PH-40;
-  ctx.font='9.5px DM Mono,monospace';ctx.textAlign='left';
+  const lx=ML+panW+gap+8,ly=MT+PH-46;
+  ctx.font='11px DM Mono,monospace';ctx.textAlign='left';
   ctx.strokeStyle=cInk3+'88';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
-  ctx.beginPath();ctx.moveTo(lx,ly+4);ctx.lineTo(lx+18,ly+4);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle=cInk2;ctx.fillText('r(Population)',lx+22,ly+8);
+  ctx.beginPath();ctx.moveTo(lx,ly+4);ctx.lineTo(lx+20,ly+4);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=cInk2;ctx.fillText('r(Population)',lx+24,ly+8);
   ctx.strokeStyle=cA1;ctx.lineWidth=2;
-  ctx.beginPath();ctx.moveTo(lx,ly+18);ctx.lineTo(lx+18,ly+18);ctx.stroke();
-  ctx.fillStyle=cA1;ctx.fillText('r(Selektion)',lx+22,ly+22);
+  ctx.beginPath();ctx.moveTo(lx,ly+20);ctx.lineTo(lx+20,ly+20);ctx.stroke();
+  ctx.fillStyle=cA1;ctx.fillText('r(Selektion)',lx+24,ly+24);
 
   // Left panel legend for boundary lines
   if(ST.selMode!=='none'){
-    const lx2=ML+8,ly2=MT+PH-40;
+    const lx2=ML+8,ly2=MT+PH-52;
+    ctx.font='11px DM Mono,monospace';
     ctx.strokeStyle=cA5+'99';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
-    ctx.beginPath();ctx.moveTo(lx2,ly2+4);ctx.lineTo(lx2+18,ly2+4);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle=cA5;ctx.fillText('Z-Selektionsgrenze',lx2+22,ly2+8);
-    ctx.beginPath();ctx.arc(lx2+4,ly2+18,3.5,0,2*Math.PI);
+    ctx.beginPath();ctx.moveTo(lx2,ly2+4);ctx.lineTo(lx2+20,ly2+4);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=cA5;ctx.fillText('Z-Selektionsgrenze',lx2+24,ly2+8);
+    ctx.beginPath();ctx.arc(lx2+4,ly2+20,3.5,0,2*Math.PI);
     ctx.fillStyle=cA1+'cc';ctx.fill();
-    ctx.fillStyle=cA1;ctx.fillText('selektiert',lx2+22,ly2+22);
-    ctx.beginPath();ctx.arc(lx2+4,ly2+32,2.5,0,2*Math.PI);
+    ctx.fillStyle=cA1;ctx.fillText('selektiert',lx2+24,ly2+24);
+    ctx.beginPath();ctx.arc(lx2+4,ly2+36,2.5,0,2*Math.PI);
     ctx.fillStyle=cInk3+'44';ctx.fill();
-    ctx.fillStyle=cInk2;ctx.fillText('nicht selektiert',lx2+22,ly2+36);
+    ctx.fillStyle=cInk2;ctx.fillText('nicht selektiert',lx2+24,ly2+40);
   }
 
   // Divider
@@ -621,9 +622,9 @@ function setMode(m){
 
 const PRESETS={
   A:{n:600,rXY:0.00,rNoise:0.30,selPct:25,selMode:'none'},
-  B:{n:600,rXY:0.00,rNoise:0.30,selPct:25,selMode:'both'},
-  C:{n:600,rXY:0.00,rNoise:0.30,selPct:10,selMode:'both'},
-  D:{n:600,rXY:0.00,rNoise:0.30,selPct:25,selMode:'top'},
+  B:{n:600,rXY:0.00,rNoise:0.30,selPct:25,selMode:'top'},
+  C:{n:600,rXY:0.00,rNoise:0.30,selPct:25,selMode:'both'},
+  D:{n:600,rXY:0.00,rNoise:0.30,selPct:10,selMode:'top'},
 };
 
 function setPreset(k){
