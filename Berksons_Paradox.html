@@ -141,7 +141,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <button class="preset-btn" id="pre-A" onclick="setPreset('A')">A — Keine Selektion (Referenz)</button>
     <button class="preset-btn active" id="pre-B" onclick="setPreset('B')">B — Nur Top 25% (klassisch)</button>
     <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — Beide Extreme — Kontrast</button>
-    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — Starke Selektion (10%)</button>
+    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — Mit Rauschen (realistisch)</button>
   </div>
 
   <div class="scard">
@@ -337,7 +337,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 </div><!-- /app -->
 
 <script>
-const ST={n:600,rXY:0.00,rNoise:0.30,selPct:25,selMode:'both',seed:42,data:null};
+const ST={n:600,rXY:0.00,rNoise:0.00,selPct:25,selMode:'top',seed:42,data:null};
 
 function mulberry32(a){
   return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
@@ -536,7 +536,7 @@ function drawCanvas(){
     ctx.font='11px DM Mono,monospace';
     ctx.strokeStyle=cA5+'99';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
     ctx.beginPath();ctx.moveTo(lx2,ly2+4);ctx.lineTo(lx2+20,ly2+4);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle=cA5;ctx.fillText('Z-Selektionsgrenze',lx2+24,ly2+8);
+    ctx.fillStyle=cA5;ctx.fillText('Z-Grenze (X+Y=c)'+(ST.rNoise>0.05?' ≈':' exakt'),lx2+24,ly2+8);
     ctx.beginPath();ctx.arc(lx2+4,ly2+20,3.5,0,2*Math.PI);
     ctx.fillStyle=cA1+'cc';ctx.fill();
     ctx.fillStyle=cA1;ctx.fillText('selektiert',lx2+24,ly2+24);
@@ -621,10 +621,10 @@ function setMode(m){
 }
 
 const PRESETS={
-  A:{n:600,rXY:0.00,rNoise:0.30,selPct:25,selMode:'none'},
-  B:{n:600,rXY:0.00,rNoise:0.30,selPct:25,selMode:'top'},
-  C:{n:600,rXY:0.00,rNoise:0.30,selPct:25,selMode:'both'},
-  D:{n:600,rXY:0.00,rNoise:0.30,selPct:10,selMode:'top'},
+  A:{n:600,rXY:0.00,rNoise:0.00,selPct:25,selMode:'none'},
+  B:{n:600,rXY:0.00,rNoise:0.00,selPct:25,selMode:'top'},
+  C:{n:600,rXY:0.00,rNoise:0.00,selPct:25,selMode:'both'},
+  D:{n:600,rXY:0.00,rNoise:0.40,selPct:25,selMode:'top'},
 };
 
 function setPreset(k){
