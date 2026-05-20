@@ -137,6 +137,33 @@ canvas{display:block;width:100%;height:auto}
   #sidebar{display:none}
   .two-scatter,.use-cards,.analogy-box{grid-template-columns:1fr}
 }
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a4);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a4);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:700;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula2{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
 </style>
 </head>
 <body>
@@ -144,7 +171,7 @@ canvas{display:block;width:100%;height:auto}
 <div id="topbar">
   <h1>ICC <em>Lab</em> — Intraklassenkorrelation interaktiv</h1>
   <button class="tbtn" onclick="window.open('..','_self')">← Übersicht</button>
-  <button class="tbtn accent" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 
@@ -248,6 +275,18 @@ canvas{display:block;width:100%;height:auto}
 <!-- ═══ MAIN ═══ -->
 <div id="main">
 
+  <div class="story-box">
+    <div class="story-lbl">Durchgehendes Beispiel</div>
+    <div class="story-vars">
+      <span class="sv">n</span><span class="sd">10 Patienten (Objekte) — z. B. aufgenommene Therapiesitzungen</span>
+      <span class="sv">k</span><span class="sd">3 Therapeuten (Rater) — beurteilen jeden Patienten auf einer Skala (0–100)</span>
+      <span class="sv">σ²_B</span><span class="sd">Varianz zwischen Patienten — der Anteil, den wir messen wollen</span>
+      <span class="sv">σ²_R</span><span class="sd">Rater-Bias (Strenge/Milde) — systematischer, aber vermeidbarer Fehler</span>
+      <span class="sv">σ²_E</span><span class="sd">Zufälliger Restfehler — nicht wegzuerklären</span>
+    </div>
+    <div class="story-q">Wie zuverlässig ist die Beurteilung — und macht es einen Unterschied, ob wir den Rater-Bias als Fehler zählen (Agreement, ICC(2)) oder herauskorrigieren (Consistency, ICC(3))? Und steigt die Reliabilität, wenn wir mehrere Rater mitteln?</div>
+  </div>
+
   <!-- ── SEKTION I: DATENMUSTER ── -->
   <div class="sec-div">
     <span class="sec-num">I</span>
@@ -350,50 +389,36 @@ canvas{display:block;width:100%;height:auto}
 </div><!-- /app -->
 
 <!-- ══ HELP PANEL ══ -->
-<div id="help-panel">
-  <div class="hp-head">
-    <span class="hp-title">Hintergrund &amp; Notation</span>
-    <button class="hp-close" onclick="toggleHelp()">✕</button>
-  </div>
-  <div class="hp-body">
-    <div class="hp-sect">Varianzkomponenten (σ²-Notation)</div>
-    Das Tool steuert intern drei Varianzkomponenten. In den Formeln erscheinen diese
-    als Mittlere Quadratsummen (MQ), da die ANOVA die σ²-Werte nicht direkt liefert,
-    sondern über Erwartungswerte der MQ.<br><br>
-    <table class="sigma-table">
-      <tr><td>σ²<sub>B</sub></td><td>Varianz <strong>zwischen Objekten</strong> (true score variance). E[MQ<sub>zw</sub>] = σ²<sub>E</sub> + k·σ²<sub>B</sub></td></tr>
-      <tr><td>σ²<sub>R</sub></td><td>Varianz der <strong>Rater-Haupteffekte</strong> (Strenge/Milde-Bias). E[MQ<sub>rat</sub>] = σ²<sub>E</sub> + n·σ²<sub>R</sub></td></tr>
-      <tr><td>σ²<sub>E</sub></td><td>Zufälliger <strong>Residualfehler</strong>. E[MQ<sub>res</sub>] = σ²<sub>E</sub></td></tr>
-    </table>
-    <div class="hp-sect">Von σ² zu den ICC-Formeln</div>
-    Setzt man die Erwartungswerte ein, vereinfachen sich die ICC-Formeln zu intuitiven
-    Varianzanteilen:<br><br>
-    <strong>ICC(3,1)</strong> = σ²<sub>B</sub> / (σ²<sub>B</sub> + σ²<sub>E</sub>)<br>
-    <strong>ICC(2,1)</strong> = σ²<sub>B</sub> / (σ²<sub>B</sub> + σ²<sub>R</sub> + σ²<sub>E</sub>)<br>
-    <strong>ICC(3,k)</strong> = k·σ²<sub>B</sub> / (k·σ²<sub>B</sub> + σ²<sub>E</sub>)<br><br>
-    ICC(3) ignoriert σ²<sub>R</sub> (justiert den Bias heraus = Consistency).<br>
-    ICC(2) zählt σ²<sub>R</sub> als Fehler (= Agreement).
-    <div class="hp-sect">Stichprobe vs. wahrer Wert</div>
-    Die Slider setzen <em>Populations-Parameter</em> (σ²). Das Tool zieht daraus eine
-    zufällige Stichprobe (n Objekte × k Rater). Die berechneten MQ-Werte und ICCs sind
-    deshalb <em>Stichproben-Schätzer</em> — sie weichen von den wahren Werten ab.<br><br>
-    Überall im Tool gilt: <strong>Stichprobenwert</strong> <span style="color:var(--ink3)">(wahrer Wert)</span><br><br>
-    Die wahren (analytischen) MQ-Erwartungswerte sind:<br>
-    E[MQ<sub>zw</sub>] = σ²<sub>E</sub> + k·σ²<sub>B</sub><br>
-    E[MQ<sub>rat</sub>] = σ²<sub>E</sub> + n·σ²<sub>R</sub><br>
-    E[MQ<sub>res</sub>] = σ²<sub>E</sub><br>
-    E[MQ<sub>in</sub>] = σ²<sub>E</sub> + σ²<sub>R</sub><br><br>
-    Mit „Neue Daten" entstehen andere Stichproben — die wahren Werte bleiben konstant.
-    Bei großem n/k konvergieren Stichproben- gegen wahre Werte.
-    <div class="hp-sect">MQ-Berechnung (2-Wege-ANOVA)</div>
-    Das Tool generiert eine n×k-Datenmatrix und berechnet:<br><br>
-    <strong>MQ<sub>zw</sub></strong> = SS<sub>zw</sub> / (n−1)<br>
-    <strong>MQ<sub>rat</sub></strong> = SS<sub>rat</sub> / (k−1)<br>
-    <strong>MQ<sub>res</sub></strong> = SS<sub>res</sub> / ((n−1)(k−1))<br>
-    <strong>MQ<sub>in</sub></strong> = (SS<sub>rat</sub>+SS<sub>res</sub>) / n(k−1) &nbsp;[für ICC(1)]
-    <div class="hp-sect">Referenz</div>
-    Shrout, P. E., &amp; Fleiss, J. L. (1979). Intraclass correlations: Uses in assessing rater reliability.
-    <em>Psychological Bulletin, 86</em>(2), 420–428.
+<!-- Hilfe-Overlay -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">ICC Lab — Hintergrund &amp; Notation</div>
+    <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+
+    <div class="help-sh">Beispiel</div>
+    <p class="help-p">3 Therapeuten beurteilen 10 Patienten auf einer klinischen Skala (0–100). Jeder Therapeut hat eine leicht andere Strenge (σ²_R). Die eigentliche Variabilität zwischen Patienten ist σ²_B — das, was wir reliabel messen wollen. σ²_E ist reiner Zufall. Die ICC-Wahl entscheidet, wie viel davon als Fehler gilt.</p>
+
+    <div class="help-sh">Varianzkomponenten (σ²-Notation)</div>
+    <p class="help-p">Das Tool steuert drei Populationsparameter. In den Formeln erscheinen sie als Mittlere Quadratsummen (MQ), da die ANOVA σ² nicht direkt liefert, sondern über Erwartungswerte der MQ.</p>
+    <p class="help-p"><strong>σ²_B</strong> = Varianz zwischen Objekten (True-Score-Varianz). Im Beispiel: wie verschieden sind die Patienten wirklich? E[MQ_zw] = σ²_E + k·σ²_B</p>
+    <p class="help-p"><strong>σ²_R</strong> = Rater-Haupteffekte (Strenge/Milde-Bias, systematisch). Im Beispiel: Therapeut A bewertet systematisch 5 Punkte strenger als B. E[MQ_rat] = σ²_E + n·σ²_R</p>
+    <p class="help-p"><strong>σ²_E</strong> = Zufälliger Residualfehler. E[MQ_res] = σ²_E</p>
+
+    <div class="help-sh">Von σ² zu den ICC-Formeln</div>
+    <p class="help-p">Setzt man die Erwartungswerte ein, vereinfachen sich die ICC-Formeln zu intuitiven Varianzanteilen:</p>
+    <span class="help-formula2">ICC(3,1) = σ²_B / (σ²_B + σ²_E)  &nbsp;  [Consistency: σ²_R wird herauskorrigiert]</span>
+    <span class="help-formula2">ICC(2,1) = σ²_B / (σ²_B + σ²_R + σ²_E)  &nbsp;  [Agreement: σ²_R zählt als Fehler]</span>
+    <span class="help-formula2">ICC(3,k) = k·σ²_B / (k·σ²_B + σ²_E)  &nbsp;  [k Rater gemittelt, Consistency]</span>
+    <p class="help-p">Im Beispiel: Wenn σ²_R groß ist (Therapeuten sehr verschieden in Strenge), ist ICC(2) deutlich kleiner als ICC(3). ICC(3) ist nur dann gerechtfertigt, wenn die Rater-Strenge herausgemittelt werden kann (z. B. jeder Patient wird immer von denselben Ratern beurteilt).</p>
+
+    <div class="help-sh">Agreement vs. Consistency</div>
+    <p class="help-p"><strong>Agreement (ICC(2)):</strong> Rater können die gleichen Objekte auf absolut unterschiedlichen Niveaus bewerten — das ist ein Fehler. Relevant wenn verschiedene Rater verschiedene Personen beurteilen und eine Vergleichbarkeit wichtig ist.</p>
+    <p class="help-p"><strong>Consistency (ICC(3)):</strong> Nur die Rangordnung zählt, nicht das absolute Niveau. Relevant wenn alle Rater alle Objekte beurteilen und systematische Strenge-Unterschiede durch Mittelung verschwinden.</p>
+    <p class="help-p">Im Beispiel: Will man die Therapeutenbeurteilung für eine Diagnoseentscheidung nutzen, ist Agreement relevant (ICC(2)). Für einen Forschungsindex, der immer von denselben 3 Therapeuten erhoben wird, reicht Consistency (ICC(3)).</p>
+
+    <div class="help-sh">Stichprobe vs. wahrer Wert</div>
+    <p class="help-p">Die Slider setzen Populations-Parameter (σ²). Das Tool zieht eine zufällige Stichprobe (n × k). Stichproben-MQs weichen von Erwartungswerten ab — das ist Stichprobenfehler. Bei jedem Klick auf "Neue Daten" ändert sich die Stichprobe, nicht die wahren Parameter. Bei großem n/k konvergieren die Schätzer.</p>
+    <p class="help-p">Referenz: Shrout, P. E., &amp; Fleiss, J. L. (1979). Psychological Bulletin, 86(2), 420–428.</p>
   </div>
 </div>
 
@@ -889,16 +914,10 @@ function toggleTheme(){
   setTimeout(rebuild,50);
 }
 
-// ── Help panel ───────────────────────────────────────────────
-let helpOpen=false;
+// ── Help overlay ─────────────────────────────────────────────
 function toggleHelp(){
-  helpOpen=!helpOpen;
-  document.getElementById('help-panel').classList.toggle('open',helpOpen);
+  document.getElementById('help-overlay').classList.toggle('open');
 }
-document.addEventListener('click',e=>{
-  if(helpOpen&&!e.target.closest('#help-panel')&&!e.target.closest('.tbtn'))
-    {helpOpen=false;document.getElementById('help-panel').classList.remove('open');}
-});
 
 // ── Resize ───────────────────────────────────────────────────
 window.addEventListener('resize',()=>{
