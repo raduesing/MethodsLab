@@ -269,6 +269,33 @@ E[Y | Treatment, Nachher]= α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</
     β₁ (Zeittrend) und β₂ (Selektion) kürzen sich in der doppelten Differenz heraus. <strong>β₃ = Interaktionsterm = DiD = ATT</strong> — der kausale Effekt für die behandelten Einheiten.
   </div>
 
+  <div class="sec-h">2 × 2 — Zellmittelwerte</div>
+  <table class="res-table">
+    <thead>
+      <tr><th>Gruppe</th><th>Vorher (Post=0)</th><th>Nachher (Post=1)</th><th>Δ (Nachher − Vorher)</th></tr>
+    </thead>
+    <tbody>
+      <tr class="row-ctrl">
+        <td>Kontrollgruppe</td>
+        <td class="num" id="td-c0">—</td>
+        <td class="num" id="td-c1">—</td>
+        <td class="num" id="td-dc">—</td>
+      </tr>
+      <tr class="row-treat">
+        <td>Treatmentgruppe</td>
+        <td class="num" id="td-t0">—</td>
+        <td class="num" id="td-t1">—</td>
+        <td class="num" id="td-dt">—</td>
+      </tr>
+      <tr class="row-did">
+        <td><strong>DiD = Δ_T − Δ_K = β̂₃</strong></td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" id="td-did">—</td>
+      </tr>
+    </tbody>
+  </table>
+
   <div class="sec-h">Regressionsoutput — OLS</div>
   <table class="res-table">
     <thead>
@@ -310,25 +337,6 @@ E[Y | Treatment, Nachher]= α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</
     </tbody>
   </table>
 
-  <div class="sec-h">DiD-Schätzer (β̂₃)</div>
-  <div class="stat-grid">
-    <div class="stat-box">
-      <div class="stat-lbl">β̂₃ DiD</div>
-      <div class="stat-val" id="st-did">—</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-lbl">SE(β̂₃)</div>
-      <div class="stat-val" id="st-se">—</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-lbl">t-Wert</div>
-      <div class="stat-val" id="st-t">—</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-lbl">p-Wert</div>
-      <div class="stat-val" id="st-p">—</div>
-    </div>
-  </div>
   <div id="st-badge"></div>
   <div id="st-note" style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);margin-top:.4rem;line-height:1.75"></div>
 
@@ -398,6 +406,15 @@ function tfmt(t){return t.toFixed(2);}
 function updateTables(){
   const o=computeOLS();
   const f=v=>v.toFixed(2);
+  const pm=v=>(v>=0?'+':'')+f(v);
+  // 2×2 table
+  document.getElementById('td-c0').textContent=f(o.mc0);
+  document.getElementById('td-c1').textContent=f(o.mc1);
+  document.getElementById('td-dc').textContent=pm(o.mc1-o.mc0);
+  document.getElementById('td-t0').textContent=f(o.mt0);
+  document.getElementById('td-t1').textContent=f(o.mt1);
+  document.getElementById('td-dt').textContent=pm(o.mt1-o.mt0);
+  document.getElementById('td-did').textContent=pm(o.b3Hat);
   // regression table — estId/tvId match HTML element IDs exactly
   const rows=[
     {estId:'rg-a',  tvId:null,     suf:'a', true_v:0,     est:o.aHat,  se:o.seA},
@@ -421,16 +438,9 @@ function updateTables(){
     const pEl=document.getElementById('rg-p'+r.suf);
     if(pEl){pEl.textContent=pFmt(p);pEl.style.color=p<0.05?'var(--a3)':'var(--ink3)';}
   });
-  // stat grid
+  // badge & note
   const t3=o.b3Hat/o.se3;
   const p3=2*(1-Φ(Math.abs(t3)));
-  document.getElementById('st-did').textContent=f(o.b3Hat);
-  document.getElementById('st-se').textContent=f(o.se3);
-  document.getElementById('st-t').textContent=tfmt(t3);
-  const pEl=document.getElementById('st-p');
-  pEl.textContent=pFmt(p3);
-  pEl.className='stat-val '+(p3<0.05?'sig':'ns');
-  // badge & note
   const badge=document.getElementById('st-badge');
   const note=document.getElementById('st-note');
   if(Math.abs(ST.pt)>0.05){
