@@ -178,6 +178,16 @@ canvas{width:100%;display:block}
 .dim-select-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;
   font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2)}
 .dim-select-row select{width:auto;flex:none}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a6);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a6);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
 </style>
 </head>
 <body>
@@ -198,6 +208,9 @@ canvas{width:100%;display:block}
 <div id="modal-box">
   <button id="modal-close" onclick="hideModal()">✕ Schließen</button>
   <div class="modal-h1">Beurteilerübereinstimmung — Anleitung</div>
+
+  <div class="modal-h2">Beispiel</div>
+  <div class="modal-p">3 klinische Psychologen beurteilen 80 Patientenvideos auf 2 Dimensionen: Depressionsschwere (ordinal, 4 Kategorien) und Risikoeinstufung (ordinal, 0–4). Jeder Beurteiler lädt eine eigene CSV-Datei hoch (80 Zeilen × 2 Spalten). Dann wird für jede Dimension einzeln und global berechnet, wie gut die drei Rater übereinstimmen — und welcher Anteil der Übereinstimmung über den Zufall hinausgeht.</div>
 
   <div class="modal-h2">CSV-Format</div>
   <div class="modal-p">
@@ -337,6 +350,18 @@ canvas{width:100%;display:block}
 
 <!-- ── MAIN ─────────────────────────────────────────────────────────────────── -->
 <div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Durchgehendes Beispiel</div>
+    <div class="story-vars">
+      <span class="sv">Reize (n)</span><span class="sd">80 Patientenvideos aus einer Ambulanz — jedes Video zeigt eine Erstvorstellung</span>
+      <span class="sv">Beurteiler (k)</span><span class="sd">3 klinische Psychologen — beurteilen jedes Video unabhängig</span>
+      <span class="sv">Dimension 1</span><span class="sd">Depressionsschwere (PHQ-Kategorie: keine / leicht / moderat / schwer)</span>
+      <span class="sv">Dimension 2</span><span class="sd">Risikoeinstufung (0 = kein Risiko … 4 = akut)</span>
+      <span class="sv">Format</span><span class="sd">3 CSV-Dateien (je 80 Zeilen × 2 Spalten) — eine pro Beurteiler</span>
+    </div>
+    <div class="story-q">Wie gut stimmen die drei Psychologen überein — und macht es einen Unterschied, ob wir Zufallsübereinstimmung korrigieren (κ, α), den Rater-Bias herausrechnen (ICC) oder robuste Korrekturen nutzen (Gwet AC)?</div>
+  </div>
 
   <!-- Empty state -->
   <div id="empty-state">
