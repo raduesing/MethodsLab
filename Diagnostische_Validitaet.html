@@ -191,7 +191,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
       <span class="sv">Cut-Off X</span><span class="sd">PHQ-Schwellenwert für positives Screening-Ergebnis</span>
       <span class="sv">Cut-Off Y</span><span class="sd">Kriteriumsschwelle: ab hier gilt jemand als „klinisch auffällig"</span>
     </div>
-    <div class="story-q">Wie gut trennt der PHQ-9 klinisch auffällige von unauffälligen Personen — und wie verändern sich Sensitivität, Spezifität und prädiktive Werte, wenn r (Validität) oder die Cut-Off-Werte verschoben werden?</div>
+    <div class="story-q">Was nützt ein positiver PHQ-9-Befund wirklich? Validität r beschreibt die Testgüte — aber PPV und NPV entscheiden, wie verwertbar das Ergebnis in dieser konkreten Situation ist. Basisrate, Cut-Off und Validität bestimmen gemeinsam den praktischen Nutzen.</div>
   </div>
 
   <div class="main-layout">
@@ -262,13 +262,29 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     <span class="help-formula2">TN: gesund + negativ getestet → korrekt ausgeschlossen</span>
     <p class="help-p">Im Beispiel: Verschieben des Test-Cut-Offs nach links erhöht Sensitivität (mehr TP), aber auch FP. Die Cut-Off-Linien können auf dem Canvas direkt gezogen werden.</p>
 
-    <div class="help-sh">Diagnostische Kennwerte</div>
-    <p class="help-p"><strong>Sensitivität</strong> = TP/(TP+FN) — Anteil korrekt erkannter Fälle. <strong>Spezifität</strong> = TN/(TN+FP) — Anteil korrekt ausgeschlossener Gesunder.</p>
-    <p class="help-p"><strong>PPV</strong> = TP/(TP+FP) — Wie wahrscheinlich ist die Erkrankung bei positivem Test? Stark prävalenzabhängig. <strong>NPV</strong> = TN/(TN+FN) — Wie sicher ist ein negatives Ergebnis?</p>
-    <p class="help-p"><strong>LR+</strong> = Sens/(1−Spez) — wie viel wahrscheinlicher ist ein positives Ergebnis bei Erkrankten? <strong>LR−</strong> = (1−Sens)/Spez. Likelihood Ratios sind prävalenzunabhängig und damit zwischen Populationen übertragbar.</p>
+    <div class="help-sh">Diagnostische Kennwerte — PPV &amp; NPV im Vordergrund</div>
+    <p class="help-p">Sensitivität und Spezifität beschreiben, wie gut der Test <em>an sich</em> funktioniert — prävalenzunabhängig, eine Eigenschaft des Tests. Im klinischen und diagnostischen Alltag steht aber eine andere Frage im Mittelpunkt: <strong>Was sagt mir dieses konkrete Ergebnis über diese konkrete Person?</strong> Diese Frage beantworten PPV und NPV.</p>
+    <p class="help-p"><strong>PPV</strong> (Positiver Prädiktiver Wert) = TP/(TP+FP): Wenn jemand positiv getestet wird — wie wahrscheinlich ist es, dass tatsächlich eine Störung vorliegt? <strong>NPV</strong> (Negativer Prädiktiver Wert) = TN/(TN+FN): Wenn jemand negativ getestet wird — wie sicher kann man sein, dass keine Störung vorliegt?</p>
+    <span class="help-formula2">PPV = (Sens · Prävalenz) / (Sens · Präv + (1−Spez) · (1−Präv))</span>
+    <p class="help-p">Beide Werte hängen stark von der <strong>Basisrate (Prävalenz)</strong> ab. Bei seltenen Störungen bleibt PPV selbst bei gutem Test niedrig — der Nenner ist voll von Gesunden, von denen trotzdem ein kleiner Anteil falsch positiv ist. Im Beispiel: Liegt die Depression-Prävalenz bei 10 % statt 50 %, sinkt PPV bei gleicher Sens und Spez drastisch.</p>
+    <p class="help-p"><strong>Sensitivität</strong> = TP/(TP+FN) und <strong>Spezifität</strong> = TN/(TN+FP) sind das Fundament: prävalenzunabhängig und populationsübertragbar. Sie bestimmen über LR, wie stark ein Testergebnis die Prä-Test-Wahrscheinlichkeit verändert.</p>
+    <p class="help-p"><strong>LR+</strong> = Sens/(1−Spez), <strong>LR−</strong> = (1−Sens)/Spez: prävalenzunabhängige Maße der Testergebnis-Stärke; direkt nutzbar zur Umrechnung von Prä- in Post-Test-Wahrscheinlichkeit (Bayes-Formel).</p>
+
+    <div class="help-sh">Nützlichkeit als Nebengütekriterium</div>
+    <p class="help-p">In der psychologischen Diagnostik werden neben den Hauptgütekriterien (Objektivität, Reliabilität, Validität) auch <strong>Nebengütekriterien</strong> gefordert — darunter die <strong>Nützlichkeit</strong> (Utility). Sie fragt: Lohnt sich der Einsatz dieses Tests in dieser Situation — verbessert er Entscheidungen gegenüber dem Status quo?</p>
+    <p class="help-p">PPV und NPV sind die direkten Operationalisierungen der Nützlichkeit im diagnostischen Kontext: Ein Test ist nützlich, wenn sein positiver Befund die Wahrscheinlichkeit einer Störung substanziell erhöht (hoher PPV) und ein negativer Befund sie substanziell senkt (hoher NPV). Validität r ist eine notwendige, aber keine hinreichende Bedingung — Basisrate und Cut-Off bestimmen, wie viel Nutzen r unter realen Bedingungen entfaltet.</p>
 
     <div class="help-sh">Zusammenhang r → Kennwerte</div>
-    <p class="help-p">Mit steigendem r rücken die Punktwolken der Gruppen auseinander — Sensitivität und Spezifität verbessern sich gleichzeitig. Mit sinkendem r (schlechte Validität) werden Sensitivität und Spezifität zu einem Nullsummenspiel: jede Verbesserung der einen geht auf Kosten der anderen. Das ist der Kern des ROC-Trade-offs.</p>
+    <p class="help-p">Mit steigendem r rücken die Punktwolken auseinander — Sensitivität und Spezifität verbessern sich gleichzeitig, und damit steigen auch PPV und NPV (bei gleicher Basisrate). Mit sinkendem r werden Sensitivität und Spezifität zum Nullsummenspiel: jede Verbesserung der einen geht auf Kosten der anderen — und PPV/NPV stagnieren oder verschlechtern sich je nach Cut-Off-Wahl.</p>
+
+    <div class="help-sh">Taylor-Russell-Tafeln — Ausblick</div>
+    <p class="help-p">Für Selektionssituationen (Personal, Therapieplätze, Fördermaßnahmen) formalisieren die <strong>Taylor-Russell-Tafeln</strong> (1939) den Zusammenhang zwischen Nützlichkeit, Validität und Randbedingungen. Sie verbinden drei Größen:</p>
+    <ul style="margin:.35rem 0 .6rem 1.1rem;font-size:.8rem;font-family:'DM Mono',monospace;color:var(--ink2);line-height:1.8">
+      <li><strong>Validität r</strong> — wie stark sagt der Test das Kriterium vorher?</li>
+      <li><strong>Basisrate BR</strong> — wie viele wären auch ohne Test erfolgreich/geeignet?</li>
+      <li><strong>Selektionsquote SR</strong> — welcher Anteil der Bewerber wird ausgewählt?</li>
+    </ul>
+    <p class="help-p">Aus diesen drei Größen ergibt sich die <strong>Erfolgsquote</strong>: der Anteil der Ausgewählten, der tatsächlich geeignet ist. Das zeigt, wann ein Test mit moderater Validität (r=0.30) unter günstigen Bedingungen (niedrige SR, mittlere BR) erheblichen Nutzen hat — und wann ein Test mit hoher Validität wenig bringt (z. B. wenn fast alle ohnehin ausgewählt werden). Ein interaktives Taylor-Russell-Tool ist in Vorbereitung.</p>
   </div>
 </div>
 
