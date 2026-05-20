@@ -200,7 +200,7 @@ canvas{display:block;width:100%;height:auto}
 
     <div class="slider-row">
       <div class="slider-lbl">
-        <span class="slider-name">σ²<sub>R</sub> · Rater-Bias</span>
+        <span class="slider-name">σ²<sub>R</sub> · Rater-Bias — wie unterschiedlich die Rater dieselben Reize bewerten</span>
         <span class="slider-val" id="v-sigR">0.50</span>
       </div>
       <input type="range" id="s-sigR" min="0" max="3" step="0.1" value="0.5">
@@ -225,9 +225,9 @@ canvas{display:block;width:100%;height:auto}
     <div class="slider-row">
       <div class="slider-lbl">
         <span class="slider-name">n · Anzahl Objekte</span>
-        <span class="slider-val" id="v-n">12</span>
+        <span class="slider-val" id="v-n">10</span>
       </div>
-      <input type="range" id="s-n" min="5" max="20" step="1" value="12">
+      <input type="range" id="s-n" min="5" max="20" step="1" value="10">
     </div>
 
     <button class="sbtn" onclick="regen()">⟳ Neue Daten</button>
@@ -279,7 +279,7 @@ canvas{display:block;width:100%;height:auto}
     <div class="story-lbl">Durchgehendes Beispiel</div>
     <div class="story-vars">
       <span class="sv">n</span><span class="sd">10 Patienten (Objekte) — z. B. aufgenommene Therapiesitzungen</span>
-      <span class="sv">k</span><span class="sd">3 Therapeuten (Rater) — beurteilen jeden Patienten auf einer Skala (0–100)</span>
+      <span class="sv">k</span><span class="sd">3 Therapeuten (Rater) — beurteilen jeden Patienten auf einer klinischen Skala</span>
       <span class="sv">σ²_B</span><span class="sd">Varianz zwischen Patienten — der Anteil, den wir messen wollen</span>
       <span class="sv">σ²_R</span><span class="sd">Rater-Bias (Strenge/Milde) — systematischer, aber vermeidbarer Fehler</span>
       <span class="sv">σ²_E</span><span class="sd">Zufälliger Restfehler — nicht wegzuerklären</span>
@@ -396,7 +396,7 @@ canvas{display:block;width:100%;height:auto}
     <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
 
     <div class="help-sh">Beispiel</div>
-    <p class="help-p">3 Therapeuten beurteilen 10 Patienten auf einer klinischen Skala (0–100). Jeder Therapeut hat eine leicht andere Strenge (σ²_R). Die eigentliche Variabilität zwischen Patienten ist σ²_B — das, was wir reliabel messen wollen. σ²_E ist reiner Zufall. Die ICC-Wahl entscheidet, wie viel davon als Fehler gilt.</p>
+    <p class="help-p">3 Therapeuten beurteilen 10 Patienten auf einer klinischen Skala. Jeder Therapeut hat eine leicht andere Strenge (σ²_R). Die eigentliche Variabilität zwischen Patienten ist σ²_B — das, was wir reliabel messen wollen. σ²_E ist reiner Zufall. Die ICC-Wahl entscheidet, wie viel davon als Fehler gilt.</p>
 
     <div class="help-sh">Varianzkomponenten (σ²-Notation)</div>
     <p class="help-p">Das Tool steuert drei Populationsparameter. In den Formeln erscheinen sie als Mittlere Quadratsummen (MQ), da die ANOVA σ² nicht direkt liefert, sondern über Erwartungswerte der MQ.</p>
