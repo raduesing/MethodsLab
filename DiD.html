@@ -136,10 +136,10 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <p class="help-p">Das DiD-Modell lautet:</p>
     <span class="help-formula">Y = α + β₁·Post + β₂·Treat + β₃·(Post × Treat) + ε</span>
     <p class="help-p">Die vier Erwartungswerte daraus:</p>
-    <span class="help-formula">E[Y | Kontroll, Vorher] = α
-E[Y | Kontroll, Nachher] = α + β₁          → Δ_K = β₁
-E[Y | Treatment, Vorher] = α + β₂
-E[Y | Treatment, Nachher] = α + β₁ + β₂ + β₃  → Δ_T = β₁ + β₃</span>
+    <span class="help-formula">E[Y | Kontroll, Vorher]  = α<br>
+E[Y | Kontroll, Nachher] = α + β₁           → Δ_K = β₁<br>
+E[Y | Treatment, Vorher] = α + β₂<br>
+E[Y | Treatment, Nachher]= α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</span>
     <p class="help-p">Differenz der Differenzen: DiD = Δ_T − Δ_K = (β₁ + β₃) − β₁ = <strong>β₃</strong></p>
     <p class="help-p">β₃ ist der Koeffizient des Interaktionsterms (Post × Treat). Er misst genau die zusätzliche Veränderung der Treatmentgruppe über den allgemeinen Zeittrend β₁ hinaus. Der Selektionsbias β₂ (zeitkonstanter Gruppenunterschied) fällt in der doppelten Differenz vollständig heraus — das ist die zentrale Stärke von DiD.</p>
 
@@ -151,16 +151,20 @@ E[Y | Treatment, Nachher] = α + β₁ + β₂ + β₃  → Δ_T = β₁ + β₃
     <p class="help-p">Ein <strong>kontrafaktisches Szenario</strong> beantwortet eine gedankliche Frage: Wie hätte sich die Treatmentgruppe entwickelt, wenn sie <em>nicht</em> behandelt worden wäre? Diese Situation existiert per Definition nicht in den Daten — jede Schule war entweder im Programm oder nicht.</p>
     <p class="help-p">Im DiD-Plot ist die <strong>gestrichelte grüne Linie</strong> das kontrafaktische Szenario: Sie zeigt, wie die Treatmentschulen sich vermutlich entwickelt hätten — nämlich parallel zur Kontrollgruppe. Der DiD-Effekt β̂₃ ist genau die Lücke zwischen dem tatsächlich beobachteten Nachher-Wert der Treatmentgruppe und diesem kontrafaktischen Wert.</p>
     <p class="help-p">Das <strong>Parallel-Trends-Argument</strong> macht die kontrafaktische Annahme explizit: Ohne Intervention hätten sich beide Gruppen gleich stark verändert. Ist das plausibel, ist das Kontrafaktual sinnvoll rekonstruiert — und β̂₃ kausal interpretierbar.</p>
-    <p class="help-p">→ Das <a href="Causal_Teaching.html" style="color:var(--a2);text-decoration:underline">Causal Teaching Tool</a> zeigt kontrafaktische Potenzielle Outcomes im Rubin-Framework (Y(0), Y(1)) und erklärt, warum man nie beides gleichzeitig beobachten kann — das fundamentale Problem kausaler Inferenz.</p>
+    <p class="help-p">→ Das <a href="Causal_Teaching.html" target="_blank" rel="noopener" style="color:var(--a2);text-decoration:underline">Causal Teaching Tool</a> zeigt kontrafaktische Potenzielle Outcomes im Rubin-Framework (Y(0), Y(1)) und erklärt, warum man nie beides gleichzeitig beobachten kann — das fundamentale Problem kausaler Inferenz.</p>
 
     <div class="help-sh">Selektionsbias — und warum DiD robust ist</div>
     <p class="help-p">β₂ misst den zeitkonstanten Unterschied zwischen Treatment- und Kontrollgruppe <em>vor</em> der Intervention. Wenn z. B. Schulen mit motivierteren Schülern am Programm teilnehmen (Selbstselektion), weichen ihre Ausgangswerte ab (β₂ ≠ 0).</p>
-    <p class="help-p">DiD korrigiert dies automatisch: β₂ kürzt sich in der doppelten Differenz heraus. Das Szenario "Selektionsbias" zeigt genau das — trotz großem β₂ ist β̂₃ unverzerrt.</p>
+    <p class="help-p">DiD korrigiert dies automatisch: β₂ kürzt sich in der doppelten Differenz heraus — trotz großem β₂ ist β̂₃ unverzerrt. Das Szenario "Selektionsbias" und das Kombinations-Szenario illustrieren das.</p>
 
-    <div class="help-sh">Die Parallel-Trends-Annahme &amp; Historienbedrohung</div>
-    <p class="help-p">DiD setzt voraus, dass sich beide Gruppen ohne Intervention <em>gleich stark</em> verändert hätten — die Parallel-Trends-Annahme. Ist sie erfüllt, schätzt DiD β₃ korrekt.</p>
-    <p class="help-p">Sie ist verletzt durch eine <strong>Historienbedrohung</strong>: Ein externes Ereignis (z. B. eine andere Reform, ein wirtschaftlicher Schock) trifft die Treatmentgruppe im Nachher-Zeitraum zusätzlich — unabhängig vom Programm. Dann hat die Treatmentgruppe auch ohne Intervention einen anderen Trend, und der DiD-Schätzer ist um die PT-Verletzung verzerrt: β̂₃ → β₃ + PT_Verletzung.</p>
-    <p class="help-p">Die Parallel-Trends-Annahme ist <strong>nicht direkt testbar</strong>, aber indirekt prüfbar: Zeigen Vorperioden-DiDs (Placebo-Tests) nahe null, ist die Annahme plausibler.</p>
+    <div class="help-sh">Naive Vergleiche — warum sie scheitern</div>
+    <p class="help-p">Im Kombinations-Szenario (β₁ = 1.5, β₂ = 1.5, β₃ = 3) sieht man, warum zwei naiv wirkende Vergleiche dennoch falsch sind:</p>
+    <p class="help-p"><strong>① G1<sub>t1</sub> − G0<sub>t1</sub></strong> (Querschnitt zum Nachher-Zeitpunkt): überschätzt den ATT, weil der Gruppenunterschied β₂ (Selektion, zeitkonstant) mit eingeht.</p>
+    <p class="help-p"><strong>② G1<sub>t1</sub> − G1<sub>t0</sub></strong> (Vorher-Nachher nur in der Treatmentgruppe): überschätzt den ATT, weil der allgemeine Zeittrend β₁ mit eingeht — die Gruppe hätte sich auch ohne Programm verbessert.</p>
+    <p class="help-p">DiD korrigiert beide Verzerrungen gleichzeitig: β₂ kürzt sich in der doppelten Differenz heraus, β₁ ebenfalls. Beide orangen Pfeile ① ② im Plot zeigen, wie weit die naiven Vergleiche daneben liegen.</p>
+
+    <div class="help-sh">Parallel-Trends-Annahme</div>
+    <p class="help-p">DiD setzt voraus, dass sich beide Gruppen ohne Intervention <em>gleich stark</em> verändert hätten. Diese Annahme ist nicht direkt testbar, aber indirekt durch Vorperioden-Vergleiche prüfbar (Placebo-Tests). Der PT-Verletzungs-Slider erlaubt manuelle Exploration dieser theoretischen Gefährdung.</p>
 
     <div class="help-sh">Grenzen &amp; Robustheit</div>
     <p class="help-p"><strong>Antizipationseffekte:</strong> Ändert die Treatmentgruppe ihr Verhalten schon vor dem Programm, ist die Vorher-Messung kontaminiert.<br>
@@ -223,15 +227,15 @@ E[Y | Treatment, Nachher] = α + β₁ + β₂ + β₃  → Δ_T = β₁ + β₃
     <div class="scard-title">Szenarien</div>
     <button class="preset-btn" id="pre-clean" onclick="setPreset('clean')">Klarer DiD-Effekt</button>
     <button class="preset-btn" id="pre-sel" onclick="setPreset('sel')">Selektionsbias — DiD robust</button>
-    <button class="preset-btn" id="pre-hist" onclick="setPreset('hist')">Historienbedrohung — DiD verzerrt</button>
-    <button class="preset-btn" id="pre-combo" onclick="setPreset('combo')">Kombination beider Probleme</button>
+    <button class="preset-btn" id="pre-combo" onclick="setPreset('combo')">Naive Vergleiche — Kombination</button>
     <button class="preset-btn" id="pre-null" onclick="setPreset('null')">Kein Effekt (Nullfall)</button>
   </div>
 
   <div class="scard">
     <div class="hint">
       <strong style="color:var(--a3)">β₂ ≠ 0</strong>: Selektion — Gruppen unterscheiden sich schon vor der Intervention. DiD korrigiert β₂ automatisch.<br><br>
-      <strong style="color:var(--a5)">PT-Verletzung ≠ 0</strong>: Historienbedrohung — eine externe Störgröße trifft die Treatmentgruppe differenziell. DiD schätzt β₃ + PT_Viol (verzerrt).
+      <strong style="color:var(--a1)">① ②</strong>: Im Kombinations-Szenario sichtbar — naive Vergleiche überschätzen den ATT.<br><br>
+      <strong style="color:var(--a5)">PT-Verletzung ≠ 0</strong>: Theoretische Gefährdung — externe Störgröße differenziell in Treatment. Nicht direkt testbar; Slider zur Exploration.
     </div>
   </div>
 
@@ -264,33 +268,6 @@ E[Y | Treatment, Nachher] = α + β₁ + β₂ + β₃  → Δ_T = β₁ + β₃
     Δ_Kontroll = β₁ &nbsp;·&nbsp; Δ_Treatment = β₁ + β₃ &nbsp;·&nbsp; <strong>DiD = Δ_T − Δ_K = β₃</strong><br>
     β₁ (Zeittrend) und β₂ (Selektion) kürzen sich in der doppelten Differenz heraus. <strong>β₃ = Interaktionsterm = DiD = ATT</strong> — der kausale Effekt für die behandelten Einheiten.
   </div>
-
-  <div class="sec-h">2 × 2 — Zellmittelwerte</div>
-  <table class="res-table">
-    <thead>
-      <tr><th>Gruppe</th><th>Vorher (Post=0)</th><th>Nachher (Post=1)</th><th>Δ (Nachher − Vorher)</th></tr>
-    </thead>
-    <tbody>
-      <tr class="row-ctrl">
-        <td>Kontrollgruppe</td>
-        <td class="num" id="td-c0">—</td>
-        <td class="num" id="td-c1">—</td>
-        <td class="num" id="td-dc">—</td>
-      </tr>
-      <tr class="row-treat">
-        <td>Treatmentgruppe</td>
-        <td class="num" id="td-t0">—</td>
-        <td class="num" id="td-t1">—</td>
-        <td class="num" id="td-dt">—</td>
-      </tr>
-      <tr class="row-did">
-        <td><strong>DiD = Δ_T − Δ_K = β̂₃</strong></td>
-        <td class="num">—</td>
-        <td class="num">—</td>
-        <td class="num" id="td-did">—</td>
-      </tr>
-    </tbody>
-  </table>
 
   <div class="sec-h">Regressionsoutput — OLS</div>
   <table class="res-table">
@@ -362,7 +339,7 @@ E[Y | Treatment, Nachher] = α + β₁ + β₂ + β₃  → Δ_T = β₁ + β₃
 // ── State ──────────────────────────────────────────────────────────────────────
 const ST = {
   b1:0.4, b2:0, b3:1.2, pt:0, sigma:0.8, n:60,
-  seed:42, data:null, yFixed:null
+  seed:42, data:null, yFixed:null, showNaive:false
 };
 
 // ── PRNG ───────────────────────────────────────────────────────────────────────
@@ -421,15 +398,6 @@ function tfmt(t){return t.toFixed(2);}
 function updateTables(){
   const o=computeOLS();
   const f=v=>v.toFixed(2);
-  const pm=v=>(v>=0?'+':'')+f(v);
-  // 2×2 table
-  document.getElementById('td-c0').textContent=f(o.mc0);
-  document.getElementById('td-c1').textContent=f(o.mc1);
-  document.getElementById('td-dc').textContent=pm(o.mc1-o.mc0);
-  document.getElementById('td-t0').textContent=f(o.mt0);
-  document.getElementById('td-t1').textContent=f(o.mt1);
-  document.getElementById('td-dt').textContent=pm(o.mt1-o.mt0);
-  document.getElementById('td-did').textContent=pm(o.b3Hat);
   // regression table — estId/tvId match HTML element IDs exactly
   const rows=[
     {estId:'rg-a',  tvId:null,     suf:'a', true_v:0,     est:o.aHat,  se:o.seA},
@@ -467,12 +435,20 @@ function updateTables(){
   const note=document.getElementById('st-note');
   if(Math.abs(ST.pt)>0.05){
     badge.innerHTML=`<span class="badge badge-warn">PT-Verletzung aktiv — β̂₃ = ${f(o.b3Hat)} enthält Bias ${ST.pt>0?'+':''}${f(ST.pt)} · wahrer β₃ = ${f(ST.b3)}</span>`;
-    note.textContent=`DiD schätzt β₃ + PT_Verletzung = ${f(ST.b3)} + ${f(ST.pt)} = ${f(ST.b3+ST.pt)} ≈ ${f(o.b3Hat)}. Der Bias entsteht, weil die PT-Annahme verletzt ist.`;
+    note.innerHTML=`DiD schätzt β₃ + PT_Verletzung = ${f(ST.b3)} + ${f(ST.pt)} = ${f(ST.b3+ST.pt)} ≈ ${f(o.b3Hat)}. Der Bias entsteht, weil die PT-Annahme verletzt ist.`;
+  } else if(ST.showNaive){
+    const nc1=o.mt1-o.mc1, nc2=o.mt1-o.mt0;
+    badge.innerHTML=p3<0.05
+      ?`<span class="badge badge-sig">β̂₃ = ${f(o.b3Hat)} — korrekte ATT-Schätzung trotz Selektion &amp; Zeittrend</span>`
+      :`<span class="badge badge-ns">Nicht signifikant (p=${pFmt(p3)})</span>`;
+    note.innerHTML=`<strong style="color:var(--a1)">① G1<sub>t1</sub>−G0<sub>t1</sub> = ${nc1>=0?'+':''}${f(nc1)}</strong> → zu groß: enthält β₂ (Selektion = ${f(ST.b2)})<br>`+
+      `<strong style="color:var(--a4)">② G1<sub>t1</sub>−G1<sub>t0</sub> = ${nc2>=0?'+':''}${f(nc2)}</strong> → zu groß: enthält β₁ (Zeittrend = ${f(ST.b1)})<br>`+
+      `<strong style="color:var(--a5)">DiD β̂₃ = ${f(o.b3Hat)}</strong> → korrigiert beide Verzerrungen — trifft den wahren ATT = ${f(ST.b3)}`;
   } else {
     badge.innerHTML=p3<0.05
       ?`<span class="badge badge-sig">Signifikant (p${p3<0.001?'<.001':'='+pFmt(p3)}) · β̂₃ = ${f(o.b3Hat)} ≈ wahrer β₃ = ${f(ST.b3)}</span>`
       :`<span class="badge badge-ns">Nicht signifikant (p=${pFmt(p3)}) · wahrer β₃ = ${f(ST.b3)}</span>`;
-    note.textContent=`β̂₃ = ${f(o.b3Hat)} | SE = ${f(o.se3)} | σ̂ = ${o.sigHat.toFixed(2)} | n = ${ST.n} pro Zelle | wahres β₂ (Selektion) = ${f(ST.b2)} → von DiD korrigiert`;
+    note.innerHTML=`β̂₃ = ${f(o.b3Hat)} | SE = ${f(o.se3)} | σ̂ = ${o.sigHat.toFixed(2)} | n = ${ST.n} pro Zelle | wahres β₂ (Selektion) = ${f(ST.b2)} → von DiD korrigiert`;
   }
 }
 
@@ -483,10 +459,10 @@ function drawDiD(){
   const canvas=document.getElementById('cv-did');
   const W=canvas.clientWidth; canvas.width=W; const H=canvas.height;
   const ctx=canvas.getContext('2d');
-  const pad={l:60,r:20,t:24,b:44};
+  const pad={l:60,r:ST.showNaive?95:20,t:24,b:44};
   const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
 
-  const a2=cv('--a2'),a3=cv('--a3'),a5=cv('--a5');
+  const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5');
   const ink=cv('--ink'),ink2=cv('--ink2'),ink3=cv('--ink3');
   const grid=cv('--grid'),bg=cv('--bg'),paper=cv('--paper');
 
@@ -621,6 +597,34 @@ function drawDiD(){
     ctx.fillText(lbl,ax+6,(ay1+ay2)/2+4);
   }
 
+  // ── Naive comparison brackets (showNaive only) ─────────────────────────────
+  if(ST.showNaive){
+    const as=4;
+    const drawNaiveBracket=(nx,y1,y2,col,lbl)=>{
+      ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1.8;
+      ctx.beginPath();ctx.moveTo(nx,y1);ctx.lineTo(nx,y2);ctx.stroke();
+      [[y2,1],[y1,-1]].forEach(([y,d])=>{
+        ctx.beginPath();ctx.moveTo(nx,y);ctx.lineTo(nx-as,y+d*6);ctx.lineTo(nx+as,y+d*6);ctx.closePath();ctx.fill();
+      });
+      ctx.fillStyle=col;ctx.font='bold 10px DM Mono,monospace';ctx.textAlign='left';
+      ctx.fillText(lbl,nx+5,(y1+y2)/2+4);
+    };
+    // Naive 1: G1_t1 − G0_t1 (cross-sectional)
+    const n1x=xPost+50;
+    const n1y1=clamp(sy(mc1)), n1y2=clamp(sy(mt1));
+    ctx.globalAlpha=0.3;ctx.strokeStyle=a1;ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(xPost,n1y1);ctx.lineTo(n1x,n1y1);ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;
+    drawNaiveBracket(n1x,n1y1,n1y2,a1,`①${(mt1-mc1)>=0?'+':''}${(mt1-mc1).toFixed(2)}`);
+    // Naive 2: G1_t1 − G1_t0 (pre-post treatment)
+    const n2x=xPost+78;
+    const n2y1=clamp(sy(mt0)), n2y2=clamp(sy(mt1));
+    ctx.globalAlpha=0.3;ctx.strokeStyle=a4;ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(xPost,n2y1);ctx.lineTo(n2x,n2y1);ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;
+    drawNaiveBracket(n2x,n2y1,n2y2,a4,`②${(mt1-mt0)>=0?'+':''}${(mt1-mt0).toFixed(2)}`);
+  }
+
   // ── Legend box ─────────────────────────────────────────────────────────────
   const items=[
     {col:a2, dash:false, lbl:'Kontrollgruppe'},
@@ -630,6 +634,10 @@ function drawDiD(){
   ];
   if(Math.abs(ST.pt)>0.05) items.push({col:a5,dash:true,lbl:'Wahres KF (PT-Viol.)'});
   if(Math.abs(ST.b2)>0.05) items.push({col:a3,dash:false,lbl:'β₂ Selektion'});
+  if(ST.showNaive){
+    items.push({col:a1,dash:false,lbl:'① Naiv: G1t1−G0t1'});
+    items.push({col:a4,dash:false,lbl:'② Naiv: G1t1−G1t0'});
+  }
 
   const lgW=168, lgItemH=16, lgPad=8;
   const lgH=items.length*lgItemH+lgPad*1.8;
@@ -666,6 +674,7 @@ function onSl(){
   document.getElementById('v-pt').textContent=ST.pt.toFixed(2);
   document.getElementById('v-sigma').textContent=ST.sigma.toFixed(2);
   document.getElementById('v-n').textContent=ST.n;
+  ST.showNaive=false;
   clearPresets();
   recompute();
 }
@@ -680,11 +689,11 @@ function setPreset(key){
   const P={
     clean: {b1:0.40, b2:0.00, b3:1.20, pt:0.00, sigma:0.80, n:60},
     sel:   {b1:0.40, b2:-1.50,b3:1.20, pt:0.00, sigma:0.80, n:60},
-    hist:  {b1:0.40, b2:0.00, b3:0.50, pt:1.00, sigma:0.80, n:60},
-    combo: {b1:0.40, b2:-1.20,b3:0.80, pt:0.80, sigma:0.80, n:60},
+    combo: {b1:1.50, b2:1.50, b3:3.00, pt:0.00, sigma:0.80, n:60},
     null:  {b1:0.40, b2:0.00, b3:0.00, pt:0.00, sigma:0.80, n:60},
   };
   const p=P[key];
+  ST.showNaive=(key==='combo');
   Object.assign(ST,p);
   ['b1','b2','b3','pt','sigma','n'].forEach(k=>{
     const el=document.getElementById('s-'+k);
