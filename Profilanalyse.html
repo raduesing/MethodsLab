@@ -99,13 +99,40 @@ select:focus{outline:1px solid var(--accent)}
 .help-panel strong{color:var(--ink)}
 .help-formula{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--grid);
   padding:.32rem .65rem;margin:.28rem 0;color:var(--a2)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula2{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
 </style>
 </head>
 <body>
 
 <div id="topbar">
   <h1>Profilanalyse — <em>Diagnostische Profilvergleiche</em></h1>
-  <button class="tbtn" id="help-btn" onclick="toggleHelp()" style="border-color:var(--a6);color:var(--a6)">? Hilfe</button>
+  <button class="tbtn" id="help-btn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 
@@ -160,25 +187,21 @@ select:focus{outline:1px solid var(--accent)}
     </div>
   </div>
 
-  <div class="help-panel" id="help-panel">
-    <p><strong>Elevation M̄</strong> = mittleres Niveau des Profils = (1/n)·Σxₖ.</p>
-    <p><strong>Streuung S²</strong> = Populationsvarianz (÷n) = (1/n)·Σ(xₖ−M̄)². Variabilität innerhalb des Profils.</p>
-    <p><strong>D²</strong> nach Cronbach &amp; Gleser (1953): quadrierte euklidische Distanz. Zerlegt in Elevation, Streuung und Form:</p>
-    <div class="help-formula">D² = n·ΔM̄² + n·ΔS² + 2n·S₁·S₂·(1−r)</div>
-    <p><strong>rₚ</strong> nach Cattell (1949) — berechnet auf z-standardisierten Profilen. Eₖ = Median(χ²_k) via Wilson-Hilferty. Niveauunterschiede gehen direkt in d²_z ein.</p>
-    <div class="help-formula">rₚ = (2Eₖ − d²_z) / (2Eₖ + d²_z)</div>
-    <p><strong>Iₚₐ</strong> nach McCrae (1993) — ebenfalls auf z-Werten. M_i = (z_{A,i}+z_{B,i})/2. Normiert so, dass Iₚₐ ≈ 0 bei Zufallsähnlichkeit.</p>
-    <div class="help-formula">Iₚₐ = (k + 2ΣM² − d²_z) / √(10k)</div>
-    <p><strong>rₚₐ</strong> transformiert Iₚₐ in einen Korrelationskoeffizienten ∈ (−1, 1]. Analog zur t→r Umrechnung mit k−2 Freiheitsgraden.</p>
-    <div class="help-formula">rₚₐ = Iₚₐ / √((k−2) + Iₚₐ²)</div>
-    <p><strong>ICC_de</strong> (Griffin &amp; Gonzalez, 1995): Pearson-Korrelation auf doppelt eingetragenem Datensatz — Spalte 1 = [P₁;P₂], Spalte 2 = [P₂;P₁]. Sensitiv für Niveauunterschiede, nicht nur Formähnlichkeit.</p>
-    <div class="help-formula">ICC_de = (MSB−MSW) / (MSB+MSW)</div>
-    <p>Merkmalsnamen sind in der Tabellenkopfzeile direkt editierbar.</p>
-  </div>
 
 </div>
 
 <div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Durchgehendes Beispiel</div>
+    <div class="story-vars">
+      <span class="sv">Person A</span><span class="sd">Patient nach neuropsychologischer Untersuchung (Stanine-Profil, 7 Subtests)</span>
+      <span class="sv">Person B</span><span class="sd">Normstichprobe (oder Profil aus Vordiagnostik / Re-Test)</span>
+      <span class="sv">Merkmale</span><span class="sd">z. B. Arbeitsgedächtnis, Verarbeitungsgeschwindigkeit, Sprachverständnis …</span>
+      <span class="sv">Skala</span><span class="sd">Stanine (M=5, SD=2) — oder umschalten auf IQ, T, z, Wertpunkte</span>
+    </div>
+    <div class="story-q">Wie ähnlich sind zwei Testwertprofile — und woher kommt eine Differenz: Liegt sie am unterschiedlichen Niveau, an der Streuung der Subtest-Werte oder an der Profilform? Verschiedene Kennwerte beantworten diese Fragen unterschiedlich.</div>
+  </div>
 
   <div class="sec-h" style="margin-top:0">① Profilabbildung</div>
   <div class="profile-section">
@@ -198,6 +221,49 @@ select:focus{outline:1px solid var(--accent)}
   <div id="pairwise-stats" class="pair-blocks n1"></div>
 
 </div>
+</div>
+
+<!-- Hilfe-Overlay -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Profilanalyse — Hilfe</div>
+    <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+
+    <div class="help-sh">Beispiel</div>
+    <p class="help-p">Person A ist ein Patient nach neuropsychologischer Untersuchung, Person B ist das Normstichprobenprofil (oder ein Vortest-Profil). Beide zeigen Stanine-Werte auf 7 Subtests (z. B. Arbeitsgedächtnis, Verarbeitungsgeschwindigkeit, Sprachverständnis). Frage: Wie ähnlich sind die Profile — und woher kommt ein Unterschied?</p>
+
+    <div class="help-sh">Elevation, Streuung, Form</div>
+    <p class="help-p">Jedes Profil lässt sich in drei unabhängige Komponenten zerlegen (Cronbach &amp; Gleser, 1953):</p>
+    <p class="help-p"><strong>Elevation M̄</strong> = mittleres Niveau = (1/k)·Σxᵢ. Unterschied in Elevation → Person A erzielt insgesamt höhere oder niedrigere Werte als B.</p>
+    <p class="help-p"><strong>Streuung S²</strong> = Variabilität der Subtestwerte um das eigene Niveau = (1/k)·Σ(xᵢ−M̄)². Hohe Streuung = ungleichmäßiges Profil.</p>
+    <p class="help-p"><strong>Form / Scatter</strong> = Muster der Hoch-/Tiefpunkte, unabhängig von Niveau und Streuung. Zwei Profile können gleiche Elevation und Streuung haben, aber vollkommen verschiedene Formen.</p>
+    <p class="help-p">Im Beispiel: Wenn A überall um 1 Stanine-Punkt unter B liegt (reiner Niveauunterschied), sollten Form-Kennwerte trotzdem hohe Ähnlichkeit zeigen.</p>
+
+    <div class="help-sh">D² nach Cronbach &amp; Gleser (1953)</div>
+    <p class="help-p">Die quadrierte euklidische Distanz D² misst den Gesamtunterschied zweier Profile und zerfällt additiv in die drei Komponenten:</p>
+    <span class="help-formula2">D² = k·ΔM̄² + k·ΔS² + 2k·S₁·S₂·(1−r)</span>
+    <p class="help-p">Im Beispiel: D²=0 → identische Profile. D²=7 (bei k=7 Merkmalen) entspricht einem durchschnittlichen Unterschied von 1 Skalenpunkt pro Merkmal. Der Beitrag jeder Komponente zeigt, was den Hauptunterschied ausmacht.</p>
+
+    <div class="help-sh">rₚ nach Cattell (1949)</div>
+    <p class="help-p">Profilkorrelation auf z-standardisierten Werten. Eₖ = Erwartungswert der χ²-Verteilung mit k Freiheitsgraden (Median via Wilson-Hilferty). Niveauunterschiede gehen in d²_z ein.</p>
+    <span class="help-formula2">rₚ = (2Eₖ − d²_z) / (2Eₖ + d²_z)</span>
+    <p class="help-p">rₚ ist sensitiv für Niveauunterschiede (anders als einfache Korrelation). Im Beispiel: Wenn A generell unter Norm (M̄_A&lt;M̄_B), sinkt rₚ, auch wenn die Profilform identisch ist.</p>
+
+    <div class="help-sh">Iₚₐ / rₚₐ nach McCrae (1993)</div>
+    <p class="help-p">Iₚₐ misst Profilähnlichkeit auf z-standardisierten Werten, normiert so dass Iₚₐ≈0 bei Zufallsähnlichkeit. Mᵢ = (zA,i+zB,i)/2 ist der mittlere z-Wert pro Merkmal.</p>
+    <span class="help-formula2">Iₚₐ = (k + 2ΣMᵢ² − d²_z) / √(10k)</span>
+    <p class="help-p">rₚₐ transformiert Iₚₐ in einen korrelativen Index ∈ (−1, 1]:</p>
+    <span class="help-formula2">rₚₐ = Iₚₐ / √((k−2) + Iₚₐ²)</span>
+    <p class="help-p">Im Beispiel: rₚₐ ≈ 0.90 = hohe Formähnlichkeit bei gleichzeitig vorhandenem Niveauunterschied möglich.</p>
+
+    <div class="help-sh">ICC_de nach Griffin &amp; Gonzalez (1995)</div>
+    <p class="help-p">Pearson-Korrelation auf doppelt eingetragenem Datensatz: Spalte 1 = [P₁; P₂], Spalte 2 = [P₂; P₁]. Sensitiv für Niveauunterschiede, weil die Symmetrisierung die Varianz erhöht wenn die Profile auf unterschiedlichen Niveaus liegen.</p>
+    <span class="help-formula2">ICC_de = (MSB − MSW) / (MSB + MSW)</span>
+    <p class="help-p">Im Beispiel: Reine Formähnlichkeit (gleicher Scatter, gleiche Elevation) → ICC_de = hohe Pearson-r auf dem doppelten Datensatz. Niveauunterschied drückt ICC_de stärker als rₚₐ.</p>
+
+    <div class="help-sh">Wann welcher Kennwert?</div>
+    <p class="help-p">D² eignet sich als globales Distanzmaß — leicht interpretierbar, zerfällt in Komponenten. rₚ (Cattell) ist etabliert in klinischer Diagnostik, aber von k und Streuung abhängig. Iₚₐ / rₚₐ (McCrae) haben klarere Null-Referenz und Normierung. ICC_de (Griffin) ist besonders geeignet wenn Niveauunterschiede vollständig berücksichtigt werden sollen — z. B. im Re-Test-Vergleich nach Therapie.</p>
+  </div>
 </div>
 
 <script>
@@ -319,8 +385,7 @@ function toggleTheme() {
   drawProfile();
 }
 function toggleHelp() {
-  document.getElementById('help-panel').classList.toggle('open');
-  document.getElementById('help-btn').classList.toggle('active');
+  document.getElementById('help-overlay').classList.toggle('open');
 }
 
 /* ── Controls ── */
