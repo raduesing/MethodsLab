@@ -469,7 +469,7 @@ function drawDiD(){
   const canvas=document.getElementById('cv-did');
   const W=canvas.clientWidth; canvas.width=W; const H=canvas.height;
   const ctx=canvas.getContext('2d');
-  const pad={l:60,r:ST.showNaive?165:20,t:24,b:44};
+  const pad={l:60,r:ST.showNaive?200:20,t:24,b:44};
   const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
 
   const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5');
@@ -620,7 +620,7 @@ function drawDiD(){
       ctx.fillText(lbl,nx+5,(y1+y2)/2+4);
     };
     // Naive 1: G1_t1 − G0_t1 (Querschnitt bei Post=1: unterschiedliche Gruppen)
-    const n1x=xPost+80;
+    const n1x=xPost+110;
     const n1y1=clamp(sy(mc1)), n1y2=clamp(sy(mt1));
     ctx.globalAlpha=0.3;ctx.strokeStyle=a1;ctx.lineWidth=1;ctx.setLineDash([3,3]);
     ctx.beginPath();ctx.moveTo(xPost,n1y1);ctx.lineTo(n1x,n1y1);ctx.stroke();
@@ -628,7 +628,7 @@ function drawDiD(){
     drawNaiveBracket(n1x,n1y1,n1y2,a1,`①${(mt1-mc1)>=0?'+':''}${(mt1-mc1).toFixed(2)}`);
     // Naive 2: G1_t1 − G1_t0 (Vorher-Nachher nur Treatment-Gruppe)
     // Führungslinie von xPre (T₀-Punkt) bis n2x — macht klar, dass T₀ der Ankerpunkt ist
-    const n2x=xPost+140;
+    const n2x=xPost+170;
     const n2y1=clamp(sy(mt0)), n2y2=clamp(sy(mt1));
     ctx.globalAlpha=0.25;ctx.strokeStyle=a4;ctx.lineWidth=1;ctx.setLineDash([3,3]);
     ctx.beginPath();ctx.moveTo(xPre,n2y1);ctx.lineTo(n2x,n2y1);ctx.stroke();
