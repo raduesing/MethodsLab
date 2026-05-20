@@ -95,6 +95,33 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
   padding:.35rem .7rem;margin:.3rem 0;color:var(--a2)}
 /* seed display */
 .seed-note{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.3rem;text-align:center}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula2{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
 </style>
 </head>
 <body>
@@ -150,18 +177,23 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     </div>
   </div>
 
-  <div class="help-panel" id="help-panel">
-    <p>Der <strong>Scatterplot</strong> zeigt N simulierte Personen mit Testwert (X) und Kriteriumswert (Y). Beide Werte sind z-standardisiert (M=0, SD=1).</p>
-    <p>Die <strong>Korrelation r</strong> entspricht der Validität des Tests: r=0 → kein Zusammenhang, r=1 → perfekte Vorhersage.</p>
-    <p>Die <strong>Cut-Off-Linien</strong> definieren vier Quadranten. Alle Personen oberhalb des Kriterium-Cut-Offs gelten als „krank", alle rechts des Test-Cut-Offs als „positiv getestet".</p>
-    <div class="help-formula">TP: krank + pos. getestet &nbsp; FP: gesund + pos. getestet<br>FN: krank + neg. getestet &nbsp; TN: gesund + neg. getestet</div>
-    <p><strong>LR−</strong> hier: Spez/(1−Sens). Werte &gt; 1 zeigen einen guten Test.</p>
-    <p>Cut-Off-Linien lassen sich auf dem Canvas <strong>ziehen</strong> (vertikal = Test, horizontal = Kriterium).</p>
-  </div>
 
 </div>
 
 <div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Durchgehendes Beispiel</div>
+    <div class="story-vars">
+      <span class="sv">X</span><span class="sd">Testwert — z. B. Depressionsskala (PHQ-9, z-standardisiert)</span>
+      <span class="sv">Y</span><span class="sd">Kriterium — klinische Diagnose nach strukturiertem Interview (z-standardisiert)</span>
+      <span class="sv">r</span><span class="sd">Validität = Korrelation zwischen Test und Kriterium (r=0.50)</span>
+      <span class="sv">Cut-Off X</span><span class="sd">PHQ-Schwellenwert für positives Screening-Ergebnis</span>
+      <span class="sv">Cut-Off Y</span><span class="sd">Kriteriumsschwelle: ab hier gilt jemand als „klinisch auffällig"</span>
+    </div>
+    <div class="story-q">Wie gut trennt der PHQ-9 klinisch auffällige von unauffälligen Personen — und wie verändern sich Sensitivität, Spezifität und prädiktive Werte, wenn r (Validität) oder die Cut-Off-Werte verschoben werden?</div>
+  </div>
+
   <div class="main-layout">
 
     <div>
@@ -207,6 +239,37 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 
   </div>
 </div>
+</div>
+
+<!-- Hilfe-Overlay -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Diagnostische Validität — Hilfe</div>
+    <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+
+    <div class="help-sh">Beispiel</div>
+    <p class="help-p">Ein Depressionsfragebogen (PHQ-9, z-standardisiert: X) wird mit dem Ergebnis eines klinischen Interviews verglichen (Kriterium Y). Die Korrelation r=0.50 beschreibt die Validität. Beide Cut-Off-Werte teilen den Scatterplot in vier Quadranten — TP, TN, FP, FN.</p>
+
+    <div class="help-sh">Validität r &amp; Scatterplot</div>
+    <p class="help-p">Die Korrelation r bestimmt die Enge des Zusammenhangs zwischen Test (X) und Kriterium (Y). Bei r=0: die Punktwolke ist kreisförmig — kein diagnostischer Nutzen. Bei r=1: alle Punkte auf einer Linie — perfekte Vorhersage.</p>
+    <p class="help-p">Im Beispiel: r=0.50 bedeutet, dass der PHQ-9 etwa 25% der Varianz im Kriterium erklärt (r²=0.25). Gute diagnostische Tests haben typischerweise r=0.40–0.70.</p>
+
+    <div class="help-sh">Cut-Off-Linien &amp; Vierfeldertafel</div>
+    <p class="help-p">Die vertikale Linie (X = Cut-Off Test) und horizontale Linie (Y = Cut-Off Kriterium) definieren vier Gruppen:</p>
+    <span class="help-formula2">TP: krank (Y &gt; Cut_Y) + positiv getestet (X &gt; Cut_X)</span>
+    <span class="help-formula2">FP: gesund (Y ≤ Cut_Y) + positiv getestet → Fehlalarm</span>
+    <span class="help-formula2">FN: krank + negativ getestet → verpasste Diagnose</span>
+    <span class="help-formula2">TN: gesund + negativ getestet → korrekt ausgeschlossen</span>
+    <p class="help-p">Im Beispiel: Verschieben des Test-Cut-Offs nach links erhöht Sensitivität (mehr TP), aber auch FP. Die Cut-Off-Linien können auf dem Canvas direkt gezogen werden.</p>
+
+    <div class="help-sh">Diagnostische Kennwerte</div>
+    <p class="help-p"><strong>Sensitivität</strong> = TP/(TP+FN) — Anteil korrekt erkannter Fälle. <strong>Spezifität</strong> = TN/(TN+FP) — Anteil korrekt ausgeschlossener Gesunder.</p>
+    <p class="help-p"><strong>PPV</strong> = TP/(TP+FP) — Wie wahrscheinlich ist die Erkrankung bei positivem Test? Stark prävalenzabhängig. <strong>NPV</strong> = TN/(TN+FN) — Wie sicher ist ein negatives Ergebnis?</p>
+    <p class="help-p"><strong>LR+</strong> = Sens/(1−Spez) — wie viel wahrscheinlicher ist ein positives Ergebnis bei Erkrankten? <strong>LR−</strong> = (1−Sens)/Spez. Likelihood Ratios sind prävalenzunabhängig und damit zwischen Populationen übertragbar.</p>
+
+    <div class="help-sh">Zusammenhang r → Kennwerte</div>
+    <p class="help-p">Mit steigendem r rücken die Punktwolken der Gruppen auseinander — Sensitivität und Spezifität verbessern sich gleichzeitig. Mit sinkendem r (schlechte Validität) werden Sensitivität und Spezifität zu einem Nullsummenspiel: jede Verbesserung der einen geht auf Kosten der anderen. Das ist der Kern des ROC-Trade-offs.</p>
+  </div>
 </div>
 
 <script>
@@ -537,10 +600,7 @@ function toggleTheme(){
   draw();
 }
 function toggleHelp(){
-  const p=document.getElementById('help-panel');
-  const b=document.getElementById('help-btn');
-  p.classList.toggle('open');
-  b.classList.toggle('active',p.classList.contains('open'));
+  document.getElementById('help-overlay').classList.toggle('open');
 }
 
 // ── INIT ────────────────────────────────────────────────────────
