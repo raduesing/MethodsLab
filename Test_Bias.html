@@ -137,6 +137,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
 .story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
   line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.num-sym{font-size:1.45em;line-height:1;vertical-align:baseline}
 </style>
 </head>
 <body>
@@ -161,9 +162,9 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="scard">
     <div class="scard-title">Szenarien</div>
     <button class="preset-btn" id="pre-none" onclick="setPreset('none')">⊡ Kein Bias</button>
-    <button class="preset-btn" id="pre-fig1" onclick="setPreset('fig1')">① Testverzerrung</button>
-    <button class="preset-btn" id="pre-fig2" onclick="setPreset('fig2')">② Kriteriumsverzerrung</button>
-    <button class="preset-btn" id="pre-fig3" onclick="setPreset('fig3')">③ Adverse Impact</button>
+    <button class="preset-btn" id="pre-fig1" onclick="setPreset('fig1')"><span class="num-sym">①</span> Testverzerrung</button>
+    <button class="preset-btn" id="pre-fig2" onclick="setPreset('fig2')"><span class="num-sym">②</span> Kriteriumsverzerrung</button>
+    <button class="preset-btn" id="pre-fig3" onclick="setPreset('fig3')"><span class="num-sym">③</span> Adverse Impact</button>
   </div>
 
   <div class="scard">
@@ -222,8 +223,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="story-box">
     <div class="story-lbl">Durchgehendes Beispiel</div>
     <div class="story-vars">
-      <span class="sv">X</span><span class="sd">Prädiktor: Auswahltest-Rohwert (kognitive Eignungsmessung, 0–100)</span>
-      <span class="sv">Y</span><span class="sd">Kriterium: Jobleistung (Vorgesetztenbeurteilung, 0–100)</span>
+      <span class="sv">X</span><span class="sd">Prädiktor: Auswahltest-Score (kognitive Eignungsmessung, z-standardisiert)</span>
+      <span class="sv">Y</span><span class="sd">Kriterium: Jobleistung (Vorgesetztenbeurteilung, z-standardisiert)</span>
       <span class="sv">Gruppe A</span><span class="sd">Referenzgruppe (Mehrheitsgruppe, z. B. Gruppe ohne Migrationshintergrund)</span>
       <span class="sv">Gruppe B</span><span class="sd">Fokusgruppe (Minderheitsgruppe, z. B. Gruppe mit Migrationshintergrund)</span>
     </div>
@@ -232,7 +233,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
   <div class="plot-sticky">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.45rem">
-      <div class="sec-h" style="margin:0;border:none;padding:0">① Streudiagramm</div>
+      <div class="sec-h" style="margin:0;border:none;padding:0"><span class="num-sym">①</span> Streudiagramm</div>
       <div style="display:flex;gap:.45rem;align-items:center">
         <button class="tbtn" id="btn-ellipse" onclick="toggleEllipses()" title="95%-Konfidenzellipsen ein-/ausblenden">⊡ Ellipsen</button>
         <button class="tbtn" id="btn-proj" onclick="toggleProjections()" title="Projektionslinien der Gruppenmittelwerte auf X- und Y-Achse">⊡ Projektionen</button>
@@ -278,10 +279,10 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <div class="erklaer-h">Differentielle Prädiktion ≠ Testverzerrung</div>
       Ein signifikanter Achsenabschnittsunterschied (M2 vs. M1) kann vier verschiedene Ursachen haben.
       Nur eine davon ist echte Testverzerrung nach Cleary.<br><br>
-      <strong>Quelle 1 — Testverzerrung:</strong> Der Test misst das Konstrukt für beide Gruppen unterschiedlich gut.<br>
-      <strong>Quelle 2 — Kriteriumsverzerrung:</strong> Das Kriterium Y bevorteilt/benachteiligt eine Gruppe unfair.<br>
-      <strong>Quelle 3 — Fehlende Variablen:</strong> Weitere Prädiktoren würden den Unterschied erklären.<br>
-      <strong>Quelle 4 — Stichprobenfehler:</strong> Zufällige Abweichungen, insbesondere bei kleinen n.<br><br>
+      <strong>Quelle 1 — Testverzerrung:</strong> Der Test misst das Konstrukt für beide Gruppen unterschiedlich — Gruppe B erzielt niedrigere X-Werte, obwohl ihre reale Y-Leistung vergleichbar ist. d_X groß, d_Y klein. <em>Auswirkung:</em> Qualifizierte Personen aus B werden systematisch aussortiert; der Test unterschätzt ihre Leistungsfähigkeit.<br>
+      <strong>Quelle 2 — Kriteriumsverzerrung:</strong> Das Kriterium Y (z. B. Vorgesetztenbeurteilung) bewertet eine Gruppe besser oder schlechter, unabhängig von ihrer tatsächlichen Leistung. d_X ≈ 0, d_Y groß. <em>Auswirkung:</em> Der Test selbst ist fair — aber das Validierungsziel ist verzerrt. Eine am Kriterium orientierte Selektion zementiert die Benachteiligung.<br>
+      <strong>Quelle 3 — Fehlende Variablen:</strong> Weitere Prädiktoren (z. B. Ausbildungsdauer, sozioökon. Status) würden den Interzeptunterschied erklären. <em>Auswirkung:</em> Der scheinbare Bias verschwindet nach Kontrolle — Handlung: Modell erweitern.<br>
+      <strong>Quelle 4 — Stichprobenfehler:</strong> Zufällige Abweichungen, insbesondere bei kleinen n. <em>Auswirkung:</em> Kein systematischer Bias; Replikation klärt die Frage.<br><br>
       <strong>Diagnose:</strong> Die standardisierten Mittelwertdifferenzen d_X und d_Y geben Hinweise auf die wahrscheinlichste Quelle (vgl. Meade &amp; Fetzer, 2009, Fig. 1–3).
     </div>
     <div id="mod2-content"></div>
@@ -915,10 +916,10 @@ const HELP_CONTENT={
     title:'Test Bias & Fairness — Überblick',
     body:`
 <h3>Beispiel</h3>
-<p>Ein Auswahltest (X = kognitive Eignungsmessung, 0–100) soll die Jobleistung (Y = Vorgesetztenbeurteilung, 0–100) vorhersagen. Geprüft wird: Gilt die Regressionsgleichung für Gruppe A (Referenz) und Gruppe B (Fokusgruppe) gleichermaßen? Wenn die Geraden divergieren, ist der Test im Sinne von Cleary (1968) verzerrt.</p>
+<p>Ein Auswahltest (X = kognitive Eignungsmessung, z-standardisiert) soll die Jobleistung (Y = Vorgesetztenbeurteilung, z-standardisiert) vorhersagen. Geprüft wird: Gilt die Regressionsgleichung für Gruppe A (Referenz) und Gruppe B (Fokusgruppe) gleichermaßen? Wenn die Geraden divergieren, ist der Test im Sinne von Cleary (1968) verzerrt.</p>
 <h3>Testverzerrung nach Cleary (1968)</h3>
 <p>Ein Test gilt als <strong>nicht verzerrt</strong>, wenn er für alle Gruppen dieselbe Vorhersagegleichung produziert: gleicher Achsenabschnitt (b₀) und gleiche Steigung (b₁). Ein Bias liegt vor, wenn die Regressionsgerade systematisch überschätzt oder unterschätzt — unabhängig von Mittelwertdifferenzen auf X oder Y.</p>
-<p>Im Beispiel: Szenario ① — Gruppe B erzielt niedrigere X-Werte, aber gleiche Y-Werte → Die gemeinsame Gerade unterschätzt die Jobleistung von Gruppe B → klassische Testverzerrung.</p>
+<p>Im Beispiel: Szenario <span class="num-sym">①</span> — Gruppe B erzielt niedrigere X-Werte, aber gleiche Y-Werte → Die gemeinsame Gerade unterschätzt die Jobleistung von Gruppe B → klassische Testverzerrung.</p>
 <h3>Die drei Prüfschritte</h3>
 <ul>
   <li><strong>Modul 1 (Cleary-Test):</strong> F-Tests für Intercept-Unterschied (M2 vs. M1) und Slope-Unterschied (M3 vs. M2). Beide nicht signifikant → kein messbarer Bias.</li>
@@ -926,7 +927,7 @@ const HELP_CONTENT={
   <li><strong>Modul 3 (Adverse Impact):</strong> 4/5-Regel: AIR = Selektionsrate_B / Selektionsrate_A. Unter 0.80 → Adverse Impact. Wichtig: Ein fairer Test kann trotzdem AI erzeugen, wenn die Gruppen unterschiedliche X-Mittelwerte haben.</li>
 </ul>
 <h3>Test Bias ≠ Adverse Impact</h3>
-<p>Das ist der wichtigste konzeptuelle Unterschied: Im Beispiel-Szenario ③ (Adverse Impact) haben die Gruppen unterschiedliche X-Mittelwerte, aber identische Regressionsgeraden — der Test ist <em>fair</em> im Cleary-Sinne, erzeugt aber unterschiedliche Selektionsraten. Adverse Impact ist ein empirisch-rechtliches Konzept; Testverzerrung ist ein psychometrisches.</p>`
+<p>Das ist der wichtigste konzeptuelle Unterschied: Im Beispiel-Szenario <span class="num-sym">③</span> (Adverse Impact) haben die Gruppen unterschiedliche X-Mittelwerte, aber identische Regressionsgeraden — der Test ist <em>fair</em> im Cleary-Sinne, erzeugt aber unterschiedliche Selektionsraten. Adverse Impact ist ein empirisch-rechtliches Konzept; Testverzerrung ist ein psychometrisches.</p>`
   },
   1:{
     title:'Modul 1 — Cleary-Test: Differentielle Prädiktion',
@@ -947,10 +948,10 @@ const HELP_CONTENT={
 </ul>
 <h3>Szenarien im Streudiagramm</h3>
 <ul>
-  <li><strong>⊡ Kein Bias:</strong> Die Regressionsgeraden beider Gruppen liegen übereinander.</li>
-  <li><strong>① Testverzerrung:</strong> Gruppe B erzielt niedrigere X-Werte, aber gleiche Y-Werte → Regressionsgerade von B liegt höher. Die gemeinsame Linie unterschätzt die Leistung von B.</li>
-  <li><strong>② Kriteriumsverzerrung:</strong> Gleiche X-Mittelwerte, aber unterschiedliche Y-Levels → parallele, verschobene Geraden.</li>
-  <li><strong>③ Adverse Impact:</strong> Gruppe B hat niedrigere X-Werte, aber die Geraden sind identisch → kein Bias, aber Selektionsrate unterscheidet sich.</li>
+  <li><strong>⊡ Kein Bias:</strong> Die Regressionsgeraden beider Gruppen liegen übereinander — der Test sagt für beide Gruppen gleich gut vorher.</li>
+  <li><strong><span class="num-sym">①</span> Testverzerrung:</strong> Gruppe B erzielt niedrigere X-Werte, aber gleiche Y-Werte → Regressionsgerade von B liegt höher; die gemeinsame Linie unterschätzt ihre Leistung. <em>Erkennung:</em> signifikanter Intercept-Bias (M2 vs. M1), d_X groß, d_Y klein. <em>Auswirkung:</em> Qualifizierte Personen aus B werden systematisch benachteiligt — der Test spiegelt ihre reale Leistungsfähigkeit nicht korrekt wider.</li>
+  <li><strong><span class="num-sym">②</span> Kriteriumsverzerrung:</strong> Gleiche X-Mittelwerte, aber unterschiedliche Y-Levels → parallele, verschobene Geraden. <em>Erkennung:</em> signifikanter Intercept-Bias, d_X ≈ 0, d_Y groß. <em>Was es bedeutet:</em> Das Kriterium selbst (z. B. Vorgesetztenbeurteilung) bewertet Gruppe B anders — unabhängig von ihrer tatsächlichen Leistung. Der Test ist im Cleary-Sinne fair; das Validierungsziel ist verzerrt. <em>Auswirkung:</em> Eine Selektion auf Basis dieses Kriteriums perpetuiert die Benachteiligung von B, obwohl der Test korrekt misst.</li>
+  <li><strong><span class="num-sym">③</span> Adverse Impact:</strong> Gruppe B hat niedrigere X-Werte, aber die Geraden sind identisch → kein Testbias. <em>Erkennung:</em> F-Tests nicht signifikant, d_X groß, d_Y groß (proportional). <em>Auswirkung:</em> Obwohl der Test fair ist, werden Personen aus B seltener ausgewählt. Die Ursache liegt nicht im Test, sondern in realen Unterschieden auf dem Prädiktor — Maßnahmen müssen dort ansetzen (Förderung, Zugang zu Vorbereitung), nicht beim Test selbst.</li>
 </ul>
 <h3>Wichtige Hinweise</h3>
 <p>Statistische Signifikanz hängt stark von n ab. Bei großen Stichproben werden auch praktisch bedeutungslose Unterschiede signifikant. Immer Effektgröße (Δb₀, Δb₁) berichten. Die Testentscheidung betrifft <em>differentielle Prädiktion</em>, nicht direkt Testfairness im umfassenden Sinne.</p>
