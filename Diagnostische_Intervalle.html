@@ -252,9 +252,9 @@ select:focus{outline:1px solid var(--accent)}
     <div class="story-lbl">Durchgehendes Beispiel</div>
     <div class="story-vars">
       <span class="sv">Person</span><span class="sd">Kind mit IQ-Testung (Wechsler-Skala, μ=100, σ=15)</span>
-      <span class="sv">X</span><span class="sd">Beobachteter Testwert = 85 (einmalige Messung)</span>
-      <span class="sv">r_xx</span><span class="sd">Reliabilität des Subtests = 0.90</span>
-      <span class="sv">SEM</span><span class="sd">Standardmessfehler = σ·√(1−r_xx) = 15·√0.10 ≈ 4.74</span>
+      <span class="sv">X</span><span class="sd">Beobachteter Testwert = 115 (einmalige Messung, 1 SD über μ)</span>
+      <span class="sv">r_xx</span><span class="sd">Reliabilität des Subtests = 0.85</span>
+      <span class="sv">SEM</span><span class="sd">Standardmessfehler = σ·√(1−r_xx) = 15·√0.15 ≈ 5.81</span>
     </div>
     <div class="story-q">In welchem Bereich liegt der wahre IQ dieses Kindes mit 95% Wahrscheinlichkeit — und warum liefern die drei Methoden unterschiedliche Intervalle, obwohl alle denselben Testwert nutzen?</div>
   </div>
@@ -338,24 +338,29 @@ select:focus{outline:1px solid var(--accent)}
     <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
 
     <div class="help-sh">Beispiel</div>
-    <p class="help-p">Ein Kind erzielt einen IQ von X=85 (Wechsler, μ=100, σ=15, r_xx=0.90). Der Standardmessfehler beträgt SEM = 15·√(1−0.90) ≈ 4.74. Frage: In welchem Bereich liegt der wahre IQ — und welche Aussage erlaubt das gewählte Intervall?</p>
+    <p class="help-p">Ein Kind erzielt einen IQ von X=115 (Wechsler, μ=100, σ=15, r_xx=0.85). Der Standardmessfehler beträgt SEM = 15·√(1−0.85) ≈ 5.81. Frage: In welchem Bereich liegt der wahre IQ — und welche Aussage erlaubt das gewählte Intervall?</p>
 
     <div class="help-sh">KI Äquivalenzhypothese</div>
     <p class="help-p">Das Intervall liegt um den beobachteten Testwert X. Annahme: X ist ein unverzerrter Schätzer des wahren Werts τ. Das klassische Konfidenzintervall der CTT.</p>
     <span class="help-formula2">KI = X ± 1.96 · SEM  &nbsp;  (SEM = σ · √(1 − r_xx))</span>
-    <p class="help-p">Im Beispiel: 85 ± 1.96 · 4.74 → [75.7, 94.3]. Interpretation: Bei wiederholter Testung (n → ∞) würde dieses Intervall den wahren Wert in 95% der Fälle enthalten.</p>
+    <p class="help-p">Im Beispiel: 115 ± 1.96 · 5.81 → [103.6, 126.4]. Interpretation: Bei wiederholter Testung (n → ∞) würde dieses Intervall den wahren Wert in 95% der Fälle enthalten.</p>
 
     <div class="help-sh">KI Regressionshypothese</div>
     <p class="help-p">Das Intervall liegt um den regredierten Schätzwert X′, nicht um den beobachteten X. Berücksichtigt die <strong>Regression zur Mitte</strong>: Extreme Testwerte haben mehr Messfehler als Werte nahe am Mittelwert — deshalb ist X′ immer zwischen X und μ.</p>
     <span class="help-formula2">X′ = μ + r_xx · (X − μ)  &nbsp;  SE_reg = σ · √(r_xx · (1 − r_xx))</span>
-    <p class="help-p">Im Beispiel: X′ = 100 + 0.90 · (85−100) = 86.5. KI_reg = 86.5 ± 1.96 · 4.50 → [77.7, 95.3]. Das Intervall ist enger als bei der Äquivalenzhypothese und liegt näher an μ.</p>
+    <p class="help-p">Im Beispiel: X′ = 100 + 0.85 · (115−100) = 112.75. SE_reg = 15·√(0.85·0.15) ≈ 5.36. KI_reg = 112.75 ± 1.96 · 5.36 → [102.2, 123.3]. Lage und Breite liegen näher an μ als beim KI der Äquivalenzhypothese.</p>
 
     <div class="help-sh">Bayesianisches CrI (Credible Interval)</div>
-    <p class="help-p">Prior N(μ, SD_prior) + Likelihood N(X, SEM) → Posterior via Präzisionsgewichtung. SD_prior steuert das Vorwissen: Je kleiner SD_prior, desto stärker zieht der Prior den Posterior in Richtung μ.</p>
+    <p class="help-p">Prior N(μ, SD_prior) + Likelihood N(X, SEM) → Posterior via Präzisionsgewichtung. Der Posterior ist ein gewichtetes Mittel aus Prior-Mittelwert μ und beobachtetem X, wobei das Gewicht umgekehrt proportional zur Varianz ist.</p>
     <span class="help-formula2">w_data = 1/SEM²  &nbsp;  w_prior = 1/SD_prior²</span>
     <span class="help-formula2">τ̂ = (μ·w_prior + X·w_data) / (w_prior + w_data)  &nbsp;  SD_post = √(1/(w_prior+w_data))</span>
-    <p class="help-p">Im Beispiel (SD_prior=σ=15): τ̂ = (100·0.0044 + 85·0.0445) / (0.0044+0.0445) ≈ 86.4. Das CrI erlaubt direkte Wahrscheinlichkeitsaussagen: P(τ &gt; 70 | X=85) = …</p>
-    <p class="help-p"><strong>Spezialfälle:</strong> SD_prior = σ → CrI ≈ Äquivalenzhypothese-KI. SD_prior = σ·√r_xx → CrI = Regressionshypothese-KI. SD_prior → ∞ (flacher Prior) → CrI = Äquivalenzhypothese-KI. Der bayesianische Vorteil: direkte Wahrscheinlichkeitsaussage über Trennwerte ohne frequentistische Umwege.</p>
+    <p class="help-p"><strong>Was steuert SD_prior?</strong> SD_prior gibt an, wie weit der wahre Wert τ nach dem Vorwissen vom Populationsmittelwert μ abweichen darf. <em>Großes</em> SD_prior: schwaches, breites Vorwissen — der Prior zieht kaum, Lage und Breite des CrI richten sich fast nur nach den Daten (X und SEM). <em>Kleines</em> SD_prior: starkes Vorwissen — τ̂ und das CrI werden deutlich in Richtung μ gezogen. Empfehlung: SD_prior = σ·√r_xx entspricht dem bayesianischen Äquivalent der Regressionshypothese und ist bei bekannter Reliabilität eine gut begründete Wahl. SD_prior = σ (Populationsstreuung) ist ein neutraler, populationsbasierter Ausgangspunkt.</p>
+    <p class="help-p">Im Beispiel (SD_prior=σ=15, X=115, r_xx=0.85): w_prior=1/225, w_data=1/33.75 → τ̂ ≈ 113.1, SD_post ≈ 5.42. CrI ≈ [102.5, 123.7]. Das CrI erlaubt direkte Wahrscheinlichkeitsaussagen: P(τ &gt; 110 | X=115) direkt ablesbar.</p>
+    <p class="help-p"><strong>Spezialfälle:</strong><br>
+    — SD_prior = σ·√r_xx: CrI stimmt exakt mit dem Regressionshypothese-KI überein (gleiche Lage und Breite).<br>
+    — SD_prior = σ (Default): Lage des CrI (τ̂ ≈ 113) und Breite liegen nahe beim Regressionshypothese-KI (X′=112.75), weil der SEM bei guter Reliabilität klein ist und die Daten das Gewicht dominieren. Nicht zu verwechseln mit dem Äquivalenzhypothese-KI, das bei X=115 zentriert ist.<br>
+    — SD_prior → ∞ (flacher Prior): CrI → Äquivalenzhypothese-KI (Lage bei X, Breite = SEM-basiert).<br>
+    Der bayesianische Vorteil: direkte Wahrscheinlichkeitsaussagen über beliebige Trennwerte ohne frequentistische Umwege.</p>
     <p class="help-p" style="color:var(--ink3);font-size:.74rem">Wagenmakers, E.-J., Morey, R. D., &amp; Lee, M. D. (2016). Bayesian benefits for the pragmatic researcher. Current Directions in Psychological Science, 25, 169–176.</p>
   </div>
 </div>
