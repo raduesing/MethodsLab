@@ -372,10 +372,46 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     <p class="help-p"><strong>Trade-off:</strong> Höhere Polynomgrade erhöhen die Varianz der Schätzung und können zu Overfitting nahe dem Cutoff führen. Grad 2 ist meist ausreichend — Imbens &amp; Gelman (2019) empfehlen lokale lineare Schätzung mit optimaler Bandbreite statt hoher Polynome.</p>
 
     <div class="help-sh">Fuzzy RDD</div>
-    <p class="help-p">Im Sharp RDD springt die Behandlungswahrscheinlichkeit P(T=1|X) am Cutoff von 0 auf 1 — jeder Bewerber über dem Cutoff wird zugelassen, keiner darunter. Fuzzy RDD erlaubt unvollständige Compliance:</p>
-    <p class="help-p">Im Beispiel: Manche Bewerber mit X ≥ 50 nehmen die Zulassung nicht an (Never-Taker). Dann springt P(T=1|X) nicht auf 1, sondern auf 0.85. Das Fuzzy-RDD skaliert den ITT-Effekt durch die Compliance-Rate:</p>
-    <span class="help-formula">LATE_Fuzzy = Sprung in E(Y|X) / Sprung in E(T|X) am Cutoff</span>
-    <p class="help-p">Das entspricht einem IV-Schätzer (2SLS): Die Cutoff-Zuweisung Z dient als Instrument für die tatsächliche Teilnahme T. Voraussetzung: Z beeinflusst Y nur über T (Exclusion Restriction) — die bloße Zulassung darf keinen direkten Gehaltseffekt haben, nur die tatsächliche Programmteilnahme.</p>
+    <p class="help-p">Im Sharp RDD springt die Behandlungswahrscheinlichkeit P(T=1|X) am Cutoff von 0 auf 1 — jeder Bewerber über dem Cutoff nimmt zwingend teil, keiner darunter. Fuzzy RDD erlaubt <strong>unvollständige Compliance</strong>: Der Sprung in P(T=1|X) am Cutoff ist real, aber &lt; 1.</p>
+    <p class="help-p"><strong>Compliance-Typen:</strong> Personen können sich je nach Zuweisung Z (Z=1: Zugelassen; Z=0: Nicht zugelassen) und tatsächlicher Teilnahme T unterschiedlich verhalten:</p>
+    <ul style="margin:.4rem 0 .7rem 1.2rem;font-size:.85rem;line-height:1.7">
+      <li><strong>Complier</strong>: nimmt teil wenn zugelassen (Z=1→T=1), nicht wenn nicht zugelassen (Z=0→T=0) — folgt der Zuweisung.</li>
+      <li><strong>Never-Taker</strong>: nimmt nie teil, egal ob zugelassen oder nicht (Z=1→T=0, Z=0→T=0).</li>
+      <li><strong>Always-Taker</strong>: nimmt immer teil, auch ohne formale Zulassung (Z=1→T=1, Z=0→T=1).</li>
+      <li><strong>Defier</strong>: macht immer das Gegenteil der Zuweisung — theoretisch möglich, in der Praxis selten und meist ausgeschlossen (Monotonie-Annahme).</li>
+    </ul>
+    <p class="help-p">Im Beispiel: Manche Bewerber mit Score X ≥ 50 nehmen die Weiterbildung nicht an (Never-Taker, z. B. wegen Zeitmangel). Dann springt P(T=1|X) am Cutoff nicht auf 1, sondern auf z. B. 0.85.</p>
+
+    <div class="help-sh" style="font-size:.9rem;margin-top:.9rem">ITT — Intent-to-Treat</div>
+    <p class="help-p">Der <strong>Intent-to-Treat-Effekt (ITT)</strong> misst, wie viel das bloße <em>Angebot</em> der Behandlung — die Zuweisung Z — den Outcome Y im Durchschnitt verändert, unabhängig davon, ob die Person tatsächlich teilgenommen hat:</p>
+    <span class="help-formula">ITT = E[Y | Z=1] − E[Y | Z=0]  am Cutoff</span>
+    <p class="help-p">Im RDD entspricht Z der Indikatorvariable Z = 1[X ≥ c] — eine Person ist "zugewiesen", sobald ihr Score den Cutoff überschreitet.</p>
+    <p class="help-p"><strong>Warum ist der ITT nützlich?</strong> Die Zuweisung Z ist (zumindest nahe dem Cutoff) quasi-zufällig — wer knapp über oder knapp unter dem Cutoff landet, unterscheidet sich nur durch Zufall. Daher ist der ITT unverzerrt: Er vergleicht zwei Gruppen, die sich im Erwartungswert nur durch die Zuweisung unterscheiden, nicht durch Selektionseffekte.</p>
+    <p class="help-p"><strong>Warum ist der ITT nicht die ganze Geschichte?</strong> Der ITT verwässert den wahren Behandlungseffekt, weil er auch Never-Taker enthält, die zwar zugewiesen wurden (Z=1), aber nie teilgenommen haben. Ihr Outcome ist "null" relativ zum Programm — das zieht den ITT nach unten. Je mehr Non-Compliance, desto mehr wird der ITT unterschätzen.</p>
+
+    <div class="help-sh" style="font-size:.9rem;margin-top:.9rem">IV — Instrumentalvariable</div>
+    <p class="help-p">Um vom ITT auf den echten Behandlungseffekt zu kommen, brauchen wir ein <strong>Instrument</strong>. Eine <strong>Instrumentalvariable (IV)</strong> ist eine Variable Z, die drei Bedingungen erfüllt:</p>
+    <ol style="margin:.4rem 0 .7rem 1.2rem;font-size:.85rem;line-height:1.9">
+      <li><strong>Relevanz:</strong> Z beeinflusst die Wahrscheinlichkeit der tatsächlichen Teilnahme T. Im Beispiel: Wer zugelassen wird (Z=1), nimmt mit deutlich höherer Wahrscheinlichkeit teil. Das ist testbar: man prüft, ob der Sprung in P(T=1|X) am Cutoff signifikant ist (First-Stage-Test).</li>
+      <li><strong>Exogenität (Unabhängigkeit):</strong> Z ist nicht mit unbeobachteten Störgrößen U korreliert. Im RDD: Wer knapp über oder knapp unter dem Cutoff liegt, unterscheidet sich im Erwartungswert nur durch Zufall — die Zuweisung ist wie eine lokale Randomisierung. Damit ist Z unkorreliert mit allem, was sonst das Gehalt beeinflusst (Motivation, Fähigkeiten, Herkunft).</li>
+      <li><strong>Ausschlusskritierium (Exclusion Restriction):</strong> Z beeinflusst Y <em>ausschließlich</em> über T — es gibt keinen direkten Weg von Z nach Y. Im Beispiel: Die bloße Zulassung zum Programm darf keinen eigenen Gehaltseffekt haben; nur die tatsächliche Teilnahme am Programm wirkt auf das Gehalt. Wenn z. B. das Unternehmen schon die Zulassung als Signal für Kompetenz nimmt und das Gehalt erhöht, wäre diese Bedingung verletzt.</li>
+    </ol>
+    <p class="help-p">Im RDD ist Z = 1[X ≥ c] das natürliche Instrument: Es ist relevant (Sprung in P(T=1|X)), lokal exogen (quasi-zufällige Zuweisung nahe c) und — unter plausibler Annahme — erfüllt das Ausschlusskriterium.</p>
+
+    <div class="help-sh" style="font-size:.9rem;margin-top:.9rem">LATE(Wald) — Lokaler Durchschnittlicher Behandlungseffekt</div>
+    <p class="help-p">Der <strong>LATE (Local Average Treatment Effect)</strong>, auch Wald-Schätzer genannt, kombiniert ITT und First-Stage:</p>
+    <span class="help-formula">LATE = ITT / First-Stage = Sprung in E[Y|X] / Sprung in E[T|X]  am Cutoff</span>
+    <p class="help-p"><strong>Herleitung intuitiv:</strong> Der ITT ist der Effekt der Zuweisung Z auf Y. Aber nur ein Bruchteil der zugewiesenen Personen nimmt tatsächlich teil (die Complier). Der Sprung in E[T|X] am Cutoff misst genau diesen Anteil — die First-Stage. Teilt man den ITT durch die First-Stage, "korrigiert" man für die Non-Compliance: Man erhält den Effekt, der auf die tatsächliche Teilnahme zurückgeht.</p>
+    <p class="help-p">Im Beispiel: ITT = 8.5 Tsd. €, First-Stage = 0.85 → LATE = 8.5 / 0.85 = <strong>10 Tsd. €</strong> Gehaltserhöhung für Complier.</p>
+
+    <p class="help-p"><strong>Warum ist LATE besser als naives OLS?</strong> Ein naiver OLS-Vergleich (Teilnehmer vs. Nicht-Teilnehmer) ist verzerrt durch <em>Selbstselektion</em>: Wer das Programm wählt, ist oft motivierter, fähiger oder hat bessere Netzwerke — unabhängig vom Programm. T ist dadurch <em>endogen</em> (korreliert mit dem Fehlerterm ε). Das IV/LATE-Verfahren umgeht dieses Problem, indem es nur die Variation in T nutzt, die durch die quasi-zufällige Zuweisung Z verursacht wird — diese Variation ist per Konstruktion unkorreliert mit U.</p>
+
+    <p class="help-p"><strong>Das "Local" im LATE hat zwei Bedeutungen:</strong></p>
+    <ul style="margin:.4rem 0 .7rem 1.2rem;font-size:.85rem;line-height:1.7">
+      <li><strong>Lokal am Cutoff:</strong> Der Effekt gilt nur für Personen nahe X = c, nicht für die gesamte Population. Wer weit vom Cutoff entfernt ist, bleibt außen vor.</li>
+      <li><strong>Lokal für Complier:</strong> Der LATE ist der Durchschnittseffekt nur für diejenigen, die tatsächlich auf die Zuweisung reagieren. Never-Taker und Always-Taker tragen nichts zum LATE bei — ihr Outcome unter beiden Z-Werten bleibt unverändert, daher lässt sich ihr Behandlungseffekt nicht identifizieren.</li>
+    </ul>
+    <p class="help-p">Im Beispiel: Der LATE von 10 Tsd. € gilt für Bewerber, die knapp über dem Cutoff lagen <em>und</em> die Zulassung angenommen hätten (Complier). Ob das Programm für Never-Taker oder für Bewerber weit über dem Cutoff gleich wirksam wäre, lässt sich aus diesem Design nicht ableiten.</p>
   </div>
 </div>
 
