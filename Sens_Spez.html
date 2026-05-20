@@ -115,6 +115,33 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 .help-panel strong{color:var(--ink)}
 .help-formula{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--grid);
   padding:.35rem .7rem;margin:.3rem 0;color:var(--a2)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula2{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
 </style>
 </head>
 <body>
@@ -184,27 +211,22 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     </div>
   </div>
 
-  <div class="help-panel" id="help-panel">
-    <p><strong>Sensitivität</strong> = Anteil echter Positiver, die korrekt erkannt werden.<br>
-    <strong>Spezifität</strong> = Anteil echter Negativer, die korrekt ausgeschlossen werden.</p>
-    <div class="help-formula">Sens = TP/(TP+FN) &nbsp; Spez = TN/(TN+FP)</div>
-    <p><strong>PPV</strong> (positiver prädiktiver Wert): Wahrscheinlichkeit, dass ein positives Testergebnis tatsächlich korrekt ist. Prävalenzabhängig.</p>
-    <p><strong>LR−</strong> hier: Spez/(1−Sens). Bei dieser Konvention zeigt LR− &gt; 1 einen guten Test an.</p>
-    <p><strong>ROC-Kurve</strong>: Sensitivität vs. 1−Spezifität für alle Cut-Offs. Die Fläche unter der Kurve (AUC) misst die Gesamttrennschärfe unabhängig vom Cut-Off.</p>
-    <p>Cut-Off-Linie auf dem <strong>Verteilungsplot</strong> direkt ziehen oder Sidebar-Slider verwenden.</p>
-    <p style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-top:.9rem;margin-bottom:.3rem">Wann welche Cut-Off-Methode?</p>
-    <p><strong>Youden-Index</strong>: Standardwahl ohne spezifische Annahmen. Maximiert Sens + Spez − 1, behandelt FP und FN gleichwertig, kein Prävalenzeinfluss. Geeignet wenn unklar ist, welche Fehlerart schwerwiegender ist.</p>
-    <p><strong>Minimale Distanz (ROC₀₁)</strong>: Geometrische Alternative zu Youden; minimiert den Abstand zum idealen Punkt im ROC-Raum. Liefert meist ähnliche Ergebnisse, kann bei asymmetrischen Kurven leicht abweichen.</p>
-    <p><strong>Kosten-Nutzen</strong>: Sinnvoll wenn eine Fehlerart klar teurer ist — z.B. eine verpasste Diagnose (FN) deutlich schlimmer als ein Fehlalarm (FP). Der Faktor c = Kosten FP / Kosten FN steuert die Gewichtung direkt über die ROC-Steigung. Bei c = 1 ist das Ergebnis identisch mit Youden — <em>kein Prävalenzeinfluss</em>.</p>
-    <p><strong>Missklassifikationskosten</strong>: Minimiert den <em>populationsgewichteten</em> Gesamtfehler. FP-Fehler gehen mit dem Faktor (1−Prävalenz), FN-Fehler mit der Prävalenz ein. Bei gleichen Kosten (cFP = cFN = 1) und Prävalenz ≠ 50% weicht das Ergebnis vom Youden/Kosten-Nutzen ab: Bei seltenen Merkmalen werden FP-Fehler stärker bestraft, weil es in der Population mehr Gesunde gibt. Empfohlen wenn die tatsächliche Fehlerlast in der Zielpopulation minimiert werden soll.</p>
-    <p><strong>Prävalenz-adjustiert (max PPV/NPV)</strong>: Wenn der prädiktive Wert entscheidend ist. PPV maximieren eignet sich, wenn ein positives Ergebnis eine invasive oder belastende Folgeuntersuchung auslöst. NPV maximieren, wenn ein negatives Ergebnis zum sicheren Ausschluss einer ernsthaften Erkrankung dienen soll. Stark prävalenzabhängig.</p>
-    <p><strong>F1-Score</strong>: Harmonisches Mittel aus PPV und Sensitivität. Gebräuchlich in der Informationstheorie und beim maschinellen Lernen; geeignet wenn Präzision und Vollständigkeit gleich wichtig sind und die Prävalenz niedrig ist.</p>
-    <p><strong>Sum PPV+NPV</strong>: Maximiert die Vorhersagegüte in beide Richtungen gleichzeitig. Sinnvoll wenn sowohl positive als auch negative Befunde verlässlich kommunizierbar sein sollen.</p>
-  </div>
 
 </div>
 
 <div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Durchgehendes Beispiel</div>
+    <div class="story-vars">
+      <span class="sv">T</span><span class="sd">Goldstandard: ADHS-Diagnose nach klinischem Interview (DSM-5)</span>
+      <span class="sv">X</span><span class="sd">Test: T-Wert eines Eltern-Screeninginstruments (μ=100, σ=15)</span>
+      <span class="sv">c</span><span class="sd">Cut-Off: Testwert-Schwelle für die Screeningentscheidung</span>
+      <span class="sv">ADHS+</span><span class="sd">Merkmalsträger: μ₊=109 — leicht erhöhte Testwerte</span>
+      <span class="sv">ADHS−</span><span class="sd">Nicht-Merkmalsträger: μ₋=100 — Durchschnittsnorm</span>
+    </div>
+    <div class="story-q">Ab welchem Testwert sollte ein Screening positiv ausfallen — und wie viele Kinder gehen dadurch verloren (FN) vs. wie viele werden unnötig weiterverwiesen (FP)? Verteilungsüberlappung, Prävalenz und Fehlerkosten bestimmen den optimalen Cut-Off.</div>
+  </div>
 
   <div class="sec-h" style="margin-top:0">① Verteilungsplot</div>
   <canvas id="cv-density" height="340"></canvas>
@@ -301,6 +323,41 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
   </div>
 
 </div>
+</div>
+
+<!-- Hilfe-Overlay -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Sensitivität &amp; Spezifität — Hilfe</div>
+    <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+
+    <div class="help-sh">Beispiel</div>
+    <p class="help-p">Ein Eltern-Screening-Instrument (T-Wert-Skala, μ=100, σ=15) soll ADHS-betroffene Kinder (ADHS+, μ₊=109) von unauffälligen Kindern (ADHS−, μ₋=100) unterscheiden. Ein klinisches Interview nach DSM-5 dient als Goldstandard. Gesucht: der optimale Cut-Off c für die Testentscheidung.</p>
+    <p class="help-p">Die Verteilungen überlappen sich — kein Cut-Off ist fehlerfrei. Bei c=105: Kinder mit T-Wert ≥ 105 werden als positiv gescreent (T=1), alle anderen als negativ (T=0).</p>
+
+    <div class="help-sh">Sensitivität &amp; Spezifität</div>
+    <p class="help-p"><strong>Sensitivität (SE)</strong> = Anteil der tatsächlich ADHS+ Kinder, die korrekt als positiv erkannt werden (TP-Rate). Hohe SE → wenige verpasste Diagnosen (FN). Senkung des Cut-Offs erhöht SE, senkt Spezifität.</p>
+    <span class="help-formula2">SE = TP / (TP + FN)</span>
+    <p class="help-p"><strong>Spezifität (SP)</strong> = Anteil der tatsächlich ADHS− Kinder, die korrekt ausgeschlossen werden (TN-Rate). Hohe SP → wenige Fehlalarme (FP). Erhöhung des Cut-Offs steigert SP, senkt Sensitivität.</p>
+    <span class="help-formula2">SP = TN / (TN + FP)</span>
+    <p class="help-p">Im Beispiel: Bei überlappenden Verteilungen (σ₊=σ₋=15, Δμ=9 Punkte) ist eine perfekte Trennung unmöglich — der Trade-off ist unvermeidlich und hängt von klinischen Prioritäten ab.</p>
+
+    <div class="help-sh">Prädiktive Werte &amp; Prävalenz</div>
+    <p class="help-p"><strong>PPV</strong> (positiver prädiktiver Wert) = P(ADHS+ | Test+): Wie wahrscheinlich ist die Diagnose bei positivem Test? Stark prävalenzabhängig: bei seltener ADHS (Prävalenz 5%) sinkt PPV stark — viele FP unter wenigen echten Positiven.</p>
+    <span class="help-formula2">PPV = TP / (TP + FP) = (SE · Präv) / (SE · Präv + (1−SP) · (1−Präv))</span>
+    <p class="help-p"><strong>NPV</strong> = P(ADHS− | Test−): Wie sicher ist ein negativer Befund? Im Beispiel: bei hoher Sensitivität und moderater ADHS-Prävalenz ist ein negatives Ergebnis sehr verlässlich.</p>
+    <p class="help-p"><strong>Likelihood Ratios:</strong> LR+ = SE/(1−SP) — wie viel wahrscheinlicher ist ein positives Ergebnis bei ADHS+ als bei ADHS−? LR− = (1−SE)/SP — wie viel wahrscheinlicher ist ein negatives Ergebnis bei ADHS−? LR sind prävalenzunabhängig.</p>
+
+    <div class="help-sh">ROC-Kurve &amp; AUC</div>
+    <p class="help-p">Die <strong>ROC-Kurve</strong> zeigt Sensitivität gegen 1−Spezifität für alle möglichen Cut-Offs. Ein perfekter Test verläuft durch den Punkt (0,1): SE=1, 1−SP=0. Eine diagonale Kurve entspricht Raten.</p>
+    <p class="help-p">Die <strong>AUC</strong> (Area Under the Curve) fasst die Gesamttrennschärfe in einer Zahl zusammen (0.5=Zufall, 1.0=perfekt). AUC ist unabhängig vom gewählten Cut-Off. Im Beispiel (Δμ=9, σ=5) ergibt sich eine AUC ≈ 0.97 — hohe Trennschärfe, die sich in einer Kurve nahe der oberen linken Ecke zeigt.</p>
+
+    <div class="help-sh">Optimale Cut-Off-Methoden</div>
+    <p class="help-p"><strong>Youden-Index:</strong> Maximiert SE + SP − 1. Standardwahl ohne spezifische Annahmen, behandelt FP und FN gleichwertig, kein Prävalenzeinfluss. Im Beispiel: optimaler Cut-Off liegt ca. bei μ₊−Δ/2.</p>
+    <p class="help-p"><strong>Kosten-Nutzen:</strong> Sinnvoll wenn eine Fehlerart klar teurer ist. Im Screening-Beispiel: Eine verpasste ADHS-Diagnose (FN) kann langfristig kostspielig sein — niedrigerer Cut-Off, höhere SE bevorzugt. Der Faktor c = Kosten(FP)/Kosten(FN) steuert direkt: c&lt;1 → FN teurer → cut-off sinkt.</p>
+    <p class="help-p"><strong>Missklassifikationskosten:</strong> Bezieht die Prävalenz ein — populationsgewichteter Gesamtfehler. Bei seltener ADHS (5%) fallen FP-Fehler häufiger an; das Modell schiebt den Cut-Off nach oben (mehr SP).</p>
+    <p class="help-p"><strong>Prävalenz-adjustiert (PPV/NPV):</strong> Wenn Kommunizierbarkeit entscheidend ist. PPV maximieren: bei invasiver Folgeuntersuchung soll ein positiver Befund verlässlich sein. NPV maximieren: bei ernsthafter Erkrankung soll ein negatives Ergebnis sicher ausschließen.</p>
+  </div>
 </div>
 
 <script>
@@ -789,10 +846,7 @@ function toggleTheme(){
 }
 
 function toggleHelp(){
-  const p=document.getElementById('help-panel');
-  const b=document.getElementById('help-btn');
-  p.classList.toggle('open');
-  b.classList.toggle('active',p.classList.contains('open'));
+  document.getElementById('help-overlay').classList.toggle('open');
 }
 
 // ── INIT ────────────────────────────────────────────────────────
