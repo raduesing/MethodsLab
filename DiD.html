@@ -42,7 +42,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;b
 input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .preset-btn{font-family:'DM Mono',monospace;font-size:.74rem;padding:.28rem .6rem;
   border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
-  transition:all .15s;white-space:nowrap;width:100%;text-align:left;display:block;margin-bottom:.28rem;line-height:1.4}
+  transition:all .15s;white-space:normal;width:100%;text-align:left;display:block;margin-bottom:.28rem;line-height:1.4}
 .preset-btn:hover{border-color:var(--accent);color:var(--accent)}
 .preset-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
 .regen-btn{font-family:'DM Mono',monospace;font-size:.76rem;padding:.28rem .6rem;
@@ -143,10 +143,15 @@ E[Y | Treatment, Nachher] = α + β₁ + β₂ + β₃  → Δ_T = β₁ + β₃
     <p class="help-p">Differenz der Differenzen: DiD = Δ_T − Δ_K = (β₁ + β₃) − β₁ = <strong>β₃</strong></p>
     <p class="help-p">β₃ ist der Koeffizient des Interaktionsterms (Post × Treat). Er misst genau die zusätzliche Veränderung der Treatmentgruppe über den allgemeinen Zeittrend β₁ hinaus. Der Selektionsbias β₂ (zeitkonstanter Gruppenunterschied) fällt in der doppelten Differenz vollständig heraus — das ist die zentrale Stärke von DiD.</p>
 
-    <div class="help-sh">DiD als IV-Schätzer — Verbindung zum LATE</div>
-    <p class="help-p">Im scharfen DiD erhält jede Person in der Treatmentgruppe das Treatment vollständig (Compliance = 100 %). Die Zuweisung Z = Post × Treat fungiert dann als perfektes <strong>Instrument</strong>: relevant (bestimmt Treatment vollständig), exogen (quasi-zufällig nahe am Politikwechsel), Ausschlusskriterium erfüllt (Z wirkt nur über Treatment auf Y).</p>
-    <p class="help-p">In diesem Fall: LATE = DiD / First-Stage = DiD / 1 = DiD. Der DiD-Schätzer ist der <strong>Average Treatment Effect on the Treated (ATT)</strong> — der kausale Effekt für genau die Einheiten, die aufgrund der Policy behandelt wurden.</p>
-    <p class="help-p">Beim <em>unscharfen DiD</em> (Fuzzy DiD) nehmen nicht alle Zugewiesenen teil. Analog zum Fuzzy RDD gilt dann: LATE = DiD_Outcome / DiD_Teilnahmerate. Z bleibt Instrument, skaliert aber den Effekt auf die tatsächlich Compliance-fähigen (Complier).</p>
+    <div class="help-sh">Was schätzt DiD — der ATT</div>
+    <p class="help-p">Der DiD-Schätzer β̂₃ identifiziert den <strong>Average Treatment Effect on the Treated (ATT)</strong> — den kausalen Effekt des Programms für genau die Einheiten, die tatsächlich behandelt wurden (hier: die Treatmentschulen).</p>
+    <p class="help-p">ATT ≠ ATE (Average Treatment Effect über alle Einheiten): Wenn sich Treatmentschulen von Kontrollschulen systematisch unterscheiden (Selektionsbias, β₂ ≠ 0), ist der Effekt womöglich nicht auf alle Schulen verallgemeinerbar — wohl aber valide für die behandelten Schulen selbst. Darin liegt die Stärke und zugleich die Grenze von DiD.</p>
+
+    <div class="help-sh">Kontrafaktisches Szenario — Was wäre gewesen, wenn?</div>
+    <p class="help-p">Ein <strong>kontrafaktisches Szenario</strong> beantwortet eine gedankliche Frage: Wie hätte sich die Treatmentgruppe entwickelt, wenn sie <em>nicht</em> behandelt worden wäre? Diese Situation existiert per Definition nicht in den Daten — jede Schule war entweder im Programm oder nicht.</p>
+    <p class="help-p">Im DiD-Plot ist die <strong>gestrichelte grüne Linie</strong> das kontrafaktische Szenario: Sie zeigt, wie die Treatmentschulen sich vermutlich entwickelt hätten — nämlich parallel zur Kontrollgruppe. Der DiD-Effekt β̂₃ ist genau die Lücke zwischen dem tatsächlich beobachteten Nachher-Wert der Treatmentgruppe und diesem kontrafaktischen Wert.</p>
+    <p class="help-p">Das <strong>Parallel-Trends-Argument</strong> macht die kontrafaktische Annahme explizit: Ohne Intervention hätten sich beide Gruppen gleich stark verändert. Ist das plausibel, ist das Kontrafaktual sinnvoll rekonstruiert — und β̂₃ kausal interpretierbar.</p>
+    <p class="help-p">→ Das <a href="Causal_Teaching.html" style="color:var(--a2);text-decoration:underline">Causal Teaching Tool</a> zeigt kontrafaktische Potenzielle Outcomes im Rubin-Framework (Y(0), Y(1)) und erklärt, warum man nie beides gleichzeitig beobachten kann — das fundamentale Problem kausaler Inferenz.</p>
 
     <div class="help-sh">Selektionsbias — und warum DiD robust ist</div>
     <p class="help-p">β₂ misst den zeitkonstanten Unterschied zwischen Treatment- und Kontrollgruppe <em>vor</em> der Intervention. Wenn z. B. Schulen mit motivierteren Schülern am Programm teilnehmen (Selbstselektion), weichen ihre Ausgangswerte ab (β₂ ≠ 0).</p>
@@ -257,7 +262,7 @@ E[Y | Treatment, Nachher] = α + β₁ + β₂ + β₃  → Δ_T = β₁ + β₃
     <strong>Warum ist β₃ genau der DiD-Schätzer?</strong>
     <span class="formula-line">Y = α + β₁·Post + β₂·Treat + β₃·(Post×Treat) + ε</span>
     Δ_Kontroll = β₁ &nbsp;·&nbsp; Δ_Treatment = β₁ + β₃ &nbsp;·&nbsp; <strong>DiD = Δ_T − Δ_K = β₃</strong><br>
-    β₁ (Zeittrend) und β₂ (Selektion) kürzen sich in der doppelten Differenz heraus. <strong>β₃ = Interaktionsterm = DiD = ATT = LATE</strong> (bei vollständiger Compliance).
+    β₁ (Zeittrend) und β₂ (Selektion) kürzen sich in der doppelten Differenz heraus. <strong>β₃ = Interaktionsterm = DiD = ATT</strong> — der kausale Effekt für die behandelten Einheiten.
   </div>
 
   <div class="sec-h">2 × 2 — Zellmittelwerte</div>
@@ -425,29 +430,29 @@ function updateTables(){
   document.getElementById('td-t1').textContent=f(o.mt1);
   document.getElementById('td-dt').textContent=pm(o.mt1-o.mt0);
   document.getElementById('td-did').textContent=pm(o.b3Hat);
-  // regression table
+  // regression table — estId/tvId match HTML element IDs exactly
   const rows=[
-    {suf:'a', true_v:0,      est:o.aHat,  se:o.seA},
-    {suf:'1', true_v:ST.b1,  est:o.b1Hat, se:o.se1},
-    {suf:'2', true_v:ST.b2,  est:o.b2Hat, se:o.se2},
-    {suf:'3', true_v:ST.b3,  est:o.b3Hat, se:o.se3},
+    {estId:'rg-a',  tvId:null,     suf:'a', true_v:0,     est:o.aHat,  se:o.seA},
+    {estId:'rg-b1', tvId:'rg-b1t', suf:'1', true_v:ST.b1, est:o.b1Hat, se:o.se1},
+    {estId:'rg-b2', tvId:'rg-b2t', suf:'2', true_v:ST.b2, est:o.b2Hat, se:o.se2},
+    {estId:'rg-b3', tvId:'rg-b3t', suf:'3', true_v:ST.b3, est:o.b3Hat, se:o.se3},
   ];
   rows.forEach(r=>{
     const t=r.est/r.se;
     const p=2*(1-Φ(Math.abs(t)));
-    document.getElementById('rg-'+r.suf).textContent=f(r.est);
-    const tvEl=document.getElementById('rg-'+r.suf+'t');
-    if(tvEl) tvEl.textContent=f(r.true_v);
-    document.getElementById('rg-se'+r.suf).textContent=f(r.se);
-    document.getElementById('rg-t'+r.suf).textContent=tfmt(t);
+    const estEl=document.getElementById(r.estId);
+    if(estEl) estEl.textContent=f(r.est);
+    if(r.tvId){
+      const tvEl=document.getElementById(r.tvId);
+      if(tvEl) tvEl.textContent=r.suf==='3'&&Math.abs(ST.pt)>0.05?f(r.true_v)+' (+PT)':f(r.true_v);
+    }
+    const seEl=document.getElementById('rg-se'+r.suf);
+    if(seEl) seEl.textContent=f(r.se);
+    const tEl=document.getElementById('rg-t'+r.suf);
+    if(tEl) tEl.textContent=tfmt(t);
     const pEl=document.getElementById('rg-p'+r.suf);
-    pEl.textContent=pFmt(p);
-    pEl.style.color=p<0.05?'var(--a3)':'var(--ink3)';
+    if(pEl){pEl.textContent=pFmt(p);pEl.style.color=p<0.05?'var(--a3)':'var(--ink3)';}
   });
-  // true values in regression table
-  document.getElementById('rg-b1t').textContent=f(ST.b1);
-  document.getElementById('rg-b2t').textContent=f(ST.b2);
-  document.getElementById('rg-b3t').textContent=f(ST.b3)+(Math.abs(ST.pt)>0.05?' (+PT)':'');
   // stat grid
   const t3=o.b3Hat/o.se3;
   const p3=2*(1-Φ(Math.abs(t3)));
