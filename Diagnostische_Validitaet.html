@@ -83,6 +83,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 .kw-table td{padding:.28rem .45rem;border-bottom:1px solid var(--grid);vertical-align:middle}
 .kw-table td:last-child{text-align:right;font-weight:600;color:var(--accent);white-space:nowrap}
 .kw-formula{color:var(--ink3);font-size:.73rem}
+.kw-calc{color:var(--ink2);font-size:.73rem}
 .kw-hi td:last-child{color:var(--a5) !important}
 /* help */
 .help-panel{background:var(--panel);border:1px solid var(--grid);padding:.8rem 1rem;margin-top:.8rem;display:none}
@@ -198,7 +199,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
       <div class="sec-h">Kennwerte</div>
       <table class="kw-table">
         <thead>
-          <tr><th>Kennwert</th><th>Formel</th><th>Wert</th></tr>
+          <tr><th>Kennwert</th><th>Formel</th><th>Berechnung</th><th>Wert</th></tr>
         </thead>
         <tbody id="kw-body"></tbody>
       </table>
@@ -260,7 +261,9 @@ function computeStats(){
   const lrm =sens<1?spec/(1-sens):Infinity;
   const acc =(tp+tn)/ST.N;
   const j   =sens+spec-1;
-  return{tp,fp,tn,fn,sens,spec,ppv,npv,lrp,lrm,acc,j};
+  const dor =(fp>0&&fn>0)?(tp*tn)/(fp*fn):Infinity;
+  const rr  =ppv/((1-npv)||0.0001);
+  return{tp,fp,tn,fn,sens,spec,ppv,npv,lrp,lrm,acc,j,dor,rr};
 }
 
 // ── UPDATE DOM ──────────────────────────────────────────────────
@@ -279,21 +282,23 @@ function updateStats(){
   const fmt=v=>isFinite(v)?v.toFixed(2):'∞';
   const fmtp=v=>(v*100).toFixed(1)+'%';
   const rows=[
-    {n:'Sensitivität', f:'TP/(TP+FN)', v:fmtp(r.sens), hi:true},
-    {n:'Spezifität',   f:'TN/(TN+FP)', v:fmtp(r.spec), hi:true},
-    {n:'PPV',          f:'TP/(TP+FP)', v:fmtp(r.ppv)},
-    {n:'NPV',          f:'TN/(TN+FN)', v:fmtp(r.npv)},
-    {n:'LR+',          f:'Sens/(1−Spez)', v:fmt(r.lrp)},
-    {n:'LR−',          f:'Spez/(1−Sens)', v:fmt(r.lrm)},
-    {n:'Accuracy',     f:'(TP+TN)/N',    v:fmtp(r.acc)},
-    {n:'Youden J',     f:'Sens+Spez−1',  v:fmt(r.j)},
+    {n:'Sensitivität', f:'TP/(TP+FN)',       c:`${r.tp}/(${r.tp+r.fn})`,                           v:fmtp(r.sens), hi:true},
+    {n:'Spezifität',   f:'TN/(TN+FP)',       c:`${r.tn}/(${r.tn+r.fp})`,                           v:fmtp(r.spec), hi:true},
+    {n:'PPV',          f:'TP/(TP+FP)',        c:`${r.tp}/(${r.tp+r.fp})`,                           v:fmtp(r.ppv)},
+    {n:'NPV',          f:'TN/(TN+FN)',        c:`${r.tn}/(${r.tn+r.fn})`,                           v:fmtp(r.npv)},
+    {n:'LR+',          f:'Sens/(1−Spez)',     c:`${r.sens.toFixed(3)}/${(1-r.spec).toFixed(3)}`,    v:fmt(r.lrp)},
+    {n:'LR−',          f:'Spez/(1−Sens)',     c:`${r.spec.toFixed(3)}/${(1-r.sens).toFixed(3)}`,    v:fmt(r.lrm)},
+    {n:'Accuracy',     f:'(TP+TN)/N',         c:`${r.tp+r.tn}/${ST.N}`,                             v:fmtp(r.acc)},
+    {n:'Youden J',     f:'Sens+Spez−1',       c:`${r.sens.toFixed(3)}+${r.spec.toFixed(3)}−1`,      v:fmt(r.j)},
+    {n:'Diagn. OR',    f:'(TP·TN)/(FP·FN)',  c:`(${r.tp}·${r.tn})/(${r.fp}·${r.fn})`,             v:fmt(r.dor)},
+    {n:'Rel. Risiko',  f:'PPV/(1−NPV)',       c:`${r.ppv.toFixed(3)}/${(1-r.npv).toFixed(3)}`,      v:fmt(r.rr)},
   ];
   const tb=document.getElementById('kw-body');
   tb.innerHTML='';
   rows.forEach(row=>{
     const tr=document.createElement('tr');
     if(row.hi) tr.className='kw-hi';
-    tr.innerHTML=`<td>${row.n}</td><td class="kw-formula">${row.f}</td><td>${row.v}</td>`;
+    tr.innerHTML=`<td>${row.n}</td><td class="kw-formula">${row.f}</td><td class="kw-calc">${row.c}</td><td>${row.v}</td>`;
     tb.appendChild(tr);
   });
 }

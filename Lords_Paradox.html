@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lord's Paradox — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a6);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:272px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500;min-width:3.5rem;text-align:right;display:inline-block}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.preset-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.3rem .65rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .15s;width:100%;text-align:left;display:block;margin-bottom:.3rem}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.preset-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.seed-btn{font-family:'DM Mono',monospace;font-size:.76rem;padding:.28rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .12s;width:100%;text-align:left;margin-top:.3rem}
+.seed-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.example-box{background:var(--panel);border-left:3px solid var(--a6);padding:.85rem 1rem;
+  margin-bottom:.85rem;font-size:.88rem;line-height:1.75}
+.example-box strong{color:var(--a6)}
+.insight-box{background:var(--panel);border-left:3px solid var(--a1);padding:.85rem 1rem;
+  margin-bottom:.85rem;font-size:.88rem;line-height:1.75}
+.insight-box strong{color:var(--a1)}
+.eq-wrap{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem;margin-bottom:.8rem}
+.eq-main{font-family:'DM Mono',monospace;font-size:.88rem;line-height:2.2;letter-spacing:.01em}
+.eq-note{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink3);line-height:1.6;
+  border-top:1px solid var(--grid);margin-top:.5rem;padding-top:.5rem}
+.canvas-wrap{background:var(--panel);border:1px solid var(--grid);margin-bottom:.85rem;overflow:hidden}
+#plot-canvas{width:100%;display:block}
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.85rem}
+.rb{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem}
+.rb-method{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.25rem}
+.rb-formula{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);margin-bottom:.55rem}
+.rb-nums{font-family:'DM Mono',monospace;font-size:.82rem;margin-bottom:.3rem;line-height:1.9}
+.rb-nums span{color:var(--ink);font-weight:600}
+.rb-test{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);margin-bottom:.5rem}
+.rb-verdict{font-family:'DM Mono',monospace;font-size:.8rem;font-weight:600;padding:.28rem .55rem;
+  border-radius:2px;text-align:center}
+.rv-ns{background:var(--grid);color:var(--ink2)}
+.rv-pos{background:var(--a3);color:var(--bg)}
+.rv-neg{background:var(--a1);color:var(--bg)}
+.paradox-badge{display:block;font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;background:var(--a1);color:var(--bg);padding:.25rem .6rem;
+  text-align:center;margin-top:.55rem}
+.decision-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.85rem}
+.dcard{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem}
+.dcard-h{font-family:'DM Mono',monospace;font-size:.73rem;letter-spacing:.07em;text-transform:uppercase;
+  margin-bottom:.5rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.dcard-body{font-size:.82rem;line-height:1.8;color:var(--ink2)}
+.dcard-body strong{color:var(--ink)}
+.dag-wrap{background:var(--panel);border:1px solid var(--grid);padding:.75rem .75rem .6rem;margin-bottom:.85rem}
+.dag-svg{width:100%;max-width:680px;display:block;margin:0 auto}
+.learn-section{margin-top:2.2rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a6);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.eq-section-lbl{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);margin-bottom:.4rem}
+.eq-divider{border-top:1px solid var(--grid);margin:.65rem 0 .55rem}
+.eq-legend{display:grid;grid-template-columns:1fr 1fr;gap:.35rem .7rem;margin-bottom:.1rem}
+.eq-comp{font-family:'DM Mono',monospace;font-size:.8rem}
+.eq-comp-sym{font-size:.85rem}
+.eq-comp-val{font-weight:600;color:var(--ink);margin:0 .28rem}
+.eq-comp-desc{font-size:.71rem;color:var(--ink3);display:block;margin-top:.04rem;line-height:1.35}
+.help-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.82);overflow-y:auto;padding:2rem 1rem}
+.help-overlay.open{display:block}
+.help-panel{max-width:700px;margin:0 auto;background:var(--paper);border:1px solid var(--border);padding:2rem}
+.help-panel h2{font-family:'Fraunces',serif;font-weight:300;font-size:1.2rem;margin-bottom:1.2rem}
+.help-h3{font-family:'DM Mono',monospace;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--a1);margin:1.1rem 0 .35rem}
+.help-p{font-size:.85rem;line-height:1.8;color:var(--ink2);margin-bottom:.6rem}
+.help-p code{font-family:'DM Mono',monospace;font-size:.8rem;background:var(--panel);padding:.1rem .35rem;color:var(--ink)}
+.help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
+  border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
+.help-close:hover{background:var(--a1);color:var(--bg)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Lord's <em>Paradox</em> — ANCOVA vs. Differenzwert</h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div class="help-overlay" id="help-overlay">
+  <div class="help-panel">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
+      <h2>Hilfe — Lord's Paradox</h2>
+      <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+    </div>
+    <div class="help-h3">Was zeigt dieses Tool?</div>
+    <p class="help-p">Lord's Paradox (1967) ist die Beobachtung, dass <strong style="color:var(--ink)">zwei korrekte statistische Analysen</strong> — die Differenzwert-Methode und ANCOVA — zu <strong style="color:var(--ink)">gegensätzlichen Schlussfolgerungen</strong> führen können. Das Paradox entsteht nicht durch einen Fehler, sondern weil beide Methoden <em>verschiedene kausale Fragen</em> beantworten.</p>
+    <div class="help-h3">Das laufende Beispiel</div>
+    <p class="help-p">Eine Universität vergleicht zwei Kurse: <strong style="color:var(--a2)">Kurs A</strong> (Standardunterricht) und <strong style="color:var(--a5)">Kurs B</strong> (Intensivkurs mit Tutorien). Studierende werden am Semesterbeginn (Prä) und -ende (Post) in Mathematik getestet. Kurs B hat im Schnitt ein höheres Ausgangsniveau — leistungsstärkere Studierende wählen den Intensivkurs.</p>
+    <div class="help-h3">Die zwei Analysen</div>
+    <p class="help-p"><strong style="color:var(--ink)">Differenzwert (Post − Prä):</strong> Wie groß ist die mittlere Verbesserung pro Kurs? Wenn beide Kurse gleich viel verbessern, findet die Differenzwert-Analyse keinen Effekt.</p>
+    <p class="help-p"><strong style="color:var(--ink)">ANCOVA (Post ~ Kurs + Prä):</strong> Bei gleichem Ausgangsniveau — schneidet ein Kurs am Ende besser ab? Weil Kurs B mit höherem Ausgangsniveau startet und Regression zur Mitte dies dämpft, erscheint Kurs B im ANCOVA-Vergleich besser.</p>
+    <div class="help-h3">Die Schlüsselformel</div>
+    <p class="help-p">Der Unterschied zwischen beiden Schätzern lässt sich exakt berechnen:<br>
+    <code>delta_ANCOVA = delta_Diff + (1 - b_w) · (mean_pre_B - mean_pre_A)</code><br>
+    Solange <code>b_w = 1</code> (ρ·σ_post/σ_pre = 1) ODER kein Baseline-Unterschied besteht, stimmen beide überein.</p>
+    <div class="help-h3">Bedienung</div>
+    <p class="help-p"><strong style="color:var(--ink)">Δ Ausgangsniveau:</strong> Unterschied im Prä-Test (Kurs B minus Kurs A). <strong style="color:var(--ink)">Wahrer Effekt:</strong> Zusätzliche Verbesserung durch den Intensivkurs (über die Semesterverbesserung hinaus). <strong style="color:var(--ink)">ρ (Pre-Post-Korr.):</strong> Je näher an 1, desto stärker stimmen beide Methoden überein. <strong style="color:var(--ink)">Szenarien:</strong> Vier voreingestellte Situationen, die verschiedene Aspekte des Paradoxons zeigen.</p>
+    <div class="help-h3">Lege Artis: Wann welches Werkzeug?</div>
+    <p class="help-p"><strong style="color:var(--ink)">RCT:</strong> ANCOVA ist vorzuziehen (höhere Power, zufällige Baseline-Differenzen werden korrigiert). <strong style="color:var(--ink)">Observationsstudie:</strong> Die Wahl hängt vom Estimanden ab — welche kausale Frage soll beantwortet werden? Ein DAG ist nötig. Beide Methoden können legitim sein — für verschiedene Fragen.</p>
+  </div>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Szenarien</div>
+    <button class="preset-btn active" id="pre-A" onclick="setPreset('A')">A — Lord's Paradox (klassisch)</button>
+    <button class="preset-btn" id="pre-B" onclick="setPreset('B')">B — Echter Effekt</button>
+    <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — RCT (kein Paradox)</button>
+    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — ρ → 1 (kein Paradox)</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Parameter</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name" style="color:var(--a5)">Δ Ausgangsniveau</span>
+        <span class="slider-val" id="val-delta">+10</span>
+      </div>
+      <input type="range" id="sl-delta" min="-20" max="20" step="1" value="10" oninput="onSl('delta',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name" style="color:var(--a3)">Wahrer Effekt</span>
+        <span class="slider-val" id="val-effect">0</span>
+      </div>
+      <input type="range" id="sl-effect" min="-10" max="10" step="1" value="0" oninput="onSl('effect',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">ρ (Pre-Post-Korr.)</span>
+        <span class="slider-val" id="val-rho">0.70</span>
+      </div>
+      <input type="range" id="sl-rho" min="0.05" max="0.99" step="0.05" value="0.70" oninput="onSl('rho',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">n (je Kurs)</span>
+        <span class="slider-val" id="val-n">100</span>
+      </div>
+      <input type="range" id="sl-n" min="30" max="300" step="10" value="100" oninput="onSl('n',this)">
+    </div>
+    <button class="seed-btn" onclick="newSeed()">⟳ Neue Stichprobe</button>
+  </div>
+
+  <div class="scard" style="font-family:'DM Mono',monospace;font-size:.76rem;line-height:1.8;color:var(--ink2)">
+    <div class="scard-title">Schlüsselformel</div>
+    <div style="font-size:.79rem">
+      <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span>
+      <span style="color:var(--ink)"> = </span>
+      <span style="color:var(--a6)">δ<sub>Diff</sub></span>
+      <span style="color:var(--ink)"> + </span>
+    </div>
+    <div style="font-size:.79rem">
+      <span style="color:var(--ink3)">(1 − </span>
+      <span style="color:var(--a3)">b<sub>w</sub></span>
+      <span style="color:var(--ink3)">) · </span>
+      <span style="color:var(--a1)">Δ<sub>base</sub></span>
+    </div>
+    <div style="color:var(--ink3);margin-top:.35rem;font-size:.72rem">= 0 wenn <span style="color:var(--a3)">b<sub>w</sub></span>=1 oder <span style="color:var(--a1)">Δ<sub>base</sub></span>=0</div>
+    <div style="font-size:.75rem;margin-top:.3rem;color:var(--ink2)">Differenz: <span id="key-delta-anc" style="color:var(--a4)">—</span></div>
+  </div>
+
+</div><!-- /sidebar -->
+
+<div id="main">
+
+  <div class="sec-h" style="margin-top:0">Laufendes Beispiel</div>
+  <div class="example-box">
+    <strong>Förderprogramm-Studie — Mathematikunterricht</strong> — Zwei Kurse an einer Universität: <span id="ex-nA" style="color:var(--a2);font-weight:600">100</span> Studierende in <span style="color:var(--a2)">Kurs A (Standard)</span> und <span id="ex-nB" style="color:var(--a5);font-weight:600">100</span> in <span style="color:var(--a5)">Kurs B (Intensiv)</span>. Kurs B Studierende starten mit im Schnitt <span id="ex-delta" style="color:var(--a5);font-weight:600">10 Punkte</span> Vorsprung. Beide Kurse verbessern sich um <span id="ex-diff" style="font-weight:600">ca. gleich viel</span> — und dennoch liefern zwei Analysen verschiedene Antworten.
+  </div>
+
+  <div class="sec-h">Ergebnisse der zwei Analysen</div>
+  <div class="results-grid">
+    <div class="rb">
+      <div class="rb-method" style="color:var(--a6)">Differenzwert-Analyse</div>
+      <div class="rb-formula">δ<sub>Diff</sub> = Δ̄<sub>B</sub> − Δ̄<sub>A</sub> · t-Test</div>
+      <div class="rb-nums">
+        ΔA̅ = <span id="rb-dA">—</span> &nbsp; ΔB̅ = <span id="rb-dB">—</span><br>
+        δ<sub>Diff</sub> = <span id="rb-delta-diff">—</span>
+      </div>
+      <div class="rb-test" id="rb-test-d">t(—) = —, p = —</div>
+      <div class="rb-verdict rv-ns" id="rb-verdict-d">—</div>
+    </div>
+    <div class="rb">
+      <div class="rb-method" style="color:var(--a4)">ANCOVA</div>
+      <div class="rb-formula">Post ~ Prä + Kurs · Regression</div>
+      <div class="rb-nums">
+        b<sub>w</sub> = <span id="rb-bw">—</span> &nbsp; δ<sub>ANC</sub> = <span id="rb-delta-anc">—</span><br>
+        SE = <span id="rb-se-anc">—</span>
+      </div>
+      <div class="rb-test" id="rb-test-a">t(—) = —, p = —</div>
+      <div class="rb-verdict rv-ns" id="rb-verdict-a">—</div>
+    </div>
+  </div>
+  <div id="paradox-container"></div>
+
+  <div class="sec-h">Visualisierung</div>
+  <div class="canvas-wrap" style="margin-bottom:.4rem">
+    <canvas id="plot-canvas" height="430"></canvas>
+  </div>
+  <div class="canvas-wrap">
+    <canvas id="traj-canvas" height="190"></canvas>
+  </div>
+
+  <div class="sec-h">Mathematischer Zusammenhang</div>
+  <div class="eq-wrap">
+
+    <!-- A: Die zwei vollständigen Formeln -->
+    <div class="eq-section-lbl">Die zwei Analysen</div>
+    <div class="eq-main">
+      <span style="color:var(--a6)">δ<sub>Diff</sub></span>
+      <span style="color:var(--ink3)"> = </span>
+      <span style="color:var(--a5)">Δ<sub>B</sub></span>
+      <span style="color:var(--ink3)"> − </span>
+      <span style="color:var(--a2)">Δ<sub>A</sub></span>
+      <span style="color:var(--ink3)">&ensp;wobei Δ = mean(Post − Prä) je Kurs</span>
+    </div>
+    <div class="eq-main" style="margin-top:.28rem">
+      <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span>
+      <span style="color:var(--ink3)"> = (ȳ<sub>post,B</sub> − ȳ<sub>post,A</sub>) − </span>
+      <span style="color:var(--a3)">b<sub>w</sub></span>
+      <span style="color:var(--ink3)"> · </span>
+      <span style="color:var(--a1)">Δ<sub>base</sub></span>
+    </div>
+
+    <!-- B: Schlüsselformel mit Live-Werten -->
+    <div class="eq-divider"></div>
+    <div class="eq-section-lbl">Schlüsselformel — warum sie divergieren</div>
+    <div class="eq-main">
+      <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span>
+      <span style="color:var(--ink3)"> = </span>
+      <span style="color:var(--a6)">δ<sub>Diff</sub></span>
+      <span style="color:var(--ink3)"> + (1 − </span>
+      <span style="color:var(--a3)">b<sub>w</sub></span>
+      <span style="color:var(--ink3)">) · </span>
+      <span style="color:var(--a1)">Δ<sub>base</sub></span>
+    </div>
+    <div class="eq-main" style="margin-top:.2rem">
+      <span style="color:var(--a4)"><span id="eq-anc">—</span></span>
+      <span style="color:var(--ink3)"> = </span>
+      <span style="color:var(--a6)"><span id="eq-dif">—</span></span>
+      <span style="color:var(--ink3)"> + (1 − </span>
+      <span style="color:var(--a3)"><span id="eq-bw">—</span></span>
+      <span style="color:var(--ink3)">) · </span>
+      <span style="color:var(--a1)"><span id="eq-dpre">—</span></span>
+      <span style="color:var(--a4)"> = <span id="eq-check">—</span></span>
+    </div>
+
+    <!-- C: Komponenten-Legende -->
+    <div class="eq-divider"></div>
+    <div class="eq-section-lbl">Komponenten erklärt</div>
+    <div class="eq-legend">
+      <div class="eq-comp">
+        <span class="eq-comp-sym" style="color:var(--a6)">δ<sub>Diff</sub></span>
+        <span class="eq-comp-val" id="comp-ddiff">—</span>
+        <span class="eq-comp-desc">Differenz der mittl. Veränderungen: Δ<sub>B</sub> − Δ<sub>A</sub></span>
+      </div>
+      <div class="eq-comp">
+        <span class="eq-comp-sym" style="color:var(--a4)">δ<sub>ANCOVA</sub></span>
+        <span class="eq-comp-val" id="comp-danc">—</span>
+        <span class="eq-comp-desc">Gruppenkoeff. aus Post ~ Prä + Kurs</span>
+      </div>
+      <div class="eq-comp">
+        <span class="eq-comp-sym" style="color:var(--a3)">b<sub>w</sub></span>
+        <span class="eq-comp-val" id="comp-bw">—</span>
+        <span class="eq-comp-desc">Within-group Steigung Post auf Prä ≈ ρ · σ<sub>post</sub>/σ<sub>pre</sub></span>
+      </div>
+      <div class="eq-comp">
+        <span class="eq-comp-sym" style="color:var(--a1)">Δ<sub>base</sub></span>
+        <span class="eq-comp-val" id="comp-dbase">—</span>
+        <span class="eq-comp-desc">Ausgangsniveauunterschied: ȳ<sub>pre,B</sub> − ȳ<sub>pre,A</sub></span>
+      </div>
+    </div>
+
+    <div class="eq-note">
+      Paradox nur wenn <span style="color:var(--a3)">b<sub>w</sub></span> ≠ 1 <em>und</em> <span style="color:var(--a1)">Δ<sub>base</sub></span> ≠ 0 gleichzeitig. Im RCT: <span style="color:var(--a1)">Δ<sub>base</sub></span> ≈ 0 per Randomisierung → beide Methoden stimmen überein.
+    </div>
+  </div>
+
+  <div class="sec-h">Zwei Fragen — Zwei Antworten</div>
+  <div class="decision-grid">
+    <div class="dcard" style="border-top:3px solid var(--a6)">
+      <div class="dcard-h" style="color:var(--a6)">Differenzwert fragt:</div>
+      <div class="dcard-body">
+        <strong>„Hat sich Kurs B im Schnitt stärker verbessert als Kurs A?"</strong><br><br>
+        Schätzt den Unterschied in den <em>mittleren Veränderungen</em>: ΔB̄ − ΔĀ.<br><br>
+        Die Frage ist <strong>marginal</strong>: Sie vergleicht Gruppenmittelwerte — ohne auf das Ausgangsniveau zu konditionieren. Individuelle Unterschiede im Startpunkt werden implizit durch die Differenzbildung herausgekürzt.
+      </div>
+    </div>
+    <div class="dcard" style="border-top:3px solid var(--a4)">
+      <div class="dcard-h" style="color:var(--a4)">ANCOVA fragt:</div>
+      <div class="dcard-body">
+        <strong>„Bei gleichem Ausgangsniveau — schneidet Kurs B am Ende besser ab?"</strong><br><br>
+        Schätzt den Gruppenunterschied <em>bei fixiertem Prä-Wert</em>: E[Post|Kurs=B, Prä=y] − E[Post|Kurs=A, Prä=y].<br><br>
+        Die Frage ist <strong>konditional</strong>: Sie vergleicht Personen mit identischem Startwert. Das ist sinnvoll, wenn man wissen will, ob der Kurs <em>innerhalb einer Leistungsebene</em> einen Unterschied macht.
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-h">DAG — Kausale Struktur</div>
+  <div class="dag-wrap">
+    <svg class="dag-svg" viewBox="0 0 580 175" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0,8 3,0 6" fill="context-stroke"/>
+        </marker>
+      </defs>
+
+      <!-- Y0 → Y1: Prä sagt Post vorher (ρ) -->
+      <line x1="264" y1="85" x2="426" y2="85" stroke="var(--a2)" stroke-width="2.2" marker-end="url(#arr)"/>
+      <text x="345" y="76" text-anchor="middle" fill="var(--a2)" font-size="11" font-family="DM Mono,monospace">ρ</text>
+
+      <!-- G → Y1: Treatment-Effekt δ (Bogen unter Y0-Node durch) -->
+      <path d="M 88 96 Q 260 145 426 96" fill="none" stroke="var(--a3)" stroke-width="2.2" marker-end="url(#arr)"/>
+      <text x="258" y="148" text-anchor="middle" fill="var(--a3)" font-size="11" font-family="DM Mono,monospace">δ (Effekt)</text>
+
+      <!-- U → Y0: Latente Fähigkeit → Prä -->
+      <line x1="306" y1="40" x2="248" y2="57" stroke="var(--ink3)" stroke-width="1.6" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+
+      <!-- U → Y1: Latente Fähigkeit → Post -->
+      <line x1="384" y1="40" x2="444" y2="57" stroke="var(--ink3)" stroke-width="1.6" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+
+      <!-- G → Y0: Selektion (nur Observationsstudie) -->
+      <path d="M 72 60 Q 120 14 196 60" fill="none" stroke="var(--a1)" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+      <text x="130" y="14" text-anchor="middle" fill="var(--a1)" font-size="10" font-family="DM Mono,monospace">Selektion?</text>
+      <text x="130" y="26" text-anchor="middle" fill="var(--a1)" font-size="10" font-family="DM Mono,monospace">(obs. Studie)</text>
+
+      <!-- G node: Kurs/Treatment -->
+      <circle cx="55" cy="85" r="33" fill="var(--panel)" stroke="var(--a3)" stroke-width="2"/>
+      <text x="55" y="79" text-anchor="middle" fill="var(--a3)" font-size="10" font-family="DM Mono,monospace">Kurs</text>
+      <text x="55" y="97" text-anchor="middle" fill="var(--a3)" font-size="18" font-family="DM Mono,monospace" font-weight="600">G</text>
+
+      <!-- Y0 node: Prä-Test -->
+      <circle cx="232" cy="85" r="32" fill="var(--panel)" stroke="var(--a2)" stroke-width="2"/>
+      <text x="232" y="79" text-anchor="middle" fill="var(--a2)" font-size="10" font-family="DM Mono,monospace">Pra-Test</text>
+      <text x="232" y="97" text-anchor="middle" fill="var(--a2)" font-size="18" font-family="DM Mono,monospace" font-weight="600">Y0</text>
+
+      <!-- Y1 node: Post-Test -->
+      <circle cx="458" cy="85" r="32" fill="var(--panel)" stroke="var(--a5)" stroke-width="2"/>
+      <text x="458" y="79" text-anchor="middle" fill="var(--a5)" font-size="10" font-family="DM Mono,monospace">Post-Test</text>
+      <text x="458" y="97" text-anchor="middle" fill="var(--a5)" font-size="18" font-family="DM Mono,monospace" font-weight="600">Y1</text>
+
+      <!-- U node: Latente Variable -->
+      <ellipse cx="345" cy="24" rx="58" ry="20" fill="var(--panel)" stroke="var(--ink3)" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="345" y="20" text-anchor="middle" fill="var(--ink3)" font-size="10" font-family="DM Mono,monospace">Fahigkeit U</text>
+      <text x="345" y="33" text-anchor="middle" fill="var(--ink3)" font-size="10" font-family="DM Mono,monospace">(latent, unbeob.)</text>
+
+      <!-- Bottom labels -->
+      <text x="55" y="168" text-anchor="middle" fill="var(--a3)" font-size="10" font-family="DM Mono,monospace">Treatment</text>
+      <text x="232" y="168" text-anchor="middle" fill="var(--a2)" font-size="10" font-family="DM Mono,monospace">ANCOVA: adjustiert</text>
+      <text x="458" y="168" text-anchor="middle" fill="var(--a5)" font-size="10" font-family="DM Mono,monospace">Outcome</text>
+    </svg>
+    <div style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink3);margin-top:.6rem;line-height:1.75">
+      Grüner Bogen (G → Y1): kausaler Effekt δ des Kurses auf das Prüfungsergebnis. &nbsp;
+      Blauer Pfeil (Y0 → Y1): Regression zur Mitte (Stärke ρ). &nbsp;
+      Grau gestrichelt: latente Fähigkeit U beeinflusst beide Messzeitpunkte. &nbsp;
+      <span style="color:var(--a1)">Rot gestrichelt (G → Y0): In Observationsstudien wählen stärkere Studierende den Intensivkurs — dieser Pfeil fehlt im RCT.</span>
+    </div>
+  </div>
+
+  <div class="sec-h">Lege Artis: Wann welches Werkzeug?</div>
+  <div class="decision-grid">
+    <div class="dcard" style="border-top:3px solid var(--a4)">
+      <div class="dcard-h" style="color:var(--a4)">ANCOVA — bevorzugen wenn:</div>
+      <div class="dcard-body">
+        <strong>Randomisiertes Experiment (RCT)</strong> — Baseline-Unterschiede sind zufällig; ANCOVA erhöht die statistische Power deutlich, ohne Bias einzuführen. Es ist der moderne Standard (Vickers &amp; Altman 2001, EMA Guidelines).<br><br>
+        <strong>Observationsstudie mit klar definiertem Confounder</strong> — wenn Y₀ (Prä) als einzige relevante Kovariate gilt und G nicht durch Y₀ verursacht wird (d.h. G ⊥ Y₀ | U im DAG).<br><br>
+        Die Frage lautet: <em>„Was wäre der Effekt, wenn wir gleiche Startbedingungen hätten?"</em>
+      </div>
+    </div>
+    <div class="dcard" style="border-top:3px solid var(--a6)">
+      <div class="dcard-h" style="color:var(--a6)">Differenzwert — bevorzugen wenn:</div>
+      <div class="dcard-body">
+        <strong>Gruppen sind durch ihr Ausgangsniveau definiert</strong> — z.B. „leistungsstarke vs. leistungsschwache Studierende". Hier <em>ist</em> der Prä-Wert das gruppendefinierende Merkmal. ANCOVA würde auf genau dieses Merkmal adjustieren und damit den Gruppenunterschied, der die Intervention erst motiviert, herausrechnen — das ist logisch zirkulär.<br><br>
+        <strong>Individuelle Veränderung ist das Interessante</strong> — wenn man wissen will, ob eine Person oder Gruppe sich entwickelt hat, unabhängig vom Startpunkt.<br><br>
+        <strong>U (Fähigkeit) ist der Hauptconfounder</strong> — Differenzwerte eliminieren zeitstabile Confunder implizit (fixed-effects-Logik).
+      </div>
+    </div>
+  </div>
+  <div class="insight-box">
+    <strong>Modernes Fazit (Pearl 2016, Senn 2006):</strong> Lord's Paradox ist kein Fehler — es ist ein Spiegel. Die beiden Methoden beantworten verschiedene kausale Fragen. Lege artis heute: <em>Kausale Frage zuerst präzisieren, DAG zeichnen, dann Methode wählen.</em> In RCTs ist ANCOVA fast immer vorzuziehen. In Observationsstudien hängt die Antwort vom Estimanden ab.
+  </div>
+
+  <div class="learn-section">
+    <div class="sec-h">Konzepte</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">Was ist Lord's Paradox?</div>
+        <div class="lcard-body">Frederic Lord (1967) zeigte, dass zwei Statistiker mit demselben Datensatz — beide korrekt rechnend — zu entgegengesetzten Schlüssen kommen können. Statistiker A nutzt Differenzwerte und findet keinen Gruppeneffekt. Statistiker B nutzt ANCOVA und findet einen signifikanten Effekt. Beide liegen richtig — weil sie verschiedene Fragen beantworten.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Regression zur Mitte als Ursache</div>
+        <div class="lcard-body">Der Mechanismus hinter dem Paradox ist <strong>Regression zur Mitte</strong>: Wer beim Prä-Test extrem hoch oder niedrig war, bewegt sich beim Post-Test in Richtung des Gruppenmittels. Kurs B hat ein höheres Mittel — seine Mitglieder regredieren zu einem anderen Zentrum als Kurs A. ANCOVA „sieht" diesen Unterschied bei fixiertem Prä-Wert; Differenzwerte nicht.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Der Estimand entscheidet</div>
+        <div class="lcard-body">Ein <strong>Estimand</strong> ist die präzise Definition der Größe, die geschätzt werden soll. ATE (Average Treatment Effect) fragt nach der durchschnittlichen Wirkung in der Population — Differenzwerte kommen dem nahe. CATE (Conditional ATE) fragt nach der Wirkung bei fixiertem Y₀ — ANCOVA schätzt genau das. Ohne vorab definierten Estimanden ist die Methodenwahl willkürlich.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">RCT: ANCOVA fast immer besser</div>
+        <div class="lcard-body">Bei randomisierten Experimenten ist ANCOVA dem bloßen t-Test auf Differenzwerte statistisch überlegen: Es reduziert den Restfehler durch Aufklärung von Varianz durch den Prä-Wert. Die geschätzten Gruppenunterschiede sind unverzerrt und präziser. Vickers &amp; Altman (2001, BMJ) empfehlen ANCOVA als Standard für klinische Trials. Differenzwerte sind nur dann gleichwertig, wenn ρ = 1 oder keine Baseline-Varianz existiert.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Observationsstudien: DAG zuerst</div>
+        <div class="lcard-body">In Beobachtungsstudien kann ANCOVA auf Y₀ (Prä) kontraproduktiv sein: Wenn Y₀ ein <strong>Mediator</strong> des G-Effekts ist (G → Y₀ → Y₁), adjustieren wir auf dem Kausalweg und unterschätzen den Effekt. Wenn Y₀ ein <strong>Collider</strong> ist (G → Y₀ ← U → Y₁), öffnen wir durch Adjustierung einen Backdoor-Pfad. Ein DAG klärt, welcher Fall vorliegt.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Die Formel des Paradoxons</div>
+        <div class="lcard-body">
+          δ<sub>ANCOVA</sub> = δ<sub>Diff</sub> + <strong>(1 − b<sub>w</sub>) · Δ<sub>base</sub></strong><br><br>
+          <strong>b<sub>w</sub></strong> = pooled within-group Steigung ≈ ρ<br>
+          <strong>Δ<sub>base</sub></strong> = Ausgangsniveauunterschied der Gruppen<br><br>
+          Das Paradox verschwindet, wenn ρ = 1 (kein Regressions-zur-Mitte-Effekt) oder Δ<sub>base</sub> = 0 (keine Baseline-Differenz). Im RCT ist Δ<sub>base</sub> ≈ 0 per Randomisierung.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+const MU_PRE_A = 60, MU_BASE_CHANGE = 5, SIGMA = 12;
+
+const P = {delta:10, effect:0, rho:0.70, n:100, seed:42};
+let dataA=[], dataB=[], stats={};
+
+// LCG RNG
+function makeLCG(seed){
+  let s=seed>>>0;
+  return ()=>{ s=(1664525*s+1013904223)>>>0; return s/4294967296; };
+}
+
+function randn(r){
+  let u=0,v=0;
+  while(u===0) u=r();
+  while(v===0) v=r();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+
+function generateData(){
+  const r=makeLCG(P.seed);
+  const muPreA=MU_PRE_A, muPreB=MU_PRE_A+P.delta;
+  const muPostA=muPreA+MU_BASE_CHANGE;
+  const muPostB=muPreB+MU_BASE_CHANGE+P.effect;
+  dataA=[];
+  for(let i=0;i<P.n;i++){
+    const z1=randn(r),z2=randn(r);
+    const pre=muPreA+SIGMA*z1;
+    const post=muPostA+SIGMA*(P.rho*z1+Math.sqrt(1-P.rho*P.rho)*z2);
+    dataA.push({pre,post});
+  }
+  dataB=[];
+  for(let i=0;i<P.n;i++){
+    const z1=randn(r),z2=randn(r);
+    const pre=muPreB+SIGMA*z1;
+    const post=muPostB+SIGMA*(P.rho*z1+Math.sqrt(1-P.rho*P.rho)*z2);
+    dataB.push({pre,post});
+  }
+}
+
+function mean(a){return a.reduce((s,v)=>s+v,0)/a.length}
+function variance(a){const m=mean(a);return a.reduce((s,v)=>s+(v-m)**2,0)/(a.length-1)}
+
+// Incomplete beta for p-values (Numerical Recipes)
+function lgamma(x){
+  const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+  let y=x,tmp=x+5.5; tmp-=(x+0.5)*Math.log(tmp); let ser=1.000000000190015;
+  for(let j=0;j<6;j++) ser+=c[j]/++y;
+  return -tmp+Math.log(2.5066282746310005*ser/x);
+}
+function betacf(x,a,b){
+  const MAXIT=200,EPS=3e-7,FPMIN=1e-30;
+  const qab=a+b,qap=a+1,qam=a-1;
+  let c=1,d=1-qab*x/qap;
+  if(Math.abs(d)<FPMIN) d=FPMIN; d=1/d; let h=d;
+  for(let m=1;m<=MAXIT;m++){
+    const m2=2*m;
+    let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+    d=1+aa*d; if(Math.abs(d)<FPMIN) d=FPMIN;
+    c=1+aa/c; if(Math.abs(c)<FPMIN) c=FPMIN;
+    d=1/d; h*=d*c;
+    aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+    d=1+aa*d; if(Math.abs(d)<FPMIN) d=FPMIN;
+    c=1+aa/c; if(Math.abs(c)<FPMIN) c=FPMIN;
+    d=1/d; const del=d*c; h*=del;
+    if(Math.abs(del-1)<EPS) break;
+  }
+  return h;
+}
+function ibeta(x,a,b){
+  if(x<=0) return 0; if(x>=1) return 1;
+  const bt=Math.exp(a*Math.log(x)+b*Math.log(1-x)-lgamma(a)-lgamma(b)+lgamma(a+b));
+  if(x<(a+1)/(a+b+2)) return bt*betacf(x,a,b)/a;
+  return 1-bt*betacf(1-x,b,a)/b;
+}
+function pval(t,df){
+  if(!isFinite(t)||isNaN(t)) return NaN;
+  const x=df/(df+t*t);
+  return ibeta(x,df/2,0.5);
+}
+
+function computeStats(){
+  const nA=dataA.length, nB=dataB.length, n=nA+nB;
+
+  const preA=dataA.map(d=>d.pre), postA=dataA.map(d=>d.post);
+  const preB=dataB.map(d=>d.pre), postB=dataB.map(d=>d.post);
+  const mPreA=mean(preA), mPostA=mean(postA);
+  const mPreB=mean(preB), mPostB=mean(postB);
+
+  // Difference scores
+  const dA=dataA.map(d=>d.post-d.pre);
+  const dB=dataB.map(d=>d.post-d.pre);
+  const mDA=mean(dA), mDB=mean(dB);
+  const vDA=variance(dA), vDB=variance(dB);
+  const se_d=Math.sqrt(vDA/nA+vDB/nB);
+  const t_d=(mDB-mDA)/se_d;
+  const df_d=(vDA/nA+vDB/nB)**2/((vDA/nA)**2/(nA-1)+(vDB/nB)**2/(nB-1));
+  const p_d=pval(t_d,df_d);
+  const delta_diff=mDB-mDA;
+
+  // ANCOVA via pooled within-group slope
+  // Within-group: center each group's pre, compute slope
+  let sxy_w=0, sxx_w=0;
+  for(const d of dataA){ sxy_w+=(d.pre-mPreA)*(d.post-mPostA); sxx_w+=(d.pre-mPreA)**2; }
+  for(const d of dataB){ sxy_w+=(d.pre-mPreB)*(d.post-mPostB); sxx_w+=(d.pre-mPreB)**2; }
+  const b_w = sxy_w/sxx_w;
+
+  // ANCOVA adjusted difference
+  const delta_anc = (mPostB-mPostA) - b_w*(mPreB-mPreA);
+
+  // SE for ANCOVA group coefficient via full OLS
+  // Build X matrix: rows = [1, pre, group]
+  const X=[], yv=[];
+  for(const d of dataA){ X.push([1,d.pre,0]); yv.push(d.post); }
+  for(const d of dataB){ X.push([1,d.pre,1]); yv.push(d.post); }
+  const olsRes=ols3(X,yv);
+  const t_a=olsRes.b[2]/olsRes.se[2];
+  const df_a=n-3;
+  const p_a=pval(t_a,df_a);
+
+  const b0_A=olsRes.b[0];
+  const b0_B=olsRes.b[0]+olsRes.b[2];
+
+  stats={mPreA,mPostA,mPreB,mPostB,mDA,mDB,delta_diff,
+    t_d,p_d,df_d,delta_anc,b_w,t_a,p_a,df_a,
+    se_anc:olsRes.se[2],b0_A,b0_B};
+}
+
+function ols3(X,y){
+  const n=y.length, p=3;
+  // X'X and X'y
+  const XtX=[[0,0,0],[0,0,0],[0,0,0]], Xty=[0,0,0];
+  for(let i=0;i<n;i++){
+    for(let r=0;r<p;r++){
+      Xty[r]+=X[i][r]*y[i];
+      for(let c=0;c<p;c++) XtX[r][c]+=X[i][r]*X[i][c];
+    }
+  }
+  // Solve via Gauss-Jordan with augmented [XtX | I]
+  const M=XtX.map((row,i)=>[...row,...[0,1,2].map(j=>i===j?1:0)]);
+  for(let col=0;col<p;col++){
+    let piv=col;
+    for(let r=col+1;r<p;r++) if(Math.abs(M[r][col])>Math.abs(M[piv][col])) piv=r;
+    [M[col],M[piv]]=[M[piv],M[col]];
+    const d=M[col][col]; if(Math.abs(d)<1e-14) continue;
+    for(let j=0;j<2*p;j++) M[col][j]/=d;
+    for(let r=0;r<p;r++) if(r!==col){ const f=M[r][col]; for(let j=0;j<2*p;j++) M[r][j]-=f*M[col][j]; }
+  }
+  const inv=M.map(row=>row.slice(p));
+  // Solve XtX*b=Xty using inv
+  const b=[0,0,0];
+  for(let r=0;r<p;r++) for(let c=0;c<p;c++) b[r]+=inv[r][c]*Xty[c];
+  // Residual variance
+  let sse=0;
+  for(let i=0;i<n;i++){ const e=y[i]-(b[0]+b[1]*X[i][1]+b[2]*X[i][2]); sse+=e*e; }
+  const mse=sse/(n-p);
+  const se=b.map((_,i)=>Math.sqrt(Math.max(0,mse*inv[i][i])));
+  return {b,se,mse};
+}
+
+function fmt(v,d=2){ if(isNaN(v)||!isFinite(v)) return '—'; return (v>=0?'+':'')+v.toFixed(d); }
+function fmtp(p){ if(isNaN(p)) return '—'; if(p<.001) return '< .001'; return '.'+('000'+Math.round(p*1000)).slice(-3); }
+
+function updateUI(){
+  const s=stats;
+  // Example box
+  document.getElementById('ex-nA').textContent=P.n;
+  document.getElementById('ex-nB').textContent=P.n;
+  document.getElementById('ex-delta').textContent=(P.delta>0?'+':'')+P.delta+' Punkte';
+  const sameChange=Math.abs(P.effect)<1;
+  const effStr=P.effect>0?'Kurs B +'+P.effect+' Pkt':'Kurs A +'+(0-P.effect)+' Pkt';
+  document.getElementById('ex-diff').textContent=sameChange?'gleich viel':effStr;
+
+  // Diff results
+  document.getElementById('rb-dA').textContent=(s.mDA>=0?'+':'')+s.mDA.toFixed(1);
+  document.getElementById('rb-dB').textContent=(s.mDB>=0?'+':'')+s.mDB.toFixed(1);
+  document.getElementById('rb-delta-diff').textContent=fmt(s.delta_diff,2);
+  document.getElementById('rb-test-d').textContent=`t(${Math.round(s.df_d)}) = ${s.t_d.toFixed(2)}, p = ${fmtp(s.p_d)}`;
+
+  // ANCOVA results
+  document.getElementById('rb-bw').textContent=s.b_w.toFixed(2);
+  document.getElementById('rb-delta-anc').textContent=fmt(s.delta_anc,2);
+  document.getElementById('rb-se-anc').textContent=s.se_anc.toFixed(2);
+  document.getElementById('rb-test-a').textContent=`t(${s.df_a}) = ${s.t_a.toFixed(2)}, p = ${fmtp(s.p_a)}`;
+
+  // Verdicts
+  function setVerdict(el,p,val){
+    el.className='rb-verdict';
+    if(p<.05){
+      el.classList.add(val>0?'rv-pos':'rv-neg');
+      el.textContent=val>0?'Kurs B signifikant besser':'Kurs A signifikant besser';
+    } else {
+      el.classList.add('rv-ns');
+      el.textContent='Kein signifikanter Unterschied';
+    }
+  }
+  setVerdict(document.getElementById('rb-verdict-d'),s.p_d,s.delta_diff);
+  setVerdict(document.getElementById('rb-verdict-a'),s.p_a,s.delta_anc);
+
+  // Paradox badge
+  const pc=document.getElementById('paradox-container');
+  const diffSig=s.p_d<.05, ancSig=s.p_a<.05;
+  if(diffSig!==ancSig && (Math.abs(P.delta)>2)){
+    pc.innerHTML='<div class="paradox-badge">⚡ Lord\'s Paradox sichtbar — beide Analysen korrekt, gegensätzliche Schlüsse</div>';
+  } else { pc.innerHTML=''; }
+
+  // Equation section
+  document.getElementById('eq-anc').textContent=fmt(s.delta_anc,2);
+  document.getElementById('eq-dif').textContent=fmt(s.delta_diff,2);
+  document.getElementById('eq-bw').textContent=s.b_w.toFixed(2);
+  document.getElementById('eq-dpre').textContent=fmt(s.mPreB-s.mPreA,1);
+  const check=s.delta_diff+(1-s.b_w)*(s.mPreB-s.mPreA);
+  document.getElementById('eq-check').textContent=fmt(check,2);
+
+  // Key formula in sidebar
+  const keyDelta=s.delta_anc-s.delta_diff;
+  document.getElementById('key-delta-anc').textContent=fmt(keyDelta,2);
+
+  // Component legend
+  document.getElementById('comp-ddiff').textContent=fmt(s.delta_diff,2);
+  document.getElementById('comp-danc').textContent=fmt(s.delta_anc,2);
+  document.getElementById('comp-bw').textContent=s.b_w.toFixed(2);
+  document.getElementById('comp-dbase').textContent=fmt(s.mPreB-s.mPreA,1);
+}
+
+function mkColors(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  return{
+    colA   :dark?'#4ab0d8':'#2a6e8a',
+    colB   :dark?'#e07830':'#b85c00',
+    colGrid:dark?'#1e242e':'#ddd5c5',
+    colInk :dark?'#ece6d8':'#18130e',
+    colInk2:dark?'#8a8070':'#5a4f42',
+    colInk3:dark?'#5a5448':'#8a7f72',
+    colPaper:dark?'#111520':'#f8f3e8',
+    colPanel:dark?'#171d28':'#e8e0ce',
+    colBord:dark?'#2a3040':'#c8bfaa',
+    colA1  :dark?'#e8614a':'#c94a2a',
+    colA3  :dark?'#80cb52':'#5a8a2a',
+    colA4  :dark?'#c87ad8':'#7a3a8a',
+    colA6  :dark?'#2bc7c4':'#0e7c7b',
+  };
+}
+
+function draw(){
+  const canvas=document.getElementById('plot-canvas');
+  const W=canvas.width, H=canvas.height;
+  const ctx=canvas.getContext('2d');
+
+  const {colA,colB,colGrid,colInk,colInk2,colInk3,colPaper,colPanel,colBord,colA1,colA3,colA4,colA6}=mkColors();
+
+  // Rechter Rand reserviert für ANCOVA-Schemakasten
+  const pad={l:60,r:126,t:30,b:56};
+  const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+
+  const allV=[...dataA.map(d=>d.pre),...dataA.map(d=>d.post),...dataB.map(d=>d.pre),...dataB.map(d=>d.post)];
+  let vMin=Math.min(...allV), vMax=Math.max(...allV);
+  const vRange=vMax-vMin;
+  vMin-=vRange*.09; vMax+=vRange*.09;
+
+  const tx=v=>pad.l+(v-vMin)/(vMax-vMin)*pw;
+  const ty=v=>pad.t+(1-(v-vMin)/(vMax-vMin))*ph;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Hintergrund rechter Rand (ANCOVA-Schemakasten)
+  ctx.fillStyle=colPanel;
+  ctx.fillRect(W-pad.r,0,pad.r,H);
+
+  // Grid
+  ctx.strokeStyle=colGrid; ctx.lineWidth=1;
+  const nT=5;
+  for(let i=0;i<=nT;i++){
+    const v=vMin+i*(vMax-vMin)/nT;
+    ctx.beginPath(); ctx.moveTo(tx(v),pad.t); ctx.lineTo(tx(v),pad.t+ph); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l,ty(v)); ctx.lineTo(pad.l+pw,ty(v)); ctx.stroke();
+  }
+
+  // Identitätslinie y=x (kein Wandel)
+  ctx.setLineDash([6,5]); ctx.strokeStyle=colInk3; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(tx(vMin),ty(vMin)); ctx.lineTo(tx(vMax),ty(vMax)); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Scatter Punkte
+  ctx.fillStyle=colA+'66';
+  for(const d of dataA){ ctx.beginPath(); ctx.arc(tx(d.pre),ty(d.post),3.5,0,Math.PI*2); ctx.fill(); }
+  ctx.fillStyle=colB+'66';
+  for(const d of dataB){ ctx.beginPath(); ctx.arc(tx(d.pre),ty(d.post),3.5,0,Math.PI*2); ctx.fill(); }
+
+  // ANCOVA-Geraden (parallel, gleiche Steigung)
+  const {b0_A,b0_B,b_w,mPreA,mPostA,mPreB,mPostB}=stats;
+  ctx.lineWidth=2.5; ctx.setLineDash([10,6]);
+  ctx.strokeStyle=colA;
+  ctx.beginPath(); ctx.moveTo(tx(vMin),ty(b0_A+b_w*vMin)); ctx.lineTo(tx(vMax),ty(b0_A+b_w*vMax)); ctx.stroke();
+  ctx.strokeStyle=colB;
+  ctx.beginPath(); ctx.moveTo(tx(vMin),ty(b0_B+b_w*vMin)); ctx.lineTo(tx(vMax),ty(b0_B+b_w*vMax)); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Gruppen-Mittelwerte — Diamanten mit Halo + Label
+  function drawMean(x,y,col,lbl){
+    const px=tx(x), py=ty(y), s=10;
+    // weißer Halo
+    ctx.fillStyle=colPaper;
+    ctx.beginPath();
+    ctx.moveTo(px,py-(s+4)); ctx.lineTo(px+(s+4),py); ctx.lineTo(px,py+(s+4)); ctx.lineTo(px-(s+4),py);
+    ctx.closePath(); ctx.fill();
+    // farbiger Diamant
+    ctx.fillStyle=col; ctx.strokeStyle=colInk; ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(px,py-s); ctx.lineTo(px+s,py); ctx.lineTo(px,py+s); ctx.lineTo(px-s,py);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // Beschriftung
+    ctx.fillStyle=col; ctx.font='bold 12px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(lbl,px,py-s-5);
+  }
+  drawMean(mPreA,mPostA,colA,'x A');
+  drawMean(mPreB,mPostB,colB,'x B');
+
+  // Achsen
+  ctx.strokeStyle=colInk2; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t); ctx.lineTo(pad.l,pad.t+ph); ctx.lineTo(pad.l+pw,pad.t+ph); ctx.stroke();
+
+  // Tick-Beschriftungen
+  ctx.fillStyle=colInk2; ctx.font='11px DM Mono,monospace'; ctx.textAlign='center';
+  for(let i=0;i<=nT;i++){
+    const v=vMin+i*(vMax-vMin)/nT;
+    ctx.fillText(Math.round(v),tx(v),pad.t+ph+16);
+  }
+  ctx.textAlign='right';
+  for(let i=0;i<=nT;i++){
+    const v=vMin+i*(vMax-vMin)/nT;
+    ctx.fillText(Math.round(v),pad.l-5,ty(v)+4);
+  }
+
+  // Achsenbeschriftungen
+  ctx.fillStyle=colInk; ctx.font='15px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('Pra-Test',pad.l+pw/2,H-6);
+  ctx.save(); ctx.translate(15,pad.t+ph/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Post-Test',0,0); ctx.restore();
+
+  // Legende oben links
+  ctx.font='12px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillStyle=colA; ctx.fillText('● Kurs A',pad.l+8,pad.t+16);
+  ctx.fillStyle=colB; ctx.fillText('● Kurs B',pad.l+8,pad.t+32);
+  ctx.fillStyle=colInk3; ctx.font='10px DM Mono,monospace';
+  ctx.fillText('◆ Mittelwert',pad.l+8,pad.t+48);
+  ctx.fillText('-- ANCOVA',pad.l+8,pad.t+62);
+  ctx.fillText('/ kein Wandel',pad.l+8,pad.t+76);
+
+  // Trennlinie rechter Rand
+  ctx.strokeStyle=colBord; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(W-pad.r,0); ctx.lineTo(W-pad.r,H); ctx.stroke();
+
+  // ─── RECHTER RAND: ANCOVA-Schemakasten ─────────────────────
+  const mx=W-pad.r+10;  // linke Kante des Kastens
+  const mw=pad.r-14;    // Breite des Kastens
+
+  // Header
+  ctx.fillStyle=colA4; ctx.font='bold 11px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('ANCOVA:',mx,18);
+  ctx.fillStyle=colInk3; ctx.font='9px DM Mono,monospace';
+  ctx.fillText('bei gleichem',mx,30);
+  ctx.fillText('Pra-Wert:',mx,40);
+
+  // Schematisches Liniendiagramm
+  const ancSig=stats.p_a<0.05;
+  const ancCol=ancSig?(stats.delta_anc>0?colA3:colA1):colInk3;
+
+  const gapPx=Math.max(20, Math.min(Math.abs(stats.delta_anc)*5, 72));
+  const schY0=54;
+  const yB_s=stats.delta_anc>=0 ? schY0       : schY0+gapPx;
+  const yA_s=stats.delta_anc>=0 ? schY0+gapPx : schY0;
+
+  // Gruppen-Labels links (right-aligned, VOR den Linien)
+  const lblX=mx+14;
+  const tickX0=mx+18;
+  const tickX1=mx+18+38;
+
+  ctx.textAlign='right';
+  ctx.fillStyle=colB; ctx.font='bold 11px DM Mono,monospace';
+  ctx.fillText('B',lblX,yB_s+4);
+  ctx.fillStyle=colA;
+  ctx.fillText('A',lblX,yA_s+4);
+
+  // Linien
+  ctx.lineWidth=3; ctx.setLineDash([]);
+  ctx.strokeStyle=colB;
+  ctx.beginPath(); ctx.moveTo(tickX0,yB_s); ctx.lineTo(tickX1,yB_s); ctx.stroke();
+  ctx.strokeStyle=colA;
+  ctx.beginPath(); ctx.moveTo(tickX0,yA_s); ctx.lineTo(tickX1,yA_s); ctx.stroke();
+
+  // Klammer rechts der Linien
+  const bkX=tickX1+3;
+  const bkArm=7;
+  ctx.strokeStyle=ancCol; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(bkX,yB_s); ctx.lineTo(bkX+bkArm,yB_s);
+  ctx.lineTo(bkX+bkArm,yA_s);
+  ctx.moveTo(bkX+bkArm,yA_s); ctx.lineTo(bkX,yA_s);
+  ctx.stroke();
+
+  // Wert + Signifikanz (unterhalb der Klammer, linksbündig)
+  const valY=Math.max(yA_s,yB_s)+14;
+  ctx.fillStyle=ancCol; ctx.textAlign='left';
+  ctx.font='bold 12px DM Mono,monospace';
+  ctx.fillText(fmt(stats.delta_anc,2),mx,valY);
+  ctx.font='9px DM Mono,monospace';
+  ctx.fillText('p = '+fmtp(stats.p_a),mx,valY+13);
+  ctx.fillText(ancSig?'sig.':'n.s.',mx,valY+25);
+}
+
+function drawTrajectory(){
+  const canvas=document.getElementById('traj-canvas');
+  if(!canvas) return;
+  const w=canvas.offsetWidth||canvas.parentElement.offsetWidth||700;
+  canvas.width=w; canvas.height=190;
+  const W=canvas.width, H=canvas.height;
+  const ctx=canvas.getContext('2d');
+
+  const {colA,colB,colGrid,colInk,colInk2,colInk3,colPaper,colPanel,colBord,colA1,colA3,colA4,colA6}=mkColors();
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=colPanel; ctx.fillRect(0,0,W,H);
+
+  const pL=88, pR=138, pT=30, pB=30;
+  const xPre=pL, xPost=W-pR;
+
+  // Y-Skala aus den vier Gruppenmittelwerten
+  const ms=stats;
+  const allM=[ms.mPreA,ms.mPostA,ms.mPreB,ms.mPostB];
+  let yMin=Math.min(...allM), yMax=Math.max(...allM);
+  const yr=yMax-yMin;
+  yMin-=Math.max(yr*0.3,3); yMax+=Math.max(yr*0.3,3);
+  const ty2=v=>pT+(1-(v-yMin)/(yMax-yMin))*(H-pT-pB);
+
+  // Title
+  ctx.fillStyle=colA6; ctx.font='bold 11px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('DIFFERENZWERT — Mittlere Verlaufe Pra-Test zu Post-Test',10,16);
+
+  // Vertikale Zeitachsen-Linien
+  ctx.strokeStyle=colGrid; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(xPre,pT); ctx.lineTo(xPre,H-pB); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(xPost,pT); ctx.lineTo(xPost,H-pB); ctx.stroke();
+
+  // X-Beschriftungen
+  ctx.fillStyle=colInk2; ctx.font='12px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('Pra-Test',xPre,H-8);
+  ctx.fillText('Post-Test',xPost,H-8);
+
+  // Trajektorien A und B
+  ctx.lineWidth=2.5;
+  ctx.strokeStyle=colA;
+  ctx.beginPath(); ctx.moveTo(xPre,ty2(ms.mPreA)); ctx.lineTo(xPost,ty2(ms.mPostA)); ctx.stroke();
+  ctx.strokeStyle=colB;
+  ctx.beginPath(); ctx.moveTo(xPre,ty2(ms.mPreB)); ctx.lineTo(xPost,ty2(ms.mPostB)); ctx.stroke();
+
+  // Punkte an Endpunkten
+  function dot(x,y,col){
+    ctx.fillStyle=col; ctx.strokeStyle=colPaper; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(x,ty2(y),6,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  }
+  dot(xPre,ms.mPreA,colA); dot(xPost,ms.mPostA,colA);
+  dot(xPre,ms.mPreB,colB); dot(xPost,ms.mPostB,colB);
+
+  // Linke Beschriftungen (Kurs A / B)
+  ctx.textAlign='right';
+  ctx.fillStyle=colA; ctx.font='bold 13px DM Mono,monospace';
+  ctx.fillText('Kurs A',xPre-12,ty2(ms.mPreA)+5);
+  ctx.fillStyle=colB;
+  ctx.fillText('Kurs B',xPre-12,ty2(ms.mPreB)+5);
+
+  // Rechts: Delta-Werte
+  const labX=xPost+14;
+  const yDA=ty2(ms.mPostA), yDB=ty2(ms.mPostB);
+  ctx.textAlign='left';
+  ctx.fillStyle=colA; ctx.font='bold 12px DM Mono,monospace';
+  ctx.fillText('DA '+( ms.mDA>=0?'+':'')+ms.mDA.toFixed(1),labX,yDA+4);
+  ctx.fillStyle=colB;
+  ctx.fillText('DB '+(ms.mDB>=0?'+':'')+ms.mDB.toFixed(1),labX,yDB+4);
+
+  // Klammer für delta_Diff (wenn sichtbarer Abstand)
+  const diffSig=stats.p_d<0.05;
+  const diffCol=diffSig?(stats.delta_diff>0?colA3:colA1):colInk3;
+  if(Math.abs(yDA-yDB)>6){
+    const bk2=labX+58;
+    ctx.strokeStyle=diffCol; ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.moveTo(bk2,yDA); ctx.lineTo(bk2+7,yDA);
+    ctx.lineTo(bk2+7,yDB);
+    ctx.moveTo(bk2+7,yDB); ctx.lineTo(bk2,yDB);
+    ctx.stroke();
+    const mY2=(yDA+yDB)/2;
+    ctx.fillStyle=diffCol; ctx.font='bold 12px DM Mono,monospace';
+    ctx.fillText(fmt(stats.delta_diff,2),bk2+11,mY2-4);
+    ctx.font='10px DM Mono,monospace';
+    ctx.fillText('p='+fmtp(stats.p_d),bk2+11,mY2+9);
+    ctx.fillText(diffSig?'sig.':'n.s.',bk2+11,mY2+21);
+  }
+}
+
+function update(){
+  generateData();
+  computeStats();
+  updateUI();
+  draw();
+  drawTrajectory();
+}
+
+function resizeCanvas(){
+  const canvas=document.getElementById('plot-canvas');
+  const w=canvas.offsetWidth||canvas.parentElement.offsetWidth||700;
+  canvas.width=w;
+  canvas.height=430;
+  update();
+}
+
+function onSl(key,el){
+  P[key]=parseFloat(el.value);
+  const fmtV={'delta':v=>(v>=0?'+':'')+v,'effect':v=>(v>=0?'+':'')+v,'rho':v=>v.toFixed(2),'n':v=>Math.round(v)};
+  document.getElementById('val-'+key).textContent=fmtV[key](P[key]);
+  clearActivePresets(); update();
+}
+
+function clearActivePresets(){
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+}
+
+const PRESETS={
+  A:{delta:10,effect:0,rho:0.70,n:100},
+  B:{delta:10,effect:6,rho:0.70,n:100},
+  C:{delta:0, effect:6,rho:0.70,n:100},
+  D:{delta:10,effect:0,rho:0.95,n:100}
+};
+
+function setPreset(id){
+  const pr=PRESETS[id];
+  Object.assign(P,pr);
+  clearActivePresets();
+  document.getElementById('pre-'+id).classList.add('active');
+  // Sync sliders
+  document.getElementById('sl-delta').value=P.delta;
+  document.getElementById('val-delta').textContent=(P.delta>=0?'+':'')+P.delta;
+  document.getElementById('sl-effect').value=P.effect;
+  document.getElementById('val-effect').textContent=(P.effect>=0?'+':'')+P.effect;
+  document.getElementById('sl-rho').value=P.rho;
+  document.getElementById('val-rho').textContent=P.rho.toFixed(2);
+  document.getElementById('sl-n').value=P.n;
+  document.getElementById('val-n').textContent=P.n;
+  update();
+}
+
+function newSeed(){ P.seed=Math.floor(Math.random()*1e8); clearActivePresets(); update(); }
+function toggleTheme(){
+  const d=document.documentElement;
+  const dark=d.getAttribute('data-theme')==='dark';
+  d.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'☽ Dark':'☀ Light';
+  draw();
+  drawTrajectory();
+}
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
+}
+
+window.addEventListener('load',()=>{
+  resizeCanvas();
+  window.addEventListener('resize',()=>{ clearTimeout(window._rt); window._rt=setTimeout(resizeCanvas,150); });
+});
+</script>
+</body>
+</html>

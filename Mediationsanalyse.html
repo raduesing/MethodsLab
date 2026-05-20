@@ -90,6 +90,24 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .lcard-body{font-size:.82rem;line-height:1.7;color:var(--ink2)}
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a4);
+  padding:.7rem 1rem;margin-bottom:1.1rem;font-family:'DM Mono',monospace;font-size:.8rem}
+.story-lbl{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a4);margin-bottom:.35rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.12rem .8rem;line-height:1.65}
+.story-vars .sv{color:var(--ink);font-weight:600}
+.story-vars .sd{color:var(--ink2)}
+.story-q{margin-top:.45rem;color:var(--ink3);font-size:.76rem;line-height:1.55}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto;padding:2rem 1rem}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:680px;margin:0 auto;padding:1.6rem 2rem}
+.help-box-h{font-size:1rem;font-weight:300;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid);display:flex;justify-content:space-between;align-items:center}
+.help-box-h em{color:var(--a1);font-style:italic}
+.help-close{font-family:'DM Mono',monospace;font-size:.72rem;padding:.25rem .65rem;border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
+.help-close:hover{background:var(--a1);color:var(--bg)}
+.help-p{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75;margin-bottom:.55rem}
+.help-p strong{color:var(--ink)}
+.help-formula{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--grid);padding:.35rem .7rem;margin:.3rem 0 .55rem;color:var(--a2)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a1);margin:.9rem 0 .3rem;padding-bottom:.2rem;border-bottom:1px solid var(--grid)}
 </style>
 </head>
 <body>
@@ -98,6 +116,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <h1>Mediations<em>analyse</em> — Hayes/PROCESS Model 4</h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+  <button class="tbtn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
 </div>
 
 <div id="app">
@@ -155,6 +174,16 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
 </div><!-- /sidebar -->
 <div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Beispiel</div>
+    <div class="story-vars">
+      <span class="sv">X</span><span class="sd">Selbstregulationsfähigkeit (SRQ-Score, standardisiert)</span>
+      <span class="sv">M</span><span class="sd">Wöchentliche Lernzeit (Stunden/Woche) — Mediator</span>
+      <span class="sv">Y</span><span class="sd">Klausurleistung (Punkte, 0–100)</span>
+    </div>
+    <div class="story-q">Wirkt Selbstregulation auf die Leistung, <em>weil</em> sie die Lernzeit erhöht (indirekter Pfad a·b)? Oder gibt es darüber hinaus einen direkten Effekt c′ — z.B. durch effizienteres Lernen?</div>
+  </div>
 
   <div class="sec-h" style="margin-top:0">Modellgleichungen — Hayes/PROCESS Model 4</div>
   <div class="eq-wrap">
@@ -332,6 +361,38 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
 </div><!-- /main -->
 </div><!-- /app -->
+
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">
+      <span>Mediations<em>analyse</em> — Hilfe</span>
+      <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+    </div>
+
+    <div class="help-sh">Beispiel</div>
+    <p class="help-p">Das Tool zeigt ein Beispiel aus der Lernpsychologie: <strong>Selbstregulation (X) → Lernzeit (M) → Klausurleistung (Y)</strong>. Die Parameterslider steuern die wahren Populationseffekte; das Tool simuliert daraus eine Stichprobe und schätzt die Koeffizienten.</p>
+
+    <div class="help-sh">Modellstruktur (Hayes Model 4)</div>
+    <p class="help-p">Eine Mediationsanalyse zerlegt den Gesamteffekt von X auf Y in zwei Wege:</p>
+    <div class="help-formula">Indirekter Effekt: a·b &nbsp;(X→M→Y)</div>
+    <div class="help-formula">Direkter Effekt: c′ &nbsp;(X→Y, bei konstantem M)</div>
+    <div class="help-formula">Totaler Effekt: c = c′ + a·b</div>
+    <p class="help-p">c entspricht genau dem bivariaten Regressionskoeffizienten aus der einfachen Regression Y ~ X (ohne M im Modell).</p>
+
+    <div class="help-sh">Vier Szenarien</div>
+    <p class="help-p"><strong>A — Keine Mediation:</strong> a·b ≈ 0, weil a oder b null ist. X wirkt direkt auf Y, aber nicht über M.<br>
+    <strong>B — Vollständige Mediation:</strong> c′ ≈ 0, der gesamte Effekt läuft über M. Ohne M im Modell ist c ≠ 0 — aber bei kontrolliertem M verschwindet er.<br>
+    <strong>C — Partielle Mediation:</strong> Sowohl a·b als auch c′ sind von null verschieden. Der häufigste Fall in der Praxis.<br>
+    <strong>D — Suppression:</strong> a und b haben entgegengesetzte Vorzeichen, deshalb ist a·b negativ. Da c = c′ + a·b, fällt der totale Effekt kleiner aus als der direkte: |c| &lt; |c′|. Bei starker Suppression kann c nahe null liegen, obwohl c′ substanziell ist.</p>
+
+    <div class="help-sh">Sobel-Test vs. Bootstrap</div>
+    <p class="help-p">Der <strong>Sobel-Test</strong> nimmt an, dass a·b annähernd normalverteilt ist. Das stimmt nur bei großem n — bei kleinen Stichproben ist die Produktverteilung schief und leptokurtisch, was den Test zu konservativ macht.</p>
+    <p class="help-p">Das <strong>Bootstrap-KI</strong> (Preacher & Hayes, 2008) macht keine Verteilungsannahme: 5000 Resamples approximieren die tatsächliche Form der a·b-Verteilung. Es hat in Simulationen bessere Power <em>und</em> korrektere α-Kontrolle — besonders bei n &lt; 100 oder asymmetrischen Effekten.</p>
+
+    <div class="help-sh">Kausalität</div>
+    <p class="help-p">Ein signifikantes a·b beweist keine Kausalität. Für kausale Aussagen müssen <strong>(1)</strong> alle Konfunder zwischen X und Y und <strong>(2)</strong> alle Konfunder zwischen M und Y kontrolliert sein. Bedingung 2 ist in Beobachtungsstudien selten erfüllbar. DAGs helfen, die nötigen Kontrollvariablen zu identifizieren.</p>
+  </div>
+</div>
 
 <script>
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -705,6 +766,7 @@ function toggleTheme(){
   document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
   if(ST.fitM&&ST.fitY&&ST.fitC)updateDAG(ST.fitM,ST.fitY,ST.fitC);
 }
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 setPreset('A');

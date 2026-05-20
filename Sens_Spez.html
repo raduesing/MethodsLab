@@ -63,13 +63,19 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 .vft-table th{font-size:.71rem;letter-spacing:.05em;color:var(--ink3);padding:.32rem .45rem;text-align:center;border:1px solid var(--grid)}
 .vft-table td{padding:.42rem .45rem;border:1px solid var(--grid);text-align:center;font-weight:500}
 .row-head{color:var(--ink2);font-size:.76rem;font-weight:400;background:var(--panel);text-align:left !important}
-.cell-tp,.cell-tn{color:var(--a3)}
-.cell-fp,.cell-fn{color:var(--a1)}
+.cell-tp{color:var(--a3)}
+.cell-tn{color:var(--a2)}
+.cell-fp{color:var(--a5)}
+.cell-fn{color:var(--a1)}
 .cell-sum{color:var(--ink2);font-size:.8rem;font-weight:400}
-:root .cell-tp,:root .cell-tn{background:rgba(80,160,40,.13)}
-:root .cell-fp,:root .cell-fn{background:rgba(200,74,42,.11)}
-[data-theme="dark"] .cell-tp,[data-theme="dark"] .cell-tn{background:rgba(128,203,82,.10)}
-[data-theme="dark"] .cell-fp,[data-theme="dark"] .cell-fn{background:rgba(232,97,74,.10)}
+:root .cell-tp{background:rgba(80,160,40,.13)}
+:root .cell-tn{background:rgba(42,110,138,.13)}
+:root .cell-fp{background:rgba(185,92,0,.11)}
+:root .cell-fn{background:rgba(200,74,42,.11)}
+[data-theme="dark"] .cell-tp{background:rgba(128,203,82,.10)}
+[data-theme="dark"] .cell-tn{background:rgba(74,176,216,.10)}
+[data-theme="dark"] .cell-fp{background:rgba(224,120,48,.10)}
+[data-theme="dark"] .cell-fn{background:rgba(232,97,74,.10)}
 .cell-lbl{display:block;font-size:.73rem;font-weight:700;line-height:1.2;margin-bottom:.06rem}
 .cell-sub{display:block;font-size:.64rem;font-weight:400;opacity:.65;line-height:1.2;margin-bottom:.2rem}
 .cell-num{display:block;font-size:1rem;font-weight:600}
@@ -186,6 +192,14 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     <p><strong>LR−</strong> hier: Spez/(1−Sens). Bei dieser Konvention zeigt LR− &gt; 1 einen guten Test an.</p>
     <p><strong>ROC-Kurve</strong>: Sensitivität vs. 1−Spezifität für alle Cut-Offs. Die Fläche unter der Kurve (AUC) misst die Gesamttrennschärfe unabhängig vom Cut-Off.</p>
     <p>Cut-Off-Linie auf dem <strong>Verteilungsplot</strong> direkt ziehen oder Sidebar-Slider verwenden.</p>
+    <p style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-top:.9rem;margin-bottom:.3rem">Wann welche Cut-Off-Methode?</p>
+    <p><strong>Youden-Index</strong>: Standardwahl ohne spezifische Annahmen. Maximiert Sens + Spez − 1, behandelt FP und FN gleichwertig, kein Prävalenzeinfluss. Geeignet wenn unklar ist, welche Fehlerart schwerwiegender ist.</p>
+    <p><strong>Minimale Distanz (ROC₀₁)</strong>: Geometrische Alternative zu Youden; minimiert den Abstand zum idealen Punkt im ROC-Raum. Liefert meist ähnliche Ergebnisse, kann bei asymmetrischen Kurven leicht abweichen.</p>
+    <p><strong>Kosten-Nutzen</strong>: Sinnvoll wenn eine Fehlerart klar teurer ist — z.B. eine verpasste Diagnose (FN) deutlich schlimmer als ein Fehlalarm (FP). Der Faktor c = Kosten FP / Kosten FN steuert die Gewichtung direkt über die ROC-Steigung. Bei c = 1 ist das Ergebnis identisch mit Youden — <em>kein Prävalenzeinfluss</em>.</p>
+    <p><strong>Missklassifikationskosten</strong>: Minimiert den <em>populationsgewichteten</em> Gesamtfehler. FP-Fehler gehen mit dem Faktor (1−Prävalenz), FN-Fehler mit der Prävalenz ein. Bei gleichen Kosten (cFP = cFN = 1) und Prävalenz ≠ 50% weicht das Ergebnis vom Youden/Kosten-Nutzen ab: Bei seltenen Merkmalen werden FP-Fehler stärker bestraft, weil es in der Population mehr Gesunde gibt. Empfohlen wenn die tatsächliche Fehlerlast in der Zielpopulation minimiert werden soll.</p>
+    <p><strong>Prävalenz-adjustiert (max PPV/NPV)</strong>: Wenn der prädiktive Wert entscheidend ist. PPV maximieren eignet sich, wenn ein positives Ergebnis eine invasive oder belastende Folgeuntersuchung auslöst. NPV maximieren, wenn ein negatives Ergebnis zum sicheren Ausschluss einer ernsthaften Erkrankung dienen soll. Stark prävalenzabhängig.</p>
+    <p><strong>F1-Score</strong>: Harmonisches Mittel aus PPV und Sensitivität. Gebräuchlich in der Informationstheorie und beim maschinellen Lernen; geeignet wenn Präzision und Vollständigkeit gleich wichtig sind und die Prävalenz niedrig ist.</p>
+    <p><strong>Sum PPV+NPV</strong>: Maximiert die Vorhersagegüte in beide Richtungen gleichzeitig. Sinnvoll wenn sowohl positive als auch negative Befunde verlässlich kommunizierbar sein sollen.</p>
   </div>
 
 </div>
@@ -341,7 +355,9 @@ function compute(){
   const lrm=sens<1?spec/(1-sens):Infinity;
   const dor=(fp>0&&fn>0)?(tp*tn)/(fp*fn):Infinity;
   const rr=ppv/((1-npv)||0.0001);
-  return{tp,fn,fp,tn,sens,spec,prev,ppv,npv,lrp,lrm,dor,rr};
+  const acc=(tp+tn)/(tp+fn+fp+tn)||0;
+  const j=sens+spec-1;
+  return{tp,fn,fp,tn,sens,spec,prev,ppv,npv,lrp,lrm,dor,rr,acc,j};
 }
 
 function computeROC(){
@@ -429,13 +445,13 @@ function calcAUC(pts){
 }
 
 const ROC_DESC={
-  youden:  'Maximiert Sens + Spez − 1. Gewichtet beide Fehlerarten gleich. Sinnvoll für initiales Screening ohne starke Prävalenzverzerrung.',
-  roc01:   'Minimiert die euklidische Distanz zum idealen Punkt (0,1). Geometrisch motiviert, ähnlich dem Youden-Index.',
-  cost:    'Maximiert Sens − c × (1−Spez), wobei c = Kosten FP / Kosten FN. Nützlich wenn Fehlklassifikationen unterschiedlich schwerwiegend sind.',
-  prev:    'Optimiert PPV (wichtig wenn ein positives Ergebnis Konsequenzen hat) oder NPV (wichtig für sicheres Ausschließen). Stark prävalenzabhängig.',
-  f1:      'Harmonisches Mittel aus PPV und Sensitivität. Balanciert Präzision und Vollständigkeit; gebräuchlich in der Informationstheorie.',
-  mccost:  'Minimiert den gewichteten Gesamtfehler c_FP×FP + c_FN×FN in der Population. Ermöglicht flexible, absolute Fehlergewichtung.',
-  sumpv:   'Maximiert PPV + NPV. Bevorzugt Cut-Offs mit hoher Vorhersagegüte in beide Richtungen.',
+  youden:  'Maximiert Sens + Spez − 1. Gewichtet beide Fehlerarten gleich, ohne Prävalenzeinfluss. Guter Ausgangspunkt für initiales Screening.',
+  roc01:   'Minimiert die euklidische Distanz zum idealen Punkt (0,1) in der ROC-Kurve. Geometrisch motiviert, liefert meist ein ähnliches Ergebnis wie Youden.',
+  cost:    'Maximiert Sens − c × (1−Spez), wobei c = Kosten FP / Kosten FN. Bei c = 1 identisch mit Youden-Index — kein Prävalenzeinfluss. Sinnvoll wenn eine Fehlerart klar schwerwiegender ist.',
+  prev:    'Optimiert PPV (wenn ein positives Ergebnis Konsequenzen hat) oder NPV (wenn sicheres Ausschließen im Vordergrund steht). Stark prävalenzabhängig.',
+  f1:      'Harmonisches Mittel aus PPV und Sensitivität. Gebräuchlich in der Informationstheorie; sinnvoll wenn Präzision und Vollständigkeit gleich wichtig sind.',
+  mccost:  'Minimiert den populationsgewichteten Fehler: c_FP·(1−Spez)·(1−Prävalenz) + c_FN·(1−Sens)·Prävalenz. Geht die Prävalenz der Stichprobe ein — bei gleichen Kosten und Prävalenz ≠ 50% weicht das Ergebnis vom Youden/Kosten-Nutzen ab, weil seltene FP-Fehler stärker ins Gewicht fallen.',
+  sumpv:   'Maximiert PPV + NPV. Bevorzugt Cut-Offs mit hoher Vorhersagegüte in beide Richtungen gleichzeitig.',
 };
 
 // ── UPDATE UI ───────────────────────────────────────────────────
@@ -469,8 +485,10 @@ function updateUI(){
     {n:'NPV',           f:'TN/(TN+FN)',       c:`${r.tn}/(${r.tn+r.fn})`,            v:fmtp(r.npv)},
     {n:'LR+',           f:'Sens/(1−Spez)',    c:`${r.sens.toFixed(3)}/${(1-r.spec).toFixed(3)}`, v:fmt(r.lrp)},
     {n:'LR−',           f:'Spez/(1−Sens)',    c:`${r.spec.toFixed(3)}/${(1-r.sens).toFixed(3)}`, v:fmt(r.lrm)},
-    {n:'Diagn. OR',     f:'(TP·TN)/(FP·FN)', c:`(${r.tp}·${r.tn})/(${r.fp}·${r.fn})`,         v:fmt(r.dor)},
-    {n:'Rel. Risiko',   f:'PPV/(1−NPV)',      c:`${r.ppv.toFixed(3)}/${(1-r.npv).toFixed(3)}`,  v:fmt(r.rr)},
+    {n:'Accuracy',      f:'(TP+TN)/N',         c:`${r.tp+r.tn}/${r.tp+r.fn+r.fp+r.tn}`,             v:fmtp(r.acc)},
+    {n:'Youden J',      f:'Sens+Spez−1',      c:`${r.sens.toFixed(3)}+${r.spec.toFixed(3)}−1`,      v:fmt(r.j)},
+    {n:'Diagn. OR',     f:'(TP·TN)/(FP·FN)', c:`(${r.tp}·${r.tn})/(${r.fp}·${r.fn})`,             v:fmt(r.dor)},
+    {n:'Rel. Risiko',   f:'PPV/(1−NPV)',      c:`${r.ppv.toFixed(3)}/${(1-r.npv).toFixed(3)}`,      v:fmt(r.rr)},
   ];
   const tb=document.getElementById('kw-body');
   tb.innerHTML='';
@@ -500,7 +518,7 @@ function drawDensity(r){
   const W=cvD.width, H=cvD.height;
   const ctx=ctxD;
   const ink2=css('--ink2'), ink3=css('--ink3'), paper=css('--paper');
-  const a1=css('--a1'), a2=css('--a2'), a5=css('--a5');
+  const a1=css('--a1'), a2=css('--a2'), a3=css('--a3'), a5=css('--a5');
   const pad={l:52,r:20,top:20,bot:28};
   const plotW=W-pad.l-pad.r, plotH=H-pad.top-pad.bot;
   const plotBot=pad.top+plotH;
@@ -538,10 +556,10 @@ function drawDensity(r){
   }
 
   if(ST.showAreas){
-    fillSeg(ST.mu2,ST.s2,ST.n2, a2+'44', lo,  ST.cut); // TN
-    fillSeg(ST.mu2,ST.s2,ST.n2, a2+'22', ST.cut, hi);  // FP
-    fillSeg(ST.mu1,ST.s1,ST.n1, a1+'22', lo,  ST.cut); // FN
-    fillSeg(ST.mu1,ST.s1,ST.n1, a1+'44', ST.cut, hi);  // TP
+    fillSeg(ST.mu2,ST.s2,ST.n2, a2+'44', lo,  ST.cut); // TN  (blau)
+    fillSeg(ST.mu2,ST.s2,ST.n2, a5+'33', ST.cut, hi);  // FP  (orange)
+    fillSeg(ST.mu1,ST.s1,ST.n1, a1+'22', lo,  ST.cut); // FN  (rot)
+    fillSeg(ST.mu1,ST.s1,ST.n1, a3+'44', ST.cut, hi);  // TP  (grün)
   }
 
   drawCurve(ST.mu2,ST.s2,ST.n2,a2);

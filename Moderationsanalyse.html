@@ -111,6 +111,33 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
   margin-bottom:.65rem;border-left:3px solid var(--a1);font-family:'DM Mono',monospace;
   font-size:.78rem;color:var(--ink2);line-height:1.7}
 .hayes-box strong{color:var(--ink)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
 </style>
 </head>
 <body>
@@ -118,6 +145,7 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 <div id="topbar">
   <h1>Moderations<em>analyse</em> — Hayes/PROCESS Model 1</h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
+  <button class="tbtn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 
@@ -232,6 +260,16 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 </div><!-- /sidebar -->
 
 <div id="main">
+  <div class="story-box">
+    <div class="story-lbl">Beispiel</div>
+    <div class="story-vars">
+      <span class="sv">X</span><span class="sd">Stressbelastung (PSS-Score, standardisiert) — Prädiktor</span>
+      <span class="sv">W</span><span class="sd">Soziale Unterstützung (BSSS-Score) — Moderator</span>
+      <span class="sv">Y</span><span class="sd">Depressive Symptome (PHQ-9-Score)</span>
+    </div>
+    <div class="story-q">Puffert soziale Unterstützung (W) den Effekt von Stress (X) auf Depression (Y)? Ein negativer Interaktionskoeffizient b₃ würde bedeuten: Je höher die soziale Unterstützung, desto schwächer schlägt Stressbelastung auf depressive Symptome durch.</div>
+  </div>
+
   <div class="cv-sticky">
     <div class="sec-h" style="margin-top:0;padding-top:.35rem">① Streudiagramm</div>
     <canvas id="cv-mod" height="340"></canvas>
@@ -268,6 +306,131 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 
 </div><!-- /main -->
 </div><!-- /app -->
+
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+    <div class="help-box-h">Moderationsanalyse — Hilfe</div>
+
+    <div class="help-sh">Beispiel</div>
+    <p class="help-p">
+      <strong>X</strong> = Stressbelastung (PSS, standardisiert),
+      <strong>W</strong> = Soziale Unterstützung (BSSS-Score),
+      <strong>Y</strong> = Depressive Symptome (PHQ-9).<br>
+      Frage: Dämpft soziale Unterstützung den Effekt von Stress auf Depression?
+      Ein negativer b₃ würde für einen Puffereffekt sprechen.
+    </p>
+
+    <div class="help-sh">Modellstruktur — Hayes/PROCESS Model 1</div>
+    <p class="help-p">
+      Das Moderationsmodell (Model 1 nach Hayes) erweitert die einfache Regression um einen
+      Interaktionsterm X·W:
+    </p>
+    <span class="help-formula">Y = b₀ + b₁·X + b₂·W + b₃·(X·W) + ε</span>
+    <p class="help-p">
+      <strong>b₁</strong> ist der Effekt von X, wenn W = 0 (konditionaler Haupteffekt).<br>
+      <strong>b₂</strong> ist der Effekt von W, wenn X = 0.<br>
+      <strong>b₃</strong> ist der Interaktionskoeffizient: er gibt an, um wie viel sich der Effekt
+      von X auf Y ändert, wenn W um eine Einheit steigt. Ist b₃ ≠ 0, liegt eine Moderation vor.
+    </p>
+    <p class="help-p">
+      <em>Im Beispiel (Szenario C):</em>
+      PHQ-9 = b₀ + 0.5·Stress − 0.5·Unterstützung − 0.5·(Stress·Unterstützung) + ε.<br>
+      b₁ = 0.5: Bei mittlerer Unterstützung (W = 0) erhöht eine SD mehr Stress den PHQ-9 um 0.5 Punkte.<br>
+      b₂ = −0.5: Soziale Unterstützung wirkt direkt depressionsmildernd (bei mittlerem Stress).<br>
+      b₃ = −0.5: Pro SD mehr Unterstützung sinkt der Stress-Effekt um 0.5 — der Puffereffekt.
+    </p>
+
+    <div class="help-sh">Interaktionsterm b₃ — Interpretation</div>
+    <p class="help-p">
+      <strong>b₃ > 0</strong>: Der X-Effekt wird stärker, je größer W —
+      <em>verstärkende Moderation</em>.<br>
+      <strong>b₃ &lt; 0</strong>: Der X-Effekt wird schwächer, je größer W —
+      <em>dämpfende Moderation (Puffereffekt)</em>.<br>
+      <strong>Ordinale Interaktion</strong>: Die Simple-Slope-Linien verlaufen parallel-versetzt
+      (kein Kreuzungspunkt im Datenbereich).<br>
+      <strong>Disordinale Interaktion</strong>: Die Linien kreuzen sich im Datenbereich —
+      die Richtung des X-Effekts kehrt sich für verschiedene W-Werte um.
+    </p>
+    <p class="help-p">
+      <em>Im Beispiel:</em> b₃ = −0.5 erzeugt eine disordinale Interaktion. Der Simple Slope von
+      Stress berechnet sich als θ = 0.5 + (−0.5)·W:<br>
+      W = −1 (wenig Unterstützung): θ = 1.0 — starker positiver Stress-Effekt.<br>
+      W = 0 (mittlere Unterstützung): θ = 0.5 — moderater Effekt.<br>
+      W = +1 (hohe Unterstützung): θ = 0 — Stress hat keinen Effekt mehr.<br>
+      W > +1: θ &lt; 0 — Stress wirkt depressionssenkend (Crossing-Punkt, disordinal).
+    </p>
+    <p class="help-p">
+      Wichtig: <em>b₁</em> und <em>b₂</em> sind konditionale Effekte (wenn die jeweils andere
+      Variable = 0 ist), keine marginalen Haupteffekte wie in einer ANOVA.
+      Standardisierung von X und W vor der Analyse erleichtert die Interpretation erheblich.
+    </p>
+
+    <div class="help-sh">Simple Slopes / Spotlight-Analyse</div>
+    <p class="help-p">
+      Die <strong>Spotlight-Analyse</strong> berechnet den Effekt von X auf Y für ausgewählte
+      W-Werte (typisch: M−SD, M, M+SD oder P16, P50, P84):
+    </p>
+    <span class="help-formula">θ(X→Y | W = w) = b̂₁ + b̂₃·w</span>
+    <p class="help-p">
+      Jede Simple Slope ist eine Punktschätzung mit KI und t-Test. Der t-Test prüft, ob der
+      X-Effekt für diesen spezifischen W-Wert signifikant von null verschieden ist. Die drei
+      Regressionsgeraden im Streudiagramm visualisieren diese konditionalen Effekte.
+    </p>
+    <p class="help-p">
+      <em>Im Beispiel:</em> Die drei Spotlight-Linien zeigen den Stress→Depression-Effekt für
+      Personen mit wenig (P16 ≈ W = −1), mittlerer (P50 ≈ W = 0) und hoher sozialer Unterstützung
+      (P84 ≈ W = +1). Das Crossing der Linien macht die disordinale Natur sichtbar:
+      Bei hoher Unterstützung flacht die Gerade ab oder kippt sogar.
+    </p>
+
+    <div class="help-sh">Johnson-Neyman-Technik (Floodlight-Plot)</div>
+    <p class="help-p">
+      Die Spotlight-Analyse setzt W-Werte willkürlich fest. Die
+      <strong>Johnson-Neyman-Technik</strong> bestimmt analytisch, bei welchem W-Wert W*
+      der Simple Slope die Signifikanzgrenze (α = .05) überschreitet:
+    </p>
+    <span class="help-formula">W* aus: (b̂₃² − t²·Var(b̂₃))·W² + 2(b̂₁·b̂₃ − t²·Cov(b̂₁,b̂₃))·W + (b̂₁² − t²·Var(b̂₁)) = 0</span>
+    <p class="help-p">
+      Der <strong>Floodlight-Plot</strong> zeigt den konditionalen Effekt θ(W) mit 95%-KI
+      über den gesamten W-Bereich. Der rot schattierte Bereich markiert, wo der Effekt
+      statistisch nicht signifikant ist (KI enthält 0). Es können 0, 1 oder 2 Übergangspunkte
+      W* existieren.
+    </p>
+    <p class="help-p">
+      <em>Im Beispiel:</em> Der Floodlight-Plot zeigt zwei Übergangspunkte W*. Im roten (nicht
+      signifikanten) Bereich dazwischen ist der Stress-Effekt statistisch von null nicht zu
+      unterscheiden — klassischer Puffer. Oberhalb des zweiten W* wird θ signifikant
+      <em>negativ</em>: Bei sehr hoher sozialer Unterstützung ist höherer Stress mit
+      <em>niedrigeren</em> Depressionswerten assoziiert. Das ist die disordinale Konsequenz —
+      soziale Unterstützung wirkt nicht nur als Puffer, sondern ab einem Schwellenwert
+      als aktiver Schutzfaktor, der die Stressreaktion ins Positive umkehrt.
+    </p>
+
+    <div class="help-sh">Szenarien A–D</div>
+    <p class="help-p">
+      <strong>A — Keine Moderation</strong>: b₃ = 0; parallele Regressionsgeraden, kein
+      Interaktionsterm nötig. Soziale Unterstützung hat ggf. einen Haupteffekt, puffert aber
+      nicht.<br>
+      <strong>B — Ordinale Interaktion</strong>: b₃ ≠ 0, kein Kreuzungspunkt im Datenbereich;
+      Stress wirkt immer positiv auf Depression, nur unterschiedlich stark je nach Unterstützung.<br>
+      <strong>C — Disordinale Interaktion (Beispiel)</strong>: b₁ = 0.5, b₂ = −0.5, b₃ = −0.5;
+      die Slopes kreuzen sich — bei sehr hoher Unterstützung kehrt sich der Stress-Effekt um.<br>
+      <strong>D — Dichotomer Moderator</strong>: W ∈ {0, 1}; z. B. Unterstützung vorhanden vs.
+      nicht vorhanden; entspricht zwei separaten Regressionen mit Test auf Unterschied der Slopes.
+    </p>
+
+    <div class="help-sh">Kausalität &amp; Einschränkungen</div>
+    <p class="help-p">
+      Ein signifikanter Interaktionsterm b₃ belegt statistisch, dass die Beziehung zwischen X und Y
+      von W abhängt — nicht, dass W kausal den X-Effekt moderiert. Dafür wäre eine experimentelle
+      Manipulation von W notwendig. Bei Beobachtungsdaten bleibt Konfundierung möglich:
+      Drittvariablen könnten sowohl W als auch Y beeinflussen und eine scheinbare Moderation erzeugen.
+      Außerdem sinkt die statistische Power für Interaktionsterme deutlich gegenüber Haupteffekten —
+      auch in größeren Stichproben ist b₃ schwer zu schätzen.
+    </p>
+  </div>
+</div>
 
 <script>
 // ─── State ─────────────────────────────────────────────────────────────────
@@ -976,7 +1139,7 @@ function drawJNCanvas(res,pts,jn){
 const PRESETS={
   A:{b0:0,b1:0.5,b2:0,   b3:0,   wtype:'normal',wmu:0,wsd:1,wp1:0.5},
   B:{b0:0,b1:0.5,b2:0,   b3:0.5, wtype:'normal',wmu:0,wsd:1,wp1:0.5},
-  C:{b0:0,b1:0,  b2:0,   b3:0.7, wtype:'normal',wmu:0,wsd:1,wp1:0.5},
+  C:{b0:0,b1:0.5,b2:-0.5,b3:-0.5,wtype:'normal',wmu:0,wsd:1,wp1:0.5},
   D:{b0:0,b1:0.4,b2:0.6, b3:0.5, wtype:'binary',wmu:0,wsd:1,wp1:0.5},
 };
 
@@ -1057,6 +1220,9 @@ function toggleMod(name){
   document.getElementById('ic-'+name).textContent=ST[key]?'▼':'▶';
   if(ST[key]&&ST.data&&ST.fitResult) updateJNResult(ST.fitResult,ST.data);
 }
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
+}
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme',dark?'light':'dark');
@@ -1090,7 +1256,7 @@ window.addEventListener('resize',()=>{
   }
 });
 
-setPreset('B');
+setPreset('C');
 </script>
 </body>
 </html>

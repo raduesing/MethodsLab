@@ -141,12 +141,23 @@ canvas{display:block;width:100%}
 /* module show/hide */
 .module{display:none}.module.active{display:block}
 .sb-mod{display:none}.sb-mod.active{display:block}
+/* story box */
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.7rem .9rem;margin-bottom:.9rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.4rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.16rem .5rem;margin-bottom:.4rem;align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.83rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.86rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.05rem}
 </style>
 </head>
 <body>
 <div id="topbar">
   <h1>Kausal <em>Denken</em> — DAGs · Potential Outcomes · Konfundierung · IPW · G-Computation</h1>
   <span style="font-family:'DM Mono',monospace;font-size:.71rem;color:var(--ink3)">Dr. R. Düsing</span>
+  <button class="tbtn" onclick="openHelp('overview')" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 <div id="mod-nav">
@@ -284,6 +295,16 @@ canvas{display:block;width:100%}
 
 <!-- ═══════════════ MAIN ═══════════════ -->
 <div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Beispiel</div>
+    <div class="story-vars">
+      <span class="sv">T</span><span class="sd">Regelmäßiger Sport (ja / nein) — Behandlung</span>
+      <span class="sv">Y</span><span class="sd">Herzgesundheits-Score (0–100) — Outcome</span>
+      <span class="sv">C</span><span class="sd">Sozioökonomischer Status (SES, hoch / niedrig) — Confounder</span>
+    </div>
+    <div class="story-q">Sporttreibende haben im Schnitt ~19 Punkte bessere Herzgesundheit — aber ist das ein kausaler Effekt? SES beeinflusst sowohl Sport als auch Herzgesundheit. Alle fünf Module analysieren dieses Konfundierungsproblem Schritt für Schritt: DAG → Potential Outcomes → Konfundierung → IPW → G-Computation.</div>
+  </div>
 
 <!-- MODULE 1: DAG -->
 <div class="module active" id="mod-1">
@@ -1143,6 +1164,64 @@ function revealGC(){
 
 // ═══ HELP ════════════════════════════════════════════════════════════════════
 const HELP={
+  overview:{title:'Kausal Denken — Überblick & Lernziele',body:`
+    <h3>Das durchgehende Beispiel — alle Variablen</h3>
+    <p>Ein Forschungsteam untersucht, ob regelmäßiger <strong>Sport (T)</strong> die
+    <strong>Herzgesundheit (Y)</strong> verbessert. Im Datensatz liegen vier Variablen vor:</p>
+    <ul>
+      <li><strong>SES</strong> (sozioökon. Status): beeinflusst sowohl, wer Sport treibt, als auch die Herzgesundheit direkt — klassischer <strong>Confounder</strong>. SES→T und SES→Y. Backdoor-Pfad ist offen → <em>muss</em> adjustiert werden.</li>
+      <li><strong>Körpergewicht (KG)</strong>: Sport senkt Körpergewicht, niedrigeres Gewicht verbessert Herzgesundheit — T→KG→Y. Das ist ein <strong>Mediator</strong>, also Teil des kausalen Pfades. Ob adjustiert werden darf, hängt von der Forschungsfrage ab: Interessiert der <em>totale</em> Effekt von Sport (generelle Wirksamkeit), darf KG <em>nicht</em> kontrolliert werden — sonst blockiert man den Wirkpfad. Interessiert der <em>direkte</em> Effekt von Sport jenseits des Gewichtspfades (z. B. kardiovaskuläre Anpassung unabhängig vom Gewicht), muss für KG adjustiert und der indirekte Pfad separat berechnet werden.</li>
+      <li><strong>Arbeitsstatus (AB)</strong>: Weder Sport noch SES verursachen Arbeitsstatus direkt — aber beide beeinflussen ihn (T→AB und SES→AB). Das macht AB zu einem <strong>Collider</strong>. Ohne Adjustierung ist der Pfad T→AB←SES blockiert und erzeugt keine Verzerrung. Adjustiert man AB, öffnet man diesen Pfad und erzeugt einen spuriösen Zusammenhang zwischen T und SES — <em>nicht</em> adjustieren!</li>
+    </ul>
+    <p>Die zentrale Frage: Woher weiß man, was was ist? Nur aus kausalen Vorannahmen — nicht aus den Daten. Dafür braucht man einen <strong>DAG</strong> (Modul ①).</p>
+    <h3>Modul ② — Potential Outcomes: Was wären kausale Effekte?</h3>
+    <p>Um den kausalen Effekt von Sport für Person i zu definieren, denkt man in zwei parallelen Welten:
+    <strong>Y_i(1)</strong> = Herzgesundheit von i, wenn sie Sport treibt, und
+    <strong>Y_i(0)</strong> = Herzgesundheit von i, wenn sie keinen Sport treibt.
+    Der individuelle kausale Effekt wäre ITE_i = Y_i(1) − Y_i(0).</p>
+    <p>Das fundamentale Problem: Wir beobachten für jede Person immer nur <em>eine</em> dieser Welten —
+    die andere ist kontrafaktisch und logisch unbeobachtbar. Es ist kein Datenproblem, das mehr Daten lösen würden: dieselbe Person kann nicht gleichzeitig Sport treiben und es lassen.</p>
+    <p>Um trotzdem etwas zu lernen, wechselt man die Ebene: Statt individueller Effekte schätzt man
+    <em>Erwartungswerte</em> über Personengruppen — unter der Annahme, dass innerhalb von Gruppen
+    (oder nach Adjustierung von Confoundern) die Treatment-Zuweisung quasi-zufällig ist
+    (Ignorierbarkeit: Y(t) ⊥ T | C). Dann gilt:</p>
+    <span class="formula">ATE = E[Y(1)] − E[Y(0)] — mittlerer Effekt in der Gesamtpopulation</span>
+    <span class="formula">ATT = E[Y(1)−Y(0) | T=1] — mittlerer Effekt bei denjenigen, die tatsächlich Sport treiben</span>
+    <span class="formula">ATU = E[Y(1)−Y(0) | T=0] — mittlerer Effekt bei denjenigen, die keinen Sport treiben</span>
+    <p>ATE, ATT und ATU können sich unterscheiden, wenn der Effekt von Sport heterogen ist — z. B. wenn nur besonders gesundheitsbewusste Personen Sport treiben und genau diese auch mehr davon profitieren.</p>
+    <p>Das scheinbar unlösbare Problem der Kontrafaktizität wird durch geeignete statistische Verfahren angegangen:
+    <strong>IPW</strong> rebalanciert die beobachteten Gruppen so, dass sie einer randomisierten Zuteilung ähneln — und schätzt so E[Y(1)] und E[Y(0)] ohne die fehlenden Kontrafaktualen direkt zu benötigen.
+    <strong>G-Computation</strong> geht noch einen Schritt weiter und schätzt für jede Person beide Potenzialzustände aus einem Outcome-Modell — die nächste Annäherung an das, was ein echtes Experiment direkt liefern würde.
+    Beide Verfahren lösen das Problem nicht im logischen Sinne, sondern umgehen es durch gezielte Annahmen — und genau diese Annahmen (Ignorierbarkeit, korrektes Modell) müssen inhaltlich begründet werden.</p>
+    <h3>Modul ③ — Konfundierung: Zwei Quellen des Bias</h3>
+    <p>Der naive Gruppenvergleich E[Y|T=1] − E[Y|T=0] ist nicht E[Y(1)] − E[Y(0)].
+    Die Heckman-Zerlegung zeigt, woher die Verzerrung kommt:</p>
+    <span class="formula">Naiv = ATE + Selection Bias + HTEB</span>
+    <ul>
+      <li><strong>Selection Bias</strong> = E[Y(0)|T=1] − E[Y(0)|T=0]: Die Gruppen unterscheiden sich bereits im Ausgangszustand — Sporttreibende hätten auch <em>ohne Sport</em> eine bessere Herzgesundheit, weil SES beide beeinflusst. Im Beispiel: Hochstatus-Personen treiben öfter Sport <em>und</em> sind unabhängig davon gesünder.</li>
+      <li><strong>HTEB</strong> (Heterogeneous Treatment Effect Bias) = (1−π)·(ATT−ATU): Selbst wenn keine Baseline-Unterschiede bestünden, könnte die Gruppe, die Sport treibt, stärker davon profitieren als die Gruppe, die es lässt — weil sie körperlich prädisponierter ist. HTEB ist null, wenn ATT = ATU (homogene Effekte) oder wenn π = 1.</li>
+    </ul>
+    <p>Im Tool: Naiver Schätzer ≈ 19 Punkte, wahrer ATE ≈ 10 Punkte — der Bias von ~9 Punkten stammt überwiegend aus dem Selection Bias durch SES.</p>
+    <h3>Modul ④ — IPW (Inverse Probability Weighting)</h3>
+    <p>Propensity Score e(C) = P(T=1|C) schätzt die Wahrscheinlichkeit, Sport zu treiben, gegeben SES.
+    IPW-Gewichte w = T/e(C) + (1−T)/(1−e(C)) rebalancieren die Stichprobe so, dass SES in der
+    gewichteten Population nicht mehr mit T zusammenhängt — eine pseudo-randomisierte Verteilung entsteht.
+    Der gewichtete Mittelwertvergleich schätzt dann den ATE ohne Confounder-Bias.</p>
+    <h3>Modul ⑤ — G-Computation: Potential Outcomes aus Modelldaten</h3>
+    <p>G-Computation schließt den Kreis zu Potential Outcomes: Statt in der Realität zwei Welten zu beobachten,
+    schätzt man sie aus einem Regressionsmodell (Y ~ T + C). Dann wird für <em>jede Person</em> das Modell
+    zweimal ausgewertet — einmal mit T=1 (als wäre sie Sportler), einmal mit T=0 (als wäre sie kein Sportler).
+    Das ergibt für jede Person i ein geschätztes Ŷ_i(1) und Ŷ_i(0) — die modellbasierten Kontrafaktualen.</p>
+    <span class="formula">ATE_GC = (1/n) Σ [ Ŷ_i(1) − Ŷ_i(0) ]</span>
+    <p>G-Computation ist damit konzeptuell die direkteste Umsetzung des Potential-Outcomes-Gedankens:
+    Man schätzt für jede Person beide Zustände und subtrahiert sie — nur dass man es nicht für echte,
+    sondern für modellierte Kontrafaktualen tut. Die Qualität hängt davon ab, wie gut das Outcome-Modell
+    die wahre Outcome-Funktion approximiert.</p>
+    <p><strong>DR-AIPW</strong> kombiniert IPW + G-Comp: Der Schätzer ist konsistent, wenn
+    <em>eines</em> der beiden Modelle (Propensity Score oder Outcome-Modell) korrekt spezifiziert ist —
+    robuster als jedes Verfahren allein.</p>
+    <p class="ref">Pearl (2009). <em>Causality.</em> · Hernán &amp; Robins (2020). <em>Causal Inference: What If.</em> · Heckman et al. (1998). JASA. · Robins et al. (1994). G-Computation.</p>
+  `},
   dag:{title:'DAG — Directed Acyclic Graph',body:`<h3>Was ist ein DAG?</h3><p>Ein DAG (Directed Acyclic Graph) ist eine formale Darstellung kausaler Annahmen. Knoten = Variablen, Pfeile = kausale Einflüsse. „Acyclic" bedeutet: keine Rückschleifen — Ursache und Wirkung werden klar getrennt.</p><h3>Drei kausale Rollen</h3><ul><li><strong>Confounder C:</strong> C→T und C→Y. Backdoor-Pfad offen → adjustieren!</li><li><strong>Mediator M:</strong> T→M→Y. Auf dem Kausalweg → nicht adjustieren!</li><li><strong>Collider K:</strong> T→K←Y. Blockiert → bei Adjustierung öffnet sich spuriöser Pfad!</li></ul><h3>d-Separation</h3><p>Zwei Variablen sind d-separiert (bedingt unabhängig), wenn alle verbindenden Pfade blockiert sind. Collider blockieren, Confounder und Mediatoren können durch Konditionieren blockiert werden.</p><p class="ref">Pearl, J. (2009). <em>Causality</em> (2nd ed.). Cambridge. · Hernán & Robins (2020). <em>Causal Inference: What If.</em></p>`},
   po:{title:'Potential Outcomes Framework',body:`<h3>Das Framework (Rubin, 1974)</h3><p>Jede Person i hat zwei potenzielle Outcomes: Y_i(1) bei Behandlung, Y_i(0) ohne Behandlung. Der individuelle kausale Effekt (ITE) ist ITE_i = Y_i(1) − Y_i(0).</p><h3>Das fundamentale Problem</h3><p>Wir beobachten immer nur eines der beiden — das andere ist kontrafaktisch und für immer unbeobachtbar. Das ist kein statistisches, sondern ein logisches Problem.</p><h3>Populationsschätzer</h3><span class="formula">ATE = E[Y(1) − Y(0)]</span><span class="formula">ATT = E[Y(1) − Y(0) | T=1]</span><span class="formula">ATU = E[Y(1) − Y(0) | T=0]</span><p>Bei heterogenen Effekten gilt: ATE ≠ ATT ≠ ATU. Welcher Estimand relevant ist, hängt von der Forschungsfrage ab.</p><p class="ref">Rubin, D. B. (1974). <em>JASA, 69</em>, 689–701. · Imbens & Rubin (2015). <em>Causal Inference for Statistics.</em></p>`},
   conf:{title:'Konfundierung und Omitted Variable Bias',body:`<h3>Definition</h3><p>Konfundierung liegt vor, wenn eine Variable C sowohl T als auch Y beeinflusst. Der naive Schätzer misst E[Y|T=1]−E[Y|T=0] — eine Mischung aus kausalem Effekt und Confounder-Effekt.</p><h3>Omitted Variable Bias</h3><span class="formula">Naiver Effekt = ATE + Bias</span><p>Der Bias ist: Corr(T,C) × Effekt(C→Y) / SD(T). Je stärker C mit T korreliert und je stärker C auf Y wirkt, desto größer der Bias.</p><h3>Wahrer ATE vs. adjustierter Wert</h3><p>In echten Daten ist der „wahre" ATE unbekannt. Im Tool können wir ihn aus den simulierten Potential Outcomes berechnen (mean(Y_i(1)−Y_i(0))). Der adjustierte Stratifikationsschätzer nähert sich dem wahren ATE, ist aber kein exakter Wert — er hat Stichprobenvarianz und kann leicht davon abweichen.</p><h3>Lösung</h3><p>Wenn alle Confounder beobachtet: Stratifizierung, Regression, IPW oder G-Computation. Wenn nicht: Instrumentalvariablen, DiD, RDD etc.</p><p class="ref">Hernán & Robins (2020). <em>Causal Inference: What If.</em> · VanderWeele (2015). <em>Explanation in Causal Inference.</em></p>`},

@@ -80,6 +80,33 @@ canvas{display:block;width:100%}
 .lcard-body{font-size:.82rem;line-height:1.7;color:var(--ink2)}
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
 </style>
 </head>
 <body>
@@ -87,6 +114,7 @@ canvas{display:block;width:100%}
 <div id="topbar">
   <h1>Partial- &amp; <em>Semipartialkorrelation</em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
+  <button class="tbtn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 
@@ -98,7 +126,7 @@ canvas{display:block;width:100%}
     <button class="preset-btn active" id="pre-A" onclick="setPreset('A')">A — Unabhängige Prädiktoren</button>
     <button class="preset-btn" id="pre-B" onclick="setPreset('B')">B — Redundanz (Kollinearität)</button>
     <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — Klassische Suppression</button>
-    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — Komplementarität</button>
+    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — Reziproke Suppression</button>
   </div>
 
   <div class="scard">
@@ -133,6 +161,16 @@ canvas{display:block;width:100%}
 
 </div><!-- /sidebar -->
 <div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Beispiel</div>
+    <div class="story-vars">
+      <span class="sv">X₁</span><span class="sd">Wöchentliche Lernzeit (Stunden/Woche) — Prädiktor von Interesse</span>
+      <span class="sv">X₂</span><span class="sd">Intelligenz (IQ-Score, standardisiert) — Kontrollvariable</span>
+      <span class="sv">Y</span><span class="sd">Klausurleistung (Punkte, 0–100)</span>
+    </div>
+    <div class="story-q">Wie stark korreliert Lernzeit mit Klausurleistung, wenn man Intelligenzunterschiede herausrechnet? Geht der Effekt auf eigenständige Lernbereitschaft zurück — oder ist er nur ein Artefakt, weil Klügere zufällig auch mehr lernen? (Szenario D — Reziproke Suppression — wechselt zu einem anderen Beispiel: Dominanz &amp; Empathie als Prädiktoren von Führungserfolg.)</div>
+  </div>
 
   <div class="sec-h" style="margin-top:0">Konzept</div>
   <div class="eq-wrap">
@@ -174,8 +212,8 @@ canvas{display:block;width:100%}
     <thead>
       <tr>
         <th>Statistik</th>
-        <th class="r">Population ρ</th>
-        <th class="r">Stichprobe r̂</th>
+        <th class="r">Population</th>
+        <th class="r">Stichprobe</th>
         <th class="r">t</th>
         <th class="r">p</th>
         <th>Anmerkung</th>
@@ -183,6 +221,9 @@ canvas{display:block;width:100%}
     </thead>
     <tbody id="stats-body"></tbody>
   </table>
+
+  <div class="sec-h">Multiple Regression — X₁ + X₂ → Y</div>
+  <div id="mreg-wrap"></div>
 
   <div class="learn-section">
     <div class="sec-h">Konzepte</div>
@@ -200,12 +241,12 @@ canvas{display:block;width:100%}
         <div class="lcard-body">Drei überlappende Kreise (X₁, X₂, Y) visualisieren die R²-Zerlegung. Die <strong>blaue Zone b</strong> = ΔR²(X₁) = Semipartial² — einzigartiger X₁-Anteil. Die <strong>grüne Zone d</strong> = ΔR²(X₂). Die <strong>lila Zone c</strong> = geteilte Varianz, die beiden Prädiktoren zugleich zugeordnet werden könnte. <strong>c kann negativ werden</strong> (Suppression) — dann bricht das Venn-Diagramm geometrisch zusammen, die Werte bleiben aber gültig. Grauer Bereich a = unerklärte Y-Varianz (1−R²).</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Suppression</div>
-        <div class="lcard-body">Bei Suppression gilt: <strong>r_partial &gt; r_bivariat</strong> und β₁_multipel &gt; β₁_einfach. Das klingt paradox — mehr kontrolliert, stärkerer Effekt? X₂ enthält <em>Störvarianz</em>, die in X₁ steckt, aber nichts mit Y zu tun hat. Durch Kontrolle von X₂ wird diese Störvarianz aus X₁ entfernt, und der „echte" X₁-Y-Zusammenhang wird sichtbar. Klassischer Fall: ρ(X₂,Y)≈0, ρ(X₁,X₂)&gt;0 → Szenario C. MacKinnon et al. (2000): Suppression, Mediation und Konfunding sind mathematisch äquivalent — drei Interpretationen derselben Gleichung.</div>
+        <div class="lcard-h">Suppression — drei Varianten</div>
+        <div class="lcard-body">Bei allen drei Varianten gilt β₁_multipel &gt; β₁_einfach (und c &lt; 0 im Ballantine). <strong>Fall 1 — Klassisch (McNemar 1945):</strong> ρ(X₂,Y) ≈ 0, ρ(X₁,X₂) &gt; 0 → Szenario C. X₂ enthält Störvarianz in X₁, die Y-irrelevant ist. <strong>Fall 2 — Negativ/Net:</strong> alle Korrelationen positiv, aber ρ(X₂,Y) &lt; ρ(X₁,X₂)·ρ(X₁,Y). Gradueller Übergang zu Fall 1. <strong>Fall 3 — Reziproke Suppression/Komplementarität (Conger 1974):</strong> X₁ und X₂ beide positiv mit Y, aber negativ untereinander → Szenario D. Beide Prädiktoren supprimieren sich gegenseitig (Velicer, 1978; Darlington &amp; Hayes, 2017).</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Komplementarität</div>
-        <div class="lcard-body">Komplementarität ist Suppression mit positiven Vorzeichen überall: ρ(X₁,Y)&gt;0, ρ(X₂,Y)&gt;0, ρ(X₁,X₂)&gt;0, aber trotzdem β₁_multipel &gt; β₁_einfach. Das passiert wenn ρ(X₂,Y) &lt; ρ(X₁,X₂)·ρ(X₁,Y) — X₂ erklärt mehr Varianz in X₁ als in Y. MacKinnon et al. zeigen: dies entspricht einem Mediationsmodell mit positivem indirekten Effekt, der c′ &gt; c erzeugt (Szenario D). Die Grenze zwischen Suppression und Komplementarität ist rein interpretatorisch.</div>
+        <div class="lcard-h">Reziproke Suppression / Komplementarität</div>
+        <div class="lcard-body">Kennzeichen: ρ(X₁,Y) &gt; 0, ρ(X₂,Y) &gt; 0, aber ρ(X₁,X₂) &lt; 0. Beide Prädiktoren korrelieren positiv mit Y, sind aber untereinander negativ korreliert — jeder enthält Störvarianz des anderen. Folge: β₁_multipel &gt; β₁_einfach <em>und</em> β₂_multipel &gt; β₂_einfach. Beispiel (Szenario D): Dominanz (X₁, r=.30) und Empathie (X₂, r=.25) korrelieren beide positiv mit Führungserfolg, aber negativ miteinander (r=−.30). Kontrolliert man jeweils die andere Variable, steigen beide β-Gewichte — das gegenseitige Unterdrücken wird aufgehoben.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Kollinearität &amp; ΔR²</div>
@@ -216,6 +257,174 @@ canvas{display:block;width:100%}
 
 </div><!-- /main -->
 </div><!-- /app -->
+
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+    <div class="help-box-h">Partial- &amp; Semipartialkorrelation — Hilfe</div>
+
+    <div class="help-sh">Beispiel</div>
+    <p class="help-p">
+      <strong>X₁</strong> = Lernzeit (Std./Woche), <strong>X₂</strong> = Intelligenz (IQ, std.),
+      <strong>Y</strong> = Klausurleistung (0–100).<br>
+      Frage: Wie viel von dem X₁–Y-Zusammenhang ist eigenständig (Lernbereitschaft), und wie viel
+      verschwindet, sobald man Intelligenzunterschiede kontrolliert?
+    </p>
+
+    <div class="help-sh">Bivariat, Semipartial- und Partialkorrelation</div>
+    <p class="help-p">
+      Drei Stufen der Kontrolle über X₂:
+    </p>
+    <span class="help-formula">r_bivariat = Korr(X₁, Y) — ohne jede Kontrolle</span>
+    <span class="help-formula">r_semi = Korr(e(X₁|X₂), Y) — X₂ nur aus X₁ herauspartialisiert</span>
+    <span class="help-formula">r_partial = Korr(e(X₁|X₂), e(Y|X₂)) — X₂ aus beiden herauspartialisiert</span>
+    <p class="help-p">
+      <strong>r_semi²</strong> = ΔR² = einzigartiger Anteil, den X₁ zur Y-Varianz beiträgt,
+      über X₂ hinaus.<br>
+      <strong>r_partial²</strong> = Anteil der <em>Restvarianz</em> in Y (nach Abzug von X₂),
+      den X₁ erklärt — misst die Stärke des Zusammenhangs <em>innerhalb</em> der X₂-kontrollierten Ebene.
+    </p>
+    <p class="help-p">
+      <em>Im Beispiel (Szenario A):</em> Lernzeit und IQ sind unkorreliert (ρ₁₂ = 0).
+      Dann gilt r_semi = r_partial = r_bivariat — Kontrolle von IQ ändert nichts, weil Lernzeit
+      und IQ keine gemeinsame Varianz teilen. Jeder Prädiktor trägt einzigartig bei.
+    </p>
+
+    <div class="help-sh">Residualisierung — was passiert geometrisch?</div>
+    <p class="help-p">
+      „Herauspartialisieren" heißt: Lernzeit auf IQ regressieren und die Residuen nehmen —
+      e(X₁|X₂) ist der Teil der Lernzeit, den IQ <em>nicht</em> vorhersagt.
+      Die drei Streudiagramme zeigen die schrittweise Bereinigung:
+    </p>
+    <p class="help-p">
+      Plot 1: Roher X₁–Y-Zusammenhang (Lernzeit vs. Leistung, gefärbt nach IQ-Rang).<br>
+      Plot 2: e(X₁|X₂) vs. Y — IQ-Gradient in X₁ entfernt; verbleibende Korrelation = r_semi.<br>
+      Plot 3: e(X₁|X₂) vs. e(Y|X₂) — IQ aus beiden entfernt; verbleibende Korrelation = r_partial.
+    </p>
+    <p class="help-p">
+      <em>Im Beispiel (Szenario B, Kollinearität):</em> Klügere lernen auch mehr (ρ₁₂ = 0.80).
+      Die Punktfärbung nach IQ-Rang zeigt in Plot 1 einen starken IQ-Gradienten entlang der X-Achse.
+      Nach Residualisierung (Plot 2/3) ist dieser Gradient verschwunden — was bleibt, ist der reine
+      Lernzeit-Effekt unabhängig von IQ. Er ist deutlich kleiner als die bivariate r.
+    </p>
+
+    <div class="help-sh">Ballantine-Diagramm — Varianzzerlegung</div>
+    <p class="help-p">
+      Drei überlappende Kreise (X₁, X₂, Y) zeigen, wie R² sich aufteilt:
+    </p>
+    <span class="help-formula">b = ΔR²(X₁) = r²_semi — einzigartiger X₁-Anteil (blau)</span>
+    <span class="help-formula">d = ΔR²(X₂) = r²_semi(X₂) — einzigartiger X₂-Anteil (grün)</span>
+    <span class="help-formula">c = R² − b − d — geteilte Varianz (lila)</span>
+    <span class="help-formula">a = 1 − R² — unerklärte Y-Varianz (grau)</span>
+    <p class="help-p">
+      <em>Im Beispiel (Szenario B):</em> Lernzeit und IQ teilen viel Varianz in Y (c groß, b und d klein).
+      Bivariat scheinen beide stark — aber ΔR²(Lernzeit) ≈ 0.04: Lernzeit erklärt nur wenig
+      einzigartigen Anteil, wenn IQ bereits im Modell ist.
+    </p>
+
+    <div class="help-sh">Suppression (Szenario C)</div>
+    <p class="help-p">
+      Formal: c &lt; 0 (geteilte Varianz negativ) — geometrisch nicht als Schnittmenge darstellbar,
+      rechnerisch aber gültig. Erkennungszeichen:
+    </p>
+    <span class="help-formula">|β₁_multipel| > |β₁_einfach| und r_partial > r_bivariat</span>
+    <p class="help-p">
+      X₂ enthält Störvarianz in X₁, die nichts mit Y zu tun hat. Durch Kontrolle von X₂ wird
+      diese Rauschangabe aus X₁ entfernt und der „wahre" X₁–Y-Effekt tritt hervor.
+    </p>
+    <p class="help-p">
+      <em>Im Beispiel (Szenario C, ρ(X₂,Y) ≈ 0, ρ(X₁,X₂) = 0.5):</em>
+      IQ korreliert kaum mit Klausurleistung — ist aber eng mit Lernzeit verknüpft.
+      Ein Teil der gemessenen Lernzeit ist eigentlich IQ-getriebenes Lernverhalten ohne Mehrwert.
+      Partialisiert man IQ heraus, steigt die echte Lernzeit-Leistungs-Korrelation: r_partial &gt; r_bivariat.
+    </p>
+
+    <div class="help-sh">Suppression — drei Varianten (nach Velicer 1978; Conger 1974)</div>
+    <p class="help-p">
+      Allen drei Varianten gemein: β₁_multipel &gt; β₁_einfach und c &lt; 0 im Ballantine-Diagramm.
+    </p>
+    <p class="help-p">
+      <strong>Fall 1 — Klassische Suppression (McNemar 1945) — Szenario C:</strong><br>
+      ρ(X₁,Y) &gt; 0, ρ(X₂,Y) ≈ 0, ρ(X₁,X₂) &gt; 0. X₂ korreliert kaum mit Y, aber mit X₁ —
+      es steckt Störvarianz in X₁, die Y-irrelevant ist. Kontrolle von X₂ entfernt diesen Rauschanteil
+      und legt den echten X₁-Y-Effekt frei.
+    </p>
+    <p class="help-p">
+      <em>Im Beispiel (Szenario C):</em> IQ (X₂) korreliert kaum mit Leistung (ρ₂y = 0),
+      aber stark mit Lernzeit (ρ₁₂ = 0.50). Ein Teil der gemessenen Lernzeit ist IQ-getrieben
+      und leistungsirrelevant. Kontrolliert man IQ, steigt r_partial &gt; r_bivariat.
+    </p>
+    <p class="help-p">
+      <strong>Fall 2 — Negative/Net Suppression:</strong><br>
+      Alle Korrelationen positiv, aber ρ(X₂,Y) &lt; ρ(X₁,X₂) · ρ(X₁,Y). Gradueller Übergang
+      zu Fall 1 — X₂ hat einen kleinen positiven Effekt auf Y, erklärt aber mehr Varianz in X₁
+      als in Y. Kein eigenes Szenario im Tool; tritt auf, wenn man in Szenario C ρ₂y leicht
+      von 0 wegschiebt.
+    </p>
+    <p class="help-p">
+      <strong>Fall 3 — Reziproke Suppression / Komplementarität (Conger 1974) — Szenario D:</strong><br>
+      ρ(X₁,Y) &gt; 0, ρ(X₂,Y) &gt; 0, aber ρ(X₁,X₂) &lt; 0. Beide Prädiktoren korrelieren
+      positiv mit Y, sind aber negativ untereinander korreliert. Jeder Prädiktor enthält Störvarianz
+      des anderen — beide supprimieren sich gegenseitig. Folge: β₁_multipel &gt; β₁_einfach
+      <em>und</em> β₂_multipel &gt; β₂_einfach.
+    </p>
+    <span class="help-formula">β₁_multipel = (ρ₁y − ρ₂y · ρ₁₂) / (1 − ρ₁₂²)</span>
+    <p class="help-p">
+      Mit ρ₁₂ &lt; 0 wird der Zähler größer (−ρ₂y·ρ₁₂ wird positiv) und der Nenner kleiner →
+      doppelter Verstärkungseffekt auf β₁.
+    </p>
+    <p class="help-p">
+      <em>Im Beispiel (Szenario D) — Persönlichkeit &amp; Führungserfolg:</em><br>
+      X₁ = Dominanz (r = .30 mit Führungserfolg), X₂ = Empathie (r = .25), ρ(X₁,X₂) = −.30.<br>
+      Dominante Personen sind tendenziell weniger empathisch — die negative Interkorrelation
+      entsteht dadurch, dass diese Eigenschaften konzeptuell antagonistisch sind.
+      Bivariat erklärt Dominanz nur 9 % der Varianz im Führungserfolg (r² = .09).
+      Kontrolliert man Empathie, steigt β₁_multipel ≈ .41 &gt; .30 — weil der
+      „empathie-suppressierte" Anteil der Dominanz, der bisher den Effekt dämpfte, herausgerechnet
+      wird. Symmetrisch gilt dasselbe für Empathie: β₂_multipel ≈ .34 &gt; .25.
+    </p>
+
+    <div class="help-sh">Kollinearität &amp; Wahl der Kennzahl</div>
+    <p class="help-p">
+      Hohe Kollinearität (ρ(X₁,X₂) groß) → kleine ΔR²-Werte, große SE, instabile β.
+      VIF = 1/(1 − R²_j) quantifiziert die Aufblähung der Standardfehler.
+      Szenario B zeigt: bivariat r = 0.60, aber ΔR²(X₁) ≈ 0.04 — ein kollinearer Prädiktor
+      erklärt bivariat viel, trägt aber kaum einzigartig bei.
+    </p>
+    <div class="help-sh" style="margin-top:.7rem">Semipartial vs. Partialkorrelation — wann welche?</div>
+    <p class="help-p">
+      Der entscheidende Unterschied liegt in der <strong>Bezugsgröße</strong>:
+    </p>
+    <span class="help-formula">r_semi² = ΔR² = Anteil der <em>gesamten</em> Y-Varianz, den X₁ einzigartig erklärt</span>
+    <span class="help-formula">r_partial² = Anteil der <em>residualen</em> Y-Varianz (nach X₂), den X₁ erklärt</span>
+    <p class="help-p">
+      Bei r_partial wird X₂ auch aus Y herauspartialisiert — damit ändert sich der Nenner.
+      r_partial² ist nicht mehr als Anteil der gesamten Y-Varianz interpretierbar und nicht direkt
+      mit r_bivariat vergleichbar. Wenn X₂ viel von Y erklärt (z. B. 64 %), schrumpft die
+      Reststreuung in Y auf 36 %. Ein r_partial = .50 klingt groß, entspricht aber nur
+      r_partial² × (1 − R²_X₂) = .25 × .36 = 9 % der Gesamtvarianz.
+    </p>
+    <p class="help-p">
+      <strong>Empfehlung für die meisten Forschungsfragen:</strong>
+      r_semi (bzw. ΔR² = r_semi²) — sie behält Y als Bezugsgröße unverändert, ist direkt mit
+      r_bivariat vergleichbar und gibt den einzigartigen Beitrag in einer für Dritte
+      nachvollziehbaren Einheit an.
+    </p>
+    <p class="help-p">
+      <strong>Wann r_partial dennoch sinnvoll ist:</strong>
+      Wenn X₂ als harte Baseline-Kovariate gilt, deren Y-Varianz konzeptuell „nicht interessiert" —
+      z. B. T1-Messwert als Baseline in einem Längsschnitt. Dann fragt man: „Wie stark hängen
+      X₁ und Y <em>innerhalb</em> der X₂-bereinigten Ebene zusammen?" — und r_partial beantwortet
+      genau das. Auch für reine Signifikanztests hat r_partial leicht mehr Power, weil der Nenner
+      kleiner wird (|r_partial| ≥ |r_semi| immer).
+    </p>
+    <p class="help-p">
+      <em>Im Beispiel (Szenario A):</em> IQ erklärt wenig von Leistung (ρ₂y = 0.40, R² ≈ 0.25).
+      Hier sind r_semi und r_partial ähnlich groß — der Unterschied wächst erst, wenn X₂ einen
+      großen Teil von Y erklärt (Szenario B mit hoher Kollinearität).
+    </p>
+  </div>
+</div>
 
 <script>
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -272,6 +481,11 @@ function sigClass(p){return p<.01?'sig01':p<.05?'sig1':'signs';}
 function pStr(p){if(!isFinite(p))return'—';if(p<.001)return'< .001';return p.toFixed(3).replace('0.','.');}
 function f3(v){return isFinite(v)?v.toFixed(3):'—';}
 function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function tCrit95(df){
+  let lo=0,hi=10;
+  for(let i=0;i<60;i++){const m=(lo+hi)/2;tPVal(m,df)>0.05?lo=m:hi=m;}
+  return(lo+hi)/2;
+}
 
 // ─── Data generation (Cholesky trivariate normal) ─────────────────────────────
 function genData(){
@@ -564,10 +778,13 @@ function updateStatsTable(pts,stats){
   const sdY =Math.sqrt(ys.reduce((s,v)=>s+(v-mean(ys))**2,0)/(n-1));
   const r1y_rw=sampleCorr(x1s,ys),r2y_rw=sampleCorr(x2s,ys),r12_rw=sampleCorr(x1s,x2s);
   const d12_h=1-r12_rw*r12_rw;
-  const beta1_s_h=r1y_rw; // standardized simple β = r
+  const beta1_s_h=r1y_rw;
+  const beta2_s_h=r2y_rw;
   const beta1_m_h=d12_h>0?(r1y_rw-r12_rw*r2y_rw)/d12_h:NaN;
+  const beta2_m_h=d12_h>0?(r2y_rw-r12_rw*r1y_rw)/d12_h:NaN;
   const dR2_h=rsemi_h*rsemi_h;
   const R2_h  =Math.max(0,analyticalStats(r1y_rw,r2y_rw,r12_rw).R2);
+  const se_m=Math.sqrt(Math.max(1e-9,(1-R2_h)/Math.max(1,n-3)/Math.max(1e-9,d12_h)));
 
   function tRow(lbl,r_pop,r_hat,df,note,R2full){
     const denom=R2full!==undefined?Math.sqrt(Math.max(1e-9,1-R2full)):Math.sqrt(Math.max(1e-9,1-r_hat*r_hat));
@@ -598,13 +815,61 @@ function updateStatsTable(pts,stats){
 
   document.getElementById('stats-body').innerHTML=
     tRow('r(X₁,Y) bivariat',ST.r1y,r1y_h,dfN,'Pearson-r ohne Kontrolle')+
+    tRow('r(X₂,Y) bivariat',ST.r2y,r2y_rw,dfN,'Pearson-r ohne Kontrolle')+
     tRow('r<sub>semi</sub> e(X₁|X₂) ~ Y',stats.r_semi1,rsemi_h,dfM,'Semipartial; df=n−3',R2_h)+
     tRow('r<sub>partial</sub> e(X₁|X₂) ~ e(Y|X₂)',stats.r_part1,rpart_h,dfM,'Partial; df=n−3')+
     plainRow('β₁ einfach (stand.)',ST.r1y,beta1_s_h,'= r bivariat bei std. Var.')+
     plainRow('β₁ multipel (stand.)',stats.beta1,beta1_m_h,
-      suppressor?'<span style="color:var(--a1)">⬆ Suppression: |β_multi| > |β_simple|</span>':'Gewich. in mult. Regression')+
+      suppressor?'<span style="color:var(--a1)">⬆ Suppression: |β_multi| > |β_simple|</span>':'Gewicht in mult. Regression')+
     plainRow('ΔR²(X₁) = r²<sub>semi</sub>',stats.dR2_1,dR2_h,'Einzigartiger Varianzanteil X₁')+
     plainRow('R² (X₁+X₂)',Math.max(0,stats.R2),R2_h,'Gesamterklärte Varianz');
+
+  // Multiple regression table
+  const tc=tCrit95(dfM);
+  const d12_pop=1-ST.r12*ST.r12;
+  const beta1_pop_m=d12_pop>1e-9?(ST.r1y-ST.r12*ST.r2y)/d12_pop:NaN;
+  const beta2_pop_m=d12_pop>1e-9?(ST.r2y-ST.r12*ST.r1y)/d12_pop:NaN;
+  function mregRow(lbl,col,r_pop,r_hat,beta_pop_m,beta_m,se,df){
+    const tv=isFinite(beta_m)&&se>0?beta_m/se:NaN;
+    const pv=isFinite(tv)?tPVal(Math.abs(tv),df):NaN;
+    const sc=sigClass(pv);
+    const ki=isFinite(beta_m)?`[${(beta_m-tc*se).toFixed(3)}, ${(beta_m+tc*se).toFixed(3)}]`:'—';
+    const signFlip=isFinite(beta_m)&&isFinite(r_hat)&&r_hat*beta_m<-0.001;
+    const magUp=isFinite(beta_m)&&isFinite(r_hat)&&Math.abs(beta_m)>Math.abs(r_hat)+0.05;
+    const note=signFlip
+      ?`<span style="color:var(--a1)">⚠ Vorzeichenwechsel r→β</span>`
+      :magUp?`<span style="color:var(--a5)">↑ |β_mult| &gt; |r_biv|</span>`:'—';
+    return`<tr>
+      <td style="color:${col};font-weight:600">${lbl}</td>
+      <td class="num" style="color:var(--ink3)">${f3(r_pop)}</td>
+      <td class="num" style="color:${col}">${f3(r_hat)}</td>
+      <td class="num" style="color:var(--ink3)">${f3(beta_pop_m)}</td>
+      <td class="num" style="color:${col}">${f3(beta_m)}</td>
+      <td class="num">${isFinite(se)?se.toFixed(3):'—'}</td>
+      <td class="num ${sc}">${isFinite(tv)?tv.toFixed(2):'—'}</td>
+      <td class="num ${sc}">${pStr(pv)}</td>
+      <td class="num" style="font-size:.73rem">${ki}</td>
+      <td class="interp">${note}</td>
+    </tr>`;
+  }
+  document.getElementById('mreg-wrap').innerHTML=`
+    <table class="coef-table">
+      <thead><tr>
+        <th>Prädiktor</th>
+        <th class="r">ρ_biv</th><th class="r">r_biv</th>
+        <th class="r">β_mult (Pop)</th><th class="r">β_mult (Stpr)</th>
+        <th class="r">SE</th><th class="r">t</th><th class="r">p</th>
+        <th class="r">95%-KI</th><th>Anmerkung</th>
+      </tr></thead>
+      <tbody>
+        ${mregRow('X₁','var(--a2)',ST.r1y,r1y_rw,beta1_pop_m,beta1_m_h,se_m,dfM)}
+        ${mregRow('X₂','var(--a3)',ST.r2y,r2y_rw,beta2_pop_m,beta2_m_h,se_m,dfM)}
+      </tbody>
+    </table>
+    <div style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);margin-top:.3rem">
+      ⚠ Vorzeichenwechsel r→β: Suppression. &nbsp;↑ |β_mult| &gt; |r_biv|: Suppression ohne Vorzeichenwechsel.
+      &nbsp;|β_mult| = |β_einf| bei ρ(X₁,X₂)=0.
+    </div>`;
 
   // Update canvas header labels
   document.getElementById('lbl-r1').textContent=`ρ=${f3(ST.r1y)}  r̂=${f3(r1y_h)}`;
@@ -647,7 +912,7 @@ const PRESETS={
   A:{r1y:0.50,r2y:0.40,r12:0.00},
   B:{r1y:0.60,r2y:0.60,r12:0.80},
   C:{r1y:0.40,r2y:0.00,r12:0.50},
-  D:{r1y:0.50,r2y:0.10,r12:0.60},
+  D:{r1y:0.30,r2y:0.25,r12:-0.30},
 };
 
 function setPreset(k){
@@ -672,6 +937,9 @@ function downloadCSV(){
   URL.revokeObjectURL(url);
 }
 
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
+}
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme',dark?'light':'dark');
