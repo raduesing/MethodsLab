@@ -116,12 +116,40 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
   padding:.2rem .6rem;background:rgba(201,74,42,.12);border:1px solid var(--a1);color:var(--a1)}
 [data-theme="dark"] .badge-ok{background:rgba(128,203,82,.10)}
 [data-theme="dark"] .badge-warn{background:rgba(232,97,74,.10)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
 </style>
 </head>
 <body>
 
 <div id="topbar">
   <h1>Regression <em>Discontinuity</em> Design</h1>
+  <button class="tbtn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 
@@ -204,6 +232,16 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 </div><!-- /sidebar -->
 
 <div id="main">
+  <div class="story-box">
+    <div class="story-lbl">Durchgehendes Beispiel</div>
+    <div class="story-vars">
+      <span class="sv">X</span><span class="sd">Aufnahmetest-Score (Running Variable, 0–100 Punkte)</span>
+      <span class="sv">c</span><span class="sd">Cutoff = 50 — wer ≥ 50 erreicht, erhält einen Studienplatz</span>
+      <span class="sv">T</span><span class="sd">Studienplatzzulassung (T=1 wenn X ≥ c, sonst T=0)</span>
+      <span class="sv">Y</span><span class="sd">Studienleistung — ECTS nach 2 Semestern (0–120)</span>
+    </div>
+    <div class="story-q">Hat die Zulassung einen kausalen Effekt auf die Studienleistung — oder sind leistungsstärkere Bewerber ohnehin besser? Knapp über und knapp unter dem Cutoff sollten sich Bewerber nur zufällig unterscheiden: genau das nutzt das RDD aus.</div>
+  </div>
   <div class="cv-sticky">
     <div class="sec-h" style="margin-top:0;padding-top:.35rem">① Streudiagramm</div>
     <canvas id="cv-rdd" height="320"></canvas>
@@ -295,6 +333,51 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 
 </div><!-- /main -->
 </div><!-- /app -->
+
+<!-- Hilfe-Overlay -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Regression Discontinuity Design — Hilfe</div>
+    <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+
+    <div class="help-sh">Beispiel</div>
+    <p class="help-p">Bewerber mit einem Aufnahmetest-Score X ≥ 50 erhalten einen Studienplatz (T=1), alle anderen nicht (T=0). Die Frage ist: Verbessert die Zulassung selbst die Studienleistung Y — oder sind die Zugelassenen schlicht leistungsstärker?</p>
+    <p class="help-p">Das Problem: Zugelassene und Abgelehnte unterscheiden sich systematisch in X, also auch in allem, was mit X zusammenhängt. Ein naiver Gruppenvergleich wäre verzerrt. Das RDD umgeht das, indem es nur die <em>lokale</em> Diskontinuität am Cutoff auswertet.</p>
+
+    <div class="help-sh">RDD-Logik &amp; Continuity Assumption</div>
+    <p class="help-p">Die Kernidee: Direkt links und rechts vom Cutoff unterscheiden sich Bewerber nur durch Zufall (sie hatten fast denselben Score). Hätte der Zulassungsmechanismus nicht eingegriffen, würden beide Gruppen im Mittel dasselbe Y zeigen — die erwartete Outcome-Kurve wäre <em>stetig</em> am Cutoff.</p>
+    <p class="help-p"><strong>Continuity Assumption:</strong> E[Y(0) | X] und E[Y(1) | X] sind beide stetig in X an der Stelle c. Jeder beobachtbare Sprung in Y am Cutoff ist dann kausal dem Treatment zuzuschreiben.</p>
+    <span class="help-formula">Verletzung: Bewerber manipulieren X knapp über c → Selektionsverzerrung</span>
+    <p class="help-p">Im Beispiel: Falls Bewerber kurz vor dem Test zusätzlich lernen und genau den Cutoff "anpeilen", sind die Gruppen knapp über/unter c nicht mehr vergleichbar.</p>
+
+    <div class="help-sh">Schätzmodell &amp; LATE</div>
+    <p class="help-p">Das Modell zentriert die Running Variable am Cutoff (X̃ = X − c) und fügt eine Sprungindikatorvariable T sowie optional einen Slope-Unterschied (T·X̃) ein:</p>
+    <span class="help-formula">Y = b₀ + b₁·X̃ + b₂·T + b₃·(T·X̃) + ε</span>
+    <p class="help-p"><strong>b₀</strong> = erwartetes Y direkt am Cutoff (T=0-Seite) &nbsp;|&nbsp; <strong>b₁</strong> = Slope der Kontrollgruppe &nbsp;|&nbsp; <strong>b₂</strong> = Sprung am Cutoff = LATE &nbsp;|&nbsp; <strong>b₃</strong> = Slope-Unterschied Treatment vs. Kontrollgruppe</p>
+    <span class="help-formula">LATE = b₂ = lim[E(Y|X↓c)] − lim[E(Y|X↑c)]</span>
+    <p class="help-p">Im Beispiel: b₂ = 15 bedeutet, dass Zugelassene im Mittel 15 ECTS mehr erwerben als vergleichbare Nicht-Zugelassene direkt am Cutoff — der <em>lokale</em> kausale Effekt der Zulassung.</p>
+    <p class="help-p"><strong>Wichtig:</strong> Das LATE gilt nur für Personen nahe am Cutoff (externe Validität eingeschränkt). Personen weit unter dem Cutoff sind typischerweise anders als Personen knapp darunter.</p>
+
+    <div class="help-sh">Szenarien A–D</div>
+    <p class="help-p"><strong>A — Kein Effekt:</strong> b₂=0, b₃=0. Die Regressionsgerade ist stetig am Cutoff — kein Sprung, kein Unterschied in den Slopes. Sichtbar: beide Linien stoßen nahtlos zusammen.</p>
+    <p class="help-p"><strong>B — Sprung (LATE):</strong> b₂≠0, b₃=0. Ein klarer Sprung am Cutoff, aber beide Seiten haben dieselbe Steigung. Das klassische Sharp-RDD-Muster.</p>
+    <p class="help-p"><strong>C — Kink (Slope-Unterschied):</strong> b₂=0, b₃≠0. Kein Niveausprung, aber die Steigung ändert sich. Nützlich wenn das Treatment einen kontinuierlichen Intensitätsunterschied erzeugt (Regression Kink Design).</p>
+    <p class="help-p"><strong>D — Sprung + Kink:</strong> b₂≠0, b₃≠0. Beide Diskontinuitäten gleichzeitig. Im Beispiel könnte das bedeuten: Zulassung erhöht nicht nur das ECTS-Niveau, sondern auch den Lernerfolg pro Testpunkt-Zuwachs.</p>
+
+    <div class="help-sh">Polynomiale Terme</div>
+    <p class="help-p">Ein lineares Modell nimmt an, dass Y auf jeder Seite des Cutoffs linear in X ist. Ist die wahre Beziehung nicht-linear (Kurve), kann das eine scheinbare Diskontinuität erzeugen — oder eine echte verdecken.</p>
+    <p class="help-p">Polynomiale Erweiterung (Grad 2) fügt X̃² und T·X̃² ein:</p>
+    <span class="help-formula">Y = b₀ + b₁·X̃ + b₂·T + b₃·(T·X̃) + b₄·X̃² + b₅·(T·X̃²) + ε</span>
+    <p class="help-p">Im Beispiel: Wenn Studierende mit sehr hohem Score (X=90) auch ohne Zulassung besonders gut wären (Deckeneffekte), würde ein lineares Modell das LATE überschätzen. Das Polynom-Modell fängt diese Krümmung auf.</p>
+    <p class="help-p"><strong>Trade-off:</strong> Höhere Polynomgrade erhöhen die Varianz der Schätzung und können zu Overfitting nahe dem Cutoff führen. Grad 2 ist meist ausreichend — Imbens &amp; Gelman (2019) empfehlen lokale lineare Schätzung mit optimaler Bandbreite statt hoher Polynome.</p>
+
+    <div class="help-sh">Fuzzy RDD</div>
+    <p class="help-p">Im Sharp RDD springt die Behandlungswahrscheinlichkeit P(T=1|X) am Cutoff von 0 auf 1 — jeder Bewerber über dem Cutoff wird zugelassen, keiner darunter. Fuzzy RDD erlaubt unvollständige Compliance:</p>
+    <p class="help-p">Im Beispiel: Manche Bewerber mit X ≥ 50 nehmen den Platz nicht an (Always-Taker gibt es hier nicht, aber Defier/Never-Taker schon). Dann springt P(T=1|X) nicht auf 1, sondern auf 0.85. Das Fuzzy-RDD skaliert:</p>
+    <span class="help-formula">LATE_Fuzzy = Sprung in E(Y|X) / Sprung in E(T|X) am Cutoff</span>
+    <p class="help-p">Das entspricht einem IV-Schätzer (2SLS): Die Cutoff-Zuweisung Z dient als Instrument für die tatsächliche Behandlung T. Voraussetzung: Z beeinflusst Y nur über T (Exclusion Restriction) — die bloße Zulassung hat keinen direkten Effekt, nur die tatsächliche Aufnahme des Studiums.</p>
+  </div>
+</div>
 
 <script>
 // ─── State ─────────────────────────────────────────────────────────────────
@@ -888,6 +971,9 @@ function toggleTheme(){
   document.documentElement.setAttribute('data-theme',dark?'light':'dark');
   document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
   drawCanvas(ST.data,ST.fitResult?.beta,ST.fitITT?.beta||null);
+}
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
 }
 
 // ─── Main recompute ────────────────────────────────────────────────────────
