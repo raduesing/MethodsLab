@@ -110,6 +110,33 @@ select:focus{outline:1px solid var(--accent)}
 .help-panel strong{color:var(--ink)}
 .help-formula{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--grid);
   padding:.35rem .7rem;margin:.35rem 0;color:var(--a2)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula2{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
 </style>
 </head>
 <body>
@@ -221,19 +248,15 @@ select:focus{outline:1px solid var(--accent)}
 
 <div id="main">
 
-  <div class="help-panel" id="help-panel">
-    <p><strong>Drei Intervall-Methoden im Vergleich:</strong></p>
-    <p><strong>KI Äquivalenzhypothese:</strong> Das Intervall liegt um den beobachteten Testwert X. Annahme: X ist unverzerrter Schätzer des wahren Werts.</p>
-    <div class="help-formula">KI = X ± 1.96 · SEM,  SEM = σ · √(1 − r_xx)</div>
-    <p><strong>KI Regressionshypothese:</strong> Das Intervall liegt um den regredierten Schätzwert X′. Berücksichtigt die Regression zur Mitte.</p>
-    <div class="help-formula">X′ = μ + r_xx · (X − μ),  SE_reg = σ · √(r_xx · (1 − r_xx))</div>
-    <p><strong>Bayesianisches CrI (flexibler Prior):</strong> Prior N(μ, SD_prior), Likelihood N(X, SEM). Die Präzisionen werden kombiniert:</p>
-    <div class="help-formula">w_data = 1/SEM²,  w_prior = 1/SD_prior²
-τ̂ = (μ·w_prior + X·w_data) / (w_prior + w_data)
-SD_post = √(1 / (w_prior + w_data))
-P(wahr &gt; T | X) = 1 − Φ((T − τ̂) / SD_post)</div>
-    <p>Mit <strong>SD_prior = σ</strong> (Standard) entspricht die Prior-Unsicherheit der Skalenunsicherheit. Bei sehr großem SD_prior (flacher Prior) nähert sich das CrI dem KI der Äquivalenzhypothese an. Mit SD_prior = σ·√r_xx ist das CrI <em>identisch</em> mit der Regressionshypothese. Kleinere Prior SD = stärkeres Vorwissen → Posterior näher am Prior-Mittelwert. Der Bayesianische Vorteil: direkte Wahrscheinlichkeitsaussage über den Trennwert.</p>
-    <p style="margin-top:.6rem;padding-top:.5rem;border-top:1px solid var(--grid);color:var(--ink3);font-size:.74rem;line-height:1.6"><strong style="color:var(--ink2)">Quelle:</strong> Wagenmakers, E.-J., Morey, R. D., &amp; Lee, M. D. (2016). Bayesian benefits for the pragmatic researcher. <em>Current Directions in Psychological Science, 25</em>, 169–176. doi:10.1177/0963721416643289</p>
+  <div class="story-box">
+    <div class="story-lbl">Durchgehendes Beispiel</div>
+    <div class="story-vars">
+      <span class="sv">Person</span><span class="sd">Kind mit IQ-Testung (Wechsler-Skala, μ=100, σ=15)</span>
+      <span class="sv">X</span><span class="sd">Beobachteter Testwert = 85 (einmalige Messung)</span>
+      <span class="sv">r_xx</span><span class="sd">Reliabilität des Subtests = 0.90</span>
+      <span class="sv">SEM</span><span class="sd">Standardmessfehler = σ·√(1−r_xx) = 15·√0.10 ≈ 4.74</span>
+    </div>
+    <div class="story-q">In welchem Bereich liegt der wahre IQ dieses Kindes mit 95% Wahrscheinlichkeit — und warum liefern die drei Methoden unterschiedliche Intervalle, obwohl alle denselben Testwert nutzen?</div>
   </div>
 
   <div class="sec-h">Verteilungen &amp; Intervalle</div>
@@ -308,6 +331,35 @@ P(wahr &gt; T | X) = 1 − Φ((T − τ̂) / SD_post)</div>
 </div><!-- /main -->
 </div><!-- /app -->
 
+<!-- Hilfe-Overlay -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Diagnostische Intervalle — Hilfe</div>
+    <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+
+    <div class="help-sh">Beispiel</div>
+    <p class="help-p">Ein Kind erzielt einen IQ von X=85 (Wechsler, μ=100, σ=15, r_xx=0.90). Der Standardmessfehler beträgt SEM = 15·√(1−0.90) ≈ 4.74. Frage: In welchem Bereich liegt der wahre IQ — und welche Aussage erlaubt das gewählte Intervall?</p>
+
+    <div class="help-sh">KI Äquivalenzhypothese</div>
+    <p class="help-p">Das Intervall liegt um den beobachteten Testwert X. Annahme: X ist ein unverzerrter Schätzer des wahren Werts τ. Das klassische Konfidenzintervall der CTT.</p>
+    <span class="help-formula2">KI = X ± 1.96 · SEM  &nbsp;  (SEM = σ · √(1 − r_xx))</span>
+    <p class="help-p">Im Beispiel: 85 ± 1.96 · 4.74 → [75.7, 94.3]. Interpretation: Bei wiederholter Testung (n → ∞) würde dieses Intervall den wahren Wert in 95% der Fälle enthalten.</p>
+
+    <div class="help-sh">KI Regressionshypothese</div>
+    <p class="help-p">Das Intervall liegt um den regredierten Schätzwert X′, nicht um den beobachteten X. Berücksichtigt die <strong>Regression zur Mitte</strong>: Extreme Testwerte haben mehr Messfehler als Werte nahe am Mittelwert — deshalb ist X′ immer zwischen X und μ.</p>
+    <span class="help-formula2">X′ = μ + r_xx · (X − μ)  &nbsp;  SE_reg = σ · √(r_xx · (1 − r_xx))</span>
+    <p class="help-p">Im Beispiel: X′ = 100 + 0.90 · (85−100) = 86.5. KI_reg = 86.5 ± 1.96 · 4.50 → [77.7, 95.3]. Das Intervall ist enger als bei der Äquivalenzhypothese und liegt näher an μ.</p>
+
+    <div class="help-sh">Bayesianisches CrI (Credible Interval)</div>
+    <p class="help-p">Prior N(μ, SD_prior) + Likelihood N(X, SEM) → Posterior via Präzisionsgewichtung. SD_prior steuert das Vorwissen: Je kleiner SD_prior, desto stärker zieht der Prior den Posterior in Richtung μ.</p>
+    <span class="help-formula2">w_data = 1/SEM²  &nbsp;  w_prior = 1/SD_prior²</span>
+    <span class="help-formula2">τ̂ = (μ·w_prior + X·w_data) / (w_prior + w_data)  &nbsp;  SD_post = √(1/(w_prior+w_data))</span>
+    <p class="help-p">Im Beispiel (SD_prior=σ=15): τ̂ = (100·0.0044 + 85·0.0445) / (0.0044+0.0445) ≈ 86.4. Das CrI erlaubt direkte Wahrscheinlichkeitsaussagen: P(τ &gt; 70 | X=85) = …</p>
+    <p class="help-p"><strong>Spezialfälle:</strong> SD_prior = σ → CrI ≈ Äquivalenzhypothese-KI. SD_prior = σ·√r_xx → CrI = Regressionshypothese-KI. SD_prior → ∞ (flacher Prior) → CrI = Äquivalenzhypothese-KI. Der bayesianische Vorteil: direkte Wahrscheinlichkeitsaussage über Trennwerte ohne frequentistische Umwege.</p>
+    <p class="help-p" style="color:var(--ink3);font-size:.74rem">Wagenmakers, E.-J., Morey, R. D., &amp; Lee, M. D. (2016). Bayesian benefits for the pragmatic researcher. Current Directions in Psychological Science, 25, 169–176.</p>
+  </div>
+</div>
+
 <script>
 // ── SCALES ──────────────────────────────────────────────────────
 const SCALES={
@@ -374,10 +426,7 @@ function toggleTheme(){
   draw();
 }
 function toggleHelp(){
-  const p=document.getElementById('help-panel');
-  const b=document.getElementById('help-btn');
-  const open=p.classList.toggle('open');
-  b.classList.toggle('active',open);
+  document.getElementById('help-overlay').classList.toggle('open');
 }
 
 // ── SCALE CHANGE ────────────────────────────────────────────────
