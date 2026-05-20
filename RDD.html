@@ -402,7 +402,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     <p class="help-p">Der <strong>LATE (Local Average Treatment Effect)</strong>, auch Wald-Schätzer genannt, kombiniert ITT und First-Stage:</p>
     <span class="help-formula">LATE = ITT / First-Stage = Sprung in E[Y|X] / Sprung in E[T|X]  am Cutoff</span>
     <p class="help-p"><strong>Herleitung intuitiv:</strong> Der ITT ist der Effekt der Zuweisung Z auf Y. Aber nur ein Bruchteil der zugewiesenen Personen nimmt tatsächlich teil (die Complier). Der Sprung in E[T|X] am Cutoff misst genau diesen Anteil — die First-Stage. Teilt man den ITT durch die First-Stage, "korrigiert" man für die Non-Compliance: Man erhält den Effekt, der auf die tatsächliche Teilnahme zurückgeht.</p>
-    <p class="help-p">Im Beispiel: ITT = 8.5 Tsd. €, First-Stage = 0.85 → LATE = 8.5 / 0.85 = <strong>10 Tsd. €</strong> Gehaltserhöhung für Complier.</p>
+    <p class="help-p">Im Beispiel (Defaults: b₂=15, Non-Compliance=15 %): ITT = 15 × 0.85 = 12.75 Tsd. €, First-Stage = 0.85 → LATE = 12.75 / 0.85 = <strong>15 Tsd. €</strong> Gehaltserhöhung für Complier.</p>
 
     <p class="help-p"><strong>Warum ist LATE besser als naives OLS?</strong> Ein naiver OLS-Vergleich (Teilnehmer vs. Nicht-Teilnehmer) ist verzerrt durch <em>Selbstselektion</em>: Wer das Programm wählt, ist oft motivierter, fähiger oder hat bessere Netzwerke — unabhängig vom Programm. T ist dadurch <em>endogen</em> (korreliert mit dem Fehlerterm ε). Das IV/LATE-Verfahren umgeht dieses Problem, indem es nur die Variation in T nutzt, die durch die quasi-zufällige Zuweisung Z verursacht wird — diese Variation ist per Konstruktion unkorreliert mit U.</p>
 
