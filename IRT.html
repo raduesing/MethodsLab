@@ -124,10 +124,20 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="help-sh">Was ist IRT?</div>
   <p class="help-p">Die <strong>Item-Response-Theorie (IRT)</strong> modelliert, wie die Wahrscheinlichkeit einer richtigen Antwort von der Fähigkeit einer Person θ (Theta) und den Eigenschaften eines Items abhängt. Anders als in der Klassischen Testtheorie (KTT) liegen Personenfähigkeit und Itemschwierigkeit auf <em>derselben Skala</em> — das ermöglicht direkte Aussagen darüber, welche Items für welche Personen informativ sind.</p>
 
+  <div class="help-sh">IRT und Faktorenanalyse — Verwandtschaft und Unterschied</div>
+  <p class="help-p">IRT und FA sind näher verwandt als es auf den ersten Blick erscheint: Beide modellieren eine oder mehrere latente Variablen, die das Antwortverhalten erklären. Mathematisch ist das 2PL-Modell äquivalent zu einem einfaktoriellen Modell für dichotome Daten — der Trennschärfeparameter a entspricht einer Faktorladung, θ entspricht dem Faktorwert. Für ordinale Items (Likert-Skalen) sind das Graded Response Model und die ordinale FA mit polychorischen Korrelationen eng verwandt.</p>
+  <p class="help-p">Der entscheidende Unterschied liegt im <strong>Erkenntnisinteresse</strong>: Die Faktorenanalyse fragt: Wie viele latente Dimensionen gibt es, und welche Items laden auf welchen Faktor? Das Ziel ist die Struktur des Konstrukts. Die IRT fragt: Wie gut funktioniert jedes einzelne Item? Wie präzise misst der Test an welcher Stelle der θ-Skala? Das Ziel ist die <strong>Güte und Brauchbarkeit der Items</strong> sowie die Messgüte des Tests für bestimmte Personen. Du täuschst dich also nicht — das ist der Kern des Unterschieds.</p>
+
   <div class="help-sh">ICC — Item Characteristic Curve</div>
-  <p class="help-p">Für jedes Item gibt es eine S-förmige Kurve (ICC, auch IRF — Item Response Function), die zeigt: Wie hoch ist P(richtig | θ)? Das allgemeine Modell (4PL):</p>
-  <code class="help-formula">P(θ) = c + (d − c) · 1 / (1 + exp(−a · (θ − b)))</code>
+  <p class="help-p">Für jedes Item gibt es eine S-förmige Kurve (ICC, auch IRF — Item Response Function), die zeigt: Wie hoch ist P(richtig | θ)? Das allgemeine Modell mit vier Parametern (4PL):</p>
+  <code class="help-formula">4PL:   P(θ) = c + (d − c) · 1 / (1 + exp(−a · (θ − b)))</code>
   <p class="help-p">a = Trennschärfe (Steilheit) · b = Schwierigkeit (Wendepunkt) · c = untere Asymptote (Raten) · d = obere Asymptote (Flüchtigkeitsfehler)</p>
+  <p class="help-p">Die einfacheren Modelle entstehen durch sukzessives Fixieren von Parametern:</p>
+  <code class="help-formula">3PL:   P(θ) = c + (1 − c) / (1 + exp(−a · (θ − b)))          [d = 1]</code>
+  <code class="help-formula">2PL:   P(θ) = 1 / (1 + exp(−a · (θ − b)))                    [c = 0, d = 1]</code>
+  <code class="help-formula">1PL:   P(θ) = 1 / (1 + exp(−a · (θ − b)))   a gleich für alle Items</code>
+  <code class="help-formula">Rasch: P(θ) = 1 / (1 + exp(−(θ − b)))       a = 1 per Axiom</code>
+  <p class="help-p">Vom 4PL zum Rasch-Modell sinkt die Flexibilität, aber die Interpretierbarkeit und Messtheoretische Strenge steigen. 2PL und 3PL sind die häufigsten Modelle in der angewandten Diagnostik.</p>
 
   <div class="help-sh">Die vier Parameter</div>
   <p class="help-p"><strong>b — Schwierigkeit (difficulty):</strong> θ-Wert am Wendepunkt der ICC. Beim 2PL gilt P(θ=b) = 0.5. Beim 3PL/4PL gilt P(θ=b) = (c+d)/2. Hohe b-Werte → schwieriges Item. b liegt auf derselben Skala wie θ.</p>
@@ -139,6 +149,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <p class="help-p">Dieser Unterschied wird in Lehrbüchern häufig verwischt. Beide Modelle haben a identisch über alle Items — aber die Philosophie ist grundverschieden:</p>
   <p class="help-p"><strong>Rasch-Modell:</strong> Georg Rasch definierte sein Modell nicht als statistisches Datenmodell, sondern als <em>Messideal</em>. a = 1 ist <em>per Axiom</em> gesetzt — nicht weil die Daten es verlangen, sondern weil es die Voraussetzung für <em>spezifische Objektivität</em> ist: Die Itemschwierigkeit b soll unabhängig von der getesteten Stichprobe gelten, und die Personenfähigkeit θ unabhängig vom eingesetzten Test. Wenn ein Item nicht passt, wird es entfernt oder überarbeitet — nicht das Modell.</p>
   <p class="help-p"><strong>1PL-Modell:</strong> a wird als gemeinsamer Parameter aus den Daten <em>geschätzt</em>. Das Modell wird den Daten angepasst. Wenn a ≠ 1 herauskommt, ist das kein Problem. Es gibt keinen axiomatischen Anspruch auf Messunabhängigkeit. <strong>Kurz: Rasch passt Daten dem Modell an — 1PL passt das Modell den Daten an.</strong></p>
+  <p class="help-p"><strong>Vorteile Rasch-konformer Items:</strong> Wenn Items das Rasch-Modell erfüllen, ergeben sich starke Messeigenschaften: (1) <em>Personenfreie Itemkalibrierung</em> — die Schwierigkeit b wird unabhängig davon geschätzt, welche Personen den Test absolviert haben. (2) <em>Itemfreie Personenmessung</em> — θ wird unabhängig davon geschätzt, welche Itemauswahl verwendet wird. (3) <em>Item Banking</em> — Items verschiedener Tests können auf einer gemeinsamen Skala verankert und ausgetauscht werden (Grundlage für adaptives Testen). (4) <em>Fit-Statistiken</em> — Items, die nicht passen, werden identifiziert und können gezielt verbessert werden. Diese Eigenschaften machen das Rasch-Modell zum Goldstandard in der psychometrischen Qualitätssicherung.</p>
 
   <div class="help-sh">Testinformationsfunktion (TIF)</div>
   <p class="help-p">I(θ) zeigt, wie präzise der Test bei jedem Fähigkeitsniveau misst. Sie ist die Summe der Iteminformationen:</p>
