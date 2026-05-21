@@ -299,8 +299,8 @@ function estimateTheta(){
   if(r.every(v=>v===0))return{th:-Infinity,note:'Alle falsch → MLE nicht definiert (EAP/MAP nötig)'};
   if(r.every(v=>v===1))return{th:+Infinity,note:'Alle richtig → MLE nicht definiert (EAP/MAP nötig)'};
   let best=0,bestLL=-Infinity;
-  for(let i=-400;i<=400;i++){
-    const th=i*0.02;let ll=0;
+  for(let i=-450;i<=450;i++){
+    const th=i*0.01;let ll=0;
     ST.items.forEach((it,j)=>{
       const p=Math.max(1e-9,Math.min(1-1e-9,icc(th,...eff(it))));
       ll+=r[j]?Math.log(p):Math.log(1-p);
@@ -617,12 +617,11 @@ function updateThetaEst(){
   const{th,note}=estimateTheta();
   document.getElementById('theta-est').textContent=isFinite(th)?`θ̂ = ${th.toFixed(2)}`:'θ̂ = ±∞';
   document.getElementById('theta-est-note').textContent=note;
-  if(isFinite(th)){
-    ST.thetaPerson=Math.max(-4,Math.min(4,th));
-    document.getElementById('sl-theta').value=ST.thetaPerson;
-    document.getElementById('v-theta').textContent=ST.thetaPerson.toFixed(1);
-    redraw();
-  }
+  const clamped=isFinite(th)?Math.max(-4,Math.min(4,th)):th>0?4:-4;
+  ST.thetaPerson=Math.round(clamped*10)/10;
+  document.getElementById('sl-theta').value=ST.thetaPerson;
+  document.getElementById('v-theta').textContent=ST.thetaPerson.toFixed(1);
+  redraw();
 }
 
 // ── Modell wechseln ────────────────────────────────────────────────────────────
