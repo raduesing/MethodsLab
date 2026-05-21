@@ -198,9 +198,11 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="prob-grid" id="prob-grid"></div>
   </div>
 
-  <div class="sec-h">Antwortmuster → θ̂ (MLE)</div>
+  <div class="sec-h">Fähigkeit aus Antworten schätzen</div>
   <div class="scard">
-    <div style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);margin-bottom:.28rem">Antworten (✓ = richtig):</div>
+    <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink2);margin-bottom:.5rem;line-height:1.7">
+      Wähle, welche Items eine Person richtig (✓) oder falsch (☐) beantwortet hat. Das Tool schätzt daraus die wahrscheinlichste Fähigkeit θ̂ via Maximum-Likelihood.
+    </div>
     <div class="resp-row" id="resp-row"></div>
     <div class="theta-est" id="theta-est">θ̂ = —</div>
     <div style="font-family:'DM Mono',monospace;font-size:.69rem;color:var(--ink3);margin-top:.2rem" id="theta-est-note"></div>
@@ -221,7 +223,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
   <div class="sec-h">Wright Map — Items und Personen auf einer Skala</div>
   <canvas id="cv-wright" height="360"></canvas>
-  <div class="hint">Items (●) liegen auf b-Wert · Personen als N(0,1)-Referenzverteilung · lila Linie = aktuelles θ</div>
+  <div class="hint">Items (●) liegen auf b-Wert · Personen als N(0,1)-Referenzverteilung · türkise Linie = aktuelles θ</div>
 
   <div class="sec-h" style="margin-top:1.6rem">Modell-Formel & Interpretation</div>
   <div class="erklaer" id="erklaer-formula"></div>
@@ -355,7 +357,7 @@ function drawICC(){
     ctx.stroke();ctx.setLineDash([]);
   });
   const tp=ST.thetaPerson;
-  ctx.strokeStyle=cv('--a4');ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.strokeStyle=cv('--a6');ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
   ctx.beginPath();ctx.moveTo(tx(tp),pad.t);ctx.lineTo(tx(tp),pad.t+cH);ctx.stroke();
   ctx.setLineDash([]);
   ST.items.forEach((it,i)=>{
@@ -379,7 +381,7 @@ function drawTIF(){
   const pad={l:48,r:18,t:20,b:40};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2'),ink3=cv('--ink3');
-  const a1c=cv('--a1'),a2c=cv('--a2'),a4c=cv('--a4');
+  const a1c=cv('--a1'),a2c=cv('--a2'),a4c=cv('--a6');
   ctx.fillStyle=paper;ctx.fillRect(0,0,W,H);
   const thMin=-4,thMax=4,NX=300;
   const ths=Array.from({length:NX},(_,k)=>thMin+k*(thMax-thMin)/(NX-1));
@@ -434,7 +436,7 @@ function drawWright(){
   const pad={l:48,r:18,t:8,b:28};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2'),ink3=cv('--ink3');
-  const a2c=cv('--a2'),a4c=cv('--a4');
+  const a2c=cv('--a2'),a4c=cv('--a6');
   ctx.fillStyle=paper;ctx.fillRect(0,0,W,H);
   const thMin=-4,thMax=4;
   const tx=t=>(t-thMin)/(thMax-thMin)*cW+pad.l;
@@ -644,7 +646,7 @@ function updateAll(){
   const mNames=['rasch','pl1','pl2','pl3','pl4'];
   const mLabels=['Rasch','1PL','2PL','3PL','4PL'];
   document.getElementById('icc-note').textContent=
-    `${mLabels[mNames.indexOf(ST.model)]}-Modell · ausgewähltes Item: ${ST.items[ST.selItem].label} (${ST.items[ST.selItem].sub}) · lila Linie = θ = ${ST.thetaPerson.toFixed(1)}`;
+    `${mLabels[mNames.indexOf(ST.model)]}-Modell · ausgewähltes Item: ${ST.items[ST.selItem].label} (${ST.items[ST.selItem].sub}) · türkise Linie = θ = ${ST.thetaPerson.toFixed(1)}`;
 }
 function redraw(){
   drawICC();drawTIF();drawWright();
