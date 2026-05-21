@@ -78,7 +78,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .res-table tr.row-true td{color:var(--a2)}
 .res-table tr.row-comp td{color:var(--ink3)}
 .res-table tr.row-lw   td{color:var(--a1)}
-.res-table tr.row-mean td{color:var(--a5)}
+.res-table tr.row-mean td{color:var(--a6)}
 .res-table tr.row-mi   td{color:var(--a3);font-weight:700;background:color-mix(in srgb,var(--a3) 5%,transparent)}
 .badge{display:inline-block;font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .65rem;
   letter-spacing:.04em;margin:.25rem 0}
@@ -438,7 +438,7 @@ function drawDensity(){
   const pad={l:50,r:18,t:20,b:42};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
 
-  const a1=cv('--a1'),a3=cv('--a3'),a5=cv('--a5'),ink3=cv('--ink3'),ink2=cv('--ink2');
+  const a1=cv('--a1'),a3=cv('--a3'),a6=cv('--a6'),ink3=cv('--ink3'),ink2=cv('--ink2');
   const a2=cv('--a2'),grid=cv('--grid'),paper=cv('--paper');
   ctx.clearRect(0,0,W,H);
 
@@ -457,7 +457,7 @@ function drawDensity(){
   const curves=[
     {vals:trueVals,   col:ink3, dash:[5,3], lw:1.5, lbl:'Wahr (vollständig)'},
     {vals:obsVals,    col:a1,   dash:[],    lw:2,   lbl:'Beobachtet / Listwise'},
-    {vals:meanImpVals,col:a5,   dash:[],    lw:2,   lbl:'Mean Imputation'},
+    {vals:meanImpVals,col:a6,   dash:[],    lw:2,   lbl:'Mean Imputation'},
     {vals:miVals,     col:a3,   dash:[],    lw:2.5, lbl:'Multiple Imputation'},
   ];
   const kdes=curves.map(c=>evalKDE(c.vals,h,xs));
