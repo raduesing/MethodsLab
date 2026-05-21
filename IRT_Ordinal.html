@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ordinale IRT — MethodsLab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f7f4;--paper:#ffffff;--border:#d9d5cd;--grid:#e8e4dc;
+  --ink1:#1a1917;--ink2:#4a4845;--ink3:#9a9590;
+  --accent:#b5451b;--panel:#f3f1ec;
+  --a1:#b5451b;--a2:#2a5ea8;--a3:#2a7a3a;--a4:#7a3a9a;--a5:#c47a1a;--a6:#1a8a8a;
+  font-size:15px;
+}
+[data-theme="dark"]{
+  --bg:#1a1917;--paper:#242220;--border:#3a3835;--grid:#2d2b28;
+  --ink1:#f0ede8;--ink2:#b8b4ae;--ink3:#6a6660;--accent:#e06030;--panel:#2a2825;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink1);font-family:'Fraunces',Georgia,serif;min-height:100vh}
+.wrap{max-width:1120px;margin:0 auto;padding:1.2rem 1.4rem}
+.header{display:flex;align-items:center;gap:.8rem;margin-bottom:.9rem;flex-wrap:wrap}
+.title{font-size:1.5rem;font-weight:700;flex:1}
+.tag{background:color-mix(in srgb,var(--a3) 14%,transparent);color:var(--a3);
+  font-family:'DM Mono',monospace;font-size:.64rem;padding:.18rem .48rem}
+.help-btn{font-family:'DM Mono',monospace;font-size:.68rem;padding:.28rem .65rem;
+  border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1)}
+.help-btn:hover{background:color-mix(in srgb,var(--a1) 10%,transparent)}
+.theme-btn{font-family:'DM Mono',monospace;font-size:.68rem;padding:.28rem .55rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2)}
+.story-box{background:color-mix(in srgb,var(--a3) 8%,transparent);
+  border:1.5px solid color-mix(in srgb,var(--a3) 25%,transparent);
+  padding:.7rem 1rem;margin-bottom:1rem;font-size:.84rem;line-height:1.6;color:var(--ink2)}
+.story-box strong{color:var(--a3)}
+.layout{display:grid;grid-template-columns:240px 1fr;gap:1.2rem}
+@media(max-width:720px){.layout{grid-template-columns:1fr}}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;font-weight:500;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--ink3);margin:1rem 0 .45rem;padding-bottom:.3rem;
+  border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.model-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.25rem;margin-bottom:.55rem}
+.item-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.25rem;margin-bottom:.55rem}
+.mbtn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.3rem .1rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
+.mbtn:hover{border-color:var(--accent);color:var(--accent)}
+.mbtn.act{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent);
+  color:var(--accent);font-weight:700}
+.mbtn.pcm-act{border-color:var(--a3)!important;background:color-mix(in srgb,var(--a3) 15%,transparent)!important;
+  color:var(--a3)!important}
+.sl-row{display:flex;align-items:center;gap:.4rem;margin-bottom:.4rem}
+.sl-lbl{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink2);min-width:24px;text-align:right}
+.sl-val{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--accent);min-width:38px;text-align:right}
+input[type=range]{flex:1;height:4px;accent-color:var(--accent);cursor:pointer}
+.fix-note{font-family:'DM Mono',monospace;font-size:.64rem;color:var(--ink3);padding:.2rem 0 .15rem}
+.reset-btn{font-family:'DM Mono',monospace;font-size:.64rem;padding:.2rem .5rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink3);
+  width:100%;text-align:left;margin-top:.3rem}
+.reset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.erklaer{background:var(--panel);border-left:3px solid var(--accent);
+  padding:.65rem .85rem;margin-bottom:.8rem;font-family:'DM Mono',monospace;
+  font-size:.71rem;line-height:1.6;color:var(--ink2)}
+.hint{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin:.25rem 0 .65rem;line-height:1.5}
+.warn-box{background:color-mix(in srgb,var(--a5) 12%,transparent);border-left:3px solid var(--a5);
+  padding:.45rem .7rem;margin-bottom:.6rem;font-family:'DM Mono',monospace;
+  font-size:.67rem;color:var(--ink2);display:none}
+.warn-box.visible{display:block}
+#cv-crf,#cv-esc,#cv-info{width:100%;display:block}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+@media(max-width:620px){.two-col{grid-template-columns:1fr}}
+.par-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.67rem;margin-bottom:.85rem}
+.par-table th{background:var(--panel);color:var(--ink3);padding:.28rem .4rem;text-align:right;border-bottom:1px solid var(--grid)}
+.par-table th:first-child{text-align:left}
+.par-table td{padding:.28rem .4rem;text-align:right;border-bottom:1px solid var(--grid)}
+.par-table td:first-child{text-align:left}
+.par-table tr.sel-row td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
+.lcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:.65rem;margin:.6rem 0 1.2rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.7rem .85rem;cursor:pointer;transition:border-color .15s}
+.lcard:hover{border-color:var(--accent)}
+.lcard-q{font-family:'DM Mono',monospace;font-size:.68rem;font-weight:500;color:var(--ink2);margin-bottom:.35rem}
+.lcard-a{font-size:.82rem;line-height:1.52;color:var(--ink1);display:none}
+.lcard.open .lcard-a{display:block}
+.lcard.open{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 4%,transparent)}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;
+  align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.help-overlay.open{display:flex}
+.help-panel{background:var(--paper);max-width:780px;width:100%;padding:2rem 2.2rem}
+.help-h{font-size:1.2rem;font-weight:700;margin-bottom:1.1rem;display:flex;justify-content:space-between;align-items:center}
+.help-sh{font-family:'DM Mono',monospace;font-size:.76rem;font-weight:500;color:var(--accent);
+  margin:1.3rem 0 .45rem;text-transform:uppercase;letter-spacing:.05em}
+.help-p{font-size:.87rem;line-height:1.65;margin-bottom:.65rem;color:var(--ink2)}
+.help-formula{display:block;font-family:'DM Mono',monospace;font-size:.72rem;
+  background:var(--panel);border-left:3px solid var(--accent);padding:.5rem .75rem;
+  margin:.5rem 0;color:var(--ink1);white-space:pre}
+.help-close{font-family:'DM Mono',monospace;font-size:.68rem;padding:.22rem .55rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2)}
+.hp-seq{list-style:none;padding:0;margin:.35rem 0 .6rem;counter-reset:hp-step}
+.hp-seq li{display:flex;gap:.6rem;margin-bottom:.38rem;font-size:.85rem;line-height:1.55;color:var(--ink2)}
+.hp-seq li::before{content:counter(hp-step);counter-increment:hp-step;
+  min-width:1.35rem;height:1.35rem;border-radius:50%;
+  background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);
+  font-family:'DM Mono',monospace;font-size:1.05rem;
+  display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div class="title">Ordinale IRT <span class="tag">PCM · GPCM · GRM</span></div>
+    <button class="help-btn" onclick="toggleHelp()">? Hilfe</button>
+    <button class="theme-btn" onclick="toggleTheme()">◑ Dark</button>
+  </div>
+
+  <div class="story-box">
+    <strong>Beispiel:</strong> Burnout-Screening am Arbeitsplatz — 4-Item-Fragebogen mit 5-stufiger Likert-Skala
+    (<em>0 = nie · 1 = selten · 2 = manchmal · 3 = oft · 4 = immer</em>). Die latente Dimension θ repräsentiert
+    allgemeines <strong>Wohlbefinden</strong> (niedrig = hohes Burnout-Risiko, hoch = hohes Wohlbefinden).
+    Ordinale IRT modelliert, wie wahrscheinlich jede Antwortkategorie bei gegebenem θ ist.
+  </div>
+
+  <div class="layout">
+    <!-- ── Sidebar ── -->
+    <div class="sidebar">
+      <div class="sec-h">Modell</div>
+      <div class="model-grid">
+        <button id="mbtn-pcm"  class="mbtn" onclick="setModel('pcm')">PCM</button>
+        <button id="mbtn-gpcm" class="mbtn" onclick="setModel('gpcm')">GPCM</button>
+        <button id="mbtn-grm"  class="mbtn" onclick="setModel('grm')">GRM</button>
+      </div>
+
+      <div class="sec-h">Item</div>
+      <div class="item-grid" id="item-grid"></div>
+
+      <div class="sec-h">Parameter — <span id="sel-item-lbl">Item 1</span></div>
+      <div id="sliders-thresh"></div>
+      <div id="a-row" class="sl-row">
+        <span class="sl-lbl">a</span>
+        <input type="range" id="sl-a" min="0.3" max="3.0" step="0.05" value="1.2"
+               oninput="ST.items[ST.selItem].a=+this.value;document.getElementById('v-a').textContent=(+this.value).toFixed(2);updateAll()">
+        <span class="sl-val" id="v-a">1.20</span>
+      </div>
+      <div id="pcm-fix" class="fix-note" style="display:none">Trennschärfe a = 1 (per Axiom, PCM)</div>
+      <button class="reset-btn" onclick="resetItem()">↺ Item zurücksetzen</button>
+
+      <div class="sec-h">Personenfähigkeit θ</div>
+      <div class="sl-row">
+        <span class="sl-lbl">θ</span>
+        <input type="range" id="sl-theta" min="-4" max="4" step="0.1" value="0"
+               oninput="ST.thetaPerson=+this.value;document.getElementById('v-theta').textContent=(+this.value).toFixed(1);updateAll()">
+        <span class="sl-val" id="v-theta">0.0</span>
+      </div>
+    </div>
+
+    <!-- ── Main ── -->
+    <div class="main">
+      <div class="sec-h" style="margin-top:0;display:flex;align-items:center;justify-content:space-between">
+        Kategorie-Antwortkurven (CRF) — <span id="crf-item-lbl">Item 1</span>
+      </div>
+      <canvas id="cv-crf" height="370"></canvas>
+      <div class="hint" id="crf-note"></div>
+
+      <div class="warn-box" id="warn-disorder">
+        ⚠ Disordered Thresholds: Mindestens zwei Schwellenparameter sind vertauscht (δⱼ &gt; δⱼ₊₁).
+        Eine Zwischenkategorie hat dann an keinem θ-Punkt die höchste Antwortwahrscheinlichkeit — sie ist empirisch redundant.
+        Dies ist kein Rechenfehler, sondern ein Hinweis auf eine schlecht funktionierende Antwortskala.
+      </div>
+
+      <div class="sec-h">Modell-Formel &amp; Parameter</div>
+      <div class="erklaer" id="erklaer-formula"></div>
+
+      <div class="two-col">
+        <div>
+          <div class="sec-h" style="margin-top:0">Expected Score E[X|θ] — ausgewähltes Item</div>
+          <canvas id="cv-esc" height="270"></canvas>
+          <div class="hint" id="esc-note"></div>
+        </div>
+        <div>
+          <div class="sec-h" style="margin-top:0">Item Information — alle Items</div>
+          <canvas id="cv-info" height="270"></canvas>
+          <div class="hint" id="info-note"></div>
+        </div>
+      </div>
+
+      <div class="sec-h">Item-Parameter-Tabelle</div>
+      <table class="par-table">
+        <thead><tr>
+          <th>Item</th><th>a</th>
+          <th id="th-d1">δ₁</th><th id="th-d2">δ₂</th>
+          <th id="th-d3">δ₃</th><th id="th-d4">δ₄</th>
+          <th>E[X|θ]</th><th>I(θ)</th>
+        </tr></thead>
+        <tbody id="par-tbody"></tbody>
+      </table>
+
+      <div class="sec-h">Lernkarten</div>
+      <div class="lcards">
+        <div class="lcard" onclick="this.classList.toggle('open')">
+          <div class="lcard-q">Was unterscheidet PCM, GPCM und GRM grundlegend?</div>
+          <div class="lcard-a"><strong>PCM</strong> (Masters, 1982): Rasch-Familie, a = 1 per Axiom — kein Diskriminationsparameter. Wenn Items nicht passen, werden sie überarbeitet, nicht das Modell. <strong>GPCM</strong> (Muraki, 1992): Erweiterung des PCM mit geschätztem a — Items dürfen unterschiedlich gut trennen. <strong>GRM</strong> (Samejima, 1969): Völlig andere Modellstruktur — modelliert kumulative Wahrscheinlichkeiten P*(X ≥ k|θ) statt benachbarte Kategorienübergänge.</div>
+        </div>
+        <div class="lcard" onclick="this.classList.toggle('open')">
+          <div class="lcard-q">Was bedeuten die Threshold-Parameter δⱼ und bₖ?</div>
+          <div class="lcard-a">Im <strong>PCM/GPCM</strong> ist δⱼ der θ-Wert, bei dem die benachbarten Kategorien j−1 und j gleich wahrscheinlich sind — der Wendepunkt des Übergangs. Im <strong>GRM</strong> ist bₖ der θ-Wert, bei dem P*(X ≥ k|θ) = 0.5 gilt — die 50%-Grenze der kumulativen Kurve. In beiden Fällen liegen die Parameter auf derselben θ-Skala wie die Personenfähigkeit — das ist das Alleinstellungsmerkmal der IRT gegenüber klassischen Verfahren.</div>
+        </div>
+        <div class="lcard" onclick="this.classList.toggle('open')">
+          <div class="lcard-q">Was sind Disordered Thresholds?</div>
+          <div class="lcard-a">Beim PCM/GPCM können Schwellen ungeordnet sein (δ₂ &lt; δ₁). Das bedeutet: Kategorie 1 hat an keinem θ-Punkt die höchste Antwortwahrscheinlichkeit — sie wird immer von den Nachbarkategorien 0 und 2 dominiert. Die Kategorie ist empirisch redundant. Ursache: zu ähnliche Formulierungen benachbarter Kategorien. Lösung: Kategorien zusammenlegen. Im <strong>GRM</strong> sind disordered thresholds per Modellstruktur unmöglich — die bₖ müssen streng monoton sein, da sonst negative Wahrscheinlichkeiten entstehen.</div>
+        </div>
+        <div class="lcard" onclick="this.classList.toggle('open')">
+          <div class="lcard-q">Was zeigt die Expected Score Curve (ESC)?</div>
+          <div class="lcard-a">E[X|θ] = Σₖ k · P(X=k|θ) — der erwartete Antwort-Score als Funktion der Personenfähigkeit. Steile ESC → hohes a → gute Trennschärfe. Die ESC ist S-förmig und verläuft von 0 (bei niedrigem θ) bis K−1 (bei hohem θ). Sie ist direkt mit der Item Information verknüpft: Wo die ESC am steilsten ist, ist I(θ) am höchsten — denn dort kann das Item am besten zwischen ähnlichen Fähigkeitsniveaus unterscheiden.</div>
+        </div>
+        <div class="lcard" onclick="this.classList.toggle('open')">
+          <div class="lcard-q">Wie hängen GRM und Faktorenanalyse zusammen?</div>
+          <div class="lcard-a">GRM und ordinale Faktorenanalyse mit <strong>polychorischen Korrelationen</strong> sind mathematisch äquivalent: Der GRM-Parameter a entspricht einer Faktorladung (a = λ/√(1−λ²)). Die Grenzparameter bₖ entsprechen den Schwellenparametern τₖ in der polychorischen FA. Der Personenparameter θ entspricht dem Faktorwert. Unterschied: GRM schätzt Parameter direkt per ML für jedes Item; polychoric FA schätzt zunächst paarweise Korrelationen, dann Faktorladungen. Für große Stichproben geben beide ähnliche Ergebnisse.</div>
+        </div>
+        <div class="lcard" onclick="this.classList.toggle('open')">
+          <div class="lcard-q">Wann welches Modell?</div>
+          <div class="lcard-a"><strong>PCM:</strong> Wenn Rasch-Konformität und spezifische Objektivität das Ziel sind — z.B. Item Banking, adaptive Tests, Lernerfolgskontrollen. Items, die nicht passen, werden entfernt. <strong>GPCM:</strong> Wenn Items unterschiedlich gut trennen dürfen — häufig in psychologischen Tests mit gemischten Itemformaten. <strong>GRM:</strong> Wenn die Verbindung zur FA wichtig ist oder wenn kumulative Übergänge inhaltlich sinnvoller sind (z.B. Ratingskalen mit klar definierten Grenzen). Faustregel: GRM für Likert-Skalen in psychologischen Fragebögen; PCM/GPCM für gestufte Bewertungsskalen in Leistungstests.</div>
+        </div>
+      </div>
+    </div><!-- /main -->
+  </div><!-- /layout -->
+</div><!-- /wrap -->
+
+<!-- ── Help Overlay ─────────────────────────────────────────────────────────── -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+<div class="help-panel">
+  <div class="help-h">Ordinale IRT — Hilfe <button class="help-close" onclick="toggleHelp()">✕ Schließen</button></div>
+
+  <div class="help-sh">Was ist ordinale IRT?</div>
+  <p class="help-p">Die klassische IRT modelliert <em>dichotome</em> Antworten (richtig/falsch). Ordinale IRT erweitert diesen Rahmen auf <em>polytome</em> Items mit geordneten Antwortkategorien (z.B. Likert-Skalen, Teilpunkte). Wie bei der binären IRT liegen Personenfähigkeit θ und Itemparameter auf derselben Skala — jetzt aber mit mehreren Schwellenparametern pro Item.</p>
+  <p class="help-p">Alle drei Modelle in diesem Tool teilen denselben Grundgedanken: Für eine Person mit Fähigkeit θ (Personenwert auf der latenten Skala) und ein Item mit bestimmten Parametern lässt sich für jede Antwortkategorie k eine Wahrscheinlichkeit P(X=k|θ) berechnen.</p>
+
+  <div class="help-sh">Partial Credit Model (PCM) — Masters (1982)</div>
+  <p class="help-p">Das PCM ist ein Mitglied der Rasch-Familie: Alle Items haben dieselbe Diskriminanz a = 1 per Axiom. Die Kategorieantwortwahrscheinlichkeit ergibt sich aus kumulierten benachbarten Log-Odds-Übergängen:</p>
+  <code class="help-formula">PCM: P(X=k|θ) = exp(Σⱼ₌₁ᵏ (θ − δⱼ)) / Σₘ₌₀ᴷ⁻¹ exp(Σⱼ₌₁ᵐ (θ − δⱼ))
+
+δⱼ = Schwellenparameter (Schritt-Parameter)
+Summe für m=0: leer (= 0 im Exponenten)</code>
+  <p class="help-p">Der Schwellenparameter δⱼ ist der θ-Wert, bei dem die benachbarten Kategorien j−1 und j gleich wahrscheinlich sind. Wenn ein Item das PCM-Modell nicht erfüllt (schlechter Fit), wird es im Rasch-Geist überarbeitet oder entfernt — nicht das Modell angepasst.</p>
+
+  <div class="help-sh">Generalized Partial Credit Model (GPCM) — Muraki (1992)</div>
+  <p class="help-p">Das GPCM erweitert das PCM um einen Diskriminationsparameter a, der aus den Daten geschätzt wird:</p>
+  <code class="help-formula">GPCM: P(X=k|θ) = exp(Σⱼ₌₁ᵏ a·(θ − δⱼ)) / Σₘ₌₀ᴷ⁻¹ exp(Σⱼ₌₁ᵐ a·(θ − δⱼ))
+
+a = Diskriminationsparameter (Trennschärfe)
+PCM ist Spezialfall mit a = 1</code>
+  <p class="help-p">Hohes a → steile Kategoriefunktionen → Item trennt gut zwischen Fähigkeitsniveaus. Unterschied zu PCM: Das GPCM passt sich den Daten an — es stellt kein Messideal auf.</p>
+
+  <div class="help-sh">Graded Response Model (GRM) — Samejima (1969)</div>
+  <p class="help-p">Das GRM arbeitet mit kumulativen Wahrscheinlichkeiten (Grenzantwortkurven). Für jede Grenze k ist P*(X≥k|θ) eine logistische Funktion:</p>
+  <code class="help-formula">GRM: P*(X≥k|θ) = 1 / (1 + exp(−a·(θ − bₖ)))    k = 1,...,K−1
+     P*(X≥0|θ) = 1,    P*(X≥K|θ) = 0
+
+Kategorieantwort:  P(X=k|θ) = P*(X≥k|θ) − P*(X≥k+1|θ)</code>
+  <p class="help-p">Die Grenzparameter bₖ müssen streng monoton sein (b₁ &lt; b₂ &lt; ... &lt; bₖ₋₁), da sonst negative Antwortwahrscheinlichkeiten entstehen. Das GRM hat damit eine andere Modellstruktur als PCM/GPCM: Es modelliert kumulative statt benachbarte Übergänge.</p>
+
+  <div class="help-sh">Threshold-Parameter und Wendepunkte</div>
+  <p class="help-p"><strong>PCM/GPCM (δⱼ):</strong> An δⱼ sind die benachbarten Kategorien j−1 und j gleich wahrscheinlich. Die δⱼ müssen nicht geordnet sein — ungeordnete Schwellen (<em>disordered thresholds</em>) bedeuten, dass eine Kategorie empirisch nie die häufigste Antwort ist. Dies ist kein Rechenfehler, sondern zeigt ein Itemdesign-Problem: Die Formulierungen benachbarter Kategorien sind zu ähnlich.</p>
+  <p class="help-p"><strong>GRM (bₖ):</strong> An bₖ gilt P*(X≥k|θ=bₖ) = 0.5 — die kumulative Grenzantwortkurve schneidet die 50%-Linie. Da die Kurven S-förmige logistische Funktionen sind, müssen b₁ &lt; b₂ &lt; ... &lt; bₖ₋₁ gelten, damit alle Kategorieantwortwahrscheinlichkeiten positiv bleiben.</p>
+
+  <div class="help-sh">Verbindung zur Faktorenanalyse</div>
+  <p class="help-p">GRM und ordinale Faktorenanalyse mit <strong>polychorischen Korrelationen</strong> sind mathematisch äquivalent. Beide modellieren eine latente kontinuierliche Variable θ, die durch Schwellen auf K ordinale Kategorien abgebildet wird:</p>
+  <ul class="hp-seq">
+    <li>GRM-Diskriminationsparameter a ↔ Faktorladung λ, mit a = λ / √(1 − λ²)</li>
+    <li>GRM-Grenzparameter bₖ ↔ Threshold-Parameter τₖ in der polychorischen FA</li>
+    <li>Personenfähigkeit θ ↔ Faktorwert (latenter Personenwert auf der θ-Skala)</li>
+    <li>GRM schätzt direkt per ML; polychoric FA nutzt paarweise Korrelationen als Zwischenschritt</li>
+  </ul>
+  <p class="help-p">Das GPCM entspricht einem graded FA-Modell mit variierenden Faktorladungen über Items. Das PCM entspricht dem Rasch-Ideal für ordinale Daten — gleiche Ladungen (a=1), messtheoretische Strenge, aber weniger Flexibilität.</p>
+
+  <div class="help-sh">Item Information bei ordinalen Modellen</div>
+  <p class="help-p">I(θ) gibt an, wie präzise ein Item bei einem bestimmten Fähigkeitsniveau misst. Für GPCM gilt: I(θ) = a² · Var(X|θ) — höhere Trennschärfe und mehr Antwortvarianz (viele konkurrierende Kategorien) erzeugen mehr Information. Für GRM wird I(θ) über die Ableitungen der Kategorieantwortwahrscheinlichkeiten berechnet.</p>
+  <p class="help-p">Im Vergleich zu dichotomen Items können polytome Items mehr Information tragen — jede Zwischenkategorie trägt zur Messung bei. Allerdings nur dann, wenn die Kategorien gut diskriminieren: Disordered thresholds und schwaches a reduzieren die Information trotz vieler Kategorien.</p>
+
+  <div class="help-sh">Expected Score Curve (ESC)</div>
+  <p class="help-p">Die ESC E[X|θ] = Σₖ k · P(X=k|θ) zeigt den erwarteten Antwort-Score als Funktion der Personenfähigkeit. Sie verläuft monoton von 0 (θ → −∞) bis K−1 (θ → +∞). Wo die ESC am steilsten ist, ist I(θ) am höchsten — denn dort unterscheidet das Item am besten zwischen ähnlichen Fähigkeitsniveaus. Die Form der ESC spiegelt direkt das Diskriminationsvermögen des Items wider.</p>
+</div>
+</div>
+
+<script>
+const NCAT=5;
+const CCOLS=['--a2','--a6','--a3','--a5','--a1'];
+const CLABELS=['nie','selten','manchmal','oft','immer'];
+const ICOLS=['--a2','--a3','--a5','--a4'];
+
+const DEF=[
+  {label:'Item 1',sub:'Erschöpfung',   a:1.2,d:[-1.8,-0.5, 0.7,2.0]},
+  {label:'Item 2',sub:'Motivation',    a:0.9,d:[-2.1,-0.8, 0.4,1.6]},
+  {label:'Item 3',sub:'Konzentration', a:1.6,d:[-1.5,-0.1, 1.1,2.4]},
+  {label:'Item 4',sub:'Distanzierung', a:1.1,d:[-0.9, 0.4, 1.4,2.6]},
+];
+
+const ST={
+  model:'gpcm',
+  selItem:0,
+  items:DEF.map(d=>({...d,d:[...d.d]})),
+  thetaPerson:0.0,
+};
+
+function cv(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+
+function effD(item,model){
+  return model==='grm'?[...item.d].sort((a,b)=>a-b):item.d;
+}
+
+function catProbs(th,a,deltas,model){
+  const K=NCAT,probs=new Array(K).fill(0);
+  if(model==='pcm'||model==='gpcm'){
+    const ea=model==='pcm'?1:a;
+    const phi=[0];
+    for(let k=1;k<K;k++){let s=0;for(let j=0;j<k;j++)s+=ea*(th-deltas[j]);phi.push(s);}
+    const mx=Math.max(...phi);
+    const ex=phi.map(p=>Math.exp(p-mx));
+    const sm=ex.reduce((a,b)=>a+b,0);
+    for(let k=0;k<K;k++)probs[k]=ex[k]/sm;
+  }else{
+    const ps=[1];
+    for(let k=0;k<K-1;k++)ps.push(1/(1+Math.exp(-a*(th-deltas[k]))));
+    ps.push(0);
+    for(let k=0;k<K;k++)probs[k]=Math.max(0,ps[k]-ps[k+1]);
+  }
+  return probs;
+}
+
+function expScore(th,a,deltas,model){
+  return catProbs(th,a,deltas,model).reduce((s,p,k)=>s+k*p,0);
+}
+
+function itemInfoOrd(th,a,deltas,model){
+  const probs=catProbs(th,a,deltas,model);
+  if(model==='pcm'||model==='gpcm'){
+    const ea=model==='pcm'?1:a;
+    const E=probs.reduce((s,p,k)=>s+k*p,0);
+    const E2=probs.reduce((s,p,k)=>s+k*k*p,0);
+    return ea*ea*(E2-E*E);
+  }else{
+    const dth=0.0005;
+    const pm=catProbs(th-dth,a,deltas,model);
+    const pp=catProbs(th+dth,a,deltas,model);
+    let info=0;
+    for(let k=0;k<NCAT;k++){
+      if(probs[k]>1e-9){const dp=(pp[k]-pm[k])/(2*dth);info+=dp*dp/probs[k];}
+    }
+    return Math.max(0,info);
+  }
+}
+
+function setupCv(id){
+  const el=document.getElementById(id);
+  const origH=parseInt(el.getAttribute('height'))||360;
+  const W=el.offsetWidth||el.parentElement.offsetWidth||600;
+  const dpr=window.devicePixelRatio||1;
+  el.width=W*dpr;el.height=origH*dpr;
+  const ctx=el.getContext('2d');
+  ctx.scale(dpr,dpr);
+  return{ctx,W,H:origH};
+}
+
+// ── CRF ──────────────────────────────────────────────────────────────────────
+function drawCRF(){
+  const{ctx,W,H}=setupCv('cv-crf');
+  const pad={l:48,r:22,t:24,b:42};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2'),ink3=cv('--ink3');
+  const a6c=cv('--a6');
+  ctx.fillStyle=paper;ctx.fillRect(0,0,W,H);
+  const thMin=-4,thMax=4,NX=320;
+  const ths=Array.from({length:NX},(_,k)=>thMin+k*(thMax-thMin)/(NX-1));
+  const it=ST.items[ST.selItem];
+  const m=ST.model,a=it.a;
+  const deltas=effD(it,m);
+  const allP=ths.map(t=>catProbs(t,a,deltas,m));
+  const tx=t=>(t-thMin)/(thMax-thMin)*cW+pad.l;
+  const py=v=>pad.t+cH*(1-v);
+  // grid
+  ctx.strokeStyle=grid;ctx.lineWidth=.7;
+  [0,.25,.5,.75,1].forEach(f=>{ctx.beginPath();ctx.moveTo(pad.l,py(f));ctx.lineTo(pad.l+cW,py(f));ctx.stroke();});
+  [-3,-2,-1,0,1,2,3].forEach(t=>{ctx.beginPath();ctx.moveTo(tx(t),pad.t);ctx.lineTo(tx(t),pad.t+cH);ctx.stroke();});
+  // threshold markers (dashed verticals)
+  const rawD=effD(it,m);
+  rawD.forEach((dv,j)=>{
+    ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([3,4]);
+    ctx.beginPath();ctx.moveTo(tx(dv),pad.t);ctx.lineTo(tx(dv),pad.t+cH);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=ink3;ctx.font=`10px 'DM Mono',monospace`;ctx.textAlign='center';
+    ctx.fillText(m==='grm'?`b${j+1}`:`δ${j+1}`,tx(dv),pad.t-7);
+  });
+  // category curves
+  for(let k=0;k<NCAT;k++){
+    ctx.strokeStyle=cv(CCOLS[k]);ctx.lineWidth=2;ctx.setLineDash([]);
+    ctx.beginPath();
+    ths.forEach((t,i)=>{const y=py(allP[i][k]);i?ctx.lineTo(tx(t),y):ctx.moveTo(tx(t),y);});
+    ctx.stroke();
+  }
+  // θ person line
+  ctx.strokeStyle=a6c;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(tx(ST.thetaPerson),pad.t);ctx.lineTo(tx(ST.thetaPerson),pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  // axes labels
+  ctx.fillStyle=ink2;ctx.font=`11px 'DM Mono',monospace`;ctx.textAlign='center';
+  [-4,-2,0,2,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+16));
+  ctx.textAlign='right';
+  [0,.25,.5,.75,1].forEach(f=>ctx.fillText(f.toFixed(2),pad.l-5,py(f)+4));
+  ctx.fillStyle=ink2;ctx.textAlign='center';ctx.fillText('Fähigkeit θ',pad.l+cW/2,H-4);
+  // legend
+  let legY=pad.t+10;const legX=pad.l+cW-4;
+  ctx.textAlign='right';
+  for(let k=0;k<NCAT;k++){
+    ctx.strokeStyle=cv(CCOLS[k]);ctx.lineWidth=2;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(legX-64,legY);ctx.lineTo(legX-46,legY);ctx.stroke();
+    ctx.fillStyle=ink2;ctx.font=`10px 'DM Mono',monospace`;
+    ctx.fillText(`${k} — ${CLABELS[k]}`,legX,legY+4);legY+=16;
+  }
+  ctx.strokeStyle=a6c;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(legX-64,legY);ctx.lineTo(legX-46,legY);ctx.stroke();
+  ctx.setLineDash([]);ctx.fillStyle=ink2;ctx.fillText('θ Person',legX,legY+4);
+  ctx.strokeStyle=cv('--ink3');ctx.lineWidth=1;ctx.strokeRect(pad.l,pad.t,cW,cH);
+  // note
+  const tp=ST.thetaPerson;
+  const probs=catProbs(tp,a,deltas,m);
+  const modal=probs.indexOf(Math.max(...probs));
+  document.getElementById('crf-note').textContent=
+    `Bei θ = ${tp.toFixed(1)}: häufigste Kategorie = ${modal} (${CLABELS[modal]}), P = ${probs[modal].toFixed(3)} · alle Kategorien: ${probs.map(p=>p.toFixed(3)).join(' · ')}`;
+}
+
+// ── ESC ──────────────────────────────────────────────────────────────────────
+function drawESC(){
+  const{ctx,W,H}=setupCv('cv-esc');
+  const pad={l:42,r:16,t:18,b:34};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2');
+  const a2c=cv('--a2'),a6c=cv('--a6');
+  ctx.fillStyle=paper;ctx.fillRect(0,0,W,H);
+  const thMin=-4,thMax=4,NX=280;
+  const ths=Array.from({length:NX},(_,k)=>thMin+k*(thMax-thMin)/(NX-1));
+  const it=ST.items[ST.selItem];
+  const m=ST.model,a=it.a;
+  const deltas=effD(it,m);
+  const scores=ths.map(t=>expScore(t,a,deltas,m));
+  const tx=t=>(t-thMin)/(thMax-thMin)*cW+pad.l;
+  const sy=v=>pad.t+cH*(1-v/(NCAT-1));
+  ctx.strokeStyle=grid;ctx.lineWidth=.7;
+  for(let k=0;k<NCAT;k++){ctx.beginPath();ctx.moveTo(pad.l,sy(k));ctx.lineTo(pad.l+cW,sy(k));ctx.stroke();}
+  [-3,-2,-1,0,1,2,3].forEach(t=>{ctx.beginPath();ctx.moveTo(tx(t),pad.t);ctx.lineTo(tx(t),pad.t+cH);ctx.stroke();});
+  // ESC
+  ctx.strokeStyle=a2c;ctx.lineWidth=2.2;ctx.setLineDash([]);
+  ctx.beginPath();ths.forEach((t,i)=>i?ctx.lineTo(tx(t),sy(scores[i])):ctx.moveTo(tx(t),sy(scores[i])));ctx.stroke();
+  // θ line + point
+  const curE=expScore(ST.thetaPerson,a,deltas,m);
+  ctx.strokeStyle=a6c;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(tx(ST.thetaPerson),pad.t);ctx.lineTo(tx(ST.thetaPerson),pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=a6c;ctx.beginPath();ctx.arc(tx(ST.thetaPerson),sy(curE),5,0,2*Math.PI);ctx.fill();
+  // axes
+  ctx.fillStyle=ink2;ctx.font=`10px 'DM Mono',monospace`;ctx.textAlign='center';
+  [-4,-2,0,2,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+13));
+  ctx.textAlign='right';
+  for(let k=0;k<NCAT;k++)ctx.fillText(k,pad.l-4,sy(k)+4);
+  ctx.fillText('E[X|θ]',pad.l+cW/2,H-4);
+  ctx.strokeStyle=cv('--ink3');ctx.lineWidth=1;ctx.strokeRect(pad.l,pad.t,cW,cH);
+  document.getElementById('esc-note').textContent=
+    `E[X|θ = ${ST.thetaPerson.toFixed(1)}] = ${curE.toFixed(2)} (Skala 0–${NCAT-1})`;
+}
+
+// ── Item Info ─────────────────────────────────────────────────────────────────
+function drawItemInfo(){
+  const{ctx,W,H}=setupCv('cv-info');
+  const pad={l:42,r:16,t:18,b:34};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2');
+  const a6c=cv('--a6');
+  ctx.fillStyle=paper;ctx.fillRect(0,0,W,H);
+  const thMin=-4,thMax=4,NX=280;
+  const ths=Array.from({length:NX},(_,k)=>thMin+k*(thMax-thMin)/(NX-1));
+  const m=ST.model;
+  const allI=ST.items.map(it=>ths.map(t=>itemInfoOrd(t,it.a,effD(it,m),m)));
+  const maxI=Math.max(...allI.flat(),.01);
+  const tx=t=>(t-thMin)/(thMax-thMin)*cW+pad.l;
+  const iy=v=>pad.t+cH*(1-v/maxI);
+  ctx.strokeStyle=grid;ctx.lineWidth=.7;
+  [0,.25,.5,.75,1].forEach(f=>{ctx.beginPath();ctx.moveTo(pad.l,iy(f*maxI));ctx.lineTo(pad.l+cW,iy(f*maxI));ctx.stroke();});
+  [-3,-2,-1,0,1,2,3].forEach(t=>{ctx.beginPath();ctx.moveTo(tx(t),pad.t);ctx.lineTo(tx(t),pad.t+cH);ctx.stroke();});
+  ST.items.forEach((it,i)=>{
+    const isSel=i===ST.selItem;
+    ctx.strokeStyle=cv(ICOLS[i]);ctx.lineWidth=isSel?2.2:1.2;
+    ctx.globalAlpha=isSel?1:.5;ctx.setLineDash(isSel?[]:[4,3]);
+    ctx.beginPath();
+    allI[i].forEach((v,k)=>k?ctx.lineTo(tx(ths[k]),iy(v)):ctx.moveTo(tx(ths[k]),iy(v)));
+    ctx.stroke();
+  });
+  ctx.globalAlpha=1;ctx.setLineDash([]);
+  ctx.strokeStyle=a6c;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(tx(ST.thetaPerson),pad.t);ctx.lineTo(tx(ST.thetaPerson),pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  // axes
+  ctx.fillStyle=ink2;ctx.font=`10px 'DM Mono',monospace`;ctx.textAlign='center';
+  [-4,-2,0,2,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+13));
+  ctx.textAlign='right';
+  [0,.25,.5,.75,1].forEach(f=>ctx.fillText((f*maxI).toFixed(2),pad.l-4,iy(f*maxI)+4));
+  ctx.fillText('I(θ)',pad.l+cW/2,H-4);
+  // legend
+  let legY=pad.t+10;const legX=pad.l+cW-4;ctx.textAlign='right';
+  ST.items.forEach((it,i)=>{
+    const isSel=i===ST.selItem;
+    ctx.strokeStyle=cv(ICOLS[i]);ctx.lineWidth=isSel?2.2:1.2;
+    ctx.globalAlpha=isSel?1:.5;ctx.setLineDash(isSel?[]:[4,3]);
+    ctx.beginPath();ctx.moveTo(legX-55,legY);ctx.lineTo(legX-38,legY);ctx.stroke();
+    ctx.globalAlpha=1;ctx.setLineDash([]);
+    ctx.fillStyle=ink2;ctx.font=`10px 'DM Mono',monospace`;
+    ctx.fillText(it.label,legX,legY+4);legY+=14;
+  });
+  ctx.strokeStyle=cv('--ink3');ctx.lineWidth=1;ctx.strokeRect(pad.l,pad.t,cW,cH);
+  const tp=ST.thetaPerson;
+  const vals=ST.items.map((it,i)=>
+    `I${i+1}=${itemInfoOrd(tp,it.a,effD(it,m),m).toFixed(3)}`).join(' · ');
+  document.getElementById('info-note').textContent=`Bei θ = ${tp.toFixed(1)}: ${vals}`;
+}
+
+// ── Disorder check ────────────────────────────────────────────────────────────
+function checkDisorder(){
+  if(ST.model==='grm'){document.getElementById('warn-disorder').classList.remove('visible');return;}
+  const d=ST.items[ST.selItem].d;
+  const dis=d.some((v,i)=>i>0&&v<d[i-1]);
+  document.getElementById('warn-disorder').classList.toggle('visible',dis);
+}
+
+// ── Parameter table ───────────────────────────────────────────────────────────
+function updateParTable(){
+  const m=ST.model,tp=ST.thetaPerson;
+  const lbl=m==='grm'?'b':'δ';
+  ['th-d1','th-d2','th-d3','th-d4'].forEach((id,j)=>
+    document.getElementById(id).textContent=`${lbl}${j+1}`);
+  const tb=document.getElementById('par-tbody');
+  tb.innerHTML='';
+  ST.items.forEach((it,i)=>{
+    const col=cv(ICOLS[i]);
+    const aStr=m==='pcm'?'1 (fix)':it.a.toFixed(2);
+    const ds=effD(it,m);
+    const E=expScore(tp,it.a,ds,m).toFixed(2);
+    const I=itemInfoOrd(tp,it.a,ds,m).toFixed(3);
+    const tr=document.createElement('tr');
+    if(i===ST.selItem)tr.classList.add('sel-row');
+    tr.innerHTML=`<td style="color:${col}">${it.label} — ${it.sub}</td>
+      <td>${aStr}</td>
+      <td>${ds[0].toFixed(2)}</td><td>${ds[1].toFixed(2)}</td>
+      <td>${ds[2].toFixed(2)}</td><td>${ds[3].toFixed(2)}</td>
+      <td>${E}</td><td>${I}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+// ── Formula box ───────────────────────────────────────────────────────────────
+function getFormelText(){
+  const it=ST.items[ST.selItem];
+  const m=ST.model,a=it.a.toFixed(2);
+  const ds=effD(it,m).map(v=>v.toFixed(2));
+  const lbl=m==='grm'?'b':'δ';
+  if(m==='pcm')
+    return `PCM · ${it.label} (${it.sub}) · a = 1 (Axiom)<br>${lbl}₁=${ds[0]}  ${lbl}₂=${ds[1]}  ${lbl}₃=${ds[2]}  ${lbl}₄=${ds[3]}`;
+  if(m==='gpcm')
+    return `GPCM · ${it.label} (${it.sub}) · a = ${a}<br>${lbl}₁=${ds[0]}  ${lbl}₂=${ds[1]}  ${lbl}₃=${ds[2]}  ${lbl}₄=${ds[3]}`;
+  return `GRM · ${it.label} (${it.sub}) · a = ${a}<br>b₁=${ds[0]}  b₂=${ds[1]}  b₃=${ds[2]}  b₄=${ds[3]}  (aufsteigend sortiert)`;
+}
+
+// ── Sliders ───────────────────────────────────────────────────────────────────
+function buildSliders(){
+  const m=ST.model,it=ST.items[ST.selItem];
+  const lbl=m==='grm'?'b':'δ';
+  const cont=document.getElementById('sliders-thresh');
+  cont.innerHTML='';
+  for(let j=0;j<4;j++){
+    const row=document.createElement('div');
+    row.className='sl-row';
+    row.innerHTML=`<span class="sl-lbl">${lbl}${j+1}</span>
+      <input type="range" id="sl-d${j}" min="-3.5" max="3.5" step="0.1"
+             value="${it.d[j].toFixed(1)}" data-idx="${j}">
+      <span class="sl-val" id="v-d${j}">${it.d[j].toFixed(1)}</span>`;
+    cont.appendChild(row);
+    document.getElementById(`sl-d${j}`).oninput=function(){
+      const idx=+this.dataset.idx;
+      ST.items[ST.selItem].d[idx]=+this.value;
+      document.getElementById(`v-d${idx}`).textContent=(+this.value).toFixed(1);
+      updateAll();
+    };
+  }
+  const aRow=document.getElementById('a-row');
+  const pcmFix=document.getElementById('pcm-fix');
+  if(m==='pcm'){aRow.style.display='none';pcmFix.style.display='block';}
+  else{aRow.style.display='flex';pcmFix.style.display='none';}
+  document.getElementById('sl-a').value=it.a.toFixed(2);
+  document.getElementById('v-a').textContent=it.a.toFixed(2);
+  document.getElementById('sel-item-lbl').textContent=`${it.label} (${it.sub})`;
+  document.getElementById('crf-item-lbl').textContent=`${it.label} — ${it.sub}`;
+}
+
+// ── setModel ──────────────────────────────────────────────────────────────────
+function setModel(m){
+  ST.model=m;
+  ['pcm','gpcm','grm'].forEach(x=>{
+    const btn=document.getElementById('mbtn-'+x);
+    btn.classList.toggle('act',x===m);
+    btn.classList.toggle('pcm-act',x===m&&m==='pcm');
+  });
+  buildSliders();
+  updateAll();
+}
+
+// ── Item grid ─────────────────────────────────────────────────────────────────
+function buildItemGrid(){
+  const g=document.getElementById('item-grid');
+  g.innerHTML='';
+  ST.items.forEach((it,i)=>{
+    const b=document.createElement('button');
+    b.className='mbtn'+(i===ST.selItem?' act':'');
+    b.id='ibtn-'+i;b.textContent=it.label;
+    b.onclick=()=>{
+      ST.selItem=i;
+      ST.items.forEach((_,j)=>document.getElementById('ibtn-'+j).classList.toggle('act',j===i));
+      buildSliders();updateAll();
+    };
+    g.appendChild(b);
+  });
+}
+
+function resetItem(){
+  const d=DEF[ST.selItem];
+  ST.items[ST.selItem].a=d.a;
+  ST.items[ST.selItem].d=[...d.d];
+  buildSliders();updateAll();
+}
+
+// ── updateAll ─────────────────────────────────────────────────────────────────
+function updateAll(){
+  drawCRF();drawESC();drawItemInfo();
+  updateParTable();checkDisorder();
+  document.getElementById('erklaer-formula').innerHTML=getFormelText();
+}
+
+function toggleTheme(){
+  const d=document.documentElement;
+  const dark=d.getAttribute('data-theme')==='dark';
+  d.setAttribute('data-theme',dark?'':'dark');
+  document.querySelector('.theme-btn').textContent=dark?'◑ Dark':'☀ Light';
+  updateAll();
+}
+
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
+}
+
+window.addEventListener('resize',updateAll);
+buildItemGrid();
+setModel('gpcm');
+</script>
+</body>
+</html>
