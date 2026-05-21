@@ -149,7 +149,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 Var_MI = W + (1 + 1/M)·B
 W = (1/M) Σ Var_m          (Within-Varianz)
 B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
-    <p class="help-p">B misst die Zusatz-Unsicherheit durch die Imputation. Je mehr fehlende Werte und je schwächer das Imputationsmodell, desto größer B. Im Plot sieht man die imputierten Y-Werte als hohle Diamanten (◇) — sie streuen um die Regressionsgerade des Imputationsmodells.</p>
+    <p class="help-p">B misst die Zusatz-Unsicherheit durch die Imputation. Je mehr fehlende Werte und je schwächer das Imputationsmodell, desto größer B. Mit "◇ MI anzeigen" lassen sich die imputierten Y-Werte als hohle Diamanten (◇) im Plot einblenden — sie streuen um die Regressionsgerade des Imputationsmodells.</p>
 
     <div class="help-sh">Wann MI gut funktioniert</div>
     <p class="help-p"><strong>1. Gutes Imputationsmodell:</strong> Variablen, die das Fehlmuster und das Outcome vorhersagen, müssen im Imputationsmodell enthalten sein. Hier ist X das entscheidende Prädiktor.<br>
@@ -200,11 +200,12 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
       <input type="range" id="s-m" min="3" max="30" step="1" value="10" oninput="onSl()">
     </div>
     <button class="regen-btn" onclick="newSeed()">⟳ Neue Stichprobe</button>
+    <button class="regen-btn" id="btn-mi-toggle" onclick="toggleMI()" style="margin-top:.25rem">◇ MI anzeigen</button>
   </div>
 
   <div class="scard">
     <div class="hint" id="hint-box">
-      <strong style="color:var(--a3)">MCAR:</strong> Fehlmuster rein zufällig — kein Zusammenhang mit X oder Y.
+      <strong style="color:var(--a3)">MCAR:</strong> Fehlmuster rein zufällig — die hohlen Kreise (○) streuen gleichmäßig über alle Y-Werte.
     </div>
   </div>
 
@@ -226,7 +227,7 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
   <canvas id="cv-miss" height="370"></canvas>
 
   <div class="erklaer" id="erklaer-box" style="margin-top:.7rem">
-    <strong>MCAR:</strong> Fehlende Werte sind Zufallsausfälle. Die Rug-Marks am unteren Rand zeigen die X-Positionen fehlender Beobachtungen — gleichmäßig über die X-Achse verteilt. Kein systematischer Bias.
+    <strong>MCAR:</strong> Die hohlen Kreise (○, rot) zeigen die wahren Y-Werte fehlender Beobachtungen — gleichmäßig über alle Y-Bereiche verteilt. Kein systematisches Muster, kein Bias. Mit "◇ MI anzeigen" lassen sich die imputierten Werte einblenden.
   </div>
 
   <div class="sec-h">Vergleich der Schätzmethoden</div>
@@ -236,6 +237,7 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
         <th>Methode</th><th>n</th>
         <th>μ̂_Y</th><th>Bias μ_Y</th>
         <th>β̂_X</th><th>Bias β_X</th>
+        <th>SD_Y</th>
       </tr>
     </thead>
     <tbody>
@@ -243,33 +245,42 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
         <td>Wahre Parameter</td><td class="num">—</td>
         <td class="num">60.00</td><td class="num">—</td>
         <td class="num">−6.00</td><td class="num">—</td>
+        <td class="num">11.66</td>
       </tr>
       <tr class="row-comp">
         <td>Vollständige Daten (Referenz)</td><td class="num" id="t-nc">—</td>
         <td class="num" id="t-mu-c">—</td><td class="num" id="t-bi-mu-c">—</td>
         <td class="num" id="t-b-c">—</td><td class="num" id="t-bi-b-c">—</td>
+        <td class="num" id="t-sdy-c">—</td>
       </tr>
       <tr class="row-lw">
         <td>Listwise-Deletion</td><td class="num" id="t-nl">—</td>
         <td class="num" id="t-mu-l">—</td><td class="num" id="t-bi-mu-l">—</td>
         <td class="num" id="t-b-l">—</td><td class="num" id="t-bi-b-l">—</td>
+        <td class="num" id="t-sdy-l">—</td>
       </tr>
       <tr class="row-mean">
         <td>Mean Imputation</td><td class="num" id="t-nm">—</td>
         <td class="num" id="t-mu-m">—</td><td class="num" id="t-bi-mu-m">—</td>
         <td class="num" id="t-b-m">—</td><td class="num" id="t-bi-b-m">—</td>
+        <td class="num" id="t-sdy-m">—</td>
       </tr>
       <tr class="row-mi">
         <td><strong>Multiple Imputation (m=<span class="mval">10</span>)</strong></td>
         <td class="num" id="t-nmi">—</td>
         <td class="num" id="t-mu-mi">—</td><td class="num" id="t-bi-mu-mi">—</td>
         <td class="num" id="t-b-mi">—</td><td class="num" id="t-bi-b-mi">—</td>
+        <td class="num" id="t-sdy-mi">—</td>
       </tr>
     </tbody>
   </table>
 
   <div id="result-badge" style="margin-bottom:.35rem"></div>
   <div id="result-note" style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);line-height:1.8;margin-bottom:1rem"></div>
+
+  <div class="sec-h">Dichteverteilung Y — Vergleich der Datensätze</div>
+  <canvas id="cv-dens" height="220" style="width:100%;display:block"></canvas>
+  <div class="hint" id="dens-note" style="margin-top:.5rem;line-height:1.8"></div>
 
 </div>
 </div>
@@ -278,6 +289,16 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
 // ── Konstanten & State ─────────────────────────────────────────────────────────
 const TRUE_A=60, TRUE_B=-6, TRUE_S=10;
 const ST={mech:'mcar',pMiss:.30,n:150,m:10,seed:42,data:null,res:null};
+
+let showMI=false;
+function toggleMI(){
+  showMI=!showMI;
+  const btn=document.getElementById('btn-mi-toggle');
+  btn.style.color=showMI?'var(--a3)':'';
+  btn.style.borderColor=showMI?'var(--a3)':'';
+  btn.textContent=showMI?'◇ MI verbergen':'◇ MI anzeigen';
+  drawPlot();
+}
 
 // ── PRNG (Box-Muller) ──────────────────────────────────────────────────────────
 function mulberry32(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};}
@@ -299,7 +320,8 @@ function ols(pts){
   const a=my-b*mx;
   const sse=pts.reduce((s,d)=>s+(d.y-(a+b*d.x))**2,0);
   const sigma2=sse/Math.max(n-2,1);
-  return{a,b,n,meanY:my,sigma2};
+  const varY=pts.reduce((s,d)=>s+(d.y-my)**2,0)/Math.max(n-1,1);
+  return{a,b,n,meanY:my,sigma2,varY};
 }
 
 // ── Datengenerierung ───────────────────────────────────────────────────────────
@@ -344,7 +366,7 @@ function runMI(obs,base){
     return base?{...base}:null;
   }
   const sigma=Math.sqrt(Math.max(base.sigma2,1));
-  const aArr=[],bArr=[],myArr=[];
+  const aArr=[],bArr=[],myArr=[],vyArr=[];
   const miSums=new Array(mis.length).fill(0);
   for(let m=0;m<ST.m;m++){
     const imp=mis.map((d,i)=>{
@@ -354,7 +376,7 @@ function runMI(obs,base){
     });
     const completed=[...obs.map(d=>({x:d.x,y:d.y})),...imp];
     const r=ols(completed);
-    if(r){aArr.push(r.a);bArr.push(r.b);myArr.push(r.meanY);}
+    if(r){aArr.push(r.a);bArr.push(r.b);myArr.push(r.meanY);vyArr.push(r.varY||0);}
   }
   mis.forEach((d,i)=>d.yMImp=miSums[i]/ST.m);
   if(!aArr.length)return null;
@@ -362,7 +384,119 @@ function runMI(obs,base){
   const aMI=aArr.reduce((s,v)=>s+v,0)/M;
   const bMI=bArr.reduce((s,v)=>s+v,0)/M;
   const myMI=myArr.reduce((s,v)=>s+v,0)/M;
-  return{a:aMI,b:bMI,n:ST.n,meanY:myMI};
+  const varYMI=vyArr.reduce((s,v)=>s+v,0)/Math.max(M,1);
+  return{a:aMI,b:bMI,n:ST.n,meanY:myMI,varY:varYMI};
+}
+
+// ── KDE Helfer ────────────────────────────────────────────────────────────────
+function silvermanBW(vals){
+  const n=vals.length;if(n<2)return 5;
+  const m=vals.reduce((s,v)=>s+v,0)/n;
+  const std=Math.sqrt(vals.reduce((s,v)=>s+(v-m)**2,0)/Math.max(n-1,1));
+  return Math.max(1.5,1.06*std*Math.pow(n,-0.2));
+}
+function evalKDE(vals,h,xs){
+  const n=vals.length,c=1/(n*h*Math.sqrt(2*Math.PI));
+  return xs.map(x=>c*vals.reduce((s,v)=>s+Math.exp(-0.5*((x-v)/h)**2),0));
+}
+
+// ── Density Canvas ────────────────────────────────────────────────────────────
+function drawDensity(){
+  if(!ST.data||!ST.res)return;
+  const canvas=document.getElementById('cv-dens');
+  const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  const pad={l:50,r:18,t:20,b:42};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+
+  const a1=cv('--a1'),a3=cv('--a3'),a5=cv('--a5'),ink3=cv('--ink3'),ink2=cv('--ink2');
+  const a2=cv('--a2'),grid=cv('--grid'),paper=cv('--paper');
+  ctx.clearRect(0,0,W,H);
+
+  const obs=ST.data.filter(d=>!d.miss);
+  const meanObs=obs.length?obs.reduce((s,d)=>s+d.y,0)/obs.length:60;
+  const trueVals=ST.data.map(d=>d.yTrue);
+  const obsVals=obs.map(d=>d.y);
+  const meanImpVals=ST.data.map(d=>d.miss?meanObs:d.y);
+  const miVals=ST.data.map(d=>d.miss?(d.yMImp??meanObs):d.y);
+
+  // Gemeinsame Bandbreite (aus Wahren Werten) für faire Vergleichbarkeit
+  const h=silvermanBW(trueVals);
+
+  const NX=300,xMin=10,xMax=100;
+  const xs=Array.from({length:NX},(_,i)=>xMin+i*(xMax-xMin)/(NX-1));
+  const curves=[
+    {vals:trueVals,   col:ink3, dash:[5,3], lw:1.5, lbl:'Wahr (vollständig)'},
+    {vals:obsVals,    col:a1,   dash:[],    lw:2,   lbl:'Beobachtet / Listwise'},
+    {vals:meanImpVals,col:a5,   dash:[],    lw:2,   lbl:'Mean Imputation'},
+    {vals:miVals,     col:a3,   dash:[],    lw:2.5, lbl:'Multiple Imputation'},
+  ];
+  const kdes=curves.map(c=>evalKDE(c.vals,h,xs));
+  const dMax=Math.max(...kdes.flat())*1.12;
+
+  const sx=v=>pad.l+cW*(v-xMin)/(xMax-xMin);
+  const sy=v=>pad.t+cH*(1-v/dMax);
+
+  // Grid Y
+  const nYTicks=4;
+  for(let i=0;i<=nYTicks;i++){
+    const dv=dMax*i/nYTicks;
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,sy(dv));ctx.lineTo(pad.l+cW,sy(dv));ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='10px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(dv.toFixed(3),pad.l-4,sy(dv)+4);
+  }
+  // Grid X
+  [20,30,40,50,60,70,80,90].forEach(xv=>{
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(sx(xv),pad.t);ctx.lineTo(sx(xv),pad.t+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='10px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(xv,sx(xv),pad.t+cH+14);
+  });
+  // Achsen
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
+  ctx.fillStyle=ink2;ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Wohlbefinden Y',pad.l+cW/2,H-2);
+  ctx.save();ctx.translate(13,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Dichte',0,0);ctx.restore();
+
+  // Kurven zeichnen
+  kdes.forEach((ys,ci)=>{
+    const c=curves[ci];
+    ctx.strokeStyle=c.col;ctx.lineWidth=c.lw;ctx.setLineDash(c.dash);
+    ctx.beginPath();
+    ys.forEach((y,i)=>{
+      const px=sx(xs[i]),py=sy(y);
+      i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+    });
+    ctx.stroke();ctx.setLineDash([]);
+  });
+
+  // Legende (oben rechts)
+  const lgW=192,lgPad=7,lgItemH=18;
+  const lgH=curves.length*lgItemH+lgPad*2;
+  const lgX=pad.l+cW-lgW-4,lgY=pad.t+4;
+  ctx.fillStyle=paper;ctx.globalAlpha=0.92;ctx.fillRect(lgX,lgY,lgW,lgH);
+  ctx.globalAlpha=1;ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.strokeRect(lgX,lgY,lgW,lgH);
+  curves.forEach((c,i)=>{
+    const y=lgY+lgPad+(i+.5)*lgItemH;
+    ctx.strokeStyle=c.col;ctx.lineWidth=c.lw;ctx.setLineDash(c.dash);
+    ctx.beginPath();ctx.moveTo(lgX+8,y);ctx.lineTo(lgX+28,y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=ink2;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(c.lbl,lgX+34,y+4);
+  });
+
+  // Density note
+  const nObs=obs.length,nMis=ST.data.length-nObs;
+  const meanImpSD=Math.sqrt(ST.res.mean?ST.res.mean.varY:0).toFixed(2);
+  const miSD=Math.sqrt(ST.res.mi?ST.res.mi.varY:0).toFixed(2);
+  const trueSD=Math.sqrt(ST.res.complete?ST.res.complete.varY:0).toFixed(2);
+  const mnarNote=ST.mech==='mnar'?' — MNAR: MI imputiert aus verzerrtem Modell → ähnlicher Bias wie Listwise':'';
+  document.getElementById('dens-note').textContent=
+    `Gemeinsame KDE-Bandbreite h=${h.toFixed(2)} (Silverman auf Wahren Werten). `+
+    `Vollständig: SD_Y=${trueSD}  ·  Mean-Imp: SD_Y=${meanImpSD}  ·  MI: SD_Y=${miSD}${mnarNote}`;
 }
 
 // ── Canvas ─────────────────────────────────────────────────────────────────────
@@ -420,9 +554,9 @@ function drawPlot(){
   if(ST.res.listwise) drawLine(ST.res.listwise.a,ST.res.listwise.b,a1,[],2);
   if(ST.res.mi)       drawLine(ST.res.mi.a,      ST.res.mi.b,      a3,[],2.5);
 
-  // MI imputierte Werte — hohle Diamanten
+  // MI imputierte Werte — hohle Diamanten (nur wenn showMI aktiv)
   const mis=ST.data.filter(d=>d.miss);
-  if(ST.res.mi){
+  if(showMI&&ST.res.mi){
     ctx.globalAlpha=0.65;
     mis.forEach(d=>{
       if(d.yMImp===null)return;
@@ -443,23 +577,22 @@ function drawPlot(){
   });
   ctx.globalAlpha=1;
 
-  // Rug-Marks für fehlende Obs (am unteren Rand)
-  const yRug=pad.t+cH;
-  ctx.globalAlpha=0.85;
+  // Fehlende Punkte — hohle Kreise an wahrem Y-Wert (aus Simulation bekannt)
+  ctx.globalAlpha=0.55;
   mis.forEach(d=>{
-    ctx.strokeStyle=a1;ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.moveTo(cx(d.x),yRug);ctx.lineTo(cx(d.x),yRug-10);ctx.stroke();
+    ctx.beginPath();ctx.arc(cx(d.x),cy(d.yTrue),3.5,0,2*Math.PI);
+    ctx.strokeStyle=a1;ctx.lineWidth=1.5;ctx.stroke();
   });
   ctx.globalAlpha=1;
 
   // Legende
   const items=[
-    {col:a2,  dash:false, circ:true,  lbl:'Beobachtet (●)'},
-    {col:a1,  dash:false, circ:false, lbl:'Fehlend — Rug (|)'},
-    {col:a3,  dash:false, circ:false, lbl:'MI imputiert (◇)'},
-    {col:ink3,dash:true,  circ:false, lbl:'Wahre Gerade'},
-    {col:a1,  dash:false, circ:false, lbl:'Listwise-Schätzung'},
-    {col:a3,  dash:false, circ:false, lbl:'MI-Schätzung'},
+    {col:a2,  dash:false, lbl:'Beobachtet (●)'},
+    {col:a1,  dash:false, lbl:'Fehlend — wahres Y (○)'},
+    ...(showMI?[{col:a3,dash:false,lbl:'MI imputiert (◇)'}]:[]),
+    {col:ink3,dash:true,  lbl:'Wahre Gerade'},
+    {col:a1,  dash:false, lbl:'Listwise-Schätzung'},
+    {col:a3,  dash:false, lbl:'MI-Schätzung'},
   ];
   const lgW=185,lgItemH=17,lgPad=8;
   const lgH=items.length*lgItemH+lgPad*1.8;
@@ -483,6 +616,7 @@ function drawPlot(){
 function updateTable(){
   const f=v=>v===null||v===undefined?'—':v.toFixed(2);
   const fb=v=>v===null?'—':(v>=0?'+':'')+v.toFixed(2);
+  const fsd=v=>v===null||v===undefined?'—':Math.sqrt(Math.max(v,0)).toFixed(2);
   const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
 
   const r=ST.res;
@@ -493,24 +627,28 @@ function updateTable(){
   set('t-bi-mu-c',r.complete?fb(r.complete.meanY-60):'—');
   set('t-b-c',   r.complete?f(r.complete.b):'—');
   set('t-bi-b-c',r.complete?fb(r.complete.b-TRUE_B):'—');
+  set('t-sdy-c', r.complete?fsd(r.complete.varY):'—');
 
   set('t-nl', r.listwise?r.listwise.n:'—');
   set('t-mu-l',  r.listwise?f(r.listwise.meanY):'—');
   set('t-bi-mu-l',r.listwise?fb(r.listwise.meanY-60):'—');
   set('t-b-l',   r.listwise?f(r.listwise.b):'—');
   set('t-bi-b-l',r.listwise?fb(r.listwise.b-TRUE_B):'—');
+  set('t-sdy-l', r.listwise?fsd(r.listwise.varY):'—');
 
   set('t-nm', ST.n);
   set('t-mu-m',  r.mean?f(r.mean.meanY):'—');
   set('t-bi-mu-m',r.mean?fb(r.mean.meanY-60):'—');
   set('t-b-m',   r.mean?f(r.mean.b):'—');
   set('t-bi-b-m',r.mean?fb(r.mean.b-TRUE_B):'—');
+  set('t-sdy-m', r.mean?fsd(r.mean.varY):'—');
 
   set('t-nmi', r.mi?r.mi.n:'—');
   set('t-mu-mi', r.mi?f(r.mi.meanY):'—');
   set('t-bi-mu-mi',r.mi?fb(r.mi.meanY-60):'—');
   set('t-b-mi', r.mi?f(r.mi.b):'—');
   set('t-bi-b-mi',r.mi?fb(r.mi.b-TRUE_B):'—');
+  set('t-sdy-mi', r.mi?fsd(r.mi.varY):'—');
   document.querySelectorAll('.mval').forEach(el=>el.textContent=ST.m);
 
   // Badge & Note
@@ -534,14 +672,14 @@ function updateTable(){
 
 // ── Mechanismus-UI ─────────────────────────────────────────────────────────────
 const HINTS={
-  mcar:'<strong style="color:var(--a3)">MCAR:</strong> Fehlmuster rein zufällig. Rug-Marks gleichmäßig verteilt. Listwise und MI liefern beide unverzerrte Schätzer.',
-  mar: '<strong style="color:var(--a5)">MAR:</strong> Hohes Stresslevel (X↑) → häufigeres Fehlen. Rug-Marks häufen sich rechts. Da Y = 60 − 6·X, sind die Fehlenden "kränker" — Listwise überschätzt μ_Y. MI nutzt X zur Imputation und korrigiert.',
-  mnar:'<strong style="color:var(--a1)">MNAR:</strong> Niedriges Wohlbefinden (Y↓) → häufigeres Fehlen. Das Fehlmuster hängt von Y selbst ab. Keine Methode korrigiert vollständig — MI ist aber meist besser als Listwise.'
+  mcar:'<strong style="color:var(--a3)">MCAR:</strong> Fehlmuster rein zufällig — die hohlen Kreise (○) streuen gleichmäßig über alle Y-Werte. Listwise und MI liefern beide unverzerrte Schätzer.',
+  mar: '<strong style="color:var(--a5)">MAR:</strong> Hohes Stresslevel (X↑) → häufigeres Fehlen. Da Y = 60 − 6·X, haben die Fehlenden (○) tendenziell niedrigeres Wohlbefinden — Listwise überschätzt μ_Y. MI nutzt X zur Imputation und korrigiert.',
+  mnar:'<strong style="color:var(--a1)">MNAR:</strong> Niedriges Wohlbefinden (Y↓) → häufigeres Fehlen. Die hohlen Kreise (○) häufen sich unten im Plot. Weder Listwise noch MI kann vollständig korrigieren — <em>warum MI trotzdem ähnlich verzerrt ist wie Listwise: das MI-Imputationsmodell wird auf den beobachteten (bereits verzerrten) Daten trainiert.</em>'
 };
 const ERKLAER={
-  mcar:'<strong>MCAR:</strong> Die Rug-Marks (rote Striche am unteren Rand) zeigen die X-Positionen fehlender Beobachtungen — gleichmäßig verteilt. Die gestrichelten Diamanten (◇) zeigen MI-imputierte Y-Werte. Alle Regressionsgerade überlappen: kein Bias.',
-  mar: '<strong>MAR:</strong> Die Rug-Marks häufen sich bei hohem X — hochgestresste Personen brechen häufiger ab. Da diese niedrigeres Wohlbefinden haben, überschätzt Listwise (rote Linie) den wahren Intercept. MI (grüne Linie) imputiert fehlende Y-Werte auf Basis von X und trifft die wahre Gerade besser.',
-  mnar:'<strong>MNAR:</strong> Personen mit niedrigem Y fehlen systematisch. Die Rug-Marks sind leicht nach links verschoben (niedriges Y → hohes X in diesem Beispiel). Weder Listwise noch MI kann das vollständig korrigieren — aber MI nutzt die X-Information und ist typischerweise weniger verzerrt.'
+  mcar:'<strong>MCAR:</strong> Die hohlen Kreise (○, rot) zeigen die wahren Y-Werte fehlender Beobachtungen — gleichmäßig über alle Y-Bereiche verteilt. Kein systematisches Muster, kein Bias. Mit "◇ MI anzeigen" lassen sich die imputierten Werte einblenden.',
+  mar: '<strong>MAR:</strong> Die hohlen Kreise (○) häufen sich im unteren Y-Bereich — hochgestresste Personen (X↑, Y↓) fehlen häufiger. Listwise (rote Linie) überschätzt den Intercept. MI (grüne Linie) imputiert fehlende Y-Werte auf Basis von X und kommt der wahren Geraden näher.',
+  mnar:'<strong>MNAR:</strong> Personen mit niedrigem Y fehlen, weil sie ein niedriges Y haben — das Fehlmuster ist durch keine beobachtete Variable erklärbar. MI schätzt das Imputationsmodell auf den beobachteten (bereits selektierten) Daten — dadurch erbt MI denselben Bias wie Listwise. In der Tabelle sind die Schätzer daher oft ähnlich. MI ist trotzdem zu bevorzugen, weil es robuster ist und den Bias nicht verstärkt.'
 };
 
 function setMech(mech){
@@ -565,18 +703,18 @@ function onSl(){
   recompute();
 }
 function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
-function recompute(){generate();computeAll();drawPlot();updateTable();}
+function recompute(){generate();computeAll();drawPlot();drawDensity();updateTable();}
 
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme',dark?'light':'dark');
   document.getElementById('btn-theme').textContent=dark?'☾ Dark':'☀ Light';
-  drawPlot();
+  drawPlot();drawDensity();
 }
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 
 window.addEventListener('load',()=>setMech('mcar'));
-window.addEventListener('resize',()=>drawPlot());
+window.addEventListener('resize',()=>{drawPlot();drawDensity();});
 </script>
 </body>
 </html>
