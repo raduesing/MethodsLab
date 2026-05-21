@@ -617,6 +617,12 @@ function updateThetaEst(){
   const{th,note}=estimateTheta();
   document.getElementById('theta-est').textContent=isFinite(th)?`θ̂ = ${th.toFixed(2)}`:'θ̂ = ±∞';
   document.getElementById('theta-est-note').textContent=note;
+  if(isFinite(th)){
+    ST.thetaPerson=Math.max(-4,Math.min(4,th));
+    document.getElementById('sl-theta').value=ST.thetaPerson;
+    document.getElementById('v-theta').textContent=ST.thetaPerson.toFixed(1);
+    redraw();
+  }
 }
 
 // ── Modell wechseln ────────────────────────────────────────────────────────────
