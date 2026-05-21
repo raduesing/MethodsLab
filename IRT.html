@@ -140,7 +140,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <p class="help-p">Vom 4PL zum Rasch-Modell sinkt die Flexibilität, aber die Interpretierbarkeit und Messtheoretische Strenge steigen. 2PL und 3PL sind die häufigsten Modelle in der angewandten Diagnostik.</p>
 
   <div class="help-sh">Die vier Parameter</div>
-  <p class="help-p"><strong>b — Schwierigkeit (difficulty):</strong> θ-Wert am Wendepunkt der ICC. Beim 2PL gilt P(θ=b) = 0.5. Beim 3PL/4PL gilt P(θ=b) = (c+d)/2. Hohe b-Werte → schwieriges Item. b liegt auf derselben Skala wie θ.</p>
+  <p class="help-p"><strong>b — Schwierigkeit (difficulty):</strong> θ-Wert am Wendepunkt der ICC — dem Punkt, an dem die S-Kurve ihre maximale Steigung hat (der Übergang von zunehmender zu abnehmender Steigung). Beim 2PL gilt P(θ=b) = 0.5. Beim 3PL/4PL gilt P(θ=b) = (c+d)/2. Hohe b-Werte → schwieriges Item. b liegt auf derselben Skala wie θ.</p>
   <p class="help-p"><strong>a — Trennschärfe (discrimination):</strong> Steilheit der ICC am Wendepunkt. Hohe a → steile Kurve → Item trennt gut zwischen Fähigkeitsgruppen. Typisch: a ∈ [0.5, 2.5]. Werte unter 0.3 deuten auf ein schwaches Item hin.</p>
   <p class="help-p"><strong>c — Ratewahrscheinlichkeit (pseudo-guessing):</strong> Untere Asymptote. Auch bei sehr niedrigem θ ist P(richtig) ≥ c. Bei Multiple-Choice mit K Optionen ist c ≈ 1/K plausibel. Ignoriert man c (2PL), wird θ bei schwachen Personen überschätzt.</p>
   <p class="help-p"><strong>d — obere Asymptote (carelessness):</strong> Maximale Antwortwahrscheinlichkeit. d < 1 modelliert Flüchtigkeitsfehler auch bei sehr fähigen Personen. In der Praxis schwer zu schätzen — braucht viele hochfähige Personen im Datensatz.</p>
@@ -238,21 +238,6 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
   <div class="sec-h" style="margin-top:1.6rem">Modell-Formel & Interpretation</div>
   <div class="erklaer" id="erklaer-formula"></div>
-
-  <div class="sec-h">Rasch vs. 1PL — Philosophie trifft Statistik</div>
-  <div class="rasch-compare">
-    <div class="rcbox">
-      <div class="rcbox-h" style="color:var(--a3)">Rasch-Modell</div>
-      <div class="rcbox-body"><strong>a ≡ 1 per Axiom</strong> (nicht geschätzt). Das Modell ist ein <em>Messideal</em>. Items, die nicht passen, werden entfernt oder überarbeitet — nicht das Modell angepasst. Ziel: <em>spezifische Objektivität</em> — b ist unabhängig von der Stichprobe, θ unabhängig vom Test.</div>
-    </div>
-    <div class="rcbox">
-      <div class="rcbox-h" style="color:var(--a2)">1PL-Modell</div>
-      <div class="rcbox-body"><strong>a wird geschätzt</strong> (gleich für alle Items, aber aus den Daten). Das Modell wird den Daten angepasst. Wenn a ≠ 1 herauskommt, akzeptiert man das. Kein axiomatischer Anspruch auf stichprobenunabhängige Messung.</div>
-    </div>
-  </div>
-  <div class="erklaer" style="border-color:var(--a5)">
-    <strong>Kernsatz:</strong> Rasch passt Daten dem Modell an — 1PL passt das Modell den Daten an. Beide haben a konstant für alle Items. Aber beim Rasch-Modell ist a = 1 keine Vereinfachung, sondern axiomatische Voraussetzung für objektive Messung. Ein Item, das diese Bedingung verletzt, fliegt aus dem Test — das Modell bleibt.
-  </div>
 
   <div class="sec-h">Item-Parameter-Tabelle</div>
   <table class="par-table">
