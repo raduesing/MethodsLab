@@ -204,11 +204,12 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
     </div>
     <button class="regen-btn" onclick="newSeed()">⟳ Neue Stichprobe</button>
     <button class="regen-btn" id="btn-mi-toggle" onclick="toggleMI()" style="margin-top:.25rem">◇ MI anzeigen</button>
+    <button class="regen-btn" onclick="downloadCSV()" style="margin-top:.25rem">⬇ CSV-Download</button>
   </div>
 
   <div class="scard">
     <div class="hint" id="hint-box">
-      <strong style="color:var(--a3)">MCAR:</strong> Rein zufällige Fehlmuster — Farben der hohlen Kreise (○) sind gemischt, kein Z-Muster erkennbar.
+      <strong style="color:var(--a3)">MCAR:</strong> Rein zufällige Fehlmuster — lila Kreise (○) gleichmäßig über alle Y-Werte verteilt.
     </div>
   </div>
 
@@ -231,7 +232,7 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
   <canvas id="cv-miss" height="370"></canvas>
 
   <div class="erklaer" id="erklaer-box" style="margin-top:.7rem">
-    <strong>MCAR:</strong> Farbe zeigt Soziale Unterstützung Z (orange=niedrig, blau=hoch). Bei MCAR sind Fehlende (○) farblich gleichmäßig verteilt — kein systematischer Dropout. Listwise und MI unverzerrt.
+    <strong>MCAR:</strong> Lila Kreise (○) zeigen die wahren Y-Werte fehlender Beobachtungen — gleichmäßig verteilt, kein systematisches Muster. Listwise und MI unverzerrt.
   </div>
 
   <div class="sec-h">Vergleich der Schätzmethoden</div>
@@ -242,7 +243,7 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
         <th>μ̂_Y</th><th>Bias μ_Y</th>
         <th>β̂_X</th><th>Bias β_X</th>
         <th>β̂_Z</th><th>Bias β_Z</th>
-        <th>SD_Y</th>
+        <th>SD_Y</th><th>Bias SD_Y</th>
       </tr>
     </thead>
     <tbody>
@@ -251,28 +252,28 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
         <td class="num">60.00</td><td class="num">—</td>
         <td class="num">−6.00</td><td class="num">—</td>
         <td class="num">+3.00</td><td class="num">—</td>
-        <td class="num" id="t-sdy-pop">—</td>
+        <td class="num" id="t-sdy-pop">—</td><td class="num">—</td>
       </tr>
       <tr class="row-comp">
         <td>Vollständige Daten (Referenz)</td><td class="num" id="t-n-c">—</td>
         <td class="num" id="t-mu-c">—</td><td class="num" id="t-bi-mu-c">—</td>
         <td class="num" id="t-bx-c">—</td><td class="num" id="t-bi-bx-c">—</td>
         <td class="num" id="t-bz-c">—</td><td class="num" id="t-bi-bz-c">—</td>
-        <td class="num" id="t-sdy-c">—</td>
+        <td class="num" id="t-sdy-c">—</td><td class="num" id="t-bi-sdy-c">—</td>
       </tr>
       <tr class="row-lw">
         <td>Listwise-Deletion</td><td class="num" id="t-n-l">—</td>
         <td class="num" id="t-mu-l">—</td><td class="num" id="t-bi-mu-l">—</td>
         <td class="num" id="t-bx-l">—</td><td class="num" id="t-bi-bx-l">—</td>
         <td class="num" id="t-bz-l">—</td><td class="num" id="t-bi-bz-l">—</td>
-        <td class="num" id="t-sdy-l">—</td>
+        <td class="num" id="t-sdy-l">—</td><td class="num" id="t-bi-sdy-l">—</td>
       </tr>
       <tr class="row-mean">
         <td>Mean Imputation</td><td class="num" id="t-n-m">—</td>
         <td class="num" id="t-mu-m">—</td><td class="num" id="t-bi-mu-m">—</td>
         <td class="num" id="t-bx-m">—</td><td class="num" id="t-bi-bx-m">—</td>
         <td class="num" id="t-bz-m">—</td><td class="num" id="t-bi-bz-m">—</td>
-        <td class="num" id="t-sdy-m">—</td>
+        <td class="num" id="t-sdy-m">—</td><td class="num" id="t-bi-sdy-m">—</td>
       </tr>
       <tr class="row-mi">
         <td><strong>MI — PMM (m=<span class="mval">10</span>, X+Z)</strong></td>
@@ -280,7 +281,7 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
         <td class="num" id="t-mu-mi">—</td><td class="num" id="t-bi-mu-mi">—</td>
         <td class="num" id="t-bx-mi">—</td><td class="num" id="t-bi-bx-mi">—</td>
         <td class="num" id="t-bz-mi">—</td><td class="num" id="t-bi-bz-mi">—</td>
-        <td class="num" id="t-sdy-mi">—</td>
+        <td class="num" id="t-sdy-mi">—</td><td class="num" id="t-bi-sdy-mi">—</td>
       </tr>
     </tbody>
   </table>
@@ -548,7 +549,7 @@ function drawPlot(){
   const pad={l:52,r:18,t:16,b:46};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
 
-  const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a5=cv('--a5');
+  const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5');
   const ink2=cv('--ink2'),ink3=cv('--ink3');
   const grid=cv('--grid'),bg=cv('--bg'),paper=cv('--paper');
 
@@ -609,29 +610,30 @@ function drawPlot(){
     ctx.globalAlpha=1;
   }
 
-  // Beobachtete Punkte (●) — Farbe nach Z: orange=niedrig, blau=hoch
-  ctx.globalAlpha=0.62;
+  // Beobachtete Punkte (●) — blau
+  ctx.globalAlpha=0.55;
   ST.data.filter(d=>!d.miss).forEach(d=>{
     ctx.beginPath();ctx.arc(cx(d.x),cy(d.y),3.5,0,2*Math.PI);
-    ctx.fillStyle=zCol(d.z,a5,a2);ctx.fill();
+    ctx.fillStyle=a2;ctx.fill();
   });
   ctx.globalAlpha=1;
 
-  // Fehlende Punkte (○) — gleiche Z-Farbe, hohle Kreise an wahrem Y-Wert
-  ctx.globalAlpha=0.7;
+  // Fehlende Punkte (○) — lila (klar von rot/orange unterscheidbar)
+  ctx.globalAlpha=0.75;
   mis.forEach(d=>{
-    ctx.beginPath();ctx.arc(cx(d.x),cy(d.yTrue),3.5,0,2*Math.PI);
-    ctx.strokeStyle=zCol(d.z,a5,a2);ctx.lineWidth=2;ctx.stroke();
+    ctx.beginPath();ctx.arc(cx(d.x),cy(d.yTrue),4,0,2*Math.PI);
+    ctx.strokeStyle=a4;ctx.lineWidth=2;ctx.stroke();
   });
   ctx.globalAlpha=1;
 
   // Legende
   const items=[
-    {col:null, grad:true,  lbl:'Z: niedrig (○) → hoch (●)'},
-    ...(showMI?[{col:a3,  grad:false, lbl:'MI imputiert (◇)'}]:[]),
-    {col:ink3, grad:false, dash:true,  lbl:'Wahr — marginal X→Y'},
-    {col:a1,   grad:false, dash:false, lbl:'Listwise-Schätzung'},
-    {col:a3,   grad:false, dash:false, lbl:'MI-Schätzung (PMM)'},
+    {col:a2,   dash:false, lbl:'Beobachtet (●)'},
+    {col:a4,   dash:false, lbl:'Fehlend — wahres Y (○)'},
+    ...(showMI?[{col:a3, dash:false, lbl:'MI imputiert (◇)'}]:[]),
+    {col:ink3, dash:true,  lbl:'Wahr — marginal X→Y'},
+    {col:a1,   dash:false, lbl:'Listwise-Schätzung'},
+    {col:a3,   dash:false, lbl:'MI-Schätzung (PMM)'},
   ];
   const lgW=192,lgItemH=17,lgPad=8;
   const lgH=items.length*lgItemH+lgPad*1.8;
@@ -642,16 +644,10 @@ function drawPlot(){
   ctx.strokeRect(lgX,lgY,lgW,lgH);
   items.forEach((item,i)=>{
     const y=lgY+lgPad+i*lgItemH+lgItemH/2;
-    if(item.grad){
-      const gr=ctx.createLinearGradient(lgX+7,0,lgX+27,0);
-      gr.addColorStop(0,a5);gr.addColorStop(1,a2);
-      ctx.fillStyle=gr;ctx.fillRect(lgX+7,y-4,20,8);
-    } else {
-      ctx.strokeStyle=item.col;ctx.lineWidth=1.8;
-      if(item.dash)ctx.setLineDash([4,3]);
-      ctx.beginPath();ctx.moveTo(lgX+7,y);ctx.lineTo(lgX+27,y);ctx.stroke();
-      ctx.setLineDash([]);
-    }
+    ctx.strokeStyle=item.col;ctx.lineWidth=1.8;
+    if(item.dash)ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(lgX+7,y);ctx.lineTo(lgX+27,y);ctx.stroke();
+    ctx.setLineDash([]);
     ctx.fillStyle=ink2;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
     ctx.fillText(item.lbl,lgX+33,y+4);
   });
@@ -676,7 +672,9 @@ function updateTable(){
     set(`t-bi-bx-${pfx}`,fb(res.bx-TRUE_BX));
     set(`t-bz-${pfx}`,  f(res.bz));
     set(`t-bi-bz-${pfx}`,fb(res.bz-TRUE_BZ));
-    set(`t-sdy-${pfx}`, fsd(res.varY));
+    const sdYhat=Math.sqrt(Math.max(res.varY,0));
+    set(`t-sdy-${pfx}`, sdYhat.toFixed(2));
+    set(`t-bi-sdy-${pfx}`,fb(sdYhat-TRUE_SDY));
   };
   fill('c', r.complete);
   fill('l', r.listwise);
@@ -707,14 +705,14 @@ function updateTable(){
 
 // ── Mechanismus-UI ─────────────────────────────────────────────────────────────
 const HINTS={
-  mcar:'<strong style="color:var(--a3)">MCAR:</strong> Rein zufällige Fehlmuster — die Farben der hohlen Kreise (○) sind gemischt, kein Z-Muster erkennbar. Listwise und MI liefern beide unverzerrte Schätzer.',
-  mar: '<strong style="color:var(--a5)">MAR:</strong> Niedrige Soziale Unterstützung (Z↓, <span style="color:var(--a5)">orange</span>) → häufigeres Fehlen. Die Fehlenden (○) sind überwiegend orange. Da Z vollständig beobachtet ist, korrigiert MI durch Einbezug von Z als Prädiktor im PMM-Modell.',
-  mnar:'<strong style="color:var(--a1)">MNAR:</strong> Niedriges Wohlbefinden (Y↓) → Dropout — die Fehlenden (○) clustern im unteren Y-Bereich, unabhängig von Z-Farbe. MI trainiert auf den selektierten Daten → erbt ähnlichen Bias wie Listwise.'
+  mcar:'<strong style="color:var(--a3)">MCAR:</strong> Rein zufällige Fehlmuster — lila Kreise (○) gleichmäßig über alle Y-Werte verteilt. Listwise und MI liefern beide unverzerrte Schätzer.',
+  mar: '<strong style="color:var(--a5)">MAR:</strong> Niedrige Soziale Unterstützung (Z↓) → häufigeres Fehlen. Lila Kreise (○) häufen sich im unteren Y-Bereich (wegen Y=60−6X+3Z). Da Z beobachtet ist, korrigiert MI durch Z im PMM-Modell.',
+  mnar:'<strong style="color:var(--a1)">MNAR:</strong> Niedriges Wohlbefinden (Y↓) → Dropout — lila Kreise (○) clustern unten. MI erbt ähnlichen Bias wie Listwise, da das Imputationsmodell auf selektierten Daten trainiert wird.'
 };
 const ERKLAER={
-  mcar:'<strong>MCAR:</strong> Die Farbe der Kreise (●/○) zeigt die Soziale Unterstützung Z — orange=niedrig, blau=hoch. Bei MCAR sind Fehlende (○) farblich gleichmäßig verteilt: kein systematischer Dropout. Listwise und MI unverzerrt.',
-  mar: '<strong>MAR:</strong> Die Fehlenden (○) sind überwiegend <strong style="color:var(--a5)">orange</strong> — niedrige Z-Personen (wenig soziale Unterstützung) brechen häufiger ab. Da Y=60−6X+3Z, haben diese auch niedrigeres Wohlbefinden → Listwise überschätzt μ_Y. MI-PMM nutzt Z als Prädiktor und korrigiert diesen Bias.',
-  mnar:'<strong>MNAR:</strong> Die Fehlenden (○) clustern im unteren Y-Bereich (gemischte Farben!) — der Dropout hängt direkt von Y ab, nicht von Z. MI schätzt das Imputationsmodell auf den beobachteten (zu hohe Y) Daten und erbt deren Bias. Tabelle zeigt ähnliche Werte für Listwise und MI.'
+  mcar:'<strong>MCAR:</strong> Lila Kreise (○) zeigen die wahren Y-Werte fehlender Beobachtungen — gleichmäßig verteilt, kein systematisches Muster. Listwise (rot) und MI (grün) überlappen fast mit der wahren Geraden.',
+  mar: '<strong>MAR:</strong> Lila Kreise (○) häufen sich im unteren Y-Bereich — Personen mit niedriger Sozialer Unterstützung (Z↓) brechen häufiger ab und haben wegen Y=60−6X+3Z auch niedrigeres Wohlbefinden. Listwise (rot) überschätzt μ_Y. MI-PMM nutzt Z als Prädiktor und korrigiert.',
+  mnar:'<strong>MNAR:</strong> Lila Kreise (○) clustern im unteren Y-Bereich. Das Fehlmuster hängt direkt von Y ab — keine Hilfsvariable erklärt es vollständig. MI trainiert auf den selektierten (zu hohe Y) Daten → ähnlicher Bias wie Listwise.'
 };
 
 function setMech(mech){
@@ -738,6 +736,19 @@ function onSl(){
   recompute();
 }
 function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
+function downloadCSV(){
+  if(!ST.data)return;
+  const header='id,x,z,y_true,y_obs,missing,mech';
+  const rows=ST.data.map((d,i)=>
+    `${i+1},${d.x.toFixed(6)},${d.z.toFixed(6)},${d.yTrue.toFixed(6)},${d.miss?'NA':d.y.toFixed(6)},${d.miss?1:0},${ST.mech}`
+  );
+  const csv=[header,...rows].join('\n');
+  const a=Object.assign(document.createElement('a'),{
+    href:URL.createObjectURL(new Blob([csv],{type:'text/csv'})),
+    download:`missing_data_${ST.mech}_n${ST.n}_seed${ST.seed}.csv`
+  });
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
 function recompute(){generate();computeAll();drawPlot();drawDensity();updateTable();}
 
 function toggleTheme(){
