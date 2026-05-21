@@ -125,8 +125,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <p class="help-p">Die <strong>Item-Response-Theorie (IRT)</strong> modelliert, wie die Wahrscheinlichkeit einer richtigen Antwort von der Fähigkeit einer Person θ (Theta) und den Eigenschaften eines Items abhängt. Anders als in der Klassischen Testtheorie (KTT) liegen Personenfähigkeit und Itemschwierigkeit auf <em>derselben Skala</em> — das ermöglicht direkte Aussagen darüber, welche Items für welche Personen informativ sind.</p>
 
   <div class="help-sh">IRT und Faktorenanalyse — Verwandtschaft und Unterschied</div>
-  <p class="help-p">IRT und FA sind näher verwandt als es auf den ersten Blick erscheint: Beide modellieren eine oder mehrere latente Variablen, die das Antwortverhalten erklären. Mathematisch ist das 2PL-Modell äquivalent zu einem einfaktoriellen Modell für dichotome Daten — der Trennschärfeparameter a entspricht einer Faktorladung, θ entspricht dem Faktorwert. Für ordinale Items (Likert-Skalen) sind das Graded Response Model und die ordinale FA mit polychorischen Korrelationen eng verwandt.</p>
-  <p class="help-p">Der entscheidende Unterschied liegt im <strong>Erkenntnisinteresse</strong>: Die Faktorenanalyse fragt: Wie viele latente Dimensionen gibt es, und welche Items laden auf welchen Faktor? Das Ziel ist die Struktur des Konstrukts. Die IRT fragt: Wie gut funktioniert jedes einzelne Item? Wie präzise misst der Test an welcher Stelle der θ-Skala? Das Ziel ist die <strong>Güte und Brauchbarkeit der Items</strong> sowie die Messgüte des Tests für bestimmte Personen. Du täuschst dich also nicht — das ist der Kern des Unterschieds.</p>
+  <p class="help-p">IRT und FA sind näher verwandt als es auf den ersten Blick erscheint: Beide modellieren eine oder mehrere latente Variablen, die das Antwortverhalten erklären. Mathematisch ist das 2PL-Modell äquivalent zu einem einfaktoriellen Modell für dichotome Daten — der Trennschärfeparameter a entspricht einer Faktorladung, θ entspricht dem personenspezifischen Fähigkeitsparameter (dem Personenwert auf der latenten Skala). Für ordinale Items (Likert-Skalen) sind das Graded Response Model und die ordinale FA mit polychorischen Korrelationen eng verwandt.</p>
+  <p class="help-p">Der entscheidende Unterschied liegt im <strong>Erkenntnisinteresse</strong>: Die Faktorenanalyse fragt: Wie viele latente Dimensionen gibt es, und welche Items laden auf welchen Faktor? Das Ziel ist die Struktur des Konstrukts. Die IRT fragt: Wie gut funktioniert jedes einzelne Item? Wie präzise misst der Test an welcher Stelle der θ-Skala? Das Ziel ist die <strong>Güte und Brauchbarkeit der Items</strong> sowie die Messgüte des Tests für bestimmte Personen.</p>
 
   <div class="help-sh">ICC — Item Characteristic Curve</div>
   <p class="help-p">Für jedes Item gibt es eine S-förmige Kurve (ICC, auch IRF — Item Response Function), die zeigt: Wie hoch ist P(richtig | θ)? Das allgemeine Modell mit vier Parametern (4PL):</p>
@@ -136,7 +136,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <code class="help-formula">3PL:   P(θ) = c + (1 − c) / (1 + exp(−a · (θ − b)))          [d = 1]</code>
   <code class="help-formula">2PL:   P(θ) = 1 / (1 + exp(−a · (θ − b)))                    [c = 0, d = 1]</code>
   <code class="help-formula">1PL:   P(θ) = 1 / (1 + exp(−a · (θ − b)))   a gleich für alle Items</code>
-  <code class="help-formula">Rasch: P(θ) = 1 / (1 + exp(−(θ − b)))       a = 1 per Axiom</code>
+  <code class="help-formula">Rasch: P(θ) = 1 / (1 + exp(−1 · (θ − b)))   a = 1 per Axiom</code>
   <p class="help-p">Vom 4PL zum Rasch-Modell sinkt die Flexibilität, aber die Interpretierbarkeit und Messtheoretische Strenge steigen. 2PL und 3PL sind die häufigsten Modelle in der angewandten Diagnostik.</p>
 
   <div class="help-sh">Die vier Parameter</div>
