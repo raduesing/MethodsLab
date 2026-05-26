@@ -586,7 +586,17 @@ function updateErklaer(){
     narrative=`<span style="margin-top:.5rem;display:block;font-size:.75rem;border-top:1px solid var(--grid);padding-top:.4rem;color:var(--ink3)">Bei gleicher Fähigkeit (θ = 0): Anna ${pR0pct} % — Ben ${pF0pct} %. Kein Unterschied — das Item ist fair.</span>`;
   }else{
     const dp=Math.abs(pR0pct-pF0pct);
-    narrative=`<span style="margin-top:.5rem;display:block;font-size:.75rem;border-top:1px solid var(--grid);padding-top:.4rem;color:var(--ink)"><strong style="color:var(--a2)">Anna</strong> und <strong style="color:var(--a1)">Ben</strong> sind gleich fähig (θ = 0). Anna löst dieses Item mit <strong style="color:var(--a2)">${pR0pct} %</strong> Wahrscheinlichkeit, Ben nur mit <strong style="color:var(--a1)">${pF0pct} %</strong> — ein Unterschied von ${dp} Prozentpunkten bei identischer Fähigkeit. Das Item misst hier nicht nur <em>${it.sub}</em>, sondern auch konstruktirrelevante Merkmale (z. B. Sprachkompetenz oder kulturelles Vorwissen).</span>`;
+    let narrativeBody;
+    if(pR0pct===pF0pct){
+      narrativeBody=`<strong style="color:var(--a2)">Anna</strong> und <strong style="color:var(--a1)">Ben</strong> sind gleich fähig (θ = 0) und lösen dieses Item mit gleicher Wahrscheinlichkeit (<strong>${pR0pct} %</strong>). Die Kurven unterscheiden sich dennoch bei anderen θ-Werten — das Item zeigt DIF außerhalb der Mitte.`;
+    }else if(pR0pct>pF0pct){
+      // Referenz begünstigt (Normalfall: Δb > 0, Ben benachteiligt)
+      narrativeBody=`<strong style="color:var(--a2)">Anna</strong> und <strong style="color:var(--a1)">Ben</strong> sind gleich fähig (θ = 0). Anna löst dieses Item mit <strong style="color:var(--a2)">${pR0pct} %</strong> Wahrscheinlichkeit, Ben nur mit <strong style="color:var(--a1)">${pF0pct} %</strong> — ein Unterschied von ${dp} Prozentpunkten bei identischer Fähigkeit. Das Item misst hier nicht nur <em>${it.sub}</em>, sondern auch konstruktirrelevante Merkmale (z. B. Sprachkompetenz oder kulturelles Vorwissen) und <strong>benachteiligt Ben</strong>.`;
+    }else{
+      // Fokus begünstigt (Δb < 0, Anna benachteiligt)
+      narrativeBody=`<strong style="color:var(--a2)">Anna</strong> und <strong style="color:var(--a1)">Ben</strong> sind gleich fähig (θ = 0). Ben löst dieses Item mit <strong style="color:var(--a1)">${pF0pct} %</strong> Wahrscheinlichkeit, Anna nur mit <strong style="color:var(--a2)">${pR0pct} %</strong> — ein Unterschied von ${dp} Prozentpunkten bei identischer Fähigkeit. Das Item misst hier nicht nur <em>${it.sub}</em>, sondern auch konstruktirrelevante Merkmale und <strong>benachteiligt Anna</strong>.`;
+    }
+    narrative=`<span style="margin-top:.5rem;display:block;font-size:.75rem;border-top:1px solid var(--grid);padding-top:.4rem;color:var(--ink)">${narrativeBody}</span>`;
   }
   document.getElementById('erklaer-dif').innerHTML=
     `<strong>${it.label} — ${it.sub}</strong> · ${type}<br>`+
