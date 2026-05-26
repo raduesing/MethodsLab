@@ -757,19 +757,23 @@ function updateErklaerTable(){
   if(!r)return;
   const f=v=>v==null?'—':v.toFixed(2);
   const fb=v=>v==null?'—':(v>=0?'+':'')+v.toFixed(2);
-  const bxLW=r.listwise?r.listwise.bx-trueBX_MARG():null;
-  const bxMI=r.mi?r.mi.bx-trueBX_MARG():null;
-  const muLW=r.listwise?r.listwise.meanY-TRUE_A:null;
-  const muMI=r.mi?r.mi.meanY-TRUE_A:null;
+  const bxLW  = r.listwise ? r.listwise.bx - trueBX_MARG() : null;
+  const bxMean= r.mean     ? r.mean.bx     - trueBX_MARG() : null;
+  const bxMI  = r.mi       ? r.mi.bx       - trueBX_MARG() : null;
+  const muLW  = r.listwise ? r.listwise.meanY - TRUE_A : null;
+  const muMean= r.mean     ? r.mean.meanY     - TRUE_A : null;
+  const muMI  = r.mi       ? r.mi.meanY       - TRUE_A : null;
   const bxMargFmt=trueBX_MARG().toFixed(2).replace('-','−');
 
-  const sdC  = r.complete ? Math.sqrt(Math.max(r.complete.varY,0)) : null;
-  const sdLW = r.listwise ? Math.sqrt(Math.max(r.listwise.varY,0)) : null;
-  const sdMI = r.mi       ? Math.sqrt(Math.max(r.mi.varY,0))       : null;
+  const sdC    = r.complete ? Math.sqrt(Math.max(r.complete.varY,0)) : null;
+  const sdLW   = r.listwise ? Math.sqrt(Math.max(r.listwise.varY,0)) : null;
+  const sdMean = r.mean     ? Math.sqrt(Math.max(r.mean.varY,0))     : null;
+  const sdMI   = r.mi       ? Math.sqrt(Math.max(r.mi.varY,0))       : null;
   const trSD = trueSDY();
-  const sdBiasC  = sdC  != null ? sdC  - trSD : null;
-  const sdBiasLW = sdLW != null ? sdLW - trSD : null;
-  const sdBiasMI = sdMI != null ? sdMI - trSD : null;
+  const sdBiasC    = sdC    != null ? sdC    - trSD : null;
+  const sdBiasLW   = sdLW   != null ? sdLW   - trSD : null;
+  const sdBiasMean = sdMean != null ? sdMean - trSD : null;
+  const sdBiasMI   = sdMI   != null ? sdMI   - trSD : null;
 
   const rowStyle=`display:grid;grid-template-columns:9rem 1fr 1fr 1fr;gap:.15rem .6rem;
     font-family:'DM Mono',monospace;font-size:.78rem;margin:.45rem 0 .2rem;align-items:baseline`;
@@ -797,6 +801,10 @@ function updateErklaerTable(){
       <span style="color:var(--a1)">${biasVal(r.listwise?.bx,bxLW)}</span>
       <span style="color:var(--a1)">${biasVal(r.listwise?.meanY,muLW)}</span>
       <span style="color:var(--a1)">${biasVal(sdLW,sdBiasLW)}</span>
+      <span style="color:var(--a6);font-weight:500">Mean Imputation</span>
+      <span style="color:var(--a6)">${biasVal(r.mean?.bx,bxMean)}</span>
+      <span style="color:var(--a6)">${biasVal(r.mean?.meanY,muMean)}</span>
+      <span style="color:var(--a6)">${biasVal(sdMean,sdBiasMean)}</span>
       <span style="color:var(--a3);font-weight:500">MI (Imp: X+Z)</span>
       <span style="color:var(--a3)">${biasVal(r.mi?.bx,bxMI)}</span>
       <span style="color:var(--a3)">${biasVal(r.mi?.meanY,muMI)}</span>
@@ -808,7 +816,7 @@ function updateErklaerTable(){
       <strong>β_X &amp; μ_Y:</strong> Alle Methoden liefern nahezu unverzerrte Schätzer. Listwise verliert nur Stichprobengröße (n_obs statt n),
       bleibt aber unverzerrt. MI nutzt das volle n — effizienter, aber keine klare Bias-Korrektur nötig.<br>
       <strong>SD_Y:</strong> Auch SD_Y ist unter MCAR näherungsweise unverzerrt — Listwise verliert nur Präzision (kleineres n),
-      nicht Genauigkeit. Mean Imputation (Tabelle oben) attuiert SD_Y dagegen stark: alle Fehlenden erhalten
+      nicht Genauigkeit. Mean Imputation attenuiert SD_Y dagegen stark: alle Fehlenden erhalten
       denselben Wert, was die Streuung künstlich komprimiert — auch wenn das Fehlmuster völlig zufällig ist.</span>`,
     mar: `<span style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);line-height:1.85;display:block;margin-top:.5rem">
       <strong>β_X:</strong> Listwise unterschätzt den Betrag des Stresseffekts — gestresste Personen (X↑) fehlen überproportional,
@@ -819,7 +827,7 @@ function updateErklaerTable(){
       <strong>SD_Y:</strong> Listwise unterschätzt SD_Y, weil die untere Y-Flanke fehlt (niedrig-Z und hoch-X Personen
       haben niedrigeres Y und fallen überproportional weg — die beobachtete Verteilung ist von unten gestutzt).
       MI füllt diese Fälle kovariatgerecht auf und liegt näher an der wahren Streuung.
-      Mean Imputation (Tabelle oben) ist am stärksten verzerrt: der Spike bei μ̂_Y kollabiert die Verteilung.</span>`,
+      Mean Imputation ist am stärksten verzerrt: der Spike bei μ̂_Y kollabiert die Verteilung.</span>`,
     mnar:`<span style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);line-height:1.85;display:block;margin-top:.5rem">
       <strong>β_X &amp; μ_Y:</strong> Das Fehlmuster hängt von Y selbst ab — kein Modell kann dies vollständig korrigieren.
       MI trainiert auf den selektierten (Y zu hoch) Daten und gibt für fehlende Fälle zu hohe Werte zurück.
