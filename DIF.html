@@ -232,7 +232,9 @@ ICCs kreuzen sich — DIF wechselt die Richtung</code>
       <th>Item</th>
       <th>a<sub>ref</sub></th><th>b<sub>ref</sub></th>
       <th>a<sub>fok</sub></th><th>b<sub>fok</sub></th>
-      <th>Sign. Area</th><th>Unsigned Area</th><th>Klasse</th>
+      <th title="Signed Area = ∫(P_ref−P_fok)dθ — vorzeichenbehaftet. Positiv = Referenz bevorzugt. Kann sich bei nicht-uniformem DIF aufheben.">Sign. Area ⓘ</th>
+      <th title="Raju-Index = ∫|P_ref−P_fok|dθ — absoluter DIF-Betrag. Cutoffs: &lt;0.05 vernachlässigbar (A), 0.05–0.10 moderat (B), &gt;0.10 substantiell (C).">Unsigned Area ⓘ</th>
+      <th>Klasse</th>
     </tr></thead>
     <tbody id="par-tbody"></tbody>
   </table>
@@ -369,6 +371,29 @@ function drawICC(){
   if(Math.abs(it.db)>0.01||Math.abs(it.da)>0.01){
     ctx.fillStyle=a1c;ctx.fillText(`b_fok=${foc.b.toFixed(2)}`,tx(foc.b),pad.t+10);
   }
+  // ── Anna/Ben bei θ=0 (nur wenn DIF aktiv) ──────────────────────────────────
+  const hasDIFplot=Math.abs(it.db)>0.01||Math.abs(it.da)>0.01;
+  if(hasDIFplot){
+    const th0=0,x0=tx(th0);
+    const pR0=icc(th0,it.a,it.b),pF0=icc(th0,foc.a,foc.b);
+    const yR=py(pR0),yF=py(pF0);
+    // Hervorgehobene Hilfslinie bei θ=0
+    ctx.strokeStyle=ink2;ctx.lineWidth=1.5;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(x0,pad.t);ctx.lineTo(x0,pad.t+cH);ctx.stroke();
+    // Anna-Punkt (Referenz, blau)
+    ctx.fillStyle=a2c;ctx.beginPath();ctx.arc(x0,yR,7,0,2*Math.PI);ctx.fill();
+    ctx.fillStyle=paper;ctx.font=`bold 8px 'DM Mono',monospace`;ctx.textAlign='center';
+    ctx.fillText('A',x0,yR+3);
+    // Ben-Punkt (Fokus, rot)
+    ctx.fillStyle=a1c;ctx.beginPath();ctx.arc(x0,yF,7,0,2*Math.PI);ctx.fill();
+    ctx.fillStyle=paper;ctx.font=`bold 8px 'DM Mono',monospace`;ctx.textAlign='center';
+    ctx.fillText('B',x0,yF+3);
+    // Labels rechts der Punkte
+    ctx.font=`9px 'DM Mono',monospace`;ctx.textAlign='left';
+    const lblX=x0+10;
+    ctx.fillStyle=a2c;ctx.fillText(`Anna: ${Math.round(pR0*100)}%`,lblX,yR-9);
+    ctx.fillStyle=a1c;ctx.fillText(`Ben: ${Math.round(pF0*100)}%`,lblX,yF+16);
+  }
   // Axes
   ctx.fillStyle=ink2;ctx.font=`11px 'DM Mono',monospace`;ctx.textAlign='center';
   [-4,-2,0,2,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+16));
@@ -449,8 +474,12 @@ function drawDiff(){
   ctx.fillStyle=a1c;ctx.fillText('Fok begünstigt',pad.l+3,mid+12);
   ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.strokeRect(pad.l,pad.t,cW,cH);
   const m=difMetrics(it.a,it.b,foc.a,foc.b);
-  document.getElementById('diff-note').textContent=
-    `Signed Area = ${m.sa>=0?'+':''}${m.sa.toFixed(4)} · Unsigned Area = ${m.ua.toFixed(4)}`;
+  document.getElementById('diff-note').innerHTML=
+    `Signed Area = ${m.sa>=0?'+':''}${m.sa.toFixed(4)} &nbsp;·&nbsp; Unsigned Area (Raju) = ${m.ua.toFixed(4)}<br>`+
+    `<span style="color:var(--ink3);margin-top:.18rem;display:block">`+
+    `<strong>Signed Area</strong> = ∫(P_ref − P_fok) dθ: vorzeichenbehaftet — positiv wenn Referenz bevorzugt, negativ wenn Fokus bevorzugt. Kann bei nicht-uniformem DIF nahe null sein, obwohl DIF vorliegt (Aufhebungseffekt).<br>`+
+    `<strong>Unsigned Area</strong> (Raju-Index) = ∫|P_ref − P_fok| dθ: absoluter DIF-Betrag, richtungsunabhängig. Grundlage für Klasse A/B/C. Richtwerte: &lt; 0.05 vernachlässigbar · 0.05–0.10 moderat · &gt; 0.10 substantiell.`+
+    `</span>`;
 }
 
 // ── Gruppenverteilungen ───────────────────────────────────────────────────────
@@ -540,9 +569,21 @@ function updateErklaer(){
   if(hasUniDIF&&!hasNonUniDIF)type=`Uniformes DIF: Δb = ${it.db>=0?'+':''}${it.db.toFixed(2)} — die Fokusgruppe ${it.db>0?'ist um '+it.db.toFixed(2)+' Einheiten benachteiligt (höhere Schwierigkeit)':'ist begünstigt (niedrigere Schwierigkeit)'}. Die ICCs verlaufen parallel.`;
   else if(!hasUniDIF&&hasNonUniDIF)type=`Nicht-uniformes DIF: Δa = ${it.da>=0?'+':''}${it.da.toFixed(2)} — die Trennschärfe unterscheidet sich zwischen Gruppen. Die ICCs kreuzen sich: bei ${it.da<0?'niedrigen':'hohen'} θ-Werten ist die Fokusgruppe im Vorteil.`;
   else if(hasUniDIF&&hasNonUniDIF)type=`Gemischtes DIF: Δb = ${it.db>=0?'+':''}${it.db.toFixed(2)}, Δa = ${it.da>=0?'+':''}${it.da.toFixed(2)} — Schwierigkeit und Trennschärfe unterscheiden sich. ICCs kreuzen sich.`;
+  // Narrativer Anna/Ben-Absatz bei θ=0
+  const hasDIF=hasUniDIF||hasNonUniDIF;
+  const pR0=icc(0,it.a,it.b),pF0=icc(0,foc.a,foc.b);
+  const pR0pct=Math.round(pR0*100),pF0pct=Math.round(pF0*100);
+  let narrative;
+  if(!hasDIF){
+    narrative=`<span style="margin-top:.5rem;display:block;font-size:.75rem;border-top:1px solid var(--grid);padding-top:.4rem;color:var(--ink3)">Bei gleicher Fähigkeit (θ = 0): Anna ${pR0pct} % — Ben ${pF0pct} %. Kein Unterschied — das Item ist fair.</span>`;
+  }else{
+    const dp=Math.abs(pR0pct-pF0pct);
+    narrative=`<span style="margin-top:.5rem;display:block;font-size:.75rem;border-top:1px solid var(--grid);padding-top:.4rem;color:var(--ink)"><strong style="color:var(--a2)">Anna</strong> und <strong style="color:var(--a1)">Ben</strong> sind gleich fähig (θ = 0). Anna löst dieses Item mit <strong style="color:var(--a2)">${pR0pct} %</strong> Wahrscheinlichkeit, Ben nur mit <strong style="color:var(--a1)">${pF0pct} %</strong> — ein Unterschied von ${dp} Prozentpunkten bei identischer Fähigkeit. Das Item misst hier nicht nur <em>${it.sub}</em>, sondern auch konstruktirrelevante Merkmale (z. B. Sprachkompetenz oder kulturelles Vorwissen).</span>`;
+  }
   document.getElementById('erklaer-dif').innerHTML=
     `<strong>${it.label} — ${it.sub}</strong> · ${type}<br>`+
-    `Unsigned Area = ${m.ua.toFixed(4)} → <strong>Klasse ${cl.label}</strong>`;
+    `Unsigned Area = ${m.ua.toFixed(4)} → <strong>Klasse ${cl.label}</strong>`+
+    narrative;
   const badge=document.getElementById('dif-badge');
   badge.textContent=`DIF-Klasse: ${cl.label}`;
   badge.style.borderColor=`var(${cl.color})`;
