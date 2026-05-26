@@ -399,8 +399,8 @@ function drawCRF(){
     ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([3,4]);
     ctx.beginPath();ctx.moveTo(tx(dv),pad.t);ctx.lineTo(tx(dv),pad.t+cH);ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle=m==='grm'?cv('--a5'):ink3;
-    ctx.font=m==='grm'?`bold 12px 'DM Mono',monospace`:`10px 'DM Mono',monospace`;
+    ctx.fillStyle=cv('--a5');
+    ctx.font=`bold 12px 'DM Mono',monospace`;
     ctx.textAlign='center';
     ctx.fillText(m==='grm'?`b${j+1}`:`δ${j+1}`,tx(dv),pad.t-7);
   });
