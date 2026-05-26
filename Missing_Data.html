@@ -707,14 +707,14 @@ function updateErklaerTable(){
   const sdBiasMI   = sdMI   != null ? sdMI   - trSD : null;
 
   const rowStyle=`display:grid;grid-template-columns:9rem 3.5rem 1fr 1fr 1fr;gap:.15rem .6rem;
-    font-family:'DM Mono',monospace;font-size:.78rem;margin:.45rem 0 .2rem;align-items:baseline`;
-  const hdrStyle=`color:var(--ink3);font-size:.70rem;letter-spacing:.06em;text-transform:uppercase;padding-bottom:.2rem;border-bottom:1px solid var(--grid)`;
+    font-family:'DM Mono',monospace;font-size:.87rem;margin:.45rem 0 .2rem;align-items:baseline`;
+  const hdrStyle=`color:var(--ink3);font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;padding-bottom:.2rem;border-bottom:1px solid var(--grid)`;
 
   const biasColor=v=>{
     if(v==null)return'var(--ink3)';
     return Math.abs(v)<0.5?'var(--a3)':Math.abs(v)<2?'var(--a5)':'var(--a1)';
   };
-  const biasVal=(est,bias)=>`${f(est)} <span style="font-size:.72rem;color:${biasColor(bias)}">(Bias ${fb(bias)})</span>`;
+  const biasVal=(est,bias)=>`${f(est)} <span style="font-size:.79rem;color:${biasColor(bias)}">(Bias ${fb(bias)})</span>`;
 
   const rows=`
     <div style="${rowStyle}">
