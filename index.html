@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html lang="de" data-theme="light">
+<html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Methods Lab — Interaktive Statistik-Werkzeuge</title>
+<title>Methods Lab — Dr. Rainer Düsing · Universität Osnabrück</title>
+<meta name="description" content="Interaktive Statistik-Werkzeuge von Dr. Rainer Düsing, Universität Osnabrück. Regression, Kausalinferenz, IRT, Paradoxe, Power — vollständig im Browser, kein Server.">
+<meta name="author" content="Dr. Rainer Düsing">
+<meta property="og:title" content="Methods Lab — Dr. Rainer Düsing · Universität Osnabrück">
+<meta property="og:description" content="Interaktive Visualisierungen für statistische Methoden: Regression, kausale Inferenz, IRT, Paradoxe, Power &amp; Stichprobengröße.">
+<meta property="og:url" content="https://methods-lab.uni-osnabrueck.de/">
+<link rel="author" href="https://www.researchgate.net/profile/Rainer-Duesing">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -42,11 +48,16 @@ a:hover{text-decoration:underline}
   display:flex;align-items:center;
   padding:0 1.25rem;gap:1rem;
 }
-#topbar .tb-brand{
-  font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;
-  color:var(--ink);letter-spacing:.01em;flex:1;
+#topbar .tb-brand{flex:1;display:flex;flex-direction:column;justify-content:center;gap:.06rem}
+#topbar .tb-brand-name{
+  font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;
+  color:var(--ink);letter-spacing:.01em;line-height:1.1;
 }
-#topbar .tb-brand span{color:var(--a2)}
+#topbar .tb-brand-name em{font-style:italic;color:var(--a2)}
+#topbar .tb-brand-sub{
+  font-family:'DM Mono',monospace;font-size:.6rem;
+  color:var(--ink3);letter-spacing:.04em;
+}
 .tb-btn{
   background:none;border:1px solid var(--border);
   color:var(--ink2);font-family:'DM Mono',monospace;font-size:.78rem;
@@ -131,8 +142,16 @@ a:hover{text-decoration:underline}
 #hero h1 em{font-style:italic;color:var(--a2)}
 #hero .hero-sub{
   font-size:1.08rem;color:var(--ink2);
-  max-width:640px;line-height:1.7;margin-bottom:1.4rem;
+  max-width:640px;line-height:1.7;margin-bottom:.9rem;
 }
+.hero-author{
+  font-family:'DM Mono',monospace;font-size:.76rem;
+  color:var(--ink3);margin-bottom:1.2rem;
+  display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;
+}
+.hero-author a{color:var(--ink3);text-decoration:underline;text-underline-offset:3px}
+.hero-author a:hover{color:var(--a2)}
+.hero-author .sep{opacity:.4}
 .hero-badges{display:flex;flex-wrap:wrap;gap:.5rem}
 .hero-badge{
   font-family:'DM Mono',monospace;font-size:.71rem;
@@ -149,8 +168,11 @@ a:hover{text-decoration:underline}
   border-bottom:2px solid var(--sec-color,var(--a2));
 }
 .sec-num{
-  font-family:'DM Mono',monospace;font-size:.72rem;
-  color:var(--ink3);letter-spacing:.1em;flex-shrink:0;
+  font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.1em;
+  color:var(--sec-color,var(--a2));
+  border:1px solid var(--sec-color,var(--a2));
+  background:color-mix(in srgb,var(--sec-color,var(--a2)) 10%,transparent);
+  padding:.1rem .5rem;line-height:1.65;flex-shrink:0;align-self:center;
 }
 .sec-title{
   font-size:1.35rem;font-weight:600;color:var(--ink);
@@ -174,18 +196,32 @@ a:hover{text-decoration:underline}
 .tcard{
   background:var(--panel);
   border:1px solid var(--border);
-  padding:1.1rem 1.1rem 1rem;
+  border-left:3px solid transparent;
+  padding:1.1rem 1rem 1rem calc(1.1rem - 2px);
   position:relative;
-  transition:border-color .15s,transform .1s;
+  transition:border-color .2s,border-left-color .2s,transform .15s,box-shadow .2s;
   display:flex;flex-direction:column;gap:.45rem;
   text-decoration:none;color:inherit;
 }
-.tcard:hover{border-color:var(--sec-color,var(--a2));transform:translateY(-2px);text-decoration:none}
-.tcard.planned{
-  opacity:.62;cursor:default;pointer-events:none;
+.tcard:hover{
+  border-color:color-mix(in srgb,var(--sec-color,var(--a2)) 35%,var(--border));
+  border-left-color:var(--sec-color,var(--a2));
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(0,0,0,.1);
+  text-decoration:none;
 }
-.tcard.planned:hover{transform:none}
-.tcard-icon{font-size:1.5rem;line-height:1;margin-bottom:.1rem}
+.tcard.planned{
+  opacity:.58;cursor:default;pointer-events:none;
+}
+.tcard.planned:hover{transform:none;box-shadow:none}
+.tcard-icon{
+  font-size:1.35rem;line-height:1;
+  width:2.2rem;height:2.2rem;
+  display:flex;align-items:center;justify-content:center;
+  background:color-mix(in srgb,var(--sec-color,var(--a2)) 10%,transparent);
+  flex-shrink:0;align-self:flex-start;
+  margin-bottom:.1rem;
+}
 .tcard-title{
   font-size:.97rem;font-weight:600;color:var(--ink);
   line-height:1.25;
@@ -242,19 +278,46 @@ a:hover{text-decoration:underline}
 /* ── Footer ────────────────────────────────────────────────────────── */
 #footer{
   border-top:1px solid var(--border);
-  padding:1.6rem 0;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:.8rem;
-}
-#footer .ft-left{
+  padding:1.8rem 0 2.4rem;
   font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);
 }
-#footer .ft-links{
-  display:flex;gap:1.2rem;
-  font-family:'DM Mono',monospace;font-size:.72rem;
+.ft-links{
+  display:flex;flex-wrap:wrap;gap:1.2rem;
+  margin-bottom:.7rem;
 }
-#footer .ft-links a{color:var(--ink3)}
-#footer .ft-links a:hover{color:var(--a2)}
+.ft-links a{color:var(--ink3);transition:color .15s}
+.ft-links a:hover{color:var(--a2);text-decoration:none}
+.ft-line{margin-top:.25rem;opacity:.8}
+.ft-line.dim{opacity:.55}
+.ft-line a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.ft-line a:hover{color:var(--a2)}
+
+/* ── Disclaimer / Impressum Modal ─────────────────────────────────── */
+.ml-modal{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.58);
+  align-items:center;justify-content:center;
+}
+.ml-modal.open{display:flex}
+.ml-modal-box{
+  background:var(--paper);border:1px solid var(--border);
+  padding:2rem 2.4rem;max-width:580px;width:90%;
+  max-height:82vh;overflow-y:auto;position:relative;
+  font-family:'DM Mono',monospace;
+}
+.ml-modal-close{
+  position:absolute;top:.75rem;right:.75rem;
+  background:none;border:none;font-size:1.1rem;
+  cursor:pointer;color:var(--ink2);line-height:1;
+}
+.ml-modal-close:hover{color:var(--ink)}
+.ml-modal-eyebrow{
+  font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:1.2rem;
+}
+.ml-modal-body{font-size:.78rem;color:var(--ink2);line-height:1.9}
+.ml-modal-body h3{font-family:'Fraunces',serif;font-size:.95rem;color:var(--ink);margin:1.1rem 0 .3rem}
+.ml-modal-body p{margin-bottom:.8rem}
 
 /* ── Scrollbar ─────────────────────────────────────────────────────── */
 #toc::-webkit-scrollbar{width:4px}
@@ -276,7 +339,10 @@ a:hover{text-decoration:underline}
 
 <!-- ═══ TOPBAR ═══════════════════════════════════════════════════════ -->
 <div id="topbar">
-  <div class="tb-brand">Methods&thinsp;<span>Lab</span></div>
+  <div class="tb-brand">
+    <span class="tb-brand-name">Methods&thinsp;<em>Lab</em></span>
+    <span class="tb-brand-sub">Dr. Rainer Düsing · Universität Osnabrück</span>
+  </div>
   <button class="tb-btn" onclick="toggleTheme()" id="theme-btn">☀ Hell</button>
 </div>
 
@@ -295,7 +361,7 @@ a:hover{text-decoration:underline}
     <li><a href="#sec6" style="--toc-accent:var(--a6)"><span class="toc-num">06</span>Diagnostik</a></li>
   </ul>
   <div class="toc-btl">
-    <a href="https://[BTL-URL]" target="_blank">
+    <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/index_de.html" target="_blank">
       <span>🎲</span>Bayes Thinking Lab ↗
     </a>
   </div>
@@ -306,13 +372,22 @@ a:hover{text-decoration:underline}
 
 <!-- ── Hero ──────────────────────────────────────────────────────── -->
 <section id="hero">
-  <div class="hero-eyebrow">Universität · Lehr-Werkzeuge · Statistik</div>
+  <div class="hero-eyebrow">Interaktive Statistik · Open Source · Universität Osnabrück</div>
   <h1>Methods <em>Lab</em></h1>
   <p class="hero-sub">
     Interaktive Visualisierungen für statistische Methoden — von der einfachen
     Regression über kausale Inferenz bis hin zu psychometrischen Modellen.
     Kein Code nötig, alle Konzepte direkt erfahrbar.
   </p>
+  <div class="hero-author">
+    <a href="https://www.uni-osnabrueck.de/fb8/psychologie/institut/mitarbeitendenverzeichnis/personendetails?username=rduesing" target="_blank">Dr. Rainer Düsing</a>
+    <span class="sep">·</span>
+    Universität Osnabrück
+    <span class="sep">·</span>
+    Fachgebiet Forschungsmethodik, Diagnostik &amp; Evaluation
+    <span class="sep">·</span>
+    <a href="https://www.researchgate.net/profile/Rainer-Duesing" target="_blank">ResearchGate ↗</a>
+  </div>
   <div class="hero-badges">
     <span class="hero-badge">25 Tools verfügbar</span>
     <span class="hero-badge">9 Tools geplant</span>
@@ -686,10 +761,10 @@ a:hover{text-decoration:underline}
       Beide Labs ergänzen sich: Lindley's Paradox z.&thinsp;B. braucht beide Perspektiven.
     </p>
     <div class="promo-links">
-      <a href="https://[BTL-URL]" target="_blank" class="promo-link">→ Zum Bayes Thinking Lab</a>
-      <a href="https://[BTL-URL]/Prior_Lab.html" target="_blank" class="promo-link secondary">Prior Lab</a>
-      <a href="https://[BTL-URL]/Decision_Maker.html" target="_blank" class="promo-link secondary">Decision Lab</a>
-      <a href="https://[BTL-URL]/Golem_Builder.html" target="_blank" class="promo-link secondary">Golem Builder</a>
+      <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/index_de.html" target="_blank" class="promo-link">→ Zum Bayes Thinking Lab</a>
+      <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Prior_Lab.html" target="_blank" class="promo-link secondary">Prior Lab</a>
+      <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Decision_Maker.html" target="_blank" class="promo-link secondary">Decision Lab</a>
+      <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Golem_Builder.html" target="_blank" class="promo-link secondary">Golem Builder</a>
     </div>
   </div>
 </div>
@@ -698,26 +773,67 @@ a:hover{text-decoration:underline}
      FOOTER
      ══════════════════════════════════════════════════════════════════ -->
 <footer id="footer">
-  <div class="ft-left">Methods Lab &mdash; Universität · Lehr-Werkzeuge</div>
   <div class="ft-links">
-    <a href="https://[BTL-URL]" target="_blank">Bayes Thinking Lab ↗</a>
-    <a href="mailto:rduesing@googlemail.com">Kontakt</a>
+    <a href="https://github.com/raduesing/MethodsLab" target="_blank">GitHub ↗</a>
+    <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/index_de.html" target="_blank">Bayes Thinking Lab ↗</a>
+    <a href="impressum.html">Impressum</a>
+    <a href="#" onclick="openModal('disclaimer-modal');return false">Disclaimer</a>
+    <a href="#hero">↑ Nach oben</a>
   </div>
+  <div class="ft-line">Methods Lab · Open Source · Dr. Rainer Düsing, Universität Osnabrück</div>
+  <div class="ft-line dim">Alle Tools laufen vollständig im Browser · Keine Datenübertragung · Kein Server nötig</div>
+  <div class="ft-line dim">Kontakt: <a href="mailto:rduesing@googlemail.com">rduesing@googlemail.com</a></div>
 </footer>
 
 </main>
 </div><!-- #layout -->
 
+<!-- ── Disclaimer Modal ──────────────────────────────────────────── -->
+<div id="disclaimer-modal" class="ml-modal" onclick="if(event.target===this)closeModal('disclaimer-modal')">
+  <div class="ml-modal-box">
+    <button class="ml-modal-close" onclick="closeModal('disclaimer-modal')">✕</button>
+    <div class="ml-modal-eyebrow">Haftungsausschluss</div>
+    <div class="ml-modal-body">
+      <p>Das Methods Lab ist ein kostenloses, quelloffenes Lehr- und Lernprojekt.
+      Alle Inhalte dienen ausschließlich zu Bildungszwecken. Trotz sorgfältiger
+      Erstellung der Inhalte und Implementierungen wird keine Gewähr für die
+      Richtigkeit, Vollständigkeit oder Aktualität der dargestellten Berechnungen,
+      Visualisierungen oder sonstigen Inhalte übernommen. Die Nutzung erfolgt auf
+      eigene Verantwortung.</p>
+      <p>Eine Haftung für Schäden, die aus der Verwendung oder dem Vertrauen auf die
+      bereitgestellten Informationen entstehen — insbesondere bei fehlerhaften
+      Berechnungen durch Software-Bugs — wird ausdrücklich ausgeschlossen, soweit
+      dies gesetzlich zulässig ist.</p>
+      <p>Für akademische, klinische oder sonstige professionelle Entscheidungen ist
+      stets die eigenständige Überprüfung durch qualifizierte Fachpersonen erforderlich.</p>
+      <h3>Über das Projekt</h3>
+      <p>Das Methods Lab wird entwickelt und betreut von Dr. Rainer Düsing,
+      Universität Osnabrück, Fachgebiet Forschungsmethodik, Diagnostik &amp; Evaluation.
+      Es ist das Schwesterprojekt des
+      <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/index_de.html" target="_blank">Bayes Thinking Lab</a>.</p>
+    </div>
+  </div>
+</div>
+
 <script>
+function openModal(id){ document.getElementById(id).classList.add('open') }
+function closeModal(id){ document.getElementById(id).classList.remove('open') }
+// close modals on Escape
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.ml-modal.open').forEach(m=>m.classList.remove('open'))});
+
 function toggleTheme(){
   const h=document.documentElement;
   const isDark=h.getAttribute('data-theme')==='dark';
-  h.setAttribute('data-theme',isDark?'light':'dark');
-  document.getElementById('theme-btn').textContent=isDark?'☀ Hell':'☾ Dunkel';
+  const newTheme=isDark?'light':'dark';
+  h.setAttribute('data-theme',newTheme);
+  document.getElementById('theme-btn').textContent=newTheme==='dark'?'☾ Dunkel':'☀ Hell';
+  localStorage.setItem('ml-theme',newTheme);
 }
-// init button label
+// init: localStorage → default dark
 (function(){
-  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const saved=localStorage.getItem('ml-theme');
+  const isDark=saved?saved==='dark':true;
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
   document.getElementById('theme-btn').textContent=isDark?'☾ Dunkel':'☀ Hell';
 })();
 
