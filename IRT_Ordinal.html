@@ -414,7 +414,7 @@ function drawCRF(){
   ctx.beginPath();ctx.moveTo(tx(ST.thetaPerson),pad.t);ctx.lineTo(tx(ST.thetaPerson),pad.t+cH);ctx.stroke();
   ctx.setLineDash([]);
   ctx.fillStyle=ink2;ctx.font=`11px 'DM Mono',monospace`;ctx.textAlign='center';
-  [-4,-2,0,2,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+16));
+  [-4,-3,-2,-1,0,1,2,3,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+16));
   ctx.textAlign='right';
   [0,.25,.5,.75,1].forEach(f=>ctx.fillText(f.toFixed(2),pad.l-5,py(f)+4));
   ctx.fillStyle=ink2;ctx.textAlign='center';ctx.fillText('Fähigkeit θ',pad.l+cW/2,H-4);
@@ -462,7 +462,7 @@ function drawESC(){
   ctx.setLineDash([]);
   ctx.fillStyle=a6c;ctx.beginPath();ctx.arc(tx(ST.thetaPerson),sy(curE),5,0,2*Math.PI);ctx.fill();
   ctx.fillStyle=ink2;ctx.font=`10px 'DM Mono',monospace`;ctx.textAlign='center';
-  [-4,-2,0,2,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+13));
+  [-4,-3,-2,-1,0,1,2,3,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+13));
   ctx.textAlign='right';
   for(let k=0;k<NCAT;k++)ctx.fillText(k,pad.l-4,sy(k)+4);
   ctx.fillText('E[X|θ]',pad.l+cW/2,H-4);
@@ -502,7 +502,7 @@ function drawItemInfo(){
   ctx.beginPath();ctx.moveTo(tx(ST.thetaPerson),pad.t);ctx.lineTo(tx(ST.thetaPerson),pad.t+cH);ctx.stroke();
   ctx.setLineDash([]);
   ctx.fillStyle=ink2;ctx.font=`10px 'DM Mono',monospace`;ctx.textAlign='center';
-  [-4,-2,0,2,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+13));
+  [-4,-3,-2,-1,0,1,2,3,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+13));
   ctx.textAlign='right';
   [0,.25,.5,.75,1].forEach(f=>ctx.fillText((f*maxI).toFixed(2),pad.l-4,iy(f*maxI)+4));
   ctx.fillText('I(θ)',pad.l+cW/2,H-4);
