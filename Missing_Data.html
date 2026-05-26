@@ -221,14 +221,14 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
   <div class="story-box">
     <div class="story-lbl">Durchgehendes Beispiel</div>
     <div class="story-vars">
-      <span class="sv">Z</span><span class="sd">Soziale Unterstützung (z-std.) — vollständig beobachtet · <strong>Auxiliary-Variable</strong>: im Imputationsmodell, <em>nicht</em> im Analysemodell · beeinflusst Y und (unter MAR) die Missingness</span>
-      <span class="sv">X</span><span class="sd">Stresslevel (z-std.) — vollständig beobachtet · r(X,Z) = −.40 · <strong>Hauptprädiktor</strong></span>
-      <span class="sv">Y</span><span class="sd">Wohlbefinden t=2 (0–100) — teilweise fehlend · Outcome</span>
-      <span class="sv">DGP</span><span class="sd">Y = 60 − 6·X + 3·Z + ε · μ_Y = 60 · SD_Y ≈ 11.85</span>
-      <span class="sv">Ziel</span><span class="sd">Analyse: <strong>Y ~ X</strong> · β_X (marginal) = −7.20 = −6 + 3·(−0.40) · Warum −7.20? Weil Z→Y (β_Z=+3) und r_XZ=−.40 — der marginale X-Effekt enthält die Z-Kovarianz</span>
-      <span class="sv">MAR-Bias</span><span class="sd">Niedrige Unterstützung (Z↓) und hoher Stress (X↑) → Dropout · Diese Personen haben niedrigeres Y · Listwise-Doppelbias: <strong>(1)</strong> μ_Y↑ (obere Y-Bereich überrepräsentiert) · <strong>(2)</strong> β_X zu flach (hohe-X-Fälle fehlen, schwächerer Effekt geschätzt) · MI-Fix: Z als Auxiliary im PMM → PMM findet korrekte Spender für niedrig-Y-Fälle</span>
+      <span class="sv">Z</span><span class="sd"><strong>Auxiliary-Variable</strong> — vollständig beobachtet, beeinflusst Y (β_Z = +3) und (unter MAR) die Missingness. Nicht Teil der Forschungsfrage, aber nötig im Imputationsmodell.</span>
+      <span class="sv">X</span><span class="sd"><strong>Hauptprädiktor</strong> — vollständig beobachtet, r(X,Z) = −.40</span>
+      <span class="sv">Y</span><span class="sd"><strong>Outcome</strong> — Wohlbefinden t=2 (0–100), teilweise fehlend</span>
+      <span class="sv">Wahrer DGP</span><span class="sd">Y = 60 − 6X + 3Z + ε — Z beeinflusst Y in der Realität, auch wenn der Forscher nur Y ~ X modelliert. Ohne Z→Y könnte PMM keine besseren Spender finden und MI hätte keinen Vorteil.</span>
+      <span class="sv">Zielanalyse</span><span class="sd">Y ~ X — marginaler Populationseffekt β_X = −7.20 (= −6 + 3·(−0.40), weil Z→Y und r_XZ = −.40)</span>
+      <span class="sv">MAR-Bias</span><span class="sd">Z↓ und X↑ → Dropout. Fehlende haben niedrigeres Y. Listwise: (1) μ_Y↑ und (2) β_X zu flach. MI-Fix: Z im Imputationsmodell → PMM findet Spender mit korrekt niedrigen Y-Werten.</span>
     </div>
-    <div class="story-q">Warum muss Z ins Imputationsmodell, obwohl die Zielanalyse nur Y ~ X ist? — <em>Weil das Imputationsmodell reicher sein muss als das Analysemodell (Rubin 1987): alle Variablen, die Missingness oder Y vorhersagen, gehören ins Imputationsmodell.</em></div>
+    <div class="story-q">Warum Z ins Imputationsmodell, wenn die Analyse nur Y ~ X ist? — Z sagt sowohl die Missingness als auch Y voraus. Ohne Z würde PMM die fehlenden Y-Werte systematisch zu hoch schätzen. Das Imputationsmodell muss reicher sein als das Analysemodell (Rubin 1987).</div>
   </div>
 
   <div class="sec-h" style="margin-top:0">Scatter — Stresslevel X vs. Wohlbefinden Y</div>
@@ -711,47 +711,80 @@ function updateTable(){
   document.getElementById('t-sdy-pop').textContent=TRUE_SDY.toFixed(2);
   document.querySelectorAll('.mval').forEach(el=>el.textContent=ST.m);
 
-  // Badge & Note
+  // Badge (Mechanismus-Label) + Note (nur n-Info)
   const badge=document.getElementById('result-badge');
   const note=document.getElementById('result-note');
   const pctMiss=Math.round((1-nObs/ST.n)*100);
-  const bLW_mu=r.listwise?fb(r.listwise.meanY-TRUE_A):'?';
-  const bMI_mu=r.mi?fb(r.mi.meanY-TRUE_A):'?';
-  const bLW_bx=r.listwise?fb(r.listwise.bx-TRUE_BX_MARG):'?';
-  const bMI_bx=r.mi?fb(r.mi.bx-TRUE_BX_MARG):'?';
-  const msgs={
-    mcar:`<span class="badge badge-ok">MCAR</span> Listwise Y~X unverzerrt — Bias β_X=${bLW_bx} · Bias μ_Y=${bLW_mu}. MI effizienter, ähnlich unverzerrt.`,
-    mar: `<span class="badge badge-warn">MAR (X+Z)</span> Listwise Y~X doppelt verzerrt — Bias β_X=${bLW_bx} · Bias μ_Y=${bLW_mu}. MI (Imp:X+Z) korrigiert: Bias β_X=${bMI_bx} · Bias μ_Y=${bMI_mu}.`,
-    mnar:`<span class="badge badge-bad">MNAR</span> Kein Modell korrigiert vollständig. Listwise β_X Bias=${bLW_bx} — MI β_X Bias=${bMI_bx}. MI praktisch trotzdem oft besser.`
+  const badgeLbls={
+    mcar:`<span class="badge badge-ok">MCAR</span>`,
+    mar: `<span class="badge badge-warn">MAR — bedingt zufällig (|X,Z)</span>`,
+    mnar:`<span class="badge badge-bad">MNAR — nicht zufällig (|Y)</span>`
   };
-  badge.innerHTML=msgs[ST.mech];
-  note.textContent=`${nObs}/${ST.n} beobachtet (${pctMiss}% fehlend, m=${ST.m}×PMM). `+
-    `Bias β_X (Y~X): Listwise=${bLW_bx} · Mean-Imp=${r.mean?fb(r.mean.bx-TRUE_BX_MARG):'?'} · MI=${bMI_bx}`;
+  badge.innerHTML=badgeLbls[ST.mech];
+  note.textContent=`${nObs} von ${ST.n} beobachtet — ${pctMiss}% fehlend — m = ${ST.m} Imputationen`;
+
+  // Erklaer-Table: Bias-Zeilen pro Methode + Interpretationstext
+  updateErklaerTable();
+}
+
+function updateErklaerTable(){
+  const r=ST.res;
+  if(!r)return;
+  const f=v=>v==null?'—':v.toFixed(2);
+  const fb=v=>v==null?'—':(v>=0?'+':'')+v.toFixed(2);
+  const bxLW=r.listwise?r.listwise.bx-TRUE_BX_MARG:null;
+  const bxMI=r.mi?r.mi.bx-TRUE_BX_MARG:null;
+  const muLW=r.listwise?r.listwise.meanY-TRUE_A:null;
+  const muMI=r.mi?r.mi.meanY-TRUE_A:null;
+
+  const rowStyle=`display:grid;grid-template-columns:9rem 1fr 1fr;gap:.15rem .6rem;
+    font-family:'DM Mono',monospace;font-size:.78rem;margin:.45rem 0 .2rem;align-items:baseline`;
+  const hdrStyle=`color:var(--ink3);font-size:.70rem;letter-spacing:.06em;text-transform:uppercase;padding-bottom:.2rem;border-bottom:1px solid var(--grid)`;
+  const badColor={mcar:'var(--a3)',mar:'var(--a5)',mnar:'var(--a1)'};
+  const mechLabel={mcar:'MCAR',mar:'MAR (X+Z)',mnar:'MNAR'};
+
+  const biasColor=v=>{
+    if(v==null)return'var(--ink3)';
+    return Math.abs(v)<0.5?'var(--a3)':Math.abs(v)<2?'var(--a5)':'var(--a1)';
+  };
+  const biasVal=(est,bias)=>`${f(est)} <span style="font-size:.72rem;color:${biasColor(bias)}">(Bias ${fb(bias)})</span>`;
+
+  const rows=`
+    <div style="${rowStyle}">
+      <span style="${hdrStyle}">Methode</span>
+      <span style="${hdrStyle}">β̂_X &nbsp;(Bias vs. −7.20)</span>
+      <span style="${hdrStyle}">μ̂_Y &nbsp;(Bias vs. 60)</span>
+      <span style="color:var(--ink3);font-size:.72rem">Vollst. Daten</span>
+      <span>${biasVal(r.complete?.bx,r.complete?r.complete.bx-TRUE_BX_MARG:null)}</span>
+      <span>${biasVal(r.complete?.meanY,r.complete?r.complete.meanY-TRUE_A:null)}</span>
+      <span style="color:var(--a1);font-weight:500">Listwise</span>
+      <span style="color:var(--a1)">${biasVal(r.listwise?.bx,bxLW)}</span>
+      <span style="color:var(--a1)">${biasVal(r.listwise?.meanY,muLW)}</span>
+      <span style="color:var(--a3);font-weight:500">MI (Imp: X+Z)</span>
+      <span style="color:var(--a3)">${biasVal(r.mi?.bx,bxMI)}</span>
+      <span style="color:var(--a3)">${biasVal(r.mi?.meanY,muMI)}</span>
+    </div>`;
+
+  const explanations={
+    mcar:`<span style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);line-height:1.85;display:block;margin-top:.5rem">
+      Alle Methoden liefern nahezu unverzerrte Schätzer. Listwise verliert nur Stichprobengröße (n_obs statt n),
+      bleibt aber unverzerrt. MI nutzt das volle n — effizienter, aber keine klare Bias-Korrektur nötig.</span>`,
+    mar: `<span style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);line-height:1.85;display:block;margin-top:.5rem">
+      <strong>β_X:</strong> Listwise unterschätzt den Betrag des Stresseffekts — gestresste Personen (X↑) fehlen überproportional,
+      die verbleibende Stichprobe zeigt einen flacheren X→Y-Zusammenhang. MI korrigiert, weil Z als Auxiliary
+      die fehlenden Personen mit korrekt niedrigen Y-Werten auffüllt.<br>
+      <strong>μ_Y:</strong> Listwise überschätzt den Mittelwert — niedrig-Z-Personen fehlen und haben wegen Y=60−6X+3Z niedrigeres Wohlbefinden.
+      MI-PMM schätzt für diese Fälle korrekt niedrige Y-Werte.</span>`,
+    mnar:`<span style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);line-height:1.85;display:block;margin-top:.5rem">
+      Das Fehlmuster hängt von Y selbst ab — kein Modell kann dies vollständig korrigieren.
+      MI trainiert auf den selektierten (Y zu hoch) Daten und gibt für fehlende Fälle zu hohe Werte zurück.
+      In der Praxis ist MI trotzdem selten schlechter als Listwise. Für MNAR: Pattern Mixture Models oder Sensitivity Analyses.</span>`
+  };
+
+  document.getElementById('erklaer-table').innerHTML=rows+explanations[ST.mech];
 }
 
 // ── Mechanismus-UI ─────────────────────────────────────────────────────────────
-const ERKLAER_TABLE={
-  mcar:`<strong>MCAR — Was bedeuten die Zahlen?</strong><br>
-Alle Methoden schätzen β_X (Y~X) nahe −7.20 und μ_Y nahe 60 — kein systematischer Bias.
-Listwise verwendet nur die vollständigen Fälle (n_obs), verliert damit Stichprobengröße und Schätzpräzision, bleibt aber unverzerrt.
-MI nutzt das volle n und ist effizienter (kleinere Schätzunsicherheit), liefert aber ähnliche Punktschätzer.
-<em>Fazit: Bei MCAR ist MI nicht notwendig, aber nie schlechter.</em>`,
-
-  mar:`<strong>MAR (X+Z) — Was bedeuten die Zahlen?</strong><br>
-<strong>β_X Bias:</strong> Listwise unterschätzt den Betrag des Stresseffekts (β_X zu wenig negativ), weil gestresste Personen (X↑) überproportional fehlen.
-Die verbleibende Stichprobe zeigt einen flacheren X→Y-Zusammenhang als die Gesamtpopulation.
-MI (Imputationsmodell: X+Z → Zielanalyse: Y~X) korrigiert dies, weil Z als Auxiliary die fehlenden gestressten Personen mit korrekt niedrigen Y-Werten auffüllt.<br>
-<strong>μ_Y Bias:</strong> Listwise überschätzt den Mittelwert, weil niedrig-Z-Personen (niedrige Soziale Unterstützung → niedrigeres Wohlbefinden) fehlen.
-MI-PMM schätzt für diese Personen korrekt niedrige Y-Werte und nähert sich daher μ_Y = 60.<br>
-<em>Fazit: MI korrigiert beide Biasquellen — vorausgesetzt Z ist im Imputationsmodell.</em>`,
-
-  mnar:`<strong>MNAR — Was bedeuten die Zahlen?</strong><br>
-Das Fehlmuster hängt direkt vom Outcome Y selbst ab: Personen mit niedrigem Wohlbefinden brechen ab, gerade weil ihr Wohlbefinden niedrig ist.
-Da Y fehlend ist, kann kein Modell diese Selektion vollständig korrigieren — die beobachteten Daten sind systematisch selektiert (Y zu hoch).
-Listwise und MI zeigen ähnliche Verzerrungen. MI kann den Bias etwas abmildern, aber nicht beseitigen.
-<em>Fazit: Bei MNAR sind spezielle Methoden nötig (Pattern Mixture Models, Selection Models, Sensitivity Analyses). MI ist trotzdem selten schlechter als Listwise.</em>`
-};
-
 const HINTS={
   mcar:'<strong style="color:var(--a3)">MCAR:</strong> Rein zufällige Fehlmuster — ○ gleichmäßig über X-, Y- und Z-Werte verteilt (gemischte Farben). Listwise Y~X und MI liefern beide unverzerrte Schätzer.',
   mar: '<strong style="color:var(--a5)">MAR (X+Z):</strong> Hoher Stress (X↑) UND niedrige Unterstützung (Z↓) → Dropout. Orangene ○ (Z↓) und hoch-X ○ häufen sich. Das Fehlmuster ist durch beobachtete Variablen vollständig erklärbar — MI nutzt X+Z im Imputationsmodell.',
@@ -770,8 +803,7 @@ function setMech(mech){
   });
   document.getElementById('hint-box').innerHTML=HINTS[mech];
   document.getElementById('erklaer-box').innerHTML=ERKLAER[mech];
-  document.getElementById('erklaer-table').innerHTML=ERKLAER_TABLE[mech];
-  recompute();
+  recompute();  // ruft updateTable() → updateErklaerTable() mit aktuellen Werten
 }
 
 // ── Steuerung ──────────────────────────────────────────────────────────────────
