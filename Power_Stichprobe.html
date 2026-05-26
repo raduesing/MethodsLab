@@ -609,13 +609,118 @@ function drawDist(){
   });
 }
 
-// ── Platzhalter für Schritt 3+4 ───────────────────────────────────────────
+// ── Heatmap n × d → Power ─────────────────────────────────────────────────
 function drawHeatmap(){
   const canvas=document.getElementById('cv-heat');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
-  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,W,H);
-  ctx.fillStyle=cv('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
-  ctx.fillText('[ Heatmap — Schritt 3 ]',W/2,H/2);
+  const ctx=canvas.getContext('2d');
+  const pad={l:55,r:18,t:18,b:50};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),bg=cv('--bg');
+  ctx.clearRect(0,0,W,H);
+
+  const dMin=0.02,dMax=2.0,nMin=10,nMax=400;
+  const logMin=Math.log(nMin),logMax=Math.log(nMax);
+  const NDX=120,NDY=100;
+  const cellW=cW/NDX,cellH=cH/NDY;
+
+  // Farbe: dunkelrot → orange → gelbgrün → grün
+  const pCol=p=>{
+    const stops=[[40,10,10],[220,80,0],[180,220,0],[0,200,60]];
+    const pts=[0,.5,.8,1];
+    let i=0;while(i<pts.length-2&&p>pts[i+1])i++;
+    const t=(p-pts[i])/(pts[i+1]-pts[i]);
+    const a=stops[i],b=stops[i+1];
+    return`rgb(${Math.round(a[0]+(b[0]-a[0])*t)},${Math.round(a[1]+(b[1]-a[1])*t)},${Math.round(a[2]+(b[2]-a[2])*t)})`;
+  };
+
+  // Heatmap-Zellen
+  for(let ix=0;ix<NDX;ix++){
+    const d=dMin+(dMax-dMin)*(ix+.5)/NDX;
+    for(let iy=0;iy<NDY;iy++){
+      const n=Math.round(Math.exp(logMin+(logMax-logMin)*(iy+.5)/NDY));
+      ctx.fillStyle=pCol(computePower(d,n,ST.alpha,ST.tails,ST.design));
+      ctx.fillRect(pad.l+ix*cellW,pad.t+(NDY-1-iy)*cellH,cellW+.6,cellH+.6);
+    }
+  }
+
+  // Hilfs-Koordinaten
+  const sx=d=>pad.l+cW*(d-dMin)/(dMax-dMin);
+  const sn=n=>pad.t+cH*(1-(Math.log(n)-logMin)/(logMax-logMin));
+
+  // Y-Gitterlinien + Ticks
+  [10,20,50,100,200,400].forEach(n=>{
+    const py=sn(n);
+    ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(pad.l+cW,py);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.75)';ctx.font='12px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(n,pad.l-5,py+4);
+  });
+
+  // Isopower-Kurven: 50% (dünn) · 80% (dick, weiß) · 95% (dünn)
+  [{pow:.50,lw:1.3,dash:[3,3],alpha:.6},{pow:.80,lw:2.2,dash:[],alpha:.95},{pow:.95,lw:1.3,dash:[3,3],alpha:.6}]
+  .forEach(iso=>{
+    ctx.strokeStyle=`rgba(255,255,255,${iso.alpha})`;
+    ctx.lineWidth=iso.lw;ctx.setLineDash(iso.dash);
+    ctx.beginPath();let started=false;
+    for(let ix=0;ix<NDX*2;ix++){
+      const d=dMin+(dMax-dMin)*(ix+.5)/(NDX*2);
+      const nStar=nForPower(d,iso.pow,ST.alpha,ST.tails,ST.design);
+      if(!isFinite(nStar)||nStar<nMin||nStar>nMax){started=false;continue;}
+      const px=sx(d),py=sn(nStar);
+      if(!started){ctx.moveTo(px,py);started=true;}else ctx.lineTo(px,py);
+    }
+    ctx.stroke();ctx.setLineDash([]);
+    // Label an guter Position
+    const dLbl=[.25,.35,.45].find(dl=>{const ns=nForPower(dl,iso.pow,ST.alpha,ST.tails,ST.design);return isFinite(ns)&&ns>=nMin&&ns<=nMax;});
+    if(dLbl!=null){
+      const ns=nForPower(dLbl,iso.pow,ST.alpha,ST.tails,ST.design);
+      ctx.fillStyle=`rgba(255,255,255,${iso.alpha})`;
+      ctx.font=`${iso.lw>2?'bold ':''  }11px DM Mono,monospace`;ctx.textAlign='left';
+      ctx.fillText(`${(iso.pow*100).toFixed(0)}%`,sx(dLbl)+3,sn(ns)-3);
+    }
+  });
+
+  // Crosshair am aktuellen (d, n)
+  const cxp=Math.max(pad.l,Math.min(pad.l+cW,sx(ST.d)));
+  const cnp=Math.max(pad.t,Math.min(pad.t+cH,sn(ST.n)));
+  ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(cxp,pad.t);ctx.lineTo(cxp,pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,cnp);ctx.lineTo(pad.l+cW,cnp);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();ctx.arc(cxp,cnp,5,0,2*Math.PI);
+  ctx.fillStyle='white';ctx.fill();
+  ctx.strokeStyle=bg;ctx.lineWidth=1.5;ctx.stroke();
+
+  // Achsen + Beschriftungen
+  ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
+  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
+  const nLbl=ST.design===2?'n (pro Gruppe)':'n';
+  ctx.fillText("Cohen's d",pad.l+cW/2,H-3);
+  ctx.save();ctx.translate(13,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText(nLbl,0,0);ctx.restore();
+  [.5,1.0,1.5,2.0].forEach(d=>{
+    ctx.fillStyle='rgba(255,255,255,.6)';ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(d.toFixed(1),sx(d),pad.t+cH+15);
+  });
+
+  // Farblegende (rechts)
+  const barX=pad.l+cW+4,barY=pad.t,barW=12,barH=cH;
+  for(let i=0;i<barH;i++){ctx.fillStyle=pCol(1-i/barH);ctx.fillRect(barX,barY+i,barW,1.5);}
+  ctx.fillStyle=ink3;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('1.0',barX+barW+2,barY+6);
+  ctx.fillText('.80',barX+barW+2,barY+barH*(1-.80)+4);
+  ctx.fillText('.50',barX+barW+2,barY+barH*(1-.50)+4);
+  ctx.fillText('0',  barX+barW+2,barY+barH);
+
+  // Note
+  const curPow=computePower(ST.d,ST.n,ST.alpha,ST.tails,ST.design);
+  document.getElementById('hint-heat').textContent=
+    `Aktuell ✕: d=${ST.d.toFixed(2)}, n=${ST.n} → Power ${(curPow*100).toFixed(1)}%. `+
+    `Weiße Isopower-Linien: 50% (dünn) · 80% (dick) · 95% (dünn). `+
+    `⚠ Cohen-Konventionen (d=0.2/0.5/0.8) sind domänenspezifisch — keine universellen Standards.`;
 }
 function drawSens(){
   const canvas=document.getElementById('cv-sens');
