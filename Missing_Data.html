@@ -763,7 +763,15 @@ function updateErklaerTable(){
   const muMI=r.mi?r.mi.meanY-TRUE_A:null;
   const bxMargFmt=trueBX_MARG().toFixed(2).replace('-','−');
 
-  const rowStyle=`display:grid;grid-template-columns:9rem 1fr 1fr;gap:.15rem .6rem;
+  const sdC  = r.complete ? Math.sqrt(Math.max(r.complete.varY,0)) : null;
+  const sdLW = r.listwise ? Math.sqrt(Math.max(r.listwise.varY,0)) : null;
+  const sdMI = r.mi       ? Math.sqrt(Math.max(r.mi.varY,0))       : null;
+  const trSD = trueSDY();
+  const sdBiasC  = sdC  != null ? sdC  - trSD : null;
+  const sdBiasLW = sdLW != null ? sdLW - trSD : null;
+  const sdBiasMI = sdMI != null ? sdMI - trSD : null;
+
+  const rowStyle=`display:grid;grid-template-columns:9rem 1fr 1fr 1fr;gap:.15rem .6rem;
     font-family:'DM Mono',monospace;font-size:.78rem;margin:.45rem 0 .2rem;align-items:baseline`;
   const hdrStyle=`color:var(--ink3);font-size:.70rem;letter-spacing:.06em;text-transform:uppercase;padding-bottom:.2rem;border-bottom:1px solid var(--grid)`;
   const badColor={mcar:'var(--a3)',mar:'var(--a5)',mnar:'var(--a1)'};
@@ -780,15 +788,19 @@ function updateErklaerTable(){
       <span style="${hdrStyle}">Methode</span>
       <span style="${hdrStyle}">β̂_X &nbsp;(Bias vs. ${bxMargFmt})</span>
       <span style="${hdrStyle}">μ̂_Y &nbsp;(Bias vs. 60)</span>
+      <span style="${hdrStyle}">SD̂_Y &nbsp;(Bias vs. ${trSD.toFixed(2)})</span>
       <span style="color:var(--ink3);font-size:.72rem">Vollst. Daten</span>
       <span>${biasVal(r.complete?.bx,r.complete?r.complete.bx-trueBX_MARG():null)}</span>
       <span>${biasVal(r.complete?.meanY,r.complete?r.complete.meanY-TRUE_A:null)}</span>
+      <span>${biasVal(sdC,sdBiasC)}</span>
       <span style="color:var(--a1);font-weight:500">Listwise</span>
       <span style="color:var(--a1)">${biasVal(r.listwise?.bx,bxLW)}</span>
       <span style="color:var(--a1)">${biasVal(r.listwise?.meanY,muLW)}</span>
+      <span style="color:var(--a1)">${biasVal(sdLW,sdBiasLW)}</span>
       <span style="color:var(--a3);font-weight:500">MI (Imp: X+Z)</span>
       <span style="color:var(--a3)">${biasVal(r.mi?.bx,bxMI)}</span>
       <span style="color:var(--a3)">${biasVal(r.mi?.meanY,muMI)}</span>
+      <span style="color:var(--a3)">${biasVal(sdMI,sdBiasMI)}</span>
     </div>`;
 
   const explanations={
