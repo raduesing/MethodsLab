@@ -722,12 +722,118 @@ function drawHeatmap(){
     `Weiße Isopower-Linien: 50% (dünn) · 80% (dick) · 95% (dünn). `+
     `⚠ Cohen-Konventionen (d=0.2/0.5/0.8) sind domänenspezifisch — keine universellen Standards.`;
 }
+// ── Sensitivitätskurve ────────────────────────────────────────────────────
 function drawSens(){
   const canvas=document.getElementById('cv-sens');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
-  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,W,H);
-  ctx.fillStyle=cv('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
-  ctx.fillText('[ Sensitivitätskurve — Schritt 4 ]',W/2,H/2);
+  const ctx=canvas.getContext('2d');
+  const pad={l:52,r:18,t:22,b:50};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5');
+  const ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),paper=cv('--paper');
+  ctx.clearRect(0,0,W,H);
+
+  const dPlan=ST.d;
+  const dMax=Math.max(dPlan*1.6,0.8);
+  const ND=250;
+  const sx=v=>pad.l+cW*v/dMax;
+  const sy=v=>pad.t+cH*(1-v);
+
+  // Grid
+  [0,.2,.4,.6,.8,1].forEach(p=>{
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,sy(p));ctx.lineTo(pad.l+cW,sy(p));ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(p.toFixed(1),pad.l-5,sy(p)+4);
+  });
+  [0,.25,.5,.75,1].map(f=>f*dMax).forEach(d=>{
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(sx(d),pad.t);ctx.lineTo(sx(d),pad.t+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(d.toFixed(2),sx(d),pad.t+cH+15);
+  });
+  // Achsen
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
+  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Tatsächliches Cohen\'s d (wahre Effektgröße)',pad.l+cW/2,H-3);
+  ctx.save();ctx.translate(13,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Power (1−β)',0,0);ctx.restore();
+
+  // Schattenbereich: d < d_plan (Warnung — geringer als geplant)
+  const shadeEnd=Math.min(dPlan,dMax);
+  ctx.fillStyle=a1;ctx.globalAlpha=.07;
+  ctx.fillRect(pad.l,pad.t,sx(shadeEnd)-pad.l,cH);
+  ctx.globalAlpha=1;
+  ctx.fillStyle=a1;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('← wahrer d kleiner als geplant',pad.l+4,pad.t+13);
+
+  // Ziel-Power-Linie
+  ctx.strokeStyle=a4;ctx.lineWidth=1.3;ctx.setLineDash([6,3]);
+  ctx.beginPath();ctx.moveTo(pad.l,sy(ST.targetPow));ctx.lineTo(pad.l+cW,sy(ST.targetPow));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=a4;ctx.font='11px DM Mono,monospace';ctx.textAlign='right';
+  ctx.fillText(`Ziel ${(ST.targetPow*100).toFixed(0)}%`,pad.l+cW-3,sy(ST.targetPow)-4);
+
+  // Power-Kurve (grün)
+  ctx.strokeStyle=a3;ctx.lineWidth=2.5;
+  ctx.beginPath();
+  for(let i=0;i<ND;i++){
+    const d=i*dMax/(ND-1);
+    const px=sx(d),py=sy(computePower(d,ST.n,ST.alpha,ST.tails,ST.design));
+    i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+
+  // Geplantes d — vertikale Linie + Power-Punkt
+  const planPow=computePower(dPlan,ST.n,ST.alpha,ST.tails,ST.design);
+  ctx.strokeStyle=a3;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(sx(dPlan),pad.t);ctx.lineTo(sx(dPlan),sy(planPow));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();ctx.arc(sx(dPlan),sy(planPow),5.5,0,2*Math.PI);
+  ctx.fillStyle=a3;ctx.fill();
+  ctx.strokeStyle=cv('--bg');ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle=a3;ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText(`d_plan=${dPlan.toFixed(2)} → ${(planPow*100).toFixed(0)}%`,sx(dPlan),pad.t+13);
+
+  // Stützpunkte: d_plan×0.25, ×0.50, ×0.75 — Punkte + Labels
+  [.25,.50,.75].forEach(frac=>{
+    const d=dPlan*frac;
+    if(d<=0||d>dMax)return;
+    const p=computePower(d,ST.n,ST.alpha,ST.tails,ST.design);
+    const col=p>=ST.targetPow?a3:p>=.5?a5:a1;
+    ctx.beginPath();ctx.arc(sx(d),sy(p),4,0,2*Math.PI);
+    ctx.fillStyle=col;ctx.fill();
+    ctx.fillStyle=col;ctx.font='10px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(`${(frac*100).toFixed(0)}%×d_p`,sx(d),sy(p)+14);
+    ctx.fillText(`→ ${(p*100).toFixed(0)}%`,sx(d),sy(p)+25);
+  });
+
+  // MDES — wo die Kurve die Ziel-Power schneidet
+  const mdes=nForPower(1,ST.targetPow,ST.alpha,ST.tails,ST.design); // nur zur Berechnung nutzen
+  // Finde MDES: kleinste d für die Power >= targetPow
+  let mdesD=null;
+  for(let i=1;i<ND;i++){
+    const d=i*dMax/(ND-1);
+    if(computePower(d,ST.n,ST.alpha,ST.tails,ST.design)>=ST.targetPow){mdesD=d;break;}
+  }
+  if(mdesD!=null&&mdesD<dMax*.98){
+    ctx.strokeStyle=a4;ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(sx(mdesD),pad.t+cH);ctx.lineTo(sx(mdesD),sy(ST.targetPow));ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=a4;ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(`MDES=${mdesD.toFixed(2)}`,sx(mdesD),pad.t+cH+30);
+  }
+
+  // Tabellen-Hinweis
+  const half=computePower(dPlan/2,ST.n,ST.alpha,ST.tails,ST.design);
+  const quarter=computePower(dPlan/4,ST.n,ST.alpha,ST.tails,ST.design);
+  document.getElementById('hint-sens').innerHTML=
+    `<strong style="color:var(--a3)">Geplant:</strong> d=${dPlan.toFixed(2)}, n=${ST.n} → Power ${(planPow*100).toFixed(1)}% &nbsp;|&nbsp; `+
+    `<strong style="color:var(--a5)">½×d_plan = ${(dPlan/2).toFixed(2)}:</strong> Power ${(half*100).toFixed(1)}% &nbsp;|&nbsp; `+
+    `<strong style="color:var(--a1)">¼×d_plan = ${(dPlan/4).toFixed(2)}:</strong> Power ${(quarter*100).toFixed(1)}%`+
+    (mdesD!=null?` &nbsp;|&nbsp; <strong style="color:var(--a4)">MDES bei n=${ST.n}: d=${mdesD.toFixed(2)}</strong>`:'');
 }
 
 function update(){
