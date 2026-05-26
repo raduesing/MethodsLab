@@ -222,7 +222,7 @@ canvas{width:100%;display:block}
   <div class="sec-h">③ Was wenn mein angenommenes δ falsch war?</div>
   <div class="plot-box">
     <div class="plot-title">Sensitivität: Power bei geplantem n = <span id="lbl-n-sens">64</span>, über alle möglichen wahren d</div>
-    <canvas id="cv-sens" height="260"></canvas>
+    <canvas id="cv-sens" height="338"></canvas>
     <div class="hint" id="hint-sens"></div>
   </div>
 
@@ -429,7 +429,7 @@ function drawPowerCurve(){
   const canvas=document.getElementById('cv-power');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
   const ctx=canvas.getContext('2d');
-  const pad={l:52,r:18,t:22,b:50};
+  const pad={l:58,r:20,t:24,b:58};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5');
   const ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),paper=cv('--paper'),bg=cv('--bg');
@@ -443,22 +443,22 @@ function drawPowerCurve(){
   [0,.2,.4,.6,.8,1].forEach(p=>{
     ctx.strokeStyle=grid;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,sy(p));ctx.lineTo(pad.l+cW,sy(p));ctx.stroke();
-    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='right';
-    ctx.fillText(p.toFixed(1),pad.l-5,sy(p)+4);
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(p.toFixed(1),pad.l-6,sy(p)+5);
   });
   [0,.5,1.0,1.5,2.0].forEach(d=>{
     ctx.strokeStyle=grid;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(sx(d),pad.t);ctx.lineTo(sx(d),pad.t+cH);ctx.stroke();
-    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
-    ctx.fillText(d.toFixed(1),sx(d),pad.t+cH+15);
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(d.toFixed(1),sx(d),pad.t+cH+18);
   });
   // Achsen
   ctx.strokeStyle=ink3;ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
   ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
-  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
-  ctx.fillText("Cohen's d (wahre Effektgröße)",pad.l+cW/2,H-3);
-  ctx.save();ctx.translate(13,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=ink2;ctx.font='15px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText("Cohen's d (wahre Effektgröße)",pad.l+cW/2,H-4);
+  ctx.save();ctx.translate(15,pad.t+cH/2);ctx.rotate(-Math.PI/2);
   ctx.fillText('Power (1−β)',0,0);ctx.restore();
 
   // Kurvenschar: n/4, n/2, n (aktuell), 2n — je eigene Farbe
@@ -487,8 +487,8 @@ function drawPowerCurve(){
   ctx.strokeStyle=a4;ctx.lineWidth=1.3;ctx.setLineDash([6,3]);
   ctx.beginPath();ctx.moveTo(pad.l,sy(ST.targetPow));ctx.lineTo(pad.l+cW,sy(ST.targetPow));ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle=a4;ctx.font='11px DM Mono,monospace';ctx.textAlign='left';
-  ctx.fillText(`Ziel ${(ST.targetPow*100).toFixed(0)}%`,pad.l+4,sy(ST.targetPow)-4);
+  ctx.fillStyle=a4;ctx.font='13px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText(`Ziel ${(ST.targetPow*100).toFixed(0)}%`,pad.l+5,sy(ST.targetPow)-5);
 
   // Cohen-Konventionen (toggle)
   if(showCohen){
@@ -496,9 +496,9 @@ function drawPowerCurve(){
       ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([2,4]);
       ctx.beginPath();ctx.moveTo(sx(c.d),pad.t);ctx.lineTo(sx(c.d),pad.t+cH);ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle=ink3;ctx.font='10px DM Mono,monospace';ctx.textAlign='center';
-      ctx.fillText(`d=${c.d}`,sx(c.d),pad.t+11);
-      ctx.fillText(`(${c.lbl})`,sx(c.d),pad.t+22);
+      ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+      ctx.fillText(`d=${c.d}`,sx(c.d),pad.t+13);
+      ctx.fillText(`(${c.lbl})`,sx(c.d),pad.t+27);
     });
   }
 
@@ -512,7 +512,7 @@ function drawPowerCurve(){
   ctx.strokeStyle=bg;ctx.lineWidth=1.5;ctx.stroke();
 
   // Legende
-  const lgW=148,lgItemH=17,lgPad=7;
+  const lgW=168,lgItemH=20,lgPad=8;
   const lgH=nCurves.length*lgItemH+lgPad*2;
   const lgX=pad.l+cW-lgW-4,lgY=pad.t+4;
   ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(lgX,lgY,lgW,lgH);
@@ -520,9 +520,9 @@ function drawPowerCurve(){
   nCurves.forEach((nc,i)=>{
     const y=lgY+lgPad+(i+.5)*lgItemH;
     ctx.strokeStyle=nc.col;ctx.lineWidth=nc.lw;ctx.setLineDash(nc.dash);
-    ctx.beginPath();ctx.moveTo(lgX+7,y);ctx.lineTo(lgX+27,y);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle=nc.col;ctx.font='11px DM Mono,monospace';ctx.textAlign='left';
-    ctx.fillText(nc.lbl,lgX+32,y+4);
+    ctx.beginPath();ctx.moveTo(lgX+7,y);ctx.lineTo(lgX+29,y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=nc.col;ctx.font='13px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(nc.lbl,lgX+34,y+5);
   });
 }
 
@@ -531,7 +531,7 @@ function drawDist(){
   const canvas=document.getElementById('cv-dist');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
   const ctx=canvas.getContext('2d');
-  const pad={l:36,r:18,t:22,b:50};
+  const pad={l:40,r:18,t:24,b:58};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a5=cv('--a5');
   const ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),paper=cv('--paper');
@@ -557,15 +557,15 @@ function drawDist(){
     if(px<pad.l-1||px>pad.l+cW+1)continue;
     ctx.strokeStyle=grid;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(px,pad.t);ctx.lineTo(px,pad.t+cH);ctx.stroke();
-    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
-    ctx.fillText(xv,px,pad.t+cH+15);
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(xv,px,pad.t+cH+18);
   }
   // Achsen
   ctx.strokeStyle=ink3;ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
   ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
-  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
-  ctx.fillText('Teststatistik z',pad.l+cW/2,H-3);
+  ctx.fillStyle=ink2;ctx.font='15px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Teststatistik z',pad.l+cW/2,H-4);
 
   // Hilfsfunktion: Fläche unter Kurve füllen
   const fillArea=(pdf,col,fromX,toX,alpha)=>{
@@ -600,8 +600,8 @@ function drawDist(){
   ctx.strokeStyle=a1;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
   ctx.beginPath();ctx.moveTo(sx(za),pad.t+8);ctx.lineTo(sx(za),pad.t+cH);ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle=a1;ctx.font='11px DM Mono,monospace';ctx.textAlign='left';
-  ctx.fillText(`z_c=${za.toFixed(2)}`,sx(za)+3,pad.t+20);
+  ctx.fillStyle=a1;ctx.font='13px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText(`z_c=${za.toFixed(2)}`,sx(za)+4,pad.t+22);
   if(ST.tails===2&&sx(-za)>pad.l){
     ctx.strokeStyle=a1;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
     ctx.beginPath();ctx.moveTo(sx(-za),pad.t+8);ctx.lineTo(sx(-za),pad.t+cH);ctx.stroke();
@@ -616,16 +616,16 @@ function drawDist(){
     // Pfeilspitze
     ctx.beginPath();ctx.moveTo(sx(ncp),ay);ctx.lineTo(sx(ncp)-6,ay-3);ctx.lineTo(sx(ncp)-6,ay+3);ctx.closePath();
     ctx.fillStyle=ink3;ctx.fill();
-    ctx.fillStyle=ink3;ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
-    ctx.fillText(`ncp = ${ncp.toFixed(2)}`,sx(ncp/2),ay-6);
+    ctx.fillStyle=ink3;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(`ncp = ${ncp.toFixed(2)}`,sx(ncp/2),ay-7);
   }
 
   // H₀/H₁-Labels
-  ctx.font='bold 12px DM Mono,monospace';
+  ctx.font='bold 14px DM Mono,monospace';
   ctx.fillStyle=a2;ctx.textAlign='center';
-  ctx.fillText('H₀',sx(0),sy(pNorm(0,0))-8);
+  ctx.fillText('H₀',sx(0),sy(pNorm(0,0))-9);
   ctx.fillStyle=a3;
-  ctx.fillText('H₁',sx(ncp),sy(pNorm(ncp,ncp))-8);
+  ctx.fillText('H₁',sx(ncp),sy(pNorm(ncp,ncp))-9);
 
   // Legende
   const curPow=computePower(ST.d,ST.n,ST.alpha,ST.tails,ST.design);
@@ -636,18 +636,18 @@ function drawDist(){
     {col:a5,lbl:`β = ${((1-curPow)*100).toFixed(1)}%`,fill:true},
     {col:a1,lbl:`α = ${(ST.alpha*100).toFixed(0)}%`,fill:true},
   ];
-  const lgW=160,lgItemH=16,lgPad=6;
+  const lgW=182,lgItemH=19,lgPad=7;
   const lgH=lgItems.length*lgItemH+lgPad*2;
   const lgX=pad.l+4,lgY=pad.t+4;
   ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(lgX,lgY,lgW,lgH);
   ctx.globalAlpha=1;ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.strokeRect(lgX,lgY,lgW,lgH);
   lgItems.forEach((it,i)=>{
     const y=lgY+lgPad+(i+.5)*lgItemH;
-    if(it.fill){ctx.fillStyle=it.col;ctx.globalAlpha=.45;ctx.fillRect(lgX+7,y-5,18,10);ctx.globalAlpha=1;}
+    if(it.fill){ctx.fillStyle=it.col;ctx.globalAlpha=.45;ctx.fillRect(lgX+7,y-5,20,10);ctx.globalAlpha=1;}
     else{ctx.strokeStyle=it.col;ctx.lineWidth=it.col===a2?1.5:2;if(it.col===a2)ctx.setLineDash([4,2]);
-      ctx.beginPath();ctx.moveTo(lgX+7,y);ctx.lineTo(lgX+25,y);ctx.stroke();ctx.setLineDash([]);}
-    ctx.fillStyle=it.col;ctx.font='11px DM Mono,monospace';ctx.textAlign='left';
-    ctx.fillText(it.lbl,lgX+30,y+4);
+      ctx.beginPath();ctx.moveTo(lgX+7,y);ctx.lineTo(lgX+27,y);ctx.stroke();ctx.setLineDash([]);}
+    ctx.fillStyle=it.col;ctx.font='13px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(it.lbl,lgX+32,y+5);
   });
 }
 
@@ -656,7 +656,7 @@ function drawHeatmap(){
   const canvas=document.getElementById('cv-heat');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
   const ctx=canvas.getContext('2d');
-  const pad={l:55,r:18,t:18,b:50};
+  const pad={l:60,r:26,t:18,b:58};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),bg=cv('--bg');
   ctx.clearRect(0,0,W,H);
@@ -695,8 +695,8 @@ function drawHeatmap(){
     const py=sn(n);
     ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(pad.l+cW,py);ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.75)';ctx.font='12px DM Mono,monospace';ctx.textAlign='right';
-    ctx.fillText(n,pad.l-5,py+4);
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(n,pad.l-6,py+5);
   });
 
   // Isopower-Kurven: 50% (dünn) · 80% (dick, weiß) · 95% (dünn)
@@ -718,8 +718,8 @@ function drawHeatmap(){
     if(dLbl!=null){
       const ns=nForPower(dLbl,iso.pow,ST.alpha,ST.tails,ST.design);
       ctx.fillStyle=`rgba(255,255,255,${iso.alpha})`;
-      ctx.font=`${iso.lw>2?'bold ':''  }11px DM Mono,monospace`;ctx.textAlign='left';
-      ctx.fillText(`${(iso.pow*100).toFixed(0)}%`,sx(dLbl)+3,sn(ns)-3);
+      ctx.font=`${iso.lw>2?'bold ':''  }13px DM Mono,monospace`;ctx.textAlign='left';
+      ctx.fillText(`${(iso.pow*100).toFixed(0)}%`,sx(dLbl)+3,sn(ns)-4);
     }
   });
 
@@ -738,24 +738,24 @@ function drawHeatmap(){
   ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
   ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
-  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillStyle=ink2;ctx.font='15px DM Mono,monospace';ctx.textAlign='center';
   const nLbl=ST.design===2?'n (pro Gruppe)':'n';
-  ctx.fillText("Cohen's d",pad.l+cW/2,H-3);
-  ctx.save();ctx.translate(13,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText("Cohen's d",pad.l+cW/2,H-4);
+  ctx.save();ctx.translate(15,pad.t+cH/2);ctx.rotate(-Math.PI/2);
   ctx.fillText(nLbl,0,0);ctx.restore();
   [.5,1.0,1.5,2.0].forEach(d=>{
-    ctx.fillStyle='rgba(255,255,255,.6)';ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
-    ctx.fillText(d.toFixed(1),sx(d),pad.t+cH+15);
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(d.toFixed(1),sx(d),pad.t+cH+18);
   });
 
   // Farblegende (rechts)
   const barX=pad.l+cW+4,barY=pad.t,barW=12,barH=cH;
   for(let i=0;i<barH;i++){ctx.fillStyle=pCol(1-i/barH);ctx.fillRect(barX,barY+i,barW,1.5);}
-  ctx.fillStyle=ink3;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
-  ctx.fillText('1.0',barX+barW+2,barY+6);
-  ctx.fillText('.80',barX+barW+2,barY+barH*(1-.80)+4);
-  ctx.fillText('.50',barX+barW+2,barY+barH*(1-.50)+4);
-  ctx.fillText('0',  barX+barW+2,barY+barH);
+  ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('1.0',barX+barW+2,barY+7);
+  ctx.fillText('.80',barX+barW+2,barY+barH*(1-.80)+5);
+  ctx.fillText('.50',barX+barW+2,barY+barH*(1-.50)+5);
+  ctx.fillText('0',  barX+barW+2,barY+barH+5);
 
   // Note
   const curPow=computePower(ST.d,ST.n,ST.alpha,ST.tails,ST.design);
@@ -769,7 +769,7 @@ function drawSens(){
   const canvas=document.getElementById('cv-sens');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
   const ctx=canvas.getContext('2d');
-  const pad={l:52,r:18,t:22,b:50};
+  const pad={l:58,r:20,t:24,b:62};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5');
   const ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),paper=cv('--paper');
@@ -785,22 +785,22 @@ function drawSens(){
   [0,.2,.4,.6,.8,1].forEach(p=>{
     ctx.strokeStyle=grid;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,sy(p));ctx.lineTo(pad.l+cW,sy(p));ctx.stroke();
-    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='right';
-    ctx.fillText(p.toFixed(1),pad.l-5,sy(p)+4);
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(p.toFixed(1),pad.l-6,sy(p)+5);
   });
   [0,.25,.5,.75,1].map(f=>f*dMax).forEach(d=>{
     ctx.strokeStyle=grid;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(sx(d),pad.t);ctx.lineTo(sx(d),pad.t+cH);ctx.stroke();
-    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
-    ctx.fillText(d.toFixed(2),sx(d),pad.t+cH+15);
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(d.toFixed(2),sx(d),pad.t+cH+18);
   });
   // Achsen
   ctx.strokeStyle=ink3;ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
   ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
-  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
-  ctx.fillText('Tatsächliches Cohen\'s d (wahre Effektgröße)',pad.l+cW/2,H-3);
-  ctx.save();ctx.translate(13,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=ink2;ctx.font='15px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Tatsächliches Cohen\'s d (wahre Effektgröße)',pad.l+cW/2,H-4);
+  ctx.save();ctx.translate(15,pad.t+cH/2);ctx.rotate(-Math.PI/2);
   ctx.fillText('Power (1−β)',0,0);ctx.restore();
 
   // Schattenbereich: d < d_plan (Warnung — geringer als geplant)
@@ -808,15 +808,15 @@ function drawSens(){
   ctx.fillStyle=a1;ctx.globalAlpha=.07;
   ctx.fillRect(pad.l,pad.t,sx(shadeEnd)-pad.l,cH);
   ctx.globalAlpha=1;
-  ctx.fillStyle=a1;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
-  ctx.fillText('← wahrer d kleiner als geplant',pad.l+4,pad.t+13);
+  ctx.fillStyle=a1;ctx.font='12px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('← wahrer d kleiner als geplant',pad.l+5,pad.t+16);
 
   // Ziel-Power-Linie
   ctx.strokeStyle=a4;ctx.lineWidth=1.3;ctx.setLineDash([6,3]);
   ctx.beginPath();ctx.moveTo(pad.l,sy(ST.targetPow));ctx.lineTo(pad.l+cW,sy(ST.targetPow));ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle=a4;ctx.font='11px DM Mono,monospace';ctx.textAlign='right';
-  ctx.fillText(`Ziel ${(ST.targetPow*100).toFixed(0)}%`,pad.l+cW-3,sy(ST.targetPow)-4);
+  ctx.fillStyle=a4;ctx.font='13px DM Mono,monospace';ctx.textAlign='right';
+  ctx.fillText(`Ziel ${(ST.targetPow*100).toFixed(0)}%`,pad.l+cW-4,sy(ST.targetPow)-5);
 
   // Power-Kurve (grün)
   ctx.strokeStyle=a3;ctx.lineWidth=2.5;
@@ -836,8 +836,8 @@ function drawSens(){
   ctx.beginPath();ctx.arc(sx(dPlan),sy(planPow),5.5,0,2*Math.PI);
   ctx.fillStyle=a3;ctx.fill();
   ctx.strokeStyle=cv('--bg');ctx.lineWidth=1.5;ctx.stroke();
-  ctx.fillStyle=a3;ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='center';
-  ctx.fillText(`d_plan=${dPlan.toFixed(2)} → ${(planPow*100).toFixed(0)}%`,sx(dPlan),pad.t+13);
+  ctx.fillStyle=a3;ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText(`d_plan=${dPlan.toFixed(2)} → ${(planPow*100).toFixed(0)}%`,sx(dPlan),pad.t+16);
 
   // Stützpunkte: d_plan×0.25, ×0.50, ×0.75 — Punkte + Labels
   [.25,.50,.75].forEach(frac=>{
@@ -847,9 +847,9 @@ function drawSens(){
     const col=p>=ST.targetPow?a3:p>=.5?a5:a1;
     ctx.beginPath();ctx.arc(sx(d),sy(p),4,0,2*Math.PI);
     ctx.fillStyle=col;ctx.fill();
-    ctx.fillStyle=col;ctx.font='10px DM Mono,monospace';ctx.textAlign='center';
-    ctx.fillText(`${(frac*100).toFixed(0)}%×d_p`,sx(d),sy(p)+14);
-    ctx.fillText(`→ ${(p*100).toFixed(0)}%`,sx(d),sy(p)+25);
+    ctx.fillStyle=col;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(`${(frac*100).toFixed(0)}%×d_p`,sx(d),sy(p)+16);
+    ctx.fillText(`→ ${(p*100).toFixed(0)}%`,sx(d),sy(p)+30);
   });
 
   // MDES — wo die Kurve die Ziel-Power schneidet
@@ -864,8 +864,11 @@ function drawSens(){
     ctx.strokeStyle=a4;ctx.lineWidth=1;ctx.setLineDash([3,3]);
     ctx.beginPath();ctx.moveTo(sx(mdesD),pad.t+cH);ctx.lineTo(sx(mdesD),sy(ST.targetPow));ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle=a4;ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='center';
-    ctx.fillText(`MDES=${mdesD.toFixed(2)}`,sx(mdesD),pad.t+cH+30);
+    // MDES-Label innerhalb des Plots, knapp unter dem Schnittpunkt mit Ziel-Power
+    const lblX=sx(mdesD)>pad.l+cW*0.75?sx(mdesD)-4:sx(mdesD)+4;
+    const lblAlign=sx(mdesD)>pad.l+cW*0.75?'right':'left';
+    ctx.fillStyle=a4;ctx.font='bold 13px DM Mono,monospace';ctx.textAlign=lblAlign;
+    ctx.fillText(`MDES=${mdesD.toFixed(2)}`,lblX,sy(ST.targetPow)+18);
   }
 
   // Tabellen-Hinweis
