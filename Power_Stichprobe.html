@@ -12,15 +12,24 @@
   --bg:#0f1117;--paper:#1a1d27;--ink:#e8eaf0;--ink2:#a8adc0;--ink3:#5a6080;
   --grid:#252a3a;--border:#2e3448;--accent:#7c8cf8;
   --a1:#f87171;--a2:#60a5fa;--a3:#4ade80;--a4:#c084fc;--a5:#fbbf24;--a6:#fb923c;
+  --topbar-h:50px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:'DM Mono',monospace;font-size:.9rem;min-height:100vh}
+body{background:var(--bg);color:var(--ink);font-family:'DM Mono',monospace;font-size:.9rem}
 
-.wrap{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+/* ── Topbar ── */
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem;height:var(--topbar-h)}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1;color:var(--ink)}
+#topbar h1 em{color:var(--accent);font-style:italic}
 
-/* ── Sidebar ── */
-.sidebar{background:var(--paper);border-right:1px solid var(--border);padding:1rem .85rem;display:flex;flex-direction:column;gap:.7rem;overflow-y:auto;position:sticky;top:0;height:100vh}
-.sidebar-title{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+/* ── App-Layout ── */
+#app{display:grid;grid-template-columns:250px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem;display:flex;flex-direction:column;gap:.7rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border)}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
 .scard{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:.65rem .75rem}
 .scard-title{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.5rem}
 
@@ -31,12 +40,18 @@ input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;margin-bo
 
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);background:transparent;color:var(--ink2);border-radius:4px;cursor:pointer;transition:all .15s}
 .tbtn.active{background:var(--accent);color:#0f1117;border-color:var(--accent);font-weight:500}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
 .btn-row{display:flex;gap:.4rem;flex-wrap:wrap}
 
-/* ── Main ── */
-.main{padding:1.2rem 1.4rem;overflow-y:auto}
+/* ── Main Content ── */
 .sec-h{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);border-bottom:1px solid var(--grid);padding-bottom:.35rem;margin:1.2rem 0 .8rem}
 .sec-h:first-child{margin-top:0}
+
+/* ── Hut/Strich-Notation ── */
+.gl-hat{display:inline-block;position:relative}
+.gl-hat::before{content:'̂';position:absolute;top:-.18em;left:50%;transform:translateX(-50%);font-size:1.05rem;line-height:1}
+.gl-bar{display:inline-block;position:relative}
+.gl-bar::before{content:'̄';position:absolute;top:-.18em;left:50%;transform:translateX(-50%);font-size:1.05rem;line-height:1}
 
 /* ── Story-Box ── */
 .story-box{background:var(--paper);border:1px solid var(--border);border-left:3px solid var(--a5);border-radius:6px;padding:.7rem .9rem;margin-bottom:.85rem;font-size:.79rem;line-height:1.85;color:var(--ink2)}
@@ -77,11 +92,17 @@ canvas{width:100%;display:block}
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<div id="topbar">
+  <h1>Power &amp; Stichprobengröße — <em>Warum Power eine Kurve ist</em></h1>
+  <button class="tbtn" id="btn-cohen" onclick="toggleCohen()" style="font-size:.70rem">Cohen-Konventionen</button>
+  <button class="tbtn" style="border-color:var(--a1);color:var(--a1)" onclick="document.getElementById('help-overlay').classList.add('open')">? Hilfe</button>
+</div>
+
+<div id="app">
 
 <!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
-<div class="sidebar">
-  <div class="sidebar-title">Parameter</div>
+<div id="sidebar">
 
   <div class="scard">
     <div class="scard-title">Signifikanzniveau α</div>
@@ -130,7 +151,7 @@ canvas{width:100%;display:block}
 </div>
 
 <!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
-<div class="main">
+<div id="main">
 
   <!-- Story-Box -->
   <div class="story-box">
@@ -199,8 +220,8 @@ canvas{width:100%;display:block}
       Planung der Studie aus.</div></div>
   </div>
 
-</div><!-- .main -->
-</div><!-- .wrap -->
+</div><!-- #main -->
+</div><!-- #app -->
 
 <!-- ══ HILFE-MODAL ══════════════════════════════════════════════════════════ -->
 <button class="help-btn" onclick="document.getElementById('help-overlay').classList.add('open')">?</button>
@@ -228,8 +249,23 @@ canvas{width:100%;display:block}
 </div>
 
 <script>
+// ── Hut/Strich-Notation ────────────────────────────────────────────────────
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
+
 // ── State ──────────────────────────────────────────────────────────────────
+let showCohen=false;
 const ST={alpha:.05,tails:2,design:2,n:64,d:.50,targetPow:.80};
+
+function toggleCohen(){
+  showCohen=!showCohen;
+  const btn=document.getElementById('btn-cohen');
+  btn.classList.toggle('active',showCohen);
+  drawPowerCurve();
+}
 const ALPHA_VALS=[0.01,0.05,0.10];
 
 // ── Normalverteilung ───────────────────────────────────────────────────────
@@ -346,38 +382,247 @@ function updateStory(){
     `Wahres d halb so groß (${(ST.d/2).toFixed(2)}): Power ${(computePower(ST.d/2,ST.n,ST.alpha,ST.tails,ST.design)*100).toFixed(1)}%.`;
 }
 
-// ── Platzhalter-Zeichenfunktionen (werden in Schritt 2+ gefüllt) ───────────
+// ── Power-Kurve ────────────────────────────────────────────────────────────
 function drawPowerCurve(){
   const canvas=document.getElementById('cv-power');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
   const ctx=canvas.getContext('2d');
+  const pad={l:52,r:18,t:22,b:50};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5');
+  const ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),paper=cv('--paper'),bg=cv('--bg');
   ctx.clearRect(0,0,W,H);
-  ctx.fillStyle=cv('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
-  ctx.fillText('[ Power-Kurve wird in Schritt 2 gezeichnet ]',W/2,H/2);
+
+  const dMax=2.0;
+  const sx=v=>pad.l+cW*v/dMax;
+  const sy=v=>pad.t+cH*(1-v);
+
+  // Grid
+  [0,.2,.4,.6,.8,1].forEach(p=>{
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,sy(p));ctx.lineTo(pad.l+cW,sy(p));ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(p.toFixed(1),pad.l-5,sy(p)+4);
+  });
+  [0,.5,1.0,1.5,2.0].forEach(d=>{
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(sx(d),pad.t);ctx.lineTo(sx(d),pad.t+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(d.toFixed(1),sx(d),pad.t+cH+15);
+  });
+  // Achsen
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
+  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText("Cohen's d (wahre Effektgröße)",pad.l+cW/2,H-3);
+  ctx.save();ctx.translate(13,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Power (1−β)',0,0);ctx.restore();
+
+  // Kurvenschar: n/4, n/2, n (aktuell), 2n — je eigene Farbe
+  const n4=Math.max(4,Math.round(ST.n/4));
+  const n2=Math.max(4,Math.round(ST.n/2));
+  const n2x=Math.min(500,ST.n*2);
+  const nCurves=[
+    {n:n4,  col:a1, dash:[4,3], lw:1.4, lbl:`n=${n4} (¼)`},
+    {n:n2,  col:a5, dash:[4,3], lw:1.4, lbl:`n=${n2} (½)`},
+    {n:ST.n,col:a3, dash:[],    lw:2.5, lbl:`n=${ST.n} ← aktuell`},
+    {n:n2x, col:a2, dash:[4,3], lw:1.4, lbl:`n=${n2x} (×2)`},
+  ];
+  const ND=250;
+  nCurves.forEach(nc=>{
+    ctx.strokeStyle=nc.col;ctx.lineWidth=nc.lw;ctx.setLineDash(nc.dash);
+    ctx.beginPath();
+    for(let i=0;i<ND;i++){
+      const d=i*dMax/(ND-1);
+      const px=sx(d),py=sy(computePower(d,nc.n,ST.alpha,ST.tails,ST.design));
+      i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+    }
+    ctx.stroke();ctx.setLineDash([]);
+  });
+
+  // Ziel-Power-Linie
+  ctx.strokeStyle=a4;ctx.lineWidth=1.3;ctx.setLineDash([6,3]);
+  ctx.beginPath();ctx.moveTo(pad.l,sy(ST.targetPow));ctx.lineTo(pad.l+cW,sy(ST.targetPow));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=a4;ctx.font='11px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText(`Ziel ${(ST.targetPow*100).toFixed(0)}%`,pad.l+4,sy(ST.targetPow)-4);
+
+  // Cohen-Konventionen (toggle)
+  if(showCohen){
+    [{d:.2,lbl:'klein'},{d:.5,lbl:'mittel'},{d:.8,lbl:'groß'}].forEach(c=>{
+      ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([2,4]);
+      ctx.beginPath();ctx.moveTo(sx(c.d),pad.t);ctx.lineTo(sx(c.d),pad.t+cH);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle=ink3;ctx.font='10px DM Mono,monospace';ctx.textAlign='center';
+      ctx.fillText(`d=${c.d}`,sx(c.d),pad.t+11);
+      ctx.fillText(`(${c.lbl})`,sx(c.d),pad.t+22);
+    });
+  }
+
+  // Aktuelles d — vertikale Linie + Punkt
+  const curPow=computePower(ST.d,ST.n,ST.alpha,ST.tails,ST.design);
+  ctx.strokeStyle=a1;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(sx(ST.d),pad.t);ctx.lineTo(sx(ST.d),pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();ctx.arc(sx(ST.d),sy(curPow),5.5,0,2*Math.PI);
+  ctx.fillStyle=a3;ctx.fill();
+  ctx.strokeStyle=bg;ctx.lineWidth=1.5;ctx.stroke();
+
+  // Legende
+  const lgW=148,lgItemH=17,lgPad=7;
+  const lgH=nCurves.length*lgItemH+lgPad*2;
+  const lgX=pad.l+cW-lgW-4,lgY=pad.t+4;
+  ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(lgX,lgY,lgW,lgH);
+  ctx.globalAlpha=1;ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.strokeRect(lgX,lgY,lgW,lgH);
+  nCurves.forEach((nc,i)=>{
+    const y=lgY+lgPad+(i+.5)*lgItemH;
+    ctx.strokeStyle=nc.col;ctx.lineWidth=nc.lw;ctx.setLineDash(nc.dash);
+    ctx.beginPath();ctx.moveTo(lgX+7,y);ctx.lineTo(lgX+27,y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=nc.col;ctx.font='11px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(nc.lbl,lgX+32,y+4);
+  });
 }
+
+// ── H₀/H₁-Verteilungen ────────────────────────────────────────────────────
 function drawDist(){
   const canvas=document.getElementById('cv-dist');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
   const ctx=canvas.getContext('2d');
+  const pad={l:36,r:18,t:22,b:50};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a5=cv('--a5');
+  const ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),paper=cv('--paper');
   ctx.clearRect(0,0,W,H);
-  ctx.fillStyle=cv('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
-  ctx.fillText('[ Verteilungen werden in Schritt 2 gezeichnet ]',W/2,H/2);
+
+  const ncp=ST.design===2?ST.d*Math.sqrt(ST.n/2):ST.d*Math.sqrt(ST.n);
+  const za=ST.tails===2?phiInv(1-ST.alpha/2):phiInv(1-ST.alpha);
+
+  const xMin=Math.min(-4,ncp-4),xMax=Math.max(4,ncp+4);
+  const NX=300;
+  const xs=Array.from({length:NX},(_,i)=>xMin+i*(xMax-xMin)/(NX-1));
+  const pNorm=(x,mu)=>Math.exp(-(x-mu)*(x-mu)/2)/Math.sqrt(2*Math.PI);
+  const pH0=xs.map(x=>pNorm(x,0));
+  const pH1=xs.map(x=>pNorm(x,ncp));
+  const yMax=Math.max(...pH0,...pH1)*1.18;
+
+  const sx=v=>pad.l+cW*(v-xMin)/(xMax-xMin);
+  const sy=v=>pad.t+cH*(1-v/yMax);
+
+  // Grid X
+  for(let xv=Math.ceil(xMin);xv<=Math.floor(xMax);xv++){
+    const px=sx(xv);
+    if(px<pad.l-1||px>pad.l+cW+1)continue;
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(px,pad.t);ctx.lineTo(px,pad.t+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(xv,px,pad.t+cH+15);
+  }
+  // Achsen
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
+  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Teststatistik z',pad.l+cW/2,H-3);
+
+  // Hilfsfunktion: Fläche unter Kurve füllen
+  const fillArea=(pdf,col,fromX,toX,alpha)=>{
+    const i0=xs.findIndex(x=>x>=fromX),i1=xs.findLastIndex(x=>x<=toX);
+    if(i0<0||i1<0||i0>i1)return;
+    ctx.fillStyle=col;ctx.globalAlpha=alpha;
+    ctx.beginPath();ctx.moveTo(sx(xs[i0]),sy(0));
+    for(let i=i0;i<=i1;i++)ctx.lineTo(sx(xs[i]),sy(pdf[i]));
+    ctx.lineTo(sx(xs[i1]),sy(0));ctx.closePath();ctx.fill();
+    ctx.globalAlpha=1;
+  };
+
+  // β (Typ-II) — gelb: unter H₁, links von z_crit
+  fillArea(pH1,a5,xMin,za,.38);
+  // Power — grün: unter H₁, rechts von z_crit
+  fillArea(pH1,a3,za,xMax,.38);
+  // α (Typ-I) — rot: unter H₀, rechts von z_crit (+ linker Tail bei zweiseitig)
+  fillArea(pH0,a1,za,xMax,.50);
+  if(ST.tails===2)fillArea(pH0,a1,xMin,-za,.50);
+
+  // Kurven
+  const drawCurve=(pdf,col,lw,dash=[])=>{
+    ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.setLineDash(dash);
+    ctx.beginPath();
+    xs.forEach((x,i)=>{i===0?ctx.moveTo(sx(x),sy(pdf[i])):ctx.lineTo(sx(x),sy(pdf[i]));});
+    ctx.stroke();ctx.setLineDash([]);
+  };
+  drawCurve(pH0,a2,2,[5,3]);   // H₀ blau, gestrichelt
+  drawCurve(pH1,a3,2.5);       // H₁ grün, solid
+
+  // Kritischer Wert
+  ctx.strokeStyle=a1;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(sx(za),pad.t+8);ctx.lineTo(sx(za),pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=a1;ctx.font='11px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText(`z_c=${za.toFixed(2)}`,sx(za)+3,pad.t+20);
+  if(ST.tails===2&&sx(-za)>pad.l){
+    ctx.strokeStyle=a1;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+    ctx.beginPath();ctx.moveTo(sx(-za),pad.t+8);ctx.lineTo(sx(-za),pad.t+cH);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // NCP-Pfeil
+  if(ncp>0.5){
+    const ay=pad.t+cH*0.18;
+    ctx.strokeStyle=ink3;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(sx(0),ay);ctx.lineTo(sx(ncp)-3,ay);ctx.stroke();
+    // Pfeilspitze
+    ctx.beginPath();ctx.moveTo(sx(ncp),ay);ctx.lineTo(sx(ncp)-6,ay-3);ctx.lineTo(sx(ncp)-6,ay+3);ctx.closePath();
+    ctx.fillStyle=ink3;ctx.fill();
+    ctx.fillStyle=ink3;ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(`ncp = ${ncp.toFixed(2)}`,sx(ncp/2),ay-6);
+  }
+
+  // H₀/H₁-Labels
+  ctx.font='bold 12px DM Mono,monospace';
+  ctx.fillStyle=a2;ctx.textAlign='center';
+  ctx.fillText('H₀',sx(0),sy(pNorm(0,0))-8);
+  ctx.fillStyle=a3;
+  ctx.fillText('H₁',sx(ncp),sy(pNorm(ncp,ncp))-8);
+
+  // Legende
+  const curPow=computePower(ST.d,ST.n,ST.alpha,ST.tails,ST.design);
+  const lgItems=[
+    {col:a2,lbl:`H₀: N(0,1)`,fill:false},
+    {col:a3,lbl:`H₁: N(${ncp.toFixed(1)},1)`,fill:false},
+    {col:a3,lbl:`Power = ${(curPow*100).toFixed(1)}%`,fill:true},
+    {col:a5,lbl:`β = ${((1-curPow)*100).toFixed(1)}%`,fill:true},
+    {col:a1,lbl:`α = ${(ST.alpha*100).toFixed(0)}%`,fill:true},
+  ];
+  const lgW=160,lgItemH=16,lgPad=6;
+  const lgH=lgItems.length*lgItemH+lgPad*2;
+  const lgX=pad.l+4,lgY=pad.t+4;
+  ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(lgX,lgY,lgW,lgH);
+  ctx.globalAlpha=1;ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.strokeRect(lgX,lgY,lgW,lgH);
+  lgItems.forEach((it,i)=>{
+    const y=lgY+lgPad+(i+.5)*lgItemH;
+    if(it.fill){ctx.fillStyle=it.col;ctx.globalAlpha=.45;ctx.fillRect(lgX+7,y-5,18,10);ctx.globalAlpha=1;}
+    else{ctx.strokeStyle=it.col;ctx.lineWidth=it.col===a2?1.5:2;if(it.col===a2)ctx.setLineDash([4,2]);
+      ctx.beginPath();ctx.moveTo(lgX+7,y);ctx.lineTo(lgX+25,y);ctx.stroke();ctx.setLineDash([]);}
+    ctx.fillStyle=it.col;ctx.font='11px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(it.lbl,lgX+30,y+4);
+  });
 }
+
+// ── Platzhalter für Schritt 3+4 ───────────────────────────────────────────
 function drawHeatmap(){
   const canvas=document.getElementById('cv-heat');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,W,H);
+  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,W,H);
   ctx.fillStyle=cv('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
-  ctx.fillText('[ Heatmap wird in Schritt 3 gezeichnet ]',W/2,H/2);
+  ctx.fillText('[ Heatmap — Schritt 3 ]',W/2,H/2);
 }
 function drawSens(){
   const canvas=document.getElementById('cv-sens');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,W,H);
+  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,W,H);
   ctx.fillStyle=cv('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
-  ctx.fillText('[ Sensitivitätskurve wird in Schritt 4 gezeichnet ]',W/2,H/2);
+  ctx.fillText('[ Sensitivitätskurve — Schritt 4 ]',W/2,H/2);
 }
 
 function update(){
