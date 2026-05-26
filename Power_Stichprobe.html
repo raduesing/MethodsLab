@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power &amp; Stichprobengröße</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117;--paper:#1a1d27;--ink:#e8eaf0;--ink2:#a8adc0;--ink3:#5a6080;
+  --grid:#252a3a;--border:#2e3448;--accent:#7c8cf8;
+  --a1:#f87171;--a2:#60a5fa;--a3:#4ade80;--a4:#c084fc;--a5:#fbbf24;--a6:#fb923c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'DM Mono',monospace;font-size:.9rem;min-height:100vh}
+
+.wrap{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+
+/* ── Sidebar ── */
+.sidebar{background:var(--paper);border-right:1px solid var(--border);padding:1rem .85rem;display:flex;flex-direction:column;gap:.7rem;overflow-y:auto;position:sticky;top:0;height:100vh}
+.sidebar-title{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.scard{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:.65rem .75rem}
+.scard-title{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.5rem}
+
+.slider-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.25rem}
+.slider-name{font-size:.8rem;color:var(--ink)}
+.slider-val{font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;margin-bottom:.4rem}
+
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);background:transparent;color:var(--ink2);border-radius:4px;cursor:pointer;transition:all .15s}
+.tbtn.active{background:var(--accent);color:#0f1117;border-color:var(--accent);font-weight:500}
+.btn-row{display:flex;gap:.4rem;flex-wrap:wrap}
+
+/* ── Main ── */
+.main{padding:1.2rem 1.4rem;overflow-y:auto}
+.sec-h{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);border-bottom:1px solid var(--grid);padding-bottom:.35rem;margin:1.2rem 0 .8rem}
+.sec-h:first-child{margin-top:0}
+
+/* ── Story-Box ── */
+.story-box{background:var(--paper);border:1px solid var(--border);border-left:3px solid var(--a5);border-radius:6px;padding:.7rem .9rem;margin-bottom:.85rem;font-size:.79rem;line-height:1.85;color:var(--ink2)}
+.story-lbl{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--a5);display:block;margin-bottom:.3rem}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+
+/* ── Plots ── */
+.plot-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.plot-box{background:var(--paper);border:1px solid var(--border);border-radius:6px;padding:.6rem}
+.plot-title{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.4rem}
+canvas{width:100%;display:block}
+
+.hint{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);line-height:1.7;margin-top:.5rem}
+
+/* ── Lernkarten ── */
+.hp-seq{display:flex;flex-direction:column;gap:.5rem;margin-top:.6rem}
+.hp-step{display:flex;gap:.7rem;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:.55rem .75rem}
+.hp-seq .hp-step::before{content:counter(step-c);counter-increment:step-c;min-width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent);color:#0f1117;display:flex;align-items:center;justify-content:center;font-size:1.05rem;font-weight:600;flex-shrink:0}
+.hp-seq{counter-reset:step-c}
+.hp-p{font-size:.79rem;color:var(--ink2);line-height:1.82}
+
+/* ── Ampel-Badge ── */
+.power-badge{display:inline-block;font-size:.78rem;padding:.22rem .75rem;border-radius:4px;font-weight:500;margin-top:.5rem}
+.badge-ok{background:color-mix(in srgb,var(--a3) 18%,transparent);color:var(--a3);border:1px solid color-mix(in srgb,var(--a3) 40%,transparent)}
+.badge-warn{background:color-mix(in srgb,var(--a5) 18%,transparent);color:var(--a5);border:1px solid color-mix(in srgb,var(--a5) 40%,transparent)}
+.badge-bad{background:color-mix(in srgb,var(--a1) 18%,transparent);color:var(--a1);border:1px solid color-mix(in srgb,var(--a1) 40%,transparent)}
+
+/* ── Hilfe-Modal ── */
+.help-btn{position:fixed;bottom:1.2rem;right:1.2rem;background:var(--a1);color:#fff;border:none;border-radius:50%;width:2.4rem;height:2.4rem;font-size:1.1rem;cursor:pointer;z-index:900;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center}
+.help-overlay.open{display:flex}
+.help-box{background:var(--paper);border:1px solid var(--border);border-radius:8px;max-width:660px;width:90%;max-height:82vh;overflow-y:auto;padding:1.2rem 1.4rem}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.8rem}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;border:1px solid var(--border);background:transparent;color:var(--ink2);border-radius:4px;cursor:pointer}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin:.9rem 0 .3rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-formula{background:var(--bg);border-left:3px solid var(--accent);padding:.3rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.35rem 0 .55rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div class="sidebar">
+  <div class="sidebar-title">Parameter</div>
+
+  <div class="scard">
+    <div class="scard-title">Signifikanzniveau α</div>
+    <div class="slider-row"><span class="slider-name">α</span><span class="slider-val" id="v-alpha">0.05</span></div>
+    <input type="range" id="s-alpha" min="1" max="3" step="1" value="2">
+    <div class="btn-row" style="font-size:.70rem;color:var(--ink3)">
+      <span>0.01</span><span style="margin-left:auto">0.10</span>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Testrichtung</div>
+    <div class="btn-row">
+      <button class="tbtn active" id="btn-two" onclick="setTails(2)">zweiseitig</button>
+      <button class="tbtn" id="btn-one" onclick="setTails(1)">einseitig</button>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Design</div>
+    <div class="btn-row">
+      <button class="tbtn active" id="btn-two-samp" onclick="setDesign(2)">2 Gruppen</button>
+      <button class="tbtn" id="btn-one-samp" onclick="setDesign(1)">1 Gruppe</button>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Stichprobengröße</div>
+    <div class="slider-row"><span class="slider-name">n <span id="lbl-n-design" style="color:var(--ink3)">(pro Gruppe)</span></span><span class="slider-val" id="v-n">64</span></div>
+    <input type="range" id="s-n" min="1" max="100" step="1" value="40">
+    <div class="hint" id="n-total-note">Gesamt-N: 128</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Geplante Effektgröße</div>
+    <div class="slider-row"><span class="slider-name">Cohen's d</span><span class="slider-val" id="v-d">0.50</span></div>
+    <input type="range" id="s-d" min="0" max="120" step="1" value="50">
+    <div class="hint">Power bei d &amp; n:<br><strong id="power-display" style="font-size:.9rem">—</strong></div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Ziel-Power</div>
+    <div class="slider-row"><span class="slider-name">1−β</span><span class="slider-val" id="v-pow">0.80</span></div>
+    <input type="range" id="s-pow" min="50" max="99" step="1" value="80">
+  </div>
+</div>
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- Story-Box -->
+  <div class="story-box">
+    <span class="story-lbl">📋 Beispiel — Klinische Studie Antidepressivum</span>
+    Forscher plant Studie: erwartet <span class="sv" id="sb-d">d = 0.50</span> (Literatur),
+    <span class="sv" id="sb-n">n = 64</span> pro Gruppe → geplante Power:
+    <span class="sv" id="sb-power">80%</span>.
+    Pilotstudie deutet auf d ≈ 0.30 hin —
+    Sektion 3 zeigt, was das bedeutet.
+  </div>
+
+  <!-- Sektion 1 -->
+  <div class="sec-h">① Power ist eine Kurve — nicht ein Wert</div>
+  <div class="plot-wrap">
+    <div class="plot-box">
+      <div class="plot-title">Power(d) — Kurve &amp; Kurvenschar</div>
+      <canvas id="cv-power" height="300"></canvas>
+      <div class="hint" id="hint-power"></div>
+    </div>
+    <div class="plot-box">
+      <div class="plot-title">H₀- und H₁-Verteilung</div>
+      <canvas id="cv-dist" height="300"></canvas>
+      <div class="hint" id="hint-dist"></div>
+    </div>
+  </div>
+  <div id="power-badge-wrap"></div>
+
+  <!-- Sektion 2 -->
+  <div class="sec-h">② Die Power-Landschaft — n × d × Power</div>
+  <div class="plot-box" style="margin-bottom:1rem">
+    <div class="plot-title">Heatmap: Power als Funktion von n und Cohen's d</div>
+    <canvas id="cv-heat" height="320"></canvas>
+    <div class="hint" id="hint-heat"></div>
+  </div>
+
+  <!-- Sektion 3 -->
+  <div class="sec-h">③ Was wenn mein angenommenes δ falsch war?</div>
+  <div class="plot-box" style="margin-bottom:1rem">
+    <div class="plot-title">Sensitivität: Power bei geplantes n = <span id="lbl-n-sens">64</span>, über alle möglichen wahren d</div>
+    <canvas id="cv-sens" height="260"></canvas>
+    <div class="hint" id="hint-sens"></div>
+  </div>
+
+  <!-- Lernkarten -->
+  <div class="sec-h">Lernkarten</div>
+  <div class="hp-seq">
+    <div class="hp-step"><div class="hp-p"><strong>Power ist eine Funktion, nicht eine Zahl.</strong>
+      Für jedes denkbare wahre δ gibt es eine andere Power. Die häufig zitierte „80%-Power" gilt
+      nur für genau ein einziges angenommenes δ — und dieses kennt man vor der Studie nie sicher.</div></div>
+    <div class="hp-step"><div class="hp-p"><strong>α und Power sind gegenläufig.</strong>
+      Strengeres α (z. B. 0.01 statt 0.05) senkt bei gleichem n und δ die Power — man macht es
+      schwerer, H₀ abzulehnen, trifft damit auch mehr echte Effekte nicht.</div></div>
+    <div class="hp-step"><div class="hp-p"><strong>Cohens „klein/mittel/groß" sind Daumenregeln, keine Naturkonstanten.</strong>
+      Cohen (1988) leitete d = 0.2 / 0.5 / 0.8 aus verhaltenwissenschaftlichen Studien
+      seiner Zeit ab — als Notlösung, wenn kein Domänenwissen vorhanden ist.
+      Er selbst warnte vor unreflektierter Übernahme. In der Medizin kann d = 0.1 klinisch
+      bedeutsam sein (BP-Senkung × Millionen Patienten); in der Grundlagenforschung
+      kann d = 0.8 trivial sein. <em>Die relevante Effektgröße ist immer kontextspezifisch.</em></div></div>
+    <div class="hp-step"><div class="hp-p"><strong>Stichprobenplanung braucht inhaltliches Vorwissen.</strong>
+      Das MDES (Minimum Detectable Effect Size) — die kleinste Effektgröße, die man
+      entdecken will — sollte aus klinischer/praktischer Relevanz kommen, nicht aus
+      statistischen Konventionen. „Welcher Effekt wäre klein genug, um ihn zu ignorieren?"</div></div>
+    <div class="hp-step"><div class="hp-p"><strong>Post-hoc Power ist irreführend.</strong>
+      Power nach einer nicht-signifikanten Studie zu berechnen (mit dem beobachteten d)
+      ist zirkulär: sie spiegelt nur den p-Wert zurück und sagt nichts über die
+      Planung der Studie aus.</div></div>
+  </div>
+
+</div><!-- .main -->
+</div><!-- .wrap -->
+
+<!-- ══ HILFE-MODAL ══════════════════════════════════════════════════════════ -->
+<button class="help-btn" onclick="document.getElementById('help-overlay').classList.add('open')">?</button>
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="help-box">
+    <div class="help-box-h">Hilfe — Power &amp; Stichprobengröße
+      <button class="help-close" onclick="document.getElementById('help-overlay').classList.remove('open')">✕ schließen</button>
+    </div>
+    <div class="help-sh">Was ist statistische Power?</div>
+    <p class="help-p">Power (1−β) ist die Wahrscheinlichkeit, einen wahren Effekt zu entdecken — also H₀ korrekt abzulehnen, wenn H₁ gilt. Power hängt von vier Größen ab: Effektgröße δ, Stichprobengröße n, Signifikanzniveau α und Testrichtung.</p>
+    <div class="help-formula">Power = P(H₀ ablehnen | H₁ wahr) = 1 − β</div>
+    <div class="help-sh">Warum ist Power eine Kurve?</div>
+    <p class="help-p">Für jedes mögliche wahre δ ergibt sich eine andere Power. Bei δ = 0 entspricht Power dem α-Niveau (falsch positiv). Mit wachsendem δ steigt Power gegen 1. Sektion 1 zeigt diese Kurve — und wie sie sich mit n verschiebt.</p>
+    <div class="help-sh">Normalapproximation der Power</div>
+    <div class="help-formula">Power ≈ Φ(|d| · √(n/2) − z_{α/2})   [zweiseitig, 2 Gruppen]</div>
+    <p class="help-p">Φ = Standard-Normalverteilung, z_{α/2} = Quantil für α/2. Die Näherung ist für n ≥ 20 sehr gut; für kleine n wird intern die nicht-zentrale t-Verteilung verwendet.</p>
+    <div class="help-sh">Cohen's d</div>
+    <p class="help-p">Standardisierte Effektgröße: d = (μ₁ − μ₂) / σ. Die Konventionen klein/mittel/groß (0.2/0.5/0.8) sind historische Daumenregeln aus der Verhaltensforschung — keine universellen Standards. Die relevante Effektgröße ist immer domänenspezifisch.</p>
+    <div class="help-sh">Begriffe</div>
+    <p class="help-p"><strong>α (Typ-I-Fehler):</strong> Wahrscheinlichkeit, H₀ fälschlicherweise abzulehnen.<br>
+    <strong>β (Typ-II-Fehler):</strong> Wahrscheinlichkeit, einen echten Effekt zu verpassen. Power = 1−β.<br>
+    <strong>MDES:</strong> Minimum Detectable Effect Size — kleinster Effekt, der mit gegebenen n und α mit gewünschter Power entdeckt werden kann.<br>
+    <strong>NCP:</strong> Non-centrality parameter = d · √(n/2). Bestimmt, wie weit die H₁-Verteilung von H₀ entfernt ist.</p>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+const ST={alpha:.05,tails:2,design:2,n:64,d:.50,targetPow:.80};
+const ALPHA_VALS=[0.01,0.05,0.10];
+
+// ── Normalverteilung ───────────────────────────────────────────────────────
+function phi(x){return .5*(1+erf(x/Math.SQRT2));}
+function phiInv(p){  // Rational approximation (Beasley-Springer-Moro)
+  if(p<=0)return -8;if(p>=1)return 8;
+  const a=[2.50662823884,-18.61500062529,41.39119773534,-25.44106049637];
+  const b=[-8.47351093090,23.08336743743,-21.06224101826,3.13082909833];
+  const c=[0.3374754822726147,0.9761690190917186,0.1607979714918209,
+           0.0276438810333863,0.0038405729373609,0.0003951896511349,
+           0.0000321767881768,0.0000002888167364,0.0000003960315187];
+  let r,x;
+  const q=p-.5;
+  if(Math.abs(q)<.42){r=q*q;x=q*(((a[3]*r+a[2])*r+a[1])*r+a[0])/((((b[3]*r+b[2])*r+b[1])*r+b[0])*r+1);}
+  else{
+    r=q<0?p:1-p;r=Math.log(-Math.log(r));
+    x=c[0]+r*(c[1]+r*(c[2]+r*(c[3]+r*(c[4]+r*(c[5]+r*(c[6]+r*(c[7]+r*c[8])))))));
+    if(q<0)x=-x;
+  }
+  return x;
+}
+function erf(x){
+  const t=1/(1+.3275911*Math.abs(x));
+  const y=1-((((1.061405429*t-1.453152027)*t+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-x*x);
+  return x<0?-y:y;
+}
+
+// ── Power-Berechnung (Normalapproximation) ─────────────────────────────────
+function computePower(d,n,alpha,tails,design){
+  const ncp=design===2?Math.abs(d)*Math.sqrt(n/2):Math.abs(d)*Math.sqrt(n);
+  const za=tails===2?phiInv(1-alpha/2):phiInv(1-alpha);
+  return phi(ncp-za);
+}
+
+// ── n aus Power-Ziel ───────────────────────────────────────────────────────
+function nForPower(d,power,alpha,tails,design){
+  if(Math.abs(d)<1e-6)return Infinity;
+  const za=tails===2?phiInv(1-alpha/2):phiInv(1-alpha);
+  const zb=phiInv(power);
+  const base=Math.pow(za+zb,2)/Math.pow(d,2);
+  return design===2?Math.ceil(2*base):Math.ceil(base);
+}
+
+// ── n-Slider Mapping (Log-Skala, 10–500) ──────────────────────────────────
+function sliderToN(v){return Math.round(Math.exp(Math.log(10)+(Math.log(500)-Math.log(10))*v/100));}
+function nToSlider(n){return Math.round((Math.log(n)-Math.log(10))/(Math.log(500)-Math.log(10))*100);}
+
+// ── Slider-Initialisierung ─────────────────────────────────────────────────
+document.getElementById('s-n').value=nToSlider(64);
+
+// ── Slider-Events ──────────────────────────────────────────────────────────
+document.getElementById('s-alpha').addEventListener('input',function(){
+  ST.alpha=ALPHA_VALS[+this.value-1];
+  document.getElementById('v-alpha').textContent=ST.alpha.toFixed(2);
+  update();
+});
+document.getElementById('s-n').addEventListener('input',function(){
+  ST.n=sliderToN(+this.value);
+  document.getElementById('v-n').textContent=ST.n;
+  document.getElementById('n-total-note').textContent=ST.design===2?`Gesamt-N: ${ST.n*2}`:'';
+  document.getElementById('lbl-n-sens').textContent=ST.n;
+  update();
+});
+document.getElementById('s-d').addEventListener('input',function(){
+  ST.d=(+this.value/100).toFixed(2)*1;
+  document.getElementById('v-d').textContent=ST.d.toFixed(2);
+  update();
+});
+document.getElementById('s-pow').addEventListener('input',function(){
+  ST.targetPow=+this.value/100;
+  document.getElementById('v-pow').textContent=ST.targetPow.toFixed(2);
+  update();
+});
+
+function setTails(t){
+  ST.tails=t;
+  document.getElementById('btn-two').classList.toggle('active',t===2);
+  document.getElementById('btn-one').classList.toggle('active',t===1);
+  update();
+}
+function setDesign(d){
+  ST.design=d;
+  document.getElementById('btn-two-samp').classList.toggle('active',d===2);
+  document.getElementById('btn-one-samp').classList.toggle('active',d===1);
+  document.getElementById('lbl-n-design').textContent=d===2?'(pro Gruppe)':'';
+  document.getElementById('n-total-note').textContent=d===2?`Gesamt-N: ${ST.n*2}`:'';
+  update();
+}
+
+// ── CSS-Variablen lesen ────────────────────────────────────────────────────
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+// ── update: Story-Box + Badge ──────────────────────────────────────────────
+function updateStory(){
+  const pow=computePower(ST.d,ST.n,ST.alpha,ST.tails,ST.design);
+  document.getElementById('sb-d').textContent=`d = ${ST.d.toFixed(2)}`;
+  document.getElementById('sb-n').textContent=`n = ${ST.n}`;
+  document.getElementById('sb-power').textContent=`${(pow*100).toFixed(1)}%`;
+  document.getElementById('power-display').textContent=`${(pow*100).toFixed(1)}%`;
+
+  const badge=pow>=ST.targetPow?
+    `<span class="power-badge badge-ok">✓ Power ${(pow*100).toFixed(1)}% ≥ Ziel ${(ST.targetPow*100).toFixed(0)}%</span>`:
+    pow>=.50?
+    `<span class="power-badge badge-warn">⚠ Power ${(pow*100).toFixed(1)}% — unter Ziel ${(ST.targetPow*100).toFixed(0)}%</span>`:
+    `<span class="power-badge badge-bad">✗ Power ${(pow*100).toFixed(1)}% — stark unterpowert</span>`;
+  document.getElementById('power-badge-wrap').innerHTML=badge;
+
+  const nNeeded=nForPower(ST.d,ST.targetPow,ST.alpha,ST.tails,ST.design);
+  document.getElementById('hint-power').textContent=
+    `n=${ST.n} → Power ${(pow*100).toFixed(1)}% bei d=${ST.d.toFixed(2)} | `+
+    `Für ${(ST.targetPow*100).toFixed(0)}% Power bei d=${ST.d.toFixed(2)}: n=${isFinite(nNeeded)?nNeeded:'∞'}`;
+  document.getElementById('hint-sens').textContent=
+    `Geplant: d=${ST.d.toFixed(2)}, n=${ST.n} → Power ${(pow*100).toFixed(1)}%. `+
+    `Wahres d halb so groß (${(ST.d/2).toFixed(2)}): Power ${(computePower(ST.d/2,ST.n,ST.alpha,ST.tails,ST.design)*100).toFixed(1)}%.`;
+}
+
+// ── Platzhalter-Zeichenfunktionen (werden in Schritt 2+ gefüllt) ───────────
+function drawPowerCurve(){
+  const canvas=document.getElementById('cv-power');
+  const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=cv('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('[ Power-Kurve wird in Schritt 2 gezeichnet ]',W/2,H/2);
+}
+function drawDist(){
+  const canvas=document.getElementById('cv-dist');
+  const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=cv('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('[ Verteilungen werden in Schritt 2 gezeichnet ]',W/2,H/2);
+}
+function drawHeatmap(){
+  const canvas=document.getElementById('cv-heat');
+  const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=cv('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('[ Heatmap wird in Schritt 3 gezeichnet ]',W/2,H/2);
+}
+function drawSens(){
+  const canvas=document.getElementById('cv-sens');
+  const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=cv('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('[ Sensitivitätskurve wird in Schritt 4 gezeichnet ]',W/2,H/2);
+}
+
+function update(){
+  updateStory();
+  drawPowerCurve();
+  drawDist();
+  drawHeatmap();
+  drawSens();
+}
+
+window.addEventListener('resize',update);
+update();
+</script>
+</body>
+</html>
