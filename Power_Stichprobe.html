@@ -377,9 +377,6 @@ function updateStory(){
   document.getElementById('hint-power').textContent=
     `n=${ST.n} → Power ${(pow*100).toFixed(1)}% bei d=${ST.d.toFixed(2)} | `+
     `Für ${(ST.targetPow*100).toFixed(0)}% Power bei d=${ST.d.toFixed(2)}: n=${isFinite(nNeeded)?nNeeded:'∞'}`;
-  document.getElementById('hint-sens').textContent=
-    `Geplant: d=${ST.d.toFixed(2)}, n=${ST.n} → Power ${(pow*100).toFixed(1)}%. `+
-    `Wahres d halb so groß (${(ST.d/2).toFixed(2)}): Power ${(computePower(ST.d/2,ST.n,ST.alpha,ST.tails,ST.design)*100).toFixed(1)}%.`;
 }
 
 // ── Power-Kurve ────────────────────────────────────────────────────────────
