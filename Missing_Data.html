@@ -256,50 +256,7 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
     <strong>MCAR:</strong> Lila Kreise (○) zeigen die wahren Y-Werte fehlender Beobachtungen — gleichmäßig verteilt, kein systematisches Muster. Listwise und MI unverzerrt.
   </div>
 
-  <div class="sec-h">Vergleich der Schätzmethoden</div>
-  <table class="res-table">
-    <thead>
-      <tr>
-        <th>Methode (Ziel: Y~X)</th><th>n</th>
-        <th>μ̂_Y</th><th>Bias μ_Y</th>
-        <th>β̂_X</th><th>Bias β_X</th>
-        <th>SD_Y</th><th>Bias SD_Y</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr class="row-true">
-        <td>Wahre Parameter (Y~X)</td><td class="num">—</td>
-        <td class="num">60.00</td><td class="num">—</td>
-        <td class="num" id="t-bxmarg-pop">−7.20</td><td class="num">—</td>
-        <td class="num" id="t-sdy-pop">—</td><td class="num">—</td>
-      </tr>
-      <tr class="row-comp">
-        <td>Vollständige Daten (Y~X)</td><td class="num" id="t-n-c">—</td>
-        <td class="num" id="t-mu-c">—</td><td class="num" id="t-bi-mu-c">—</td>
-        <td class="num" id="t-bx-c">—</td><td class="num" id="t-bi-bx-c">—</td>
-        <td class="num" id="t-sdy-c">—</td><td class="num" id="t-bi-sdy-c">—</td>
-      </tr>
-      <tr class="row-lw">
-        <td>Listwise-Deletion (Y~X)</td><td class="num" id="t-n-l">—</td>
-        <td class="num" id="t-mu-l">—</td><td class="num" id="t-bi-mu-l">—</td>
-        <td class="num" id="t-bx-l">—</td><td class="num" id="t-bi-bx-l">—</td>
-        <td class="num" id="t-sdy-l">—</td><td class="num" id="t-bi-sdy-l">—</td>
-      </tr>
-      <tr class="row-mean">
-        <td>Mean Imputation (Y~X)</td><td class="num" id="t-n-m">—</td>
-        <td class="num" id="t-mu-m">—</td><td class="num" id="t-bi-mu-m">—</td>
-        <td class="num" id="t-bx-m">—</td><td class="num" id="t-bi-bx-m">—</td>
-        <td class="num" id="t-sdy-m">—</td><td class="num" id="t-bi-sdy-m">—</td>
-      </tr>
-      <tr class="row-mi">
-        <td><strong>MI — PMM (m=<span class="mval">10</span>, Imp:X+Z → Y~X)</strong></td>
-        <td class="num" id="t-n-mi">—</td>
-        <td class="num" id="t-mu-mi">—</td><td class="num" id="t-bi-mu-mi">—</td>
-        <td class="num" id="t-bx-mi">—</td><td class="num" id="t-bi-bx-mi">—</td>
-        <td class="num" id="t-sdy-mi">—</td><td class="num" id="t-bi-sdy-mi">—</td>
-      </tr>
-    </tbody>
-  </table>
+
 
   <div id="result-badge" style="margin-bottom:.35rem"></div>
   <div id="result-note" style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);line-height:1.8;margin-bottom:.5rem"></div>
@@ -707,34 +664,8 @@ function drawPlot(){
 
 // ── Tabelle ────────────────────────────────────────────────────────────────────
 function updateTable(){
-  const f=v=>v===null||v===undefined?'—':v.toFixed(2);
-  const fb=v=>v===null?'—':(v>=0?'+':'')+v.toFixed(2);
-  const fsd=v=>v===null||v===undefined?'—':Math.sqrt(Math.max(v,0)).toFixed(2);
-  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
-
   const r=ST.res;
   const nObs=ST.data.filter(d=>!d.miss).length;
-
-  const fill=(pfx,res)=>{
-    if(!res)return;
-    set(`t-n-${pfx}`, res.n);
-    set(`t-mu-${pfx}`,  f(res.meanY));
-    set(`t-bi-mu-${pfx}`,fb(res.meanY-TRUE_A));
-    set(`t-bx-${pfx}`,  f(res.bx));
-    set(`t-bi-bx-${pfx}`,fb(res.bx-trueBX_MARG()));  // Referenz: marginaler β_X in Y~X
-    const sdYhat=Math.sqrt(Math.max(res.varY,0));
-    set(`t-sdy-${pfx}`, sdYhat.toFixed(2));
-    set(`t-bi-sdy-${pfx}`,fb(sdYhat-trueSDY()));
-  };
-  fill('c', r.complete);
-  fill('l', r.listwise);
-  fill('m', r.mean);
-  fill('mi',r.mi);
-  // Populationsparameter dynamisch
-  document.getElementById('t-sdy-pop').textContent=trueSDY().toFixed(2);
-  const tBxp=document.getElementById('t-bxmarg-pop');
-  if(tBxp) tBxp.textContent=trueBX_MARG().toFixed(2).replace('-','−');
-  document.querySelectorAll('.mval').forEach(el=>el.textContent=ST.m);
 
   // Badge (Mechanismus-Label) + Note (nur n-Info)
   const badge=document.getElementById('result-badge');
@@ -775,11 +706,9 @@ function updateErklaerTable(){
   const sdBiasMean = sdMean != null ? sdMean - trSD : null;
   const sdBiasMI   = sdMI   != null ? sdMI   - trSD : null;
 
-  const rowStyle=`display:grid;grid-template-columns:9rem 1fr 1fr 1fr;gap:.15rem .6rem;
+  const rowStyle=`display:grid;grid-template-columns:9rem 3.5rem 1fr 1fr 1fr;gap:.15rem .6rem;
     font-family:'DM Mono',monospace;font-size:.78rem;margin:.45rem 0 .2rem;align-items:baseline`;
   const hdrStyle=`color:var(--ink3);font-size:.70rem;letter-spacing:.06em;text-transform:uppercase;padding-bottom:.2rem;border-bottom:1px solid var(--grid)`;
-  const badColor={mcar:'var(--a3)',mar:'var(--a5)',mnar:'var(--a1)'};
-  const mechLabel={mcar:'MCAR',mar:'MAR (X+Z)',mnar:'MNAR'};
 
   const biasColor=v=>{
     if(v==null)return'var(--ink3)';
@@ -790,22 +719,32 @@ function updateErklaerTable(){
   const rows=`
     <div style="${rowStyle}">
       <span style="${hdrStyle}">Methode</span>
+      <span style="${hdrStyle}">n</span>
       <span style="${hdrStyle}">β̂_X &nbsp;(Bias vs. ${bxMargFmt})</span>
       <span style="${hdrStyle}">μ̂_Y &nbsp;(Bias vs. 60)</span>
       <span style="${hdrStyle}">SD̂_Y &nbsp;(Bias vs. ${trSD.toFixed(2)})</span>
+      <span style="color:var(--ink3);font-size:.72rem">Wahr (Population)</span>
+      <span style="color:var(--ink3)">${ST.n}</span>
+      <span style="color:var(--ink3)">${trueBX_MARG().toFixed(2).replace('-','−')}</span>
+      <span style="color:var(--ink3)">60.00</span>
+      <span style="color:var(--ink3)">${trSD.toFixed(2)}</span>
       <span style="color:var(--ink3);font-size:.72rem">Vollst. Daten</span>
+      <span style="color:var(--ink3)">${r.complete?.n??'—'}</span>
       <span>${biasVal(r.complete?.bx,r.complete?r.complete.bx-trueBX_MARG():null)}</span>
       <span>${biasVal(r.complete?.meanY,r.complete?r.complete.meanY-TRUE_A:null)}</span>
       <span>${biasVal(sdC,sdBiasC)}</span>
       <span style="color:var(--a1);font-weight:500">Listwise</span>
+      <span style="color:var(--a1)">${r.listwise?.n??'—'}</span>
       <span style="color:var(--a1)">${biasVal(r.listwise?.bx,bxLW)}</span>
       <span style="color:var(--a1)">${biasVal(r.listwise?.meanY,muLW)}</span>
       <span style="color:var(--a1)">${biasVal(sdLW,sdBiasLW)}</span>
       <span style="color:var(--a6);font-weight:500">Mean Imputation</span>
+      <span style="color:var(--a6)">${r.mean?.n??'—'}</span>
       <span style="color:var(--a6)">${biasVal(r.mean?.bx,bxMean)}</span>
       <span style="color:var(--a6)">${biasVal(r.mean?.meanY,muMean)}</span>
       <span style="color:var(--a6)">${biasVal(sdMean,sdBiasMean)}</span>
-      <span style="color:var(--a3);font-weight:500">MI (Imp: X+Z)</span>
+      <span style="color:var(--a3);font-weight:500">MI (m=${ST.m}, Imp:X+Z)</span>
+      <span style="color:var(--a3)">${r.mi?.n??'—'}</span>
       <span style="color:var(--a3)">${biasVal(r.mi?.bx,bxMI)}</span>
       <span style="color:var(--a3)">${biasVal(r.mi?.meanY,muMI)}</span>
       <span style="color:var(--a3)">${biasVal(sdMI,sdBiasMI)}</span>
