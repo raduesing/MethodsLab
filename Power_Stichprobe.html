@@ -295,11 +295,25 @@ Power ≈ Φ(|d| · √n    − z_{α/2})   [zweiseitig, 1 Gruppe]</span>
     <div class="help-sh">Cohen's d und seine Grenzen</div>
     <p class="help-p">Standardisierte Effektgröße: d = (μ₁ − μ₂) / σ. Die Konventionen <strong>klein/mittel/groß (0.2/0.5/0.8)</strong> sind historische Daumenregeln aus der Verhaltensforschung der 1960er–70er Jahre — keine universellen Standards. Cohen selbst warnte vor unreflektierter Übernahme. In der Medizin kann d = 0.1 klinisch bedeutsam sein (Blutdrucksenkung × Millionen Patienten); in der Grundlagenforschung kann d = 0.8 trivial sein.</p>
 
+    <div class="help-sh">SESOI — Wie bestimmt man die relevante Effektgröße?</div>
+    <p class="help-p">Das Kernproblem der Stichprobenplanung ist nicht das Rechnen — es ist die inhaltliche Frage: <strong>Welchen Effekt möchte ich zuverlässig entdecken?</strong> Lakens (2022) schlägt vor, die Planung am <strong>SESOI</strong> auszurichten — dem <em>Smallest Effect Size of Interest</em>: dem kleinsten Effekt, der noch praktisch oder klinisch bedeutsam wäre.</p>
+    <p class="help-p">Das SESOI ist grundlegend verschieden von der Frage „Was haben frühere Studien gefunden?" — denn publizierte Effektgrößen sind durch Selektionsbias und Publikationsbias systematisch überschätzt (Winner's Curse). Wer seine Planung auf dem mittleren publizierten d aufbaut, riskiert eine überhöhte Effekterwartung und damit chronische Unterpowerung.</p>
+    <p class="help-p"><strong>Vier Wege zur SESOI-Bestimmung:</strong></p>
+    <p class="help-p"><strong>1. Klinischer/praktischer Anker (empfohlen):</strong> Welcher Effekt würde eine Entscheidung ändern — z. B. Behandlungsleitlinien, Zulassung, Kostenerstattung? In der Medizin gibt es für viele Skalen bereits empirisch bestimmte Mindestschwellen (MCID, Minimal Clinically Important Difference). Beispiel: Auf dem HAM-D gilt eine Reduktion von ≥ 3 Punkten als klinisch bedeutsam — das entspricht einem bestimmten d.</p>
+    <p class="help-p"><strong>2. Ressourcen-basierte Rechtfertigung:</strong> Arbeite rückwärts: Welche n sind realistisch erreichbar? Welches MDES ergibt sich daraus bei 80% Power? Ist dieser MDES inhaltlich noch relevant — oder so groß, dass nur große, unplausible Effekte entdeckt würden?</p>
+    <p class="help-p"><strong>3. Untere Schranke aus der Theorie:</strong> Was sagt die Theorie über die Mindestgröße des Effekts? Wenn ein Mechanismus postuliert wird, kann man oft argumentieren, unterhalb welcher Schwelle er praktisch nicht existiert.</p>
+    <p class="help-p"><strong>4. Vorherige Literatur — mit Vorsicht:</strong> Metaanalytische Schätzungen aus vorselektierten Stichproben überschätzen den wahren Effekt. Besser: Unkorrigierte Rohdaten aus Registerstudien oder präregistrierten Replikationen. Wenn nur publizierte Effekte verfügbar sind, setze den Planungswert deutlich konservativer an (z. B. 50–70% des publizierten d).</p>
+    <p class="help-p"><strong>SESOI und MDES verbinden:</strong> Nachdem das SESOI inhaltlich bestimmt ist, liefert Sektion 3 dieses Tools die Antwort: Ist mein geplantes n groß genug, um das SESOI zuverlässig zu entdecken (MDES ≤ SESOI)? Falls nicht, muss n erhöht oder das Design geändert werden.</p>
+    <p class="help-p" style="border-top:1px solid var(--grid);padding-top:.55rem;margin-top:.3rem;color:var(--ink3)">
+    <strong style="color:var(--ink2)">Literatur:</strong> Lakens, D. (2022). Sample size justification. <em>Collabra: Psychology</em>, 8(1), 33267.
+    <a href="https://doi.org/10.1525/collabra.33267" target="_blank" style="color:var(--a2);text-decoration:none">doi:10.1525/collabra.33267</a> — Open Access, enthält R-Code und interaktive Beispiele.</p>
+
     <div class="help-sh">Begriffe</div>
     <p class="help-p"><strong>α (Typ-I-Fehler):</strong> Wahrscheinlichkeit, H₀ fälschlicherweise abzulehnen.<br>
     <strong>β (Typ-II-Fehler):</strong> Wahrscheinlichkeit, einen echten Effekt zu verpassen. Power = 1−β.<br>
     <strong>NCP (Non-centrality parameter):</strong> δ · √(n/2) — gibt an, wie weit H₁ von H₀ entfernt ist (in SD-Einheiten der Teststatistik).<br>
     <strong>MDES (Minimum Detectable Effect Size):</strong> Kleinster Effekt, der mit gegebenen n und α bei Ziel-Power entdeckt werden kann. Aus Sektion 3 ablesbar.<br>
+    <strong>SESOI (Smallest Effect Size of Interest):</strong> Der kleinste Effekt, der inhaltlich noch praktisch oder klinisch relevant wäre. Die Planung sollte so erfolgen, dass MDES ≤ SESOI.<br>
     <strong>Post-hoc Power:</strong> Power berechnet <em>nach</em> der Studie mit dem beobachteten d — zirkulär und uninformativ, weil sie nur den p-Wert zurückspiegelt.</p>
   </div>
 </div>
