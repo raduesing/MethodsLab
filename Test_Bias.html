@@ -138,6 +138,9 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
   line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
 .num-sym{font-size:1.45em;line-height:1;vertical-align:baseline}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
 </style>
 </head>
 <body>
@@ -319,6 +322,11 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 </div><!-- /app -->
 
 <script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
 // ─── State ─────────────────────────────────────────────────────────────────
 const ST = {
   muXA:0, alphaA:0, betaA:0.5, nA:100,
@@ -637,7 +645,7 @@ function updateMod1(){
   const sig=p=>p<.05;
   const vcolor=s=>s?'var(--a1)':'var(--a3)';
 
-  document.getElementById('mod1-content').innerHTML=`
+  document.getElementById('mod1-content').innerHTML=fixDiacritics(`
     <table class="reg-table">
       <colgroup><col style="width:36%"><col style="width:16%"><col style="width:16%"><col style="width:16%"><col style="width:16%"></colgroup>
       <tr>
@@ -685,7 +693,7 @@ function updateMod1(){
       ?'<div class="interp-box" style="color:var(--ink2)">Steigungsunterschied: Die Prädiktionskraft des Tests unterscheidet sich zwischen den Gruppen.</div>'
       :''
     }
-  `;
+  `);
 }
 
 // ─── Module 2: Meade & Fetzer ──────────────────────────────────────────────
@@ -733,7 +741,7 @@ function updateMod2(){
   else if(!dxBig&&dyBig){interp='d_X klein, d_Y groß: Kriteriumsverzerrungsmuster (Fig. 2). Gleiche Prädiktorwerte, unterschiedliche Kriteriumswerte — mögliche fehlende Kovariablen oder unfaires Kriterium.';col='var(--a5)';}
   else{interp='d_X und d_Y beide groß: Adverse-Impact-Muster (Fig. 3). Gruppenunterschiede auf Prädiktor und Kriterium sind proportional — ein gemeinsames Regressionsmodell passt für beide Gruppen.';col='var(--a2)';}
 
-  document.getElementById('mod2-content').innerHTML=`
+  document.getElementById('mod2-content').innerHTML=fixDiacritics(`
     <div class="kw-grid">
       <div class="ftest-box">
         <div class="ftest-label" style="color:var(--a1)">d_X (Prädiktor)</div>
@@ -769,7 +777,7 @@ function updateMod2(){
       ${cell(true,false)}${cell(true,true)}
     </div>
     <div class="interp-box" style="color:${col}">${interp}</div>
-  `;
+  `);
 }
 
 // ─── Module 3: Adverse Impact ──────────────────────────────────────────────

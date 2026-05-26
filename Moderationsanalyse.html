@@ -138,6 +138,9 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
   line-height:1.85;margin-bottom:.55rem}
 .help-formula{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
   font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
 </style>
 </head>
 <body>
@@ -433,6 +436,11 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 </div>
 
 <script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
 // ─── State ─────────────────────────────────────────────────────────────────
 const ST = {
   n:200, sigma:1, seed:42,
@@ -794,12 +802,12 @@ function updateEq(beta){
       <div class="eq-lbl-name" style="color:var(${l.c})">${l.n}</div>
       <div class="eq-lbl-desc">${l.d}</div>
     </div>`).join('');
-  document.getElementById('eq-wrap').innerHTML=`
+  document.getElementById('eq-wrap').innerHTML=fixDiacritics(`
     <div class="eq-main">
       <span style="font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink2)">ŷᵢ =</span>
       ${eqParts}
     </div>
-    <div class="eq-labels" style="grid-template-columns:repeat(4,1fr)">${lblHTML}</div>`;
+    <div class="eq-labels" style="grid-template-columns:repeat(4,1fr)">${lblHTML}</div>`);
 }
 
 // ─── Coefficient Table ─────────────────────────────────────────────────────
@@ -849,7 +857,7 @@ function updateCoefTable(res,resR){
   const bic_r=resR?calcBIC(sse_r,resR.p+1).toFixed(2):'—';
   const t_b3=beta[3]/se[3], p_b3=tPVal(t_b3,df);
 
-  document.getElementById('coef-wrap').innerHTML=`
+  document.getElementById('coef-wrap').innerHTML=fixDiacritics(`
     <table class="coef-table">
       <tr>
         <th>Par.</th>
@@ -875,7 +883,7 @@ function updateCoefTable(res,resR){
       X ~ N(0,1): b₁, b₂ sind konditionaler Effekt bei W=0 bzw. X=0<br>
       AIC: voll = ${aic_f}, reduziert = ${aic_r} (ΔAIC = ${(parseFloat(aic_f)-parseFloat(aic_r)).toFixed(2)}) &nbsp;|&nbsp;
       BIC: voll = ${bic_f}, reduziert = ${bic_r} (ΔBIC = ${(parseFloat(bic_f)-parseFloat(bic_r)).toFixed(2)})
-    </div>`:''}`;
+    </div>`:''}` + ``);
 }
 
 // ─── Simple Slopes Table ───────────────────────────────────────────────────
@@ -916,7 +924,7 @@ function updateSlopesTable(res,spotW){
       <td class="num" style="font-size:.75rem">[${ci1.toFixed(3)},&nbsp;${ci2.toFixed(3)}]</td>
     </tr>`;
   }).join('');
-  document.getElementById('slopes-wrap').innerHTML=`
+  document.getElementById('slopes-wrap').innerHTML=fixDiacritics(`
     <div class="hayes-box">
       <strong>Hayes-Notation:</strong>&nbsp; θ(X→Y|W=w) = b̂₁ + b̂₃·w = ${b1.toFixed(3)} + (${b3.toFixed(3)})·w<br>
       SE(θ) = √[ s²·(v₁₁ + w²·v₃₃ + 2w·v₁₃) ] &nbsp;|&nbsp; s² = ${s2.toFixed(4)} &nbsp;|&nbsp; df = ${df}
@@ -935,7 +943,7 @@ function updateSlopesTable(res,spotW){
     </table>
     <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3)">
       t-Krit. (α=.05, df=${df}) = ${tc.toFixed(3)} &nbsp;|&nbsp; Hayes (2022, 3rd ed.) Introduction to Mediation, Moderation, and Conditional Process Analysis
-    </div>`;
+    </div>`);
 }
 
 // ─── Johnson-Neyman ────────────────────────────────────────────────────────
@@ -992,7 +1000,7 @@ function updateJNResult(res,pts){
     }).join('');
   }
 
-  el.innerHTML=`
+  el.innerHTML=fixDiacritics(`
     <div class="kw-grid">
       <div class="kw-box">
         <div class="kw-label">t-Krit. (α=.05)</div>
@@ -1010,7 +1018,7 @@ function updateJNResult(res,pts){
         <div class="kw-sub">${roots.length===0?'kein Grenzwert':roots.length===1?'1 Grenze':'2 Grenzen'}</div>
       </div>
     </div>
-    ${rootsHTML}`;
+    ${rootsHTML}`);
   drawJNCanvas(res,pts,jn);
 }
 
@@ -1257,6 +1265,7 @@ window.addEventListener('resize',()=>{
 });
 
 setPreset('C');
+document.querySelectorAll('.formula-line,.help-formula,.help-p').forEach(el=>{el.innerHTML=fixDiacritics(el.innerHTML);});
 </script>
 </body>
 </html>

@@ -106,6 +106,9 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);float:right;margin-top:-.3rem}
 .help-close:hover{background:var(--ink);color:var(--bg)}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
 </style>
 </head>
 <body>
@@ -260,6 +263,11 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 </div><!-- /app -->
 
 <script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
 // ── Konstanten ─────────────────────────────────────────────────────────────
 const ICOLS=['--a2','--a3','--a5','--a4','--a1'];
 const DEF=[
@@ -626,7 +634,7 @@ function updateParTable(){
 // ── θ̂ schätzen ────────────────────────────────────────────────────────────────
 function updateThetaEst(){
   const{th,note}=estimateTheta();
-  document.getElementById('theta-est').textContent=isFinite(th)?`θ̂ = ${th.toFixed(2)}`:'θ̂ = ±∞';
+  document.getElementById('theta-est').innerHTML=fixDiacritics(isFinite(th)?`θ̂ = ${th.toFixed(2)}`:'θ̂ = ±∞');
   document.getElementById('theta-est-note').textContent=note;
   const clamped=isFinite(th)?Math.max(-4,Math.min(4,th)):th>0?4:-4;
   ST.thetaPerson=Math.round(clamped*10)/10;
@@ -718,7 +726,10 @@ function init(){
   buildLCards();
   selectModel('pl2');
 }
-window.addEventListener('load',()=>requestAnimationFrame(()=>requestAnimationFrame(init)));
+window.addEventListener('load',()=>{
+  requestAnimationFrame(()=>requestAnimationFrame(init));
+  document.querySelectorAll('.help-p,.help-formula,.theta-est').forEach(el=>{el.innerHTML=fixDiacritics(el.innerHTML);});
+});
 let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(updateAll,60);});
 </script>
 </body>

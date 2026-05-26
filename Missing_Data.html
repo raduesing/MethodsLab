@@ -103,6 +103,9 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);
   padding:.3rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.35rem 0 .55rem;
   white-space:pre}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
 </style>
 </head>
 <body>
@@ -295,6 +298,11 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
 </div>
 
 <script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
 // ── Konstanten & State ─────────────────────────────────────────────────────────
 const TRUE_A=60, TRUE_BX=-6, TRUE_BZ=3, TRUE_S=9, RXZ=-0.40;
 // SD_Y = sqrt(BX²+BZ²+2·BX·BZ·r_XZ+S²) = sqrt(140.4) ≈ 11.85
@@ -781,7 +789,7 @@ function updateErklaerTable(){
       In der Praxis ist MI trotzdem selten schlechter als Listwise. Für MNAR: Pattern Mixture Models oder Sensitivity Analyses.</span>`
   };
 
-  document.getElementById('erklaer-table').innerHTML=rows+explanations[ST.mech];
+  document.getElementById('erklaer-table').innerHTML=fixDiacritics(rows+explanations[ST.mech]);
 }
 
 // ── Mechanismus-UI ─────────────────────────────────────────────────────────────
@@ -840,7 +848,10 @@ function toggleTheme(){
 }
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 
-window.addEventListener('load',()=>setMech('mcar'));
+window.addEventListener('load',()=>{
+  setMech('mcar');
+  document.querySelectorAll('th,.help-p,.help-formula').forEach(el=>{el.innerHTML=fixDiacritics(el.innerHTML);});
+});
 window.addEventListener('resize',()=>{drawPlot();drawDensity();});
 </script>
 </body>

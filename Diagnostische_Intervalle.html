@@ -137,6 +137,9 @@ select:focus{outline:1px solid var(--accent)}
   line-height:1.85;margin-bottom:.55rem}
 .help-formula2{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
   font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
 </style>
 </head>
 <body>
@@ -372,6 +375,11 @@ select:focus{outline:1px solid var(--accent)}
 </div>
 
 <script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
 // ── SCALES ──────────────────────────────────────────────────────
 const SCALES={
   iq:  {label:'IQ-Wert',   mu:100,sigma:15,step:1,   dec:0, sdpMin:1,  sdpMax:30,sdpStep:0.5},
@@ -881,6 +889,7 @@ document.documentElement.style.setProperty('--topbar-h',
 
 buildSc();
 onInput();
+document.querySelectorAll('td,.help-p,.help-formula2').forEach(el=>{el.innerHTML=fixDiacritics(el.innerHTML);});
 </script>
 </body>
 </html>

@@ -112,6 +112,9 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   padding:.3rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.35rem 0 .55rem}
 .hint{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);line-height:1.65;
   border-top:1px solid var(--grid);padding-top:.4rem}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
 </style>
 </head>
 <body>
@@ -344,6 +347,11 @@ E[Y | Treatment, Nachher]= α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</
 </div><!-- /app -->
 
 <script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
 // ── State ──────────────────────────────────────────────────────────────────────
 const ST = {
   b1:0.4, b2:0, b3:1.2, pt:0, sigma:0.8, n:60,
@@ -460,6 +468,7 @@ function updateTables(){
       :`<span class="badge badge-ns">Nicht signifikant (p=${pFmt(p3)}) · wahrer β₃ = ${f(ST.b3)}</span>`;
     note.innerHTML=`β̂₃ = ${f(o.b3Hat)} | SE = ${f(o.se3)} | σ̂ = ${o.sigHat.toFixed(2)} | n = ${ST.n} pro Zelle | wahres β₂ (Selektion) = ${f(ST.b2)} → von DiD korrigiert`;
   }
+  [badge,note].forEach(el=>{el.innerHTML=fixDiacritics(el.innerHTML);});
 }
 
 // ── Canvas ─────────────────────────────────────────────────────────────────────
@@ -746,7 +755,10 @@ function toggleTheme(){
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 
 // ── Init ───────────────────────────────────────────────────────────────────────
-window.addEventListener('load',()=>setPreset('clean'));
+window.addEventListener('load',()=>{
+  setPreset('clean');
+  document.querySelectorAll('th,td,.help-p,.help-formula,.hint').forEach(el=>{el.innerHTML=fixDiacritics(el.innerHTML);});
+});
 window.addEventListener('resize',()=>drawDiD());
 </script>
 </body>

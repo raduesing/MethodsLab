@@ -151,6 +151,9 @@ canvas{display:block;width:100%}
 .sd{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2)}
 .story-q{font-family:'Fraunces',serif;font-size:.86rem;color:var(--ink2);font-style:italic;
   line-height:1.6;border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.05rem}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
 </style>
 </head>
 <body>
@@ -479,6 +482,11 @@ canvas{display:block;width:100%}
 </div><!-- /app -->
 
 <script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
 // ═══ PRNG ════════════════════════════════════════════════════════════════════
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 function mkGauss(r){return()=>{const u=Math.max(r(),1e-15);return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*r());};}
@@ -1232,7 +1240,7 @@ const HELP={
   gcomp:{title:'G-Computation / Standardisierung',body:`<h3>Idee</h3><p>G-Computation schätzt den kausalen Effekt in zwei Schritten: (1) Passe ein Outcomemodell Ê[Y|T,X] an. (2) Standardisiere über die X-Verteilung.</p><span class="formula">Ê[Y(t)] = Σ_x Ê[Y | T=t, X=x] · P(X=x)</span><span class="formula">ATE = Ê[Y(1)] − Ê[Y(0)]</span><h3>Zwei kontrafaktische Welten</h3><p>Man erstellt zwei identische Kopien der Stichprobe — in der einen bekommt jede Person T=1, in der anderen T=0. Das Outcomemodell sagt Y für alle vorher. Der Unterschied der Mittelwerte ist der G-Comp-Schätzer.</p><p class="ref">Robins (1986). <em>Mathematical Modelling, 7</em>. · Snowden et al. (2011). <em>Am. J. Epidemiol., 173</em>.</p>`},
   dr:{title:'Doubly Robust Estimation (AIPW)',body:`<h3>Idee</h3><p>Ein Doubly Robust (DR) Schätzer kombiniert IPW (Propensity-Modell) und G-Computation (Outcome-Modell). Er ist konsistent, wenn <em>mindestens eines</em> der beiden Modelle korrekt ist — daher „doubly robust".</p><h3>AIPW-Formel (implementiert in diesem Tool)</h3><span class="formula">Ê_DR[Y(t)] = 1/n Σ_i [ μ_t(X_i) + (𝟙(T=t)/p_t(X_i)) · (Y_i − μ_t(X_i)) ]</span><p>wobei μ_t(X) = Outcome-Modell (hier: Gruppenmerkmale) und p_t(X) = Propensity Score.</p><h3>Funktionsprinzip</h3><ul><li><strong>Erster Term</strong> μ_t(X_i): G-Computation-Anteil — Outcome-Modell für alle Personen</li><li><strong>Zweiter Term</strong>: IPW-Korrektur — korrigiert Bias im Outcome-Modell via Residuen gewichtet mit IP-Gewichten</li></ul><h3>Implikation</h3><p>DR hat günstige semiparametrische Effizienzeigenschaften. In der Praxis: AIPW, targeted MLE (TMLE), DML. Das Tool zeigt den DR-Schätzer bei „G-Computation zeigen".</p><p class="ref">Bang & Robins (2005). <em>Biometrics, 61</em>. · Funk et al. (2011). <em>Am. J. Epidemiol., 173</em>.</p>`},
 };
-function openHelp(k){const h=HELP[k];if(!h)return;document.getElementById('h-title').textContent=h.title;document.getElementById('h-body').innerHTML=h.body;document.getElementById('help-modal').classList.add('open');document.getElementById('help-ov').classList.add('open');}
+function openHelp(k){const h=HELP[k];if(!h)return;document.getElementById('h-title').textContent=h.title;document.getElementById('h-body').innerHTML=fixDiacritics(h.body);document.getElementById('help-modal').classList.add('open');document.getElementById('help-ov').classList.add('open');}
 function closeHelp(){document.getElementById('help-modal').classList.remove('open');document.getElementById('help-ov').classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
 

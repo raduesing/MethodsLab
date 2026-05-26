@@ -143,6 +143,9 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
   line-height:1.85;margin-bottom:.55rem}
 .help-formula{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
   font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
 </style>
 </head>
 <body>
@@ -416,6 +419,11 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 </div>
 
 <script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
 // ─── State ─────────────────────────────────────────────────────────────────
 const ST = {
   n:200, c:50, sigma:8, seed:42,
@@ -800,7 +808,7 @@ function updateEq(beta){
       <div class="eq-lbl-desc">${l.desc}</div>
     </div>`).join('');
 
-  document.getElementById('eq-wrap').innerHTML=`
+  document.getElementById('eq-wrap').innerHTML=fixDiacritics(`
     <div class="eq-main">
       <span style="font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink2)">ŷᵢ =</span>
       ${eqParts}
@@ -808,7 +816,7 @@ function updateEq(beta){
     <div class="eq-labels" style="grid-template-columns:repeat(${ncols},1fr)">
       ${lblHTML}
     </div>
-  `;
+  `);
 }
 
 // ─── Coefficient Table ─────────────────────────────────────────────────────
@@ -851,7 +859,7 @@ function updateCoefTable(res){
     </tr>`;
   }).join('');
 
-  document.getElementById('coef-wrap').innerHTML=`
+  document.getElementById('coef-wrap').innerHTML=fixDiacritics(`
     <table class="coef-table">
       <tr>
         <th>Par.</th><th class="r">Population</th><th class="r">Geschätzt</th>
@@ -863,7 +871,7 @@ function updateCoefTable(res){
       *** p&lt;.001 &nbsp;** p&lt;.01 &nbsp;* p&lt;.05 &nbsp;n.s. = nicht signifikant &nbsp;|&nbsp;
       R² = ${res.r2.toFixed(3)} &nbsp;|&nbsp; σ̂ = ${Math.sqrt(s2).toFixed(2)} &nbsp;|&nbsp; n = ${n}
     </div>
-  `;
+  `);
 }
 
 // ─── Polynomial Module ─────────────────────────────────────────────────────
@@ -871,13 +879,13 @@ function updatePolyResult(res){
   if(!ST.modPoly){document.getElementById('poly-result').innerHTML='';return;}
   const b=res.beta;
   const f=v=>v.toFixed(3);
-  document.getElementById('poly-result').innerHTML=`
+  document.getElementById('poly-result').innerHTML=fixDiacritics(`
     <div style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
       background:var(--panel);border:1px solid var(--grid);padding:.55rem .8rem;margin-top:.5rem">
       Slope der EG gesamt = b̂₁ + b̂₃ + 2·b̂₄·(X−c) + 2·b̂₅·(X−c) &nbsp;[am Cutoff: ${(b[1]+b[3]).toFixed(3)}]<br>
       Krümmung EG = b̂₄ + b̂₅ = ${(b[4]+b[5]).toFixed(4)}
     </div>
-  `;
+  `);
 }
 
 // ─── Fuzzy Module ──────────────────────────────────────────────────────────
