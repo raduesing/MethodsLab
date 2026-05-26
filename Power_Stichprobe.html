@@ -1,102 +1,122 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Power &amp; Stichprobengröße</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<title>Power &amp; Stichprobengröße — MethodsLab</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
 :root{
-  --bg:#0f1117;--paper:#1a1d27;--ink:#e8eaf0;--ink2:#a8adc0;--ink3:#5a6080;
-  --grid:#252a3a;--border:#2e3448;--accent:#7c8cf8;
-  --a1:#f87171;--a2:#60a5fa;--a3:#4ade80;--a4:#c084fc;--a5:#fbbf24;--a6:#fb923c;
-  --topbar-h:50px;
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:'DM Mono',monospace;font-size:.9rem}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
 
 /* ── Topbar ── */
 #topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
-  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem;height:var(--topbar-h)}
-#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1;color:var(--ink)}
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
 #topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
 
 /* ── App-Layout ── */
-#app{display:grid;grid-template-columns:250px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
-#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem;display:flex;flex-direction:column;gap:.7rem}
+#app{display:grid;grid-template-columns:268px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
-#sidebar::-webkit-scrollbar-thumb{background:var(--border)}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 #main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
 
-.scard{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:.65rem .75rem}
-.scard-title{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:.5rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
 
-.slider-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.25rem}
-.slider-name{font-size:.8rem;color:var(--ink)}
-.slider-val{font-size:.82rem;color:var(--accent);font-weight:500}
-input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer;margin-bottom:.4rem}
+.slider-row{margin-bottom:.52rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
-.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);background:transparent;color:var(--ink2);border-radius:4px;cursor:pointer;transition:all .15s}
-.tbtn.active{background:var(--accent);color:#0f1117;border-color:var(--accent);font-weight:500}
-.tbtn:hover{background:var(--ink);color:var(--bg)}
 .btn-row{display:flex;gap:.4rem;flex-wrap:wrap}
 
 /* ── Main Content ── */
-.sec-h{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);border-bottom:1px solid var(--grid);padding-bottom:.35rem;margin:1.2rem 0 .8rem}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.3rem 0 .55rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
 .sec-h:first-child{margin-top:0}
 
 /* ── Hut/Strich-Notation ── */
-.gl-hat{display:inline-block;position:relative}
-.gl-hat::before{content:'̂';position:absolute;top:-.18em;left:50%;transform:translateX(-50%);font-size:1.05rem;line-height:1}
-.gl-bar{display:inline-block;position:relative}
-.gl-bar::before{content:'̄';position:absolute;top:-.18em;left:50%;transform:translateX(-50%);font-size:1.05rem;line-height:1}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
 
 /* ── Story-Box ── */
-.story-box{background:var(--paper);border:1px solid var(--border);border-left:3px solid var(--a5);border-radius:6px;padding:.7rem .9rem;margin-bottom:.85rem;font-size:.79rem;line-height:1.85;color:var(--ink2)}
-.story-lbl{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--a5);display:block;margin-bottom:.3rem}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
 .sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
 
 /* ── Plots ── */
 .plot-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
-.plot-box{background:var(--paper);border:1px solid var(--border);border-radius:6px;padding:.6rem}
-.plot-title{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.4rem}
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
 canvas{width:100%;display:block}
 
-.hint{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);line-height:1.7;margin-top:.5rem}
+.hint{font-family:'DM Mono',monospace;font-size:.70rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.35rem;margin-bottom:.8rem}
 
 /* ── Lernkarten ── */
-.hp-seq{display:flex;flex-direction:column;gap:.5rem;margin-top:.6rem}
-.hp-step{display:flex;gap:.7rem;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:.55rem .75rem}
-.hp-seq .hp-step::before{content:counter(step-c);counter-increment:step-c;min-width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent);color:#0f1117;display:flex;align-items:center;justify-content:center;font-size:1.05rem;font-weight:600;flex-shrink:0}
-.hp-seq{counter-reset:step-c}
-.hp-p{font-size:.79rem;color:var(--ink2);line-height:1.82}
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
 
 /* ── Ampel-Badge ── */
-.power-badge{display:inline-block;font-size:.78rem;padding:.22rem .75rem;border-radius:4px;font-weight:500;margin-top:.5rem}
-.badge-ok{background:color-mix(in srgb,var(--a3) 18%,transparent);color:var(--a3);border:1px solid color-mix(in srgb,var(--a3) 40%,transparent)}
-.badge-warn{background:color-mix(in srgb,var(--a5) 18%,transparent);color:var(--a5);border:1px solid color-mix(in srgb,var(--a5) 40%,transparent)}
-.badge-bad{background:color-mix(in srgb,var(--a1) 18%,transparent);color:var(--a1);border:1px solid color-mix(in srgb,var(--a1) 40%,transparent)}
+.power-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:.78rem;
+  padding:.22rem .65rem;letter-spacing:.04em;margin:.25rem 0}
+.badge-ok{background:rgba(90,138,42,.12);border:1px solid var(--a3);color:var(--a3)}
+.badge-warn{background:rgba(184,92,0,.12);border:1px solid var(--a5);color:var(--a5)}
+.badge-bad{background:rgba(201,74,42,.12);border:1px solid var(--a1);color:var(--a1)}
 
 /* ── Hilfe-Modal ── */
-.help-btn{position:fixed;bottom:1.2rem;right:1.2rem;background:var(--a1);color:#fff;border:none;border-radius:50%;width:2.4rem;height:2.4rem;font-size:1.1rem;cursor:pointer;z-index:900;box-shadow:0 2px 8px rgba(0,0,0,.4)}
-.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center}
-.help-overlay.open{display:flex}
-.help-box{background:var(--paper);border:1px solid var(--border);border-radius:8px;max-width:660px;width:90%;max-height:82vh;overflow-y:auto;padding:1.2rem 1.4rem}
-.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.8rem}
-.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;border:1px solid var(--border);background:transparent;color:var(--ink2);border-radius:4px;cursor:pointer}
-.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin:.9rem 0 .3rem}
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:660px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
 .help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
-.help-formula{background:var(--bg);border-left:3px solid var(--accent);padding:.3rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.35rem 0 .55rem}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);
+  padding:.3rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre}
 </style>
 </head>
 <body>
 
 <div id="topbar">
   <h1>Power &amp; Stichprobengröße — <em>Warum Power eine Kurve ist</em></h1>
-  <button class="tbtn" id="btn-cohen" onclick="toggleCohen()" style="font-size:.70rem">Cohen-Konventionen</button>
-  <button class="tbtn" style="border-color:var(--a1);color:var(--a1)" onclick="document.getElementById('help-overlay').classList.add('open')">? Hilfe</button>
+  <button class="tbtn" id="btn-cohen" onclick="toggleCohen()">Cohen-Konventionen</button>
+  <button class="tbtn" style="border-color:var(--a1);color:var(--a1)" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
 </div>
 
 <div id="app">
@@ -106,10 +126,12 @@ canvas{width:100%;display:block}
 
   <div class="scard">
     <div class="scard-title">Signifikanzniveau α</div>
-    <div class="slider-row"><span class="slider-name">α</span><span class="slider-val" id="v-alpha">0.05</span></div>
-    <input type="range" id="s-alpha" min="1" max="3" step="1" value="2">
-    <div class="btn-row" style="font-size:.70rem;color:var(--ink3)">
-      <span>0.01</span><span style="margin-left:auto">0.10</span>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">α</span><span class="slider-val" id="v-alpha">0.05</span></div>
+      <input type="range" id="s-alpha" min="1" max="3" step="1" value="2">
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);display:flex;justify-content:space-between">
+      <span>0.01</span><span>0.05</span><span>0.10</span>
     </div>
   </div>
 
@@ -131,22 +153,31 @@ canvas{width:100%;display:block}
 
   <div class="scard">
     <div class="scard-title">Stichprobengröße</div>
-    <div class="slider-row"><span class="slider-name">n <span id="lbl-n-design" style="color:var(--ink3)">(pro Gruppe)</span></span><span class="slider-val" id="v-n">64</span></div>
-    <input type="range" id="s-n" min="1" max="100" step="1" value="40">
-    <div class="hint" id="n-total-note">Gesamt-N: 128</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">n <span id="lbl-n-design" style="color:var(--ink3)">(pro Gruppe)</span></span>
+        <span class="slider-val" id="v-n">64</span>
+      </div>
+      <input type="range" id="s-n" min="1" max="100" step="1" value="40">
+    </div>
+    <div class="hint" id="n-total-note" style="border-top:none;padding-top:0;margin-bottom:0">Gesamt-N: 128</div>
   </div>
 
   <div class="scard">
     <div class="scard-title">Geplante Effektgröße</div>
-    <div class="slider-row"><span class="slider-name">Cohen's d</span><span class="slider-val" id="v-d">0.50</span></div>
-    <input type="range" id="s-d" min="0" max="120" step="1" value="50">
-    <div class="hint">Power bei d &amp; n:<br><strong id="power-display" style="font-size:.9rem">—</strong></div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Cohen's d</span><span class="slider-val" id="v-d">0.50</span></div>
+      <input type="range" id="s-d" min="0" max="120" step="1" value="50">
+    </div>
+    <div class="hint" style="border-top:none;padding-top:0;margin-bottom:0">Power: <strong id="power-display" style="font-family:'DM Mono',monospace;font-size:.85rem;color:var(--ink)">—</strong></div>
   </div>
 
   <div class="scard">
     <div class="scard-title">Ziel-Power</div>
-    <div class="slider-row"><span class="slider-name">1−β</span><span class="slider-val" id="v-pow">0.80</span></div>
-    <input type="range" id="s-pow" min="50" max="99" step="1" value="80">
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">1−β</span><span class="slider-val" id="v-pow">0.80</span></div>
+      <input type="range" id="s-pow" min="50" max="99" step="1" value="80">
+    </div>
   </div>
 </div>
 
@@ -166,22 +197,22 @@ canvas{width:100%;display:block}
   <!-- Sektion 1 -->
   <div class="sec-h">① Power ist eine Kurve — nicht ein Wert</div>
   <div class="plot-wrap">
-    <div class="plot-box">
+    <div class="plot-box" style="margin-bottom:0">
       <div class="plot-title">Power(d) — Kurve &amp; Kurvenschar</div>
       <canvas id="cv-power" height="300"></canvas>
       <div class="hint" id="hint-power"></div>
     </div>
-    <div class="plot-box">
+    <div class="plot-box" style="margin-bottom:0">
       <div class="plot-title">H₀- und H₁-Verteilung</div>
       <canvas id="cv-dist" height="300"></canvas>
       <div class="hint" id="hint-dist"></div>
     </div>
   </div>
-  <div id="power-badge-wrap"></div>
+  <div id="power-badge-wrap" style="margin-bottom:.85rem"></div>
 
   <!-- Sektion 2 -->
   <div class="sec-h">② Die Power-Landschaft — n × d × Power</div>
-  <div class="plot-box" style="margin-bottom:1rem">
+  <div class="plot-box">
     <div class="plot-title">Heatmap: Power als Funktion von n und Cohen's d</div>
     <canvas id="cv-heat" height="320"></canvas>
     <div class="hint" id="hint-heat"></div>
@@ -189,71 +220,85 @@ canvas{width:100%;display:block}
 
   <!-- Sektion 3 -->
   <div class="sec-h">③ Was wenn mein angenommenes δ falsch war?</div>
-  <div class="plot-box" style="margin-bottom:1rem">
-    <div class="plot-title">Sensitivität: Power bei geplantes n = <span id="lbl-n-sens">64</span>, über alle möglichen wahren d</div>
+  <div class="plot-box">
+    <div class="plot-title">Sensitivität: Power bei geplantem n = <span id="lbl-n-sens">64</span>, über alle möglichen wahren d</div>
     <canvas id="cv-sens" height="260"></canvas>
     <div class="hint" id="hint-sens"></div>
   </div>
 
   <!-- Lernkarten -->
   <div class="sec-h">Lernkarten</div>
-  <div class="hp-seq">
-    <div class="hp-step"><div class="hp-p"><strong>Power ist eine Funktion, nicht eine Zahl.</strong>
-      Für jedes denkbare wahre δ gibt es eine andere Power. Die häufig zitierte „80%-Power" gilt
-      nur für genau ein einziges angenommenes δ — und dieses kennt man vor der Studie nie sicher.</div></div>
-    <div class="hp-step"><div class="hp-p"><strong>α und Power sind gegenläufig.</strong>
-      Strengeres α (z. B. 0.01 statt 0.05) senkt bei gleichem n und δ die Power — man macht es
-      schwerer, H₀ abzulehnen, trifft damit auch mehr echte Effekte nicht.</div></div>
-    <div class="hp-step"><div class="hp-p"><strong>Cohens „klein/mittel/groß" sind Daumenregeln, keine Naturkonstanten.</strong>
-      Cohen (1988) leitete d = 0.2 / 0.5 / 0.8 aus verhaltenwissenschaftlichen Studien
-      seiner Zeit ab — als Notlösung, wenn kein Domänenwissen vorhanden ist.
-      Er selbst warnte vor unreflektierter Übernahme. In der Medizin kann d = 0.1 klinisch
-      bedeutsam sein (BP-Senkung × Millionen Patienten); in der Grundlagenforschung
-      kann d = 0.8 trivial sein. <em>Die relevante Effektgröße ist immer kontextspezifisch.</em></div></div>
-    <div class="hp-step"><div class="hp-p"><strong>Stichprobenplanung braucht inhaltliches Vorwissen.</strong>
-      Das MDES (Minimum Detectable Effect Size) — die kleinste Effektgröße, die man
-      entdecken will — sollte aus klinischer/praktischer Relevanz kommen, nicht aus
-      statistischen Konventionen. „Welcher Effekt wäre klein genug, um ihn zu ignorieren?"</div></div>
-    <div class="hp-step"><div class="hp-p"><strong>Post-hoc Power ist irreführend.</strong>
-      Power nach einer nicht-signifikanten Studie zu berechnen (mit dem beobachteten d)
-      ist zirkulär: sie spiegelt nur den p-Wert zurück und sagt nichts über die
-      Planung der Studie aus.</div></div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">Power ist eine Funktion</div>
+      <div class="lcard-body">Für jedes denkbare wahre δ gibt es eine andere Power. Die häufig zitierte „80%-Power" gilt nur für genau ein einziges angenommenes δ — und dieses kennt man vor der Studie nie sicher.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">α und Power sind gegenläufig</div>
+      <div class="lcard-body">Strengeres α (z. B. 0.01 statt 0.05) senkt bei gleichem n und δ die Power — man macht es schwerer, H₀ abzulehnen, und verpasst damit auch mehr echte Effekte.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Cohen: Daumenregeln, keine Gesetze</div>
+      <div class="lcard-body">Cohen (1988) leitete d = 0.2/0.5/0.8 aus verhaltenwiss. Studien seiner Zeit ab — als <strong>Notlösung ohne Domänenwissen</strong>. In der Medizin kann d = 0.1 klinisch bedeutsam sein; in der Grundlagenforschung kann d = 0.8 trivial sein. <em>Die relevante ES ist immer kontextspezifisch.</em></div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">MDES aus inhaltlichem Kontext</div>
+      <div class="lcard-body">Das MDES (Minimum Detectable Effect Size) sollte aus klinischer/praktischer Relevanz kommen, nicht aus statistischen Konventionen. Frage: <em>„Welcher Effekt wäre klein genug, um ihn zu ignorieren?"</em></div>
+    </div>
+    <div class="lcard" style="grid-column:1/-1">
+      <div class="lcard-h">Post-hoc Power ist irreführend</div>
+      <div class="lcard-body">Power nach einer nicht-signifikanten Studie mit dem beobachteten d zu berechnen ist zirkulär: sie spiegelt nur den p-Wert zurück und sagt nichts über die ursprüngliche Planung aus. <strong>Verwende nur a-priori Power (vor der Studie).</strong></div>
+    </div>
   </div>
 
 </div><!-- #main -->
 </div><!-- #app -->
 
-<!-- ══ HILFE-MODAL ══════════════════════════════════════════════════════════ -->
-<button class="help-btn" onclick="document.getElementById('help-overlay').classList.add('open')">?</button>
-<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+<!-- ══ HILFE-OVERLAY ═════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
   <div class="help-box">
-    <div class="help-box-h">Hilfe — Power &amp; Stichprobengröße
-      <button class="help-close" onclick="document.getElementById('help-overlay').classList.remove('open')">✕ schließen</button>
+    <div class="help-box-h">Power &amp; Stichprobengröße — Hilfe
+      <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
     </div>
+
+    <div class="help-sh">Beispiel</div>
+    <p class="help-p">Ein Kliniker plant eine RCT zu einem Antidepressivum. Aus der Literatur erwartet er <strong>Cohen's d = 0.50</strong> auf der HAM-D-Skala. Mit n = 64 pro Gruppe und α = 0.05 (zweiseitig) ergibt sich eine geplante Power von ca. 80%. Eine Pilotstudie deutet jedoch auf d ≈ 0.30 hin — <em>Sektion 3</em> zeigt, was das für die tatsächliche Power bedeutet.</p>
+
     <div class="help-sh">Was ist statistische Power?</div>
     <p class="help-p">Power (1−β) ist die Wahrscheinlichkeit, einen wahren Effekt zu entdecken — also H₀ korrekt abzulehnen, wenn H₁ gilt. Power hängt von vier Größen ab: Effektgröße δ, Stichprobengröße n, Signifikanzniveau α und Testrichtung.</p>
-    <div class="help-formula">Power = P(H₀ ablehnen | H₁ wahr) = 1 − β</div>
+    <span class="help-formula">Power = P(H₀ ablehnen | H₁ wahr) = 1 − β</span>
+
     <div class="help-sh">Warum ist Power eine Kurve?</div>
-    <p class="help-p">Für jedes mögliche wahre δ ergibt sich eine andere Power. Bei δ = 0 entspricht Power dem α-Niveau (falsch positiv). Mit wachsendem δ steigt Power gegen 1. Sektion 1 zeigt diese Kurve — und wie sie sich mit n verschiebt.</p>
+    <p class="help-p">Für jedes mögliche wahre δ ergibt sich eine andere Power. Bei δ = 0 entspricht Power dem α-Niveau (falsch-positiv). Mit wachsendem δ steigt Power gegen 1. Sektion 1 zeigt diese Kurve — und wie sie sich mit n verschiebt. Die oft zitierte „80%-Power" gilt immer nur für <em>ein</em> bestimmtes δ.</p>
+
     <div class="help-sh">Normalapproximation der Power</div>
-    <div class="help-formula">Power ≈ Φ(|d| · √(n/2) − z_{α/2})   [zweiseitig, 2 Gruppen]</div>
-    <p class="help-p">Φ = Standard-Normalverteilung, z_{α/2} = Quantil für α/2. Die Näherung ist für n ≥ 20 sehr gut; für kleine n wird intern die nicht-zentrale t-Verteilung verwendet.</p>
-    <div class="help-sh">Cohen's d</div>
-    <p class="help-p">Standardisierte Effektgröße: d = (μ₁ − μ₂) / σ. Die Konventionen klein/mittel/groß (0.2/0.5/0.8) sind historische Daumenregeln aus der Verhaltensforschung — keine universellen Standards. Die relevante Effektgröße ist immer domänenspezifisch.</p>
+    <span class="help-formula">Power ≈ Φ(|d| · √(n/2) − z_{α/2})   [zweiseitig, 2 Gruppen]
+Power ≈ Φ(|d| · √n    − z_{α/2})   [zweiseitig, 1 Gruppe]</span>
+    <p class="help-p">Φ = Standardnormalverteilung (kumulativ), z_{α/2} = Quantil für α/2. Die Näherung ist für n ≥ 20 sehr präzise.</p>
+
+    <div class="help-sh">Cohen's d und seine Grenzen</div>
+    <p class="help-p">Standardisierte Effektgröße: d = (μ₁ − μ₂) / σ. Die Konventionen <strong>klein/mittel/groß (0.2/0.5/0.8)</strong> sind historische Daumenregeln aus der Verhaltensforschung der 1960er–70er Jahre — keine universellen Standards. Cohen selbst warnte vor unreflektierter Übernahme. In der Medizin kann d = 0.1 klinisch bedeutsam sein (Blutdrucksenkung × Millionen Patienten); in der Grundlagenforschung kann d = 0.8 trivial sein.</p>
+
     <div class="help-sh">Begriffe</div>
     <p class="help-p"><strong>α (Typ-I-Fehler):</strong> Wahrscheinlichkeit, H₀ fälschlicherweise abzulehnen.<br>
     <strong>β (Typ-II-Fehler):</strong> Wahrscheinlichkeit, einen echten Effekt zu verpassen. Power = 1−β.<br>
-    <strong>MDES:</strong> Minimum Detectable Effect Size — kleinster Effekt, der mit gegebenen n und α mit gewünschter Power entdeckt werden kann.<br>
-    <strong>NCP:</strong> Non-centrality parameter = d · √(n/2). Bestimmt, wie weit die H₁-Verteilung von H₀ entfernt ist.</p>
+    <strong>NCP (Non-centrality parameter):</strong> δ · √(n/2) — gibt an, wie weit H₁ von H₀ entfernt ist (in SD-Einheiten der Teststatistik).<br>
+    <strong>MDES (Minimum Detectable Effect Size):</strong> Kleinster Effekt, der mit gegebenen n und α bei Ziel-Power entdeckt werden kann. Aus Sektion 3 ablesbar.<br>
+    <strong>Post-hoc Power:</strong> Power berechnet <em>nach</em> der Studie mit dem beobachteten d — zirkulär und uninformativ, weil sie nur den p-Wert zurückspiegelt.</p>
   </div>
 </div>
 
 <script>
-// ── Hut/Strich-Notation ────────────────────────────────────────────────────
-function fixDiacritics(s){
-  return s
-    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
-    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+// ── Theme / Help ───────────────────────────────────────────────────────────
+function toggleTheme(){
+  const h=document.documentElement;
+  const dark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('btn-theme').textContent=dark?'🌙 Dark':'☀ Light';
+  update();
+}
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
 }
 
 // ── State ──────────────────────────────────────────────────────────────────
