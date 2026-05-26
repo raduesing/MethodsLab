@@ -88,6 +88,18 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .rv-row{display:flex;justify-content:space-between;margin-bottom:.2rem;font-family:'DM Mono',monospace;font-size:.79rem}
 .rv-lbl{color:var(--ink2)}
 .rv-num{color:var(--accent);font-weight:500}
+/* Phase headers */
+.phase-h{display:flex;align-items:flex-start;gap:.75rem;margin:1.8rem 0 .65rem;padding-bottom:.45rem;border-bottom:2px solid var(--grid)}
+.phase-h:first-child{margin-top:0}
+.phase-num{font-family:'DM Mono',monospace;font-size:1.05rem;color:var(--accent);font-weight:700;min-width:1.5rem;line-height:1.25;flex-shrink:0}
+.phase-text{flex:1}
+.phase-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);font-weight:500;line-height:1.3}
+.phase-sub{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.18rem;line-height:1.55}
+/* Warning box */
+.warn-box{background:var(--panel);border-left:3px solid var(--a1);
+  padding:.55rem .85rem;margin-bottom:.65rem;font-family:'DM Mono',monospace;
+  font-size:.77rem;color:var(--ink2);line-height:1.85;display:none}
+.warn-box strong{color:var(--a1)}
 </style>
 </head>
 <body>
@@ -205,11 +217,24 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <!-- MAIN -->
 <div id="main">
 
-  <div class="sec-h">PS-Überlappung — Common Support</div>
+  <div class="phase-h">
+    <div class="phase-num">①</div>
+    <div class="phase-text">
+      <div class="phase-title">Das Problem — Selektionsbias &amp; Propensity Score</div>
+      <div class="phase-sub">Behandelte und Kontrollen unterscheiden sich in Vormerkmalen (X₁–X₃). Der Propensity Score e(X) = P(T=1|X) verdichtet alle Kovariaten zu einem Skalar — und zeigt, wo die Gruppen überlappen (<em>Common Support</em>). Ohne Überlappung ist kein Matching möglich.</div>
+    </div>
+  </div>
   <div class="erklaer" id="erklaer">Wird berechnet…</div>
+  <div class="warn-box" id="warn-box"></div>
   <canvas id="cv-ps" height="290"></canvas>
 
-  <div class="sec-h" style="margin-top:1.3rem">Balance — Love Plot</div>
+  <div class="phase-h">
+    <div class="phase-num">②</div>
+    <div class="phase-text">
+      <div class="phase-title">Die Korrektur — Kovariaten-Balance</div>
+      <div class="phase-sub">Der Love Plot zeigt den Standardisierten Mittleren Unterschied (SMD) je Kovariate vor und nach Adjustierung. Ziel: alle |SMD| &lt; 0,10 (grüne Zone). Ein ausgeglichener Love Plot bedeutet: die Gruppen sind nach Adjustierung vergleichbar.</div>
+    </div>
+  </div>
   <canvas id="cv-love" height="220"></canvas>
   <table class="par-table" style="margin-top:.65rem">
     <thead>
@@ -223,8 +248,14 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <tbody id="bal-tbody"></tbody>
   </table>
 
-  <div class="sec-h">Effektschätzer — Naiv vs. Adjustiert</div>
-  <canvas id="cv-est" height="190"></canvas>
+  <div class="phase-h">
+    <div class="phase-num">③</div>
+    <div class="phase-text">
+      <div class="phase-title">Der Effekt — Kausale Schätzung</div>
+      <div class="phase-sub">Der grüne Strich markiert den <em>wahren</em> Effekt τ (im Simulationsmodell bekannt). Wie nah kommen die Schätzer heran? Der naive Vergleich zeigt den Bias — adjustierte Methoden sollten sich der Wahrheitslinie annähern.</div>
+    </div>
+  </div>
+  <canvas id="cv-est" height="200"></canvas>
 
   <div class="learn-section">
     <div class="sec-h">Lernkarten</div>
@@ -308,7 +339,7 @@ function toggleHelp(){ document.getElementById('help-overlay').classList.toggle(
 function toggleTheme(){
   const dark = document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme', dark?'light':'dark');
-  document.getElementById('btn-theme').textContent = dark?'☽ Dark':'☀ Light';
+  document.getElementById('btn-theme').textContent = dark?'🌙 Dark':'☀ Light';
   draw();
 }
 
@@ -417,15 +448,44 @@ function updateUI(){
   document.getElementById('rv-true').textContent=f2(ST.tau);
 
   const bias=e.naive-ST.tau;
-  const dir=bias<-0.03?'unterschätzt':bias>0.03?'überschätzt':'trifft näherungsweise';
-  const mStr=e.matched!==null
-    ?` Nach <strong>PSM</strong>: ${f2(e.matched)} (${e.nP} Paare).`
-    :' PSM: keine Paare — Caliper enger als alle Distanzen?';
-  const iStr=` Nach <strong>IPW</strong>: ${f2(e.ipw)}.`;
+  const absBias=Math.abs(bias).toFixed(2);
+  // Confounding-level feedback
+  let confMsg;
+  if(ST.gamma<0.5){
+    confMsg=`<span style="color:var(--a3)">Geringe Konfundierung (γ = ${ST.gamma.toFixed(1)}): Die Gruppen sind kaum verzerrt — der naive Schätzer weicht nur um ${absBias} vom wahren Effekt ab.</span>`;
+  } else if(ST.gamma>2.0){
+    confMsg=`<span style="color:var(--a1)"><strong>Starke Konfundierung (γ = ${ST.gamma.toFixed(1)}):</strong> Massiver Selektionsbias — naiver Schätzer <strong>${f2(e.naive)}</strong>, Abweichung ${absBias} von τ = ${ST.tau.toFixed(2)}.</span>`;
+  } else {
+    confMsg=`Moderate Konfundierung (γ = ${ST.gamma.toFixed(1)}): Naiver Schätzer <strong>${f2(e.naive)}</strong>, Abweichung ${absBias} von τ = ${ST.tau.toFixed(2)}.`;
+  }
+  // Match quality feedback
+  const nP=e.nP||0, nT=e.nT||1;
+  const matchRate=nP/nT;
+  let adjMsg='';
+  if(ST.method!=='ipw'){
+    if(nP===0){
+      adjMsg=` <span style="color:var(--a1)">⚠ Kein Paar gefunden — Caliper zu eng oder kein Common Support.</span>`;
+    } else if(matchRate<0.5){
+      adjMsg=` PSM: <strong>${f2(e.matched)}</strong> aus ${nP}/${nT} Paaren. <span style="color:var(--a5)">⚠ Mehr als die Hälfte ohne Match — Common-Support-Problem.</span>`;
+    } else {
+      const nDrop=nT-nP;
+      adjMsg=` PSM: <strong>${f2(e.matched)}</strong> (${nP}/${nT} Behandelte gematcht${nDrop>0?', '+nDrop+' weggefallen':''}).`;
+    }
+  }
+  if(ST.method!=='match'){
+    adjMsg+=` IPW: <strong>${f2(e.ipw)}</strong>.`;
+  }
+  // Warn box
+  const warnEl=document.getElementById('warn-box');
+  if(warnEl){
+    const showWarn=ST.gamma>2.2&&matchRate<0.45&&ST.method!=='ipw';
+    warnEl.style.display=showWarn?'block':'none';
+    if(showWarn){
+      warnEl.innerHTML='⚠ <strong>Achtung:</strong> Bei starker Konfundierung und engem Caliper gehen viele Behandelte ohne Match verloren. Erweitern Sie den Caliper oder wechseln Sie zu IPW, um alle Datenpunkte zu nutzen.';
+    }
+  }
   document.getElementById('erklaer').innerHTML=
-    `n = ${e.nT+e.nC}: <strong>${e.nT}</strong> Behandelte · <strong>${e.nC}</strong> Kontrollen.<br>`+
-    `Naiver Schätzer: <strong>${f2(e.naive)}</strong> — ${dir} den wahren Effekt (τ = ${ST.tau.toFixed(2)}).`+
-    mStr+iStr;
+    `<strong>${e.nT}</strong> Behandelte · <strong>${e.nC}</strong> Kontrollen — `+confMsg+adjMsg;
 
   // Balance table
   const showM=ST.method!=='ipw', showI=ST.method!=='match';
@@ -531,6 +591,11 @@ function drawPS(){
   if(ST.method!=='ipw'){
     ctx.fillStyle=ink2; ctx.textAlign='right';
     ctx.fillText('■ = gematcht',W-pad.r,pad.t+14);
+    const nUnmatched=(ESTS.nT||0)-(ESTS.nP||0);
+    if(nUnmatched>0){
+      ctx.fillStyle=cv('--a1');
+      ctx.fillText(nUnmatched+' ohne Match',W-pad.r,pad.t+30);
+    }
   }
 }
 
@@ -541,7 +606,7 @@ function drawLove(){
   const pad={l:108,r:72,t:22,b:28};
   const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
   const ink=cv('--ink'),ink2=cv('--ink2'),ink3=cv('--ink3');
-  const grid=cv('--grid'),bg=cv('--bg'),a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3');
+  const grid=cv('--grid'),bg=cv('--bg'),a1=cv('--a1'),a2=cv('--a2'),a6=cv('--a6');
 
   ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
 
@@ -587,7 +652,7 @@ function drawLove(){
     ctx.fillStyle=ink3; ctx.fillText('Match',lx+12,ly+4); ly+=16;
   }
   if(ST.method!=='match'){
-    ctx.fillStyle=a3; diamond(ctx,lx+4,ly,4);
+    ctx.fillStyle=a6; diamond(ctx,lx+4,ly,4);
     ctx.fillStyle=ink3; ctx.fillText('IPW',lx+12,ly+4);
   }
 
@@ -615,7 +680,7 @@ function drawLove(){
     // After match circle
     if(ST.method!=='ipw'&&m!==null){ ctx.fillStyle=a2; ctx.beginPath(); ctx.arc(tx(m),y,6,0,Math.PI*2); ctx.fill(); }
     // After IPW diamond
-    if(ST.method!=='match'){ ctx.fillStyle=a3; diamond(ctx,tx(ipw),y,6); }
+    if(ST.method!=='match'){ ctx.fillStyle=a6; diamond(ctx,tx(ipw),y,6); }
   });
 }
 function diamond(ctx,x,y,r){
@@ -627,10 +692,10 @@ function diamond(ctx,x,y,r){
 function drawEst(){
   const ctx=setupCv('cv-est');
   const W=ctx.W, H=ctx.H;
-  const pad={l:118,r:32,t:20,b:32};
+  const pad={l:118,r:32,t:28,b:32};
   const pw=W-pad.l-pad.r;
   const ink=cv('--ink'),ink2=cv('--ink2'),ink3=cv('--ink3');
-  const grid=cv('--grid'),bg=cv('--bg'),a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3');
+  const grid=cv('--grid'),bg=cv('--bg'),a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a6=cv('--a6');
 
   ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
 
@@ -639,7 +704,7 @@ function drawEst(){
   const rows=[
     {lbl:'Naiv',val:ESTS.naive,col:a1},
     ...(showM?[{lbl:'Matching ATT',val:ESTS.matched,col:a2}]:[]),
-    ...(showI?[{lbl:'IPW ATT',val:ESTS.ipw,col:a3}]:[]),
+    ...(showI?[{lbl:'IPW ATT',val:ESTS.ipw,col:a6}]:[]),
   ];
 
   const allV=[ST.tau,...rows.map(r=>r.val)].filter(v=>v!==null);
@@ -660,13 +725,15 @@ function drawEst(){
     ctx.fillText(v.toFixed(2),x,H-pad.b+14);
   }
 
-  // True effect line
+  // True effect line — prominent green, solid
   const trueX=tx(ST.tau);
-  ctx.strokeStyle=ink3; ctx.lineWidth=1.5; ctx.setLineDash([5,3]);
+  ctx.strokeStyle=a3; ctx.lineWidth=2.5; ctx.setLineDash([]);
   ctx.beginPath(); ctx.moveTo(trueX,pad.t); ctx.lineTo(trueX,H-pad.b); ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle=ink3; ctx.font=`${9}px DM Mono,monospace`; ctx.textAlign='center';
-  ctx.fillText('τ='+ST.tau.toFixed(2),trueX,pad.t-5);
+  // Label above line
+  ctx.fillStyle=a3; ctx.font=`500 ${10}px DM Mono,monospace`; ctx.textAlign='center';
+  ctx.fillText('τ = '+ST.tau.toFixed(2),trueX,pad.t-14);
+  ctx.font=`${8.5}px DM Mono,monospace`;
+  ctx.fillText('wahrer Effekt',trueX,pad.t-4);
 
   ctx.fillStyle=ink3; ctx.font=`${9}px DM Mono,monospace`; ctx.textAlign='center';
   ctx.fillText('Geschätzter Effekt (SD-Einheiten)',pad.l+pw/2,H);
