@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methods Lab — Interaktive Statistik-Werkzeuge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Design Tokens ─────────────────────────────────────────────────── */
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--topbar-h:54px;
+  --sidebar-w:210px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+
+/* ── Reset & Base ──────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--topbar-h) + 24px)}
+body{
+  font-family:'Fraunces',Georgia,serif;
+  background:var(--bg);color:var(--ink);
+  font-size:1rem;line-height:1.65;
+  min-height:100vh;
+}
+a{color:var(--a2);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Topbar ────────────────────────────────────────────────────────── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:var(--topbar-h);
+  background:var(--paper);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 1.25rem;gap:1rem;
+}
+#topbar .tb-brand{
+  font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;
+  color:var(--ink);letter-spacing:.01em;flex:1;
+}
+#topbar .tb-brand span{color:var(--a2)}
+.tb-btn{
+  background:none;border:1px solid var(--border);
+  color:var(--ink2);font-family:'DM Mono',monospace;font-size:.78rem;
+  padding:.3rem .7rem;cursor:pointer;
+  transition:border-color .15s,color .15s;
+}
+.tb-btn:hover{border-color:var(--a2);color:var(--a2)}
+.tb-sep{width:1px;height:24px;background:var(--border)}
+
+/* ── Layout ────────────────────────────────────────────────────────── */
+#layout{
+  display:flex;
+  margin-top:var(--topbar-h);
+  min-height:calc(100vh - var(--topbar-h));
+}
+
+/* ── Sidebar TOC ───────────────────────────────────────────────────── */
+#toc{
+  width:var(--sidebar-w);
+  flex-shrink:0;
+  position:sticky;top:var(--topbar-h);
+  height:calc(100vh - var(--topbar-h));
+  overflow-y:auto;
+  border-right:1px solid var(--border);
+  background:var(--paper);
+  padding:1.4rem 0 2rem;
+}
+#toc .toc-head{
+  font-family:'DM Mono',monospace;font-size:.68rem;
+  text-transform:uppercase;letter-spacing:.12em;
+  color:var(--ink3);padding:0 1.1rem .6rem;
+  border-bottom:1px solid var(--border);margin-bottom:.7rem;
+}
+#toc ul{list-style:none}
+#toc ul li a{
+  display:block;padding:.36rem 1.1rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;
+  color:var(--ink2);border-left:3px solid transparent;
+  transition:color .15s,border-color .15s,background .15s;
+  line-height:1.35;
+}
+#toc ul li a:hover{color:var(--ink);text-decoration:none;background:var(--panel)}
+#toc ul li a.active{color:var(--ink);border-left-color:var(--toc-accent,var(--a2));background:var(--panel)}
+#toc ul li a .toc-num{
+  font-size:.64rem;color:var(--ink3);margin-right:.3em;
+}
+#toc .toc-btl{
+  margin-top:1.4rem;padding:0 1.1rem;
+}
+#toc .toc-btl a{
+  display:flex;align-items:center;gap:.4rem;
+  font-family:'DM Mono',monospace;font-size:.72rem;
+  color:var(--a5);border:1px solid var(--a5);
+  padding:.4rem .6rem;
+  transition:background .15s;
+}
+#toc .toc-btl a:hover{background:color-mix(in srgb,var(--a5) 10%,transparent);text-decoration:none}
+
+/* ── Main Content ──────────────────────────────────────────────────── */
+#main{
+  flex:1;
+  min-width:0;
+  padding:0 2rem 4rem;
+}
+
+/* ── Hero ──────────────────────────────────────────────────────────── */
+#hero{
+  padding:3.5rem 0 2.8rem;
+  border-bottom:1px solid var(--border);
+  margin-bottom:3rem;
+}
+#hero .hero-eyebrow{
+  font-family:'DM Mono',monospace;font-size:.75rem;
+  text-transform:uppercase;letter-spacing:.14em;
+  color:var(--ink3);margin-bottom:.7rem;
+}
+#hero h1{
+  font-size:clamp(2rem,4vw,3rem);font-weight:700;
+  line-height:1.1;color:var(--ink);margin-bottom:.9rem;
+  letter-spacing:-.02em;
+}
+#hero h1 em{font-style:italic;color:var(--a2)}
+#hero .hero-sub{
+  font-size:1.08rem;color:var(--ink2);
+  max-width:640px;line-height:1.7;margin-bottom:1.4rem;
+}
+.hero-badges{display:flex;flex-wrap:wrap;gap:.5rem}
+.hero-badge{
+  font-family:'DM Mono',monospace;font-size:.71rem;
+  padding:.25rem .65rem;border:1px solid var(--border);
+  color:var(--ink3);background:var(--panel);
+}
+
+/* ── Section ───────────────────────────────────────────────────────── */
+.ml-section{margin-bottom:3.5rem}
+.sec-header{
+  display:flex;align-items:baseline;gap:.9rem;
+  margin-bottom:.6rem;
+  padding-bottom:.7rem;
+  border-bottom:2px solid var(--sec-color,var(--a2));
+}
+.sec-num{
+  font-family:'DM Mono',monospace;font-size:.72rem;
+  color:var(--ink3);letter-spacing:.1em;flex-shrink:0;
+}
+.sec-title{
+  font-size:1.35rem;font-weight:600;color:var(--ink);
+  letter-spacing:-.01em;
+}
+.sec-title em{font-style:italic;color:var(--sec-color,var(--a2))}
+.sec-desc{
+  font-size:.9rem;color:var(--ink2);
+  line-height:1.7;margin-bottom:1.4rem;
+  max-width:680px;
+}
+
+/* ── Tool Grid ─────────────────────────────────────────────────────── */
+.tool-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:1rem;
+}
+
+/* ── Tool Card ─────────────────────────────────────────────────────── */
+.tcard{
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:1.1rem 1.1rem 1rem;
+  position:relative;
+  transition:border-color .15s,transform .1s;
+  display:flex;flex-direction:column;gap:.45rem;
+  text-decoration:none;color:inherit;
+}
+.tcard:hover{border-color:var(--sec-color,var(--a2));transform:translateY(-2px);text-decoration:none}
+.tcard.planned{
+  opacity:.62;cursor:default;pointer-events:none;
+}
+.tcard.planned:hover{transform:none}
+.tcard-icon{font-size:1.5rem;line-height:1;margin-bottom:.1rem}
+.tcard-title{
+  font-size:.97rem;font-weight:600;color:var(--ink);
+  line-height:1.25;
+}
+.tcard-desc{
+  font-family:'DM Mono',monospace;font-size:.73rem;
+  color:var(--ink2);line-height:1.55;flex:1;
+}
+.tcard-badge{
+  font-family:'DM Mono',monospace;font-size:.64rem;
+  padding:.15rem .45rem;
+  position:absolute;top:.65rem;right:.65rem;
+  letter-spacing:.05em;
+}
+.badge-ready{background:color-mix(in srgb,var(--a3) 15%,transparent);color:var(--a3);border:1px solid var(--a3)}
+.badge-soon{background:color-mix(in srgb,var(--ink3) 12%,transparent);color:var(--ink3);border:1px solid var(--border)}
+.badge-bug{background:color-mix(in srgb,var(--a1) 12%,transparent);color:var(--a1);border:1px solid var(--a1)}
+
+/* ── BTL Cross-Promo ───────────────────────────────────────────────── */
+#btl-promo{
+  margin:3rem 0;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-left:4px solid var(--a5);
+  padding:1.6rem 1.8rem;
+  display:flex;align-items:flex-start;gap:1.4rem;
+}
+#btl-promo .promo-icon{font-size:2.4rem;flex-shrink:0;line-height:1}
+#btl-promo .promo-body{}
+#btl-promo .promo-eyebrow{
+  font-family:'DM Mono',monospace;font-size:.68rem;
+  text-transform:uppercase;letter-spacing:.12em;
+  color:var(--a5);margin-bottom:.35rem;
+}
+#btl-promo .promo-title{
+  font-size:1.15rem;font-weight:600;color:var(--ink);
+  margin-bottom:.45rem;
+}
+#btl-promo .promo-desc{
+  font-size:.875rem;color:var(--ink2);line-height:1.7;
+  margin-bottom:.8rem;max-width:560px;
+}
+#btl-promo .promo-links{display:flex;flex-wrap:wrap;gap:.6rem}
+.promo-link{
+  font-family:'DM Mono',monospace;font-size:.75rem;
+  padding:.35rem .75rem;border:1px solid var(--a5);
+  color:var(--a5);background:none;
+  transition:background .15s;display:inline-block;
+}
+.promo-link:hover{background:color-mix(in srgb,var(--a5) 12%,transparent);text-decoration:none}
+.promo-link.secondary{border-color:var(--border);color:var(--ink2)}
+.promo-link.secondary:hover{background:var(--bg)}
+
+/* ── Footer ────────────────────────────────────────────────────────── */
+#footer{
+  border-top:1px solid var(--border);
+  padding:1.6rem 0;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:.8rem;
+}
+#footer .ft-left{
+  font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);
+}
+#footer .ft-links{
+  display:flex;gap:1.2rem;
+  font-family:'DM Mono',monospace;font-size:.72rem;
+}
+#footer .ft-links a{color:var(--ink3)}
+#footer .ft-links a:hover{color:var(--a2)}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────── */
+#toc::-webkit-scrollbar{width:4px}
+#toc::-webkit-scrollbar-track{background:transparent}
+#toc::-webkit-scrollbar-thumb{background:var(--border)}
+
+/* ── Responsive ────────────────────────────────────────────────────── */
+@media(max-width:860px){
+  #toc{display:none}
+  #main{padding:0 1.2rem 3rem}
+}
+@media(max-width:520px){
+  .tool-grid{grid-template-columns:1fr}
+  #btl-promo{flex-direction:column;gap:.9rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══════════════════════════════════════════════════════ -->
+<div id="topbar">
+  <div class="tb-brand">Methods&thinsp;<span>Lab</span></div>
+  <button class="tb-btn" onclick="toggleTheme()" id="theme-btn">☀ Hell</button>
+</div>
+
+<!-- ═══ LAYOUT ═══════════════════════════════════════════════════════ -->
+<div id="layout">
+
+<!-- ─── Sidebar TOC ─────────────────────────────────────────────────── -->
+<nav id="toc" aria-label="Inhaltsverzeichnis">
+  <div class="toc-head">Themen</div>
+  <ul>
+    <li><a href="#sec1" style="--toc-accent:var(--a2)"><span class="toc-num">01</span>Regression & Zusammenhänge</a></li>
+    <li><a href="#sec2" style="--toc-accent:var(--a3)"><span class="toc-num">02</span>Inferenz & Planung</a></li>
+    <li><a href="#sec3" style="--toc-accent:var(--a1)"><span class="toc-num">03</span>Statistische Paradoxe</a></li>
+    <li><a href="#sec4" style="--toc-accent:var(--a5)"><span class="toc-num">04</span>Kausale Inferenz</a></li>
+    <li><a href="#sec5" style="--toc-accent:var(--a4)"><span class="toc-num">05</span>Testtheorie & Messung</a></li>
+    <li><a href="#sec6" style="--toc-accent:var(--a6)"><span class="toc-num">06</span>Diagnostik</a></li>
+  </ul>
+  <div class="toc-btl">
+    <a href="https://[BTL-URL]" target="_blank">
+      <span>🎲</span>Bayes Thinking Lab ↗
+    </a>
+  </div>
+</nav>
+
+<!-- ─── Main ─────────────────────────────────────────────────────────── -->
+<main id="main">
+
+<!-- ── Hero ──────────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-eyebrow">Universität · Lehr-Werkzeuge · Statistik</div>
+  <h1>Methods <em>Lab</em></h1>
+  <p class="hero-sub">
+    Interaktive Visualisierungen für statistische Methoden — von der einfachen
+    Regression über kausale Inferenz bis hin zu psychometrischen Modellen.
+    Kein Code nötig, alle Konzepte direkt erfahrbar.
+  </p>
+  <div class="hero-badges">
+    <span class="hero-badge">25 Tools verfügbar</span>
+    <span class="hero-badge">9 Tools geplant</span>
+    <span class="hero-badge">Nur HTML / JS</span>
+    <span class="hero-badge">Kein Server</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     SEKTION 1 — Regression & Zusammenhänge
+     ══════════════════════════════════════════════════════════════════ -->
+<section id="sec1" class="ml-section" style="--sec-color:var(--a2)">
+  <div class="sec-header">
+    <span class="sec-num">01</span>
+    <h2 class="sec-title">Regression &amp; <em>Zusammenhänge</em></h2>
+  </div>
+  <p class="sec-desc">
+    Die Grundlage für alle weiteren Sektionen: Wie schätzt man lineare Zusammenhänge,
+    was bedeutet „unter Kontrolle von", und wie zerlegt man Effekte in direkte und
+    indirekte Pfade? Diese Tools bilden das Fundament für das Verständnis der
+    statistischen Paradoxe in Sektion&nbsp;3.
+  </p>
+  <div class="tool-grid">
+
+    <div class="tcard planned">
+      <span class="tcard-badge badge-soon">Bald</span>
+      <div class="tcard-icon">📈</div>
+      <div class="tcard-title">OLS &amp; Multiple Regression</div>
+      <div class="tcard-desc">Einfache und multiple Regression — Koeffizienten, R², Annahmen und typische Verletzungen. Interaktive Dateninjektion.</div>
+    </div>
+
+    <a href="Partialkorrelation.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">🔗</div>
+      <div class="tcard-title">Partialkorrelation</div>
+      <div class="tcard-desc">Korrelation zweier Variablen bereinigt um den Einfluss einer dritten. Suppressor-Effekte, Semipartialkorrelation, Pfad&shy;koeffizienten.</div>
+    </a>
+
+    <a href="Mediationsanalyse.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">➡️</div>
+      <div class="tcard-title">Mediationsanalyse</div>
+      <div class="tcard-desc">Hayes/PROCESS Model&nbsp;4 — DAG-Visualisierung, direkter und indirekter Effekt, Sobel/Aroian live, Bootstrap auf Knopfdruck.</div>
+    </a>
+
+    <a href="Moderationsanalyse.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">✂️</div>
+      <div class="tcard-title">Moderationsanalyse</div>
+      <div class="tcard-desc">Hayes/PROCESS Model&nbsp;1 — Simple Slopes, Johnson-Neyman-Technik, Floodlight-Plot. Wann moderiert W den Effekt von X auf Y?</div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     SEKTION 2 — Inferenz & Planung
+     ══════════════════════════════════════════════════════════════════ -->
+<section id="sec2" class="ml-section" style="--sec-color:var(--a3)">
+  <div class="sec-header">
+    <span class="sec-num">02</span>
+    <h2 class="sec-title">Inferenz &amp; <em>Planung</em></h2>
+  </div>
+  <p class="sec-desc">
+    Wie groß muss eine Stichprobe sein? Was ist ein bedeutsamer Effekt? Und was
+    passiert, wenn Daten fehlen? Diese drei Fragen entscheiden über die Qualität
+    jeder empirischen Studie — vor der Datenerhebung und nach ihr.
+  </p>
+  <div class="tool-grid">
+
+    <a href="Effektgroessen.html" class="tcard">
+      <span class="tcard-badge badge-bug">NCT-Bug</span>
+      <div class="tcard-icon">📏</div>
+      <div class="tcard-title">Effektgrößen</div>
+      <div class="tcard-desc">Cohen's d, r, η², f, OR/RR — Umrechnungen, Visualisierungen, Konfidenzintervalle. NCT-CI-Berechnung in Überarbeitung.</div>
+    </a>
+
+    <a href="Power_Stichprobe.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">⚡</div>
+      <div class="tcard-title">Power &amp; Stichprobengröße</div>
+      <div class="tcard-desc">4-Kurven-Schar, H₀/H₁-Verteilung, Heatmap n×d, Sensitivitätskurve, MDES, SESOI. α, β, d, n interaktiv.</div>
+    </a>
+
+    <a href="Missing_Data.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">🕳️</div>
+      <div class="tcard-title">Missing Data</div>
+      <div class="tcard-desc">MCAR, MAR, MNAR — Mechanismen verstehen, vier Imputationsstrategien vergleichen, Ampel-Grid für Bias und Effizienz.</div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     SEKTION 3 — Statistische Paradoxe & Effekte
+     ══════════════════════════════════════════════════════════════════ -->
+<section id="sec3" class="ml-section" style="--sec-color:var(--a1)">
+  <div class="sec-header">
+    <span class="sec-num">03</span>
+    <h2 class="sec-title">Statistische <em>Paradoxe</em></h2>
+  </div>
+  <p class="sec-desc">
+    Kontraintuitive Effekte, die selbst erfahrenen Forschern Fallen stellen.
+    Alle Paradoxe hier beruhen auf Regressionslogik — deshalb kommt diese
+    Sektion nach den Grundlagen. Wer Abschnitt&nbsp;1 versteht, versteht auch,
+    warum diese Ergebnisse <em>nicht</em> überraschend sind.
+  </p>
+  <div class="tool-grid">
+
+    <a href="Regression_zur_Mitte.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">↩️</div>
+      <div class="tcard-title">Regression zur Mitte</div>
+      <div class="tcard-desc">Blutdruck-Beispiel, r-Slider, bidirektionale Selektion. Warum „schlechte" Extremwerte beim zweiten Mal besser aussehen.</div>
+    </a>
+
+    <a href="Messfehler_Attenuierung.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">📡</div>
+      <div class="tcard-title">Messfehler-Attenuation</div>
+      <div class="tcard-desc">Intelligenz & Schulleistung — Disattenuation, Lernkarten zur N-Instabilität und Reliabilitätswahl. Wie Messungenauigkeit Korrelationen verzerrt.</div>
+    </a>
+
+    <a href="Berksons_Paradox.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">🌀</div>
+      <div class="tcard-title">Berkson's Paradox</div>
+      <div class="tcard-desc">Talent + Fleiß → Erfolg — DAG, diagonale Selektionsgrenze, Collider Bias. Negative Korrelation in selektierten Stichproben.</div>
+    </a>
+
+    <a href="Lords_Paradox.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">⚖️</div>
+      <div class="tcard-title">Lord's Paradox</div>
+      <div class="tcard-desc">ANCOVA vs. Differenzwert — wann führen beide Analysen zu gegensätzlichen Schlüssen? DAG, Schlüsselformel, Lege-artis-Entscheidung.</div>
+    </a>
+
+    <div class="tcard planned">
+      <span class="tcard-badge badge-soon">Bald</span>
+      <div class="tcard-icon">📊</div>
+      <div class="tcard-title">Simpson's Paradox</div>
+      <div class="tcard-desc">Aggregierter Trend kehrt sich bei Aufschlüsselung um. Ecological Fallacy als Sonderfall. Cross-Link zum Multilevel-Tool.</div>
+    </div>
+
+    <div class="tcard planned">
+      <span class="tcard-badge badge-soon">Bald</span>
+      <div class="tcard-icon">🔭</div>
+      <div class="tcard-title">Range Restriction</div>
+      <div class="tcard-desc">Taylor-Russell interaktiv — Korrelationsattenuation in selektierten Stichproben. Korrekturformeln nach Thorndike.</div>
+    </div>
+
+    <div class="tcard planned">
+      <span class="tcard-badge badge-soon">Bald</span>
+      <div class="tcard-icon">⚔️</div>
+      <div class="tcard-title">Lindley's Paradox</div>
+      <div class="tcard-desc">p &lt; .05, aber Bayes-Faktor &lt; 1 möglich — der Konflikt zwischen Frequentist und Bayes. Synergie mit dem Bayes Thinking Lab.</div>
+    </div>
+
+    <div class="tcard planned">
+      <span class="tcard-badge badge-soon">Bald</span>
+      <div class="tcard-icon">🎭</div>
+      <div class="tcard-title">Will Rogers Phenomenon</div>
+      <div class="tcard-desc">Reklassifikation hebt Mittelwert beider Gruppen gleichzeitig (Stage Migration). Wichtig für Verlaufsdaten und Stadieneinteilung.</div>
+    </div>
+
+    <div class="tcard planned">
+      <span class="tcard-badge badge-soon">Bald</span>
+      <div class="tcard-icon">🎲</div>
+      <div class="tcard-title">Freedman's Paradox</div>
+      <div class="tcard-desc">Schrittweise Regression mit Zufallsprädiktoren: durch Zufall signifikante Variablen, R²-Überschätzung. Warnung an Applied-Statistiker.</div>
+    </div>
+
+    <div class="tcard planned">
+      <span class="tcard-badge badge-soon">Bald</span>
+      <div class="tcard-icon">🚌</div>
+      <div class="tcard-title">Inspection Paradox</div>
+      <div class="tcard-desc">Man landet zufällig in überdurchschnittlich langen Intervallen (Busse, klinische Kohorten, Überlebensdaten). Length-biased Sampling.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     SEKTION 4 — Kausale Inferenz
+     ══════════════════════════════════════════════════════════════════ -->
+<section id="sec4" class="ml-section" style="--sec-color:var(--a5)">
+  <div class="sec-header">
+    <span class="sec-num">04</span>
+    <h2 class="sec-title">Kausale <em>Inferenz</em></h2>
+  </div>
+  <p class="sec-desc">
+    Unter welchen Bedingungen darf man von Assoziation auf Kausalität schließen?
+    Diese Sektion behandelt das Potential-Outcomes-Framework, natürliche Experimente
+    und Matching-Methoden — das methodische Handwerkszeug der modernen Kausalanalyse.
+  </p>
+  <div class="tool-grid">
+
+    <a href="Causal_Teaching.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">🔬</div>
+      <div class="tcard-title">Kausale Inferenz — Grundlagen</div>
+      <div class="tcard-desc">DAGs, Potential Outcomes, IPW, G-Computation — fünf Module im Vollbild-Layout. Starkes Konfunding, live ATE-Schätzung.</div>
+    </a>
+
+    <a href="RDD.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">🚧</div>
+      <div class="tcard-title">Regression Discontinuity</div>
+      <div class="tcard-desc">Sharp RDD — Szenarien A–D, Polynomgrad-Slider, Fuzzy RDD und Polynomial-Fallstricke als aufklappbare Module.</div>
+    </a>
+
+    <a href="DiD.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">📉</div>
+      <div class="tcard-title">Difference-in-Differences</div>
+      <div class="tcard-desc">Regressionsmodell, ATT, Selektionsbias, naive Vergleiche ①②, live-aktualisierte Pfeile. Parallel-Trends-Annahme visuell.</div>
+    </a>
+
+    <a href="PSM.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">🎯</div>
+      <div class="tcard-title">Propensity Score Matching</div>
+      <div class="tcard-desc">Logistische PS-Schätzung, Greedy 1:1 Matching, IPW (ATT), Love Plot, Effektschätzer-Vergleich vor/nach Matching.</div>
+    </a>
+
+    <div class="tcard planned">
+      <span class="tcard-badge badge-soon">Bald</span>
+      <div class="tcard-icon">🏗️</div>
+      <div class="tcard-title">Multilevel-Modelle</div>
+      <div class="tcard-desc">Random Intercepts/Slopes, ICC, Shrinkage. Simpson's Paradox als integriertes Beispiel. Aufbauend auf BTL GLMM-Tool.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     SEKTION 5 — Testtheorie & Messung
+     ══════════════════════════════════════════════════════════════════ -->
+<section id="sec5" class="ml-section" style="--sec-color:var(--a4)">
+  <div class="sec-header">
+    <span class="sec-num">05</span>
+    <h2 class="sec-title">Testtheorie &amp; <em>Messung</em></h2>
+  </div>
+  <p class="sec-desc">
+    Wie misst man psychologische Konstrukte, und wie gut tut ein Test das?
+    Von der klassischen Reliabilität bis zu modernen IRT-Modellen — diese
+    Sektion deckt die Grundlagen der Psychometrie ab.
+  </p>
+  <div class="tool-grid">
+
+    <a href="IRT.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">📐</div>
+      <div class="tcard-title">IRT — Dichotome Modelle</div>
+      <div class="tcard-desc">1PL / 2PL / 3PL / 4PL + Rasch — ICC, TIF, Wright Map, MLE-Personenschätzer. Rasch vs. 1PL Unterschied explizit.</div>
+    </a>
+
+    <a href="IRT_Ordinal.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">🎚️</div>
+      <div class="tcard-title">IRT — Ordinale Modelle</div>
+      <div class="tcard-desc">PCM, GPCM, GRM — CRF, ESC, Item-Info für alle Items. Disordered-Threshold-Warnung, Faktoranalyse-Bezug in Hilfe.</div>
+    </a>
+
+    <a href="DIF.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">🔍</div>
+      <div class="tcard-title">Differential Item Functioning</div>
+      <div class="tcard-desc">2PL-Modell, 4 Items, Δb/Δa-Schieberegler, ICC-Vergleich, Differenzkurve, Gruppenverteilungen, Raju SA/UA, ETS A/B/C.</div>
+    </a>
+
+    <a href="Faktoranalyse.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">🧩</div>
+      <div class="tcard-title">Faktoranalyse</div>
+      <div class="tcard-desc">PAF (echte EFA), korrektes Oblique (Pattern Matrix Λ), Reliabilitäts-Panel (α / ωt / ωh Schmid-Leiman), 3 Szenarien, Biplot.</div>
+    </a>
+
+    <div class="tcard planned">
+      <span class="tcard-badge badge-soon">Bald</span>
+      <div class="tcard-icon">📋</div>
+      <div class="tcard-title">Klassische Testtheorie</div>
+      <div class="tcard-desc">Reliabilität (α, Split-Half, Test-Retest), Messfehlervarianz, SEM, Korrektur für Attenuation. Brücke zu IRT.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     SEKTION 6 — Diagnostik
+     ══════════════════════════════════════════════════════════════════ -->
+<section id="sec6" class="ml-section" style="--sec-color:var(--a6)">
+  <div class="sec-header">
+    <span class="sec-num">06</span>
+    <h2 class="sec-title">Diagnostik &amp; <em>Testgüte</em></h2>
+  </div>
+  <p class="sec-desc">
+    Wie gut erkennt ein Instrument, was es erkennen soll? Klinische und
+    psychologische Diagnostik braucht präzise Kennzahlen — von Sensitivität
+    und Spezifität über Beurteilerübereinstimmung bis hin zur differenziellen
+    Validität.
+  </p>
+  <div class="tool-grid">
+
+    <a href="Sens_Spez.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">🎯</div>
+      <div class="tcard-title">Sensitivität &amp; Spezifität</div>
+      <div class="tcard-desc">ROC-Kurve, AUC, PPV/NPV in Abhängigkeit von Prävalenz — interaktiver Cutoff, Vierfeldertafel live.</div>
+    </a>
+
+    <a href="Profilanalyse.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">👤</div>
+      <div class="tcard-title">Profilanalyse</div>
+      <div class="tcard-desc">Profilvergleich mit Cattell rₚ, McCrae Iₚₐ / rₚₐ, ICC_de — Profil-Elevation, Streuung und Form getrennt bewertet.</div>
+    </a>
+
+    <a href="Test_Bias.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">⚖️</div>
+      <div class="tcard-title">Test Bias</div>
+      <div class="tcard-desc">Cleary-Modell, Meade &amp; Fetzer, Adverse Impact — 3 Module, 4 Szenarien. Differential Prediction vs. Fairness in der Praxis.</div>
+    </a>
+
+    <a href="ICC_Lab.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">👥</div>
+      <div class="tcard-title">ICC-Lab</div>
+      <div class="tcard-desc">Intraklassenkorrelation — alle 6 Shrout-&amp;-Fleiss-Formen, Rater-Anzahl, absolute vs. konsistente Übereinstimmung.</div>
+    </a>
+
+    <a href="Beurteileruebereinstimmung.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">🤝</div>
+      <div class="tcard-title">Beurteilerübereinstimmung</div>
+      <div class="tcard-desc">Cohens κ, gewichtetes κ, Kappa-Paradox, Prävalenz &amp; Bias — wann κ täuscht und was man stattdessen berichten sollte.</div>
+    </a>
+
+    <a href="Diagnostische_Intervalle.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">📊</div>
+      <div class="tcard-title">Diagnostische Intervalle</div>
+      <div class="tcard-desc">Konfidenz-, Prädiktions- und Toleranzintervall im Vergleich — was jeder Typ aussagt und für welche Frage er geeignet ist.</div>
+    </a>
+
+    <a href="Diagnostische_Validitaet.html" class="tcard">
+      <span class="tcard-badge badge-ready">Fertig</span>
+      <div class="tcard-icon">✅</div>
+      <div class="tcard-title">Diagnostische Validität</div>
+      <div class="tcard-desc">Konstrukt-, Kriterium- und Inhaltsvalidität — Validitätskoeffizienten, Taylor-Russell-Tabellen, Nutzenwert-Analyse.</div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     BTL CROSS-PROMO
+     ══════════════════════════════════════════════════════════════════ -->
+<div id="btl-promo">
+  <div class="promo-icon">🎲</div>
+  <div class="promo-body">
+    <div class="promo-eyebrow">Schwesterprojekt · Bayesianische Statistik</div>
+    <div class="promo-title">Bayes Thinking Lab</div>
+    <p class="promo-desc">
+      Frequentistische Methoden sind hier gut aufgehoben — aber für Priors,
+      Posterior-Verteilungen, ROPE-Entscheidungen, Bayes-Faktoren und
+      brms-Modelle gibt es das <strong>Bayes Thinking Lab</strong>:
+      interaktive Tools, die Bayesianisches Denken von Grund auf erklären.
+      Beide Labs ergänzen sich: Lindley's Paradox z.&thinsp;B. braucht beide Perspektiven.
+    </p>
+    <div class="promo-links">
+      <a href="https://[BTL-URL]" target="_blank" class="promo-link">→ Zum Bayes Thinking Lab</a>
+      <a href="https://[BTL-URL]/Prior_Lab.html" target="_blank" class="promo-link secondary">Prior Lab</a>
+      <a href="https://[BTL-URL]/Decision_Maker.html" target="_blank" class="promo-link secondary">Decision Lab</a>
+      <a href="https://[BTL-URL]/Golem_Builder.html" target="_blank" class="promo-link secondary">Golem Builder</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════════════════════════ -->
+<footer id="footer">
+  <div class="ft-left">Methods Lab &mdash; Universität · Lehr-Werkzeuge</div>
+  <div class="ft-links">
+    <a href="https://[BTL-URL]" target="_blank">Bayes Thinking Lab ↗</a>
+    <a href="mailto:rduesing@googlemail.com">Kontakt</a>
+  </div>
+</footer>
+
+</main>
+</div><!-- #layout -->
+
+<script>
+function toggleTheme(){
+  const h=document.documentElement;
+  const isDark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',isDark?'light':'dark');
+  document.getElementById('theme-btn').textContent=isDark?'☀ Hell':'☾ Dunkel';
+}
+// init button label
+(function(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.getElementById('theme-btn').textContent=isDark?'☾ Dunkel':'☀ Hell';
+})();
+
+// ── Active TOC highlight on scroll ──────────────────────────────────
+(function(){
+  const secs=document.querySelectorAll('.ml-section[id]');
+  const links=document.querySelectorAll('#toc a[href^="#"]');
+  const topH=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h'))||54;
+  function onScroll(){
+    let cur='';
+    secs.forEach(s=>{
+      if(s.getBoundingClientRect().top<=topH+40) cur=s.id;
+    });
+    links.forEach(l=>{
+      l.classList.toggle('active',l.getAttribute('href')==='#'+cur);
+    });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+})();
+</script>
+</body>
+</html>
