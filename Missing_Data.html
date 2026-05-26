@@ -103,6 +103,12 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);
   padding:.3rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.35rem 0 .55rem;
   white-space:pre}
+.dgp-bar{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a5);
+  padding:.55rem .9rem;margin-bottom:.75rem;font-family:'DM Mono',monospace}
+.dgp-bar-lbl{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--a5);margin-bottom:.28rem}
+.dgp-row{font-size:.78rem;color:var(--ink2);line-height:1.75}
+.dgp-val{color:var(--ink);font-weight:500}
+.dgp-sep{color:var(--ink3);margin:0 .45rem}
 .gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
 .gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
 .gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
@@ -206,6 +212,13 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
       </div>
       <input type="range" id="s-m" min="3" max="30" step="1" value="10" oninput="onSl()">
     </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">β_X · Stärke X→Y</span>
+        <span class="slider-val" id="v-bx">−6.0</span>
+      </div>
+      <input type="range" id="s-bx" min="0" max="6" step="0.5" value="6" oninput="onSl()">
+    </div>
     <button class="regen-btn" onclick="newSeed()">⟳ Neue Stichprobe</button>
     <button class="regen-btn" id="btn-mi-toggle" onclick="toggleMI()" style="margin-top:.25rem">◇ MI anzeigen</button>
     <button class="regen-btn" onclick="downloadCSV()" style="margin-top:.25rem">⬇ CSV-Download</button>
@@ -227,15 +240,17 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
       <span class="sv">Z</span><span class="sd"><strong>Auxiliary-Variable</strong> — vollständig beobachtet, beeinflusst Y (β_Z = +3) und (unter MAR) die Missingness. Nicht Teil der Forschungsfrage, aber nötig im Imputationsmodell.</span>
       <span class="sv">X</span><span class="sd"><strong>Hauptprädiktor</strong> — vollständig beobachtet, r(X,Z) = −.40</span>
       <span class="sv">Y</span><span class="sd"><strong>Outcome</strong> — Wohlbefinden t=2 (0–100), teilweise fehlend</span>
-      <span class="sv">Wahrer DGP</span><span class="sd">Y = 60 − 6X + 3Z + ε — Z beeinflusst Y in der Realität, auch wenn der Forscher nur Y ~ X modelliert. Ohne Z→Y könnte PMM keine besseren Spender finden und MI hätte keinen Vorteil.</span>
-      <span class="sv">Zielanalyse</span><span class="sd">Y ~ X — marginaler Populationseffekt β_X = −7.20 (= −6 + 3·(−0.40), weil Z→Y und r_XZ = −.40)</span>
+      <span class="sv">Wahrer DGP</span><span class="sd"><span id="sb-dgp-formula">Y = 60 − 6.0·X + 3·Z + ε</span> — Z beeinflusst Y in der Realität, auch wenn der Forscher nur Y ~ X modelliert. Ohne Z→Y könnte PMM keine besseren Spender finden und MI hätte keinen Vorteil.</span>
+      <span class="sv">Zielanalyse</span><span class="sd">Y ~ X — marginaler Populationseffekt β_X = <span id="sb-bxm">−7.20</span> (= <span id="sb-bxmf">−6.0 + 3·(−0.40)</span>, weil Z→Y und r_XZ = −.40)</span>
       <span class="sv">MAR-Bias</span><span class="sd">Z↓ und X↑ → Dropout. Fehlende haben niedrigeres Y. Listwise: (1) μ_Y↑ und (2) β_X zu flach. MI-Fix: Z im Imputationsmodell → PMM findet Spender mit korrekt niedrigen Y-Werten.</span>
     </div>
     <div class="story-q">Warum Z ins Imputationsmodell, wenn die Analyse nur Y ~ X ist? — Z sagt sowohl die Missingness als auch Y voraus. Ohne Z würde PMM die fehlenden Y-Werte systematisch zu hoch schätzen. Das Imputationsmodell muss reicher sein als das Analysemodell (Rubin 1987).</div>
   </div>
 
+  <div id="dgp-bar" class="dgp-bar"><!-- filled by updateDGPDisplay() --></div>
+
   <div class="sec-h" style="margin-top:0">Scatter — Stresslevel X vs. Wohlbefinden Y</div>
-  <canvas id="cv-miss" height="370"></canvas>
+  <canvas id="cv-miss" height="555"></canvas>
 
   <div class="erklaer" id="erklaer-box" style="margin-top:.7rem">
     <strong>MCAR:</strong> Lila Kreise (○) zeigen die wahren Y-Werte fehlender Beobachtungen — gleichmäßig verteilt, kein systematisches Muster. Listwise und MI unverzerrt.
@@ -255,7 +270,7 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
       <tr class="row-true">
         <td>Wahre Parameter (Y~X)</td><td class="num">—</td>
         <td class="num">60.00</td><td class="num">—</td>
-        <td class="num">−7.20</td><td class="num">—</td>
+        <td class="num" id="t-bxmarg-pop">−7.20</td><td class="num">—</td>
         <td class="num" id="t-sdy-pop">—</td><td class="num">—</td>
       </tr>
       <tr class="row-comp">
@@ -291,7 +306,7 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
   <div id="erklaer-table" class="erklaer" style="margin-bottom:1rem"></div>
 
   <div class="sec-h">Dichteverteilung Y — Vergleich der Datensätze</div>
-  <canvas id="cv-dens" height="220" style="width:100%;display:block"></canvas>
+  <canvas id="cv-dens" height="330" style="width:100%;display:block"></canvas>
   <div class="hint" id="dens-note" style="margin-top:.5rem;line-height:1.8"></div>
 
 </div>
@@ -304,12 +319,12 @@ function fixDiacritics(s){
     .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
 }
 // ── Konstanten & State ─────────────────────────────────────────────────────────
-const TRUE_A=60, TRUE_BX=-6, TRUE_BZ=3, TRUE_S=9, RXZ=-0.40;
-// SD_Y = sqrt(BX²+BZ²+2·BX·BZ·r_XZ+S²) = sqrt(140.4) ≈ 11.85
-const TRUE_SDY=Math.sqrt(TRUE_BX**2+TRUE_BZ**2+2*TRUE_BX*TRUE_BZ*RXZ+TRUE_S**2);
-// Marginaler β_X in Zielanalyse Y~X: β_X + β_Z·r_XZ = −6 + 3·(−0.40) = −7.20
-const TRUE_BX_MARG=TRUE_BX+TRUE_BZ*RXZ;
-const ST={mech:'mcar',pMiss:.30,n:150,m:10,seed:42,data:null,res:null};
+const TRUE_A=60, TRUE_BZ=3, TRUE_S=9, RXZ=-0.40;
+// Dynamische Parameter (abhängig von β_X-Slider)
+function trueBX(){ return -ST.bxMag; }                         // z.B. −6
+function trueBX_MARG(){ return trueBX()+TRUE_BZ*RXZ; }         // z.B. −7.20
+function trueSDY(){ const bx=trueBX(); return Math.sqrt(bx**2+TRUE_BZ**2+2*bx*TRUE_BZ*RXZ+TRUE_S**2); }
+const ST={mech:'mcar',pMiss:.30,n:150,m:10,bxMag:6,seed:42,data:null,res:null};
 
 let showMI=false;
 function toggleMI(){
@@ -369,7 +384,7 @@ function generate(){
   for(let i=0;i<ST.n;i++){
     const z=rng_n();                                               // Z ~ N(0,1)
     const x=RXZ*z+Math.sqrt(1-RXZ**2)*rng_n();                    // X korreliert mit Z
-    const yTrue=Math.max(0,Math.min(100,TRUE_A+TRUE_BX*x+TRUE_BZ*z+rng_n()*TRUE_S));
+    const yTrue=Math.max(0,Math.min(100,TRUE_A+trueBX()*x+TRUE_BZ*z+rng_n()*TRUE_S));
     let logitP;
     if(ST.mech==='mcar')     logitP=lp;
     else if(ST.mech==='mar') logitP=lp+1.0*x-3.5*z;  // niedrige Unterstützung (Z↓, dominant) + hoher Stress (X↑) → mehr Fehlend
@@ -454,7 +469,7 @@ function drawDensity(){
   const canvas=document.getElementById('cv-dens');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
   const ctx=canvas.getContext('2d');
-  const pad={l:50,r:18,t:20,b:42};
+  const pad={l:50,r:18,t:20,b:52};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
 
   const a1=cv('--a1'),a3=cv('--a3'),a6=cv('--a6'),ink3=cv('--ink3'),ink2=cv('--ink2');
@@ -491,21 +506,21 @@ function drawDensity(){
     const dv=dMax*i/nYTicks;
     ctx.strokeStyle=grid;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,sy(dv));ctx.lineTo(pad.l+cW,sy(dv));ctx.stroke();
-    ctx.fillStyle=ink3;ctx.font='10px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='right';
     ctx.fillText(dv.toFixed(3),pad.l-4,sy(dv)+4);
   }
   // Grid X
   [20,30,40,50,60,70,80,90].forEach(xv=>{
     ctx.strokeStyle=grid;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(sx(xv),pad.t);ctx.lineTo(sx(xv),pad.t+cH);ctx.stroke();
-    ctx.fillStyle=ink3;ctx.font='10px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
     ctx.fillText(xv,sx(xv),pad.t+cH+14);
   });
   // Achsen
   ctx.strokeStyle=ink3;ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
   ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
-  ctx.fillStyle=ink2;ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
   ctx.fillText('Wohlbefinden Y',pad.l+cW/2,H-2);
   ctx.save();ctx.translate(13,pad.t+cH/2);ctx.rotate(-Math.PI/2);
   ctx.fillText('Dichte',0,0);ctx.restore();
@@ -534,7 +549,7 @@ function drawDensity(){
     ctx.strokeStyle=m.col;ctx.lineWidth=1.2;ctx.setLineDash(m.dash);
     ctx.beginPath();ctx.moveTo(x,pad.t+36);ctx.lineTo(x,pad.t+cH);ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle=m.col;ctx.font=`bold 8.5px DM Mono,monospace`;ctx.textAlign='center';
+    ctx.fillStyle=m.col;ctx.font=`bold 11px DM Mono,monospace`;ctx.textAlign='center';
     ctx.fillText(`${m.lbl}${m.val.toFixed(1)}`,x,pad.t+m.yOff+8);
   });
 
@@ -548,7 +563,7 @@ function drawDensity(){
     const y=lgY+lgPad+(i+.5)*lgItemH;
     ctx.strokeStyle=c.col;ctx.lineWidth=c.lw;ctx.setLineDash(c.dash);
     ctx.beginPath();ctx.moveTo(lgX+8,y);ctx.lineTo(lgX+28,y);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle=ink2;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillStyle=ink2;ctx.font='12px DM Mono,monospace';ctx.textAlign='left';
     ctx.fillText(c.lbl,lgX+34,y+4);
   });
 
@@ -583,7 +598,7 @@ function drawPlot(){
   const canvas=document.getElementById('cv-miss');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
   const ctx=canvas.getContext('2d');
-  const pad={l:52,r:18,t:16,b:46};
+  const pad={l:56,r:18,t:18,b:54};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
 
   const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5');
@@ -602,13 +617,13 @@ function drawPlot(){
   [-3,-2,-1,0,1,2,3].forEach(xv=>{
     ctx.strokeStyle=grid;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(cx(xv),pad.t);ctx.lineTo(cx(xv),pad.t+cH);ctx.stroke();
-    ctx.fillStyle=ink3;ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillStyle=ink3;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
     ctx.fillText(xv,cx(xv),pad.t+cH+14);
   });
   [0,20,40,60,80,100].forEach(yv=>{
     ctx.strokeStyle=grid;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,cy(yv));ctx.lineTo(pad.l+cW,cy(yv));ctx.stroke();
-    ctx.fillStyle=ink3;ctx.font='11px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillStyle=ink3;ctx.font='13px DM Mono,monospace';ctx.textAlign='right';
     ctx.fillText(yv,pad.l-4,cy(yv)+4);
   });
 
@@ -616,7 +631,7 @@ function drawPlot(){
   ctx.strokeStyle=ink3;ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
   ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
-  ctx.fillStyle=ink2;ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
   ctx.fillText('Stresslevel X (z-standardisiert)',pad.l+cW/2,H-2);
   ctx.save();ctx.translate(12,pad.t+cH/2);ctx.rotate(-Math.PI/2);
   ctx.fillText('Wohlbefinden Y',0,0);ctx.restore();
@@ -685,7 +700,7 @@ function drawPlot(){
     if(item.dash)ctx.setLineDash([4,3]);
     ctx.beginPath();ctx.moveTo(lgX+7,y);ctx.lineTo(lgX+27,y);ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle=ink2;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillStyle=ink2;ctx.font='12px DM Mono,monospace';ctx.textAlign='left';
     ctx.fillText(item.lbl,lgX+33,y+4);
   });
 }
@@ -706,17 +721,19 @@ function updateTable(){
     set(`t-mu-${pfx}`,  f(res.meanY));
     set(`t-bi-mu-${pfx}`,fb(res.meanY-TRUE_A));
     set(`t-bx-${pfx}`,  f(res.bx));
-    set(`t-bi-bx-${pfx}`,fb(res.bx-TRUE_BX_MARG));  // Referenz: marginaler β_X in Y~X
+    set(`t-bi-bx-${pfx}`,fb(res.bx-trueBX_MARG()));  // Referenz: marginaler β_X in Y~X
     const sdYhat=Math.sqrt(Math.max(res.varY,0));
     set(`t-sdy-${pfx}`, sdYhat.toFixed(2));
-    set(`t-bi-sdy-${pfx}`,fb(sdYhat-TRUE_SDY));
+    set(`t-bi-sdy-${pfx}`,fb(sdYhat-trueSDY()));
   };
   fill('c', r.complete);
   fill('l', r.listwise);
   fill('m', r.mean);
   fill('mi',r.mi);
-  // Populationsparameter SD_Y dynamisch
-  document.getElementById('t-sdy-pop').textContent=TRUE_SDY.toFixed(2);
+  // Populationsparameter dynamisch
+  document.getElementById('t-sdy-pop').textContent=trueSDY().toFixed(2);
+  const tBxp=document.getElementById('t-bxmarg-pop');
+  if(tBxp) tBxp.textContent=trueBX_MARG().toFixed(2).replace('-','−');
   document.querySelectorAll('.mval').forEach(el=>el.textContent=ST.m);
 
   // Badge (Mechanismus-Label) + Note (nur n-Info)
@@ -740,10 +757,11 @@ function updateErklaerTable(){
   if(!r)return;
   const f=v=>v==null?'—':v.toFixed(2);
   const fb=v=>v==null?'—':(v>=0?'+':'')+v.toFixed(2);
-  const bxLW=r.listwise?r.listwise.bx-TRUE_BX_MARG:null;
-  const bxMI=r.mi?r.mi.bx-TRUE_BX_MARG:null;
+  const bxLW=r.listwise?r.listwise.bx-trueBX_MARG():null;
+  const bxMI=r.mi?r.mi.bx-trueBX_MARG():null;
   const muLW=r.listwise?r.listwise.meanY-TRUE_A:null;
   const muMI=r.mi?r.mi.meanY-TRUE_A:null;
+  const bxMargFmt=trueBX_MARG().toFixed(2).replace('-','−');
 
   const rowStyle=`display:grid;grid-template-columns:9rem 1fr 1fr;gap:.15rem .6rem;
     font-family:'DM Mono',monospace;font-size:.78rem;margin:.45rem 0 .2rem;align-items:baseline`;
@@ -760,10 +778,10 @@ function updateErklaerTable(){
   const rows=`
     <div style="${rowStyle}">
       <span style="${hdrStyle}">Methode</span>
-      <span style="${hdrStyle}">β̂_X &nbsp;(Bias vs. −7.20)</span>
+      <span style="${hdrStyle}">β̂_X &nbsp;(Bias vs. ${bxMargFmt})</span>
       <span style="${hdrStyle}">μ̂_Y &nbsp;(Bias vs. 60)</span>
       <span style="color:var(--ink3);font-size:.72rem">Vollst. Daten</span>
-      <span>${biasVal(r.complete?.bx,r.complete?r.complete.bx-TRUE_BX_MARG:null)}</span>
+      <span>${biasVal(r.complete?.bx,r.complete?r.complete.bx-trueBX_MARG():null)}</span>
       <span>${biasVal(r.complete?.meanY,r.complete?r.complete.meanY-TRUE_A:null)}</span>
       <span style="color:var(--a1);font-weight:500">Listwise</span>
       <span style="color:var(--a1)">${biasVal(r.listwise?.bx,bxLW)}</span>
@@ -811,7 +829,7 @@ function setMech(mech){
   });
   document.getElementById('hint-box').innerHTML=HINTS[mech];
   document.getElementById('erklaer-box').innerHTML=ERKLAER[mech];
-  recompute();  // ruft updateTable() → updateErklaerTable() mit aktuellen Werten
+  recompute();  // ruft updateTable() → updateErklaerTable() + updateDGPDisplay()
 }
 
 // ── Steuerung ──────────────────────────────────────────────────────────────────
@@ -819,9 +837,12 @@ function onSl(){
   ST.n=parseInt(document.getElementById('s-n').value);
   ST.pMiss=parseInt(document.getElementById('s-pm').value)/100;
   ST.m=parseInt(document.getElementById('s-m').value);
+  ST.bxMag=parseFloat(document.getElementById('s-bx').value);
   document.getElementById('v-n').textContent=ST.n;
   document.getElementById('v-pm').textContent=Math.round(ST.pMiss*100)+'%';
   document.getElementById('v-m').textContent=ST.m;
+  const bxDisp=ST.bxMag===0?'0':`−${ST.bxMag.toFixed(1)}`;
+  document.getElementById('v-bx').textContent=bxDisp;
   recompute();
 }
 function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
@@ -838,7 +859,46 @@ function downloadCSV(){
   });
   document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
-function recompute(){generate();computeAll();drawPlot();drawDensity();updateTable();}
+function updateDGPDisplay(){
+  const neg=v=>typeof v==='number'?v.toFixed(2).replace('-','−'):String(v).replace('-','−');
+  const bxMag=ST.bxMag,bx=-bxMag,bxMarg=trueBX_MARG(),p=ST.pMiss;
+
+  // Story-box: DGP-Formel
+  const sbF=document.getElementById('sb-dgp-formula');
+  if(sbF) sbF.textContent=bxMag===0?'Y = 60 + 3·Z + ε':`Y = 60 − ${bxMag.toFixed(1)}·X + 3·Z + ε`;
+
+  // Story-box: marginaler β_X
+  const sbBxm=document.getElementById('sb-bxm');
+  if(sbBxm) sbBxm.textContent=neg(bxMarg);
+  const sbBxmf=document.getElementById('sb-bxmf');
+  if(sbBxmf) sbBxmf.textContent=`${neg(bx.toFixed(2))} + 3·(−0.40)`;
+
+  // DGP-Bar
+  const mechColor={mcar:'var(--a3)',mar:'var(--a5)',mnar:'var(--a1)'};
+  const mechLabel={mcar:'MCAR',mar:'MAR',mnar:'MNAR'};
+  const mechEq={
+    mcar:`P(R=1) = ${p.toFixed(2)}  (konstant, unabhängig von X, Y, Z)`,
+    mar: `logit P(R=1) = logit(${p.toFixed(2)}) + 1.0·X − 3.5·Z`,
+    mnar:`logit P(R=1) = logit(${p.toFixed(2)}) − (Y − 60)/8`
+  };
+  const yFml=bxMag===0?'Y = 60 + 3·Z + ε':`Y = 60 − ${bxMag.toFixed(1)}·X + 3·Z + ε`;
+  const bar=document.getElementById('dgp-bar');
+  if(bar) bar.innerHTML=
+    `<div class="dgp-bar-lbl">Datengenerierungsprozess (DGP)</div>`+
+    `<div class="dgp-row">`+
+      `<span class="dgp-val">${yFml}</span>`+
+      `<span class="dgp-sep">·</span>σ<sub>ε</sub> = 9`+
+      `<span class="dgp-sep">·</span>r(X,Z) = −.40`+
+      `<span class="dgp-sep">·</span>Marginal β<sub>X</sub>(Y~X) = <span class="dgp-val">${neg(bxMarg)}</span>`+
+    `</div>`+
+    `<div class="dgp-row" style="margin-top:.12rem">`+
+      `<span style="color:var(--ink3)">R </span>`+
+      `<span style="color:${mechColor[ST.mech]};font-weight:500">[${mechLabel[ST.mech]}]</span>`+
+      `<span class="dgp-sep">·</span>`+
+      `${mechEq[ST.mech]}`+
+    `</div>`;
+}
+function recompute(){generate();computeAll();drawPlot();drawDensity();updateTable();updateDGPDisplay();}
 
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
