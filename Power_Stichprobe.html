@@ -76,6 +76,18 @@ canvas{width:100%;display:block}
 .hint{font-family:'DM Mono',monospace;font-size:.70rem;color:var(--ink3);line-height:1.7;
   border-top:1px solid var(--grid);padding-top:.35rem;margin-bottom:.8rem}
 
+/* ── Erklärungs-Box ── */
+.erklaer{background:var(--panel);border-left:3px solid var(--accent);
+  padding:.8rem 1rem;margin-bottom:.85rem;font-family:'DM Mono',monospace;
+  font-size:.80rem;color:var(--ink2);line-height:1.95}
+.erklaer strong{color:var(--ink)}
+.erklaer .ek-lbl{font-size:.67rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);display:block;margin-bottom:.3rem}
+.erklaer-row{display:grid;grid-template-columns:auto 1fr;gap:.18rem .7rem;
+  margin:.45rem 0 .2rem;align-items:baseline}
+.erklaer-key{font-family:'DM Mono',monospace;font-size:.80rem;font-weight:600;color:var(--ink)}
+.erklaer-val{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2)}
+
 /* ── Lernkarten ── */
 .learn-section{margin-top:1.8rem}
 .lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
@@ -219,11 +231,15 @@ canvas{width:100%;display:block}
   </div>
 
   <!-- Sektion 3 -->
-  <div class="sec-h">③ Was wenn mein angenommenes δ falsch war?</div>
+  <div class="sec-h">③ Was, wenn das wahre δ kleiner ist als angenommen?</div>
   <div class="plot-box">
-    <div class="plot-title">Sensitivität: Power bei geplantem n = <span id="lbl-n-sens">64</span>, über alle möglichen wahren d</div>
-    <canvas id="cv-sens" height="338"></canvas>
-    <div class="hint" id="hint-sens"></div>
+    <div class="plot-title">Sensitivitätsanalyse — Power bei n = <span id="lbl-n-sens">64</span> für jedes mögliche wahre d</div>
+    <canvas id="cv-sens" height="406"></canvas>
+    <div class="hint" id="hint-sens" style="font-size:.80rem;line-height:1.85"></div>
+  </div>
+  <div class="erklaer" id="sens-erklaer">
+    <span class="ek-lbl">Was dieser Plot zeigt</span>
+    Wird geladen…
   </div>
 
   <!-- Lernkarten -->
@@ -833,23 +849,33 @@ function drawSens(){
   ctx.strokeStyle=a3;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
   ctx.beginPath();ctx.moveTo(sx(dPlan),pad.t);ctx.lineTo(sx(dPlan),sy(planPow));ctx.stroke();
   ctx.setLineDash([]);
-  ctx.beginPath();ctx.arc(sx(dPlan),sy(planPow),5.5,0,2*Math.PI);
+  ctx.beginPath();ctx.arc(sx(dPlan),sy(planPow),6,0,2*Math.PI);
   ctx.fillStyle=a3;ctx.fill();
   ctx.strokeStyle=cv('--bg');ctx.lineWidth=1.5;ctx.stroke();
-  ctx.fillStyle=a3;ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';
-  ctx.fillText(`d_plan=${dPlan.toFixed(2)} → ${(planPow*100).toFixed(0)}%`,sx(dPlan),pad.t+16);
+  // Label links oder rechts der Linie, um Überlappung zu vermeiden
+  const planOnRight=sx(dPlan)<pad.l+cW*0.55;
+  ctx.fillStyle=a3;ctx.font='bold 13px DM Mono,monospace';
+  ctx.textAlign=planOnRight?'left':'right';
+  const plx=planOnRight?sx(dPlan)+7:sx(dPlan)-7;
+  ctx.fillText(`geplant: d = ${dPlan.toFixed(2)}`,plx,pad.t+18);
+  ctx.fillText(`Power = ${(planPow*100).toFixed(0)}%`,plx,pad.t+34);
 
-  // Stützpunkte: d_plan×0.25, ×0.50, ×0.75 — Punkte + Labels
+  // Stützpunkte: d_plan × 0.25, 0.50, 0.75 — Punkte + Labels
   [.25,.50,.75].forEach(frac=>{
     const d=dPlan*frac;
     if(d<=0||d>dMax)return;
     const p=computePower(d,ST.n,ST.alpha,ST.tails,ST.design);
     const col=p>=ST.targetPow?a3:p>=.5?a5:a1;
-    ctx.beginPath();ctx.arc(sx(d),sy(p),4,0,2*Math.PI);
+    ctx.beginPath();ctx.arc(sx(d),sy(p),5,0,2*Math.PI);
     ctx.fillStyle=col;ctx.fill();
-    ctx.fillStyle=col;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
-    ctx.fillText(`${(frac*100).toFixed(0)}%×d_p`,sx(d),sy(p)+16);
-    ctx.fillText(`→ ${(p*100).toFixed(0)}%`,sx(d),sy(p)+30);
+    ctx.strokeStyle=cv('--bg');ctx.lineWidth=1;ctx.stroke();
+    // Labels: d-Wert + Power — links/rechts je nach Position
+    const onRight=sx(d)<pad.l+cW*0.7;
+    ctx.fillStyle=col;ctx.font='bold 12px DM Mono,monospace';
+    ctx.textAlign=onRight?'left':'right';
+    const lx=onRight?sx(d)+7:sx(d)-7;
+    ctx.fillText(`d = ${d.toFixed(2)}`,lx,sy(p)-2);
+    ctx.fillText(`Power: ${(p*100).toFixed(0)}%`,lx,sy(p)+13);
   });
 
   // MDES — wo die Kurve die Ziel-Power schneidet
@@ -871,14 +897,32 @@ function drawSens(){
     ctx.fillText(`MDES=${mdesD.toFixed(2)}`,lblX,sy(ST.targetPow)+18);
   }
 
-  // Tabellen-Hinweis
-  const half=computePower(dPlan/2,ST.n,ST.alpha,ST.tails,ST.design);
-  const quarter=computePower(dPlan/4,ST.n,ST.alpha,ST.tails,ST.design);
+  // ── Texte ──────────────────────────────────────────────────────────────
+  const p75=computePower(dPlan*.75,ST.n,ST.alpha,ST.tails,ST.design);
+  const half=computePower(dPlan*.50,ST.n,ST.alpha,ST.tails,ST.design);
+  const quarter=computePower(dPlan*.25,ST.n,ST.alpha,ST.tails,ST.design);
+
+  const col=p=>`color:${p>=ST.targetPow?'var(--a3)':p>=.5?'var(--a5)':'var(--a1)'}`;
+
+  // Kurze Zusammenfassung direkt unter dem Canvas
   document.getElementById('hint-sens').innerHTML=
-    `<strong style="color:var(--a3)">Geplant:</strong> d=${dPlan.toFixed(2)}, n=${ST.n} → Power ${(planPow*100).toFixed(1)}% &nbsp;|&nbsp; `+
-    `<strong style="color:var(--a5)">½×d_plan = ${(dPlan/2).toFixed(2)}:</strong> Power ${(half*100).toFixed(1)}% &nbsp;|&nbsp; `+
-    `<strong style="color:var(--a1)">¼×d_plan = ${(dPlan/4).toFixed(2)}:</strong> Power ${(quarter*100).toFixed(1)}%`+
-    (mdesD!=null?` &nbsp;|&nbsp; <strong style="color:var(--a4)">MDES bei n=${ST.n}: d=${mdesD.toFixed(2)}</strong>`:'');
+    `<strong style="color:var(--a3)">Geplant:</strong> d = ${dPlan.toFixed(2)}, n = ${ST.n} &rarr; Power <strong>${(planPow*100).toFixed(0)}%</strong>`+
+    (mdesD!=null?` &nbsp;&bull;&nbsp; <strong style="color:var(--a4)">MDES = ${mdesD.toFixed(2)}</strong> (kleinster detektierbarer Effekt bei Ziel-Power ${(ST.targetPow*100).toFixed(0)}%)`:'');
+
+  // Ausführliche Tutorial-Erklärung
+  document.getElementById('sens-erklaer').innerHTML=`
+<span class="ek-lbl">Was dieser Plot zeigt</span>
+<strong>X-Achse:</strong> Das <em>tatsächliche</em> wahre d in der Population — unbekannt vor der Studie.<br>
+<strong>Y-Achse:</strong> Die resultierende Power (= Wahrscheinlichkeit, H<sub>0</sub> korrekt abzulehnen).<br>
+<strong>Grüne Kurve:</strong> Power Ihrer Studie bei n&nbsp;=&nbsp;${ST.n} für <em>jedes</em> mögliche wahre d. Die Kurve ist vor der Studie bekannt — sie hängt nur von n, &alpha; und Design ab, nicht von den Daten.<br>
+<strong style="color:var(--a3)">Grüner Punkt</strong> (d&nbsp;=&nbsp;${dPlan.toFixed(2)}, Power&nbsp;=&nbsp;${(planPow*100).toFixed(0)}%): Ihre Planungsannahme — die 80%-Power gilt <em>nur</em> wenn das wahre d genau diesem Wert entspricht.<br>
+<strong style="color:var(--a1)">Roter Bereich</strong> (d &lt; ${dPlan.toFixed(2)}): Risikezone der Überschätzung. Publizierte Effekte sind durch Selektionsbias oft zu groß — das wahre d liegt dann links von Ihrem geplanten Punkt.
+<div class="erklaer-row" style="margin-top:.55rem">
+  <span class="erklaer-key">¾ des Geplanten</span><span class="erklaer-val">wahres d = ${(dPlan*.75).toFixed(2)} &rarr; Power = <strong style="${col(p75)}">${(p75*100).toFixed(0)}%</strong></span>
+  <span class="erklaer-key">½ des Geplanten</span><span class="erklaer-val">wahres d = ${(dPlan*.50).toFixed(2)} &rarr; Power = <strong style="${col(half)}">${(half*100).toFixed(0)}%</strong></span>
+  <span class="erklaer-key">¼ des Geplanten</span><span class="erklaer-val">wahres d = ${(dPlan*.25).toFixed(2)} &rarr; Power = <strong style="${col(quarter)}">${(quarter*100).toFixed(0)}%</strong></span>
+</div>
+${mdesD!=null?`<strong style="color:var(--a4)">MDES = ${mdesD.toFixed(2)}</strong> (lila gestrichelte Linie): Minimum Detectable Effect Size — der kleinste Effekt, den Sie mit n&nbsp;=&nbsp;${ST.n} und &alpha;&nbsp;=&nbsp;${ST.alpha} noch mit ${(ST.targetPow*100).toFixed(0)}% Wahrscheinlichkeit entdecken. Effekte unter diesem Wert bleiben wahrscheinlich unentdeckt. <em>Ist MDES&nbsp;=&nbsp;${mdesD.toFixed(2)} in Ihrem Forschungskontext klinisch/praktisch bedeutsam?</em>`:'(MDES nicht bestimmbar im aktuellen Bereich — n oder Ziel-Power anpassen.)'}`;
 }
 
 function update(){
