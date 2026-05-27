@@ -422,6 +422,25 @@ input[type=range]::-moz-range-thumb{
 .details-box[open] summary{color:var(--a2);border-bottom:1px solid var(--border)}
 .details-box .details-inner{padding:.7rem .8rem}
 
+/* ── Info-Box (rechtes Panel, alle Module) ──────────────────────── */
+.info-box{
+  background:color-mix(in srgb,var(--a2) 5%,var(--panel));
+  border:1px solid var(--border);
+  border-left:3px solid var(--a2);
+  padding:.85rem 1rem;
+  font-family:'DM Mono',monospace;font-size:.77rem;
+  color:var(--ink2);line-height:1.9;
+}
+.info-box-h{
+  font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--a2);margin-bottom:.6rem;
+  padding-bottom:.38rem;border-bottom:1px solid var(--border);
+}
+.info-box p{margin-bottom:.5rem}
+.info-box p:last-child{margin-bottom:0}
+.info-box strong{color:var(--ink)}
+.info-box em{font-style:italic;color:var(--a2)}
+
 /* ── Scrollbar ─────────────────────────────────────────────────── */
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -495,7 +514,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <!-- Rechtes Panel -->
-    <div style="display:flex;flex-direction:column;gap:.75rem;min-width:220px;max-width:280px">
+    <div style="display:flex;flex-direction:column;gap:.75rem;flex:1;min-width:240px;max-width:400px">
 
       <div class="coef-grid g2">
         <div class="coef-cell">
@@ -516,18 +535,24 @@ input[type=range]::-moz-range-thumb{
         </div>
       </div>
 
-      <!-- RSS-Meter -->
+      <!-- RSS-Vergleich: Ihre Gerade vs. OLS -->
       <div>
-        <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-bottom:.3rem">
-          RSS-Meter (relativ zu SST)
+        <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-bottom:.45rem">
+          RSS-Vergleich (% von SST)
         </div>
-        <div class="rss-bar-bg" style="position:relative;height:18px;max-width:100%">
-          <div class="rss-bar-fill" id="rss-fill" style="width:60%;height:100%"></div>
-          <div id="rss-ols-tick" style="position:absolute;top:0;height:100%;width:2px;background:var(--a3);display:none"></div>
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">
+          <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--a5);width:66px;flex-shrink:0">Ihre Gerade</div>
+          <div style="flex:1;height:13px;background:var(--border);overflow:hidden">
+            <div id="rss-hand-fill" style="height:100%;background:var(--a5);width:80%;transition:width .12s"></div>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--a5);width:40px;text-align:right" id="rss-hand-pct">—</div>
         </div>
-        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;
-          font-size:.62rem;color:var(--ink3);margin-top:.2rem">
-          <span>0 (Perfekt)</span><span id="rss-pct">—</span><span>SST (Ø-Linie)</span>
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--a3);width:66px;flex-shrink:0">OLS (min)</div>
+          <div style="flex:1;height:13px;background:var(--border);overflow:hidden">
+            <div id="rss-ols-fill" style="height:100%;background:var(--a3);width:40%;transition:width .12s"></div>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--a3);width:40px;text-align:right" id="rss-ols-pct">—</div>
         </div>
       </div>
 
@@ -539,13 +564,23 @@ input[type=range]::-moz-range-thumb{
       </div>
 
       <!-- Buttons -->
-      <div class="btn-row" style="margin-bottom:.3rem">
-        <button class="btn" id="btn-hand" onclick="toggleHand()">✏ Selbst anpassen</button>
+      <div class="btn-row" style="margin-bottom:.3rem;flex-wrap:wrap">
+        <button class="btn accent1" id="btn-hand" onclick="toggleHand()">✏ Hand: An</button>
+        <button class="btn" id="btn-show-ols" onclick="toggleShowOLS()">◎ OLS zeigen</button>
         <button class="btn primary" onclick="snapToOLS()">→ OLS</button>
       </div>
       <button class="btn" id="btn-resid" onclick="toggleResiduals()" style="width:100%">
         ● Residuals: An
       </button>
+
+      <!-- Infobox -->
+      <div class="info-box">
+        <div class="info-box-h">Das OLS-Minimum</div>
+        <p><strong>RSS</strong> = Σeᵢ² = Σ(yᵢ − ŷᵢ)²<br>
+        OLS findet das einzige b₀, b₁, für das Σeᵢ² minimal ist. <em>Keine andere Gerade hat kleinere RSS.</em></p>
+        <p><strong>Gauss-Markov:</strong> Unter den OLS-Annahmen ist dieser Schätzer der BLUE — <em>Best Linear Unbiased Estimator</em> (→ Modul ③).</p>
+        <p><strong>Aufgabe:</strong> Verschiebe deine Gerade möglichst nah an das Minimum heran — dann klicke „→ OLS" und beobachte, wie sich die RSS-Balken angleichen.</p>
+      </div>
 
     </div><!-- rechtes Panel -->
   </div><!-- cv-row -->
@@ -615,7 +650,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <!-- Rechtes Panel -->
-    <div style="display:flex;flex-direction:column;gap:.75rem;min-width:220px;max-width:280px">
+    <div style="display:flex;flex-direction:column;gap:.75rem;flex:1;min-width:240px;max-width:400px">
 
       <div class="coef-grid g3">
         <div class="coef-cell" title="Erwarteter Y-Wert wenn X = 0">
@@ -645,6 +680,19 @@ input[type=range]::-moz-range-thumb{
         <strong>b₀:</strong> Erwartete Note bei 0 h Lernzeit (extrapoliert,
         inhaltlich oft nicht sinnvoll).
       </div>
+
+      <!-- Infobox -->
+      <div class="info-box">
+        <div class="info-box-h">Interpretation: Klausur-Beispiel</div>
+        <p><strong>b₁ = <span id="m2-info-b1">—</span></strong><br>
+        Pro +1 h Lernzeit: +<span id="m2-info-b1b">—</span> Punkte (erwartet).</p>
+        <p><strong>β = <span id="m2-info-beta">—</span></strong><br>
+        Pro +1 SD Lernzeit steigt die Note um β Standardabweichungen.</p>
+        <p><strong>b₀ = <span id="m2-info-b0">—</span></strong><br>
+        Erwartete Note bei 0 h — liegt außerhalb des Datenbereichs (Extrapolation!).</p>
+        <p>Schwerpunkt: (<span id="m2-info-mx">—</span> h | <span id="m2-info-my">—</span> Pkt) — die Gerade läuft <em>immer</em> durch diesen Punkt.</p>
+      </div>
+
     </div>
   </div><!-- cv-row -->
 
@@ -699,7 +747,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <!-- Rechtes Panel -->
-    <div style="display:flex;flex-direction:column;gap:.75rem;min-width:220px;max-width:280px">
+    <div style="display:flex;flex-direction:column;gap:.75rem;flex:1;min-width:240px;max-width:400px">
 
       <!-- Modus-Toggle -->
       <div class="btn-row" style="margin-bottom:0">
@@ -748,6 +796,20 @@ input[type=range]::-moz-range-thumb{
         in Y werden durch X₁ erklärt.<br>
         <strong>f²</strong> = R²/(1−R²): &nbsp;klein ≥ .02 · mittel ≥ .15 · groß ≥ .35
       </div>
+
+      <!-- Infobox -->
+      <div class="info-box">
+        <div class="info-box-h">Varianzkomponenten: Klausur-Daten</div>
+        <p><strong>SST = <span id="m3-info-sst">—</span></strong><br>
+        Gesamtvarianz in Y (Abstände der Datenpunkte von ȳ).</p>
+        <p><strong>SSR = <span id="m3-info-ssr">—</span></strong> (<span id="m3-info-ssr-pct">—</span>% von SST)<br>
+        Durch X₁ <em>erklärte</em> Varianz.</p>
+        <p><strong>SSE = <span id="m3-info-sse">—</span></strong> (<span id="m3-info-sse-pct">—</span>% von SST)<br>
+        Nicht erklärte Residualvarianz.</p>
+        <p><strong>f² = <span id="m3-info-f2">—</span></strong> → <span id="m3-info-f2-lbl">—</span> Effekt<br>
+        (Cohen 1988: .02 klein · .15 mittel · .35 groß)</p>
+      </div>
+
     </div>
   </div><!-- cv-row -->
 
@@ -844,7 +906,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <!-- Rechtes Panel -->
-    <div style="display:flex;flex-direction:column;gap:.75rem;min-width:220px;max-width:280px">
+    <div style="display:flex;flex-direction:column;gap:.75rem;flex:1;min-width:240px;max-width:400px">
 
       <!-- Schritt-Buttons -->
       <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3)">Schritt</div>
@@ -907,6 +969,16 @@ input[type=range]::-moz-range-thumb{
       <div class="erklaer" id="m4-erkl" style="margin-bottom:0;min-height:5rem">
         Schritt ① zeigt die <strong>bivariate</strong> Regression Y auf X₁ — wie in Modul ①.
         Das bivariate b₁ enthält noch den <em>Einfluss von X₂</em>, wenn X₁ und X₂ korreliert sind.
+      </div>
+
+      <!-- Infobox -->
+      <div class="info-box">
+        <div class="info-box-h">Konfundierung &amp; partieller Effekt</div>
+        <p>Korrelation X₁↔X₂ = <strong><span id="m4-info-r12">—</span></strong></p>
+        <p>bivariat: b₁ = <span id="m4-info-biv" style="color:var(--ink)">—</span><br>
+        partiell: b₁ = <em><span id="m4-info-par">—</span></em><br>
+        Differenz: Δb₁ = <span id="m4-info-diff">—</span></p>
+        <p><em>Je größer r₁₂, desto mehr weicht das bivariate b₁ vom partiellen b₁ ab — X₂ konfundiert den Effekt von X₁ auf Y.</em></p>
       </div>
 
     </div><!-- rechtes Panel -->
@@ -1229,7 +1301,7 @@ const ST={
   // Fit-by-Hand Zustand (Modul 1)
   handLine:{active:false,yA:null,yB:null},
   showResiduals:true,
-  showOLS:true,
+  showOLS:false,   // OLS-Overlay (zusätzlich zur Hand-Linie)
   // Modul 2
   showBeta:false,m2showSlope:false,m2showMean:false,
   // Modul 3
@@ -1246,13 +1318,18 @@ function initData(){
   ST.fitMult=olsMultiple(ST.data.x1,ST.data.x2,ST.data.y);
   ST.avp=avpComponents(ST.data.x1,ST.data.x2,ST.data.y);
   document.getElementById('seed-info').textContent='Seed: '+ST.seed;
+  // Modul 1: Hand-Linie initialisieren — flat bei ȳ, Hand-Modus aktiv
+  const my=ST.fitBiv.my;
+  ST.handLine.yA=my;ST.handLine.yB=my;ST.handLine.active=true;
+  ST.showOLS=false;
+  const btnH=document.getElementById('btn-hand');
+  if(btnH){btnH.classList.add('accent1');btnH.textContent='✏ Hand: An';}
+  const btnO=document.getElementById('btn-show-ols');
+  if(btnO)btnO.classList.remove('primary');
 }
 
 function neueDaten(){
   ST.seed=Math.floor(Math.random()*99999)+1;
-  ST.handLine.active=false;ST.handLine.yA=null;ST.handLine.yB=null;
-  const btn=document.getElementById('btn-hand');
-  if(btn){btn.classList.remove('accent1');btn.textContent='✏ Selbst anpassen';}
   initData();
   draw();
 }
@@ -1321,18 +1398,23 @@ function drawMod1(){
     });
   }
 
-  // OLS-Referenz-Ghost wenn Hand aktiv (blassblau)
-  if(isHand){
+  // OLS-Linie: immer wenn nicht Hand-Modus, oder wenn showOLS aktiv
+  if(!isHand||ST.showOLS){
     const{b0:b0o,b1:b1o}=ST.fitBiv;
     ctx.beginPath();
     ctx.moveTo(sx(1),sy(b0o+b1o*1));ctx.lineTo(sx(22),sy(b0o+b1o*22));
-    ctx.strokeStyle=a2;ctx.lineWidth=1.5;ctx.globalAlpha=.35;
+    ctx.strokeStyle=a2;ctx.lineWidth=2;ctx.globalAlpha=isHand?.85:1;
     ctx.setLineDash([]);ctx.stroke();ctx.globalAlpha=1;
+    // OLS-Label wenn Hand-Modus aktiv
+    if(isHand){
+      ctx.font='11px DM Mono,monospace';ctx.fillStyle=a2;
+      ctx.textAlign='right';ctx.textBaseline='top';
+      ctx.fillText('OLS',W-pad.r-3,pad.t+4);
+    }
   }
 
-  // Aktive Linie
+  // Hand-Linie (wenn aktiv): gestrichelt orange + Anker
   if(isHand){
-    // Gestrichelte Hand-Linie (a5 = orange)
     ctx.beginPath();
     ctx.moveTo(sx(1),sy(b0c+b1c*1));ctx.lineTo(sx(22),sy(b0c+b1c*22));
     ctx.strokeStyle=a5;ctx.lineWidth=2.5;ctx.setLineDash([7,3]);
@@ -1343,11 +1425,6 @@ function drawMod1(){
       ctx.fillStyle=a5;ctx.globalAlpha=.22;ctx.fill();ctx.globalAlpha=1;
       ctx.strokeStyle=a5;ctx.lineWidth=2;ctx.stroke();
     });
-  }else{
-    // Solide OLS-Linie (a2)
-    ctx.beginPath();
-    ctx.moveTo(sx(1),sy(b0c+b1c*1));ctx.lineTo(sx(22),sy(b0c+b1c*22));
-    ctx.strokeStyle=a2;ctx.lineWidth=2;ctx.setLineDash([]);ctx.stroke();
   }
 
   // Datenpunkte (offene Kreise)
@@ -1368,31 +1445,30 @@ function drawMod1(){
 function updateMod1Display(b0,b1,isHand){
   const fmt=v=>v.toFixed(2);
   const{x1,y}=ST.data;
-  const rss=x1.reduce((s,xi,i)=>{const e=y[i]-(b0+b1*xi);return s+e*e;},0);
+  const handRss=x1.reduce((s,xi,i)=>{const e=y[i]-(b0+b1*xi);return s+e*e;},0);
+  const olsRss=ST.fitBiv.sse;
   const sst=ST.fitBiv.sst;
 
   document.getElementById('v-b0').textContent=fmt(b0);
   document.getElementById('v-b1').textContent=fmt(b1);
-  document.getElementById('v-r2').textContent=fmt(Math.max(0,1-rss/sst));
-  document.getElementById('v-rss').textContent=Math.round(rss);
+  document.getElementById('v-r2').textContent=fmt(Math.max(0,1-handRss/sst));
+  document.getElementById('v-rss').textContent=Math.round(handRss);
   document.getElementById('f-b0').textContent=fmt(b0);
   document.getElementById('f-b1').textContent=(b1>=0?'+':'')+fmt(b1);
 
-  // RSS-Balken: Breite = rss/sst, Farbe grün wenn OLS, rot wenn Hand
-  const pct=Math.min(100,rss/sst*100);
-  const fill=document.getElementById('rss-fill');
-  fill.style.width=pct+'%';
-  fill.style.background=isHand?cssVar('--a1'):cssVar('--a3');
+  // Dual-RSS-Balken
+  const handPct=Math.min(100,handRss/sst*100);
+  const olsPct=Math.min(100,olsRss/sst*100);
+  const hf=document.getElementById('rss-hand-fill');
+  if(hf)hf.style.width=handPct+'%';
+  const of=document.getElementById('rss-ols-fill');
+  if(of)of.style.width=olsPct+'%';
+  const hp=document.getElementById('rss-hand-pct');
+  if(hp)hp.textContent=handPct.toFixed(1)+'%';
+  const op=document.getElementById('rss-ols-pct');
+  if(op)op.textContent=olsPct.toFixed(1)+'%';
 
-  // OLS-Tick (zeigt optimales Minimum beim Hand-Modus)
-  const tick=document.getElementById('rss-ols-tick');
-  const olsPct=Math.min(100,ST.fitBiv.sse/sst*100);
-  tick.style.left=olsPct+'%';
-  tick.style.display=isHand?'block':'none';
-
-  document.getElementById('rss-pct').textContent=pct.toFixed(1)+'%';
-
-  // Geänderte Koeffizienten hervorheben
+  // Koeffizienten hervorheben wenn Hand aktiv
   ['v-b0','v-b1'].forEach(id=>{
     document.getElementById(id).classList.toggle('changed',isHand);
   });
@@ -1456,14 +1532,22 @@ function toggleHand(){
   ST.handLine.active=!ST.handLine.active;
   const btn=document.getElementById('btn-hand');
   if(ST.handLine.active){
-    // Anker nahe OLS setzen (leicht versetzt)
-    const f=ST.fitBiv;
-    ST.handLine.yA=Math.max(0,Math.min(100,f.b0+f.b1*3+8));
-    ST.handLine.yB=Math.max(0,Math.min(100,f.b0+f.b1*19-5));
+    // Wenn noch kein Anker gesetzt: flat bei ȳ; sonst bestehende Position behalten
+    if(ST.handLine.yA===null){
+      const my=ST.fitBiv.my;
+      ST.handLine.yA=my;ST.handLine.yB=my;
+    }
     btn.classList.add('accent1');btn.textContent='✏ Hand: An';
   }else{
     btn.classList.remove('accent1');btn.textContent='✏ Selbst anpassen';
   }
+  drawMod1();
+}
+
+function toggleShowOLS(){
+  ST.showOLS=!ST.showOLS;
+  const btn=document.getElementById('btn-show-ols');
+  if(btn)btn.classList.toggle('primary',ST.showOLS);
   drawMod1();
 }
 
@@ -1480,9 +1564,11 @@ function snapToOLS(){
     drawMod1();
     if(i<steps){requestAnimationFrame(frame);}
     else{
-      ST.handLine.active=false;
+      ST.handLine.active=false;ST.showOLS=false;
       const btn=document.getElementById('btn-hand');
-      btn.classList.remove('accent1');btn.textContent='✏ Selbst anpassen';
+      if(btn){btn.classList.remove('accent1');btn.textContent='✏ Selbst anpassen';}
+      const btnO=document.getElementById('btn-show-ols');
+      if(btnO)btnO.classList.remove('primary');
       drawMod1();
     }
   }
@@ -1641,7 +1727,7 @@ function drawMod2(){
 
 function updateMod2Display(){
   if(!ST.fitBiv)return;
-  const{b0,b1,beta1}=ST.fitBiv;
+  const{b0,b1,beta1,mx,my}=ST.fitBiv;
   const fmt=v=>v.toFixed(2);
   document.getElementById('m2-b0').textContent=fmt(b0);
   document.getElementById('m2-b1').textContent=fmt(b1);
@@ -1652,6 +1738,14 @@ function updateMod2Display(){
   ['m2-beta-val','m2-beta-acc'].forEach(id=>{
     const el=document.getElementById(id);if(el)el.textContent=fmt(beta1);
   });
+  // Infobox aktualisieren
+  const setTxt=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setTxt('m2-info-b1',fmt(b1));
+  setTxt('m2-info-b1b',fmt(b1));
+  setTxt('m2-info-beta',fmt(beta1));
+  setTxt('m2-info-b0',fmt(b0));
+  setTxt('m2-info-mx',fmt(mx));
+  setTxt('m2-info-my',fmt(my));
 }
 
 function toggleSlope(){
@@ -1741,6 +1835,16 @@ function updateMod3Display(){
   document.getElementById('m3-sse-seg').style.width=ssePct+'%';
   document.getElementById('m3-ssr-lbl').textContent='SSR = '+Math.round(ssr);
   document.getElementById('m3-sse-lbl').textContent='SSE = '+Math.round(sse);
+  // Infobox aktualisieren
+  const setTxt=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setTxt('m3-info-sst',Math.round(sst));
+  setTxt('m3-info-ssr',Math.round(ssr));
+  setTxt('m3-info-ssr-pct',ssrPct.toFixed(1));
+  setTxt('m3-info-sse',Math.round(sse));
+  setTxt('m3-info-sse-pct',ssePct.toFixed(1));
+  setTxt('m3-info-f2',fmt3(f2));
+  const f2lbl=f2>=.35?'groß':f2>=.15?'mittel':f2>=.02?'klein':'sehr klein';
+  setTxt('m3-info-f2-lbl',f2lbl);
 }
 
 function setVarMode(mode){
@@ -1937,6 +2041,12 @@ function updateMod4Display(){
   document.getElementById('m4-par-r2').textContent=fmt(parR2);
   document.getElementById('m4-avp-slope').textContent=fmt(avpB1);
   document.getElementById('m4-diff-b1').textContent=fmt(bivB1-parB1);
+  // Infobox aktualisieren
+  const setTxt=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setTxt('m4-info-r12',ST.r12.toFixed(2));
+  setTxt('m4-info-biv',fmt(bivB1));
+  setTxt('m4-info-par',fmt(parB1));
+  setTxt('m4-info-diff',fmt(bivB1-parB1));
 }
 
 function setAvpStep(step){
