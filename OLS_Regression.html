@@ -833,8 +833,95 @@ input[type=range]::-moz-range-thumb{
 <div id="mod4" class="mod-panel">
   <div class="mod-h">Multiple Regression &amp; <em>Added Variable Plot</em></div>
   <div class="mod-sub">Was bedeutet „unter Kontrolle von X₂"? Partielle Slopes visuell verstehen.</div>
-  <!-- Batch 4 -->
-  <p style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink3)">[Modul 4 — wird in Batch 4 ergänzt]</p>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <!-- Canvas -->
+    <div>
+      <div class="cv-label" id="m4-cv-label">Schritt ① — Bivariates Modell: Y ~ X₁</div>
+      <div class="cv-wrap">
+        <canvas id="cv-avp" width="880" height="640"></canvas>
+      </div>
+    </div>
+
+    <!-- Rechtes Panel -->
+    <div style="display:flex;flex-direction:column;gap:.75rem;min-width:220px;max-width:280px">
+
+      <!-- Schritt-Buttons -->
+      <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3)">Schritt</div>
+      <div class="btn-row" style="flex-wrap:wrap;gap:.4rem;margin-bottom:0">
+        <button class="btn avp-step-btn active" data-step="0" onclick="setAvpStep(0)"><span class="tab-num">①</span> Bivariat</button>
+        <button class="btn avp-step-btn" data-step="1" onclick="setAvpStep(1)"><span class="tab-num">②</span> e(Y|X₂)</button>
+        <button class="btn avp-step-btn" data-step="2" onclick="setAvpStep(2)"><span class="tab-num">③</span> e(X₁|X₂)</button>
+        <button class="btn avp-step-btn" data-step="3" onclick="setAvpStep(3)"><span class="tab-num">④</span> AVP</button>
+      </div>
+
+      <!-- r₁₂-Szenarien -->
+      <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.2rem">Korrelation X₁↔X₂</div>
+      <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:0">
+        <button class="scen-btn" id="scen-r0" onclick="setR12(0)">r = .00</button>
+        <button class="scen-btn active" id="scen-r2" onclick="setR12(0.20)">r = .20</button>
+        <button class="scen-btn" id="scen-r5" onclick="setR12(0.50)">r = .50</button>
+        <button class="scen-btn" id="scen-r8" onclick="setR12(0.80)">r = .80</button>
+      </div>
+
+      <!-- Koeffizientenvergleich -->
+      <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.2rem">Koeffizientenvergleich</div>
+      <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.77rem">
+        <thead>
+          <tr>
+            <th style="text-align:left;color:var(--ink3);padding:.25rem .3rem;border-bottom:1px solid var(--border);font-weight:400">Modell</th>
+            <th style="text-align:right;color:var(--ink3);padding:.25rem .3rem;border-bottom:1px solid var(--border);font-weight:400">b₁</th>
+            <th style="text-align:right;color:var(--ink3);padding:.25rem .3rem;border-bottom:1px solid var(--border);font-weight:400">β₁</th>
+            <th style="text-align:right;color:var(--ink3);padding:.25rem .3rem;border-bottom:1px solid var(--border);font-weight:400">R²</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:.25rem .3rem;color:var(--ink2)">Bivariat</td>
+            <td id="m4-biv-b1" style="text-align:right;padding:.25rem .3rem;color:var(--ink)">—</td>
+            <td id="m4-biv-beta" style="text-align:right;padding:.25rem .3rem;color:var(--ink)">—</td>
+            <td id="m4-biv-r2" style="text-align:right;padding:.25rem .3rem;color:var(--ink)">—</td>
+          </tr>
+          <tr>
+            <td style="padding:.25rem .3rem;color:var(--ink2)">Partiell</td>
+            <td id="m4-par-b1" style="text-align:right;padding:.25rem .3rem;color:var(--a2);font-weight:600">—</td>
+            <td id="m4-par-beta" style="text-align:right;padding:.25rem .3rem;color:var(--a2);font-weight:600">—</td>
+            <td id="m4-par-r2" style="text-align:right;padding:.25rem .3rem;color:var(--a2);font-weight:600">—</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- AVP-Slope + Δb₁ -->
+      <div class="coef-grid g2">
+        <div class="coef-cell" title="Steigung der AVP-Regressionslinie = partielles b₁">
+          <div class="coef-cell-lbl">AVP-Slope</div>
+          <div class="coef-cell-val" id="m4-avp-slope">—</div>
+        </div>
+        <div class="coef-cell" title="Bivariates b₁ minus partielles b₁">
+          <div class="coef-cell-lbl">Δb₁</div>
+          <div class="coef-cell-val" id="m4-diff-b1">—</div>
+        </div>
+      </div>
+
+      <!-- Schritt-Erklärer -->
+      <div class="erklaer" id="m4-erkl" style="margin-bottom:0;min-height:5rem">
+        Schritt ① zeigt die <strong>bivariate</strong> Regression Y auf X₁ — wie in Modul ①.
+        Das bivariate b₁ enthält noch den <em>Einfluss von X₂</em>, wenn X₁ und X₂ korreliert sind.
+      </div>
+
+    </div><!-- rechtes Panel -->
+  </div><!-- cv-row -->
+
+  <!-- Erklärer unten -->
+  <div class="erklaer" style="margin-top:.9rem">
+    <strong>AVP-Prinzip:</strong> Ein Added Variable Plot (<em>Partialregression</em>) macht den
+    <em>partiellen</em> Effekt von X₁ auf Y sichtbar — bereinigt um X₂. Dazu wird X₂ sowohl aus
+    Y (<em>e(Y|X₂)</em>) als auch aus X₁ (<em>e(X₁|X₂)</em>) herausgerechnet. Die Steigung der
+    Regressionslinie durch die Residualvektoren <strong>entspricht exakt</strong> dem partiellen
+    Koeffizienten b₁ aus dem multiplen Modell. Verändere die Korrelation X₁↔X₂, um zu sehen,
+    wann und warum bivariates b₁ ≠ partielles b₁.
+  </div>
+
 </div>
 
 <!-- ══ LERNKARTEN ═══════════════════════════════════════════════════ -->
@@ -1154,7 +1241,7 @@ const ST={
 
 /* ── Initialisierung & Daten ──────────────────────────────────────── */
 function initData(){
-  ST.data=genData(ST.seed);
+  ST.data=genData(ST.seed,0.60,0.45,ST.r12);
   ST.fitBiv=olsBivariate(ST.data.x1,ST.data.y);
   ST.fitMult=olsMultiple(ST.data.x1,ST.data.x2,ST.data.y);
   ST.avp=avpComponents(ST.data.x1,ST.data.x2,ST.data.y);
@@ -1667,8 +1754,227 @@ function setVarMode(mode){
   drawMod3();
 }
 
-/* ── Modul 4 — wird in Batch 4 ergänzt ───────────────────────────────── */
-function drawMod4(){}
+/* ── Modul 4: AVP-Hilfsfunktionen ───────────────────────────────────── */
+function niceTicksFromRange(dmin,dmax,approxCount){
+  if(Math.abs(dmax-dmin)<1e-10)return[parseFloat(dmin.toFixed(6))];
+  const range=dmax-dmin;
+  const roughStep=range/(approxCount||5);
+  const mag=Math.pow(10,Math.floor(Math.log10(Math.abs(roughStep))));
+  const norm=roughStep/mag;
+  let step;
+  if(norm<1.5)step=mag;
+  else if(norm<3.5)step=2*mag;
+  else if(norm<7.5)step=5*mag;
+  else step=10*mag;
+  const start=Math.ceil((dmin-step*1e-10)/step)*step;
+  const ticks=[];
+  for(let v=start;v<=dmax+step*1e-10;v+=step){
+    const t=parseFloat(v.toFixed(10));
+    if(t>=dmin-step*0.02&&t<=dmax+step*0.02)ticks.push(t);
+    if(ticks.length>20)break;
+  }
+  return ticks;
+}
+
+function makeAdaptiveScales(xArr,yArr,W,H){
+  const pad={l:55,r:18,t:22,b:52};
+  const xmin=Math.min(...xArr),xmax=Math.max(...xArr);
+  const ymin=Math.min(...yArr),ymax=Math.max(...yArr);
+  const xR=xmax-xmin||1, yR=ymax-ymin||1;
+  const dx0=xmin-xR*0.10, dx1=xmax+xR*0.10;
+  const dy0=ymin-yR*0.10, dy1=ymax+yR*0.10;
+  const sx=makeScale(dx0,dx1,pad.l,W-pad.r);
+  const sy=makeScale(dy0,dy1,H-pad.b,pad.t);
+  const xTicks=niceTicksFromRange(dx0,dx1,6);
+  const yTicks=niceTicksFromRange(dy0,dy1,6);
+  return{pad,sx,sy,xTicks,yTicks,dx0,dx1,dy0,dy1};
+}
+
+/* ── Modul 4: Zeichenfunktionen ─────────────────────────────────────── */
+function drawMod4(){
+  const cv=document.getElementById('cv-avp');
+  if(!cv||!ST.data)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  if(ST.avpStep===0)     drawAvpStep0(ctx,W,H);
+  else if(ST.avpStep===1)drawAvpStep1(ctx,W,H);
+  else if(ST.avpStep===2)drawAvpStep2(ctx,W,H);
+  else if(ST.avpStep===3)drawAvpStep3(ctx,W,H);
+  updateMod4Display();
+}
+
+function drawAvpStep0(ctx,W,H){
+  // Bivariates Modell Y ~ X₁ — gleiche Skala wie Module 1–3
+  const pad={l:55,r:18,t:22,b:52};
+  const sx=makeScale(1,22,pad.l,W-pad.r);
+  const sy=makeScale(0,100,H-pad.b,pad.t);
+  const xT=[2,4,6,8,10,12,14,16,18,20];
+  const yT=[0,10,20,30,40,50,60,70,80,90,100];
+  drawAxes(ctx,pad,W,H,'X₁ (Lernzeit h/Woche)','Y (Klausurnote)',xT,yT,sx,sy,13);
+  const{b0,b1}=ST.fitBiv;
+  const a2=cssVar('--a2'),paper=cssVar('--paper');
+  // OLS-Gerade
+  ctx.strokeStyle=a2;ctx.lineWidth=2.5;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(sx(1),sy(b0+b1*1));ctx.lineTo(sx(22),sy(b0+b1*22));ctx.stroke();
+  // Datenpunkte
+  ST.data.x1.forEach((xi,i)=>{
+    ctx.beginPath();ctx.arc(sx(xi),sy(ST.data.y[i]),5,0,2*Math.PI);
+    ctx.fillStyle=paper;ctx.fill();
+    ctx.strokeStyle=a2;ctx.lineWidth=1.5;ctx.stroke();
+  });
+  // Label
+  ctx.font='bold 12px DM Mono,monospace';ctx.fillStyle=a2;
+  ctx.textAlign='right';ctx.textBaseline='top';
+  ctx.fillText('biv. b₁ = '+b1.toFixed(3),W-pad.r-4,pad.t+4);
+}
+
+function drawAvpStep1(ctx,W,H){
+  // X₂ aus Y herausrechnen — zeigt e(Y|X₂)
+  const{x2,y}=ST.data;
+  const sc=makeAdaptiveScales(x2,y,W,H);
+  const{pad,sx,sy,xTicks,yTicks,dx0,dx1}=sc;
+  drawAxes(ctx,pad,W,H,'X₂ (Schlaf h/Nacht)','Y (Klausurnote)',xTicks,yTicks,sx,sy,13);
+  const bYX2=olsBivariate(x2,y);
+  const a5=cssVar('--a5'),a3=cssVar('--a3'),a1=cssVar('--a1'),paper=cssVar('--paper');
+  // Regressionsgerade X₂ → Y (gestrichelt orange)
+  ctx.strokeStyle=a5;ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();
+  ctx.moveTo(sx(dx0),sy(bYX2.b0+bYX2.b1*dx0));
+  ctx.lineTo(sx(dx1),sy(bYX2.b0+bYX2.b1*dx1));
+  ctx.stroke();ctx.setLineDash([]);
+  // Residuallinien einfärben
+  const eYX2=ST.avp.eYX2;
+  eYX2.forEach((e,i)=>{
+    const yhat=bYX2.b0+bYX2.b1*x2[i];
+    ctx.strokeStyle=e>=0?a3:a1;ctx.lineWidth=1.5;ctx.globalAlpha=.75;
+    ctx.beginPath();ctx.moveTo(sx(x2[i]),sy(yhat));ctx.lineTo(sx(x2[i]),sy(y[i]));ctx.stroke();
+  });
+  ctx.globalAlpha=1;
+  // Datenpunkte
+  x2.forEach((xi,i)=>{
+    ctx.beginPath();ctx.arc(sx(xi),sy(y[i]),5,0,2*Math.PI);
+    ctx.fillStyle=paper;ctx.fill();ctx.strokeStyle=a5;ctx.lineWidth=1.5;ctx.stroke();
+  });
+  ctx.font='bold 12px DM Mono,monospace';ctx.fillStyle=a5;
+  ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillText('Residuen = e(Y|X₂)',pad.l+8,pad.t+4);
+}
+
+function drawAvpStep2(ctx,W,H){
+  // X₂ aus X₁ herausrechnen — zeigt e(X₁|X₂)
+  const{x1,x2}=ST.data;
+  const sc=makeAdaptiveScales(x2,x1,W,H);
+  const{pad,sx,sy,xTicks,yTicks,dx0,dx1}=sc;
+  drawAxes(ctx,pad,W,H,'X₂ (Schlaf h/Nacht)','X₁ (Lernzeit h/Woche)',xTicks,yTicks,sx,sy,13);
+  const bX1X2=olsBivariate(x2,x1);
+  const a5=cssVar('--a5'),a3=cssVar('--a3'),a1=cssVar('--a1'),paper=cssVar('--paper');
+  // Regressionsgerade X₂ → X₁ (gestrichelt orange)
+  ctx.strokeStyle=a5;ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();
+  ctx.moveTo(sx(dx0),sy(bX1X2.b0+bX1X2.b1*dx0));
+  ctx.lineTo(sx(dx1),sy(bX1X2.b0+bX1X2.b1*dx1));
+  ctx.stroke();ctx.setLineDash([]);
+  // Residuallinien
+  const eX1X2=ST.avp.eX1X2;
+  eX1X2.forEach((e,i)=>{
+    const x1hat=bX1X2.b0+bX1X2.b1*x2[i];
+    ctx.strokeStyle=e>=0?a3:a1;ctx.lineWidth=1.5;ctx.globalAlpha=.75;
+    ctx.beginPath();ctx.moveTo(sx(x2[i]),sy(x1hat));ctx.lineTo(sx(x2[i]),sy(x1[i]));ctx.stroke();
+  });
+  ctx.globalAlpha=1;
+  // Datenpunkte
+  x2.forEach((xi,i)=>{
+    ctx.beginPath();ctx.arc(sx(xi),sy(x1[i]),5,0,2*Math.PI);
+    ctx.fillStyle=paper;ctx.fill();ctx.strokeStyle=a5;ctx.lineWidth=1.5;ctx.stroke();
+  });
+  ctx.font='bold 12px DM Mono,monospace';ctx.fillStyle=a5;
+  ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillText('Residuen = e(X₁|X₂)',pad.l+8,pad.t+4);
+}
+
+function drawAvpStep3(ctx,W,H){
+  // Added Variable Plot: e(X₁|X₂) vs e(Y|X₂)
+  const{eX1X2,eYX2,fit}=ST.avp;
+  const sc=makeAdaptiveScales(eX1X2,eYX2,W,H);
+  const{pad,sx,sy,xTicks,yTicks,dx0,dx1}=sc;
+  drawAxes(ctx,pad,W,H,'e(X₁|X₂) — X₁ bereinigt um X₂','e(Y|X₂) — Y bereinigt um X₂',xTicks,yTicks,sx,sy,12);
+  // Nulllinien
+  const ink3=cssVar('--ink3');
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.globalAlpha=.5;
+  ctx.beginPath();ctx.moveTo(pad.l,sy(0));ctx.lineTo(W-pad.r,sy(0));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(sx(0),pad.t);ctx.lineTo(sx(0),H-pad.b);ctx.stroke();
+  ctx.setLineDash([]);ctx.globalAlpha=1;
+  // AVP-Regressionsgerade (= partielles b₁)
+  const a2=cssVar('--a2'),paper=cssVar('--paper');
+  ctx.strokeStyle=a2;ctx.lineWidth=2.5;
+  ctx.beginPath();
+  ctx.moveTo(sx(dx0),sy(fit.b0+fit.b1*dx0));
+  ctx.lineTo(sx(dx1),sy(fit.b0+fit.b1*dx1));
+  ctx.stroke();
+  // Datenpunkte
+  eX1X2.forEach((xi,i)=>{
+    ctx.beginPath();ctx.arc(sx(xi),sy(eYX2[i]),5,0,2*Math.PI);
+    ctx.fillStyle=paper;ctx.fill();ctx.strokeStyle=a2;ctx.lineWidth=1.5;ctx.stroke();
+  });
+  // Slope-Label
+  ctx.font='bold 12px DM Mono,monospace';ctx.fillStyle=a2;
+  ctx.textAlign='right';ctx.textBaseline='top';
+  ctx.fillText('Slope = '+fit.b1.toFixed(3)+' = b₁(mult)',W-pad.r-4,pad.t+4);
+}
+
+function updateMod4Display(){
+  if(!ST.fitBiv||!ST.fitMult||!ST.avp)return;
+  const fmt=v=>isFinite(v)?v.toFixed(3):'—';
+  const{b1:bivB1,beta1:bivBeta,r2:bivR2}=ST.fitBiv;
+  const{b1:parB1,beta1:parBeta,r2:parR2}=ST.fitMult;
+  const{b1:avpB1}=ST.avp.fit;
+  document.getElementById('m4-biv-b1').textContent=fmt(bivB1);
+  document.getElementById('m4-biv-beta').textContent=fmt(bivBeta);
+  document.getElementById('m4-biv-r2').textContent=fmt(bivR2);
+  document.getElementById('m4-par-b1').textContent=fmt(parB1);
+  document.getElementById('m4-par-beta').textContent=fmt(parBeta);
+  document.getElementById('m4-par-r2').textContent=fmt(parR2);
+  document.getElementById('m4-avp-slope').textContent=fmt(avpB1);
+  document.getElementById('m4-diff-b1').textContent=fmt(bivB1-parB1);
+}
+
+function setAvpStep(step){
+  ST.avpStep=step;
+  document.querySelectorAll('.avp-step-btn').forEach(b=>{
+    b.classList.toggle('active',+b.dataset.step===step);
+  });
+  const labels=[
+    'Schritt ① — Bivariates Modell: Y ~ X₁',
+    'Schritt ② — X₂ aus Y herausrechnen: e(Y|X₂)',
+    'Schritt ③ — X₂ aus X₁ herausrechnen: e(X₁|X₂)',
+    'Schritt ④ — Added Variable Plot: e(X₁|X₂) vs e(Y|X₂)'
+  ];
+  const erkls=[
+    'Schritt ① zeigt die <strong>bivariate</strong> Regression Y auf X₁ — wie in Modul ①. Das bivariate b₁ enthält noch den <em>Einfluss von X₂</em>, wenn X₁ und X₂ korreliert sind.',
+    'In Schritt ② wird X₂ aus Y herausgerechnet. Die gestrichelte Linie ist Y&#160;~&#160;X₂. Die farbigen Residuen <em>e(Y|X₂)</em> sind das Y-Signal, das <em>nicht</em> auf X₂ zurückgeht.',
+    'In Schritt ③ wird X₂ auch aus X₁ herausgerechnet. <em>e(X₁|X₂)</em> ist der X₁-Anteil, der <em>unabhängig</em> von X₂ ist — die X₁-Variation, die nicht auf X₂ zurückgeht.',
+    'Der <strong>Added Variable Plot</strong>: e(X₁|X₂) gegen e(Y|X₂). Die Steigung der Regressionsgeraden ist exakt das <em>partielle</em> b₁ aus Y&#160;~&#160;X₁&#160;+&#160;X₂.'
+  ];
+  const lbl=document.getElementById('m4-cv-label');
+  if(lbl)lbl.textContent=labels[step];
+  const erkl=document.getElementById('m4-erkl');
+  if(erkl)erkl.innerHTML=erkls[step];
+  drawMod4();
+}
+
+function setR12(r){
+  ST.r12=r;
+  ST.data=genData(ST.seed,0.60,0.45,r);
+  ST.fitBiv=olsBivariate(ST.data.x1,ST.data.y);
+  ST.fitMult=olsMultiple(ST.data.x1,ST.data.x2,ST.data.y);
+  ST.avp=avpComponents(ST.data.x1,ST.data.x2,ST.data.y);
+  [['scen-r0',0],['scen-r2',0.20],['scen-r5',0.50],['scen-r8',0.80]].forEach(([id,v])=>{
+    const btn=document.getElementById(id);
+    if(btn)btn.classList.toggle('active',Math.abs(v-r)<0.01);
+  });
+  draw();
+}
 
 /* ── Canvas Hilfs-Utilities ───────────────────────────────────────── */
 // Holt CSS-Variable als Farbe
