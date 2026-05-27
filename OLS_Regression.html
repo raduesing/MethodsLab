@@ -513,73 +513,74 @@ input[type=range]::-moz-range-thumb{
         white-space:nowrap"></div>
     </div>
 
-    <!-- Rechtes Panel -->
-    <div style="display:flex;flex-direction:column;gap:.75rem;flex:1;min-width:240px;max-width:400px">
+    <!-- Rechtes Panel: Steuerung | Info nebeneinander -->
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
 
-      <div class="coef-grid g2">
-        <div class="coef-cell">
-          <div class="coef-cell-lbl">b₀</div>
-          <div class="coef-cell-val" id="v-b0">—</div>
-        </div>
-        <div class="coef-cell">
-          <div class="coef-cell-lbl">b₁</div>
-          <div class="coef-cell-val" id="v-b1">—</div>
-        </div>
-        <div class="coef-cell">
-          <div class="coef-cell-lbl">R²</div>
-          <div class="coef-cell-val" id="v-r2">—</div>
-        </div>
-        <div class="coef-cell" title="Summe der quadrierten Residuen">
-          <div class="coef-cell-lbl">RSS</div>
-          <div class="coef-cell-val" id="v-rss">—</div>
-        </div>
-      </div>
+      <!-- Steuerungsspalte -->
+      <div style="width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
 
-      <!-- RSS-Vergleich: Ihre Gerade vs. OLS -->
-      <div>
-        <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-bottom:.45rem">
-          RSS-Vergleich (% von SST)
-        </div>
-        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">
-          <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--a5);width:66px;flex-shrink:0">Ihre Gerade</div>
-          <div style="flex:1;height:13px;background:var(--border);overflow:hidden">
-            <div id="rss-hand-fill" style="height:100%;background:var(--a5);width:80%;transition:width .12s"></div>
+        <div class="coef-grid g2">
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">b₀</div>
+            <div class="coef-cell-val" id="v-b0">—</div>
           </div>
-          <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--a5);width:40px;text-align:right" id="rss-hand-pct">—</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:.5rem">
-          <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--a3);width:66px;flex-shrink:0">OLS (min)</div>
-          <div style="flex:1;height:13px;background:var(--border);overflow:hidden">
-            <div id="rss-ols-fill" style="height:100%;background:var(--a3);width:40%;transition:width .12s"></div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">b₁</div>
+            <div class="coef-cell-val" id="v-b1">—</div>
           </div>
-          <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--a3);width:40px;text-align:right" id="rss-ols-pct">—</div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">R²</div>
+            <div class="coef-cell-val" id="v-r2">—</div>
+          </div>
+          <div class="coef-cell" title="Summe der quadrierten Residuen">
+            <div class="coef-cell-lbl">RSS</div>
+            <div class="coef-cell-val" id="v-rss">—</div>
+          </div>
         </div>
-      </div>
 
-      <!-- Formel -->
-      <div class="erklaer" style="margin-bottom:0">
-        <strong>Modell:</strong><br>
-        <span class="gk gk-hat">Y</span> = <span id="f-b0" style="color:var(--a2)">—</span>
-        + <span id="f-b1" style="color:var(--a2)">—</span> · X₁
-      </div>
+        <!-- RSS-Vergleich: Ihre Gerade vs. OLS -->
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-bottom:.45rem">RSS-Vergleich (% von SST)</div>
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">
+            <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--a5);width:66px;flex-shrink:0">Ihre Gerade</div>
+            <div style="flex:1;height:13px;background:var(--border);overflow:hidden">
+              <div id="rss-hand-fill" style="height:100%;background:var(--a5);width:80%;transition:width .12s"></div>
+            </div>
+            <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--a5);width:40px;text-align:right" id="rss-hand-pct">—</div>
+          </div>
+          <div id="rss-ols-row" style="display:flex;align-items:center;gap:.5rem;opacity:.3;transition:opacity .25s">
+            <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--a3);width:66px;flex-shrink:0">OLS (min)</div>
+            <div style="flex:1;height:13px;background:var(--border);overflow:hidden">
+              <div id="rss-ols-fill" style="height:100%;background:var(--a3);width:0%;transition:width .2s"></div>
+            </div>
+            <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--a3);width:40px;text-align:right" id="rss-ols-pct">—</div>
+          </div>
+        </div>
 
-      <!-- Buttons -->
-      <div class="btn-row" style="margin-bottom:.3rem;flex-wrap:wrap">
-        <button class="btn accent1" id="btn-hand" onclick="toggleHand()">✏ Hand: An</button>
-        <button class="btn" id="btn-show-ols" onclick="toggleShowOLS()">◎ OLS zeigen</button>
-        <button class="btn primary" onclick="snapToOLS()">→ OLS</button>
-      </div>
-      <button class="btn" id="btn-resid" onclick="toggleResiduals()" style="width:100%">
-        ● Residuals: An
-      </button>
+        <!-- Formel -->
+        <div class="erklaer" style="margin-bottom:0">
+          <strong>Modell:</strong><br>
+          <span class="gk gk-hat">Y</span> = <span id="f-b0" style="color:var(--a2)">—</span>
+          + <span id="f-b1" style="color:var(--a2)">—</span> · X₁
+        </div>
 
-      <!-- Infobox -->
-      <div class="info-box">
+        <!-- Buttons -->
+        <div class="btn-row" style="margin-bottom:.3rem;flex-wrap:wrap">
+          <button class="btn accent1" id="btn-hand" onclick="toggleHand()">✏ Hand: An</button>
+          <button class="btn" id="btn-show-ols" onclick="toggleShowOLS()">◎ OLS zeigen</button>
+        </div>
+        <button class="btn" id="btn-resid" onclick="toggleResiduals()" style="width:100%">● Residuals: An</button>
+
+      </div><!-- /Steuerungsspalte -->
+
+      <!-- Info-Spalte -->
+      <div class="info-box" style="flex:1">
         <div class="info-box-h">Das OLS-Minimum</div>
         <p><strong>RSS</strong> = Σeᵢ² = Σ(yᵢ − ŷᵢ)²<br>
-        OLS findet das einzige b₀, b₁, für das Σeᵢ² minimal ist. <em>Keine andere Gerade hat kleinere RSS.</em></p>
-        <p><strong>Gauss-Markov:</strong> Unter den OLS-Annahmen ist dieser Schätzer der BLUE — <em>Best Linear Unbiased Estimator</em> (→ Modul ③).</p>
-        <p><strong>Aufgabe:</strong> Verschiebe deine Gerade möglichst nah an das Minimum heran — dann klicke „→ OLS" und beobachte, wie sich die RSS-Balken angleichen.</p>
+        OLS findet das einzige b₀, b₁, für das Σeᵢ² minimal ist — <em>keine andere Gerade hat kleinere RSS.</em></p>
+        <p><strong>Gauss-Markov-Theorem:</strong> Unter den 5 OLS-Annahmen (→ Modul ③) ist OLS der <em>BLUE</em> — Best Linear Unbiased Estimator. D.h. kein anderer linearer, unverzerrter Schätzer hat kleinere Varianz.</p>
+        <p><strong>Aufgabe:</strong> Schiebe die Anker, bis deine RSS so klein wie möglich ist. Klicke dann „◎ OLS zeigen", um das echte Minimum einzublenden und die Balken zu vergleichen.</p>
+        <p><strong>Warum Quadrate?</strong> Positive und negative Fehler heben sich sonst auf (Σeᵢ = 0 ist trivial erfüllbar). Das Quadrieren bestraft große Ausreißer überproportional stark.</p>
       </div>
 
     </div><!-- rechtes Panel -->
@@ -649,40 +650,45 @@ input[type=range]::-moz-range-thumb{
       </div>
     </div>
 
-    <!-- Rechtes Panel -->
-    <div style="display:flex;flex-direction:column;gap:.75rem;flex:1;min-width:240px;max-width:400px">
+    <!-- Rechtes Panel: Steuerung | Info nebeneinander -->
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
 
-      <div class="coef-grid g3">
-        <div class="coef-cell" title="Erwarteter Y-Wert wenn X = 0">
-          <div class="coef-cell-lbl">b₀</div>
-          <div class="coef-cell-val" id="m2-b0">—</div>
+      <!-- Steuerungsspalte -->
+      <div style="width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+
+        <div class="coef-grid g3">
+          <div class="coef-cell" title="Erwarteter Y-Wert wenn X = 0">
+            <div class="coef-cell-lbl">b₀</div>
+            <div class="coef-cell-val" id="m2-b0">—</div>
+          </div>
+          <div class="coef-cell" title="Änderung von Y pro +1 Einheit X">
+            <div class="coef-cell-lbl">b₁</div>
+            <div class="coef-cell-val" id="m2-b1">—</div>
+          </div>
+          <div class="coef-cell" title="Standardisierter Koeffizient — in SD-Einheiten">
+            <div class="coef-cell-lbl">β</div>
+            <div class="coef-cell-val" id="m2-beta">—</div>
+          </div>
         </div>
-        <div class="coef-cell" title="Änderung von Y pro +1 Einheit X">
-          <div class="coef-cell-lbl">b₁</div>
-          <div class="coef-cell-val" id="m2-b1">—</div>
+
+        <div class="btn-row" style="margin-bottom:0;flex-wrap:wrap">
+          <button class="btn" id="btn-slope" onclick="toggleSlope()">△ Steigung</button>
+          <button class="btn" id="btn-mean-cr" onclick="toggleMeanCr()">✛ Mittelwert</button>
         </div>
-        <div class="coef-cell" title="Standardisierter Koeffizient — in SD-Einheiten">
-          <div class="coef-cell-lbl">β</div>
-          <div class="coef-cell-val" id="m2-beta">—</div>
+
+        <div class="erklaer" style="margin-bottom:0">
+          <strong>b₁:</strong> Pro +1 h Lernzeit steigt die erwartete Note um
+          <span id="m2-b1-val" style="color:var(--a2)">—</span> Punkte.<br>
+          <strong>β = r =</strong> <span id="m2-beta-val" style="color:var(--a2)">—</span>
+          — bivariat gilt stets β = r.<br>
+          <strong>b₀:</strong> Erwartete Note bei 0 h Lernzeit (extrapoliert,
+          inhaltlich oft nicht sinnvoll).
         </div>
-      </div>
 
-      <div class="btn-row" style="margin-bottom:0;flex-wrap:wrap">
-        <button class="btn" id="btn-slope" onclick="toggleSlope()">△ Steigung</button>
-        <button class="btn" id="btn-mean-cr" onclick="toggleMeanCr()">✛ Mittelwert</button>
-      </div>
+      </div><!-- /Steuerungsspalte -->
 
-      <div class="erklaer" style="margin-bottom:0">
-        <strong>b₁:</strong> Pro +1 h Lernzeit steigt die erwartete Note um
-        <span id="m2-b1-val" style="color:var(--a2)">—</span> Punkte.<br>
-        <strong>β = r =</strong> <span id="m2-beta-val" style="color:var(--a2)">—</span>
-        — bivariat gilt stets β = r.<br>
-        <strong>b₀:</strong> Erwartete Note bei 0 h Lernzeit (extrapoliert,
-        inhaltlich oft nicht sinnvoll).
-      </div>
-
-      <!-- Infobox -->
-      <div class="info-box">
+      <!-- Info-Spalte -->
+      <div class="info-box" style="flex:1">
         <div class="info-box-h">Interpretation: Klausur-Beispiel</div>
         <p><strong>b₁ = <span id="m2-info-b1">—</span></strong><br>
         Pro +1 h Lernzeit: +<span id="m2-info-b1b">—</span> Punkte (erwartet).</p>
@@ -693,7 +699,7 @@ input[type=range]::-moz-range-thumb{
         <p>Schwerpunkt: (<span id="m2-info-mx">—</span> h | <span id="m2-info-my">—</span> Pkt) — die Gerade läuft <em>immer</em> durch diesen Punkt.</p>
       </div>
 
-    </div>
+    </div><!-- rechtes Panel -->
   </div><!-- cv-row -->
 
   <!-- Formel-Erklärer -->
@@ -746,59 +752,64 @@ input[type=range]::-moz-range-thumb{
       </div>
     </div>
 
-    <!-- Rechtes Panel -->
-    <div style="display:flex;flex-direction:column;gap:.75rem;flex:1;min-width:240px;max-width:400px">
+    <!-- Rechtes Panel: Steuerung | Info nebeneinander -->
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
 
-      <!-- Modus-Toggle -->
-      <div class="btn-row" style="margin-bottom:0">
-        <button class="btn primary" id="btn-m3-sst" onclick="setVarMode('SST')">SST</button>
-        <button class="btn" id="btn-m3-sse" onclick="setVarMode('SSE')">SSR + SSE</button>
-      </div>
+      <!-- Steuerungsspalte -->
+      <div style="width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
 
-      <!-- Varianzzerlegungsbalken -->
-      <div>
-        <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-bottom:.3rem">
-          SST = SSR + SSE
+        <!-- Modus-Toggle -->
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="btn primary" id="btn-m3-sst" onclick="setVarMode('SST')">SST</button>
+          <button class="btn" id="btn-m3-sse" onclick="setVarMode('SSE')">SSR + SSE</button>
         </div>
-        <div class="var-bar">
-          <div class="var-seg ssr" id="m3-ssr-seg" style="width:50%">SSR</div>
-          <div class="var-seg sse" id="m3-sse-seg" style="width:50%">SSE</div>
-        </div>
-        <div style="display:flex;justify-content:space-between;
-          font-family:'DM Mono',monospace;font-size:.62rem;margin-top:.25rem">
-          <span style="color:var(--a3)" id="m3-ssr-lbl">SSR = —</span>
-          <span style="color:var(--a1)" id="m3-sse-lbl">SSE = —</span>
-        </div>
-      </div>
 
-      <!-- Kennwerte -->
-      <div class="coef-grid g2">
-        <div class="coef-cell">
-          <div class="coef-cell-lbl">R²</div>
-          <div class="coef-cell-val" id="m3-r2">—</div>
+        <!-- Varianzzerlegungsbalken -->
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-bottom:.3rem">
+            SST = SSR + SSE
+          </div>
+          <div class="var-bar">
+            <div class="var-seg ssr" id="m3-ssr-seg" style="width:50%">SSR</div>
+            <div class="var-seg sse" id="m3-sse-seg" style="width:50%">SSE</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;
+            font-family:'DM Mono',monospace;font-size:.62rem;margin-top:.25rem">
+            <span style="color:var(--a3)" id="m3-ssr-lbl">SSR = —</span>
+            <span style="color:var(--a1)" id="m3-sse-lbl">SSE = —</span>
+          </div>
         </div>
-        <div class="coef-cell">
-          <div class="coef-cell-lbl">adj. R²</div>
-          <div class="coef-cell-val" id="m3-adjr2">—</div>
-        </div>
-        <div class="coef-cell">
-          <div class="coef-cell-lbl">f²</div>
-          <div class="coef-cell-val" id="m3-f2">—</div>
-        </div>
-        <div class="coef-cell">
-          <div class="coef-cell-lbl">r (Pearson)</div>
-          <div class="coef-cell-val" id="m3-r">—</div>
-        </div>
-      </div>
 
-      <div class="erklaer" style="margin-bottom:0">
-        <strong>R²</strong> = <span id="m3-r2-pct">—</span>% der Gesamtvarianz
-        in Y werden durch X₁ erklärt.<br>
-        <strong>f²</strong> = R²/(1−R²): &nbsp;klein ≥ .02 · mittel ≥ .15 · groß ≥ .35
-      </div>
+        <!-- Kennwerte -->
+        <div class="coef-grid g2">
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">R²</div>
+            <div class="coef-cell-val" id="m3-r2">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">adj. R²</div>
+            <div class="coef-cell-val" id="m3-adjr2">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">f²</div>
+            <div class="coef-cell-val" id="m3-f2">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">r (Pearson)</div>
+            <div class="coef-cell-val" id="m3-r">—</div>
+          </div>
+        </div>
 
-      <!-- Infobox -->
-      <div class="info-box">
+        <div class="erklaer" style="margin-bottom:0">
+          <strong>R²</strong> = <span id="m3-r2-pct">—</span>% der Gesamtvarianz
+          in Y werden durch X₁ erklärt.<br>
+          <strong>f²</strong> = R²/(1−R²): &nbsp;klein ≥ .02 · mittel ≥ .15 · groß ≥ .35
+        </div>
+
+      </div><!-- /Steuerungsspalte -->
+
+      <!-- Info-Spalte -->
+      <div class="info-box" style="flex:1">
         <div class="info-box-h">Varianzkomponenten: Klausur-Daten</div>
         <p><strong>SST = <span id="m3-info-sst">—</span></strong><br>
         Gesamtvarianz in Y (Abstände der Datenpunkte von ȳ).</p>
@@ -810,7 +821,7 @@ input[type=range]::-moz-range-thumb{
         (Cohen 1988: .02 klein · .15 mittel · .35 groß)</p>
       </div>
 
-    </div>
+    </div><!-- rechtes Panel -->
   </div><!-- cv-row -->
 
   <!-- OLS-Annahmen Akkordion -->
@@ -905,74 +916,79 @@ input[type=range]::-moz-range-thumb{
       </div>
     </div>
 
-    <!-- Rechtes Panel -->
-    <div style="display:flex;flex-direction:column;gap:.75rem;flex:1;min-width:240px;max-width:400px">
+    <!-- Rechtes Panel: Steuerung | Info nebeneinander -->
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
 
-      <!-- Schritt-Buttons -->
-      <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3)">Schritt</div>
-      <div class="btn-row" style="flex-wrap:wrap;gap:.4rem;margin-bottom:0">
-        <button class="btn avp-step-btn active" data-step="0" onclick="setAvpStep(0)"><span class="tab-num">①</span> Bivariat</button>
-        <button class="btn avp-step-btn" data-step="1" onclick="setAvpStep(1)"><span class="tab-num">②</span> e(Y|X₂)</button>
-        <button class="btn avp-step-btn" data-step="2" onclick="setAvpStep(2)"><span class="tab-num">③</span> e(X₁|X₂)</button>
-        <button class="btn avp-step-btn" data-step="3" onclick="setAvpStep(3)"><span class="tab-num">④</span> AVP</button>
-      </div>
+      <!-- Steuerungsspalte -->
+      <div style="width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
 
-      <!-- r₁₂-Szenarien -->
-      <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.2rem">Korrelation X₁↔X₂</div>
-      <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:0">
-        <button class="scen-btn" id="scen-r0" onclick="setR12(0)">r = .00</button>
-        <button class="scen-btn active" id="scen-r2" onclick="setR12(0.20)">r = .20</button>
-        <button class="scen-btn" id="scen-r5" onclick="setR12(0.50)">r = .50</button>
-        <button class="scen-btn" id="scen-r8" onclick="setR12(0.80)">r = .80</button>
-      </div>
-
-      <!-- Koeffizientenvergleich -->
-      <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.2rem">Koeffizientenvergleich</div>
-      <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.77rem">
-        <thead>
-          <tr>
-            <th style="text-align:left;color:var(--ink3);padding:.25rem .3rem;border-bottom:1px solid var(--border);font-weight:400">Modell</th>
-            <th style="text-align:right;color:var(--ink3);padding:.25rem .3rem;border-bottom:1px solid var(--border);font-weight:400">b₁</th>
-            <th style="text-align:right;color:var(--ink3);padding:.25rem .3rem;border-bottom:1px solid var(--border);font-weight:400">β₁</th>
-            <th style="text-align:right;color:var(--ink3);padding:.25rem .3rem;border-bottom:1px solid var(--border);font-weight:400">R²</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="padding:.25rem .3rem;color:var(--ink2)">Bivariat</td>
-            <td id="m4-biv-b1" style="text-align:right;padding:.25rem .3rem;color:var(--ink)">—</td>
-            <td id="m4-biv-beta" style="text-align:right;padding:.25rem .3rem;color:var(--ink)">—</td>
-            <td id="m4-biv-r2" style="text-align:right;padding:.25rem .3rem;color:var(--ink)">—</td>
-          </tr>
-          <tr>
-            <td style="padding:.25rem .3rem;color:var(--ink2)">Partiell</td>
-            <td id="m4-par-b1" style="text-align:right;padding:.25rem .3rem;color:var(--a2);font-weight:600">—</td>
-            <td id="m4-par-beta" style="text-align:right;padding:.25rem .3rem;color:var(--a2);font-weight:600">—</td>
-            <td id="m4-par-r2" style="text-align:right;padding:.25rem .3rem;color:var(--a2);font-weight:600">—</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <!-- AVP-Slope + Δb₁ -->
-      <div class="coef-grid g2">
-        <div class="coef-cell" title="Steigung der AVP-Regressionslinie = partielles b₁">
-          <div class="coef-cell-lbl">AVP-Slope</div>
-          <div class="coef-cell-val" id="m4-avp-slope">—</div>
+        <!-- Schritt-Buttons -->
+        <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3)">Schritt</div>
+        <div class="btn-row" style="flex-wrap:wrap;gap:.4rem;margin-bottom:0">
+          <button class="btn avp-step-btn active" data-step="0" onclick="setAvpStep(0)"><span class="tab-num">①</span> Bivariat</button>
+          <button class="btn avp-step-btn" data-step="1" onclick="setAvpStep(1)"><span class="tab-num">②</span> e(Y|X₂)</button>
+          <button class="btn avp-step-btn" data-step="2" onclick="setAvpStep(2)"><span class="tab-num">③</span> e(X₁|X₂)</button>
+          <button class="btn avp-step-btn" data-step="3" onclick="setAvpStep(3)"><span class="tab-num">④</span> AVP</button>
         </div>
-        <div class="coef-cell" title="Bivariates b₁ minus partielles b₁">
-          <div class="coef-cell-lbl">Δb₁</div>
-          <div class="coef-cell-val" id="m4-diff-b1">—</div>
+
+        <!-- r₁₂-Szenarien -->
+        <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.2rem">Korrelation X₁↔X₂</div>
+        <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:0">
+          <button class="scen-btn" id="scen-r0" onclick="setR12(0)">r = .00</button>
+          <button class="scen-btn active" id="scen-r2" onclick="setR12(0.20)">r = .20</button>
+          <button class="scen-btn" id="scen-r5" onclick="setR12(0.50)">r = .50</button>
+          <button class="scen-btn" id="scen-r8" onclick="setR12(0.80)">r = .80</button>
         </div>
-      </div>
 
-      <!-- Schritt-Erklärer -->
-      <div class="erklaer" id="m4-erkl" style="margin-bottom:0;min-height:5rem">
-        Schritt ① zeigt die <strong>bivariate</strong> Regression Y auf X₁ — wie in Modul ①.
-        Das bivariate b₁ enthält noch den <em>Einfluss von X₂</em>, wenn X₁ und X₂ korreliert sind.
-      </div>
+        <!-- Koeffizientenvergleich -->
+        <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.2rem">Koeffizientenvergleich</div>
+        <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.77rem">
+          <thead>
+            <tr>
+              <th style="text-align:left;color:var(--ink3);padding:.25rem .3rem;border-bottom:1px solid var(--border);font-weight:400">Modell</th>
+              <th style="text-align:right;color:var(--ink3);padding:.25rem .3rem;border-bottom:1px solid var(--border);font-weight:400">b₁</th>
+              <th style="text-align:right;color:var(--ink3);padding:.25rem .3rem;border-bottom:1px solid var(--border);font-weight:400">β₁</th>
+              <th style="text-align:right;color:var(--ink3);padding:.25rem .3rem;border-bottom:1px solid var(--border);font-weight:400">R²</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:.25rem .3rem;color:var(--ink2)">Bivariat</td>
+              <td id="m4-biv-b1" style="text-align:right;padding:.25rem .3rem;color:var(--ink)">—</td>
+              <td id="m4-biv-beta" style="text-align:right;padding:.25rem .3rem;color:var(--ink)">—</td>
+              <td id="m4-biv-r2" style="text-align:right;padding:.25rem .3rem;color:var(--ink)">—</td>
+            </tr>
+            <tr>
+              <td style="padding:.25rem .3rem;color:var(--ink2)">Partiell</td>
+              <td id="m4-par-b1" style="text-align:right;padding:.25rem .3rem;color:var(--a2);font-weight:600">—</td>
+              <td id="m4-par-beta" style="text-align:right;padding:.25rem .3rem;color:var(--a2);font-weight:600">—</td>
+              <td id="m4-par-r2" style="text-align:right;padding:.25rem .3rem;color:var(--a2);font-weight:600">—</td>
+            </tr>
+          </tbody>
+        </table>
 
-      <!-- Infobox -->
-      <div class="info-box">
+        <!-- AVP-Slope + Δb₁ -->
+        <div class="coef-grid g2">
+          <div class="coef-cell" title="Steigung der AVP-Regressionslinie = partielles b₁">
+            <div class="coef-cell-lbl">AVP-Slope</div>
+            <div class="coef-cell-val" id="m4-avp-slope">—</div>
+          </div>
+          <div class="coef-cell" title="Bivariates b₁ minus partielles b₁">
+            <div class="coef-cell-lbl">Δb₁</div>
+            <div class="coef-cell-val" id="m4-diff-b1">—</div>
+          </div>
+        </div>
+
+        <!-- Schritt-Erklärer -->
+        <div class="erklaer" id="m4-erkl" style="margin-bottom:0;min-height:5rem">
+          Schritt ① zeigt die <strong>bivariate</strong> Regression Y auf X₁ — wie in Modul ①.
+          Das bivariate b₁ enthält noch den <em>Einfluss von X₂</em>, wenn X₁ und X₂ korreliert sind.
+        </div>
+
+      </div><!-- /Steuerungsspalte -->
+
+      <!-- Info-Spalte -->
+      <div class="info-box" style="flex:1">
         <div class="info-box-h">Konfundierung &amp; partieller Effekt</div>
         <p>Korrelation X₁↔X₂ = <strong><span id="m4-info-r12">—</span></strong></p>
         <p>bivariat: b₁ = <span id="m4-info-biv" style="color:var(--ink)">—</span><br>
@@ -1461,12 +1477,15 @@ function updateMod1Display(b0,b1,isHand){
   const olsPct=Math.min(100,olsRss/sst*100);
   const hf=document.getElementById('rss-hand-fill');
   if(hf)hf.style.width=handPct+'%';
-  const of=document.getElementById('rss-ols-fill');
-  if(of)of.style.width=olsPct+'%';
   const hp=document.getElementById('rss-hand-pct');
   if(hp)hp.textContent=handPct.toFixed(1)+'%';
+  // OLS-Balken: erst sichtbar wenn ST.showOLS aktiv
+  const olsRow=document.getElementById('rss-ols-row');
+  if(olsRow)olsRow.style.opacity=ST.showOLS?'1':'0.3';
+  const of=document.getElementById('rss-ols-fill');
+  if(of)of.style.width=ST.showOLS?olsPct+'%':'0%';
   const op=document.getElementById('rss-ols-pct');
-  if(op)op.textContent=olsPct.toFixed(1)+'%';
+  if(op)op.textContent=ST.showOLS?olsPct.toFixed(1)+'%':'—';
 
   // Koeffizienten hervorheben wenn Hand aktiv
   ['v-b0','v-b1'].forEach(id=>{
