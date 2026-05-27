@@ -1357,7 +1357,8 @@ const ST={
   m3mode:'SST',showBenchmark:false,
   // Modul 4
   r12:0.20,           // Korrelation X1↔X2 (für Szenarien)
-  avpStep:0,          // 0=Ausgangslage,1=eY|X2,2=eX1|X2,3=AVP-Slope
+  avpStep:0,          // 0=Ausgangslage,1=eY|X2,2=eX1|X2,3=AVP-Slope,4=3D
+  rot3d:{az:-0.55,el:0.38,dragging:false,lastX:0,lastY:0},
 };
 
 /* ── Initialisierung & Daten ──────────────────────────────────────── */
@@ -2082,137 +2083,168 @@ function drawAvpStep3(ctx,W,H){
 }
 
 function drawAvpStep4(ctx,W,H){
-  // 3D-Regressionsfläche: isometrische Projektion
+  // 3D-Regressionsfläche mit drehbarer Projektion
   if(!ST.fitMult||!ST.data)return;
   const{b0,b1,b2,r2}=ST.fitMult;
   const{x1,x2,y}=ST.data;
 
-  // Datenbereiche
-  const x1min=Math.min(...x1),x1max=Math.max(...x1);
-  const x2min=Math.min(...x2),x2max=Math.max(...x2);
-  const ymin=Math.min(...y),ymax=Math.max(...y);
-  const pad3=0.07;
-  const X1LO=x1min-(x1max-x1min)*pad3, X1HI=x1max+(x1max-x1min)*pad3;
-  const X2LO=x2min-(x2max-x2min)*pad3, X2HI=x2max+(x2max-x2min)*pad3;
-  const yhat=x1.map((v,i)=>b0+b1*v+b2*x2[i]);
-  const allY=[...y,...yhat];
-  const YMIN=Math.min(...allY)-(ymax-ymin)*0.10;
-  const YMAX=Math.max(...allY)+(ymax-ymin)*0.10;
+  // ── 1. Datenbereiche + Normierung auf [-0.5, 0.5] ──────────────────
+  const ext=(arr,p)=>{const mn=Math.min(...arr),mx=Math.max(...arr),r=mx-mn;return[mn-r*p,mx+r*p];};
+  const[X1lo,X1hi]=ext(x1,0.08), [X2lo,X2hi]=ext(x2,0.08);
+  const yhats=x1.map((v,i)=>b0+b1*v+b2*x2[i]);
+  const[Ylo,Yhi]=ext([...y,...yhats],0.12);
+  const n1=v=>(v-X1lo)/(X1hi-X1lo)-0.5;  // X₁ → world-X (rechts)
+  const n2=v=>(v-X2lo)/(X2hi-X2lo)-0.5;  // X₂ → world-Z (Tiefe)
+  const n3=v=>(v-Ylo)/(Yhi-Ylo)-0.5;     // Y  → world-Y (oben)
 
-  // Normierung [0,1]
-  const nx=v=>(v-X1LO)/(X1HI-X1LO);
-  const nw=v=>(v-X2LO)/(X2HI-X2LO);
-  const ny=v=>(v-YMIN)/(YMAX-YMIN);
+  // ── 2. Drehbare orthografische Projektion ──────────────────────────
+  const{az,el}=ST.rot3d;
+  const ca=Math.cos(az),sa=Math.sin(az),ce=Math.cos(el),se=Math.sin(el);
+  const cx=W*0.5, cy=H*0.51, sc=Math.min(W,H)*0.63;
 
-  // Isometrische Projektion
-  const OX=W*0.42, OY=H*0.87;
-  const A1=-12*Math.PI/180, A2=202*Math.PI/180;
-  const S1=290, S2=160, S3=H*0.70;
-
-  function p3(n1,n2,n3){
-    return[
-      OX+n1*S1*Math.cos(A1)+n2*S2*Math.cos(A2),
-      OY-n3*S3+n1*S1*Math.sin(A1)+n2*S2*Math.sin(A2)
-    ];
+  function proj(wx,wy,wz){
+    // Azimut: Drehung um Y-Achse
+    const rx=ca*wx+sa*wz, rz=-sa*wx+ca*wz;
+    // Elevation: Neigung um X-Achse
+    const ry2=ce*wy-se*rz, rz2=se*wy+ce*rz;
+    return{px:cx+rx*sc, py:cy-ry2*sc, depth:rz2};
   }
 
-  // Farben
-  const ink=cssVar('--ink'), ink2=cssVar('--ink2'), ink3=cssVar('--ink3');
-  const paper=cssVar('--paper');
+  // ── 3. Farben ──────────────────────────────────────────────────────
+  const ink=cssVar('--ink'),ink2=cssVar('--ink2'),ink3=cssVar('--ink3'),paper=cssVar('--paper');
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const pfill =isDark?'rgba(74,176,216,0.20)':'rgba(28,115,148,0.16)';
+  const pstroke=isDark?'rgba(74,176,216,0.52)':'rgba(28,115,148,0.44)';
+  const floorBg=isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.05)';
 
-  // ① Bodengitter (gestrichelt)
-  ctx.setLineDash([3,4]);
-  ctx.strokeStyle=ink3; ctx.lineWidth=0.6; ctx.globalAlpha=0.35;
-  for(let i=0;i<=5;i++){
-    const t=i/5;
-    const[ax,ay]=p3(t,0,0),[bx,by]=p3(t,1,0);
-    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.stroke();
-    const[cx,cy]=p3(0,t,0),[dx,dy]=p3(1,t,0);
-    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(dx,dy);ctx.stroke();
+  // ── 4. Boden: Füllung + Kanten ────────────────────────────────────
+  const fc=[
+    proj(-0.5,-0.5,-0.5),proj( 0.5,-0.5,-0.5),
+    proj( 0.5,-0.5, 0.5),proj(-0.5,-0.5, 0.5)
+  ];
+  ctx.beginPath();
+  fc.forEach((p,i)=>i?ctx.lineTo(p.px,p.py):ctx.moveTo(p.px,p.py));
+  ctx.closePath();
+  ctx.fillStyle=floorBg; ctx.fill();
+  ctx.strokeStyle=ink3; ctx.lineWidth=1.1; ctx.globalAlpha=0.55; ctx.stroke();
+  ctx.globalAlpha=1;
+
+  // Boden-Gitter 5×5
+  ctx.setLineDash([2,4]); ctx.strokeStyle=ink3; ctx.lineWidth=0.5; ctx.globalAlpha=0.30;
+  for(let k=1;k<=4;k++){
+    const t=k/5-0.5;
+    let a=proj(t,-0.5,-0.5),b=proj(t,-0.5,0.5);
+    ctx.beginPath();ctx.moveTo(a.px,a.py);ctx.lineTo(b.px,b.py);ctx.stroke();
+    a=proj(-0.5,-0.5,t);b=proj(0.5,-0.5,t);
+    ctx.beginPath();ctx.moveTo(a.px,a.py);ctx.lineTo(b.px,b.py);ctx.stroke();
   }
   ctx.setLineDash([]);ctx.globalAlpha=1;
 
-  // ② Regressionsfläche (von hinten nach vorne: hohe X₂-Werte zuerst)
-  const NX=10, NW=6;
-  for(let j=NW-1;j>=0;j--){
-    for(let i=0;i<NX;i++){
-      const x1a=X1LO+(i/NX)*(X1HI-X1LO), x1b=X1LO+((i+1)/NX)*(X1HI-X1LO);
-      const x2a=X2LO+(j/NW)*(X2HI-X2LO), x2b=X2LO+((j+1)/NW)*(X2HI-X2LO);
-      const[ax,ay]=p3(i/NX,     j/NW,     ny(b0+b1*x1a+b2*x2a));
-      const[bx,by]=p3((i+1)/NX, j/NW,     ny(b0+b1*x1b+b2*x2a));
-      const[cx,cy]=p3((i+1)/NX, (j+1)/NW, ny(b0+b1*x1b+b2*x2b));
-      const[dx,dy]=p3(i/NX,     (j+1)/NW, ny(b0+b1*x1a+b2*x2b));
-      ctx.beginPath();
-      ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.lineTo(cx,cy);ctx.lineTo(dx,dy);
-      ctx.closePath();
-      ctx.fillStyle='rgba(74,176,216,0.16)';ctx.fill();
-      ctx.strokeStyle='rgba(74,176,216,0.33)';ctx.lineWidth=0.6;ctx.stroke();
+  // ── 5. Regressionsfläche: Quads depth-sorted ──────────────────────
+  const NX=14,NW=14;
+  const quads=[];
+  for(let i=0;i<NX;i++){
+    for(let j=0;j<NW;j++){
+      const xA=X1lo+(i/NX)*(X1hi-X1lo),   xB=X1lo+((i+1)/NX)*(X1hi-X1lo);
+      const zA=X2lo+(j/NW)*(X2hi-X2lo),   zB=X2lo+((j+1)/NW)*(X2hi-X2lo);
+      const pA=proj(n1(xA),n3(b0+b1*xA+b2*zA),n2(zA));
+      const pB=proj(n1(xB),n3(b0+b1*xB+b2*zA),n2(zA));
+      const pC=proj(n1(xB),n3(b0+b1*xB+b2*zB),n2(zB));
+      const pD=proj(n1(xA),n3(b0+b1*xA+b2*zB),n2(zB));
+      quads.push({pA,pB,pC,pD,d:(pA.depth+pB.depth+pC.depth+pD.depth)/4});
     }
   }
-
-  // ③ Datenpunkte + Residuallinien
-  x1.forEach((xi,i)=>{
-    const wi=x2[i], yi=y[i];
-    const yhati=b0+b1*xi+b2*wi;
-    const resid=yi-yhati;
-    const[px,py]=p3(nx(xi),nw(wi),ny(yi));
-    const[qx,qy]=p3(nx(xi),nw(wi),ny(yhati));
-    ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(qx,qy);
-    ctx.strokeStyle=resid>=0?'rgba(76,175,80,0.75)':'rgba(229,57,53,0.75)';
-    ctx.lineWidth=1.3;ctx.setLineDash([2,2]);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.beginPath();ctx.arc(px,py,4.5,0,2*Math.PI);
-    ctx.fillStyle=paper;ctx.fill();
-    ctx.strokeStyle=resid>=0?'#4caf50':'#e53935';
-    ctx.lineWidth=1.6;ctx.stroke();
+  quads.sort((a,b)=>b.d-a.d);
+  quads.forEach(({pA,pB,pC,pD})=>{
+    ctx.beginPath();
+    ctx.moveTo(pA.px,pA.py);ctx.lineTo(pB.px,pB.py);
+    ctx.lineTo(pC.px,pC.py);ctx.lineTo(pD.px,pD.py);
+    ctx.closePath();
+    ctx.fillStyle=pfill;ctx.fill();
+    ctx.strokeStyle=pstroke;ctx.lineWidth=0.65;ctx.stroke();
   });
 
-  // ④ Achsen
-  ctx.lineWidth=1.8;
-  // Y-Achse
-  const[yb0x,yb0y]=p3(0,0,0),[yb1x,yb1y]=p3(0,0,1);
-  ctx.beginPath();ctx.moveTo(yb0x,yb0y);ctx.lineTo(yb1x,yb1y);
-  ctx.strokeStyle=ink;ctx.stroke();
-  ctx.font='bold 11px DM Mono,monospace';ctx.fillStyle=ink;
-  ctx.textAlign='center';ctx.fillText('Y (Note)',yb1x,yb1y-10);
-  // X₁-Achse
-  const[x1b1x,x1b1y]=p3(1,0,0);
-  ctx.beginPath();ctx.moveTo(yb0x,yb0y);ctx.lineTo(x1b1x,x1b1y);
-  ctx.strokeStyle=ink;ctx.stroke();
-  ctx.textAlign='left';ctx.fillText('X₁ (Lernzeit)',x1b1x+4,x1b1y);
-  // X₂-Achse
-  const[x2b1x,x2b1y]=p3(0,1,0);
-  ctx.beginPath();ctx.moveTo(yb0x,yb0y);ctx.lineTo(x2b1x,x2b1y);
-  ctx.strokeStyle=ink;ctx.stroke();
-  ctx.textAlign='right';ctx.fillText('X₂ (Schlaf)',x2b1x-4,x2b1y);
+  // ── 6. Datenpunkte + Residuallinien, depth-sorted ─────────────────
+  const pts=x1.map((xi,i)=>{
+    const wi=x2[i],yi=y[i],yhi=b0+b1*xi+b2*wi,res=yi-yhi;
+    return{pp:proj(n1(xi),n3(yi),n2(wi)),ph:proj(n1(xi),n3(yhi),n2(wi)),res};
+  });
+  pts.sort((a,b)=>b.pp.depth-a.pp.depth);
 
-  // ⑤ Achsen-Tick-Labels
+  pts.forEach(({pp,ph,res})=>{
+    const gcol=res>=0?'rgba(76,175,80,0.78)':'rgba(229,57,53,0.78)';
+    const scol=res>=0?'#4caf50':'#e53935';
+    // Residuallinie (gestrichelt)
+    ctx.beginPath();ctx.moveTo(pp.px,pp.py);ctx.lineTo(ph.px,ph.py);
+    ctx.strokeStyle=gcol;ctx.lineWidth=1.4;ctx.setLineDash([2,2]);ctx.stroke();
+    ctx.setLineDash([]);
+    // Fußpunkt auf Fläche
+    ctx.beginPath();ctx.arc(ph.px,ph.py,2.8,0,2*Math.PI);
+    ctx.fillStyle=gcol;ctx.fill();
+    // Datenpunkt
+    ctx.beginPath();ctx.arc(pp.px,pp.py,5.5,0,2*Math.PI);
+    ctx.fillStyle=paper;ctx.fill();
+    ctx.strokeStyle=scol;ctx.lineWidth=2;ctx.stroke();
+  });
+
+  // ── 7. Achsen mit Pfeilen ──────────────────────────────────────────
+  const orig=proj(-0.5,-0.5,-0.5);
+  const ax1e=proj( 0.52,-0.5,-0.5);
+  const ax2e=proj(-0.5,-0.5, 0.52);
+  const aye =proj(-0.5, 0.55,-0.5);
+
+  function drawArrow(a,b,color){
+    ctx.beginPath();ctx.moveTo(a.px,a.py);ctx.lineTo(b.px,b.py);
+    ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+    const dx=b.px-a.px,dy=b.py-a.py,len=Math.sqrt(dx*dx+dy*dy);
+    if(len<1)return;
+    const ux=dx/len,uy=dy/len;
+    ctx.beginPath();
+    ctx.moveTo(b.px,b.py);
+    ctx.lineTo(b.px-9*ux+4*uy,b.py-9*uy-4*ux);
+    ctx.lineTo(b.px-9*ux-4*uy,b.py-9*uy+4*ux);
+    ctx.closePath();ctx.fillStyle=color;ctx.fill();
+  }
+  drawArrow(orig,ax1e,ink);
+  drawArrow(orig,ax2e,ink);
+  drawArrow(orig,aye,ink);
+
+  // Achsenbeschriftungen
+  ctx.font='bold 12px DM Mono,monospace';ctx.fillStyle=ink2;
+  ctx.textAlign='left'; ctx.fillText('X₁ (Lernzeit)',ax1e.px+7,ax1e.py+1);
+  ctx.textAlign='right';ctx.fillText('X₂ (Schlaf)',  ax2e.px-7,ax2e.py+2);
+  ctx.textAlign='center';ctx.fillText('Y (Note)',      aye.px,   aye.py-13);
+
+  // Tick-Labels
   ctx.font='10px DM Mono,monospace';ctx.fillStyle=ink3;
   [0,0.5,1].forEach(t=>{
-    const xv=X1LO+t*(X1HI-X1LO);
-    const[tx,ty]=p3(t,0,0);
-    ctx.textAlign='center';ctx.fillText(xv.toFixed(0),tx,ty+13);
+    const v=X1lo+t*(X1hi-X1lo);
+    const p=proj(t-0.5,-0.5,-0.5);
+    ctx.textAlign='center';ctx.fillText(v.toFixed(0),p.px,p.py+13);
   });
   [0,0.5,1].forEach(t=>{
-    const wv=X2LO+t*(X2HI-X2LO);
-    const[tx,ty]=p3(0,t,0);
-    ctx.textAlign='right';ctx.fillText(wv.toFixed(0),tx-5,ty+4);
+    const v=X2lo+t*(X2hi-X2lo);
+    const p=proj(-0.5,-0.5,t-0.5);
+    ctx.textAlign='right';ctx.fillText(v.toFixed(0),p.px-6,p.py+3);
   });
   [0,0.5,1].forEach(t=>{
-    const yv=YMIN+t*(YMAX-YMIN);
-    const[tx,ty]=p3(0,0,t);
-    ctx.textAlign='right';ctx.fillText(yv.toFixed(0),tx-5,ty+4);
+    const v=Ylo+t*(Yhi-Ylo);
+    const p=proj(-0.5,t-0.5,-0.5);
+    ctx.textAlign='right';ctx.fillText(v.toFixed(0),p.px-6,p.py+4);
   });
 
-  // ⑥ Modelltitel & Koeffizienten
-  const fmtCoef=v=>v>=0?'+'+v.toFixed(2):v.toFixed(2);
+  // ── 8. Formel + R² ────────────────────────────────────────────────
+  const fc2=v=>(v>=0?'+':'')+v.toFixed(2);
   ctx.font='bold 12px DM Mono,monospace';ctx.fillStyle=ink2;ctx.textAlign='left';
-  ctx.fillText('Ŷ = '+b0.toFixed(1)+' '+fmtCoef(b1)+'·X₁ '+fmtCoef(b2)+'·X₂     R² = '+r2.toFixed(3),10,18);
+  ctx.fillText('Ŷ = '+b0.toFixed(1)+' '+fc2(b1)+'·X₁ '+fc2(b2)+'·X₂    R² = '+r2.toFixed(3),10,18);
 
-  // ⑦ Legende
+  // ── 9. Legende + Drag-Hinweis ─────────────────────────────────────
   ctx.font='11px DM Mono,monospace';
-  ctx.fillStyle='#4caf50';ctx.fillText('● Positives Residuum',10,H-30);
-  ctx.fillStyle='#e53935';ctx.fillText('● Negatives Residuum',10,H-16);
+  ctx.fillStyle='#4caf50';ctx.textAlign='left';ctx.fillText('● Positives Residuum',10,H-36);
+  ctx.fillStyle='#e53935';ctx.fillText('● Negatives Residuum',10,H-22);
+  ctx.fillStyle=ink3;ctx.textAlign='right';
+  ctx.font='10px DM Mono,monospace';
+  ctx.fillText('Ziehen: drehen  ·  Doppelklick: zurücksetzen',W-10,H-8);
 }
 
 function updateMod4Display(){
@@ -2292,6 +2324,9 @@ function setAvpStep(step){
   if(erkl)erkl.innerHTML=erkls[step];
   const guide=document.getElementById('m4-info-step');
   if(guide)guide.innerHTML=stepGuide[step];
+  // Cursor für 3D-Drag
+  const cvAvp=document.getElementById('cv-avp');
+  if(cvAvp)cvAvp.style.cursor=step===4?'grab':'default';
   drawMod4();
 }
 
@@ -2370,9 +2405,61 @@ function toggleAcc(trigger){
   body.classList.toggle('open');
 }
 
+/* ── Modul 4: 3D-Drag-Rotation ────────────────────────────────────── */
+function initMod4Drag(){
+  const cv=document.getElementById('cv-avp');
+  if(!cv)return;
+
+  function startDrag(clientX,clientY){
+    if(ST.avpStep!==4)return false;
+    ST.rot3d.dragging=true;
+    ST.rot3d.lastX=clientX; ST.rot3d.lastY=clientY;
+    cv.style.cursor='grabbing';
+    return true;
+  }
+  function moveDrag(clientX,clientY){
+    if(!ST.rot3d.dragging)return;
+    const dx=clientX-ST.rot3d.lastX, dy=clientY-ST.rot3d.lastY;
+    ST.rot3d.az-=dx*0.007;
+    ST.rot3d.el=Math.max(-1.45,Math.min(1.45,ST.rot3d.el+dy*0.007));
+    ST.rot3d.lastX=clientX; ST.rot3d.lastY=clientY;
+    if(ST.avpStep===4)drawMod4();
+  }
+  function endDrag(){
+    if(!ST.rot3d.dragging)return;
+    ST.rot3d.dragging=false;
+    cv.style.cursor=ST.avpStep===4?'grab':'default';
+  }
+
+  // Maus
+  cv.addEventListener('mousedown',e=>{if(startDrag(e.clientX,e.clientY))e.preventDefault();});
+  window.addEventListener('mousemove',e=>moveDrag(e.clientX,e.clientY));
+  window.addEventListener('mouseup',endDrag);
+
+  // Touch
+  cv.addEventListener('touchstart',e=>{
+    if(e.touches.length===1&&startDrag(e.touches[0].clientX,e.touches[0].clientY))e.preventDefault();
+  },{passive:false});
+  window.addEventListener('touchmove',e=>{
+    if(ST.rot3d.dragging&&e.touches.length===1){
+      moveDrag(e.touches[0].clientX,e.touches[0].clientY);
+      e.preventDefault();
+    }
+  },{passive:false});
+  window.addEventListener('touchend',endDrag);
+
+  // Doppelklick: Ansicht zurücksetzen
+  cv.addEventListener('dblclick',()=>{
+    if(ST.avpStep!==4)return;
+    ST.rot3d.az=-0.55; ST.rot3d.el=0.38;
+    drawMod4();
+  });
+}
+
 /* ── Start ────────────────────────────────────────────────────────── */
 initData();
 initCanvasEvents();
+initMod4Drag();
 draw();
 </script>
 </body>
