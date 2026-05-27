@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OLS &amp; Multiple Regression — Methods Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Design Tokens ─────────────────────────────────────────────── */
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);
+  --topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+
+/* ── Reset & Base ──────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Fraunces',Georgia,serif;
+  background:var(--bg);color:var(--ink);
+  font-size:1rem;line-height:1.65;
+  padding-top:var(--topbar-h);
+  min-height:100vh;
+}
+a{color:var(--a2);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Dach / Hut-Notation ───────────────────────────────────────── */
+/* Usage: <span class="gk gk-hat">y</span>  →  ŷ  */
+/*        <span class="gk gk-bar">y</span>  →  ȳ  */
+.gk{position:relative;display:inline-block;font-family:'Fraunces',serif}
+.gk-hat::before{
+  content:'^';position:absolute;top:-.2em;
+  left:0;right:0;text-align:center;
+  font-size:.72em;line-height:1;pointer-events:none;
+}
+.gk-bar::before{
+  content:'–';position:absolute;top:-.1em;
+  left:0;right:0;text-align:center;
+  font-size:.65em;line-height:1;pointer-events:none;
+}
+
+/* ── Topbar ────────────────────────────────────────────────────── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:var(--topbar-h);
+  background:var(--paper);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 1.25rem;gap:.7rem;
+}
+.tb-title{
+  font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;
+  color:var(--ink);letter-spacing:.01em;flex:1;
+}
+.tb-title em{font-style:italic;color:var(--a2)}
+.tb-btn{
+  background:none;border:1px solid var(--border);
+  color:var(--ink2);font-family:'DM Mono',monospace;font-size:.76rem;
+  padding:.28rem .65rem;cursor:pointer;
+  transition:border-color .15s,color .15s;white-space:nowrap;
+}
+.tb-btn:hover{border-color:var(--a2);color:var(--a2)}
+.tb-btn.red{border-color:var(--a1);color:var(--a1)}
+.tb-btn.red:hover{background:color-mix(in srgb,var(--a1) 10%,transparent)}
+.tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
+
+/* ── Story Banner ──────────────────────────────────────────────── */
+#story{
+  background:var(--panel);border-bottom:1px solid var(--border);
+  padding:.65rem 1.4rem;
+  display:flex;align-items:center;flex-wrap:wrap;gap:.6rem 1.4rem;
+}
+.story-label{
+  font-family:'DM Mono',monospace;font-size:.7rem;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);
+}
+.story-vars{
+  display:flex;flex-wrap:wrap;gap:.5rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;
+}
+.sv{
+  padding:.12rem .5rem;border:1px solid var(--border);
+  background:var(--bg);color:var(--ink2);
+}
+.sv em{font-style:normal;color:var(--accent)}
+#seed-info{
+  font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);
+  margin-left:auto;
+}
+
+/* ── Module Tabs ───────────────────────────────────────────────── */
+#mod-tabs{
+  display:flex;border-bottom:1px solid var(--border);
+  background:var(--paper);position:sticky;top:var(--topbar-h);z-index:100;
+  overflow-x:auto;
+}
+.mod-tab{
+  background:none;border:none;border-bottom:2px solid transparent;
+  font-family:'DM Mono',monospace;font-size:.78rem;
+  color:var(--ink3);padding:.7rem 1.2rem;
+  cursor:pointer;white-space:nowrap;
+  transition:color .15s,border-color .15s;
+  display:flex;align-items:center;gap:.4rem;
+}
+.mod-tab:hover{color:var(--ink)}
+.mod-tab.active{color:var(--a2);border-bottom-color:var(--a2)}
+.mod-tab .tab-num{font-size:1.05rem;line-height:1} /* feedback_circle_numbers */
+
+/* ── Module Panels ─────────────────────────────────────────────── */
+.mod-panel{display:none;padding:1.4rem 1.4rem 2rem;max-width:1100px}
+.mod-panel.active{display:block}
+.mod-h{
+  font-size:1.25rem;font-weight:600;color:var(--ink);
+  letter-spacing:-.01em;margin-bottom:.3rem;
+}
+.mod-h em{font-style:italic;color:var(--a2)}
+.mod-sub{
+  font-family:'DM Mono',monospace;font-size:.76rem;
+  color:var(--ink3);margin-bottom:1.2rem;
+}
+
+/* ── Canvas Containers ─────────────────────────────────────────── */
+.cv-wrap{
+  background:var(--paper);border:1px solid var(--border);
+  display:inline-block;position:relative;
+}
+.cv-wrap canvas{display:block}
+.cv-row{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem}
+.cv-label{
+  font-family:'DM Mono',monospace;font-size:.68rem;
+  color:var(--ink3);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.08em;
+}
+
+/* ── Two-Column Layout (Module 4) ──────────────────────────────── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1rem}
+@media(max-width:720px){.two-col{grid-template-columns:1fr}}
+
+/* ── Controls ──────────────────────────────────────────────────── */
+.ctrl-block{
+  background:var(--panel);border:1px solid var(--border);
+  padding:.85rem 1rem;margin-bottom:.85rem;
+}
+.ctrl-row{
+  display:flex;align-items:center;gap:.7rem;
+  margin-bottom:.55rem;flex-wrap:wrap;
+}
+.ctrl-row:last-child{margin-bottom:0}
+.ctrl-label{
+  font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);min-width:130px;
+}
+.ctrl-val{
+  font-family:'DM Mono',monospace;font-size:.78rem;
+  color:var(--a2);min-width:52px;
+}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  height:4px;background:var(--border);outline:none;
+  flex:1;min-width:120px;max-width:260px;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;
+  background:var(--a2);cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:14px;height:14px;background:var(--a2);border:none;cursor:pointer;
+}
+.btn{
+  background:none;border:1px solid var(--border);
+  color:var(--ink2);font-family:'DM Mono',monospace;font-size:.75rem;
+  padding:.3rem .75rem;cursor:pointer;
+  transition:border-color .15s,color .15s,background .15s;
+}
+.btn:hover{border-color:var(--a2);color:var(--a2)}
+.btn.primary{border-color:var(--a2);color:var(--a2)}
+.btn.primary:hover{background:color-mix(in srgb,var(--a2) 12%,transparent)}
+.btn.accent1{border-color:var(--a1);color:var(--a1)}
+.btn.accent1:hover{background:color-mix(in srgb,var(--a1) 10%,transparent)}
+.btn-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.85rem}
+
+/* ── Scenario Buttons (Module 4) ───────────────────────────────── */
+.scen-btns{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.85rem}
+.scen-btn{
+  font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.28rem .7rem;cursor:pointer;
+  border:1px solid var(--border);color:var(--ink3);background:none;
+  transition:all .15s;
+}
+.scen-btn:hover,.scen-btn.active{
+  border-color:var(--a2);color:var(--a2);
+  background:color-mix(in srgb,var(--a2) 8%,transparent);
+}
+
+/* ── Erkläer Box ───────────────────────────────────────────────── */
+.erklaer{
+  background:var(--panel);border-left:3px solid var(--accent);
+  padding:.8rem 1rem;margin-bottom:.85rem;
+  font-family:'DM Mono',monospace;font-size:.80rem;
+  color:var(--ink2);line-height:1.95;
+}
+.erklaer strong{color:var(--ink)}
+
+/* ── Coefficient Grid ──────────────────────────────────────────── */
+.coef-grid{
+  display:grid;gap:.35rem;margin-bottom:.85rem;
+}
+.coef-grid.g2{grid-template-columns:repeat(2,1fr)}
+.coef-grid.g3{grid-template-columns:repeat(3,1fr)}
+.coef-cell{
+  background:var(--panel);border:1px solid var(--border);
+  padding:.6rem .85rem;
+}
+.coef-cell-lbl{
+  font-family:'DM Mono',monospace;font-size:.66rem;
+  color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:.15rem;
+}
+.coef-cell-val{
+  font-family:'DM Mono',monospace;font-size:1.05rem;
+  color:var(--a2);font-weight:500;
+}
+.coef-cell-val.changed{color:var(--a5)} /* highlight when b changes */
+
+/* ── RSS Meter ─────────────────────────────────────────────────── */
+.rss-wrap{
+  display:flex;align-items:center;gap:.7rem;
+  margin-bottom:.85rem;
+}
+.rss-label{
+  font-family:'DM Mono',monospace;font-size:.73rem;
+  color:var(--ink2);min-width:40px;
+}
+.rss-bar-bg{
+  flex:1;height:16px;background:var(--border);
+  position:relative;max-width:340px;
+}
+.rss-bar-fill{
+  height:100%;background:var(--a1);
+  transition:width .12s;
+  max-width:100%;
+}
+.rss-val{
+  font-family:'DM Mono',monospace;font-size:.78rem;
+  color:var(--a1);min-width:70px;
+}
+
+/* ── Variance Decomposition Bar ────────────────────────────────── */
+.var-bar-wrap{margin-bottom:.85rem}
+.var-bar-label{
+  font-family:'DM Mono',monospace;font-size:.68rem;
+  color:var(--ink3);margin-bottom:.3rem;
+}
+.var-bar{
+  height:28px;display:flex;
+  border:1px solid var(--border);overflow:hidden;
+}
+.var-seg{
+  height:100%;display:flex;align-items:center;
+  justify-content:center;
+  font-family:'DM Mono',monospace;font-size:.65rem;
+  transition:width .2s;overflow:hidden;white-space:nowrap;
+  padding:0 .3rem;
+}
+.var-seg.ssr{background:color-mix(in srgb,var(--a3) 35%,transparent);color:var(--a3)}
+.var-seg.sse{background:color-mix(in srgb,var(--a1) 22%,transparent);color:var(--a1)}
+
+/* ── Anscombe Grid ─────────────────────────────────────────────── */
+.ansc-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:.7rem;margin-bottom:.85rem;
+}
+@media(max-width:720px){.ansc-grid{grid-template-columns:repeat(2,1fr)}}
+.ansc-item{}
+.ansc-title{
+  font-family:'DM Mono',monospace;font-size:.67rem;
+  color:var(--ink3);margin-bottom:.25rem;
+}
+
+/* ── Accordion ─────────────────────────────────────────────────── */
+.acc-wrap{margin-bottom:.85rem}
+.acc-item{border:1px solid var(--border);margin-bottom:.4rem}
+.acc-trigger{
+  width:100%;text-align:left;
+  background:var(--panel);border:none;
+  font-family:'DM Mono',monospace;font-size:.78rem;
+  color:var(--ink2);padding:.65rem 1rem;cursor:pointer;
+  display:flex;align-items:center;gap:.6rem;
+  transition:color .15s;
+}
+.acc-trigger:hover{color:var(--ink)}
+.acc-trigger.open{color:var(--a2)}
+.acc-arrow{
+  font-size:.7rem;color:var(--ink3);
+  transition:transform .2s;flex-shrink:0;
+  margin-left:auto;
+}
+.acc-trigger.open .acc-arrow{transform:rotate(90deg)}
+.acc-body{
+  display:none;padding:.8rem 1rem;
+  border-top:1px solid var(--border);
+}
+.acc-body.open{display:block}
+
+/* ── AVP Step Display ──────────────────────────────────────────── */
+.avp-steps{
+  display:flex;gap:.4rem;flex-wrap:wrap;
+  margin-bottom:.7rem;
+}
+.avp-step-btn{
+  font-family:'DM Mono',monospace;font-size:.71rem;
+  padding:.25rem .6rem;border:1px solid var(--border);
+  color:var(--ink3);background:none;cursor:pointer;
+  transition:all .15s;
+}
+.avp-step-btn.active{
+  border-color:var(--a2);color:var(--a2);
+  background:color-mix(in srgb,var(--a2) 10%,transparent);
+}
+
+/* ── Model Comparison Table ────────────────────────────────────── */
+.model-table{
+  width:100%;border-collapse:collapse;
+  font-family:'DM Mono',monospace;font-size:.76rem;
+  margin-bottom:.85rem;
+}
+.model-table th{
+  background:var(--panel);border:1px solid var(--border);
+  padding:.4rem .7rem;color:var(--ink3);
+  font-weight:400;text-align:left;
+}
+.model-table td{
+  border:1px solid var(--border);padding:.4rem .7rem;
+  color:var(--ink2);
+}
+.model-table td.val{color:var(--a2)}
+.model-table td.changed{color:var(--a5)}
+.model-table td.dim{color:var(--ink3)}
+.model-table tr:nth-child(even) td{background:color-mix(in srgb,var(--panel) 50%,transparent)}
+
+/* ── Lernkarten ────────────────────────────────────────────────── */
+#lernkarten{
+  padding:1.4rem 1.4rem 2.5rem;
+  border-top:1px solid var(--border);
+  background:var(--bg);
+}
+.lk-head{
+  font-family:'DM Mono',monospace;font-size:.68rem;
+  text-transform:uppercase;letter-spacing:.12em;
+  color:var(--ink3);margin-bottom:1rem;
+}
+.lcard-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:.85rem;
+}
+.lcard{background:var(--panel);border:1px solid var(--border);padding:1rem 1.1rem}
+.lcard:last-child{grid-column:1/-1}
+.lcard-h{
+  font-family:'DM Mono',monospace;font-size:.7rem;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:var(--a2);margin-bottom:.55rem;
+}
+.lcard-body{font-size:.875rem;color:var(--ink2);line-height:1.7}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{
+  font-family:'DM Mono',monospace;font-size:.82em;
+  color:var(--a2);
+}
+
+/* ── Help Modal ────────────────────────────────────────────────── */
+.ml-modal{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.58);align-items:flex-start;
+  justify-content:center;padding-top:60px;overflow-y:auto;
+}
+.ml-modal.open{display:flex}
+.ml-modal-box{
+  background:var(--paper);border:1px solid var(--border);
+  padding:2rem 2.4rem;max-width:620px;width:90%;
+  margin-bottom:2rem;
+  font-family:'DM Mono',monospace;position:relative;
+}
+.ml-modal-close{
+  position:absolute;top:.75rem;right:.75rem;
+  background:none;border:none;font-size:1.1rem;
+  cursor:pointer;color:var(--ink2);line-height:1;
+}
+.ml-modal-close:hover{color:var(--ink)}
+.ml-modal-eyebrow{
+  font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:1rem;
+}
+.ml-modal-body h3{
+  font-family:'Fraunces',serif;font-size:1rem;color:var(--ink);
+  margin:1.2rem 0 .4rem;
+}
+.ml-modal-body p,.ml-modal-body li{
+  font-size:.8rem;color:var(--ink2);line-height:1.9;
+}
+.ml-modal-body ul{padding-left:1.2rem;margin:.3rem 0 .6rem}
+.ml-modal-body code{font-family:'DM Mono',monospace;font-size:.9em;color:var(--a2)}
+.ml-modal-body a{color:var(--a2)}
+.details-box{
+  border:1px solid var(--border);margin:.6rem 0;
+}
+.details-box summary{
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);
+  padding:.5rem .8rem;cursor:pointer;list-style:none;
+}
+.details-box summary::-webkit-details-marker{display:none}
+.details-box[open] summary{color:var(--a2);border-bottom:1px solid var(--border)}
+.details-box .details-inner{padding:.7rem .8rem}
+
+/* ── Scrollbar ─────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border)}
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media(max-width:600px){
+  .lcard-grid{grid-template-columns:1fr}
+  .lcard:last-child{grid-column:auto}
+  .coef-grid.g3{grid-template-columns:repeat(2,1fr)}
+  .ansc-grid{grid-template-columns:repeat(2,1fr)}
+  #mod-tabs{font-size:.7rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ══════════════════════════════════════════════════════ -->
+<div id="topbar">
+  <div class="tb-title">OLS &amp; Multiple <em>Regression</em></div>
+  <button class="tb-btn" id="btn-neue-daten" onclick="neueDaten()">↻ Neue Daten</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn red" onclick="openModal('help-modal')">? Hilfe</button>
+  <button class="tb-btn" id="btn-theme" onclick="toggleTheme()">☀ Hell</button>
+</div>
+
+<!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
+<div id="story">
+  <span class="story-label">Beispiel</span>
+  <div class="story-vars">
+    <span class="sv">N = 30 Studierende</span>
+    <span class="sv">X₁ = <em>Lernzeit</em> (h/Woche)</span>
+    <span class="sv">X₂ = <em>Schlafstunden</em> (h/Nacht)</span>
+    <span class="sv">Y = <em>Klausurnote</em> (0–100 Pkt.)</span>
+  </div>
+  <span id="seed-info">Seed: —</span>
+</div>
+
+<!-- ══ MODULE TABS ═════════════════════════════════════════════════ -->
+<div id="mod-tabs">
+  <button class="mod-tab active" data-mod="1" onclick="showMod(1)">
+    <span class="tab-num">①</span> Least Squares
+  </button>
+  <button class="mod-tab" data-mod="2" onclick="showMod(2)">
+    <span class="tab-num">②</span> Koeffizienten
+  </button>
+  <button class="mod-tab" data-mod="3" onclick="showMod(3)">
+    <span class="tab-num">③</span> Modellgüte
+  </button>
+  <button class="mod-tab" data-mod="4" onclick="showMod(4)">
+    <span class="tab-num">④</span> Multiple Regression
+  </button>
+</div>
+
+<!-- ══ MODULE 1 ════════════════════════════════════════════════════ -->
+<div id="mod1" class="mod-panel active">
+  <div class="mod-h">Das <em>Least-Squares</em>-Prinzip</div>
+  <div class="mod-sub">Warum minimiert OLS die quadrierten Abweichungen — und was bedeutet das?</div>
+  <!-- Batch 2 füllt diesen Block -->
+  <p style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink3)">[Modul 1 — wird in Batch 2 ergänzt]</p>
+</div>
+
+<!-- ══ MODULE 2 ════════════════════════════════════════════════════ -->
+<div id="mod2" class="mod-panel">
+  <div class="mod-h"><em>b₀</em> und <em>b₁</em> verstehen</div>
+  <div class="mod-sub">Was bedeuten Achsenabschnitt und Steigung — unstandardisiert und standardisiert?</div>
+  <!-- Batch 3 -->
+  <p style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink3)">[Modul 2 — wird in Batch 3 ergänzt]</p>
+</div>
+
+<!-- ══ MODULE 3 ════════════════════════════════════════════════════ -->
+<div id="mod3" class="mod-panel">
+  <div class="mod-h">Modellgüte &amp; <em>Varianzzerlegung</em></div>
+  <div class="mod-sub">R², SST = SSR + SSE, adjusted R² — und die Annahmen des Modells</div>
+  <!-- Batch 3 -->
+  <p style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink3)">[Modul 3 — wird in Batch 3 ergänzt]</p>
+</div>
+
+<!-- ══ MODULE 4 ════════════════════════════════════════════════════ -->
+<div id="mod4" class="mod-panel">
+  <div class="mod-h">Multiple Regression &amp; <em>Added Variable Plot</em></div>
+  <div class="mod-sub">Was bedeutet „unter Kontrolle von X₂"? Partielle Slopes visuell verstehen.</div>
+  <!-- Batch 4 -->
+  <p style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink3)">[Modul 4 — wird in Batch 4 ergänzt]</p>
+</div>
+
+<!-- ══ LERNKARTEN ═══════════════════════════════════════════════════ -->
+<section id="lernkarten">
+  <div class="lk-head">Lernkarten — OLS &amp; Multiple Regression</div>
+  <div class="lcard-grid">
+
+    <div class="lcard">
+      <div class="lcard-h">① OLS-Kriterium</div>
+      <div class="lcard-body">
+        OLS minimiert die <strong>Summe der quadrierten Residuen</strong>:
+        <code>min Σ(yᵢ − ŷᵢ)²</code>.
+        Das Quadrieren hat zwei Gründe: Vorzeichen werden neutralisiert,
+        und große Fehler werden überproportional stärker bestraft als kleine.
+        Die Lösung ist eindeutig und liefert immer <code>Σeᵢ = 0</code>.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h">② Koeffizient b₁</div>
+      <div class="lcard-body">
+        <strong>Interpretation:</strong> „Pro +1 Einheit X steigt der erwartete
+        Wert von Y um b₁ Einheiten — alle anderen Prädiktoren konstant gehalten
+        (<em>ceteris paribus</em>)."
+        Im bivariaten Fall: <code>b₁ = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)²</code>.
+        Der Zähler ist die Kovarianz, der Nenner die Varianz von X.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h">③ Intercept b₀</div>
+      <div class="lcard-body">
+        b₀ ist der erwartete Y-Wert, <strong>wenn alle Prädiktoren gleich 0 sind</strong>.
+        Das ist oft inhaltlich nicht sinnvoll (z. B. 0 Lernstunden, 0 Schlaf).
+        b₀ wird für die <em>Vorhersage</em> benötigt, sollte aber meist
+        nicht inhaltlich interpretiert werden. Immer gilt: <code>ȳ = b₀ + b₁·x̄</code>.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h">④ R² und adj. R²</div>
+      <div class="lcard-body">
+        <code>R² = SSR/SST ∈ [0, 1]</code> — Anteil erklärter Varianz.
+        R² steigt mit jedem hinzugefügten Prädiktor, auch nutzlosen.
+        Adjusted R² korrigiert dafür:
+        <code>adj.R² = 1 − (1−R²)·(n−1)/(n−k−1)</code>.
+        adj.R² sinkt, wenn ein neuer Prädiktor weniger erklärt als durch Zufall erwartet.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h">⑤ Partial Slope</div>
+      <div class="lcard-body">
+        b₁ im multiplen Modell ist <strong>nicht</strong> derselbe wie im bivariaten Modell —
+        er ist der Slope im <em>Added Variable Plot</em> (AVP):
+        Regression von <code>e(Y|X₂)</code> auf <code>e(X₁|X₂)</code>.
+        Dieser Wert entspricht dem <em>Partial Slope</em>: Effekt von X₁ auf Y,
+        nachdem der gemeinsame Anteil von X₂ aus beiden herausgerechnet wurde.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h">⑥ Standardisierung β</div>
+      <div class="lcard-body">
+        <code>β = b · (SD_X / SD_Y)</code> — der standardisierte Regressionskoeffizient.
+        β gibt an, um wie viele <strong>Standardabweichungen</strong> Y steigt,
+        wenn X um eine SD steigt. Erlaubt Vergleich von Prädiktoren
+        mit verschiedenen Skalen, aber nur <em>innerhalb</em> einer Stichprobe.
+        Zwischen Studien sind β-Werte wegen unterschiedlicher SDs <strong>nicht</strong> direkt vergleichbar.
+      </div>
+    </div>
+
+  </div><!-- .lcard-grid -->
+</section>
+
+<!-- ══ HILFE-MODAL ═══════════════════════════════════════════════════ -->
+<div id="help-modal" class="ml-modal" onclick="if(event.target===this)closeModal('help-modal')">
+  <div class="ml-modal-box">
+    <button class="ml-modal-close" onclick="closeModal('help-modal')">✕</button>
+    <div class="ml-modal-eyebrow">? Hilfe — OLS &amp; Multiple Regression</div>
+    <div class="ml-modal-body">
+
+      <h3>Was ist OLS?</h3>
+      <p><em>Ordinary Least Squares</em> (OLS) ist das Standardverfahren zur Schätzung
+      linearer Regressionsmodelle. Es findet diejenigen Koeffizienten b₀ und b₁, die die
+      <strong>Summe der quadrierten Residuen</strong> minimieren:
+      <code>min Σ(yᵢ − ŷᵢ)² = min Σ(yᵢ − b₀ − b₁·xᵢ)²</code>.
+      Die Lösung folgt aus den <em>Normalgleichungen</em>:</p>
+      <ul>
+        <li><code>b₁ = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)²</code></li>
+        <li><code>b₀ = ȳ − b₁·x̄</code></li>
+      </ul>
+
+      <details class="details-box">
+        <summary>▸ Matrizennotation (für Interessierte)</summary>
+        <div class="details-inner" style="font-size:.78rem;color:var(--ink2);line-height:1.9">
+          Im multiplen Fall mit Design-Matrix
+          <strong>X</strong> (n×(k+1), erste Spalte Einsen) und Vektor <strong>y</strong>:<br>
+          <code><strong>b</strong> = (<strong>X</strong>ᵀ<strong>X</strong>)⁻¹ <strong>X</strong>ᵀ<strong>y</strong></code><br>
+          Voraussetzung: (<strong>X</strong>ᵀ<strong>X</strong>) ist invertierbar → keine perfekte Multikollinearität.
+        </div>
+      </details>
+
+      <h3>Koeffizienteninterpretation</h3>
+      <p><strong>b₁</strong> (unstandardisiert): „Pro +1 Einheit X steigt Ŷ um b₁ Einheiten,
+      wenn alle anderen Prädiktoren konstant gehalten werden."
+      Das „ceteris paribus" ist entscheidend — im multiplen Modell ist b₁ ein
+      <em>partieller</em> Effekt, kein marginaler Roheffekt.</p>
+      <p><strong>β</strong> (standardisiert): Vergleich von Prädiktoren unterschiedlicher Skalen.
+      Vorsicht: β ist stichprobenspezifisch und darf nicht zwischen Studien verglichen werden.</p>
+
+      <h3>R² und Modellgüte</h3>
+      <p><code>R² = SSR/SST = 1 − SSE/SST</code>. Im bivariaten Fall gilt <code>R² = r²</code>.
+      R² steigt mit jedem Prädiktor, auch bei zufälligen Variablen (<em>Freedman's Paradox</em>).
+      Adjusted R² korrigiert für die Anzahl der Prädiktoren k:</p>
+      <p><code>adj.R² = 1 − (1−R²)·(n−1)/(n−k−1)</code></p>
+
+      <h3>Effektgröße f² und SESOI</h3>
+      <p><code>f² = R²/(1−R²)</code> — Effektgröße für multiple Regression.
+      Konventionen (Cohen 1988): klein ≥ .02, mittel ≥ .15, groß ≥ .35.
+      Besser als Konventionen: <em>SESOI</em> — den kleinsten inhaltlich
+      bedeutsamen Effekt vor der Studie definieren. → Siehe
+      <a href="Power_Stichprobe.html">Power &amp; Stichprobengröße</a>.</p>
+
+      <h3>Wann versagt OLS?</h3>
+      <ul>
+        <li><strong>Nichtlinearität</strong> — Residual-vs-Fitted-Plot zeigt Muster</li>
+        <li><strong>Heteroskedastizität</strong> — Streufächer in Residualplot</li>
+        <li><strong>Ausreißer/Leverage</strong> — Einzelne Punkte bestimmen die Gerade (→ Anscombe)</li>
+        <li><strong>Multikollinearität</strong> — Hohe r(X₁,X₂) bläht Standardfehler auf; VIF > 10 kritisch</li>
+        <li><strong>Messfehler</strong> — Attenuation von b₁ → <a href="Messfehler_Attenuierung.html">Messfehler-Tool</a></li>
+      </ul>
+
+      <h3>Verwandte Tools</h3>
+      <ul>
+        <li><a href="Partialkorrelation.html">Partialkorrelation</a> — Vertiefung des AVP-Konzepts</li>
+        <li><a href="Mediationsanalyse.html">Mediationsanalyse</a> — Direkte + indirekte Pfade in OLS</li>
+        <li><a href="Moderationsanalyse.html">Moderationsanalyse</a> — Interaktionsterm als dritter Prädiktor</li>
+        <li><a href="Regression_zur_Mitte.html">Regression zur Mitte</a> — b₁ &lt; r bei Messfehler</li>
+        <li><a href="Power_Stichprobe.html">Power &amp; Stichprobe</a> — f² als Effektgröße für OLS</li>
+        <li><a href="Causal_Teaching.html">Kausale Inferenz</a> — OLS schätzt Assoziation, nicht Kausalität</li>
+      </ul>
+
+    </div><!-- .ml-modal-body -->
+  </div>
+</div>
+
+<!-- ══ JAVASCRIPT ════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ── Seeded RNG (mulberry32) ──────────────────────────────────────── */
+function mulberry32(seed){
+  return function(){
+    seed|=0; seed=seed+0x6D2B79F5|0;
+    let t=Math.imul(seed^seed>>>15,1|seed);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return((t^t>>>14)>>>0)/4294967296;
+  };
+}
+
+/* ── Box-Muller Normalverteilung ──────────────────────────────────── */
+function randn(rng){
+  let u,v;
+  do{u=rng();}while(u===0);
+  v=rng();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+
+/* ── Datengenerator (Cholesky, 3 Variablen) ───────────────────────── */
+// Erzeugt X1 (Lernzeit), X2 (Schlaf), Y (Note) mit einstellbarer Korrelationsstruktur
+function genData(seed, r_x1y=0.60, r_x2y=0.45, r_x1x2=0.20, n=30){
+  const rng=mulberry32(seed);
+  // Mittelwerte und SDs der skalierten Variablen
+  const mx1=10, sdx1=3.2;   // Lernzeit h/Woche
+  const mx2=6.5, sdx2=1.0;  // Schlafstunden h/Nacht
+  const my=65,  sdy=12;     // Klausurnote
+  // Cholesky-Zerlegung der 3×3-Korrelationsmatrix
+  // R = L·Lᵀ wobei L lower triangular
+  const L=[[0,0,0],[0,0,0],[0,0,0]];
+  L[0][0]=1;
+  L[1][0]=r_x1x2;
+  L[1][1]=Math.sqrt(Math.max(0,1-L[1][0]**2));
+  L[2][0]=r_x1y;
+  L[2][1]=(r_x2y-L[2][0]*L[1][0])/(L[1][1]||1e-9);
+  L[2][2]=Math.sqrt(Math.max(0,1-L[2][0]**2-L[2][1]**2));
+  const x1=[],x2=[],y=[];
+  for(let i=0;i<n;i++){
+    const z0=randn(rng),z1=randn(rng),z2=randn(rng);
+    const u0=L[0][0]*z0;
+    const u1=L[1][0]*z0+L[1][1]*z1;
+    const u2=L[2][0]*z0+L[2][1]*z1+L[2][2]*z2;
+    // Clamp auf plausible Ranges
+    x1.push(Math.max(1,Math.min(22, mx1+sdx1*u0)));
+    x2.push(Math.max(3.5,Math.min(9, mx2+sdx2*u1)));
+    y.push(Math.max(0,Math.min(100, my+sdy*u2)));
+  }
+  return{x1,x2,y,n};
+}
+
+/* ── OLS Bivariat ─────────────────────────────────────────────────── */
+function olsBivariate(x,y){
+  const n=x.length;
+  const mx=x.reduce((a,b)=>a+b)/n;
+  const my=y.reduce((a,b)=>a+b)/n;
+  const sxx=x.reduce((s,xi)=>s+(xi-mx)**2,0);
+  const sxy=x.reduce((s,xi,i)=>s+(xi-mx)*(y[i]-my),0);
+  const b1=sxy/sxx;
+  const b0=my-b1*mx;
+  const yhat=x.map(xi=>b0+b1*xi);
+  const resid=y.map((yi,i)=>yi-yhat[i]);
+  const sse=resid.reduce((s,e)=>s+e**2,0);
+  const sst=y.reduce((s,yi)=>s+(yi-my)**2,0);
+  const ssr=sst-sse;
+  const r2=1-sse/sst;
+  const sdx=Math.sqrt(sxx/(n-1));
+  const sdy=Math.sqrt(sst/(n-1));
+  const beta1=b1*sdx/sdy; // standardisierter Koeffizient
+  return{b0,b1,beta1,yhat,resid,sse,sst,ssr,r2,rss:sse,mx,my,sdx,sdy};
+}
+
+/* ── OLS Multiple (Y ~ X1 + X2, Gauß-Elimination 3×3) ─────────────── */
+function olsMultiple(x1,x2,y){
+  const n=x1.length;
+  // Normalgleichungen: [X'X]b = X'y  (3×3 System)
+  const Sx1=x1.reduce((a,b)=>a+b,0),Sx2=x2.reduce((a,b)=>a+b,0);
+  const Sy=y.reduce((a,b)=>a+b,0);
+  const Sx1x1=x1.reduce((s,v)=>s+v*v,0);
+  const Sx2x2=x2.reduce((s,v)=>s+v*v,0);
+  const Sx1x2=x1.reduce((s,v,i)=>s+v*x2[i],0);
+  const Sx1y=x1.reduce((s,v,i)=>s+v*y[i],0);
+  const Sx2y=x2.reduce((s,v,i)=>s+v*y[i],0);
+  // Augmented matrix [A|b]
+  const A=[
+    [n,   Sx1,   Sx2,   Sy],
+    [Sx1, Sx1x1, Sx1x2, Sx1y],
+    [Sx2, Sx1x2, Sx2x2, Sx2y]
+  ];
+  // Forward elimination
+  for(let i=0;i<3;i++){
+    const piv=A[i][i];
+    for(let j=i+1;j<3;j++){
+      const f=A[j][i]/piv;
+      for(let k=i;k<=3;k++) A[j][k]-=f*A[i][k];
+    }
+  }
+  // Back substitution
+  const b=new Array(3);
+  for(let i=2;i>=0;i--){
+    b[i]=A[i][3];
+    for(let j=i+1;j<3;j++) b[i]-=A[i][j]*b[j];
+    b[i]/=A[i][i];
+  }
+  const[b0,b1,b2]=b;
+  const yhat=x1.map((_,i)=>b0+b1*x1[i]+b2*x2[i]);
+  const resid=y.map((yi,i)=>yi-yhat[i]);
+  const sse=resid.reduce((s,e)=>s+e**2,0);
+  const my=Sy/n;
+  const sst=y.reduce((s,yi)=>s+(yi-my)**2,0);
+  const ssr=sst-sse;
+  const r2=1-sse/sst;
+  const adjR2=1-(1-r2)*(n-1)/(n-3);
+  // Standardisierte Koeffizienten
+  const sdX1=Math.sqrt(x1.reduce((s,v)=>s+(v-Sx1/n)**2,0)/(n-1));
+  const sdX2=Math.sqrt(x2.reduce((s,v)=>s+(v-Sx2/n)**2,0)/(n-1));
+  const sdY=Math.sqrt(sst/(n-1));
+  const beta1=b1*sdX1/sdY, beta2=b2*sdX2/sdY;
+  return{b0,b1,b2,beta1,beta2,yhat,resid,sse,sst,ssr,r2,adjR2,my,sdY};
+}
+
+/* ── Added Variable Plot Helfer ───────────────────────────────────── */
+// Residuiert v auf u (gibt e = v - ŷ_v|u zurück)
+function residualize(v,u){
+  const{b0,b1}=olsBivariate(u,v);
+  return v.map((vi,i)=>vi-(b0+b1*u[i]));
+}
+// AVP-Komponenten: gibt e(Y|X2) und e(X1|X2) zurück
+function avpComponents(x1,x2,y){
+  const eYX2=residualize(y,x2);
+  const eX1X2=residualize(x1,x2);
+  const fit=olsBivariate(eX1X2,eYX2);
+  return{eYX2,eX1X2,fit};
+}
+
+/* ── Anscombe's Quartet (Hardcoded) ───────────────────────────────── */
+const ANSCOMBE={
+  x1:[10,8,13,9,11,14,6,4,12,7,5],
+  y1:[8.04,6.95,7.58,8.81,8.33,9.96,7.24,4.26,10.84,4.82,5.68],
+  x2:[10,8,13,9,11,14,6,4,12,7,5],
+  y2:[9.14,8.14,8.74,8.77,9.26,8.10,6.13,3.10,9.13,7.26,4.74],
+  x3:[10,8,13,9,11,14,6,4,12,7,5],
+  y3:[7.46,6.77,12.74,7.11,7.81,8.84,6.08,5.39,8.15,6.42,5.73],
+  x4:[8,8,8,8,8,8,8,19,8,8,8],
+  y4:[6.58,5.76,7.71,8.84,8.47,7.04,5.25,12.5,5.56,7.91,6.89]
+};
+
+/* ── Globaler Zustand ─────────────────────────────────────────────── */
+const ST={
+  seed:42,
+  data:null,          // {x1,x2,y,n}
+  fitBiv:null,        // olsBivariate Ergebnis
+  fitMult:null,       // olsMultiple Ergebnis
+  avp:null,           // avpComponents Ergebnis
+  activeModule:1,
+  // Fit-by-Hand Zustand (Modul 1)
+  handLine:{b0:null,b1:null,active:false},
+  showResiduals:true,
+  showOLS:true,
+  // Modul 2
+  showBeta:false,
+  // Modul 3
+  showBenchmark:false,
+  // Modul 4
+  r12:0.20,           // Korrelation X1↔X2 (für Szenarien)
+  avpStep:0,          // 0=Ausgangslage,1=eY|X2,2=eX1|X2,3=AVP-Slope
+};
+
+/* ── Initialisierung & Daten ──────────────────────────────────────── */
+function initData(){
+  ST.data=genData(ST.seed);
+  ST.fitBiv=olsBivariate(ST.data.x1,ST.data.y);
+  ST.fitMult=olsMultiple(ST.data.x1,ST.data.x2,ST.data.y);
+  ST.avp=avpComponents(ST.data.x1,ST.data.x2,ST.data.y);
+  // Hand-Linie auf OLS initialisieren (Mod 1)
+  if(ST.handLine.b0===null){
+    ST.handLine.b0=ST.fitBiv.b0+5;
+    ST.handLine.b1=ST.fitBiv.b1*0.7;
+  }
+  document.getElementById('seed-info').textContent='Seed: '+ST.seed;
+}
+
+function neueDaten(){
+  ST.seed=Math.floor(Math.random()*99999)+1;
+  ST.handLine.b0=null; // reset hand line
+  initData();
+  draw();
+}
+
+/* ── Modul-Tabs ───────────────────────────────────────────────────── */
+function showMod(n){
+  document.querySelectorAll('.mod-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.mod-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('mod'+n).classList.add('active');
+  document.querySelector(`.mod-tab[data-mod="${n}"]`).classList.add('active');
+  ST.activeModule=n;
+  draw();
+}
+
+/* ── Zeichnen (Dispatcher) ────────────────────────────────────────── */
+function draw(){
+  if(ST.activeModule===1) drawMod1();
+  else if(ST.activeModule===2) drawMod2();
+  else if(ST.activeModule===3) drawMod3();
+  else if(ST.activeModule===4) drawMod4();
+}
+
+// Platzhalter-Zeichenfunktionen — werden in Batches 2-4 ersetzt
+function drawMod1(){}
+function drawMod2(){}
+function drawMod3(){}
+function drawMod4(){}
+
+/* ── Canvas Hilfs-Utilities ───────────────────────────────────────── */
+// Holt CSS-Variable als Farbe
+function cssVar(v){
+  return getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+}
+// Mappe Datenwert auf Canvas-Pixel
+function makeScale(dMin,dMax,pxMin,pxMax){
+  return d=>pxMin+(d-dMin)/(dMax-dMin)*(pxMax-pxMin);
+}
+// Achsen zeichnen
+function drawAxes(ctx,pad,W,H,xLabel,yLabel,xTicks,yTicks,xScale,yScale,fontSize=13){
+  const ink=cssVar('--ink2'),ink3=cssVar('--ink3'),grid=cssVar('--grid');
+  ctx.font=`${fontSize}px DM Mono,monospace`;
+  ctx.textBaseline='middle';
+  // Gitternetz
+  ctx.strokeStyle=grid;ctx.lineWidth=.6;
+  xTicks.forEach(v=>{const px=xScale(v);ctx.beginPath();ctx.moveTo(px,pad.t);ctx.lineTo(px,H-pad.b);ctx.stroke()});
+  yTicks.forEach(v=>{const py=yScale(v);ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(W-pad.r,py);ctx.stroke()});
+  // Achsenbeschriftung
+  ctx.fillStyle=ink3;ctx.textAlign='center';
+  xTicks.forEach(v=>{ctx.fillText(v,xScale(v),H-pad.b+15)});
+  ctx.textAlign='right';
+  yTicks.forEach(v=>{ctx.fillText(v,pad.l-6,yScale(v))});
+  // Achsenlabels
+  ctx.fillStyle=ink;ctx.font=`bold ${fontSize+1}px DM Mono,monospace`;
+  ctx.textAlign='center';ctx.textBaseline='bottom';
+  ctx.fillText(xLabel,pad.l+(W-pad.l-pad.r)/2,H-2);
+  ctx.save();ctx.translate(14,pad.t+(H-pad.t-pad.b)/2);ctx.rotate(-Math.PI/2);
+  ctx.textBaseline='top';ctx.fillText(yLabel,0,0);ctx.restore();
+}
+
+/* ── Theme Toggle ─────────────────────────────────────────────────── */
+function toggleTheme(){
+  const h=document.documentElement;
+  const isDark=h.getAttribute('data-theme')==='dark';
+  const nt=isDark?'light':'dark';
+  h.setAttribute('data-theme',nt);
+  document.getElementById('btn-theme').textContent=nt==='dark'?'☀ Hell':'☾ Dunkel';
+  localStorage.setItem('ml-theme',nt);
+  draw();
+}
+(function(){
+  const saved=localStorage.getItem('ml-theme');
+  const isDark=saved?saved==='dark':true;
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  document.getElementById('btn-theme').textContent=isDark?'☾ Dunkel':'☀ Hell';
+})();
+
+/* ── Modals ───────────────────────────────────────────────────────── */
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')document.querySelectorAll('.ml-modal.open').forEach(m=>m.classList.remove('open'));
+});
+
+/* ── Accordion ────────────────────────────────────────────────────── */
+function toggleAcc(trigger){
+  trigger.classList.toggle('open');
+  const body=trigger.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+/* ── Start ────────────────────────────────────────────────────────── */
+initData();
+draw();
+</script>
+</body>
+</html>
