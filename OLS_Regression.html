@@ -575,12 +575,20 @@ input[type=range]::-moz-range-thumb{
 
       <!-- Info-Spalte -->
       <div class="info-box" style="flex:1">
-        <div class="info-box-h">Das OLS-Minimum</div>
-        <p><strong>RSS</strong> = Σeᵢ² = Σ(yᵢ − ŷᵢ)²<br>
-        OLS findet das einzige b₀, b₁, für das Σeᵢ² minimal ist — <em>keine andere Gerade hat kleinere RSS.</em></p>
-        <p><strong>Gauss-Markov-Theorem:</strong> Unter den 5 OLS-Annahmen (→ Modul ③) ist OLS der <em>BLUE</em> — Best Linear Unbiased Estimator. D.h. kein anderer linearer, unverzerrter Schätzer hat kleinere Varianz.</p>
-        <p><strong>Aufgabe:</strong> Schiebe die Anker, bis deine RSS so klein wie möglich ist. Klicke dann „◎ OLS zeigen", um das echte Minimum einzublenden und die Balken zu vergleichen.</p>
-        <p><strong>Warum Quadrate?</strong> Positive und negative Fehler heben sich sonst auf (Σeᵢ = 0 ist trivial erfüllbar). Das Quadrieren bestraft große Ausreißer überproportional stark.</p>
+        <div class="info-box-h">Tutorial — Das Least-Squares-Prinzip</div>
+        <p><strong>Was Sie sehen</strong><br>
+        50 simulierte Studierende: Lernzeit X₁ (h/Woche) → Klausurnote Y (Punkte). Die <em>orangene Gerade</em> ist Ihre Schätzlinie — ziehbar über zwei runde Anker am linken und rechten Rand. Die blauen senkrechten Striche sind die <em>Residuen</em>: eᵢ = yᵢ − ŷᵢ = beobachteter Wert minus vorhergesagter Wert.</p>
+        <p><strong>Was tun</strong><br>
+        Ziehen Sie die Anker nach oben/unten, bis Ihre RSS (orangener Balken) möglichst klein wird. Klicken Sie dann <em>◎ OLS zeigen</em> — die teal-farbene OLS-Gerade erscheint. Der zweite Balken zeigt deren RSS. Vergleich: Wie nah kamen Sie ans Minimum?</p>
+        <p><strong>Was ist RSS?</strong><br>
+        RSS = Σeᵢ² = Σ(yᵢ − ŷᵢ)². OLS findet analytisch exakt das b₀ und b₁, für das Σeᵢ² global minimal ist — eindeutig und beweisbar. Kein Ausprobieren: b₁ = Cov(X,Y)/Var(X), b₀ = ȳ − b₁·x̄. Starten Sie auch die Residuals-Anzeige (Schaltfläche <em>● Residuals</em>), um die einzelnen Abweichungen zu sehen.</p>
+        <p><strong>Warum Quadrate, nicht Beträge?</strong><br>
+        (1) Für jede OLS-Gerade gilt Σeᵢ = 0 — positive und negative Fehler heben sich trivialerweise auf. (2) Das Quadrieren bestraft große Fehler überproportional: Fehler 10 kostet 100, nicht 10. (3) Das Quadrat liefert eine differenzierbare Funktion → geschlossene, eindeutige Lösung.</p>
+        <p><strong>Was beobachten?</strong><br>
+        · Falsche Steigung → RSS steigt schneller als falscher Achsenabschnitt.<br>
+        · Punkte am X-Rand (hohe <em>Hebelwirkung</em>) drehen b₁ stark, wenn sie von der Geraden abweichen.<br>
+        · Probieren Sie absichtlich schlechte Geraden (steil, flach, negativ) — der RSS-Balken explodiert.<br>
+        · <strong>Gauss-Markov:</strong> Unter den 5 OLS-Annahmen (→ Modul ③) ist OLS der <em>BLUE</em> — Best Linear Unbiased Estimator. Kein anderer linearer unverzerrter Schätzer hat kleinere Varianz.</p>
       </div>
 
     </div><!-- rechtes Panel -->
@@ -689,14 +697,21 @@ input[type=range]::-moz-range-thumb{
 
       <!-- Info-Spalte -->
       <div class="info-box" style="flex:1">
-        <div class="info-box-h">Interpretation: Klausur-Beispiel</div>
-        <p><strong>b₁ = <span id="m2-info-b1">—</span></strong><br>
-        Pro +1 h Lernzeit: +<span id="m2-info-b1b">—</span> Punkte (erwartet).</p>
-        <p><strong>β = <span id="m2-info-beta">—</span></strong><br>
-        Pro +1 SD Lernzeit steigt die Note um β Standardabweichungen.</p>
-        <p><strong>b₀ = <span id="m2-info-b0">—</span></strong><br>
-        Erwartete Note bei 0 h — liegt außerhalb des Datenbereichs (Extrapolation!).</p>
-        <p>Schwerpunkt: (<span id="m2-info-mx">—</span> h | <span id="m2-info-my">—</span> Pkt) — die Gerade läuft <em>immer</em> durch diesen Punkt.</p>
+        <div class="info-box-h">Tutorial — b₀, b₁ und β verstehen</div>
+        <p><strong>Was Sie sehen</strong><br>
+        Die OLS-Gerade durch alle 50 Datenpunkte. Aktivieren Sie <em>△ Steigung</em> für das Steigungsdreieck (zeigt +1 Einheit X → +b₁ Einheiten Y) und <em>✛ Mittelwert</em> für den Schwerpunkt (x̄, ȳ) im Canvas.</p>
+        <p><strong>b₁ = <span id="m2-info-b1">—</span> — Steigung (unstandardisiert)</strong><br>
+        Pro +1 h Lernzeit steigt die <em>erwartete</em> Note um <span id="m2-info-b1b">—</span> Punkte. Einheit: Punkte/Stunde. Interpretation: deskriptiv, <em>kein Kausaleffekt</em>. b₁ ist skalenabhängig — ein b₁ aus einer anderen Studie mit anderen Skalen ist nicht vergleichbar.</p>
+        <p><strong>β = <span id="m2-info-beta">—</span> — standardisierter Koeffizient</strong><br>
+        Pro +1 SD in X₁ steigt Y um β SD. Bivariat gilt immer β = r (Pearson-Korrelation) — prüfen Sie das in der Koeffizientenzelle! β erlaubt Vergleiche zwischen Prädiktoren unterschiedlicher Skalen <em>innerhalb</em> einer Studie, aber <em>nicht</em> zwischen Studien (abhängig von SD(X) und SD(Y) der jeweiligen Stichprobe).</p>
+        <p><strong>b₀ = <span id="m2-info-b0">—</span> — Achsenabschnitt</strong><br>
+        Erwartete Note bei X₁ = 0 h Lernzeit. Da 0 h weit außerhalb des beobachteten Bereichs liegt, handelt es sich um eine <em>Extrapolation</em> — inhaltlich meist nicht sinnvoll. b₀ ist mathematisch notwendig, hat aber selten eine eigenständige Bedeutung.</p>
+        <p><strong>Schwerpunkt (x̄ = <span id="m2-info-mx">—</span> h | ȳ = <span id="m2-info-my">—</span> Pkt)</strong><br>
+        Die OLS-Gerade läuft <em>immer</em> durch (x̄, ȳ) — mathematisch zwingend, da b₀ = ȳ − b₁·x̄. Aktivieren Sie <em>✛ Mittelwert</em> und prüfen Sie das visuell.</p>
+        <p><strong>Was beobachten?</strong><br>
+        · Das Steigungsdreieck zeigt konkret: Δx = 1 Stunde → Δy = b₁ Punkte.<br>
+        · OLS schätzt E[Y|X] — den konditionalen Erwartungswert, keine Einzelvorhersage.<br>
+        · Ein größeres |β| bedeutet einen stärkeren standardisierten Effekt — vergleichbar mit r.</p>
       </div>
 
     </div><!-- rechtes Panel -->
@@ -810,15 +825,22 @@ input[type=range]::-moz-range-thumb{
 
       <!-- Info-Spalte -->
       <div class="info-box" style="flex:1">
-        <div class="info-box-h">Varianzkomponenten: Klausur-Daten</div>
-        <p><strong>SST = <span id="m3-info-sst">—</span></strong><br>
-        Gesamtvarianz in Y (Abstände der Datenpunkte von ȳ).</p>
-        <p><strong>SSR = <span id="m3-info-ssr">—</span></strong> (<span id="m3-info-ssr-pct">—</span>% von SST)<br>
-        Durch X₁ <em>erklärte</em> Varianz.</p>
-        <p><strong>SSE = <span id="m3-info-sse">—</span></strong> (<span id="m3-info-sse-pct">—</span>% von SST)<br>
-        Nicht erklärte Residualvarianz.</p>
-        <p><strong>f² = <span id="m3-info-f2">—</span></strong> → <span id="m3-info-f2-lbl">—</span> Effekt<br>
-        (Cohen 1988: .02 klein · .15 mittel · .35 groß)</p>
+        <div class="info-box-h">Tutorial — Varianzzerlegung &amp; Modellgüte</div>
+        <p><strong>Was Sie sehen</strong><br>
+        <em>Modus SST:</em> Abstände aller Punkte von ȳ (blau) — die Gesamtvarianz in Y, bevor das Modell kommt. <em>Modus SSR + SSE:</em> grüne Striche = erklärte Varianz (Modell), rote Striche = Residualvarianz (Fehler). Der Balken links zeigt das SSR : SSE-Verhältnis. Wechseln Sie die Ansicht über die Schaltflächen.</p>
+        <p><strong>SST = <span id="m3-info-sst">—</span> — Gesamtvarianz in Y</strong><br>
+        SST = Σ(yᵢ − ȳ)². Wie stark schwanken die Klausurnoten generell? SST hängt <em>nicht</em> vom Modell ab — nur von Y und seinem Mittelwert. SST ist die „Ausgangslage", die das Modell erklären soll.</p>
+        <p><strong>SSR = <span id="m3-info-ssr">—</span> (<span id="m3-info-ssr-pct">—</span>% von SST) — erklärte Varianz</strong><br>
+        SSR = Σ(ŷᵢ − ȳ)². Varianzanteil, den X₁ (Lernzeit) erklärt. Je größer SSR relativ zu SST, desto besser der Fit. OLS <em>maximiert</em> SSR — äquivalent zum Minimieren von SSE.</p>
+        <p><strong>SSE = <span id="m3-info-sse">—</span> (<span id="m3-info-sse-pct">—</span>% von SST) — Residualvarianz</strong><br>
+        SSE = Σeᵢ² = Σ(yᵢ − ŷᵢ)². Was das Modell <em>nicht</em> erklärt. SST = SSR + SSE ist mathematisch exakt. SSE = 0 wäre perfekter Fit — in der Praxis unmöglich und auch nicht wünschenswert (Überanpassung).</p>
+        <p><strong>R² und Effektgröße f²</strong><br>
+        R² = SSR/SST (→ Kennwerte links): Anteil erklärter Varianz. <em>Achtung:</em> R² steigt immer mit jedem zusätzlichen Prädiktor — auch bei nutzlosen! Adjusted R² korrigiert mit einem Strafterm.<br>
+        f² = <span id="m3-info-f2">—</span> → <span id="m3-info-f2-lbl">—</span> Effekt (Cohen 1988: .02 klein · .15 mittel · .35 groß).</p>
+        <p><strong>Was gut / problematisch ist</strong><br>
+        · Gut: Großer grüner Balken (SSR ≫ SSE), R² nahe 1, f² ≥ .15.<br>
+        · R² = 0: Modell nicht besser als Mittelwert ȳ als Prognose.<br>
+        · R² allein genügt nicht — ein gutes R² trotz verletzter Annahmen täuscht. Residualdiagnostik ist Pflicht (→ Akkordion OLS-Annahmen unten).</p>
       </div>
 
     </div><!-- rechtes Panel -->
@@ -989,12 +1011,22 @@ input[type=range]::-moz-range-thumb{
 
       <!-- Info-Spalte -->
       <div class="info-box" style="flex:1">
-        <div class="info-box-h">Konfundierung &amp; partieller Effekt</div>
-        <p>Korrelation X₁↔X₂ = <strong><span id="m4-info-r12">—</span></strong></p>
-        <p>bivariat: b₁ = <span id="m4-info-biv" style="color:var(--ink)">—</span><br>
-        partiell: b₁ = <em><span id="m4-info-par">—</span></em><br>
-        Differenz: Δb₁ = <span id="m4-info-diff">—</span></p>
-        <p><em>Je größer r₁₂, desto mehr weicht das bivariate b₁ vom partiellen b₁ ab — X₂ konfundiert den Effekt von X₁ auf Y.</em></p>
+        <div class="info-box-h">Tutorial — Multiple Regression &amp; AVP</div>
+        <p><strong>Warum multiple Regression?</strong><br>
+        X₁ (Lernzeit) und X₂ (Schlaf, h/Nacht) korrelieren mit r₁₂ = <strong><span id="m4-info-r12">—</span></strong>. Ein bivariates Modell Y&#160;~&#160;X₁ enthält daher den „Schatten" von X₂ im Koeffizienten b₁ — es misst nicht den reinen X₁-Effekt. Der AVP (Added Variable Plot) macht diesen Bereinigungsprozess Schritt für Schritt sichtbar.</p>
+
+        <!-- Dynamischer Step-Block: wird von setAvpStep() befüllt -->
+        <div id="m4-info-step" style="border-top:1px solid var(--border);margin-top:.55rem;padding-top:.55rem">
+          <p><strong>Schritt ① — Bivariate Ausgangslage</strong><br>
+          Was Sie sehen: Die bivariate OLS-Gerade Y&#160;~&#160;X₁ (Lernzeit → Note) — identisch mit Modul ①.<br>
+          Problem: Wenn r₁₂&#160;≠&#160;0 enthält b₁ den Einfluss von X₂ als Störgröße. Der bivariate Schätzer ist verzerrt, solange X₂ sowohl mit X₁ korreliert als auch Y beeinflusst.<br>
+          Tipp: Notieren Sie das bivariate b₁ (Tabelle links), wechseln Sie dann r₁₂ und vergleichen Sie.</p>
+        </div>
+
+        <p style="border-top:1px solid var(--border);margin-top:.55rem;padding-top:.55rem">
+        <strong>Konfundierung im Vergleich</strong><br>
+        bivariat b₁ = <span id="m4-info-biv" style="color:var(--ink)">—</span> · partiell b₁ = <em><span id="m4-info-par">—</span></em> · Δb₁ = <span id="m4-info-diff">—</span><br>
+        Je größer r₁₂, desto mehr weicht das bivariate vom partiellen b₁ ab. Bei r₁₂&#160;=&#160;0 sind beide identisch — X₂ konfundiert nichts. Probieren Sie die vier r₁₂-Szenarien links.</p>
       </div>
 
     </div><!-- rechtes Panel -->
@@ -2085,10 +2117,33 @@ function setAvpStep(step){
     'In Schritt ③ wird X₂ auch aus X₁ herausgerechnet. <em>e(X₁|X₂)</em> ist der X₁-Anteil, der <em>unabhängig</em> von X₂ ist — die X₁-Variation, die nicht auf X₂ zurückgeht.',
     'Der <strong>Added Variable Plot</strong>: e(X₁|X₂) gegen e(Y|X₂). Die Steigung der Regressionsgeraden ist exakt das <em>partielle</em> b₁ aus Y&#160;~&#160;X₁&#160;+&#160;X₂.'
   ];
+  const stepGuide=[
+    `<p><strong>Schritt ① — Bivariate Ausgangslage</strong><br>
+    Was Sie sehen: Die bivariate OLS-Gerade Y&#160;~&#160;X₁ (Lernzeit → Note) — identisch mit Modul ①.<br>
+    Problem: Wenn r₁₂&#160;≠&#160;0 enthält b₁ den Einfluss von X₂ (Schlaf) als Störgröße. Der bivariate Schätzer ist verzerrt, solange X₂ sowohl mit X₁ korreliert als auch Y beeinflusst.<br>
+    Tipp: Notieren Sie das bivariate b₁ (Tabelle links), wechseln Sie dann r₁₂ und vergleichen Sie.</p>`,
+
+    `<p><strong>Schritt ② — Y von X₂ bereinigen: e(Y|X₂)</strong><br>
+    Was Sie sehen: Y wurde auf X₂ regressiert (gestrichelte Hilfslinie). Die Punkte sind die Residuen — das, was X₂ in Y <em>nicht</em> erklären kann.<br>
+    Y-Achse = „Klausurnote bereinigt um Schlafeinfluss": Der X₂-Anteil ist aus Y herausgerechnet. Übrig bleibt das Y-Signal, das mit X₂ nichts zu tun hat.<br>
+    Warum: Um den reinen X₁-Effekt zu sehen, muss X₂'s Einfluss auf Y zuerst entfernt werden.</p>`,
+
+    `<p><strong>Schritt ③ — X₁ von X₂ bereinigen: e(X₁|X₂)</strong><br>
+    Was Sie sehen: Auch X₁ (Lernzeit) wurde auf X₂ regressiert. Die Punkte zeigen X₁ bereinigt um X₂.<br>
+    X-Achse = „Lernzeit bereinigt um Schlaf" — der Teil von X₁, der <em>nicht</em> auf X₂ zurückgeht. Bei großem r₁₂ wird diese Streuung deutlich kleiner (X₁ wird stark durch X₂ erklärt).<br>
+    Warum: Wenn X₁ und X₂ korrelieren, müssen wir X₁ ebenfalls von X₂'s Einfluss befreien.</p>`,
+
+    `<p><strong>Schritt ④ — Added Variable Plot (AVP)</strong><br>
+    Was Sie sehen: e(Y|X₂) aufgetragen gegen e(X₁|X₂) — der bereinigte Zusammenhang nach Entfernen des X₂-Einflusses aus beiden Variablen.<br>
+    Die Steigung dieser Geraden = partielles b₁ = b₁ aus Y&#160;~&#160;X₁&#160;+&#160;X₂ (→ Tabelle links, Zeile „Partiell").<br>
+    Kernerkenntnis: „Unter Kontrolle von X₂" bedeutet genau das: beide Variablen von X₂ bereinigt, dann Zusammenhang berechnet. Der AVP-Slope stimmt stets exakt mit dem multiplen Modell überein.</p>`
+  ];
   const lbl=document.getElementById('m4-cv-label');
   if(lbl)lbl.textContent=labels[step];
   const erkl=document.getElementById('m4-erkl');
   if(erkl)erkl.innerHTML=erkls[step];
+  const guide=document.getElementById('m4-info-step');
+  if(guide)guide.innerHTML=stepGuide[step];
   drawMod4();
 }
 
