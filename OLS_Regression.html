@@ -599,18 +599,231 @@ input[type=range]::-moz-range-thumb{
 
 <!-- ══ MODULE 2 ════════════════════════════════════════════════════ -->
 <div id="mod2" class="mod-panel">
-  <div class="mod-h"><em>b₀</em> und <em>b₁</em> verstehen</div>
-  <div class="mod-sub">Was bedeuten Achsenabschnitt und Steigung — unstandardisiert und standardisiert?</div>
-  <!-- Batch 3 -->
-  <p style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink3)">[Modul 2 — wird in Batch 3 ergänzt]</p>
+  <div class="mod-h"><em>b₀</em>, <em>b₁</em> und β verstehen</div>
+  <div class="mod-sub">Steigung, Achsenabschnitt und standardisierter Koeffizient — visuell und formal</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <!-- Canvas -->
+    <div>
+      <div class="cv-label">Regressionsgerade mit Koeffizienten-Visualisierung</div>
+      <div class="cv-wrap">
+        <canvas id="cv-coef" width="480" height="360"></canvas>
+      </div>
+    </div>
+
+    <!-- Rechtes Panel -->
+    <div style="display:flex;flex-direction:column;gap:.75rem;min-width:196px;max-width:230px">
+
+      <div class="coef-grid g3">
+        <div class="coef-cell" title="Erwarteter Y-Wert wenn X = 0">
+          <div class="coef-cell-lbl">b₀</div>
+          <div class="coef-cell-val" id="m2-b0">—</div>
+        </div>
+        <div class="coef-cell" title="Änderung von Y pro +1 Einheit X">
+          <div class="coef-cell-lbl">b₁</div>
+          <div class="coef-cell-val" id="m2-b1">—</div>
+        </div>
+        <div class="coef-cell" title="Standardisierter Koeffizient — in SD-Einheiten">
+          <div class="coef-cell-lbl">β</div>
+          <div class="coef-cell-val" id="m2-beta">—</div>
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-bottom:0;flex-wrap:wrap">
+        <button class="btn" id="btn-slope" onclick="toggleSlope()">△ Steigung</button>
+        <button class="btn" id="btn-mean-cr" onclick="toggleMeanCr()">✛ Mittelwert</button>
+      </div>
+
+      <div class="erklaer" style="margin-bottom:0">
+        <strong>b₁:</strong> Pro +1 h Lernzeit steigt die erwartete Note um
+        <span id="m2-b1-val" style="color:var(--a2)">—</span> Punkte.<br>
+        <strong>β = r =</strong> <span id="m2-beta-val" style="color:var(--a2)">—</span>
+        — bivariat gilt stets β = r.<br>
+        <strong>b₀:</strong> Erwartete Note bei 0 h Lernzeit (extrapoliert,
+        inhaltlich oft nicht sinnvoll).
+      </div>
+    </div>
+  </div><!-- cv-row -->
+
+  <!-- Formel-Erklärer -->
+  <div class="erklaer" style="margin-top:.9rem">
+    <strong>Berechnungsformeln:</strong><br>
+    b₁ = Σ(xᵢ − <span class="gk gk-bar">x</span>)(yᵢ − <span class="gk gk-bar">y</span>) /
+    Σ(xᵢ − <span class="gk gk-bar">x</span>)² = Cov(X,Y) / Var(X)<br>
+    b₀ = <span class="gk gk-bar">y</span> − b₁ ·
+    <span class="gk gk-bar">x</span>
+    &nbsp;·&nbsp;
+    β = b₁ · (SD<sub>X</sub> / SD<sub>Y</sub>) = r &nbsp;(bivariat)
+  </div>
+
+  <!-- Accordion: b₁ vs β -->
+  <div class="acc-wrap" style="margin-top:.9rem">
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        📊 b₁ vs. β — Welchen Koeffizienten soll ich berichten?
+        <span class="acc-arrow">▶</span>
+      </button>
+      <div class="acc-body">
+        <div style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);line-height:1.95">
+          <strong style="color:var(--ink)">b₁ (unstandardisiert)</strong> berichtet man, wenn
+          die Einheit inhaltlich bedeutsam ist: „+1 h Lernzeit → +<span id="m2-b1-acc">—</span> Punkte".
+          Voraussetzung: Leser kennen die Skala.<br><br>
+          <strong style="color:var(--ink)">β (standardisiert)</strong> erlaubt den Vergleich von
+          Prädiktoren verschiedener Skalen <em>innerhalb</em> einer Studie.
+          Achtung: β variiert mit SD(X) und SD(Y) — Vergleiche zwischen Studien sind
+          <em>nicht</em> zulässig.<br><br>
+          Im bivariaten OLS gilt stets: β = r = <span id="m2-beta-acc">—</span>.
+          Im multiplen Modell (Modul ④) ist β ≠ r, da partielle Kontrolle der anderen Prädiktoren.
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ══ MODULE 3 ════════════════════════════════════════════════════ -->
 <div id="mod3" class="mod-panel">
   <div class="mod-h">Modellgüte &amp; <em>Varianzzerlegung</em></div>
-  <div class="mod-sub">R², SST = SSR + SSE, adjusted R² — und die Annahmen des Modells</div>
-  <!-- Batch 3 -->
-  <p style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink3)">[Modul 3 — wird in Batch 3 ergänzt]</p>
+  <div class="mod-sub">SST = SSR + SSE, R², adjusted R² und die Annahmen des OLS-Modells</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <!-- Canvas -->
+    <div>
+      <div class="cv-label" id="m3-cv-label">Gesamtvarianz (SST) — Abweichungen vom Mittelwert ȳ</div>
+      <div class="cv-wrap">
+        <canvas id="cv-var" width="480" height="360"></canvas>
+      </div>
+    </div>
+
+    <!-- Rechtes Panel -->
+    <div style="display:flex;flex-direction:column;gap:.75rem;min-width:196px;max-width:230px">
+
+      <!-- Modus-Toggle -->
+      <div class="btn-row" style="margin-bottom:0">
+        <button class="btn primary" id="btn-m3-sst" onclick="setVarMode('SST')">SST</button>
+        <button class="btn" id="btn-m3-sse" onclick="setVarMode('SSE')">SSR + SSE</button>
+      </div>
+
+      <!-- Varianzzerlegungsbalken -->
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-bottom:.3rem">
+          SST = SSR + SSE
+        </div>
+        <div class="var-bar">
+          <div class="var-seg ssr" id="m3-ssr-seg" style="width:50%">SSR</div>
+          <div class="var-seg sse" id="m3-sse-seg" style="width:50%">SSE</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;
+          font-family:'DM Mono',monospace;font-size:.62rem;margin-top:.25rem">
+          <span style="color:var(--a3)" id="m3-ssr-lbl">SSR = —</span>
+          <span style="color:var(--a1)" id="m3-sse-lbl">SSE = —</span>
+        </div>
+      </div>
+
+      <!-- Kennwerte -->
+      <div class="coef-grid g2">
+        <div class="coef-cell">
+          <div class="coef-cell-lbl">R²</div>
+          <div class="coef-cell-val" id="m3-r2">—</div>
+        </div>
+        <div class="coef-cell">
+          <div class="coef-cell-lbl">adj. R²</div>
+          <div class="coef-cell-val" id="m3-adjr2">—</div>
+        </div>
+        <div class="coef-cell">
+          <div class="coef-cell-lbl">f²</div>
+          <div class="coef-cell-val" id="m3-f2">—</div>
+        </div>
+        <div class="coef-cell">
+          <div class="coef-cell-lbl">r (Pearson)</div>
+          <div class="coef-cell-val" id="m3-r">—</div>
+        </div>
+      </div>
+
+      <div class="erklaer" style="margin-bottom:0">
+        <strong>R²</strong> = <span id="m3-r2-pct">—</span>% der Gesamtvarianz
+        in Y werden durch X₁ erklärt.<br>
+        <strong>f²</strong> = R²/(1−R²): &nbsp;klein ≥ .02 · mittel ≥ .15 · groß ≥ .35
+      </div>
+    </div>
+  </div><!-- cv-row -->
+
+  <!-- OLS-Annahmen Akkordion -->
+  <div class="acc-wrap" style="margin-top:.9rem">
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        📋 OLS-Annahmen — wann ist das Modell gültig?
+        <span class="acc-arrow">▶</span>
+      </button>
+      <div class="acc-body">
+        <div style="display:flex;flex-direction:column;gap:.6rem">
+
+          <div style="display:flex;gap:.75rem;align-items:flex-start">
+            <span style="font-family:'DM Mono',monospace;font-size:1.05rem;
+              color:var(--a2);flex-shrink:0;line-height:1.25">①</span>
+            <div style="font-family:'DM Mono',monospace;font-size:.79rem;
+              color:var(--ink2);line-height:1.85">
+              <strong style="color:var(--ink)">Linearität:</strong>
+              Die Beziehung zwischen X und Y ist linear. Verletzung: Residual-vs-Fitted-Plot
+              zeigt systematisches Muster (Kurve, Fächer). Abhilfe: Transformation oder
+              polynomiale Terme.
+            </div>
+          </div>
+
+          <div style="display:flex;gap:.75rem;align-items:flex-start">
+            <span style="font-family:'DM Mono',monospace;font-size:1.05rem;
+              color:var(--a2);flex-shrink:0;line-height:1.25">②</span>
+            <div style="font-family:'DM Mono',monospace;font-size:.79rem;
+              color:var(--ink2);line-height:1.85">
+              <strong style="color:var(--ink)">Unabhängigkeit:</strong>
+              Beobachtungen sind unabhängig (keine Autokorrelation, kein Clustering).
+              Verletzung bei Längsschnitt- oder Nested-Daten → gemischte Modelle notwendig.
+              <em>Lernende in derselben Schulklasse sind nicht unabhängig.</em>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:.75rem;align-items:flex-start">
+            <span style="font-family:'DM Mono',monospace;font-size:1.05rem;
+              color:var(--a2);flex-shrink:0;line-height:1.25">③</span>
+            <div style="font-family:'DM Mono',monospace;font-size:.79rem;
+              color:var(--ink2);line-height:1.85">
+              <strong style="color:var(--ink)">Homoskedastizität:</strong>
+              Varianz der Residuen ist konstant über alle X-Werte — kein Streufächer.
+              Verletzung: heteroskedastizitätsrobuste Standardfehler (HC3) oder WLS.
+              Anscombe-Datensatz III zeigt klassische Verletzung.
+            </div>
+          </div>
+
+          <div style="display:flex;gap:.75rem;align-items:flex-start">
+            <span style="font-family:'DM Mono',monospace;font-size:1.05rem;
+              color:var(--a2);flex-shrink:0;line-height:1.25">④</span>
+            <div style="font-family:'DM Mono',monospace;font-size:.79rem;
+              color:var(--ink2);line-height:1.85">
+              <strong style="color:var(--ink)">Normalverteilung der Residuen:</strong>
+              Nur für <em>Inferenzstatistik</em> (t-Tests, CIs) nötig — nicht für die
+              OLS-Schätzung selbst (Gauss-Markov-Theorem!). Bei n ≥ 30 greift
+              der zentrale Grenzwertsatz: leichte Verletzungen unkritisch.
+            </div>
+          </div>
+
+          <div style="display:flex;gap:.75rem;align-items:flex-start">
+            <span style="font-family:'DM Mono',monospace;font-size:1.05rem;
+              color:var(--a2);flex-shrink:0;line-height:1.25">⑤</span>
+            <div style="font-family:'DM Mono',monospace;font-size:.79rem;
+              color:var(--ink2);line-height:1.85">
+              <strong style="color:var(--ink)">Keine perfekte Multikollinearität</strong>
+              (multiple Regression): Sind zwei Prädiktoren perfekt korreliert, ist
+              (<strong>X</strong>ᵀ<strong>X</strong>) nicht invertierbar.
+              Hohe (nicht-perfekte) Kollinearität bläht Standardfehler auf → VIF &gt; 10 kritisch.
+              Siehe Modul ④.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- ══ MODULE 4 ════════════════════════════════════════════════════ -->
@@ -928,9 +1141,9 @@ const ST={
   showResiduals:true,
   showOLS:true,
   // Modul 2
-  showBeta:false,
+  showBeta:false,m2showSlope:false,m2showMean:false,
   // Modul 3
-  showBenchmark:false,
+  m3mode:'SST',showBenchmark:false,
   // Modul 4
   r12:0.20,           // Korrelation X1↔X2 (für Szenarien)
   avpStep:0,          // 0=Ausgangslage,1=eY|X2,2=eX1|X2,3=AVP-Slope
@@ -1262,9 +1475,196 @@ function initCanvasEvents(){
   cv.addEventListener('mouseleave',()=>{tip.style.display='none';_drag=null;});
 }
 
-/* ── Module 2/3/4 — werden in Batches 3+4 ergänzt ───────────────────── */
-function drawMod2(){}
-function drawMod3(){}
+/* ── Modul 2: Koeffizienten-Canvas ───────────────────────────────────── */
+function drawMod2(){
+  const cv=document.getElementById('cv-coef');
+  if(!cv||!ST.fitBiv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+
+  const pad={l:55,r:18,t:22,b:52};
+  const sx=makeScale(1,22,pad.l,W-pad.r);
+  const sy=makeScale(0,100,H-pad.b,pad.t);
+  const a1=cssVar('--a1'),a2=cssVar('--a2'),a3=cssVar('--a3'),a5=cssVar('--a5');
+  const ink2=cssVar('--ink2'),ink3=cssVar('--ink3'),paper=cssVar('--paper');
+
+  drawAxes(ctx,pad,W,H,'Lernzeit (h/Woche)','Klausurnote',
+    [2,4,6,8,10,12,14,16,18,20,22],[0,20,40,60,80,100],sx,sy,11);
+
+  const{b0,b1,mx,my}=ST.fitBiv;
+
+  // Mittelwert-Kreuz (gestrichelt, a5)
+  if(ST.m2showMean){
+    ctx.strokeStyle=a5;ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(sx(mx),pad.t);ctx.lineTo(sx(mx),H-pad.b);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad.l,sy(my));ctx.lineTo(W-pad.r,sy(my));ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(sx(mx),sy(my),5.5,0,Math.PI*2);
+    ctx.fillStyle=a5;ctx.fill();
+    ctx.fillStyle=a5;ctx.font='10px DM Mono,monospace';
+    ctx.textAlign='center';ctx.textBaseline='bottom';
+    ctx.fillText('x̄='+mx.toFixed(1),sx(mx),pad.t-1);
+    ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText('ȳ='+my.toFixed(1),pad.l-4,sy(my));
+  }
+
+  // OLS-Linie
+  ctx.beginPath();ctx.moveTo(sx(1),sy(b0+b1*1));ctx.lineTo(sx(22),sy(b0+b1*22));
+  ctx.strokeStyle=a2;ctx.lineWidth=2;ctx.setLineDash([]);ctx.stroke();
+
+  // Steigungsdreieck (+3 h Spanne, bei x̄)
+  if(ST.m2showSlope){
+    const dx=3;
+    const xL=Math.max(2,Math.min(mx,17));
+    const xR=xL+dx;
+    const yL=b0+b1*xL,yR=b0+b1*xR;
+    const pxL=sx(xL),pyL=sy(yL),pxR=sx(xR),pyR=sy(yR);
+    ctx.setLineDash([]);
+    // horizontale Kathete
+    ctx.beginPath();ctx.moveTo(pxL,pyL);ctx.lineTo(pxR,pyL);
+    ctx.strokeStyle=a5;ctx.lineWidth=1.5;ctx.stroke();
+    // vertikale Kathete
+    ctx.beginPath();ctx.moveTo(pxR,pyL);ctx.lineTo(pxR,pyR);
+    ctx.strokeStyle=b1>=0?a3:a1;ctx.lineWidth=2;ctx.stroke();
+    // Ecke markieren
+    ctx.beginPath();ctx.arc(pxL,pyL,3,0,Math.PI*2);ctx.fillStyle=a5;ctx.fill();
+    ctx.beginPath();ctx.arc(pxR,pyR,3,0,Math.PI*2);ctx.fillStyle=b1>=0?a3:a1;ctx.fill();
+    // Labels
+    ctx.font='10px DM Mono,monospace';
+    ctx.fillStyle=a5;ctx.textAlign='center';ctx.textBaseline='top';
+    ctx.fillText('+'+dx+' h',pxL+(pxR-pxL)/2,pyL+3);
+    const dy_lbl=(b1>=0?'+':'')+(dx*b1).toFixed(1)+' Pkt';
+    ctx.fillStyle=b1>=0?a3:a1;ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(dy_lbl,pxR+5,(pyL+pyR)/2);
+  }
+
+  // Datenpunkte
+  ST.data.x1.forEach((xi,i)=>{
+    ctx.beginPath();ctx.arc(sx(xi),sy(ST.data.y[i]),4.5,0,Math.PI*2);
+    ctx.fillStyle=paper;ctx.fill();
+    ctx.strokeStyle=a2;ctx.lineWidth=1.3;ctx.stroke();
+  });
+
+  updateMod2Display();
+}
+
+function updateMod2Display(){
+  if(!ST.fitBiv)return;
+  const{b0,b1,beta1}=ST.fitBiv;
+  const fmt=v=>v.toFixed(2);
+  document.getElementById('m2-b0').textContent=fmt(b0);
+  document.getElementById('m2-b1').textContent=fmt(b1);
+  document.getElementById('m2-beta').textContent=fmt(beta1);
+  ['m2-b1-val','m2-b1-acc'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.textContent=fmt(b1);
+  });
+  ['m2-beta-val','m2-beta-acc'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.textContent=fmt(beta1);
+  });
+}
+
+function toggleSlope(){
+  ST.m2showSlope=!ST.m2showSlope;
+  document.getElementById('btn-slope').classList.toggle('primary',ST.m2showSlope);
+  drawMod2();
+}
+function toggleMeanCr(){
+  ST.m2showMean=!ST.m2showMean;
+  document.getElementById('btn-mean-cr').classList.toggle('primary',ST.m2showMean);
+  drawMod2();
+}
+
+/* ── Modul 3: Varianzzerlegung ────────────────────────────────────────── */
+function drawMod3(){
+  const cv=document.getElementById('cv-var');
+  if(!cv||!ST.fitBiv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+
+  const pad={l:55,r:18,t:22,b:52};
+  const sx=makeScale(1,22,pad.l,W-pad.r);
+  const sy=makeScale(0,100,H-pad.b,pad.t);
+  const a1=cssVar('--a1'),a2=cssVar('--a2'),a3=cssVar('--a3');
+  const ink2=cssVar('--ink2'),ink3=cssVar('--ink3'),paper=cssVar('--paper');
+
+  drawAxes(ctx,pad,W,H,'Lernzeit (h/Woche)','Klausurnote',
+    [2,4,6,8,10,12,14,16,18,20,22],[0,20,40,60,80,100],sx,sy,11);
+
+  const{b0,b1,my,yhat}=ST.fitBiv;
+
+  if(ST.m3mode==='SST'){
+    // ȳ-Linie gestrichelt
+    ctx.beginPath();ctx.moveTo(pad.l,sy(my));ctx.lineTo(W-pad.r,sy(my));
+    ctx.strokeStyle=a2;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);ctx.stroke();ctx.setLineDash([]);
+    // Abweichungen vom Mittelwert (grau, SST)
+    ST.data.x1.forEach((xi,i)=>{
+      ctx.beginPath();ctx.moveTo(sx(xi),sy(ST.data.y[i]));ctx.lineTo(sx(xi),sy(my));
+      ctx.strokeStyle=ink2;ctx.globalAlpha=.45;ctx.lineWidth=1.5;ctx.stroke();ctx.globalAlpha=1;
+    });
+    // ȳ-Label
+    ctx.fillStyle=a2;ctx.font='10px DM Mono,monospace';
+    ctx.textAlign='left';ctx.textBaseline='bottom';
+    ctx.fillText('ȳ = '+my.toFixed(1),W-pad.r-58,sy(my)-3);
+  }else{
+    // SSR+SSE: OLS-Linie + farbige Residuen
+    ST.data.x1.forEach((xi,i)=>{
+      const yi=ST.data.y[i],yhi=yhat[i];
+      ctx.beginPath();ctx.moveTo(sx(xi),sy(yi));ctx.lineTo(sx(xi),sy(yhi));
+      ctx.strokeStyle=yi>yhi?a3:a1;ctx.globalAlpha=.42;ctx.lineWidth=1.5;
+      ctx.stroke();ctx.globalAlpha=1;
+    });
+    // ȳ-Ghost (sehr blass)
+    ctx.beginPath();ctx.moveTo(pad.l,sy(my));ctx.lineTo(W-pad.r,sy(my));
+    ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.globalAlpha=.35;
+    ctx.stroke();ctx.globalAlpha=1;ctx.setLineDash([]);
+    // OLS-Linie
+    ctx.beginPath();ctx.moveTo(sx(1),sy(b0+b1*1));ctx.lineTo(sx(22),sy(b0+b1*22));
+    ctx.strokeStyle=a2;ctx.lineWidth=2;ctx.stroke();
+  }
+
+  // Datenpunkte
+  ST.data.x1.forEach((xi,i)=>{
+    ctx.beginPath();ctx.arc(sx(xi),sy(ST.data.y[i]),5,0,Math.PI*2);
+    ctx.fillStyle=paper;ctx.fill();ctx.strokeStyle=a2;ctx.lineWidth=1.5;ctx.stroke();
+  });
+
+  updateMod3Display();
+}
+
+function updateMod3Display(){
+  if(!ST.fitBiv||!ST.data)return;
+  const{r2,sse,ssr,sst,b1}=ST.fitBiv;
+  const n=ST.data.n;
+  const adjR2=1-(1-r2)*(n-1)/(n-2);
+  const f2=r2/(1-r2);
+  const r=Math.sign(b1)*Math.sqrt(r2);
+  const fmt3=v=>v.toFixed(3);
+  document.getElementById('m3-r2').textContent=fmt3(r2);
+  document.getElementById('m3-adjr2').textContent=fmt3(adjR2);
+  document.getElementById('m3-f2').textContent=fmt3(f2);
+  document.getElementById('m3-r').textContent=fmt3(r);
+  document.getElementById('m3-r2-pct').textContent=(r2*100).toFixed(1);
+  const ssrPct=ssr/sst*100,ssePct=sse/sst*100;
+  document.getElementById('m3-ssr-seg').style.width=ssrPct+'%';
+  document.getElementById('m3-sse-seg').style.width=ssePct+'%';
+  document.getElementById('m3-ssr-lbl').textContent='SSR = '+Math.round(ssr);
+  document.getElementById('m3-sse-lbl').textContent='SSE = '+Math.round(sse);
+}
+
+function setVarMode(mode){
+  ST.m3mode=mode;
+  document.getElementById('btn-m3-sst').classList.toggle('primary',mode==='SST');
+  document.getElementById('btn-m3-sse').classList.toggle('primary',mode==='SSE');
+  const lbl=document.getElementById('m3-cv-label');
+  if(lbl)lbl.textContent=mode==='SST'?
+    'Gesamtvarianz (SST) — Abweichungen vom Mittelwert ȳ':
+    'Varianzzerlegung: SSR (erklärt, grün) + SSE (Residuen, rot)';
+  drawMod3();
+}
+
+/* ── Modul 4 — wird in Batch 4 ergänzt ───────────────────────────────── */
 function drawMod4(){}
 
 /* ── Canvas Hilfs-Utilities ───────────────────────────────────────── */
