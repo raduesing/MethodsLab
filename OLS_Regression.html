@@ -477,9 +477,125 @@ input[type=range]::-moz-range-thumb{
 <div id="mod1" class="mod-panel active">
   <div class="mod-h">Das <em>Least-Squares</em>-Prinzip</div>
   <div class="mod-sub">Warum minimiert OLS die quadrierten Abweichungen — und was bedeutet das?</div>
-  <!-- Batch 2 füllt diesen Block -->
-  <p style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink3)">[Modul 1 — wird in Batch 2 ergänzt]</p>
-</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <!-- Scatterplot -->
+    <div style="position:relative">
+      <div class="cv-label">Lernzeit (h/Woche) → Klausurnote</div>
+      <div class="cv-wrap">
+        <canvas id="cv-scatter" width="520" height="380"></canvas>
+      </div>
+      <div id="tooltip-sc" style="display:none;position:absolute;font-family:'DM Mono',monospace;
+        font-size:.7rem;background:var(--paper);border:1px solid var(--border);
+        padding:.28rem .55rem;pointer-events:none;color:var(--ink2);line-height:1.6;
+        white-space:nowrap"></div>
+    </div>
+
+    <!-- Rechtes Panel -->
+    <div style="display:flex;flex-direction:column;gap:.75rem;min-width:196px;max-width:230px">
+
+      <div class="coef-grid g2">
+        <div class="coef-cell">
+          <div class="coef-cell-lbl">b₀</div>
+          <div class="coef-cell-val" id="v-b0">—</div>
+        </div>
+        <div class="coef-cell">
+          <div class="coef-cell-lbl">b₁</div>
+          <div class="coef-cell-val" id="v-b1">—</div>
+        </div>
+        <div class="coef-cell">
+          <div class="coef-cell-lbl">R²</div>
+          <div class="coef-cell-val" id="v-r2">—</div>
+        </div>
+        <div class="coef-cell" title="Summe der quadrierten Residuen">
+          <div class="coef-cell-lbl">RSS</div>
+          <div class="coef-cell-val" id="v-rss">—</div>
+        </div>
+      </div>
+
+      <!-- RSS-Meter -->
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-bottom:.3rem">
+          RSS-Meter (relativ zu SST)
+        </div>
+        <div class="rss-bar-bg" style="position:relative;height:18px;max-width:100%">
+          <div class="rss-bar-fill" id="rss-fill" style="width:60%;height:100%"></div>
+          <div id="rss-ols-tick" style="position:absolute;top:0;height:100%;width:2px;background:var(--a3);display:none"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;
+          font-size:.62rem;color:var(--ink3);margin-top:.2rem">
+          <span>0 (Perfekt)</span><span id="rss-pct">—</span><span>SST (Ø-Linie)</span>
+        </div>
+      </div>
+
+      <!-- Formel -->
+      <div class="erklaer" style="margin-bottom:0">
+        <strong>Modell:</strong><br>
+        <span class="gk gk-hat">Y</span> = <span id="f-b0" style="color:var(--a2)">—</span>
+        + <span id="f-b1" style="color:var(--a2)">—</span> · X₁
+      </div>
+
+      <!-- Buttons -->
+      <div class="btn-row" style="margin-bottom:.3rem">
+        <button class="btn" id="btn-hand" onclick="toggleHand()">✏ Selbst anpassen</button>
+        <button class="btn primary" onclick="snapToOLS()">→ OLS</button>
+      </div>
+      <button class="btn" id="btn-resid" onclick="toggleResiduals()" style="width:100%">
+        ● Residuals: An
+      </button>
+
+    </div><!-- rechtes Panel -->
+  </div><!-- cv-row -->
+
+  <!-- Erklärer -->
+  <div class="erklaer" style="margin-top:.9rem">
+    <strong>Was ist ein Residual?</strong>
+    eᵢ = yᵢ − <span class="gk gk-hat" style="display:inline-block">y</span>ᵢ
+    ist die Abweichung des <em>beobachteten</em> Wertes vom <em>vorhergesagten</em>.
+    <strong>Warum quadrieren?</strong> Erstens werden positive und negative Residuen gleich
+    behandelt (|+3| = |−3|). Zweitens werden große Fehler überproportional bestraft:
+    ein Fehler von 10 zählt 100, nicht 10. OLS findet das einzige b₀, b₁ für das gilt:
+    Σeᵢ = 0 <em>und</em> Σeᵢ² ist minimal — diese Lösung ist eindeutig.
+  </div>
+
+  <!-- Anscombe Quartet Accordion -->
+  <div class="acc-wrap" style="margin-top:.9rem">
+    <div class="acc-item">
+      <button class="acc-trigger"
+        onclick="toggleAcc(this);if(this.classList.contains('open'))drawAnscombe()">
+        📐 Anscombe's Quartet — Warum Residualdiagnostik unverzichtbar ist
+        <span class="acc-arrow">▶</span>
+      </button>
+      <div class="acc-body">
+        <div class="ansc-grid">
+          <div class="ansc-item">
+            <div class="ansc-title">I — linear</div>
+            <div class="cv-wrap"><canvas id="cv-ansc1" width="190" height="150"></canvas></div>
+          </div>
+          <div class="ansc-item">
+            <div class="ansc-title">II — quadratisch</div>
+            <div class="cv-wrap"><canvas id="cv-ansc2" width="190" height="150"></canvas></div>
+          </div>
+          <div class="ansc-item">
+            <div class="ansc-title">III — Ausreißer</div>
+            <div class="cv-wrap"><canvas id="cv-ansc3" width="190" height="150"></canvas></div>
+          </div>
+          <div class="ansc-item">
+            <div class="ansc-title">IV — Leverage-Punkt</div>
+            <div class="cv-wrap"><canvas id="cv-ansc4" width="190" height="150"></canvas></div>
+          </div>
+        </div>
+        <div class="erklaer" style="margin-bottom:0">
+          <strong>Alle vier Datensätze</strong> haben (nahezu) identische Kennwerte:
+          b₁ ≈ 0.50, b₀ ≈ 3.0, r ≈ .816, R² ≈ .667. Dennoch zeigen Scatterplot und
+          Residualplot fundamental verschiedene Muster. <strong>Fazit:</strong>
+          Koeffizienten und R² allein genügen nicht — Residualdiagnostik ist Pflicht.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- mod1 -->
 
 <!-- ══ MODULE 2 ════════════════════════════════════════════════════ -->
 <div id="mod2" class="mod-panel">
@@ -808,7 +924,7 @@ const ST={
   avp:null,           // avpComponents Ergebnis
   activeModule:1,
   // Fit-by-Hand Zustand (Modul 1)
-  handLine:{b0:null,b1:null,active:false},
+  handLine:{active:false,yA:null,yB:null},
   showResiduals:true,
   showOLS:true,
   // Modul 2
@@ -826,17 +942,14 @@ function initData(){
   ST.fitBiv=olsBivariate(ST.data.x1,ST.data.y);
   ST.fitMult=olsMultiple(ST.data.x1,ST.data.x2,ST.data.y);
   ST.avp=avpComponents(ST.data.x1,ST.data.x2,ST.data.y);
-  // Hand-Linie auf OLS initialisieren (Mod 1)
-  if(ST.handLine.b0===null){
-    ST.handLine.b0=ST.fitBiv.b0+5;
-    ST.handLine.b1=ST.fitBiv.b1*0.7;
-  }
   document.getElementById('seed-info').textContent='Seed: '+ST.seed;
 }
 
 function neueDaten(){
   ST.seed=Math.floor(Math.random()*99999)+1;
-  ST.handLine.b0=null; // reset hand line
+  ST.handLine.active=false;ST.handLine.yA=null;ST.handLine.yB=null;
+  const btn=document.getElementById('btn-hand');
+  if(btn){btn.classList.remove('accent1');btn.textContent='✏ Selbst anpassen';}
   initData();
   draw();
 }
@@ -859,8 +972,297 @@ function draw(){
   else if(ST.activeModule===4) drawMod4();
 }
 
-// Platzhalter-Zeichenfunktionen — werden in Batches 2-4 ersetzt
-function drawMod1(){}
+/* ── Modul 1: Skalierungshilfe ───────────────────────────────────────── */
+function scatterScales(W,H){
+  const pad={l:55,r:18,t:22,b:52};
+  const sx=makeScale(1,22,pad.l,W-pad.r);
+  const sy=makeScale(0,100,H-pad.b,pad.t);
+  const sx_inv=makeScale(pad.l,W-pad.r,1,22);
+  const sy_inv=makeScale(H-pad.b,pad.t,0,100);
+  return{pad,sx,sy,sx_inv,sy_inv};
+}
+
+/* ── Modul 1: Hauptzeichenfunktion ───────────────────────────────────── */
+function drawMod1(){
+  const cv=document.getElementById('cv-scatter');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  if(!ST.data)return;
+
+  const{pad,sx,sy}=scatterScales(W,H);
+  const a1=cssVar('--a1'),a2=cssVar('--a2'),a3=cssVar('--a3'),a5=cssVar('--a5');
+  const paper=cssVar('--paper');
+
+  drawAxes(ctx,pad,W,H,'Lernzeit (h/Woche)','Klausurnote',
+    [2,4,6,8,10,12,14,16,18,20,22],[0,20,40,60,80,100],sx,sy,11);
+
+  // Aktuelle Linie bestimmen
+  let b0c,b1c,isHand=false;
+  if(ST.handLine.active&&ST.handLine.yA!==null){
+    b1c=(ST.handLine.yB-ST.handLine.yA)/(19-3);
+    b0c=ST.handLine.yA-b1c*3;
+    isHand=true;
+  }else{b0c=ST.fitBiv.b0;b1c=ST.fitBiv.b1;}
+
+  // Residuallinien (grün = pos, rot = neg)
+  if(ST.showResiduals){
+    ST.data.x1.forEach((xi,i)=>{
+      const yi=ST.data.y[i],yhi=b0c+b1c*xi;
+      ctx.beginPath();
+      ctx.moveTo(sx(xi),sy(yi));ctx.lineTo(sx(xi),sy(yhi));
+      ctx.strokeStyle=yi>yhi?a3:a1;
+      ctx.globalAlpha=.42;ctx.lineWidth=1.5;
+      ctx.stroke();ctx.globalAlpha=1;
+    });
+  }
+
+  // OLS-Referenz-Ghost wenn Hand aktiv (blassblau)
+  if(isHand){
+    const{b0:b0o,b1:b1o}=ST.fitBiv;
+    ctx.beginPath();
+    ctx.moveTo(sx(1),sy(b0o+b1o*1));ctx.lineTo(sx(22),sy(b0o+b1o*22));
+    ctx.strokeStyle=a2;ctx.lineWidth=1.5;ctx.globalAlpha=.35;
+    ctx.setLineDash([]);ctx.stroke();ctx.globalAlpha=1;
+  }
+
+  // Aktive Linie
+  if(isHand){
+    // Gestrichelte Hand-Linie (a5 = orange)
+    ctx.beginPath();
+    ctx.moveTo(sx(1),sy(b0c+b1c*1));ctx.lineTo(sx(22),sy(b0c+b1c*22));
+    ctx.strokeStyle=a5;ctx.lineWidth=2.5;ctx.setLineDash([7,3]);
+    ctx.stroke();ctx.setLineDash([]);
+    // Anker-Kreise an x=3 und x=19
+    [[sx(3),sy(ST.handLine.yA)],[sx(19),sy(ST.handLine.yB)]].forEach(([ax,ay])=>{
+      ctx.beginPath();ctx.arc(ax,ay,10,0,Math.PI*2);
+      ctx.fillStyle=a5;ctx.globalAlpha=.22;ctx.fill();ctx.globalAlpha=1;
+      ctx.strokeStyle=a5;ctx.lineWidth=2;ctx.stroke();
+    });
+  }else{
+    // Solide OLS-Linie (a2)
+    ctx.beginPath();
+    ctx.moveTo(sx(1),sy(b0c+b1c*1));ctx.lineTo(sx(22),sy(b0c+b1c*22));
+    ctx.strokeStyle=a2;ctx.lineWidth=2;ctx.setLineDash([]);ctx.stroke();
+  }
+
+  // Datenpunkte (offene Kreise)
+  ST.data.x1.forEach((xi,i)=>{
+    ctx.beginPath();ctx.arc(sx(xi),sy(ST.data.y[i]),5,0,Math.PI*2);
+    ctx.fillStyle=paper;ctx.fill();
+    ctx.strokeStyle=a2;ctx.lineWidth=1.5;ctx.stroke();
+  });
+
+  updateMod1Display(b0c,b1c,isHand);
+
+  // Anscombe nachzeichnen wenn Akkordion offen
+  const anscBody=document.querySelector('#mod1 .acc-body');
+  if(anscBody&&anscBody.classList.contains('open'))drawAnscombe();
+}
+
+/* ── Modul 1: Koeffizienten-Panel aktualisieren ──────────────────────── */
+function updateMod1Display(b0,b1,isHand){
+  const fmt=v=>v.toFixed(2);
+  const{x1,y}=ST.data;
+  const rss=x1.reduce((s,xi,i)=>{const e=y[i]-(b0+b1*xi);return s+e*e;},0);
+  const sst=ST.fitBiv.sst;
+
+  document.getElementById('v-b0').textContent=fmt(b0);
+  document.getElementById('v-b1').textContent=fmt(b1);
+  document.getElementById('v-r2').textContent=fmt(Math.max(0,1-rss/sst));
+  document.getElementById('v-rss').textContent=Math.round(rss);
+  document.getElementById('f-b0').textContent=fmt(b0);
+  document.getElementById('f-b1').textContent=(b1>=0?'+':'')+fmt(b1);
+
+  // RSS-Balken: Breite = rss/sst, Farbe grün wenn OLS, rot wenn Hand
+  const pct=Math.min(100,rss/sst*100);
+  const fill=document.getElementById('rss-fill');
+  fill.style.width=pct+'%';
+  fill.style.background=isHand?cssVar('--a1'):cssVar('--a3');
+
+  // OLS-Tick (zeigt optimales Minimum beim Hand-Modus)
+  const tick=document.getElementById('rss-ols-tick');
+  const olsPct=Math.min(100,ST.fitBiv.sse/sst*100);
+  tick.style.left=olsPct+'%';
+  tick.style.display=isHand?'block':'none';
+
+  document.getElementById('rss-pct').textContent=pct.toFixed(1)+'%';
+
+  // Geänderte Koeffizienten hervorheben
+  ['v-b0','v-b1'].forEach(id=>{
+    document.getElementById(id).classList.toggle('changed',isHand);
+  });
+}
+
+/* ── Modul 1: Anscombe's Quartet ─────────────────────────────────────── */
+function drawAnscombe(){
+  const A=ANSCOMBE;
+  [1,2,3,4].forEach(k=>{
+    const cv=document.getElementById('cv-ansc'+k);
+    if(!cv)return;
+    const ctx=cv.getContext('2d');
+    const W=cv.width,H=cv.height;
+    ctx.clearRect(0,0,W,H);
+    const xd=A['x'+k],yd=A['y'+k];
+    const xmin=Math.min(...xd)-1,xmax=Math.max(...xd)+1;
+    const ymin=Math.min(...yd)-1,ymax=Math.max(...yd)+1;
+    const pad={l:26,r:8,t:10,b:24};
+    const sx=makeScale(xmin,xmax,pad.l,W-pad.r);
+    const sy=makeScale(ymin,ymax,H-pad.b,pad.t);
+    const ink=cssVar('--ink'),ink3=cssVar('--ink3');
+    const a2=cssVar('--a2'),paper=cssVar('--paper'),grid=cssVar('--grid');
+
+    // Gitternetz
+    ctx.strokeStyle=grid;ctx.lineWidth=.5;
+    [5,10,15,20].filter(v=>v>xmin&&v<xmax).forEach(v=>{
+      ctx.beginPath();ctx.moveTo(sx(v),pad.t);ctx.lineTo(sx(v),H-pad.b);ctx.stroke();
+    });
+    [4,6,8,10,12].filter(v=>v>ymin&&v<ymax).forEach(v=>{
+      ctx.beginPath();ctx.moveTo(pad.l,sy(v));ctx.lineTo(W-pad.r,sy(v));ctx.stroke();
+    });
+
+    // Achsen
+    ctx.strokeStyle=ink3;ctx.lineWidth=.8;
+    ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,H-pad.b);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(pad.l,H-pad.b);ctx.lineTo(W-pad.r,H-pad.b);ctx.stroke();
+
+    // Regressionsgerade
+    const fit=olsBivariate(xd,yd);
+    ctx.beginPath();
+    ctx.moveTo(sx(xmin),sy(fit.b0+fit.b1*xmin));
+    ctx.lineTo(sx(xmax),sy(fit.b0+fit.b1*xmax));
+    ctx.strokeStyle=a2;ctx.lineWidth=1.5;ctx.setLineDash([]);ctx.stroke();
+
+    // Datenpunkte
+    xd.forEach((xi,i)=>{
+      ctx.beginPath();ctx.arc(sx(xi),sy(yd[i]),3.5,0,Math.PI*2);
+      ctx.fillStyle=paper;ctx.fill();
+      ctx.strokeStyle=ink;ctx.lineWidth=1.2;ctx.stroke();
+    });
+
+    // R²-Label rechts unten
+    ctx.fillStyle=a2;ctx.font='10px DM Mono,monospace';
+    ctx.textAlign='right';ctx.textBaseline='bottom';
+    ctx.fillText('R²='+fit.r2.toFixed(2),W-pad.r-2,H-pad.b-2);
+  });
+}
+
+/* ── Modul 1: Fit-by-Hand ─────────────────────────────────────────────── */
+function toggleHand(){
+  ST.handLine.active=!ST.handLine.active;
+  const btn=document.getElementById('btn-hand');
+  if(ST.handLine.active){
+    // Anker nahe OLS setzen (leicht versetzt)
+    const f=ST.fitBiv;
+    ST.handLine.yA=Math.max(0,Math.min(100,f.b0+f.b1*3+8));
+    ST.handLine.yB=Math.max(0,Math.min(100,f.b0+f.b1*19-5));
+    btn.classList.add('accent1');btn.textContent='✏ Hand: An';
+  }else{
+    btn.classList.remove('accent1');btn.textContent='✏ Selbst anpassen';
+  }
+  drawMod1();
+}
+
+function snapToOLS(){
+  if(!ST.handLine.active)return;
+  const f=ST.fitBiv;
+  const tA=f.b0+f.b1*3,tB=f.b0+f.b1*19;
+  const sA=ST.handLine.yA,sB=ST.handLine.yB;
+  let i=0;const steps=22;
+  function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+  function frame(){
+    i++;const t=ease(i/steps);
+    ST.handLine.yA=sA+(tA-sA)*t;ST.handLine.yB=sB+(tB-sB)*t;
+    drawMod1();
+    if(i<steps){requestAnimationFrame(frame);}
+    else{
+      ST.handLine.active=false;
+      const btn=document.getElementById('btn-hand');
+      btn.classList.remove('accent1');btn.textContent='✏ Selbst anpassen';
+      drawMod1();
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function toggleResiduals(){
+  ST.showResiduals=!ST.showResiduals;
+  document.getElementById('btn-resid').textContent=
+    '● Residuals: '+(ST.showResiduals?'An':'Aus');
+  drawMod1();
+}
+
+/* ── Canvas-Events: Drag-Anker + Punkt-Tooltip ───────────────────────── */
+let _drag=null;
+function initCanvasEvents(){
+  const cv=document.getElementById('cv-scatter');
+  if(!cv)return;
+  const tip=document.getElementById('tooltip-sc');
+
+  function getScales(){return scatterScales(cv.width,cv.height);}
+  function anchorPx(){
+    const{sx,sy}=getScales();
+    return{ax:sx(3),ay:sy(ST.handLine.yA||0),bx:sx(19),by:sy(ST.handLine.yB||0)};
+  }
+  function dist(x1,y1,x2,y2){return Math.sqrt((x1-x2)**2+(y1-y2)**2);}
+
+  cv.addEventListener('mousedown',e=>{
+    if(!ST.handLine.active)return;
+    const r=cv.getBoundingClientRect();
+    const mx=e.clientX-r.left,my=e.clientY-r.top;
+    const{ax,ay,bx,by}=anchorPx();
+    if(dist(mx,my,ax,ay)<14){_drag='A';e.preventDefault();}
+    else if(dist(mx,my,bx,by)<14){_drag='B';e.preventDefault();}
+  });
+
+  cv.addEventListener('mousemove',e=>{
+    const r=cv.getBoundingClientRect();
+    const mx=e.clientX-r.left,my=e.clientY-r.top;
+    const{sx,sy,sy_inv}=getScales();
+
+    // Anker ziehen
+    if(_drag){
+      const yv=Math.max(0,Math.min(100,sy_inv(my)));
+      if(_drag==='A')ST.handLine.yA=yv;else ST.handLine.yB=yv;
+      drawMod1();return;
+    }
+
+    // Cursor auf Ankern
+    if(ST.handLine.active&&ST.handLine.yA!==null){
+      const{ax,ay,bx,by}=anchorPx();
+      if(dist(mx,my,ax,ay)<14||dist(mx,my,bx,by)<14){
+        cv.style.cursor='ns-resize';tip.style.display='none';return;
+      }
+    }
+
+    // Tooltip über Datenpunkten
+    if(!ST.data){tip.style.display='none';cv.style.cursor='crosshair';return;}
+    let found=false;
+    ST.data.x1.forEach((xi,i)=>{
+      if(found)return;
+      if(dist(mx,my,sx(xi),sy(ST.data.y[i]))<8){
+        let b0c,b1c;
+        if(ST.handLine.active&&ST.handLine.yA!==null){
+          b1c=(ST.handLine.yB-ST.handLine.yA)/(19-3);
+          b0c=ST.handLine.yA-b1c*3;
+        }else{b0c=ST.fitBiv.b0;b1c=ST.fitBiv.b1;}
+        const yhi=b0c+b1c*xi,ei=ST.data.y[i]-yhi;
+        tip.innerHTML='yᵢ = '+ST.data.y[i].toFixed(1)+'<br>ŷᵢ = '+yhi.toFixed(1)+'<br>eᵢ = '+ei.toFixed(1);
+        tip.style.display='block';
+        tip.style.left=(sx(xi)+10)+'px';
+        tip.style.top=(sy(ST.data.y[i])-10)+'px';
+        cv.style.cursor='default';found=true;
+      }
+    });
+    if(!found){tip.style.display='none';cv.style.cursor=ST.handLine.active?'default':'crosshair';}
+  });
+
+  window.addEventListener('mouseup',()=>{_drag=null;});
+  cv.addEventListener('mouseleave',()=>{tip.style.display='none';_drag=null;});
+}
+
+/* ── Module 2/3/4 — werden in Batches 3+4 ergänzt ───────────────────── */
 function drawMod2(){}
 function drawMod3(){}
 function drawMod4(){}
@@ -929,6 +1331,7 @@ function toggleAcc(trigger){
 
 /* ── Start ────────────────────────────────────────────────────────── */
 initData();
+initCanvasEvents();
 draw();
 </script>
 </body>
