@@ -294,13 +294,13 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
         <div>
           <div class="cv-label" style="margin-bottom:.4rem">Pooling-Modus (de/aktivieren)</div>
           <div class="btn-row" style="flex-direction:column;gap:.35rem;margin-bottom:0">
-            <button class="btn primary" id="pool-cp-btn" onclick="togglePool('cp')" style="width:100%;text-align:left">
+            <button class="btn primary" id="pool-cp-btn" onclick="togglePool('cp')" style="width:100%;text-align:left;opacity:0.35">
               ● Complete Pooling
             </button>
-            <button class="btn primary" id="pool-np-btn" onclick="togglePool('np')" style="width:100%;text-align:left">
+            <button class="btn primary" id="pool-np-btn" onclick="togglePool('np')" style="width:100%;text-align:left;opacity:0.35">
               ● No Pooling
             </button>
-            <button class="btn primary" id="pool-pp-btn" onclick="togglePool('pp')" style="width:100%;text-align:left">
+            <button class="btn primary" id="pool-pp-btn" onclick="togglePool('pp')" style="width:100%;text-align:left;opacity:0.35">
               ● Partial Pooling (LMM)
             </button>
           </div>
@@ -355,13 +355,13 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
       <!-- Info-Spalte -->
       <div class="info-box" style="flex:1">
         <div class="info-box-h">Tutorial — Warum Multilevel?</div>
-        <p><strong>Was Sie sehen</strong><br>
-        J=5 Schulklassen (verschiedene Farben), jede mit n_j=10 Schülern. X = Lernzeit, Y = Klausurnote. Die drei Pooling-Modi lassen sich einzeln de/aktivieren — beobachten Sie, wie sich die Geraden unterscheiden.</p>
-        <p><strong>Complete Pooling (rot, gestrichelt)</strong><br>
+        <p><strong>Aufgabe — klicken Sie sich durch</strong><br>
+        J=5 Schulklassen (Farben), n_j=10 Schüler, X = Lernzeit, Y = Klausurnote. Die Regressionsgeraden sind zunächst <em>ausgeblendet</em>. <strong>Aktivieren Sie die Pooling-Modi einzeln</strong> (Buttons links), um die Geraden einzublenden — zuerst einen allein, dann im Vergleich. Was fällt auf?</p>
+        <p><strong>Complete Pooling (rot, gestrichelt) → aktivieren</strong><br>
         Eine globale OLS-Gerade durch alle N=50 Datenpunkte. Gruppenstruktur wird vollständig ignoriert. Vorteil: einfach. Problem: Standard­fehler werden unterschätzt, weil Beobachtungen innerhalb einer Klasse nicht unabhängig sind.</p>
-        <p><strong>No Pooling (Gruppen­farben, gepunktet)</strong><br>
+        <p><strong>No Pooling (Gruppen­farben, gepunktet) → aktivieren</strong><br>
         Jede Klasse bekommt eine eigene OLS-Gerade — J separate Modelle. Nutzt Gruppen­info voll, aber verschwendet Informationen: Klassen „lernen" nichts voneinander. Bei n_j=4 werden die Schätzungen instabil.</p>
-        <p><strong>Partial Pooling / LMM (blau, durchgezogen)</strong><br>
+        <p><strong>Partial Pooling / LMM (blau, durchgezogen) → aktivieren</strong><br>
         Der Goldstandard für hierarchische Daten. Die Gruppen-Intercepts werden zur Grand Mean <em>geschrumpft</em> (Shrinkage) — proportional zu ICC und n_j. Klassen mit wenig Daten werden stärker angepasst. Korrekte Standard­fehler, Informations­austausch zwischen Gruppen.</p>
         <p><strong>Was beobachten?</strong><br>
         · <em>Hohe ICC:</em> CP- und NP-Geraden liegen weit auseinander. PP liegt dazwischen.<br>
@@ -825,7 +825,7 @@ const ST={
   tau1:1.5, rho:0, g10_m3:3,
   bw:3, bb:-6, xoff:7,
   activeModule:1,
-  poolCP:true, poolNP:true, poolPP:true,
+  poolCP:false, poolNP:false, poolPP:false,
   data:null, cpFit:null, npFit:null, ppFit:null
 };
 
