@@ -264,7 +264,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 <!-- ══ MODULE 1: POOLING-VERGLEICH ══════════════════════════════════ -->
 <div id="mod1" class="mod-panel active">
   <div class="mod-h">Warum Multilevel? — <em>Complete, No &amp; Partial Pooling</em></div>
-  <div class="mod-sub">Drei Strategien im Vergleich: eine gemeinsame Gerade, J separate Geraden, oder das Beste aus beiden Welten?</div>
+  <div class="mod-sub">Vier Strategien im Vergleich: eine gemeinsame Gerade, gruppenspezifische Geraden (Interaktionsmodell), Partial Pooling mit gleicher oder variierender Steigung.</div>
 
   <div class="cv-row" style="align-items:flex-start">
     <!-- Canvas -->
@@ -302,6 +302,9 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
             </button>
             <button class="btn primary" id="pool-pp-btn" onclick="togglePool('pp')" style="width:100%;text-align:left;opacity:0.35">
               ● Partial Pooling (LMM)
+            </button>
+            <button class="btn primary" id="pool-rs-btn" onclick="togglePool('rs')" style="width:100%;text-align:left;opacity:0.35">
+              ● Random Slopes (LMM)
             </button>
           </div>
         </div>
@@ -360,12 +363,14 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
         <p><strong>Complete Pooling (rot, gestrichelt) → aktivieren</strong><br>
         Eine globale OLS-Gerade durch alle N=50 Datenpunkte. Gruppenstruktur wird vollständig ignoriert. Vorteil: einfach. Problem: Standard­fehler werden unterschätzt, weil Beobachtungen innerhalb einer Klasse nicht unabhängig sind.</p>
         <p><strong>No Pooling (Gruppen­farben, gepunktet) → aktivieren</strong><br>
-        Jede Klasse bekommt eine eigene OLS-Gerade — J separate Modelle. Nutzt Gruppen­info voll, aber verschwendet Informationen: Klassen „lernen" nichts voneinander. Bei n_j=4 werden die Schätzungen instabil.</p>
-        <p><strong>Partial Pooling / LMM (blau, durchgezogen) → aktivieren</strong><br>
-        Der Goldstandard für hierarchische Daten. Die Gruppen-Intercepts werden zur Grand Mean <em>geschrumpft</em> (Shrinkage) — proportional zu ICC und n_j. Klassen mit wenig Daten werden stärker angepasst. Korrekte Standard­fehler, Informations­austausch zwischen Gruppen.</p>
+        Jede Klasse bekommt eine eigene Regressionsgerade. In der Praxis: ein Modell mit Gruppe × Prädiktor-Interaktion — bei J Gruppen entstehen so 2J Parameter (J Intercepts + J Slopes). Bei großem J wird das schnell unhandlich; kein Informationsaustausch zwischen Gruppen. Bei n_j=4 werden Schätzungen instabil.</p>
+        <p><strong>Partial Pooling / LMM (Gruppen­farben, durchgezogen) → aktivieren</strong><br>
+        Die Gruppen-Intercepts werden zur Grand Mean <em>geschrumpft</em>, aber alle Gruppen teilen denselben Slope γ₁₀ (Random Intercepts). Die blaue gestrichelte Gerade zeigt den Fixed Effect (γ₀₀ + γ₁₀·X). Korrekte Standard­fehler, Informations­austausch zwischen Gruppen.</p>
+        <p><strong>Random Slopes / LMM (Gruppen­farben, gestrichelt) → aktivieren</strong><br>
+        Erweiterung: auch die Steigungen variieren zwischen Gruppen und werden zu γ₁₀ geschrumpft. Die Geraden ähneln stärker dem No-Pooling-Muster als parallele RI-Linien — aber bleiben regularisiert. Nähe zu No Pooling ↑ wenn τ₁ groß, zu Partial Pooling ↑ wenn τ₁ klein.</p>
         <p><strong>Was beobachten?</strong><br>
-        · <em>Hohe ICC:</em> CP- und NP-Geraden liegen weit auseinander. PP liegt dazwischen.<br>
-        · <em>Kleine Gruppen:</em> NP-Geraden schwanken stark, PP-Geraden bleiben stabil.<br>
+        · <em>Hohe ICC:</em> CP- und NP-Geraden liegen weit auseinander. PP/RS liegen dazwischen.<br>
+        · <em>Kleine Gruppen:</em> NP-Geraden schwanken stark, PP/RS-Geraden bleiben stabil.<br>
         · <em>Simpson:</em> CP-Gerade zeigt negativen Trend, NP/PP zeigen positiven Within-Effekt. Modul&nbsp;④ erklärt warum.</p>
       </div>
 
@@ -725,7 +730,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
     <div class="lcard">
       <div class="lcard-h">② Complete · No · Partial Pooling</div>
       <div class="lcard-body">
-        <strong>Complete Pooling</strong> ignoriert Gruppen — eine globale OLS-Gerade, SE unterschätzt. <strong>No Pooling</strong> schätzt jede Gruppe separat — stabil nur bei großen n_j, kein Informationsaustausch. <strong>Partial Pooling</strong> (LMM) ist der Kompromiss: Gruppen-Intercepts werden zur Grand Mean <em>geschrumpft</em> (Empirical Bayes). Stärke des Shrinkage: λ = τ₀²/(τ₀²+σ²/n_j). Kleine Gruppen werden stärker angepasst. Ergebnis: regularisierter Schätzer mit besserer Out-of-Sample-Vorhersage und korrekten SE.
+        <strong>Complete Pooling</strong> ignoriert Gruppen — eine globale OLS-Gerade, SE unterschätzt. <strong>No Pooling</strong> modelliert als Gruppe × Prädiktor-Interaktion (2J Parameter) — stabil nur bei großen n_j und kleinem J, kein Informationsaustausch. <strong>Partial Pooling</strong> (LMM) ist der Kompromiss: Gruppen-Intercepts (Random Intercepts) oder auch Slopes (Random Slopes) werden zur Grand Mean <em>geschrumpft</em> (Empirical Bayes). Stärke des Shrinkage: λ = τ₀²/(τ₀²+σ²/n_j). Kleine Gruppen werden stärker angepasst. Ergebnis: regularisierter Schätzer mit besserer Out-of-Sample-Vorhersage und korrekten SE.
       </div>
     </div>
 
@@ -825,8 +830,8 @@ const ST={
   tau1:1.5, rho:0, g10_m3:3,
   bw:3, bb:-6, xoff:7,
   activeModule:1,
-  poolCP:false, poolNP:false, poolPP:false,
-  data:null, cpFit:null, npFit:null, ppFit:null
+  poolCP:false, poolNP:false, poolPP:false, poolRS:false,
+  data:null, cpFit:null, npFit:null, ppFit:null, rsFit:null
 };
 
 /* ── Data generation ─────────────────────────────────────── */
@@ -873,6 +878,19 @@ function fitPP(groups,np){
     return{j,aPP:lam*aNPj+(1-lam)*g00,aNP:aNPj,lam};
   });
   return{g00,g10,tau0,tau0Sq,sig,sigSq,icc,pp};
+}
+
+function fitPP_RS(groups,np,ppRI){
+  const g10=ppRI.g10,sigSq=ppRI.sigSq;
+  const Sxx=groups.map((g,j)=>Math.max(0.01,g.pts.reduce((s,p)=>s+(p.x-np[j].xm)**2,0)));
+  const bNP=np.map(g=>g.b);
+  const bVar=bNP.reduce((s,b)=>s+(b-g10)**2,0)/Math.max(1,bNP.length-1);
+  const tau1Sq=Math.max(0,bVar-sigSq*Sxx.reduce((s,v)=>s+1/v,0)/Sxx.length);
+  const ppSlopes=np.map((g,j)=>{
+    const lam1=tau1Sq/(tau1Sq+sigSq/Sxx[j]+1e-10);
+    return{j,aPP:ppRI.pp[j].aPP,bPP:lam1*g.b+(1-lam1)*g10,lam1};
+  });
+  return{g10,ppSlopes,tau1Sq};
 }
 
 /* ── Canvas helpers ──────────────────────────────────────── */
@@ -937,7 +955,18 @@ function drawMod1(){
   const leg=[];
   if(ST.poolCP&&ST.cpFit){drawLine(ctx,sc,ST.cpFit.a,ST.cpFit.b,cvar('--a1'),2.5,[8,4]);leg.push([cvar('--a1'),'Complete Pooling',[8,4]]);}
   if(ST.poolNP&&ST.npFit){ST.npFit.forEach((g,j)=>drawLine(ctx,sc,g.a,g.b,GC[j%5]+'bb',2,[3,3]));leg.push([GC[0]+'bb','No Pooling',[3,3]]);}
-  if(ST.poolPP&&ST.ppFit){ST.ppFit.pp.forEach(g=>drawLine(ctx,sc,g.aPP,ST.ppFit.g10,cvar('--a2'),2.5));leg.push([cvar('--a2'),'Partial Pooling',null]);}
+  if(ST.poolRS&&ST.rsFit){
+    ST.rsFit.ppSlopes.forEach((g,j)=>drawLine(ctx,sc,g.aPP,g.bPP,GC[j%5],2,[6,3]));
+    leg.push([GC[0],'Rand. Slopes',[6,3]]);
+  }
+  if(ST.poolPP&&ST.ppFit){
+    ST.ppFit.pp.forEach((g,j)=>drawLine(ctx,sc,g.aPP,ST.ppFit.g10,GC[j%5],2));
+    leg.push([GC[0],'PP Gruppen',null]);
+  }
+  if((ST.poolPP||ST.poolRS)&&ST.ppFit){
+    drawLine(ctx,sc,ST.ppFit.g00,ST.ppFit.g10,cvar('--a2'),3,[7,3]);
+    leg.push([cvar('--a2'),'Fixed Effect',[7,3]]);
+  }
   drawLegend(ctx,sc,leg);
 }
 function updMod1UI(){
@@ -1085,6 +1114,7 @@ function drawMod4(){
 function runSim(){
   ST.data=genData(ST.seed,ST.g00,ST.g10,ST.tau0,ST.sig,ST.J,ST.nj);
   ST.cpFit=fitCP(ST.data);ST.npFit=fitNP(ST.data);ST.ppFit=fitPP(ST.data,ST.npFit);
+  ST.rsFit=fitPP_RS(ST.data,ST.npFit,ST.ppFit);
   document.getElementById('seed-info').textContent='Seed: '+ST.seed;
   updMod1UI();redrawActive();
 }

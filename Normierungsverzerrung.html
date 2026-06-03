@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Normierungsverzerrung — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.02rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn.active{border-color:var(--a3)!important;background:var(--a3)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:272px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.5rem}
+.mode-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.32rem .5rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
+.mode-btn:hover{border-color:var(--accent);color:var(--accent)}
+.mode-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.slider-row{margin-bottom:.52rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.dist-info{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink3);line-height:1.6;
+  border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.15rem}
+.stat-row{display:grid;grid-template-columns:auto 1fr;gap:.18rem .65rem;align-items:baseline;margin-bottom:.15rem}
+.stat-key{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2)}
+.stat-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink);font-weight:500;text-align:right}
+.stat-val.accent{color:var(--accent)}
+.stat-val.warn{color:var(--a1)}
+.pr-row{display:flex;justify-content:space-between;align-items:center;padding:.2rem 0;
+  border-bottom:1px dashed var(--grid);font-family:'DM Mono',monospace;font-size:.74rem}
+.pr-row:last-child{border-bottom:none}
+.pr-t{color:var(--ink3)}
+.pr-val{font-weight:500}
+.pr-diff{font-size:.74rem}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block}
+.plot-sticky{position:sticky;top:0;z-index:10;background:var(--bg);padding-bottom:.2rem;
+  border-bottom:2px solid var(--border);margin-bottom:0}
+.hint{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.35rem;margin-top:.4rem}
+.dtable-wrap{overflow-x:auto;margin-bottom:.85rem}
+.dtable{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.82rem}
+.dtable th{background:var(--panel);border:1px solid var(--grid);padding:.35rem .6rem;
+  color:var(--ink3);font-weight:400;letter-spacing:.06em;text-transform:uppercase;font-size:.74rem;text-align:center}
+.dtable td{border:1px solid var(--grid);padding:.32rem .6rem;text-align:center;color:var(--ink2)}
+.dtable tr:nth-child(even) td{background:color-mix(in srgb,var(--panel) 50%,var(--bg))}
+.diff-pos-big{color:var(--a1);font-weight:600}
+.diff-pos-mid{color:var(--a5);font-weight:600}
+.diff-neg{color:var(--a4);font-weight:600}
+.diff-zero{color:var(--ink3)}
+.row-mean td{background:color-mix(in srgb,var(--accent) 8%,var(--bg))!important;font-weight:600}
+.table-expl{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);
+  line-height:1.8;margin-bottom:.85rem;display:flex;flex-wrap:wrap;gap:.1rem .6rem;
+  border-left:3px solid var(--border);padding:.45rem .75rem;background:var(--panel)}
+.te-item{display:block}
+.te-key{font-weight:600;color:var(--ink2)}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:640px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.3rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Normierungsverzerrung — <em>T-Werte bei schiefen Verteilungen</em></h1>
+  <button class="tbtn" id="btn-areaT" onclick="toggleAreaT()">Flächentransf. aus</button>
+  <button class="tbtn" style="border-color:var(--a1);color:var(--a1)" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Verteilungstyp</div>
+    <div class="mode-row">
+      <button class="mode-btn active" id="btn-gamma"    onclick="setDist('gamma')">Gamma</button>
+      <button class="mode-btn"        id="btn-lognormal" onclick="setDist('lognormal')">Log-Normal</button>
+    </div>
+    <div class="mode-row">
+      <button class="mode-btn"        id="btn-exp"      onclick="setDist('exponential')">Exponential</button>
+      <button class="mode-btn"        id="btn-exgauss"  onclick="setDist('exgauss')">Ex-Gauss</button>
+    </div>
+    <button class="mode-btn" id="btn-weibull" onclick="setDist('weibull')" style="width:100%;margin-bottom:.4rem">Weibull</button>
+    <div class="dist-info" id="dist-info">Typisch für Symptomskalen: Mode &lt; Median &lt; Mittelwert, parametrische Schiefe über Shape α kontrollierbar.</div>
+  </div>
+
+  <div class="scard" id="param-card">
+    <div class="scard-title">Parameter</div>
+    <div id="sliders-wrap"></div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Verteilungskennwerte</div>
+    <div class="stat-row"><span class="stat-key">Mittelwert</span><span class="stat-val" id="st-mean">—</span></div>
+    <div class="stat-row"><span class="stat-key">SD</span><span class="stat-val" id="st-sd">—</span></div>
+    <div class="stat-row"><span class="stat-key">Schiefe γ₁</span><span class="stat-val warn" id="st-skew">—</span></div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">T-Wert → Echter PR</div>
+    <div id="pr-mini"></div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Anzeigebereich (beide Canvas)</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">0 bis</span>
+        <span class="slider-val" id="sv-xdisp">40 Pkt.</span>
+      </div>
+      <input type="range" id="sl-xdisp" min="5" max="40" step="1" value="40">
+    </div>
+  </div>
+
+</div><!-- #sidebar -->
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <div class="story-box" style="margin-bottom:.7rem">
+    <div class="story-lbl">📋 Einleitung — SCL-90-R als Beispiel</div>
+    Die SCL-90-R (Items 0–4, hier 10 Items → Summenwert 0–40) hat eine <strong>stark rechtsschiefe</strong> Normierungsverteilung.
+    Die Autoren haben dies korrekt gelöst und die T-Werte über die <strong>Flächentransformation</strong> (Lienert &amp; Raatz) berechnet — also percentiläquivalent.
+    Dieses Tool stellt die Gegenfrage: <em>Wie stark wäre die Verzerrung, wenn man stattdessen lineare T-Werte (M=50, SD=10) verwendet hätte?</em>
+    Ein lineares T=50 läge empirisch bei <strong id="sb-pr">…</strong> der Normstichprobe.
+  </div>
+
+  <div class="plot-box plot-sticky">
+    <div class="plot-title">① Dichteverteilung — Empirisch (blau) vs. implizierte Normalverteilung (orange)</div>
+    <canvas id="cv-density" height="372"></canvas>
+    <div class="hint" id="hint-density">Rote Linien = lineare T-Wert-Stufen · Blaue Linien = empirische Percentile (PR 16, 50, 84, 98) · Grün (Toggle) = T_F-Stufen + NV (Median/IQR) · Modell: kontinuierlich — Bodeneffekt bei x=0 nicht abgebildet</div>
+  </div>
+
+  <div class="sec-h" style="margin-top:.6rem">② Diskrepanztabelle — Vergleich beider Normierungsansätze</div>
+  <div class="dtable-wrap">
+    <table class="dtable" id="dtable">
+      <thead>
+        <tr>
+          <th style="color:var(--a5)">T (linear)</th>
+          <th>Rohwert</th>
+          <th style="color:var(--a5)">T-Norm PR</th>
+          <th style="color:var(--a2)">Empir. PR</th>
+          <th>Diff (PP)</th>
+          <th style="color:var(--a3)">T_F (Fläche)</th>
+          <th style="color:var(--a3)">Δ T</th>
+        </tr>
+      </thead>
+      <tbody id="dtbody"></tbody>
+    </table>
+  </div>
+  <div class="table-expl">
+    <span class="te-item"><span class="te-key">T (linear)</span> = 50 + 10·(x − M̄)/SD &thinsp;—&thinsp; setzt Normalverteilung voraus</span>
+    <span class="te-item"><span class="te-key" style="color:var(--a5)">T-Norm PR</span> = nominaler Prozentrang unter NV-Annahme</span>
+    <span class="te-item"><span class="te-key" style="color:var(--a2)">Empir. PR</span> = wahrer Prozentrang in der simulierten Verteilung</span>
+    <span class="te-item"><span class="te-key">Diff (PP)</span> = Empir. PR − T-Norm PR in Prozentpunkten</span>
+    <span class="te-item"><span class="te-key" style="color:var(--a3)">T_F (Fläche)</span> = 50 + 10·Φ⁻¹(Empir. PR / 100) &thinsp;—&thinsp; Lienert &amp; Raatz</span>
+    <span class="te-item"><span class="te-key" style="color:var(--a3)">Δ T</span> = T_F − T (linear): positiv = lineare Norm unterschätzt Elevation</span>
+  </div>
+
+  <div class="sec-h">③ Prozentrang-Kurven im Vergleich</div>
+  <div class="plot-box">
+    <div class="plot-title">Kumulierte Prozentränge: Empirisch (blau) vs. T-Norm-Annahme (orange)</div>
+    <canvas id="cv-pr" height="300"></canvas>
+    <div class="hint" id="hint-pr">Die Divergenz zwischen den Kurven zeigt, wie stark die T-Norm den empirischen PR unter- oder überschätzt.</div>
+  </div>
+
+  <div class="sec-h">Konzepte</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">Das Normierungsdilemma</div>
+      <div class="lcard-body">Lineare T-Werte setzen voraus, dass die Normierungsstichprobe <strong>normalverteilt</strong> ist.
+        Bei schiefen Rohdaten (z.B. Symptomskalen) ist diese Voraussetzung verletzt.
+        Der T-Wert-Mittelwert (T=50) fällt dann nicht auf den <em>50. Perzentrang</em> der Population,
+        sondern auf einen deutlich höheren.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Warum PR(Mittelwert) &gt; 50 %?</div>
+      <div class="lcard-body">Bei rechtsschiefen Verteilungen liegt <strong>mehr als die Hälfte aller Werte unterhalb des Mittelwerts</strong>
+        (Mittelwert &gt; Median). Der T-Wert normiert auf den Mittelwert — aber empirisch übertrifft dieser
+        Wert 60–75 % der Normstichprobe. Ein Patient mit T=50 ist damit pathologischer als PR=50 suggeriert.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Wo liegt die größte Verzerrung?</div>
+      <div class="lcard-body">Die Abweichung ist im <strong>mittleren Bereich (T=45–65)</strong> am größten,
+        weil dort die Schiefe der Verteilung den CDF am stärksten gegenüber der Normalverteilung verschiebt.
+        Bei extremen Werten (T=70–80) ist die Diskrepanz gering — beide Kurven nähern sich 100 %.
+        Klinisch brisant: gerade milde bis moderate Symptomwerte werden fehlklassifiziert.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Alternativen: Flächentreue Normierung</div>
+      <div class="lcard-body">Die <strong>area transformation</strong> (Watts &amp; Bollen, 1985; Blom, 1958) weist
+        jedem Rohwert seinen empirischen Perzentrang zu und transformiert diesen dann in einen Normalwert.
+        Das Ergebnis entspricht dem, was man erhalten würde, wenn die Rohwerte normalverteilt wären —
+        ohne die Normalverteilungsannahme zu verletzen. Gebräuchliche Varianten: <em>Rangnormierung</em>, <em>Blom-Korrektur</em>.</div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Normierungsverzerrung — Hilfe &amp; Hintergrund
+      <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+    </div>
+    <div class="help-sh">Das Problem</div>
+    <p class="help-p">Viele psychologische Tests (SCL-90-R, BDI, PHQ-9, BAI) erheben Symptomwerte auf ordinalen Skalen (z.B. 0–4).
+      Summenwerte über mehrere Items sind in gesunden Normierungsstichproben <strong>stark rechtschief</strong>:
+      Die meisten Menschen haben niedrige Werte, wenige haben hohe.
+      Obwohl diese Verteilung <em>nicht</em> normalverteilt ist, werden häufig <strong>lineare T-Werte</strong> berechnet:</p>
+    <span class="help-formula">T = 50 + 10 · (X − M) / SD</span>
+    <p class="help-p">Diese Transformation setzt implizit voraus, dass X normalverteilt ist. Das führt zu systematischen Verzerrungen.</p>
+
+    <div class="help-sh">Was dieses Tool zeigt</div>
+    <p class="help-p">Vier rechtsschiefe Verteilungstypen können auf 0–40 skalierte Rohwerte angepasst werden.
+      Das Tool vergleicht für jeden Rohwert den <strong>T-Norm-impliziten Prozentrang</strong> (unter Normalverteilungsannahme)
+      mit dem <strong>echten empirischen Prozentrang</strong> aus der gewählten Verteilung.</p>
+
+    <div class="help-sh">Die vier Verteilungstypen</div>
+    <p class="help-p"><strong>Gamma (α, β):</strong> Hier wird die <em>Raten-Parametrisierung</em> verwendet (wie in R: <code>dgamma(x, shape=α, rate=β)</code>).
+      <strong>Shape α</strong> bestimmt die Form und Schiefe: Schiefe = 2/√α.
+      Für α &lt; 1 ist die Verteilung extrem rechtschief (monoton fallend), für α → ∞ nähert sie sich der Normalverteilung.
+      <strong>Rate β</strong> ist der reziproke Skalierungsparameter (β = 1/Scale): er staucht (großes β) oder streckt (kleines β) die Verteilung.
+      Mittelwert <em>M = α/β</em>, Varianz <em>σ² = α/β²</em>, PDF: <em>f(x) = β^α · x^(α−1) · e^(−βx) / Γ(α)</em>.
+      Beispiel: α=1.5, β=0.20 → M=7.5, SD=6.1, γ₁=1.63 — typisch für gesunde SCL-90-Normstichprobe (10 Items, Bereich 0–40).
+      Praktisch: α kontrolliert die Asymmetrie, β die Lage (umgekehrt proportional zum Mittelwert).</p>
+    <p class="help-p"><strong>Log-Normal (μ_log, σ_log):</strong> Ergibt sich, wenn der Logarithmus des Messwerts normalverteilt ist.
+      Schiefe steigt schnell mit σ_log. Häufig bei Messwerten, die nicht negativ werden können.</p>
+    <p class="help-p"><strong>Exponential (λ):</strong> Spezialfall der Gamma-Verteilung (α=1). Gedächtnisloser Prozess,
+      maximale Schiefe = 2. Alle Rohwerte gleich wahrscheinlich zu verringern — extremes Modell.</p>
+    <p class="help-p"><strong>Weibull (k, λ):</strong> Zweiparametrische Verteilung, die je nach Shape-Parameter k sehr unterschiedliche Formen annimmt.
+      <strong>k &lt; 1:</strong> streng monoton fallend, fallende Hazardrate (wie Exponential, aber noch extremer).
+      <strong>k = 1:</strong> identisch mit Exponential(1/λ).
+      <strong>1 &lt; k &lt; 3.6:</strong> rechtschief, glockenförmig — relevant für Überlebenszeiten und Reaktionszeiten.
+      <strong>k &gt; 3.6:</strong> annähernd normalverteilt.
+      Mittelwert = λ · Γ(1 + 1/k), Varianz = λ² · [Γ(1+2/k) − Γ(1+1/k)²].</p>
+
+    <p class="help-p"><strong>Ex-Gaussian (μ, σ, τ):</strong> Faltung aus Normalverteilung N(μ,σ²) und Exponential Exp(1/τ).
+      Häufig für Reaktionszeitdaten. Ermöglicht separate Kontrolle über normalverteilte Grundkomponente
+      und exponentiellen Ausreißerterm (τ). Schiefe ≈ 2τ³/(σ²+τ²)^(3/2).</p>
+
+    <div class="help-sh">Numerische Implementierung &amp; Grenzen</div>
+    <p class="help-p"><strong>Exakte CDFs:</strong> Für Gamma, Log-Normal, Exponential und Weibull verwendet das Tool analytisch exakte kumulative Verteilungsfunktionen (z.B. regularisierte unvollständige Gammafunktion), die keine Diskretisierungsfehler nahe x=0 aufweisen. Nur für die Ex-Gauss-Verteilung wird numerisch integriert (Trapezregel, 1200 Schritte).</p>
+    <p class="help-p"><strong>Kontinuierliche Näherung:</strong> Das Tool modelliert alle Verteilungen als <em>stetig</em>. In der diagnostischen Praxis (z.B. SCL-90-R) ist der Rohwert 0 oft ein diskreter Block mit massiver punktueller Wahrscheinlichkeit (Bodeneffekt). Diese Klippenwahrscheinlichkeit bei x=0 wird vom Tool nicht dargestellt — es zeigt das kontinuierliche Modell als Idealisierung.</p>
+
+    <div class="help-sh">Formel: T-Norm PR vs. empirischer PR</div>
+    <span class="help-formula">Nominaler PR(x) = Φ((x − M̄) / SD)  [T-Norm-Annahme: Normalverteilung]
+Empirischer PR(x) = F_skief(x)           [wahre kumulative Verteilungsfunktion]</span>
+    <p class="help-p">Dabei ist M̄ der Mittelwert und SD die Standardabweichung der empirischen Verteilung —
+      die gleichen Werte, die für die lineare T-Transformation verwendet werden.
+      Die Differenz Empir. PR − Nominal PR zeigt die Fehlklassifikation.</p>
+
+    <div class="help-sh">Flächentransformation nach Lienert &amp; Raatz</div>
+    <p class="help-p">Die <strong>flächentreue T-Normierung</strong> (Lienert &amp; Raatz, 1998; auch: „area transformation" oder „normalized standard scores") löst das Schiefeproblem, indem sie jeden Rohwert über seinen <em>empirischen Prozentrang</em> in einen T-Wert überführt — nicht über eine lineare Formel:</p>
+    <span class="help-formula">T_F(x) = 50 + 10 · Φ⁻¹(F_emp(x))</span>
+    <p class="help-p">Dabei ist <em>F_emp(x)</em> die empirische kumulative Häufigkeit des Rohwerts x und <em>Φ⁻¹</em> die Quantilfunktion (Inverse) der Standardnormalverteilung. Das Ergebnis: Wer auf dem 84. Perzentrang der Normstichprobe liegt, bekommt immer T_F = 60 — unabhängig davon, ob die Rohwertverteilung schief ist oder nicht.</p>
+    <p class="help-p"><strong>Vergleich beider Methoden:</strong></p>
+    <span class="help-formula">Linear:  T   = 50 + 10 · (x − M) / SD    → setzt Normalvt. voraus
+Fläche:  T_F = 50 + 10 · Φ⁻¹(F_emp(x)) → exakt nach Prozentrang</span>
+    <p class="help-p">Der <strong>Toggle „Flächentransf."</strong> im Tool blendet drei zusätzliche visuelle Elemente ein:</p>
+    <p class="help-p">① <strong>Grüne Dichtekurve</strong> im ersten Panel: Eine <em>Quantil-basierte Normalapproximation</em> — eine Normalverteilung, deren Parameter robust aus den empirischen Quantilen geschätzt werden: Zentrum = empirischer Median, Streuung = (PR84 − PR16)/2. <strong>Wichtig:</strong> Das ist <em>nicht</em> die Dichte der Flächentransformation selbst (die im Rohwert-Raum identisch mit der empirischen Dichte wäre), sondern eine heuristische Visualisierung: Sie zeigt, wie eine Normalverteilung aussähe, wenn man robust parametrisiert — und macht so den Unterschied zur linear-normierten orangen Kurve sichtbar.</p>
+    <p class="help-p">② <strong>Grüne gestrichelte Vertikallinien</strong> (T_F = 40, 50, 60, 70) im Dichteplot: Sie markieren genau die Raw-Score-Positionen, die bei flächentreuer Normierung die T-Werte 40, 50, 60, 70 erzeugen — also die empirischen PR-Quantile 15.9 %, 50 %, 84.1 % und 97.7 %. Vergleich mit den roten Linien (linear) zeigt die Verschiebung.</p>
+    <p class="help-p">③ <strong>Tabellenspalten „T Fläche" und „Δ T"</strong>: Für jeden linearen T-Wert (T = 30–80) wird der flächentreue T-Wert am gleichen Rohwert berechnet und die Differenz ausgewiesen. Positive Δ T: Die lineare Normierung unterschätzt die klinische Elevation — der Patient ist pathologischer als T_linear suggeriert.</p>
+
+    <div class="help-sh">Literatur</div>
+    <p class="help-p">Lienert, G.A. &amp; Raatz, U. (1998). <em>Testaufbau und Testanalyse</em> (6. Aufl.). Beltz PVU. [Kap. 7: Normierung]<br>
+    Franke, G.H. (2002). <em>SCL-90-R. Symptom-Checkliste von L.R. Derogatis</em> (2. Aufl.). Beltz Test.<br>
+    Blom, G. (1958). <em>Statistical estimates and transformed beta-variables.</em> Almqvist &amp; Wiksell.</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// MATH UTILITIES
+// ══════════════════════════════════════════════════════════════════════
+
+function erf(x) {
+  const s = x < 0 ? -1 : 1;
+  x = Math.abs(x);
+  const t = 1 / (1 + 0.3275911 * x);
+  const y = 1 - ((((1.061405429*t - 1.453152027)*t + 1.421413741)*t - 0.284496736)*t + 0.254829592)*t*Math.exp(-x*x);
+  return s * y;
+}
+
+function normalCDF(x, mu=0, sigma=1) {
+  return 0.5 * (1 + erf((x - mu) / (sigma * Math.SQRT2)));
+}
+
+function normalPDF(x, mu=0, sigma=1) {
+  return Math.exp(-0.5 * ((x-mu)/sigma)**2) / (sigma * Math.sqrt(2*Math.PI));
+}
+
+function logGamma(z) {
+  if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - logGamma(1 - z);
+  z -= 1;
+  const C = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+    771.32342877765313, -176.61502916214059, 12.507343278686905,
+    -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  let x = C[0];
+  for (let i = 1; i < 9; i++) x += C[i] / (z + i);
+  const t = z + 7.5;
+  return 0.5*Math.log(2*Math.PI) + (z+0.5)*Math.log(t) - t + Math.log(x);
+}
+
+function normalCDFInv(p) {
+  if (p <= 0) return -8; if (p >= 1) return 8;
+  const a = [2.50662823884,-18.61500062529,41.39119773534,-25.44106049637];
+  const b = [-8.47351093090,23.08336743743,-21.06224101826,3.13082909833];
+  const c = [0.3374754822726147,0.9761690190917186,0.1607979714918209,
+             0.0276438810333863,0.0038405729373609,0.0003951896511349,
+             0.0000321767881768,0.0000002888167364,0.0000003960315187];
+  const q = p - 0.5;
+  let r, x;
+  if (Math.abs(q) < 0.42) {
+    r = q*q;
+    x = q*(((a[3]*r+a[2])*r+a[1])*r+a[0])/((((b[3]*r+b[2])*r+b[1])*r+b[0])*r+1);
+  } else {
+    r = q < 0 ? p : 1-p;
+    r = Math.log(-Math.log(r));
+    x = c[0]+r*(c[1]+r*(c[2]+r*(c[3]+r*(c[4]+r*(c[5]+r*(c[6]+r*(c[7]+r*c[8])))))));
+    if (q < 0) x = -x;
+  }
+  return x;
+}
+
+// Regularized lower incomplete gamma P(a, x) — for exact Gamma CDF
+function regularizedGammaP(a, x) {
+  if (x <= 0) return 0;
+  if (!isFinite(x)) return 1;
+  const EPS = 3e-10, FPMIN = 1e-30, MAXITER = 300;
+  if (x < a + 1) {
+    let ap = a, del = 1/a, sum = del;
+    for (let n = 0; n < MAXITER; n++) {
+      ++ap; del *= x/ap; sum += del;
+      if (Math.abs(del) < EPS * Math.abs(sum)) break;
+    }
+    return Math.min(1, sum * Math.exp(-x + a*Math.log(x) - logGamma(a)));
+  } else {
+    let b = x+1-a, c = 1/FPMIN, d = 1/b, h = d;
+    for (let i = 1; i <= MAXITER; i++) {
+      const an = -i*(i-a); b += 2;
+      d = an*d+b; if (Math.abs(d) < FPMIN) d = FPMIN;
+      c = b+an/c; if (Math.abs(c) < FPMIN) c = FPMIN;
+      d = 1/d; const del = d*c; h *= del;
+      if (Math.abs(del-1) < EPS) break;
+    }
+    return Math.max(0, 1 - Math.exp(-x + a*Math.log(x) - logGamma(a)) * h);
+  }
+}
+
+// Distribution PDFs
+function gammaPDF(x, alpha, beta) {
+  // Gamma(α, β) with β = rate: f(x) = β^α · x^(α−1) · exp(−βx) / Γ(α)
+  if (x <= 0) return 0;
+  return Math.exp(alpha*Math.log(beta) + (alpha-1)*Math.log(x) - beta*x - logGamma(alpha));
+}
+
+function logNormalPDF(x, meanlog, sdlog) {
+  if (x <= 0) return 0;
+  return Math.exp(-0.5*((Math.log(x)-meanlog)/sdlog)**2) / (x*sdlog*Math.sqrt(2*Math.PI));
+}
+
+function expPDF(x, rate) {
+  if (x < 0) return 0;
+  return rate * Math.exp(-rate * x);
+}
+
+function weibullPDF(x, k, lambda) {
+  if (x <= 0) return 0;
+  const z = x / lambda;
+  return (k/lambda) * Math.pow(z, k-1) * Math.exp(-Math.pow(z, k));
+}
+
+function exGaussPDF(x, mu, sigma, tau) {
+  // f(x; μ,σ,τ) = (1/τ)·exp((μ−x)/τ + σ²/(2τ²))·Φ((x−μ)/σ − σ/τ)
+  const logF = -Math.log(tau) + (mu - x)/tau + sigma**2/(2*tau**2);
+  const z = (x - mu)/sigma - sigma/tau;
+  const f = Math.exp(logF) * normalCDF(z);
+  return isFinite(f) ? Math.max(0, f) : 0;
+}
+
+// Distribution statistics (mean, sd, skewness)
+function distStats(type, p) {
+  let mean, variance, skewness;
+  switch (type) {
+    case 'gamma':
+      mean = p.alpha / p.beta;
+      variance = p.alpha / (p.beta**2);
+      skewness = 2 / Math.sqrt(p.alpha);
+      break;
+    case 'lognormal':
+      mean = Math.exp(p.meanlog + p.sdlog**2/2);
+      variance = (Math.exp(p.sdlog**2)-1) * Math.exp(2*p.meanlog + p.sdlog**2);
+      skewness = (Math.exp(p.sdlog**2)+2) * Math.sqrt(Math.exp(p.sdlog**2)-1);
+      break;
+    case 'exponential':
+      mean = 1/p.rate;
+      variance = 1/p.rate**2;
+      skewness = 2;
+      break;
+    case 'exgauss':
+      mean = p.mu + p.tau;
+      variance = p.sigma**2 + p.tau**2;
+      skewness = 2*p.tau**3 / (variance**1.5);
+      break;
+    case 'weibull': {
+      const g1 = Math.exp(logGamma(1 + 1/p.k));
+      const g2 = Math.exp(logGamma(1 + 2/p.k));
+      const g3 = Math.exp(logGamma(1 + 3/p.k));
+      mean = p.lambda * g1;
+      variance = p.lambda**2 * (g2 - g1**2);
+      const skv = g2 - g1**2;
+      skewness = (g3 - 3*g2*g1 + 2*g1**3) / Math.pow(skv, 1.5);
+      break;
+    }
+  }
+  return { mean, sd: Math.sqrt(variance), skewness };
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════
+
+const ST = {
+  dist: 'gamma',
+  params: {
+    gamma:       { alpha: 1.50, beta: 0.20 },
+    lognormal:   { meanlog: 1.5, sdlog: 0.8 },
+    exponential: { rate: 0.10 },
+    exgauss:     { mu: 3.0, sigma: 2.0, tau: 5.0 },
+    weibull:     { k: 1.5, lambda: 8.0 }
+  }
+};
+
+let D = null;        // computed data
+let showAreaT = false;
+let X_DISPLAY = 40;  // visible x-range for both canvases (0 … X_DISPLAY)
+
+// ══════════════════════════════════════════════════════════════════════
+// DATA COMPUTATION
+// ══════════════════════════════════════════════════════════════════════
+
+const X_MAX = 40;
+const N_PTS = 1200;
+const DX = X_MAX / N_PTS;
+
+function computeData() {
+  const type = ST.dist;
+  const p = ST.params[type];
+  const stats = distStats(type, p);
+  const { mean, sd } = stats;
+
+  const pdfFn =
+    type === 'gamma'       ? x => gammaPDF(x, p.alpha, p.beta)
+    : type === 'lognormal' ? x => logNormalPDF(x, p.meanlog, p.sdlog)
+    : type === 'exponential' ? x => expPDF(x, p.rate)
+    : type === 'weibull'   ? x => weibullPDF(x, p.k, p.lambda)
+    :                          x => exGaussPDF(x, p.mu, p.sigma, p.tau);
+
+  // Exact analytical CDFs for 4 distributions (avoids trapezoidal errors near x=0)
+  const exactCDF =
+    type === 'gamma'       ? x => regularizedGammaP(p.alpha, p.beta * x)
+    : type === 'lognormal' ? x => (x <= 0 ? 0 : normalCDF(Math.log(x), p.meanlog, p.sdlog))
+    : type === 'exponential' ? x => (x <= 0 ? 0 : 1 - Math.exp(-p.rate * x))
+    : type === 'weibull'   ? x => (x <= 0 ? 0 : 1 - Math.exp(-Math.pow(x/p.lambda, p.k)))
+    : null; // ExGauss: numerical integration
+
+  const xs = [], pdfs = [], cdfs = [];
+
+  if (exactCDF) {
+    // Grid from x=0: PDF guard returns 0 at x=0 (avoids boundary spike in maxPDF)
+    const normFactor = exactCDF(X_MAX);
+    for (let i = 0; i <= N_PTS; i++) {
+      const x = i * DX;
+      xs.push(x);
+      const v = pdfFn(x);
+      pdfs.push((isFinite(v) && !isNaN(v)) ? v / normFactor : 0);
+      cdfs.push(exactCDF(x) / normFactor);
+    }
+  } else {
+    // Numerical trapezoidal integration for ExGauss
+    for (let i = 0; i <= N_PTS; i++) {
+      const x = i * DX;
+      xs.push(x);
+      const v = pdfFn(x);
+      pdfs.push((isFinite(v) && !isNaN(v)) ? v : 0);
+    }
+    const rawCdfs = [0];
+    for (let i = 1; i <= N_PTS; i++)
+      rawCdfs.push(rawCdfs[i-1] + (pdfs[i-1] + pdfs[i]) * DX / 2);
+    const totalMass = rawCdfs[N_PTS] || 1;
+    for (let i = 0; i <= N_PTS; i++) {
+      pdfs[i] /= totalMass;
+      cdfs.push(rawCdfs[i] / totalMass);
+    }
+  }
+
+  D = {
+    xs, pdfs, cdfs,
+    prEmp:  cdfs.map(v => v * 100),
+    prNorm: xs.map(x => normalCDF(x, mean, sd) * 100),
+    maxPDF: Math.max(...pdfs.filter(v => isFinite(v) && !isNaN(v))),
+    ...stats
+  };
+}
+
+// Interpolate empirical PR at a given raw score x
+function empPR(x) {
+  if (!D) return 0;
+  if (x <= D.xs[0]) return 0;
+  if (x >= X_MAX)   return 100;
+  const idx = x / DX;
+  const i0 = Math.min(N_PTS - 1, Math.floor(idx));
+  const t  = idx - i0;
+  return D.prEmp[i0] * (1-t) + D.prEmp[i0+1] * t;
+}
+
+// Find x where empirical CDF ≈ target (0-100)
+function invEmpPR(targetPR) {
+  const target = targetPR / 100;
+  for (let i = 1; i <= N_PTS; i++) {
+    if (D.cdfs[i] >= target) {
+      const t = (target - D.cdfs[i-1]) / (D.cdfs[i] - D.cdfs[i-1]);
+      return D.xs[i-1] + t * DX;
+    }
+  }
+  return X_MAX;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CSS VARIABLE READER
+// ══════════════════════════════════════════════════════════════════════
+
+function cv(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAWING — DENSITY PANEL
+// ══════════════════════════════════════════════════════════════════════
+
+function drawDensity() {
+  const canvas = document.getElementById('cv-density');
+  const W = canvas.clientWidth; canvas.width = W;
+  const H = canvas.height;
+  const ctx = canvas.getContext('2d');
+
+  const ml=68, mr=22, mt=48, mb=52;
+  const cW=W-ml-mr, cH=H-mt-mb;
+
+  const c1=cv('--a1'), c2=cv('--a2'), c4=cv('--a4'), c5=cv('--a5');
+  const ink2=cv('--ink2'), ink3=cv('--ink3'), grid=cv('--grid'), paper=cv('--paper');
+
+  ctx.clearRect(0,0,W,H);
+
+  // Compute visible range; yMax fixed to global max (prevents axis jumping on zoom)
+  const endIdx = Math.min(N_PTS, Math.round(X_DISPLAY / DX));
+  const yMax = D.maxPDF * 1.28;
+  const toX = x => ml + cW * x / X_DISPLAY;
+  const toY = y => mt + cH * (1 - y / yMax);
+  const xStep = X_DISPLAY <= 10 ? 2 : 5;
+
+  // Grid — horizontal
+  for (let i=0; i<=4; i++) {
+    const yv = yMax * i / 4;
+    const py = toY(yv);
+    ctx.strokeStyle=grid; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(ml,py); ctx.lineTo(ml+cW,py); ctx.stroke();
+    ctx.fillStyle=ink3; ctx.font='15px DM Mono,monospace'; ctx.textAlign='right';
+    ctx.fillText(yv.toFixed(3), ml-6, py+4);
+  }
+
+  // Grid — vertical
+  for (let xv=0; xv<=X_DISPLAY; xv+=xStep) {
+    const px = toX(xv);
+    ctx.strokeStyle=grid; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(px,mt); ctx.lineTo(px,mt+cH); ctx.stroke();
+    ctx.fillStyle=ink3; ctx.font='15px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(xv, px, mt+cH+16);
+  }
+
+  // Axes
+  ctx.strokeStyle=ink3; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(ml,mt); ctx.lineTo(ml,mt+cH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ml,mt+cH); ctx.lineTo(ml+cW,mt+cH); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle=ink2; ctx.font='16px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText(`Rohwert-Punkte (0 bis ${X_DISPLAY})`, ml+cW/2, H-6);
+  ctx.save(); ctx.translate(13, mt+cH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=ink3; ctx.font='15px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('Dichte', 0, 0); ctx.restore();
+
+  // T-mark labels drawn BEFORE clip (they sit above the plot area)
+  const T_MARKS = [40, 50, 60, 70];
+  const T_NOM_PRS = [15.9, 50, 84.1, 97.7];
+  T_MARKS.forEach((T, ti) => {
+    const rawX = D.mean + (T-50)/10 * D.sd;
+    if (rawX < 0 || rawX > X_DISPLAY) return;
+    const px = toX(rawX);
+    ctx.fillStyle=c1; ctx.font='bold 13px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(`T=${T}`, px, mt-12);
+    ctx.font='13px DM Mono,monospace';
+    ctx.fillText(`PR ${T_NOM_PRS[ti].toFixed(0)}`, px, mt-2);
+  });
+
+  // ── CLIP to plot area for all curves, lines, and inner labels ──
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(ml, mt, cW, cH);
+  ctx.clip();
+
+  // T-mark lines (clipped)
+  T_MARKS.forEach(T => {
+    const rawX = D.mean + (T-50)/10 * D.sd;
+    if (rawX < 0 || rawX > X_DISPLAY) return;
+    const px = toX(rawX);
+    ctx.strokeStyle=c1; ctx.lineWidth=1.4; ctx.setLineDash([5,3]);
+    ctx.beginPath(); ctx.moveTo(px,mt); ctx.lineTo(px,mt+cH); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Empirical percentile markers
+  const EMP_MARKS = [16, 50, 84, 98];
+  const EMP_LBLS  = ['PR 16', 'Median', 'PR 84', 'PR 98'];
+  EMP_MARKS.forEach((pr, i) => {
+    const empX = invEmpPR(pr);
+    if (empX < 0 || empX > X_DISPLAY) return;
+    const px = toX(empX);
+    ctx.strokeStyle=c2; ctx.lineWidth=1.5; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(px, mt+cH*0.05); ctx.lineTo(px, mt+cH); ctx.stroke();
+    const side = empX > X_DISPLAY*0.6 ? -1 : 1;
+    ctx.fillStyle=c2; ctx.font='13px DM Mono,monospace';
+    ctx.textAlign = side===1 ? 'left' : 'right';
+    ctx.fillText(EMP_LBLS[i], px + side*4, mt+cH*0.1+8);
+  });
+
+  // Blue filled area
+  ctx.fillStyle=c2; ctx.globalAlpha=0.22;
+  ctx.beginPath();
+  ctx.moveTo(toX(D.xs[0]), toY(0));
+  for (let i=0; i<=endIdx; i++) ctx.lineTo(toX(D.xs[i]), toY(D.pdfs[i]));
+  ctx.lineTo(toX(D.xs[endIdx]), toY(0));
+  ctx.closePath(); ctx.fill();
+  ctx.globalAlpha=1;
+
+  // Blue stroke
+  ctx.strokeStyle=c2; ctx.lineWidth=2.2; ctx.setLineDash([]);
+  ctx.beginPath();
+  for (let i=0; i<=endIdx; i++) {
+    const px=toX(D.xs[i]), py=toY(D.pdfs[i]);
+    i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+
+  // Orange dashed: implied normal
+  ctx.strokeStyle=c5; ctx.lineWidth=1.8; ctx.setLineDash([8,4]);
+  ctx.beginPath();
+  for (let i=0; i<=endIdx; i++) {
+    const x=D.xs[i], y=normalPDF(x, D.mean, D.sd);
+    const px=toX(x), py=toY(y);
+    i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // Flächentransformation overlay
+  if (showAreaT) {
+    const c3 = cv('--a3');
+    const medX = invEmpPR(50);
+    const sdF  = (invEmpPR(84.1) - invEmpPR(15.9)) / 2;
+    ctx.strokeStyle=c3; ctx.lineWidth=2.0; ctx.setLineDash([4,5]);
+    ctx.beginPath();
+    for (let i=0; i<=endIdx; i++) {
+      const x=D.xs[i], y=normalPDF(x, medX, sdF);
+      const px=toX(x), py=toY(y);
+      i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+    }
+    ctx.stroke(); ctx.setLineDash([]);
+
+    [40,50,60,70].forEach((T, i) => {
+      const rawX = invEmpPR([15.9,50.0,84.1,97.7][i]);
+      if (rawX < 0 || rawX > X_DISPLAY) return;
+      const px = toX(rawX);
+      ctx.strokeStyle=c3; ctx.lineWidth=1.8; ctx.setLineDash([3,4]);
+      ctx.beginPath(); ctx.moveTo(px,mt); ctx.lineTo(px,mt+cH); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle=c3; ctx.font='bold 13px DM Mono,monospace'; ctx.textAlign='center';
+      ctx.fillText(`T_F=${T}`, px, mt+cH-5);
+    });
+  }
+
+  // Annotation box
+  const prM = empPR(D.mean);
+  const visX = Math.min(D.mean, X_DISPLAY);
+  const pxM  = toX(visX);
+  ctx.fillStyle=paper; ctx.globalAlpha=0.92;
+  const bx = (D.mean > X_DISPLAY || pxM > W*0.62) ? ml+8 : pxM+10;
+  ctx.fillRect(bx-4, mt+6, 214, 26);
+  ctx.globalAlpha=1;
+  ctx.strokeStyle=c2; ctx.lineWidth=1.2; ctx.strokeRect(bx-4, mt+6, 214, 26);
+  ctx.fillStyle=c2; ctx.font='bold 14px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText(`T=50 → echter PR = ${prM.toFixed(1)} %`, bx+2, mt+23);
+
+  // Legend
+  const lgX=ml+cW-202, lgY=mt+cH*0.10;
+  const lgH = showAreaT ? 88 : 62;
+  ctx.fillStyle=paper; ctx.globalAlpha=0.92;
+  ctx.fillRect(lgX-4, lgY, 205, lgH);
+  ctx.globalAlpha=1;
+  ctx.strokeStyle=grid; ctx.lineWidth=1;
+  ctx.strokeRect(lgX-4, lgY, 205, lgH);
+  ctx.fillStyle=c2; ctx.globalAlpha=0.25;
+  ctx.fillRect(lgX+1, lgY+10, 22, 13);
+  ctx.globalAlpha=1;
+  ctx.strokeStyle=c2; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(lgX+1,lgY+17); ctx.lineTo(lgX+23,lgY+17); ctx.stroke();
+  ctx.fillStyle=ink2; ctx.font='14px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('Empir. Verteilung', lgX+28, lgY+21);
+  ctx.strokeStyle=c5; ctx.lineWidth=1.8; ctx.setLineDash([5,3]);
+  ctx.beginPath(); ctx.moveTo(lgX+1,lgY+42); ctx.lineTo(lgX+23,lgY+42); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=ink2; ctx.font='14px DM Mono,monospace';
+  ctx.fillText('Impliz. Normalvt.', lgX+28, lgY+47);
+  if (showAreaT) {
+    const c3=cv('--a3');
+    ctx.strokeStyle=c3; ctx.lineWidth=2; ctx.setLineDash([4,5]);
+    ctx.beginPath(); ctx.moveTo(lgX+1,lgY+68); ctx.lineTo(lgX+23,lgY+68); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=c3; ctx.font='14px DM Mono,monospace';
+    ctx.fillText('NV (Median/IQR)', lgX+28, lgY+73);
+  }
+
+  ctx.restore(); // end clip
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAWING — PR CURVES PANEL
+// ══════════════════════════════════════════════════════════════════════
+
+function drawPR() {
+  const canvas = document.getElementById('cv-pr');
+  const W = canvas.clientWidth; canvas.width = W;
+  const H = canvas.height;
+  const ctx = canvas.getContext('2d');
+
+  const ml=68, mr=22, mt=22, mb=54;
+  const cW=W-ml-mr, cH=H-mt-mb;
+
+  const c1=cv('--a1'), c2=cv('--a2'), c4=cv('--a4'), c5=cv('--a5');
+  const ink2=cv('--ink2'), ink3=cv('--ink3'), grid=cv('--grid'), paper=cv('--paper');
+
+  ctx.clearRect(0,0,W,H);
+
+  const endIdx = Math.min(N_PTS, Math.round(X_DISPLAY / DX));
+  const toX = x  => ml + cW * x / X_DISPLAY;
+  const toY = pr => mt + cH * (1 - pr/100);
+  const xStep = X_DISPLAY <= 10 ? 2 : 5;
+
+  // Grid — horizontal
+  for (let pr=0; pr<=100; pr+=10) {
+    const py=toY(pr);
+    ctx.strokeStyle=grid; ctx.lineWidth = pr===50 ? 1.5 : 1;
+    ctx.beginPath(); ctx.moveTo(ml,py); ctx.lineTo(ml+cW,py); ctx.stroke();
+    ctx.fillStyle=ink3; ctx.font='15px DM Mono,monospace'; ctx.textAlign='right';
+    ctx.fillText(pr, ml-6, py+4);
+  }
+
+  // Grid — vertical
+  for (let xv=0; xv<=X_DISPLAY; xv+=xStep) {
+    const px=toX(xv);
+    ctx.strokeStyle=grid; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(px,mt); ctx.lineTo(px,mt+cH); ctx.stroke();
+    ctx.fillStyle=ink3; ctx.font='15px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(xv, px, mt+cH+16);
+  }
+
+  // Axes
+  ctx.strokeStyle=ink3; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(ml,mt); ctx.lineTo(ml,mt+cH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ml,mt+cH); ctx.lineTo(ml+cW,mt+cH); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle=ink2; ctx.font='16px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText(`Rohwert-Punkte (0 bis ${X_DISPLAY})`, ml+cW/2, H-6);
+  ctx.save(); ctx.translate(13, mt+cH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=ink3; ctx.font='15px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('Prozentrang', 0, 0); ctx.restore();
+
+  // T-mark labels BEFORE clip (below plot area, at mt+cH+30)
+  const T_MARKS = [40, 50, 60, 70];
+  T_MARKS.forEach(T => {
+    const rawX = D.mean + (T-50)/10 * D.sd;
+    if (rawX < 0 || rawX > X_DISPLAY) return;
+    const px=toX(rawX);
+    ctx.fillStyle=c1; ctx.font='13px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(`T=${T}`, px, mt+cH+30);
+  });
+
+  // ── CLIP to plot area ──
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(ml, mt, cW, cH);
+  ctx.clip();
+
+  // T-mark lines (clipped)
+  T_MARKS.forEach(T => {
+    const rawX = D.mean + (T-50)/10 * D.sd;
+    if (rawX < 0 || rawX > X_DISPLAY) return;
+    const px=toX(rawX);
+    ctx.strokeStyle=c1; ctx.lineWidth=1.2; ctx.setLineDash([5,3]);
+    ctx.beginPath(); ctx.moveTo(px,mt); ctx.lineTo(px,mt+cH); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Horizontal PR-of-mean line
+  const prM = empPR(D.mean);
+  const pyM = toY(prM);
+  ctx.strokeStyle=c4; ctx.lineWidth=1.3; ctx.setLineDash([8,3,2,3]);
+  ctx.beginPath(); ctx.moveTo(ml,pyM); ctx.lineTo(ml+cW,pyM); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=c4; ctx.font='13px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText(`empir. PR = ${prM.toFixed(1)}%`, ml+4, pyM-4);
+
+  // Blue solid: empirical PR
+  ctx.strokeStyle=c2; ctx.lineWidth=2.4; ctx.setLineDash([]);
+  ctx.beginPath();
+  for (let i=0; i<=endIdx; i++) {
+    const px=toX(D.xs[i]), py=toY(D.prEmp[i]);
+    i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+
+  // Orange dashed: T-norm PR
+  ctx.strokeStyle=c5; ctx.lineWidth=1.8; ctx.setLineDash([8,4]);
+  ctx.beginPath();
+  for (let i=0; i<=endIdx; i++) {
+    const px=toX(D.xs[i]), py=toY(D.prNorm[i]);
+    i===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // Shaded divergence area
+  ctx.fillStyle=c2; ctx.globalAlpha=0.08;
+  ctx.beginPath();
+  ctx.moveTo(toX(D.xs[0]), toY(D.prEmp[0]));
+  for (let i=1; i<=endIdx; i++) ctx.lineTo(toX(D.xs[i]), toY(D.prEmp[i]));
+  for (let i=endIdx; i>=0; i--) ctx.lineTo(toX(D.xs[i]), toY(D.prNorm[i]));
+  ctx.closePath(); ctx.fill();
+  ctx.globalAlpha=1;
+
+  // Legend
+  const lgX=ml+8, lgY=mt+4;
+  ctx.fillStyle=paper; ctx.globalAlpha=0.92;
+  ctx.fillRect(lgX-4, lgY, 232, 62);
+  ctx.globalAlpha=1;
+  ctx.strokeStyle=ink3; ctx.lineWidth=1; ctx.strokeRect(lgX-4, lgY, 232, 62);
+  ctx.strokeStyle=c2; ctx.lineWidth=2.4;
+  ctx.beginPath(); ctx.moveTo(lgX,lgY+17); ctx.lineTo(lgX+24,lgY+17); ctx.stroke();
+  ctx.fillStyle=ink2; ctx.font='14px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('Empir. Prozentrang', lgX+29, lgY+21);
+  ctx.strokeStyle=c5; ctx.lineWidth=1.8; ctx.setLineDash([6,3]);
+  ctx.beginPath(); ctx.moveTo(lgX,lgY+43); ctx.lineTo(lgX+24,lgY+43); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillText('T-Norm PR (NV-Annahme)', lgX+29, lgY+47);
+
+  ctx.restore(); // end clip
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// SIDEBAR — STATS & TABLE
+// ══════════════════════════════════════════════════════════════════════
+
+function updateStats() {
+  const prM = empPR(D.mean);
+  document.getElementById('st-mean').textContent  = D.mean.toFixed(2);
+  document.getElementById('st-sd').textContent    = D.sd.toFixed(2);
+  document.getElementById('st-skew').textContent  = D.skewness.toFixed(2);
+  document.getElementById('sb-pr').textContent    = `PR ${prM.toFixed(1)} %`;
+
+  // Mini PR table
+  const T_LIST = [40, 50, 60, 70];
+  const NOM_PR = [15.9, 50.0, 84.1, 97.7];
+  let html = '';
+  T_LIST.forEach((T, i) => {
+    const rawX = D.mean + (T-50)/10 * D.sd;
+    const ep = rawX < 0 ? '< 0' : rawX > X_MAX ? '> Max' : empPR(rawX).toFixed(1);
+    const diff = (typeof ep === 'string') ? '—' : (parseFloat(ep) - NOM_PR[i]).toFixed(1);
+    const diffCol = diff === '—' ? '' : parseFloat(diff) > 5 ? 'diff-pos-big' : parseFloat(diff) < -5 ? 'diff-neg' : 'diff-zero';
+    const sign = parseFloat(diff) > 0 ? '+' : '';
+    html += `<div class="pr-row">
+      <span class="pr-t">T=${T}</span>
+      <span class="pr-val">${typeof ep==='string'?ep:ep+' %'}</span>
+      <span class="pr-diff ${diffCol}">${diff==='—'?'—':sign+diff+' pp'}</span>
+    </div>`;
+  });
+  document.getElementById('pr-mini').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// FULL DISCREPANCY TABLE (main area)
+// ══════════════════════════════════════════════════════════════════════
+
+function updateTable() {
+  const T_LIST = [30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80];
+  const NOM_PR_MAP = {30:2.3,35:6.7,40:15.9,45:30.9,50:50.0,55:69.1,60:84.1,65:93.3,70:97.7,75:99.4,80:99.9};
+  let html = '';
+  T_LIST.forEach(T => {
+    const rawX = D.mean + (T-50)/10 * D.sd;
+    const nomPR = NOM_PR_MAP[T];
+    let epStr, diffStr, rowClass='', diffClass='';
+    let tFlStr='—', deltaTStr='—', deltaTClass='diff-zero';
+    if (rawX < 0 || rawX > X_MAX+D.sd*0.5) {
+      epStr = rawX < 0 ? '< 0' : '> Bereich';
+      diffStr = '—';
+    } else {
+      const xc = Math.max(0, Math.min(X_MAX, rawX));
+      const ep = empPR(xc);
+      const diff = ep - nomPR;
+      epStr = ep.toFixed(1) + ' %';
+      diffStr = (diff>0?'+':'')+diff.toFixed(1)+' pp';
+      if (Math.abs(diff) > 12)      diffClass = 'diff-pos-big';
+      else if (Math.abs(diff) > 6)  diffClass = 'diff-pos-mid';
+      else if (diff < -4)           diffClass = 'diff-neg';
+      else                          diffClass = 'diff-zero';
+      // Flächentransformation T-score
+      const prFrac = ep / 100;
+      if (prFrac > 0.001 && prFrac < 0.999) {
+        const tF = 50 + 10 * normalCDFInv(prFrac);
+        tFlStr = tF.toFixed(1);
+        const dT = tF - T;
+        deltaTStr = (dT > 0 ? '+' : '') + dT.toFixed(1);
+        deltaTClass = Math.abs(dT) > 8 ? 'diff-pos-big'
+          : Math.abs(dT) > 4 ? 'diff-pos-mid'
+          : dT < -3 ? 'diff-neg'
+          : 'diff-zero';
+      }
+    }
+    if (T === 50) rowClass = 'row-mean';
+    html += `<tr class="${rowClass}">
+      <td style="color:var(--a5)"><strong>T = ${T}</strong></td>
+      <td>${rawX < 0 ? '—' : rawX > X_MAX ? '> 40' : rawX.toFixed(1)}</td>
+      <td style="color:var(--a5)">${nomPR.toFixed(1)} %</td>
+      <td style="color:var(--a2)">${epStr}</td>
+      <td class="${diffClass}">${diffStr}</td>
+      <td style="color:var(--a3)">${tFlStr}</td>
+      <td class="${deltaTClass}">${deltaTStr}</td>
+    </tr>`;
+  });
+  document.getElementById('dtbody').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// SLIDER SYSTEM
+// ══════════════════════════════════════════════════════════════════════
+
+const DIST_INFO = {
+  gamma:       'Gamma(α, β): β = Rate (= 1/Scale). Mittelwert = α/β, Schiefe = 2/√α. Für α=1.5, β=0.20 → M=7.5, γ₁≈1.63.',
+  lognormal:   'Log-Normal(μ_log, σ_log): Logarithmus des Wertes ist normalverteilt. Schiefe steigt stark mit σ_log.',
+  exponential: 'Exponential(λ): Spezialfall Gamma(α=1). Gedächtnisloses Modell, feste Schiefe = 2.',
+  exgauss:     'Ex-Gauss(μ, σ, τ): N(μ,σ²)+Exp(1/τ). Normalanteil + exponentieller Ausreißerterm — typisch für RT-Daten.',
+  weibull:     'Weibull(k, λ): Häufig in Zuverlässigkeitsanalysen. k<1 fallende Hazardrate; k=1 Exponential; k>1 glockenförmig. Schiefe sinkt mit k.'
+};
+
+const SLIDER_DEFS = {
+  gamma: [
+    { key:'alpha', label:'Shape α',  min:0.10, max:5.00, step:0.05, default:1.50, fmt:v=>v.toFixed(2) },
+    { key:'beta',  label:'Rate β',   min:0.10, max:2.00, step:0.05, default:0.20, fmt:v=>v.toFixed(2) }
+  ],
+  lognormal: [
+    { key:'meanlog', label:'μ_log', min:0.10, max:3.50, step:0.05, default:1.50, fmt:v=>v.toFixed(2) },
+    { key:'sdlog',   label:'σ_log', min:0.10, max:2.50, step:0.05, default:0.80, fmt:v=>v.toFixed(2) }
+  ],
+  exponential: [
+    { key:'rate', label:'Rate λ', min:0.10, max:0.50, step:0.05, default:0.10, fmt:v=>v.toFixed(2) }
+  ],
+  exgauss: [
+    { key:'mu',    label:'μ (Normal)',  min:0.10, max:20.00, step:0.05, default:3.00, fmt:v=>v.toFixed(2) },
+    { key:'sigma', label:'σ (Normal)',  min:0.10, max:15.00, step:0.05, default:2.00, fmt:v=>v.toFixed(2) },
+    { key:'tau',   label:'τ (Exp.)',    min:0.10, max:30.00, step:0.05, default:5.00, fmt:v=>v.toFixed(2) }
+  ],
+  weibull: [
+    { key:'k',      label:'Shape k',  min:0.10, max:5.00, step:0.05, default:1.50, fmt:v=>v.toFixed(2) },
+    { key:'lambda', label:'Scale λ',  min:0.10, max:20.00, step:0.05, default:8.00, fmt:v=>v.toFixed(2) }
+  ]
+};
+
+function buildSliders() {
+  const wrap = document.getElementById('sliders-wrap');
+  const defs = SLIDER_DEFS[ST.dist];
+  const p    = ST.params[ST.dist];
+  wrap.innerHTML = '';
+  defs.forEach(def => {
+    const val = p[def.key];
+    const id  = 'sl-' + def.key;
+    const vid = 'sv-' + def.key;
+    wrap.insertAdjacentHTML('beforeend', `
+      <div class="slider-row">
+        <div class="slider-lbl">
+          <span class="slider-name">${def.label}</span>
+          <span class="slider-val" id="${vid}">${def.fmt(val)}</span>
+        </div>
+        <input type="range" id="${id}" min="${def.min}" max="${def.max}" step="${def.step}" value="${val}">
+      </div>`);
+    document.getElementById(id).addEventListener('input', function() {
+      const v = parseFloat(this.value);
+      ST.params[ST.dist][def.key] = v;
+      document.getElementById(vid).textContent = def.fmt(v);
+      update();
+    });
+  });
+  document.getElementById('dist-info').textContent = DIST_INFO[ST.dist];
+}
+
+function setDist(type) {
+  ST.dist = type;
+  ['btn-gamma','btn-lognormal','btn-exp','btn-exgauss','btn-weibull'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  });
+  const btnMap = {gamma:'btn-gamma', lognormal:'btn-lognormal', exponential:'btn-exp', exgauss:'btn-exgauss', weibull:'btn-weibull'};
+  document.getElementById(btnMap[type]).classList.add('active');
+  buildSliders();
+  update();
+}
+
+function toggleAreaT() {
+  showAreaT = !showAreaT;
+  const btn = document.getElementById('btn-areaT');
+  btn.textContent = showAreaT ? 'Flächentransf. an' : 'Flächentransf. aus';
+  btn.classList.toggle('active', showAreaT);
+  drawDensity();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// THEME / HELP
+// ══════════════════════════════════════════════════════════════════════
+
+function toggleTheme() {
+  const h = document.documentElement;
+  const dark = h.getAttribute('data-theme') === 'dark';
+  h.setAttribute('data-theme', dark ? 'light' : 'dark');
+  document.getElementById('btn-theme').textContent = dark ? '🌙 Dark' : '☀ Light';
+  // Wait one frame so CSS variables are recomputed before canvas reads them
+  requestAnimationFrame(() => update());
+}
+
+function toggleHelp() {
+  document.getElementById('help-overlay').classList.toggle('open');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// MAIN UPDATE
+// ══════════════════════════════════════════════════════════════════════
+
+function update() {
+  computeData();
+  drawDensity();
+  drawPR();
+  updateStats();
+  updateTable();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════
+
+buildSliders();
+update();
+
+document.getElementById('sl-xdisp').addEventListener('input', function() {
+  X_DISPLAY = parseInt(this.value);
+  document.getElementById('sv-xdisp').textContent = X_DISPLAY + ' Pkt.';
+  drawDensity();
+  drawPR();
+});
+
+window.addEventListener('resize', () => {
+  if (window._resizeTimer) clearTimeout(window._resizeTimer);
+  window._resizeTimer = setTimeout(update, 120);
+});
+</script>
+</body>
+</html>
