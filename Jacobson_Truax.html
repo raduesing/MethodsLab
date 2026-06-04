@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jacobson-Truax — Reliable Change &amp; Klinische Signifikanz — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+
+/* ── Topbar ── */
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.02rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn.active{border-color:var(--a3)!important;background:var(--a3)!important;color:var(--bg)!important}
+
+/* ── App-Layout ── */
+#app{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink)}
+.slider-name em{color:var(--ink3);font-style:normal;font-size:.7rem}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+input[type=range].acc-func::-webkit-slider-thumb{background:var(--a3)}
+input[type=range].acc-dysf::-webkit-slider-thumb{background:var(--a1)}
+
+.field-row2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.55rem}
+.btn-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem}
+.btn-row.two{grid-template-columns:1fr 1fr}
+.mbtn{font-family:'DM Mono',monospace;font-size:.73rem;padding:.32rem .3rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
+.mbtn:hover{border-color:var(--accent);color:var(--accent)}
+.mbtn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.3rem}
+.toggle-lbl{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2);line-height:1.4}
+
+.reset-btn{font-family:'DM Mono',monospace;font-size:.74rem;padding:.4rem .7rem;width:100%;
+  border:1.5px solid var(--a5);background:transparent;cursor:pointer;color:var(--a5);transition:all .15s}
+.reset-btn:hover{background:var(--a5);color:var(--bg)}
+
+/* ── Focus patient card ── */
+.focus-badge{font-family:'DM Mono',monospace;font-size:.8rem;font-weight:500;padding:.3rem .55rem;
+  text-align:center;margin-top:.4rem;border:1.5px solid}
+.fb-rec{color:var(--a3);border-color:var(--a3);background:color-mix(in srgb,var(--a3) 12%,transparent)}
+.fb-nrr{color:var(--a5);border-color:var(--a5);background:color-mix(in srgb,var(--a5) 12%,transparent)}
+.fb-imp{color:var(--a2);border-color:var(--a2);background:color-mix(in srgb,var(--a2) 12%,transparent)}
+.fb-unc{color:var(--ink3);border-color:var(--ink3);background:color-mix(in srgb,var(--ink3) 12%,transparent)}
+.fb-det{color:var(--a1);border-color:var(--a1);background:color-mix(in srgb,var(--a1) 12%,transparent)}
+.focus-rci{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);text-align:center;margin-top:.3rem;line-height:1.5}
+.focus-rci strong{color:var(--ink)}
+
+/* ── Main ── */
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)}
+.story-box em{font-style:italic;color:var(--ink)}
+
+/* ── Metric cards ── */
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:1rem}
+.metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.3rem;line-height:1.3}
+.metric-val{font-family:'DM Mono',monospace;font-size:1.35rem;font-weight:500;color:var(--accent);line-height:1}
+.metric-sub{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.25rem;line-height:1.4}
+
+/* ── Plots ── */
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block}
+.hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
+
+/* ── Category result bars ── */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.5rem}
+.cat-card{background:var(--panel);border:1px solid var(--grid);border-left:4px solid;padding:.6rem .8rem}
+.cat-card.c-rec{border-left-color:var(--a3)}
+.cat-card.c-nrr{border-left-color:var(--a5)}
+.cat-card.c-imp{border-left-color:var(--a2)}
+.cat-card.c-unc{border-left-color:var(--ink3)}
+.cat-card.c-det{border-left-color:var(--a1)}
+.cat-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.3rem}
+.cat-name{font-family:'DM Mono',monospace;font-size:.8rem;font-weight:500}
+.cat-name.c-rec{color:var(--a3)} .cat-name.c-nrr{color:var(--a5)} .cat-name.c-imp{color:var(--a2)}
+.cat-name.c-unc{color:var(--ink2)} .cat-name.c-det{color:var(--a1)}
+.cat-pct{font-family:'DM Mono',monospace;font-size:.92rem;font-weight:500;color:var(--ink)}
+.cat-bar{height:6px;background:var(--grid);overflow:hidden}
+.cat-bar-fill{height:100%;transition:width .25s}
+.cat-bar-fill.c-rec{background:var(--a3)} .cat-bar-fill.c-nrr{background:var(--a5)} .cat-bar-fill.c-imp{background:var(--a2)}
+.cat-bar-fill.c-unc{background:var(--ink3)} .cat-bar-fill.c-det{background:var(--a1)}
+.cat-desc{font-family:'DM Mono',monospace;font-size:.67rem;color:var(--ink3);margin-top:.35rem;line-height:1.5}
+
+/* ── Learn cards ── */
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+
+/* ── Help overlay ── */
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Jacobson-Truax — <em>Reliable Change &amp; Klinische Signifikanz</em></h1>
+  <button class="tbtn" id="btn-bands" onclick="toggleBands()">BDI-II Schweregrade</button>
+  <button class="tbtn" style="border-color:var(--a1);color:var(--a1)" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Beispiel-Datensatz</div>
+    <div class="btn-row two">
+      <button class="mbtn active" id="ex-bdi" onclick="loadExample('bdi')">BDI-II</button>
+      <button class="mbtn" id="ex-scl" onclick="loadExample('scl')">SCL-90-S · GSI</button>
+    </div>
+    <div class="hint" style="border-top:none;padding-top:.35rem;margin-bottom:0">Lädt komplette Default-Werte; danach alles frei veränderbar.</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Skala &amp; Reliabilität</div>
+    <div class="field-row2">
+      <div class="slider-row" style="margin-bottom:0">
+        <div class="slider-lbl"><span class="slider-name">Min</span><span class="slider-val" id="v-smin">0</span></div>
+        <input type="range" id="s-smin" min="0" max="20" step="1" value="0">
+      </div>
+      <div class="slider-row" style="margin-bottom:0">
+        <div class="slider-lbl"><span class="slider-name">Max</span><span class="slider-val" id="v-smax">63</span></div>
+        <input type="range" id="s-smax" min="20" max="120" step="1" value="63">
+      </div>
+    </div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">Reliabilität r<sub>tt</sub></span><span class="slider-val" id="v-rxx">0.92</span></div>
+      <input type="range" id="s-rxx" min="0.50" max="0.99" step="0.01" value="0.92">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a3)">Funktionale Population <em style="font-style:normal;color:var(--ink3)">(gesund)</em></div>
+    <div class="field-row2">
+      <div class="slider-row" style="margin-bottom:0">
+        <div class="slider-lbl"><span class="slider-name">M<sub>f</sub></span><span class="slider-val" style="color:var(--a3)" id="v-mf">8.0</span></div>
+        <input type="range" class="acc-func" id="s-mf" min="0" max="40" step="0.5" value="8">
+      </div>
+      <div class="slider-row" style="margin-bottom:0">
+        <div class="slider-lbl"><span class="slider-name">SD<sub>f</sub></span><span class="slider-val" style="color:var(--a3)" id="v-sdf">7.0</span></div>
+        <input type="range" class="acc-func" id="s-sdf" min="1" max="20" step="0.5" value="7">
+      </div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a1)">Dysfunktionale Population <em style="font-style:normal;color:var(--ink3)">(klinisch)</em></div>
+    <div class="field-row2">
+      <div class="slider-row" style="margin-bottom:0">
+        <div class="slider-lbl"><span class="slider-name">M<sub>d</sub></span><span class="slider-val" style="color:var(--a1)" id="v-md">30.0</span></div>
+        <input type="range" class="acc-dysf" id="s-md" min="5" max="60" step="0.5" value="30">
+      </div>
+      <div class="slider-row" style="margin-bottom:0">
+        <div class="slider-lbl"><span class="slider-name">SD<sub>d</sub></span><span class="slider-val" style="color:var(--a1)" id="v-sdd">10.0</span></div>
+        <input type="range" class="acc-dysf" id="s-sdd" min="1" max="25" step="0.5" value="10">
+      </div>
+    </div>
+    <div class="hint" style="border-top:none;padding-top:.2rem;margin-top:.1rem">SD<sub>d</sub> dient zugleich als Pretest-SD für den Messfehler (SEM).</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Klinisches Cutoff-Kriterium</div>
+    <div class="btn-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+      <button class="mbtn" id="cut-a" onclick="setCutoff('a')">a</button>
+      <button class="mbtn" id="cut-b" onclick="setCutoff('b')">b</button>
+      <button class="mbtn active" id="cut-c" onclick="setCutoff('c')">c</button>
+      <button class="mbtn" id="cut-d" onclick="setCutoff('d')">d</button>
+    </div>
+    <div class="hint" id="cut-desc" style="border-top:none;padding-top:.35rem;margin-bottom:.5rem">
+      <strong style="color:var(--ink2)">c</strong> — gewichteter Mittelpunkt beider Populationen (empfohlen bei Überlappung).
+    </div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">Eigener Cutoff <em>(d)</em></span><span class="slider-val" style="color:var(--a6)" id="v-cutd">60</span></div>
+      <input type="range" id="s-cutd" min="0" max="63" step="1" value="60">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">RCI-Signifikanzschwelle</div>
+    <div class="btn-row">
+      <button class="mbtn" id="z-90" onclick="setZ(1.645)">90%</button>
+      <button class="mbtn active" id="z-95" onclick="setZ(1.96)">95%</button>
+      <button class="mbtn" id="z-99" onclick="setZ(2.576)">99%</button>
+    </div>
+    <div class="toggle-row" style="margin-top:.5rem">
+      <span class="toggle-lbl">Niedrigere Werte<br>= Verbesserung</span>
+      <button class="mbtn active" id="btn-dir" style="width:64px" onclick="toggleDir()">Ja</button>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Simulierte Stichprobe</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">N Patienten</span><span class="slider-val" id="v-n">80</span></div>
+      <input type="range" id="s-n" min="10" max="300" step="5" value="80">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Ø Behandlungseffekt <em>(Pkt.)</em></span><span class="slider-val" id="v-eff">14</span></div>
+      <input type="range" id="s-eff" min="0" max="40" step="1" value="14">
+    </div>
+    <button class="reset-btn" style="border-color:var(--a2);color:var(--a2)" onclick="reroll()">🎲 Stichprobe neu würfeln</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Fokus-Patient</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Prä-Wert</span><span class="slider-val" id="v-pre">32</span></div>
+      <input type="range" id="s-pre" min="0" max="63" step="1" value="32">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Post-Wert</span><span class="slider-val" id="v-post">12</span></div>
+      <input type="range" id="s-post" min="0" max="63" step="1" value="12">
+    </div>
+    <div class="focus-badge" id="focus-badge">—</div>
+    <div class="focus-rci" id="focus-rci">—</div>
+  </div>
+
+</div><!-- #sidebar -->
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <div class="story-box" id="story-box">
+    <div class="story-lbl">📋 Beispiel — BDI-II (Beck Depression Inventory II)</div>
+    Das BDI-II misst depressive Symptomatik auf einer Skala von <strong>0–63</strong> (Retest-Reliabilität ≈ <strong>.92</strong>).
+    Eine Patientin startet bei <em>Prä = 32</em> (schwer) und liegt nach der Therapie bei <em>Post = 12</em> (minimal).
+    Ist diese Verbesserung <strong>zuverlässig</strong> (über den Messfehler hinaus) — und ist sie <strong>klinisch bedeutsam</strong>
+    (Wechsel von der klinischen in die gesunde Population)? Genau diese zwei Fragen beantwortet die Jacobson-Truax-Methode.
+  </div>
+
+  <div class="sec-h">① Kennwerte der Veränderungsmessung</div>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-lbl">Messfehler SE<sub>M</sub></div>
+      <div class="metric-val" id="m-sem">—</div>
+      <div class="metric-sub" id="m-sem-sub">SD<sub>d</sub>·√(1−r<sub>tt</sub>)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">SE der Differenz S<sub>diff</sub></div>
+      <div class="metric-val" id="m-sdiff">—</div>
+      <div class="metric-sub">√2·SE<sub>M</sub></div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">RCI-Kritischer Wert</div>
+      <div class="metric-val" id="m-rci">—</div>
+      <div class="metric-sub" id="m-rci-sub">z·S<sub>diff</sub> · Punkte</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">Klinisches Cutoff</div>
+      <div class="metric-val" id="m-cut">—</div>
+      <div class="metric-sub" id="m-cut-sub">Kriterium c</div>
+    </div>
+  </div>
+
+  <div class="sec-h">② Die zwei Populationen &amp; das klinische Cutoff</div>
+  <div class="plot-box">
+    <div class="plot-title">Verteilung gesund (grün) vs. klinisch (rot) — wo trennt das Cutoff?</div>
+    <canvas id="cv-dist" height="290"></canvas>
+    <div class="hint" id="hint-dist"></div>
+  </div>
+
+  <div class="sec-h">③ Jacobson-Truax-Plot — Prä vs. Post</div>
+  <div class="plot-box">
+    <div class="plot-title">Veränderungsdiagramm mit Reliable-Change-Band &amp; klinischem Cutoff</div>
+    <canvas id="cv-jt" height="500"></canvas>
+    <div class="hint" id="hint-jt"></div>
+  </div>
+
+  <div class="sec-h">④ Klassifikation der Stichprobe — 5 Gruppen analog JTRCI (N = <span id="lbl-n">80</span>)</div>
+  <div class="cat-grid">
+    <div class="cat-card c-rec">
+      <div class="cat-head"><span class="cat-name c-rec">✓ Genesen (recovered)</span><span class="cat-pct" id="p-rec">—</span></div>
+      <div class="cat-bar"><div class="cat-bar-fill c-rec" id="b-rec" style="width:0%"></div></div>
+      <div class="cat-desc">Post im funktionalen Bereich <strong>und</strong> zuverlässige Verbesserung (|RCI| ≥ 1.96).</div>
+    </div>
+    <div class="cat-card c-nrr">
+      <div class="cat-head"><span class="cat-name c-nrr">✓? Nicht reliabel genesen</span><span class="cat-pct" id="p-nrr">—</span></div>
+      <div class="cat-bar"><div class="cat-bar-fill c-nrr" id="b-nrr" style="width:0%"></div></div>
+      <div class="cat-desc">Post unter dem Cutoff (funktional), aber Veränderung <strong>im</strong> RCI-Band — Genesung nicht absicherbar.</div>
+    </div>
+    <div class="cat-card c-imp">
+      <div class="cat-head"><span class="cat-name c-imp">↑ Verbessert (improved)</span><span class="cat-pct" id="p-imp">—</span></div>
+      <div class="cat-bar"><div class="cat-bar-fill c-imp" id="b-imp" style="width:0%"></div></div>
+      <div class="cat-desc">Zuverlässige Verbesserung, aber Cutoff <strong>nicht</strong> überschritten.</div>
+    </div>
+    <div class="cat-card c-unc">
+      <div class="cat-head"><span class="cat-name c-unc">→ Unverändert</span><span class="cat-pct" id="p-unc">—</span></div>
+      <div class="cat-bar"><div class="cat-bar-fill c-unc" id="b-unc" style="width:0%"></div></div>
+      <div class="cat-desc">Veränderung innerhalb des Messfehlers — nicht zuverlässig.</div>
+    </div>
+    <div class="cat-card c-det" style="grid-column:1/-1">
+      <div class="cat-head"><span class="cat-name c-det">↓ Verschlechtert</span><span class="cat-pct" id="p-det">—</span></div>
+      <div class="cat-bar"><div class="cat-bar-fill c-det" id="b-det" style="width:0%"></div></div>
+      <div class="cat-desc">Zuverlässige Verschlechterung über den Messfehler hinaus.</div>
+    </div>
+  </div>
+
+  <div class="sec-h">Konzepte</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">Reliable Change Index (RCI)</div>
+      <div class="lcard-body">Der RCI prüft, ob eine individuelle Veränderung <strong>größer ist als der Messfehler</strong>.
+        Er setzt die Prä-Post-Differenz ins Verhältnis zum Standardfehler der Differenz. Erst ab |RCI| &gt; 1.96
+        gilt die Veränderung als zuverlässig (p &lt; .05) — alles darunter könnte reines Messrauschen sein.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Klinische Signifikanz</div>
+      <div class="lcard-body">Reliabel ≠ bedeutsam. Eine Person kann sich zuverlässig verbessern und trotzdem klinisch auffällig bleiben.
+        Klinische Signifikanz fragt: Ist die Person <strong>von der dysfunktionalen in die funktionale Population
+        gewechselt</strong>? Das Cutoff markiert die Grenze zwischen beiden Welten.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Warum zwei Kriterien?</div>
+      <div class="lcard-body">Statistische Signifikanz auf Gruppenebene sagt nichts über den <strong>einzelnen Patienten</strong>.
+        Jacobson &amp; Truax (1991) kombinieren deshalb Reliabilität (RCI) und Bedeutsamkeit (Cutoff) — das Fundament
+        moderner Outcome-Forschung. Dieses Tool nutzt die <strong>5-Gruppen-Variante</strong> des R-Pakets JTRCI, die
+        zusätzlich „nicht reliabel genesen" ausweist.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Cutoff a, b, c — oder d?</div>
+      <div class="lcard-body"><strong>a:</strong> 2 SD vom klinischen Mittel. <strong>b:</strong> innerhalb 2 SD der
+        gesunden Norm — oft <em>zu liberal</em>. <strong>c:</strong> gewichteter Mittelpunkt, meist die beste Wahl.
+        <strong>d:</strong> ein selbst gesetzter, klinisch <em>validierter</em> Cutoff (z.B. SCL GSI T&gt;60) — nicht Teil
+        des Original-Verfahrens, aber transparent und oft am besten begründbar. Schalte zwischen BDI &amp; SCL um, um den Unterschied zu sehen.</div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Jacobson-Truax — Methode &amp; Formeln
+      <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+    </div>
+
+    <div class="help-sh">Das Grundproblem</div>
+    <p class="help-p">Eine signifikante Mittelwertsänderung in einer Therapiestudie sagt nichts darüber aus, ob es
+      einem <strong>einzelnen Patienten</strong> nach der Behandlung tatsächlich besser geht. Jacobson &amp; Truax (1991)
+      lösen das mit zwei Fragen pro Person: (1) Ist die Veränderung <em>zuverlässig</em>? (2) Ist sie <em>klinisch bedeutsam</em>?</p>
+
+    <div class="help-sh">1 · Reliable Change Index (RCI)</div>
+    <p class="help-p">Der Messfehler (Standardmessfehler, SE<sub>M</sub>) ergibt sich aus Streuung und Reliabilität:</p>
+    <span class="help-formula">SE_M  = SD · √(1 − r_tt)
+S_diff = √2 · SE_M           (Standardfehler der Differenz)
+RCI    = (x_prä − x_post) / S_diff</span>
+    <p class="help-p">Ist |RCI| &gt; <strong>1.96</strong>, übersteigt die Veränderung den Messfehler mit 95% Sicherheit.
+      Äquivalent dazu: Die Roh-Differenz muss größer sein als der <strong>kritische Wert</strong> = 1.96 · S<sub>diff</sub>.
+      Als Pretest-SD wird hier die SD der klinischen Population (SD<sub>d</sub>) verwendet.</p>
+
+    <div class="help-sh">2 · Klinische Signifikanz — vier Cutoff-Kriterien</div>
+    <span class="help-formula">a = M_d − 2·SD_d     (Verlassen der klinischen Verteilung)
+b = M_f + 2·SD_f     (Eintreten in die gesunde Verteilung)
+c = (SD_f·M_d + SD_d·M_f) / (SD_f + SD_d)
+d = frei gewählter, validierter Cutoff</span>
+    <p class="help-p"><strong>a</strong> nutzt nur die klinische Stichprobe (wenn keine gesunde Norm vorliegt) und ist
+      konservativ. <strong>b</strong> nutzt nur die gesunde Norm. <strong>c</strong> ist der nach Likelihood gewichtete
+      Schnittpunkt beider Verteilungen. <strong>d</strong> ist eine pragmatische Ergänzung (siehe unten).</p>
+
+    <div class="help-sh">Welches Kriterium wählen? (Praxis)</div>
+    <p class="help-p"><strong>Kriterium b ist oft zu liberal.</strong> „Innerhalb 2 SD der Gesunden" entspricht dem
+      97,5-Perzentil der gesunden Verteilung — ein sehr weites Netz. Überlappen sich klinische und gesunde Verteilung
+      (Normalfall bei Symptomskalen), gelten dadurch viele Patienten schon <em>vor</em> der Therapie als „funktional", und
+      das Kriterium trägt kaum Information bei.</p>
+    <p class="help-p"><strong>Kriterium c ist meist die beste Wahl.</strong> Es landet automatisch dort, wo beide
+      Populationen gleich wahrscheinlich sind — typischerweise nahe an klinisch sinnvollen Schwellen. Wichtig: In einer
+      JT-Analyse hast du <em>immer</em> Prätest-Daten der klinischen Gruppe — du kannst M<sub>d</sub> und SD<sub>d</sub>
+      also <em>immer</em> schätzen und damit c rechnen. Die Ausrede „nur gesunde Norm vorhanden → ich muss b nehmen" ist
+      selten wirklich zwingend.</p>
+    <p class="help-p"><strong>Der „2-SD"-Faktor ist Konvention, kein Gesetz.</strong> Mit 1 oder 1,28 SD käme b näher an
+      validierte klinische Schwellen heran.</p>
+
+    <div class="help-sh">Kriterium d — eigener, validierter Cutoff</div>
+    <p class="help-p"><strong>d gehört nicht zum Original-Verfahren</strong> von Jacobson &amp; Truax — ist in der Praxis aber
+      oft die transparenteste und am besten begründbare Lösung: Statt eines statistischen 2-SD-Werts setzt man direkt einen
+      <em>klinisch validierten Schwellenwert</em> aus Testmanual oder Literatur ein.</p>
+    <p class="help-p"><strong>Beispiel SCL-90-S:</strong> Die Autoren definieren einen Fall ab <strong>GSI-T &gt; 60</strong>.
+      Diesen Wert als d=60 zu setzen ist nachvollziehbar und manual-konform — Reviewer akzeptieren das in der Regel, gerade
+      weil es sich auf die Originalquelle stützt.</p>
+    <p class="help-p"><strong>Warnung vor dem „SD-Trick":</strong> Man kann denselben Cutoff auch <em>erzwingen</em>, indem man
+      künstlich eine passende SD ins Skript schreibt (z.B. SD<sub>f</sub>=5, damit M<sub>f</sub> + 2·SD = 50 + 10 = 60
+      herauskommt). Das liefert zwar dieselbe Zahl, ist aber undurchsichtig und für Außenstehende nicht nachvollziehbar.
+      Ein <em>explizit benannter</em> Cutoff (Kriterium d) ist klar und ehrlich — deshalb gibt es ihn hier als eigene Option.</p>
+
+    <div class="help-sh">Rechenbeispiel: SCL-90-S GSI (T-Werte)</div>
+    <p class="help-p">Gesund M<sub>f</sub>=50 / SD<sub>f</sub>=10, klinisch M<sub>d</sub>=65 / SD<sub>d</sub>=8. Daraus:</p>
+    <span class="help-formula">a = 65 − 2·8   = 49     (zu streng: ~ gesunder Mittelwert)
+b = 50 + 2·10  = 70     (unbrauchbar: über fast jedem Patienten)
+c = (10·65 + 8·50)/18 ≈ 58.3   (nah an 60, aber nicht exakt)
+d = 60                  (Manual-Caseness, exakt nachvollziehbar)</span>
+    <p class="help-p">In einer Poliklinik mit Prätest-Schnitt T≈65 zeigt das die Schwächen schön: <strong>b=70</strong> läge
+      über fast allen Patienten (kaum jemand gilt als Fall), <strong>a=49</strong> verlangt fast Rückkehr zum gesunden
+      Mittel, <strong>c≈58</strong> kommt nah, trifft die offizielle Schwelle aber nicht. <strong>d=60</strong> bildet die
+      manualkonforme Definition direkt ab.</p>
+
+    <div class="help-sh">Die Klassifikation — 5 Gruppen, analog zum R-Paket JTRCI</div>
+    <p class="help-p">Dieses Tool folgt <strong>exakt der Klassifikationslogik des R-Pakets JTRCI</strong> (A.-W. Kruijt) —
+      derselben Einteilung, die in vielen Publikationen berichtet wird. Entschieden wird über zwei Größen: die Lage des
+      <em>Post</em>-Werts zum Cutoff und den RCI. Die fünf Gruppen:</p>
+    <p class="help-p"><strong style="color:var(--a3)">Genesen (recovered):</strong> Post im funktionalen Bereich UND reliable Verbesserung (|RCI| ≥ 1.96).<br>
+      <strong style="color:var(--a5)">Nicht reliabel genesen (non-reliably recovered):</strong> Post im funktionalen Bereich, aber Veränderung im Messfehler-Band (|RCI| &lt; 1.96).<br>
+      <strong style="color:var(--a2)">Verbessert (improved):</strong> reliable Verbesserung, aber Post noch im klinischen Bereich.<br>
+      <strong style="color:var(--ink2)">Unverändert (unchanged):</strong> Post im klinischen Bereich, keine reliable Veränderung.<br>
+      <strong style="color:var(--a1)">Verschlechtert (deteriorated):</strong> reliable Veränderung in die ungünstige Richtung — überschreibt alle anderen Kategorien.</p>
+    <p class="help-p"><strong>Warum „nicht reliabel genesen"?</strong> Jemand kann am Ende unter dem Cutoff liegen, ohne dass die
+      Veränderung den Messfehler übersteigt — die scheinbare Genesung könnte also Messrauschen sein. JTRCI macht diese
+      Unsicherheit als eigene Gruppe sichtbar, statt sie (wie das klassische 4-Felder-Schema) unter „unverändert" zu verstecken.</p>
+    <p class="help-p"><strong>Vorsicht beim Prä-Status:</strong> Die Klassifikation nutzt — wie JTRCI — nur Post-Wert und RCI,
+      <em>nicht</em>, ob jemand zu Beginn überhaupt im klinischen Bereich lag. Wer schon vor der Behandlung unter dem Cutoff
+      startet, kann streng genommen gar nicht „genesen"; solche Fälle sollte man mit Vorsicht interpretieren (JTRCI markiert sie
+      im Plot separat). Für stringente Vergleichbarkeit folgt dieses Tool aber bewusst der Paket-Logik.</p>
+    <p class="help-p" style="color:var(--ink3)"><strong>Quelle:</strong> JTRCI — github.com/AWKruijt/JT-RCI. RCI-Konvention dort:
+      RCI = (Post − Prä) / S<sub>diff</sub>; bei „niedriger = besser" bedeutet ein negativer RCI eine Verbesserung.</p>
+
+    <div class="help-sh">Der Jacobson-Truax-Plot</div>
+    <p class="help-p">Auf der x-Achse steht der Prä-, auf der y-Achse der Post-Wert. Die <strong>Diagonale</strong> (y = x)
+      ist die Linie ohne Veränderung. Das graue <strong>Reliable-Change-Band</strong> markiert den Bereich, in dem Veränderungen
+      nicht vom Messfehler unterscheidbar sind (Breite = ± kritischer Wert). Die <strong>Cutoff-Linie</strong> trennt
+      funktionale von dysfunktionalen Post-Werten. Die Lage jedes Punktes relativ zu Band und Cutoff bestimmt seine Kategorie.</p>
+
+    <div class="help-sh">Der Fokus-Patient (Sidebar)</div>
+    <p class="help-p">Mit den beiden Schiebereglern <strong>Prä-Wert</strong> und <strong>Post-Wert</strong> ganz unten in der Sidebar
+      legst du einen einzelnen Beispiel-Patienten fest und siehst <em>live</em>, wie die Jacobson-Truax-Logik ihn einordnet.
+      Er ist unabhängig von der simulierten Stichprobe und dient zum gezielten Durchspielen einzelner Fälle.</p>
+    <p class="help-p">Direkt unter den Reglern erscheinen zwei Anzeigen:</p>
+    <p class="help-p"><strong>① Das farbige Kategorie-Feld</strong> zeigt die Klassifikation (Genesen / Nicht reliabel genesen /
+      Verbessert / Unverändert / Verschlechtert) in der jeweiligen Kategoriefarbe — dieselbe Farbe, in der der Patient auch
+      im JT-Plot erscheint.</p>
+    <p class="help-p"><strong>② Die RCI-Zeile</strong> nennt den konkreten Reliable-Change-Index, ob die Veränderung
+      zuverlässig ist (<em>zuverlässig</em> = außerhalb des Messfehler-Bands, <em>n.s.</em> = innerhalb), die rohe
+      Differenz Δ in Punkten und den kritischen Wert (± krit.), den die Differenz überschreiten muss.</p>
+    <p class="help-p"><strong>Im Plot</strong> erscheint der Fokus-Patient als <strong>großer, umrandeter Punkt</strong> mit
+      einer gestrichelten Verbindungslinie zur Diagonalen — diese Linie zeigt anschaulich das Ausmaß seiner Veränderung
+      (je länger, desto größer die Prä-Post-Differenz). So lässt sich z.B. ausprobieren: Ab welchem Post-Wert kippt ein
+      Patient von „Verbessert" zu „Genesen"? Wann reicht die Veränderung gerade nicht für reliable Change? Verschiebe dazu
+      die Cutoff- und RCI-Einstellungen und beobachte, wie der Punkt die Kategorie wechselt.</p>
+
+    <div class="help-sh">Beispiel-Defaults</div>
+    <p class="help-p"><strong>BDI-II:</strong> Skala 0–63 · r<sub>tt</sub> = .92 · gesund M=8 / SD=7 · klinisch M=30 / SD=10.
+      Daraus SE<sub>M</sub> ≈ 2.83, S<sub>diff</sub> ≈ 4.0, kritischer Wert ≈ 7.8 Punkte, Cutoff c ≈ 17.
+      Eine BDI-II-Änderung muss also etwa <strong>8 Punkte</strong> betragen, um zuverlässig zu sein. Kriterium d ist auf
+      <strong>20</strong> voreingestellt — die häufig als klinisch relevant genutzte Grenze (Übergang mittlere/schwere Depression).</p>
+    <p class="help-p"><strong>SCL-90-S · GSI:</strong> T-Werte 30–80 · r<sub>tt</sub> = .90 · gesund M=50 / SD=10 ·
+      klinisch M=65 / SD=8 · Cutoff <strong>d = 60</strong> (Manual-Caseness). Daraus SE<sub>M</sub> ≈ 2.53,
+      kritischer Wert ≈ 7.0 T-Punkte. Hier sieht man, warum die a/b/c-Automatik allein die Manual-Schwelle verfehlt.</p>
+
+    <div class="help-sh">Literatur</div>
+    <p class="help-p">Jacobson, N.S. &amp; Truax, P. (1991). Clinical significance: A statistical approach to defining
+      meaningful change in psychotherapy research. <em>Journal of Consulting and Clinical Psychology, 59</em>(1), 12–19.<br>
+      Beck, A.T., Steer, R.A. &amp; Brown, G.K. (1996). <em>Manual for the Beck Depression Inventory-II.</em> Psychological Corporation.<br>
+      Franke, G.H. (2002). <em>SCL-90-R. Die Symptom-Checkliste von L.R. Derogatis</em> (2. Aufl.). Beltz Test.</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════
+const ST = {
+  smin: 0, smax: 63, rxx: 0.92,
+  mf: 8, sdf: 7, md: 30, sdd: 10,
+  cutoff: 'c', cutD: 14, z: 1.96, lowerBetter: true,
+  n: 80, eff: 14,
+  pre: 32, post: 12
+};
+let showBands = false;
+let cohort = [];     // simulated patients {pre, post}
+let seed = 12345;
+
+// ══════════════════════════════════════════════════════════════════════
+// MATH
+// ══════════════════════════════════════════════════════════════════════
+function normalPDF(x, mu, sd){ return Math.exp(-0.5*((x-mu)/sd)**2) / (sd*Math.sqrt(2*Math.PI)); }
+
+// Seeded RNG (mulberry32)
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+let rng = mulberry32(seed);
+function randn(){ // Box-Muller
+  let u = 0, v = 0;
+  while(u === 0) u = rng();
+  while(v === 0) v = rng();
+  return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+}
+function clamp(x, lo, hi){ return Math.max(lo, Math.min(hi, x)); }
+
+// Derived quantities
+function calc(){
+  const SEM = ST.sdd * Math.sqrt(1 - ST.rxx);
+  const Sdiff = Math.SQRT2 * SEM;
+  const RCIcrit = ST.z * Sdiff;
+  const cutA = ST.md - 2*ST.sdd;                                   // leaving clinical
+  const cutB = ST.mf + 2*ST.sdf;                                   // entering functional
+  const cutC = (ST.sdf*ST.md + ST.sdd*ST.mf) / (ST.sdf + ST.sdd);  // weighted midpoint
+  const cutoff = ST.cutoff === 'a' ? cutA : ST.cutoff === 'b' ? cutB
+               : ST.cutoff === 'c' ? cutC : ST.cutD;
+  return { SEM, Sdiff, RCIcrit, cutA, cutB, cutC, cutoff };
+}
+
+// Classify a single (pre, post) pair → category key
+function classify(pre, post){
+  const { RCIcrit, cutoff } = calc();
+  // improvement amount (positive = better)
+  const improvement = ST.lowerBetter ? (pre - post) : (post - pre);
+  const reliableImp = improvement > RCIcrit;
+  const reliableDet = improvement < -RCIcrit;
+  // functional side of cutoff?
+  const functional = ST.lowerBetter ? (post <= cutoff) : (post >= cutoff);
+  // Logic exactly analogous to R package JTRCI (deterioration overrides all):
+  if (reliableDet) return 'det';
+  if (functional)  return reliableImp ? 'rec' : 'nrr';  // nrr = non-reliably recovered
+  return reliableImp ? 'imp' : 'unc';
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// SIMULATION
+// ══════════════════════════════════════════════════════════════════════
+function simulate(){
+  rng = mulberry32(seed);
+  cohort = [];
+  const { SEM } = calc();
+  for (let i = 0; i < ST.n; i++){
+    // Pretest drawn from clinical population
+    let preTrue = ST.md + ST.sdd * randn();
+    // True change: mean treatment effect + individual variation, plus regression to mean
+    const effDir = ST.lowerBetter ? -1 : 1;
+    let postTrue = preTrue + effDir * ST.eff + 0.6*ST.sdd * randn() * 0.5;
+    // Observed scores include measurement error
+    let pre  = clamp(Math.round(preTrue  + SEM*randn()), ST.smin, ST.smax);
+    let post = clamp(Math.round(postTrue + SEM*randn()), ST.smin, ST.smax);
+    cohort.push({ pre, post });
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CSS VAR READER
+// ══════════════════════════════════════════════════════════════════════
+function cv(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+const CATCOL = { rec:'--a3', nrr:'--a5', imp:'--a2', unc:'--ink3', det:'--a1' };
+
+// Reference bands of the active example (set by loadExample)
+let currentBands = [];
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW — POPULATION DISTRIBUTIONS
+// ══════════════════════════════════════════════════════════════════════
+function drawDist(){
+  const canvas = document.getElementById('cv-dist');
+  const W = canvas.clientWidth; canvas.width = W;
+  const H = canvas.height;
+  const ctx = canvas.getContext('2d');
+  const ml=46, mr=20, mt=20, mb=42;
+  const cW=W-ml-mr, cH=H-mt-mb;
+  const a1=cv('--a1'), a3=cv('--a3'), a4=cv('--a4'), a5=cv('--a5');
+  const ink2=cv('--ink2'), ink3=cv('--ink3'), grid=cv('--grid'), paper=cv('--paper');
+  ctx.clearRect(0,0,W,H);
+
+  const { cutA, cutB, cutC, cutoff } = calc();
+  const xMin = ST.smin, xMax = ST.smax;
+  const toX = x => ml + cW*(x-xMin)/(xMax-xMin);
+
+  // y-scale from peak of both densities
+  const NX = 240;
+  const xs = Array.from({length:NX}, (_,i)=> xMin + i*(xMax-xMin)/(NX-1));
+  const pf = xs.map(x => normalPDF(x, ST.mf, ST.sdf));
+  const pd = xs.map(x => normalPDF(x, ST.md, ST.sdd));
+  const yMax = Math.max(...pf, ...pd) * 1.18;
+  const toY = y => mt + cH*(1 - y/yMax);
+
+  // Reference / severity bands (background)
+  if (showBands){
+    currentBands.forEach(b=>{
+      const lo = Math.max(b.lo, xMin), hi = Math.min(b.hi, xMax);
+      if (hi <= lo) return;
+      ctx.fillStyle = cv(b.col); ctx.globalAlpha = 0.07;
+      ctx.fillRect(toX(lo), mt, toX(hi)-toX(lo), cH);
+      ctx.globalAlpha = 1;
+    });
+  }
+
+  // axis grid (x)
+  const step = (xMax-xMin) <= 70 ? 10 : 20;
+  for (let xv=xMin; xv<=xMax; xv+=step){
+    const px=toX(xv);
+    ctx.strokeStyle=grid; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(px,mt); ctx.lineTo(px,mt+cH); ctx.stroke();
+    ctx.fillStyle=ink3; ctx.font='13px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(xv, px, mt+cH+16);
+  }
+  ctx.strokeStyle=ink3; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(ml,mt+cH); ctx.lineTo(ml+cW,mt+cH); ctx.stroke();
+  ctx.fillStyle=ink2; ctx.font='13px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('Testwert', ml+cW/2, H-4);
+
+  // filled curves
+  const fill = (arr, col) => {
+    ctx.fillStyle=col; ctx.globalAlpha=0.20;
+    ctx.beginPath(); ctx.moveTo(toX(xs[0]), toY(0));
+    for(let i=0;i<NX;i++) ctx.lineTo(toX(xs[i]), toY(arr[i]));
+    ctx.lineTo(toX(xs[NX-1]), toY(0)); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.strokeStyle=col; ctx.lineWidth=2.2;
+    ctx.beginPath();
+    for(let i=0;i<NX;i++){ const px=toX(xs[i]),py=toY(arr[i]); i===0?ctx.moveTo(px,py):ctx.lineTo(px,py); }
+    ctx.stroke();
+  };
+  fill(pf, a3);  // functional
+  fill(pd, a1);  // dysfunctional
+
+  // cutoff lines a / b / c
+  const drawCut = (val, col, lbl, active) => {
+    if (val < xMin || val > xMax) return;
+    const px = toX(val);
+    ctx.strokeStyle=col; ctx.lineWidth = active?2.4:1.2; ctx.setLineDash(active?[]:[4,4]);
+    ctx.beginPath(); ctx.moveTo(px,mt); ctx.lineTo(px,mt+cH); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=col; ctx.font=(active?'bold ':'')+'13px DM Mono,monospace'; ctx.textAlign='left';
+    ctx.fillText(lbl, px+4, mt+10);  // offset right of the line so it stays readable
+  };
+  drawCut(cutA, a5, 'a', ST.cutoff==='a');
+  drawCut(cutB, a4, 'b', ST.cutoff==='b');
+  drawCut(cutC, cv('--a2'), 'c', ST.cutoff==='c');
+  drawCut(ST.cutD, cv('--a6'), 'd', ST.cutoff==='d');
+
+  // legend
+  ctx.font='13px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillStyle=a3; ctx.fillText('● gesund', ml+8, mt+16);
+  ctx.fillStyle=a1; ctx.fillText('● klinisch', ml+8, mt+34);
+
+  document.getElementById('hint-dist').innerHTML =
+    `Cutoff <strong>a</strong>=${cutA.toFixed(1)} · <strong>b</strong>=${cutB.toFixed(1)} · ` +
+    `<strong>c</strong>=${cutC.toFixed(1)} · <strong>d</strong>=${ST.cutD.toFixed(1)} ` +
+    `&nbsp;|&nbsp; aktiv: <strong>${ST.cutoff}</strong> = ${cutoff.toFixed(1)}`;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW — JACOBSON-TRUAX SCATTER
+// ══════════════════════════════════════════════════════════════════════
+function drawJT(){
+  const canvas = document.getElementById('cv-jt');
+  const W = canvas.clientWidth; canvas.width = W;
+  const H = canvas.height;
+  const ctx = canvas.getContext('2d');
+  const ml=52, mr=20, mt=20, mb=46;
+  const cW=W-ml-mr, cH=H-mt-mb;
+  const a1=cv('--a1'), a2=cv('--a2'), a3=cv('--a3');
+  const ink2=cv('--ink2'), ink3=cv('--ink3'), grid=cv('--grid'), paper=cv('--paper'), bg=cv('--bg');
+  ctx.clearRect(0,0,W,H);
+
+  const { RCIcrit, cutoff } = calc();
+  const lo = ST.smin, hi = ST.smax;
+  const toX = x => ml + cW*(x-lo)/(hi-lo);
+  const toY = y => mt + cH*(1-(y-lo)/(hi-lo));
+
+  // grid
+  const step = (hi-lo) <= 70 ? 10 : 20;
+  ctx.font='13px DM Mono,monospace';
+  for (let v=lo; v<=hi; v+=step){
+    ctx.strokeStyle=grid; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(toX(v),mt); ctx.lineTo(toX(v),mt+cH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ml,toY(v)); ctx.lineTo(ml+cW,toY(v)); ctx.stroke();
+    ctx.fillStyle=ink3; ctx.textAlign='center'; ctx.fillText(v, toX(v), mt+cH+16);
+    ctx.textAlign='right'; ctx.fillText(v, ml-6, toY(v)+4);
+  }
+
+  // clip to plot area
+  ctx.save();
+  ctx.beginPath(); ctx.rect(ml,mt,cW,cH); ctx.clip();
+
+  // Reliable change band (around diagonal y = x ± RCIcrit)
+  ctx.fillStyle=ink3; ctx.globalAlpha=0.14;
+  ctx.beginPath();
+  ctx.moveTo(toX(lo), toY(lo+RCIcrit));
+  ctx.lineTo(toX(hi), toY(hi+RCIcrit));
+  ctx.lineTo(toX(hi), toY(hi-RCIcrit));
+  ctx.lineTo(toX(lo), toY(lo-RCIcrit));
+  ctx.closePath(); ctx.fill();
+  ctx.globalAlpha=1;
+
+  // diagonal (no change)
+  ctx.strokeStyle=ink2; ctx.lineWidth=1.6; ctx.setLineDash([6,4]);
+  ctx.beginPath(); ctx.moveTo(toX(lo),toY(lo)); ctx.lineTo(toX(hi),toY(hi)); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // band edges
+  ctx.strokeStyle=ink3; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(toX(lo),toY(lo+RCIcrit)); ctx.lineTo(toX(hi),toY(hi+RCIcrit)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(toX(lo),toY(lo-RCIcrit)); ctx.lineTo(toX(hi),toY(hi-RCIcrit)); ctx.stroke();
+
+  // clinical cutoff (horizontal line at post = cutoff)
+  ctx.strokeStyle=a2; ctx.lineWidth=2; ctx.setLineDash([2,3]);
+  ctx.beginPath(); ctx.moveTo(ml,toY(cutoff)); ctx.lineTo(ml+cW,toY(cutoff)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=a2; ctx.font='bold 12px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText(`Cutoff ${ST.cutoff} = ${cutoff.toFixed(1)}`, ml+6, toY(cutoff)-5);
+
+  // cohort points
+  cohort.forEach(p=>{
+    const cat = classify(p.pre, p.post);
+    ctx.fillStyle = cv(CATCOL[cat]);
+    ctx.globalAlpha = 0.78;
+    ctx.beginPath(); ctx.arc(toX(p.pre), toY(p.post), 3.6, 0, 2*Math.PI); ctx.fill();
+    ctx.globalAlpha = 1;
+  });
+
+  // focus patient (large highlighted)
+  const fcat = classify(ST.pre, ST.post);
+  const fx = toX(ST.pre), fy = toY(ST.post);
+  // connector to diagonal
+  ctx.strokeStyle=cv(CATCOL[fcat]); ctx.lineWidth=1.4; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(fx, toY(ST.pre)); ctx.lineTo(fx, fy); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(fx, fy, 8, 0, 2*Math.PI);
+  ctx.fillStyle=cv(CATCOL[fcat]); ctx.fill();
+  ctx.strokeStyle=bg; ctx.lineWidth=2.5; ctx.stroke();
+
+  ctx.restore(); // end clip
+
+  // axis labels
+  ctx.fillStyle=ink2; ctx.font='14px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('Prä-Wert', ml+cW/2, H-4);
+  ctx.save(); ctx.translate(14, mt+cH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Post-Wert', 0, 0); ctx.restore();
+
+  // in-plot region annotations
+  ctx.font='12px DM Mono,monospace'; ctx.textAlign='center';
+  if (ST.lowerBetter){
+    ctx.fillStyle=a3; ctx.fillText('▼ Verbesserung', ml+cW*0.74, mt+cH-10);
+    ctx.fillStyle=a1; ctx.fillText('▲ Verschlechterung', ml+cW*0.26, mt+18);
+  } else {
+    ctx.fillStyle=a3; ctx.fillText('▲ Verbesserung', ml+cW*0.26, mt+18);
+    ctx.fillStyle=a1; ctx.fillText('▼ Verschlechterung', ml+cW*0.74, mt+cH-10);
+  }
+
+  document.getElementById('hint-jt').innerHTML =
+    `Graues Band = Reliable-Change-Zone (± ${RCIcrit.toFixed(1)} Pkt., nicht vom Messfehler unterscheidbar) · ` +
+    `Punkte außerhalb = zuverlässige Veränderung · großer Punkt = Fokus-Patient.`;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// UPDATE — metrics, categories, focus
+// ══════════════════════════════════════════════════════════════════════
+function updateMetrics(){
+  const { SEM, Sdiff, RCIcrit, cutoff } = calc();
+  document.getElementById('m-sem').textContent   = SEM.toFixed(2);
+  document.getElementById('m-sem-sub').innerHTML = `${ST.sdd.toFixed(1)}·√(1−${ST.rxx.toFixed(2)})`;
+  document.getElementById('m-sdiff').textContent = Sdiff.toFixed(2);
+  document.getElementById('m-rci').textContent   = '±' + RCIcrit.toFixed(1);
+  document.getElementById('m-rci-sub').innerHTML = `${ST.z}·S<sub>diff</sub> · Punkte`;
+  document.getElementById('m-cut').textContent   = cutoff.toFixed(1);
+  document.getElementById('m-cut-sub').innerHTML = `Kriterium ${ST.cutoff}`;
+}
+
+function updateCategories(){
+  const counts = { rec:0, nrr:0, imp:0, unc:0, det:0 };
+  cohort.forEach(p => counts[classify(p.pre, p.post)]++);
+  const n = cohort.length || 1;
+  ['rec','nrr','imp','unc','det'].forEach(k=>{
+    const pct = 100*counts[k]/n;
+    document.getElementById('p-'+k).textContent = `${counts[k]} · ${pct.toFixed(0)}%`;
+    document.getElementById('b-'+k).style.width = pct+'%';
+  });
+  document.getElementById('lbl-n').textContent = cohort.length;
+}
+
+function updateFocus(){
+  const { RCIcrit, Sdiff, cutoff } = calc();
+  const improvement = ST.lowerBetter ? (ST.pre - ST.post) : (ST.post - ST.pre);
+  const rci = improvement / Sdiff;
+  const cat = classify(ST.pre, ST.post);
+  const badge = document.getElementById('focus-badge');
+  const map = {
+    rec:['✓ Genesen','fb-rec'], nrr:['✓? Nicht reliabel genesen','fb-nrr'],
+    imp:['↑ Verbessert','fb-imp'], unc:['→ Unverändert','fb-unc'],
+    det:['↓ Verschlechtert','fb-det']
+  };
+  badge.textContent = map[cat][0];
+  badge.className = 'focus-badge ' + map[cat][1];
+  const reliable = Math.abs(improvement) > RCIcrit;
+  document.getElementById('focus-rci').innerHTML =
+    `RCI = <strong>${rci.toFixed(2)}</strong> ${reliable?'(zuverlässig)':'(n.s.)'}<br>` +
+    `Δ = ${improvement>0?'+':''}${improvement} Pkt. · krit. = ±${RCIcrit.toFixed(1)}`;
+}
+
+function update(){
+  drawDist();
+  drawJT();
+  updateMetrics();
+  updateCategories();
+  updateFocus();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════════════════════════════════════
+function bindSlider(id, key, valId, fmt, isInt){
+  const el = document.getElementById(id);
+  el.addEventListener('input', function(){
+    ST[key] = isInt ? parseInt(this.value) : parseFloat(this.value);
+    document.getElementById(valId).textContent = fmt ? fmt(ST[key]) : this.value;
+    if (key==='n' || key==='eff') simulate();
+    update();
+  });
+}
+bindSlider('s-smin','smin','v-smin',null,true);
+bindSlider('s-smax','smax','v-smax',null,true);
+bindSlider('s-rxx','rxx','v-rxx', v=>v.toFixed(2));
+bindSlider('s-mf','mf','v-mf', v=>v.toFixed(1));
+bindSlider('s-sdf','sdf','v-sdf', v=>v.toFixed(1));
+bindSlider('s-md','md','v-md', v=>v.toFixed(1));
+bindSlider('s-sdd','sdd','v-sdd', v=>v.toFixed(1));
+bindSlider('s-n','n','v-n',null,true);
+bindSlider('s-eff','eff','v-eff',null,true);
+bindSlider('s-pre','pre','v-pre',null,true);
+bindSlider('s-post','post','v-post',null,true);
+bindSlider('s-cutd','cutD','v-cutd',null,true);
+
+// keep pre/post/cutoff-d slider ranges in sync with scale
+function syncScaleRanges(){
+  ['s-pre','s-post','s-cutd'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.min=ST.smin; el.max=ST.smax;
+  });
+}
+document.getElementById('s-smin').addEventListener('input', syncScaleRanges);
+document.getElementById('s-smax').addEventListener('input', syncScaleRanges);
+
+const CUT_DESC = {
+  a:'<strong style="color:var(--ink2)">a</strong> — 2 SD unterhalb des klinischen Mittels (wenn keine gesunde Norm vorliegt). Konservativ.',
+  b:'<strong style="color:var(--ink2)">b</strong> — innerhalb 2 SD der gesunden Norm. Oft zu liberal bei Überlappung.',
+  c:'<strong style="color:var(--ink2)">c</strong> — gewichteter Mittelpunkt beider Populationen (empfohlen bei Überlappung).',
+  d:'<strong style="color:var(--a6)">d</strong> — eigener, validierter Cutoff (z.B. SCL GSI T&gt;60). Nicht offizielles JT-Kriterium, aber transparent &amp; klinisch begründbar.'
+};
+function setCutoff(c){
+  ST.cutoff = c;
+  ['a','b','c','d'].forEach(k=> document.getElementById('cut-'+k).classList.toggle('active', k===c));
+  document.getElementById('cut-desc').innerHTML = CUT_DESC[c];
+  update();
+}
+function setZ(z){
+  ST.z = z;
+  document.getElementById('z-90').classList.toggle('active', z===1.645);
+  document.getElementById('z-95').classList.toggle('active', z===1.96);
+  document.getElementById('z-99').classList.toggle('active', z===2.576);
+  update();
+}
+function toggleDir(){
+  ST.lowerBetter = !ST.lowerBetter;
+  document.getElementById('btn-dir').textContent = ST.lowerBetter ? 'Ja' : 'Nein';
+  document.getElementById('btn-dir').classList.toggle('active', ST.lowerBetter);
+  simulate();
+  update();
+}
+function reroll(){ seed = Math.floor(Math.random()*1e9); simulate(); update(); }
+
+function toggleBands(){
+  showBands = !showBands;
+  document.getElementById('btn-bands').classList.toggle('active', showBands);
+  drawDist();
+}
+
+// ── Example datasets ──────────────────────────────────────────────────
+const EXAMPLES = {
+  bdi: {
+    btnText:'BDI-II Schweregrade',
+    smin:0, smax:63, rxx:0.92, mf:8, sdf:7, md:30, sdd:10,
+    cutoff:'c', cutD:20, z:1.96, lowerBetter:true, n:80, eff:8, pre:32, post:12,
+    bands:[{lo:0,hi:13,col:'--a3'},{lo:14,hi:19,col:'--a6'},{lo:20,hi:28,col:'--a5'},{lo:29,hi:63,col:'--a1'}],
+    story:`<div class="story-lbl">📋 Beispiel — BDI-II (Beck Depression Inventory II)</div>
+      Das BDI-II misst depressive Symptomatik auf einer Skala von <strong>0–63</strong> (Retest-Reliabilität ≈ <strong>.92</strong>).
+      Eine Patientin startet bei <em>Prä = 32</em> (schwer) und liegt nach der Therapie bei <em>Post = 12</em> (minimal).
+      Ist diese Verbesserung <strong>zuverlässig</strong> (über den Messfehler hinaus) — und ist sie <strong>klinisch bedeutsam</strong>
+      (Wechsel von der klinischen in die gesunde Population)? Genau diese zwei Fragen beantwortet die Jacobson-Truax-Methode.`
+  },
+  scl: {
+    btnText:'SCL Referenzbereiche',
+    smin:30, smax:80, rxx:0.90, mf:50, sdf:10, md:65, sdd:8,
+    cutoff:'d', cutD:60, z:1.96, lowerBetter:true, n:80, eff:5, pre:68, post:54,
+    bands:[{lo:30,hi:60,col:'--a3'},{lo:60,hi:70,col:'--a5'},{lo:70,hi:80,col:'--a1'}],
+    story:`<div class="story-lbl">📋 Beispiel — SCL-90-S · GSI (Global Severity Index)</div>
+      Der GSI wird als <strong>T-Wert</strong> berichtet (gesunde Norm M=50, SD=10). Die SCL-Autoren definieren einen
+      <strong>Fall ab GSI-T &gt; 60</strong>. In einer psychotherapeutischen Poliklinik liegt der Prätest-Schnitt bei ≈ T=65.
+      Hier ist <strong>Kriterium d</strong> (konkreter Cutoff = 60) gewählt — manual-konform und für Reviewer nachvollziehbar.
+      Schalte einmal auf a, b, c um: <em>b = 70</em> läge über fast allen Patienten (praktisch unbrauchbar),
+      <em>c ≈ 58</em> kommt nah, trifft die offizielle Schwelle 60 aber nicht exakt.`
+  }
+};
+
+function loadExample(name){
+  const e = EXAMPLES[name];
+  Object.assign(ST, {
+    smin:e.smin, smax:e.smax, rxx:e.rxx, mf:e.mf, sdf:e.sdf, md:e.md, sdd:e.sdd,
+    cutoff:e.cutoff, cutD:e.cutD, z:e.z, lowerBetter:e.lowerBetter,
+    n:e.n, eff:e.eff, pre:e.pre, post:e.post
+  });
+  syncScaleRanges();   // set pre/post/cutd ranges BEFORE assigning their values
+  const setW = (id,v)=>{ document.getElementById(id).value = v; };
+  const setL = (id,txt)=>{ document.getElementById(id).textContent = txt; };
+  setW('s-smin',e.smin); setL('v-smin',e.smin);
+  setW('s-smax',e.smax); setL('v-smax',e.smax);
+  setW('s-rxx',e.rxx);   setL('v-rxx',e.rxx.toFixed(2));
+  setW('s-mf',e.mf);     setL('v-mf',e.mf.toFixed(1));
+  setW('s-sdf',e.sdf);   setL('v-sdf',e.sdf.toFixed(1));
+  setW('s-md',e.md);     setL('v-md',e.md.toFixed(1));
+  setW('s-sdd',e.sdd);   setL('v-sdd',e.sdd.toFixed(1));
+  setW('s-n',e.n);       setL('v-n',e.n);
+  setW('s-eff',e.eff);   setL('v-eff',e.eff);
+  setW('s-pre',e.pre);   setL('v-pre',e.pre);
+  setW('s-post',e.post); setL('v-post',e.post);
+  setW('s-cutd',e.cutD); setL('v-cutd',e.cutD);
+  // example + bands + story
+  document.getElementById('ex-bdi').classList.toggle('active', name==='bdi');
+  document.getElementById('ex-scl').classList.toggle('active', name==='scl');
+  currentBands = e.bands;
+  document.getElementById('btn-bands').textContent = e.btnText;
+  document.getElementById('story-box').innerHTML = e.story;
+  // cutoff / z / direction widgets
+  setCutoff(e.cutoff);
+  setZ(e.z);
+  document.getElementById('btn-dir').textContent = ST.lowerBetter ? 'Ja' : 'Nein';
+  document.getElementById('btn-dir').classList.toggle('active', ST.lowerBetter);
+  seed = 12345;
+  simulate();
+  update();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// THEME / HELP
+// ══════════════════════════════════════════════════════════════════════
+function toggleTheme(){
+  const h=document.documentElement;
+  const dark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme', dark?'light':'dark');
+  document.getElementById('btn-theme').textContent = dark?'🌙 Dark':'☀ Light';
+  requestAnimationFrame(()=>update());
+}
+function toggleHelp(){ document.getElementById('help-overlay').classList.toggle('open'); }
+
+// ══════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════
+loadExample('bdi');
+window.addEventListener('resize', ()=>{
+  if(window._rt) clearTimeout(window._rt);
+  window._rt = setTimeout(update, 120);
+});
+</script>
+</body>
+</html>
