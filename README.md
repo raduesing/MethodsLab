@@ -1,14 +1,15 @@
 <div align="center">
 
-# Methods Lab
+# Methods Lab `beta 0.7`
 ### Statistical Methods, Made Tangible.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Static Badge](https://img.shields.io/badge/Status-Academic_Project-blue)]()
 [![Static Badge](https://img.shields.io/badge/Tech-Vanilla_JS-orange)]()
 [![Static Badge](https://img.shields.io/badge/Tools-29_interactive-green)]()
+[![Static Badge](https://img.shields.io/badge/Version-0.7_beta-lightgrey)]()
 
-### 🌐 [www.methods-lab.uni-osnabrueck.de](https://methods-lab.uni-osnabrueck.de/)
+### 🌐 [www.methodslab.uni-osnabrueck.de](https://www.methodslab.uni-osnabrueck.de/)
 
 **A suite of 29 interactive tools that build statistical intuition from the ground up — from OLS regression and effect sizes, through the counter-intuitive paradoxes that trip up even seasoned researchers, into modern causal inference, psychometrics (IRT), and clinical diagnostics. Everything runs entirely in the browser. No code, no server, no data ever leaves your machine.**
 
@@ -122,7 +123,7 @@ The Methods Lab is a **serverless web application**. No installation, no backend
 
 Open the hosted version directly in your browser:
 
-🌐 **[www.methods-lab.uni-osnabrueck.de](https://methods-lab.uni-osnabrueck.de/)**
+🌐 **[www.methodslab.uni-osnabrueck.de](https://www.methodslab.uni-osnabrueck.de/)**
 
 No setup required.
 
@@ -186,7 +187,7 @@ If you use the **Methods Lab** for research, teaching, or software development, 
 <div align="left">
 
 ### APA Style
-> Düsing, R. (2026). *Methods Lab: An interactive suite of statistical methods tools for teaching and research.* GitHub. https://github.com/raduesing/MethodsLab
+> Düsing, R. (2026). *Methods Lab: An interactive suite of statistical methods tools for teaching and research* (Version 0.7 beta). GitHub. https://github.com/raduesing/MethodsLab
 
 ### BibTeX
 ```bibtex
@@ -194,6 +195,7 @@ If you use the **Methods Lab** for research, teaching, or software development, 
   author  = {Düsing, Rainer},
   title   = {{Methods Lab: An interactive suite of statistical methods tools for teaching and research}},
   url     = {https://github.com/raduesing/MethodsLab},
+  version = {0.7 beta},
   year    = {2026}
 }
 ```
