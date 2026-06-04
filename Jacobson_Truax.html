@@ -422,6 +422,10 @@ d = frei gewählter, validierter Cutoff</span>
       Schnittpunkt beider Verteilungen. <strong>d</strong> ist eine pragmatische Ergänzung (siehe unten).</p>
 
     <div class="help-sh">Welches Kriterium wählen? (Praxis)</div>
+    <p class="help-p"><strong>Kriterium a ist konservativ.</strong> Es nutzt nur die klinische Stichprobe
+      (a = M<sub>d</sub> − 2·SD<sub>d</sub>) und verlangt, dass der Post-Wert die klinische Verteilung nach unten
+      verlässt — also fast bis zum gesunden Mittel zurückkehrt. Sinnvoll, wenn <em>keine</em> gesunde Normstichprobe
+      vorliegt; tendenziell aber streng, sodass echte Verbesserungen seltener als „klinisch bedeutsam" gelten.</p>
     <p class="help-p"><strong>Kriterium b ist oft zu liberal.</strong> „Innerhalb 2 SD der Gesunden" entspricht dem
       97,5-Perzentil der gesunden Verteilung — ein sehr weites Netz. Überlappen sich klinische und gesunde Verteilung
       (Normalfall bei Symptomskalen), gelten dadurch viele Patienten schon <em>vor</em> der Therapie als „funktional", und
@@ -441,10 +445,12 @@ d = frei gewählter, validierter Cutoff</span>
     <p class="help-p"><strong>Beispiel SCL-90-S:</strong> Die Autoren definieren einen Fall ab <strong>GSI-T &gt; 60</strong>.
       Diesen Wert als d=60 zu setzen ist nachvollziehbar und manual-konform — Reviewer akzeptieren das in der Regel, gerade
       weil es sich auf die Originalquelle stützt.</p>
-    <p class="help-p"><strong>Warnung vor dem „SD-Trick":</strong> Man kann denselben Cutoff auch <em>erzwingen</em>, indem man
-      künstlich eine passende SD ins Skript schreibt (z.B. SD<sub>f</sub>=5, damit M<sub>f</sub> + 2·SD = 50 + 10 = 60
-      herauskommt). Das liefert zwar dieselbe Zahl, ist aber undurchsichtig und für Außenstehende nicht nachvollziehbar.
-      Ein <em>explizit benannter</em> Cutoff (Kriterium d) ist klar und ehrlich — deshalb gibt es ihn hier als eigene Option.</p>
+    <p class="help-p"><strong>Hinweis — d gibt es in JTRCI nicht direkt:</strong> Das R-Paket JTRCI kennt nur die Kriterien
+      a, b und c. Möchte man dort trotzdem einen festen Cutoff erreichen, kann man „tricksen", indem man die
+      Populationsparameter passend wählt. Beispiel SCL-90-S mit Ziel-Cutoff 60: Kriterium <strong>b</strong> nehmen, die
+      gesunde Norm wie im Original auf M<sub>f</sub> = 50 lassen, aber SD<sub>f</sub> = 5 setzen — dann ergibt sich
+      b = M<sub>f</sub> + 2·SD<sub>f</sub> = 50 + 2·5 = 60. Das funktioniert, ist aber für Außenstehende schwerer
+      nachvollziehbar. Die Option <strong>d</strong> in diesem Tool macht denselben Schritt einfach explizit und transparent.</p>
 
     <div class="help-sh">Rechenbeispiel: SCL-90-S GSI (T-Werte)</div>
     <p class="help-p">Gesund M<sub>f</sub>=50 / SD<sub>f</sub>=10, klinisch M<sub>d</sub>=65 / SD<sub>d</sub>=8. Daraus:</p>
