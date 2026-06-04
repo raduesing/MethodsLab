@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KTT — Grundlagen — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:17.5px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.02rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+
+#app{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink)}
+.slider-name em{color:var(--ink3);font-style:normal;font-size:.7rem}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+input[type=range].acc-t::-webkit-slider-thumb{background:var(--a3)}
+input[type=range].acc-e::-webkit-slider-thumb{background:var(--a1)}
+
+.btn-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem}
+.mbtn{font-family:'DM Mono',monospace;font-size:.73rem;padding:.34rem .3rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
+.mbtn:hover{border-color:var(--accent);color:var(--accent)}
+.mbtn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.reset-btn{font-family:'DM Mono',monospace;font-size:.74rem;padding:.4rem .7rem;width:100%;
+  border:1.5px solid var(--a2);background:transparent;cursor:pointer;color:var(--a2);transition:all .15s}
+.reset-btn:hover{background:var(--a2);color:var(--bg)}
+
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:.8rem}
+.metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.3rem;line-height:1.3}
+.metric-val{font-family:'DM Mono',monospace;font-size:1.45rem;font-weight:500;color:var(--accent);line-height:1}
+.metric-sub{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.25rem;line-height:1.4}
+
+/* variance decomposition bar */
+.vbar-wrap{margin-bottom:1rem}
+.vbar{display:flex;height:34px;border:1px solid var(--grid);overflow:hidden;font-family:'DM Mono',monospace;font-size:.78rem}
+.vbar-t{background:color-mix(in srgb,var(--a3) 70%,var(--bg));color:var(--bg);display:flex;align-items:center;justify-content:center;transition:width .25s;white-space:nowrap;overflow:hidden}
+.vbar-e{background:color-mix(in srgb,var(--a1) 70%,var(--bg));color:var(--bg);display:flex;align-items:center;justify-content:center;transition:width .25s;white-space:nowrap;overflow:hidden}
+.vbar-legend{display:flex;gap:1.2rem;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.4rem}
+.vbar-legend b{font-weight:500}
+
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block}
+.hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
+.ci-intro{font-size:.96rem;line-height:1.65;color:var(--ink2);margin-bottom:.7rem}
+.ci-intro strong{color:var(--ink)}
+.ci-note{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink3);line-height:1.75;
+  border-left:3px solid var(--a5);background:var(--panel);padding:.65rem .85rem;margin-bottom:1rem}
+.ci-note strong{color:var(--ink2)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr 1fr}}
+
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>KTT — Grundlagen · <em>X = T + E</em></h1>
+  <button class="tbtn" style="border-color:var(--a1);color:var(--a1)" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Wahrer-Wert-Modell</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">SD wahre Werte σ<sub>T</sub></span><span class="slider-val" style="color:var(--a3)" id="v-st">14</span></div>
+      <input type="range" class="acc-t" id="s-st" min="2" max="25" step="0.5" value="14">
+    </div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">SD Messfehler σ<sub>E</sub> <em>(= SEM)</em></span><span class="slider-val" style="color:var(--a1)" id="v-se">5</span></div>
+      <input type="range" class="acc-e" id="s-se" min="0.5" max="25" step="0.5" value="5">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Stichprobe</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n Personen</span><span class="slider-val" id="v-n">60</span></div>
+      <input type="range" id="s-n" min="20" max="300" step="5" value="60">
+    </div>
+    <button class="reset-btn" onclick="reroll()">🎲 Stichprobe neu würfeln</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Konfidenzband um Testwert</div>
+    <div class="btn-row" style="margin-bottom:.5rem">
+      <button class="mbtn" id="cl-90" onclick="setCL(1.645,'90')">90%</button>
+      <button class="mbtn active" id="cl-95" onclick="setCL(1.96,'95')">95%</button>
+      <button class="mbtn" id="cl-99" onclick="setCL(2.576,'99')">99%</button>
+    </div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">Beobachteter Wert X</span><span class="slider-val" id="v-xobs">115</span></div>
+      <input type="range" id="s-xobs" min="55" max="145" step="1" value="115">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Spearman-Brown (Testlänge)</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Längenfaktor k</span><span class="slider-val" id="v-k">1.0×</span></div>
+      <input type="range" id="s-k" min="0.25" max="5" step="0.25" value="1">
+    </div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">Ziel-Reliabilität</span><span class="slider-val" id="v-target">0.90</span></div>
+      <input type="range" id="s-target" min="0.50" max="0.99" step="0.01" value="0.90">
+    </div>
+  </div>
+
+</div><!-- #sidebar -->
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 Beispiel — Intelligenztest (IQ-Skala)</div>
+    Ein IQ-Test hat M = 100. Jeder beobachtete Wert <strong>X</strong> ist die Summe aus dem <em>wahren Wert</em> <strong>T</strong>
+    (der tatsächlichen Merkmalsausprägung) und einem zufälligen <em>Messfehler</em> <strong>E</strong>: <strong>X = T + E</strong>.
+    Die <strong>Reliabilität</strong> ist der Anteil der Varianz, der auf wahre Unterschiede zurückgeht — nicht auf Rauschen.
+    Mit σ<sub>T</sub> = 14 und σ<sub>E</sub> = 5 ergibt sich r<sub>tt</sub> ≈ .89 und ein SEM von 5 Punkten.
+  </div>
+
+  <div class="sec-h">① Reliabilität &amp; Messfehler</div>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-lbl">Reliabilität r<sub>tt</sub></div>
+      <div class="metric-val" id="m-rel">—</div>
+      <div class="metric-sub">σ²<sub>T</sub> / (σ²<sub>T</sub>+σ²<sub>E</sub>)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">SEM</div>
+      <div class="metric-val" id="m-sem">—</div>
+      <div class="metric-sub">SD<sub>X</sub>·√(1−r<sub>tt</sub>) = σ<sub>E</sub></div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">SD beobachtet</div>
+      <div class="metric-val" id="m-sdx">—</div>
+      <div class="metric-sub">√(σ²<sub>T</sub>+σ²<sub>E</sub>)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">Empirisch r (Retest)</div>
+      <div class="metric-val" id="m-remp">—</div>
+      <div class="metric-sub">cor(X₁, X₂) der Stichprobe</div>
+    </div>
+  </div>
+
+  <div class="vbar-wrap">
+    <div class="vbar">
+      <div class="vbar-t" id="vbar-t">wahre Varianz</div>
+      <div class="vbar-e" id="vbar-e">Fehler</div>
+    </div>
+    <div class="vbar-legend">
+      <span><b style="color:var(--a3)">■</b> Wahre Varianz (reliabel) = r<sub>tt</sub></span>
+      <span><b style="color:var(--a1)">■</b> Fehlervarianz = 1 − r<sub>tt</sub></span>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="plot-box" style="margin-bottom:0">
+      <div class="plot-title">② Reliabilität = Korrelation zweier Messungen</div>
+      <canvas id="cv-par" height="300"></canvas>
+      <div class="hint" id="hint-par"></div>
+    </div>
+    <div class="plot-box" style="margin-bottom:0">
+      <div class="plot-title">③ Spearman-Brown — Reliabilität &amp; Testlänge</div>
+      <canvas id="cv-sb" height="300"></canvas>
+      <div class="hint" id="hint-sb"></div>
+    </div>
+  </div>
+
+  <div class="sec-h">④ Konfidenzintervall um einen einzelnen Testwert</div>
+  <p class="ci-intro">Eine <strong>einzelne Person</strong> bearbeitet den Test einmal und erhält den beobachteten Wert
+    <strong>X</strong> (Regler „Beobachteter Wert X" in der Seitenleiste). Wegen des Messfehlers ist X nicht exakt der
+    wahre Wert <strong>τ</strong>. Die KTT kennt dafür zwei Konfidenzintervalle:
+    die <strong style="color:var(--a1)">Äquivalenzhypothese</strong> (KI um den beobachteten Wert X) und die
+    <strong style="color:var(--a3)">Regressionshypothese</strong> (KI um den zur Mitte korrigierten Schätzwert X′).</p>
+  <div class="plot-box">
+    <div class="plot-title"><span id="ci-cl">95</span>%-Konfidenzintervall: Äquivalenz- (rot) vs. Regressionshypothese (grün)</div>
+    <canvas id="cv-ci" height="190"></canvas>
+    <div class="hint" id="hint-ci"></div>
+  </div>
+  <div class="ci-note">⚠ Ein Konfidenzintervall ist <strong>kein</strong> Wahrscheinlichkeitsbereich für τ und <strong>keine
+    Schätzung des wahren Werts</strong> selbst — es ist ein Überdeckungs-Intervall (bei wiederholter Messung enthält es τ
+    in z. B. 95 % der Fälle). Der Punkt-Schätzer des wahren Werts ist X bzw. X′; das <em>Intervall</em> drückt nur die Unsicherheit
+    aus. Eine direkte Wahrscheinlichkeitsaussage über τ erlaubt erst das Bayes-Credible-Interval — KI und CrI werden
+    ausführlich behandelt im Tool
+    <a class="xlink" href="Diagnostische_Intervalle.html" target="_blank" style="margin-top:0;padding:.2rem .55rem">→ Diagnostische Intervalle</a></div>
+
+  <div class="sec-h">Konzepte</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">Reliabilität ist ein Varianzanteil</div>
+      <div class="lcard-body">r<sub>tt</sub> sagt, <strong>welcher Anteil</strong> der beobachteten Streuung auf echte
+        Unterschiede zwischen Personen zurückgeht. r = .90 heißt: 90% wahre Varianz, 10% Messrauschen. Reliabilität ist
+        keine Eigenschaft „des Tests", sondern von <strong>Test + Population</strong>: dieselbe Skala ist in einer homogenen
+        Gruppe weniger reliabel.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">SEM hängt von Reliabilität ab</div>
+      <div class="lcard-body">Der Standardmessfehler <strong>SEM = SD·√(1−r)</strong> übersetzt Reliabilität in die
+        Skaleneinheit. Hier gilt sogar SEM = σ<sub>E</sub>. Er ist die Basis für Konfidenzbänder um Einzelwerte — und damit
+        für die <strong>Veränderungsmessung</strong> (Reliable Change).
+        <br><a class="xlink" href="Jacobson_Truax.html" target="_blank">→ Jacobson-Truax</a></div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Längere Tests sind reliabler</div>
+      <div class="lcard-body">Die <strong>Spearman-Brown-Formel</strong> zeigt: mehr (gleichartige) Items erhöhen die
+        Reliabilität — aber mit abnehmendem Grenznutzen. Verdoppeln bringt viel, Verzehnfachen wenig. Das Tool rechnet aus,
+        wie viele Items für eine Ziel-Reliabilität nötig sind.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Messfehler verzerrt Zusammenhänge</div>
+      <div class="lcard-body">Unreliabilität <strong>dämpft Korrelationen</strong> (Attenuation): der beobachtete
+        Zusammenhang ist kleiner als der wahre. Die Disattenuationsformel korrigiert das.
+        <br><a class="xlink" href="Messfehler_Attenuierung.html" target="_blank">→ Messfehler-Attenuation</a></div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">KTT-Grundlagen — Hintergrund
+      <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+    </div>
+
+    <div class="help-sh">Was dieses Tool zeigt — und was nicht</div>
+    <p class="help-p"><strong>Zeigt:</strong> das Wahrer-Wert-Modell X = T + E, Reliabilität als Varianzanteil, SEM,
+      Konfidenzbänder um Einzelwerte und die Spearman-Brown-Testlängen-Formel. <strong>Nicht hier:</strong> die konkreten
+      Schätzverfahren (α, ω, Split-Half) — das übernimmt das Tool „Reliabilität: α vs. ω"; die Messmodelle dahinter das
+      Tool „Messmodelle".</p>
+
+    <div class="help-sh">Das Modell der Klassischen Testtheorie</div>
+    <span class="help-formula">X = T + E       (Beobachtung = wahrer Wert + Fehler)
+E[E] = 0,  Cov(T,E) = 0
+Var(X) = Var(T) + Var(E)</span>
+    <p class="help-p">Der Fehler ist zufällig, im Mittel null und unkorreliert mit dem wahren Wert. Daraus folgt die zentrale
+      Definition der Reliabilität:</p>
+    <span class="help-formula">r_tt = Var(T) / Var(X) = Var(T) / [Var(T) + Var(E)]</span>
+
+    <div class="help-sh">Reliabilität als Korrelation (Panel ②)</div>
+    <p class="help-p">Zwei <em>parallele</em> Messungen X₁ und X₂ derselben Personen korrelieren genau mit r<sub>tt</sub> —
+      denn ihr gemeinsamer Teil ist der wahre Wert T. Das ist die operationale Grundlage der Test-Retest- und
+      Parallel-Test-Reliabilität. Der empirisch geschätzte Wert schwankt um den theoretischen (Stichprobenfehler — mit n sichtbar kleiner).</p>
+
+    <div class="help-sh">Standardmessfehler &amp; Konfidenzintervalle (Panel ④)</div>
+    <p class="help-p">Eine <strong>einzelne Person</strong> erhält bei einer Testung den beobachteten Wert X. Wegen des
+      Messfehlers weicht X vom (unbekannten) wahren Wert τ ab. Der <strong>Standardmessfehler</strong> beschreibt, wie stark
+      einzelne Messungen um τ streuen:</p>
+    <span class="help-formula">SEM = SD_X · √(1 − r_tt)        (hier zugleich = σ_E)</span>
+    <p class="help-p">Daraus bildet die KTT ein Konfidenzintervall — in zwei Lesarten, exakt wie im Tool „Diagnostische
+      Intervalle":</p>
+    <p class="help-p"><strong style="color:var(--a1)">Äquivalenzhypothese</strong> (rot): das Intervall liegt um den
+      beobachteten Wert X. Annahme: X ist ein erwartungstreuer Schätzer von τ.</p>
+    <span class="help-formula">KI = X ± z · SEM</span>
+    <p class="help-p"><strong style="color:var(--a3)">Regressionshypothese</strong> (grün): das Intervall liegt um den
+      <em>regredierten</em> Schätzwert X′, der die Regression zur Mitte berücksichtigt — extreme Werte enthalten mehr
+      Messfehler und werden zur Mitte gezogen:</p>
+    <span class="help-formula">X′ = M + r_tt · (X − M)
+SE_reg = SD_X · √(r_tt · (1 − r_tt))
+KI = X′ ± z · SE_reg</span>
+    <p class="help-p"><strong>Wichtig zur Interpretation:</strong> Ein Konfidenzintervall ist <em>keine</em>
+      Wahrscheinlichkeitsaussage über τ und nicht selbst „die Schätzung des wahren Werts". Der Punkt-Schätzer ist X bzw.
+      X′; das Intervall drückt nur aus, dass es bei <em>wiederholter</em> Messung den wahren Wert in z. B. 95 % der Fälle
+      überdeckt. Eine direkte Aussage „mit 95 % liegt τ in …" erlaubt erst das <strong>Bayes-Credible-Interval</strong>.
+      Konfidenz- und Credible-Intervalle (sowie die Prozentrang-Einordnung) werden ausführlich im Tool
+      <em>Diagnostische Intervalle</em> behandelt.</p>
+
+    <div class="help-sh">Spearman-Brown: Testlänge &amp; Reliabilität (Panel ③)</div>
+    <p class="help-p">Reliabilität lässt sich durch <strong>mehr Items</strong> erhöhen — denn der gemeinsame wahre Anteil
+      mehrerer Items summiert sich stärker als ihr unabhängiger Messfehler. Die Spearman-Brown-Prophezeiungsformel sagt
+      voraus, welche Reliabilität ein um den Faktor k verlängerter Test hätte:</p>
+    <span class="help-formula">r_k = (k · r) / (1 + (k − 1) · r)</span>
+    <p class="help-p">k ist der <strong>Längenfaktor</strong>: k = 2 bedeutet doppelte Itemzahl, k = 0.5 ein halbierter Test.
+      Die Kurve im Plot steigt zunächst steil und flacht dann ab — der <strong>Grenznutzen nimmt ab</strong>: Von einem
+      schon reliablen Test wird Verdoppeln kaum noch etwas bringen, von einem unreliablen sehr viel. Bei k = 1 liegt der
+      aktuelle Test (roter Punkt), die lila Linie markiert die Ziel-Reliabilität.</p>
+    <p class="help-p">Stellt man die Formel um, ergibt sich die <strong>nötige Testlänge</strong> für eine Ziel-Reliabilität r*:</p>
+    <span class="help-formula">k = r* · (1 − r) / [ r · (1 − r*) ]</span>
+    <p class="help-p">Beispiel: Ein Test mit r = .70 soll r* = .90 erreichen → k = .90·.30 / (.70·.10) ≈ 3.86, also fast die
+      vierfache Itemzahl. <strong>Voraussetzung:</strong> die hinzugefügten Items sind den vorhandenen gleichwertig
+      (gleiche Qualität, parallel) — sonst überschätzt die Formel den Gewinn.</p>
+
+    <div class="help-sh">Reliabilität ist kontextabhängig</div>
+    <p class="help-p">Da r<sub>tt</sub> = Var(T)/Var(X), sinkt sie, wenn die wahre Varianz schrumpft (homogene Gruppe,
+      Varianzeinschränkung) — bei <em>gleichem</em> Messfehler. Reliabilität gehört also zu Test <strong>und</strong>
+      Population, nicht zum Test allein.</p>
+
+    <div class="help-sh">Literatur</div>
+    <p class="help-p">Lord, F. M. &amp; Novick, M. R. (1968). <em>Statistical Theories of Mental Test Scores.</em> Addison-Wesley.<br>
+      Spearman, C. (1910) &amp; Brown, W. (1910), Prophezeiungsformel.<br>
+      Gulliksen, H. (1950). <em>Theory of Mental Tests.</em> Wiley.</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════
+const MU = 100;
+const ST = { st:14, se:5, n:60, z:1.96, cl:'95', xobs:115, k:1, target:0.90 };
+let seed = 7777, X1=[], X2=[];
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let rng = mulberry32(seed);
+function randn(){let u=0,v=0;while(u===0)u=rng();while(v===0)v=rng();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+// derived
+function rel(){return ST.st*ST.st/(ST.st*ST.st+ST.se*ST.se);}
+function sdx(){return Math.sqrt(ST.st*ST.st+ST.se*ST.se);}
+function sem(){return ST.se;} // = SD_X*sqrt(1-r)
+
+// ══════════════════════════════════════════════════════════════════════
+// SIMULATION — two parallel measurements
+// ══════════════════════════════════════════════════════════════════════
+function simulate(){
+  rng = mulberry32(seed);
+  X1=[]; X2=[];
+  for(let i=0;i<ST.n;i++){
+    const T = MU + ST.st*randn();
+    X1.push(T + ST.se*randn());
+    X2.push(T + ST.se*randn());
+  }
+}
+function corr(a,b){
+  const n=a.length; let sa=0,sb=0; for(let i=0;i<n;i++){sa+=a[i];sb+=b[i];}
+  const ma=sa/n,mb=sb/n; let saa=0,sbb=0,sab=0;
+  for(let i=0;i<n;i++){const da=a[i]-ma,db=b[i]-mb;saa+=da*da;sbb+=db*db;sab+=da*db;}
+  return sab/Math.sqrt(saa*sbb);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW — parallel scatter
+// ══════════════════════════════════════════════════════════════════════
+function drawParallel(){
+  const c=document.getElementById('cv-par'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d'); const ml=46,mr=16,mt=14,mb=40,cW=W-ml-mr,cH=H-mt-mb;
+  const a2=cv('--a2'),ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid');
+  ctx.clearRect(0,0,W,H);
+  const lo=MU-3*sdx(), hi=MU+3*sdx();
+  const toX=v=>ml+cW*(v-lo)/(hi-lo), toY=v=>mt+cH*(1-(v-lo)/(hi-lo));
+  ctx.font='14px DM Mono,monospace';
+  for(let g=-3;g<=3;g++){const v=MU+g*sdx();
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(toX(v),mt);ctx.lineTo(toX(v),mt+cH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(ml,toY(v));ctx.lineTo(ml+cW,toY(v));ctx.stroke();
+    ctx.fillStyle=ink3;ctx.textAlign='center';ctx.fillText(Math.round(v),toX(v),mt+cH+15);
+  }
+  // identity line
+  ctx.strokeStyle=ink3;ctx.lineWidth=1.3;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(toX(lo),toY(lo));ctx.lineTo(toX(hi),toY(hi));ctx.stroke();ctx.setLineDash([]);
+  // clip
+  ctx.save();ctx.beginPath();ctx.rect(ml,mt,cW,cH);ctx.clip();
+  ctx.fillStyle=a2;ctx.globalAlpha=.58;
+  for(let i=0;i<X1.length;i++){ctx.beginPath();ctx.arc(toX(X1[i]),toY(X2[i]),3.2,0,2*Math.PI);ctx.fill();}
+  ctx.globalAlpha=1;ctx.restore();
+  // labels
+  ctx.fillStyle=ink2;ctx.font='15px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Messung X₁',ml+cW/2,H-3);
+  ctx.save();ctx.translate(13,mt+cH/2);ctx.rotate(-Math.PI/2);ctx.fillText('Messung X₂',0,0);ctx.restore();
+  const remp=corr(X1,X2);
+  document.getElementById('hint-par').innerHTML=
+    `Theoretisch r<sub>tt</sub> = <strong>${rel().toFixed(3)}</strong> · empirisch cor(X₁,X₂) = <strong>${remp.toFixed(3)}</strong> (n=${ST.n}). `+
+    `Je enger die Punktwolke an der Diagonale, desto reliabler.`;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW — Spearman-Brown
+// ══════════════════════════════════════════════════════════════════════
+function sb(k,r){return k*r/(1+(k-1)*r);}
+function drawSB(){
+  const c=document.getElementById('cv-sb'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d'); const ml=46,mr=16,mt=14,mb=40,cW=W-ml-mr,cH=H-mt-mb;
+  const a2=cv('--a2'),a4=cv('--a4'),a1=cv('--a1'),ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),bg=cv('--bg');
+  ctx.clearRect(0,0,W,H);
+  const r=rel(), kMax=5;
+  const toX=k=>ml+cW*(k-0)/(kMax-0), toY=v=>mt+cH*(1-v);
+  ctx.font='14px DM Mono,monospace';
+  for(let v=0;v<=1;v+=0.2){ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(ml,toY(v));ctx.lineTo(ml+cW,toY(v));ctx.stroke();
+    ctx.fillStyle=ink3;ctx.textAlign='right';ctx.fillText(v.toFixed(1),ml-5,toY(v)+4);}
+  for(let k=1;k<=5;k++){ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(toX(k),mt);ctx.lineTo(toX(k),mt+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.textAlign='center';ctx.fillText(k+'×',toX(k),mt+cH+15);}
+  // target line
+  ctx.strokeStyle=a4;ctx.lineWidth=1.3;ctx.setLineDash([6,3]);
+  ctx.beginPath();ctx.moveTo(ml,toY(ST.target));ctx.lineTo(ml+cW,toY(ST.target));ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=a4;ctx.font='14px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('Ziel '+ST.target.toFixed(2),ml+4,toY(ST.target)-4);
+  // curve
+  ctx.strokeStyle=a2;ctx.lineWidth=2.6;ctx.beginPath();
+  for(let i=0;i<=120;i++){const k=0.25+(kMax-0.25)*i/120;const px=toX(k),py=toY(sb(k,r));i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);}
+  ctx.stroke();
+  // current k point
+  const rk=sb(ST.k,r);
+  ctx.beginPath();ctx.arc(toX(ST.k),toY(rk),5.5,0,2*Math.PI);ctx.fillStyle=a1;ctx.fill();
+  ctx.strokeStyle=bg;ctx.lineWidth=2;ctx.stroke();
+  // labels
+  ctx.fillStyle=ink2;ctx.font='15px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Testlänge (Faktor k)',ml+cW/2,H-3);
+  ctx.save();ctx.translate(13,mt+cH/2);ctx.rotate(-Math.PI/2);ctx.fillText('Reliabilität',0,0);ctx.restore();
+  // needed k
+  const t=ST.target;
+  const kNeed = t*(1-r)/(r*(1-t));
+  document.getElementById('hint-sb').innerHTML=
+    `<strong>Was der Plot zeigt:</strong> wie die Reliabilität steigt, wenn man den Test um den Faktor k verlängert `+
+    `(k=2× = doppelte Itemzahl gleicher Art) — mit klar <em>abnehmendem</em> Grenznutzen. `+
+    `Aktuell: k=${ST.k.toFixed(2)}× → r = <strong>${rk.toFixed(3)}</strong>. `+
+    `Für die Ziel-Reliabilität ${t.toFixed(2)} (lila Linie) wären <strong>${kNeed>0&&isFinite(kNeed)?kNeed.toFixed(2):'∞'}×</strong> der Items nötig `+
+    `(ausgehend von der aktuellen Reliabilität r₁=${r.toFixed(3)}).`;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW — confidence band
+// ══════════════════════════════════════════════════════════════════════
+function drawCI(){
+  const c=document.getElementById('cv-ci'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d'); const ml=20,mr=20,mt=20,mb=40,cW=W-ml-mr,cH=H-mt-mb;
+  const a1=cv('--a1'),a3=cv('--a3'),ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),bg=cv('--bg'),paper=cv('--paper');
+  ctx.clearRect(0,0,W,H);
+  const lo=MU-3*sdx(), hi=MU+3*sdx();
+  const toX=v=>ml+cW*(v-lo)/(hi-lo);
+  const axisY=mt+cH*0.62;
+  // axis
+  ctx.strokeStyle=ink3;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(ml,axisY);ctx.lineTo(ml+cW,axisY);ctx.stroke();
+  ctx.font='14px DM Mono,monospace';
+  for(let g=-3;g<=3;g++){const v=MU+g*sdx();const px=toX(v);
+    ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(px,axisY-5);ctx.lineTo(px,axisY+5);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.textAlign='center';ctx.fillText(Math.round(v),px,axisY+20);}
+  // mean marker
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(toX(MU),mt);ctx.lineTo(toX(MU),axisY);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=ink3;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('M='+MU,toX(MU),mt-2);
+
+  const X=ST.xobs, S=sem(), r=rel(), z=ST.z, SDx=sdx();
+  // — Äquivalenzhypothese: KI um beobachteten Wert X (rot, a1) —
+  const yB=axisY-28;
+  ctx.fillStyle=a1;ctx.globalAlpha=.20;ctx.fillRect(toX(X-z*S),yB-7,toX(X+z*S)-toX(X-z*S),14);ctx.globalAlpha=1;
+  ctx.strokeStyle=a1;ctx.lineWidth=1.6;
+  ctx.beginPath();ctx.moveTo(toX(X-z*S),yB-7);ctx.lineTo(toX(X-z*S),yB+7);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(toX(X+z*S),yB-7);ctx.lineTo(toX(X+z*S),yB+7);ctx.stroke();
+  ctx.beginPath();ctx.arc(toX(X),yB,5,0,2*Math.PI);ctx.fillStyle=a1;ctx.fill();ctx.strokeStyle=bg;ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle=a1;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Äquivalenzhypothese · X = '+X+' ± z·SEM',toX(X),yB-12);
+
+  // — Regressionshypothese: KI um Schätzwert X′ (grün, a3) —
+  const Xreg=MU+r*(X-MU), SEreg=Math.sqrt(SDx*SDx*r*(1-r));
+  const yT=axisY+32;
+  ctx.fillStyle=a3;ctx.globalAlpha=.20;ctx.fillRect(toX(Xreg-z*SEreg),yT-7,toX(Xreg+z*SEreg)-toX(Xreg-z*SEreg),14);ctx.globalAlpha=1;
+  ctx.strokeStyle=a3;ctx.lineWidth=1.6;
+  ctx.beginPath();ctx.moveTo(toX(Xreg-z*SEreg),yT-7);ctx.lineTo(toX(Xreg-z*SEreg),yT+7);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(toX(Xreg+z*SEreg),yT-7);ctx.lineTo(toX(Xreg+z*SEreg),yT+7);ctx.stroke();
+  ctx.beginPath();ctx.arc(toX(Xreg),yT,5,0,2*Math.PI);ctx.fillStyle=a3;ctx.fill();ctx.strokeStyle=bg;ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle=a3;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Regressionshypothese · X′ = '+Xreg.toFixed(1)+' ± z·SE_reg',toX(Xreg),yT+20);
+
+  // connector X -> X′
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([2,2]);
+  ctx.beginPath();ctx.moveTo(toX(X),yB+5);ctx.lineTo(toX(Xreg),yT-5);ctx.stroke();ctx.setLineDash([]);
+
+  document.getElementById('hint-ci').innerHTML=
+    `<b style="color:var(--a1)">Äquivalenzhypothese</b>: KI um beobachteten Wert X=${X} → [${(X-z*S).toFixed(1)}, ${(X+z*S).toFixed(1)}] (±${(z*S).toFixed(1)}). `+
+    `<b style="color:var(--a3)">Regressionshypothese</b>: KI um Schätzwert X′=${Xreg.toFixed(1)} (zur Mitte korrigiert) → [${(Xreg-z*SEreg).toFixed(1)}, ${(Xreg+z*SEreg).toFixed(1)}]. `+
+    `Beide ${ST.cl}%-KI <em>überdecken</em> den wahren Wert τ bei wiederholter Messung in ${ST.cl}% der Fälle — sie sind selbst keine Wahrscheinlichkeitsaussage über τ.`;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// UPDATE
+// ══════════════════════════════════════════════════════════════════════
+function update(){
+  const r=rel();
+  document.getElementById('m-rel').textContent=r.toFixed(3);
+  document.getElementById('m-sem').textContent=sem().toFixed(2);
+  document.getElementById('m-sdx').textContent=sdx().toFixed(2);
+  document.getElementById('m-remp').textContent=(X1.length?corr(X1,X2):0).toFixed(3);
+  // variance bar
+  const pT=Math.round(r*100), pE=100-pT;
+  const t=document.getElementById('vbar-t'), e=document.getElementById('vbar-e');
+  t.style.width=pT+'%'; e.style.width=pE+'%';
+  t.textContent=pT>=14?pT+'%':''; e.textContent=pE>=14?pE+'%':'';
+  drawParallel(); drawSB(); drawCI();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════════════════════════════════════
+function bind(id,key,valId,fmt,isInt,resim){
+  document.getElementById(id).addEventListener('input',function(){
+    ST[key]=isInt?parseInt(this.value):parseFloat(this.value);
+    document.getElementById(valId).textContent=fmt?fmt(ST[key]):this.value;
+    if(resim) simulate();
+    update();
+  });
+}
+bind('s-st','st','v-st',v=>v.toFixed(1),false,true);
+bind('s-se','se','v-se',v=>v.toFixed(1),false,true);
+bind('s-n','n','v-n',null,true,true);
+bind('s-xobs','xobs','v-xobs',null,true,false);
+bind('s-k','k','v-k',v=>v.toFixed(2)+'×',false,false);
+bind('s-target','target','v-target',v=>v.toFixed(2),false,false);
+
+function setCL(z,lbl){ST.z=z;ST.cl=lbl;
+  ['90','95','99'].forEach(k=>document.getElementById('cl-'+k).classList.toggle('active',k===lbl));
+  document.getElementById('ci-cl').textContent=lbl;
+  update();}
+function reroll(){seed=Math.floor(Math.random()*1e9);simulate();update();}
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+
+// init
+simulate();
+update();
+window.addEventListener('resize',()=>{if(window._rt)clearTimeout(window._rt);window._rt=setTimeout(update,120);});
+</script>
+</body>
+</html>

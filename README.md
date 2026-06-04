@@ -6,12 +6,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Static Badge](https://img.shields.io/badge/Status-Academic_Project-blue)]()
 [![Static Badge](https://img.shields.io/badge/Tech-Vanilla_JS-orange)]()
-[![Static Badge](https://img.shields.io/badge/Tools-29_interactive-green)]()
+[![Static Badge](https://img.shields.io/badge/Tools-33_interactive-green)]()
 [![Static Badge](https://img.shields.io/badge/Version-0.7_beta-lightgrey)]()
 
 ### 🌐 [www.methodslab.uni-osnabrueck.de](https://www.methodslab.uni-osnabrueck.de/)
 
-**A suite of 29 interactive tools that build statistical intuition from the ground up — from OLS regression and effect sizes, through the counter-intuitive paradoxes that trip up even seasoned researchers, into modern causal inference, psychometrics (IRT), and clinical diagnostics. Everything runs entirely in the browser. No code, no server, no data ever leaves your machine.**
+**A suite of 33 interactive tools that build statistical intuition from the ground up — from OLS regression and effect sizes, through the counter-intuitive paradoxes that trip up even seasoned researchers, into modern causal inference, psychometrics (classical test theory, measurement models, reliability, IRT), and clinical diagnostics. Everything runs entirely in the browser. No code, no server, no data ever leaves your machine.**
 
 [ [Learning Path](#-the-learning-path) ] • [ [Ecosystem](#-the-ecosystem) ] • [ [Philosophy](#-scientific-philosophy) ] • [ [Usage](#-getting-started) ] • [ [Sister Project](#-sister-project--bayes-thinking-lab) ]
 
@@ -44,8 +44,8 @@ The lab is organized into six sections that build on one another. Work through t
 | **2 · Inference & Planning** | How big a sample needs to be, what counts as a meaningful effect, and what missing data does | Effect Sizes · Power & Sample Size · Missing Data |
 | **3 · Statistical Paradoxes** | Why counter-intuitive results are, in fact, plain regression logic | Regression to the Mean · Attenuation · Berkson · Lord |
 | **4 · Causal Inference** | When association may be read as causation — and the toolkit of modern causal analysis | Causal Foundations · RDD · Difference-in-Differences · Propensity Score Matching |
-| **5 · Test Theory & Measurement** | How psychological constructs are measured and how well | IRT (dichotomous & ordinal) · DIF · Factor Analysis · Norm-Score Distortion |
-| **6 · Diagnostics & Test Quality** | How accurately an instrument detects what it should — at the level of the individual | Sensitivity/Specificity · ICC · Inter-Rater Agreement · Jacobson-Truax |
+| **5 · Test Theory & Measurement** | How psychological constructs are measured and how well | Classical Test Theory · Measurement Models (CFA) · Factor Analysis · Reliability (α vs. ω) · IRT · DIF |
+| **6 · Diagnostics & Test Quality** | How accurately an instrument detects what it should — at the level of the individual | Sensitivity/Specificity · ICC · Diagnostic Intervals · Norm-Score Distortion · Jacobson-Truax |
 
 ---
 
@@ -76,7 +76,7 @@ Legend: **✓** finished · **⟳** in revision · **◷** planned
 * **✓ Measurement-Error Attenuation** — Intelligence & school achievement: disattenuation, learning cards on N-instability and reliability choice.
 * **✓ Berkson's Paradox** — Talent + effort → success: DAG, diagonal selection boundary, collider bias. Negative correlation in selected samples.
 * **✓ Lord's Paradox** — ANCOVA vs. change scores: when do the two analyses lead to opposite conclusions? DAG, key formula, lege-artis decision.
-* **◷ Simpson's Paradox** — An aggregate trend reverses on disaggregation; ecological fallacy as a special case. Cross-link to the multilevel tool.
+* **✓ Simpson's Paradox** — An aggregate (pooled) trend reverses on disaggregation: within- vs. pooled regression, confounding slider, reversal & amplification scenarios. Cross-link to the multilevel tool.
 * **◷ Range Restriction** — Taylor-Russell interactive: correlation attenuation in selected samples, Thorndike correction formulae.
 * **◷ Lindley's Paradox** — p < .05 yet a Bayes factor < 1 is possible: the frequentist–Bayes conflict. Synergy with the Bayes Thinking Lab.
 * **◷ Will Rogers Phenomenon** — Reclassification raises the mean of both groups at once (stage migration). Crucial for longitudinal and staging data.
@@ -92,14 +92,17 @@ Legend: **✓** finished · **⟳** in revision · **◷** planned
 * **✓ Propensity Score Matching** — Logistic PS estimation, greedy 1:1 matching, IPW (ATT), love plot, estimator comparison before/after matching.
 
 ### 5 · Test Theory & Measurement
-*How psychological constructs are measured — and how well a test does that.*
+*How psychological constructs are measured — and how well a test does that. Ordered as a learning path: classical foundations → latent measurement models → reliability → modern IRT.*
 
+* **✓ Classical Test Theory — Basics** — True-score model X = T + E, reliability as a variance ratio, SEM, confidence band around a single test score, Spearman-Brown test-length prophecy. The anchor of the whole reliability theme.
+* **✓ Measurement Models (CFA intro)** — Parallel, tau-equivalent, congeneric: path diagram, implied covariance matrix, automatic model classification, ω_total vs. α live, optional intercepts for essential equivalence. The bridge from factor analysis to reliability.
+* **✓ Factor Analysis** — PAF (genuine EFA), correct oblique solution (pattern matrix Λ), reliability panel (α / ωt / ωh Schmid-Leiman), three scenarios, biplot.
+* **✓ Reliability: α vs. ω** — Cronbach's α vs. McDonald's ω_total / ω_hierarchical: when α *underestimates* (congeneric) and when it *feigns unidimensionality* (multidimensional). Variance decomposition, split-half distribution, three scenarios.
 * **✓ IRT — Dichotomous Models** — 1PL/2PL/3PL/4PL + Rasch: ICC, TIF, Wright map, MLE person estimation. The Rasch-vs-1PL distinction made explicit.
 * **✓ IRT — Ordinal Models** — PCM, GPCM, GRM: CRF, ESC, item information for every item. Disordered-threshold warning, factor-analysis link in the help.
 * **✓ Differential Item Functioning (DIF)** — 2PL model, four items, Δb/Δa sliders, ICC comparison, difference curve, group distributions, Raju SA/UA, ETS A/B/C.
-* **✓ Factor Analysis** — PAF (genuine EFA), correct oblique solution (pattern matrix Λ), reliability panel (α / ωt / ωh Schmid-Leiman), three scenarios, biplot.
-* **✓ Norm-Score Distortion** — What linear T-scores do to right-skewed distributions (SCL-90 analogy). Gamma, log-normal, exponential, Weibull, ex-Gaussian; empirical vs. T-norm percentile ranks; area-transformation (Lienert & Raatz) overlay.
-* **◷ Classical Test Theory** — Reliability (α, split-half, test-retest), error variance, SEM, correction for attenuation. Bridge to IRT.
+* **◷ Measurement Invariance** — Configural / metric / scalar: the CFA twin of DIF. When are group comparisons of means even admissible?
+* **◷ Generalizability Theory** — G-theory as the multi-facet extension of CTT: variance components across raters, items, occasions; G- and D-studies.
 
 ### 6 · Diagnostics & Test Quality
 *How well does an instrument detect what it should — at the level of the individual patient?*
@@ -110,6 +113,7 @@ Legend: **✓** finished · **⟳** in revision · **◷** planned
 * **✓ ICC-Lab** — Intraclass correlation: all six Shrout-&-Fleiss forms, rater count, absolute vs. consistency agreement.
 * **✓ Inter-Rater Agreement** — Cohen's κ, weighted κ, the kappa paradox, prevalence & bias: when κ misleads and what to report instead.
 * **✓ Diagnostic Intervals** — Confidence, prediction, and tolerance intervals compared: what each one says and which question it answers.
+* **✓ Norm-Score Distortion** — What linear T-scores do to right-skewed distributions (SCL-90 analogy). Gamma, log-normal, exponential, Weibull, ex-Gaussian; empirical vs. T-norm percentile ranks; area-transformation (Lienert & Raatz) overlay.
 * **✓ Diagnostic Validity** — Construct, criterion, and content validity: validity coefficients, Taylor-Russell tables, utility analysis.
 * **✓ Jacobson-Truax Analysis** — Reliable Change Index & clinical significance: RCI band, cut-off criteria a/b/c/d, five-group classification (analogous to the R package JTRCI) in the pre-post plot. BDI-II and SCL-90 as worked examples.
 
@@ -144,8 +148,8 @@ No setup required.
 
 | Level | Recommended Entry Point | Tools to Explore |
 | :--- | :--- | :--- |
-| **BSc Students** | Section 1 — Foundations | OLS Regression · Partial Correlation · Effect Sizes · Power & Sample Size · Sensitivity/Specificity |
-| **MSc Students** | Sections 2–3 | Missing Data · Regression to the Mean · Berkson · Lord · Mediation/Moderation · IRT |
+| **BSc Students** | Section 1 — Foundations | OLS Regression · Partial Correlation · Effect Sizes · Power & Sample Size · Classical Test Theory · Sensitivity/Specificity |
+| **MSc Students** | Sections 2–3, 5 | Missing Data · Regression to the Mean · Berkson · Lord · Simpson · Measurement Models · Reliability (α vs. ω) · IRT |
 | **PhD / Researchers** | Sections 4–6 | Causal Foundations · RDD · DiD · PSM · DIF · Factor Analysis · Jacobson-Truax · Norm-Score Distortion |
 
 ---
@@ -165,7 +169,7 @@ The tools build on foundational work across applied statistics, psychometrics, a
 | **Causal inference** | Pearl (DAGs, d-separation) · Rubin (potential outcomes) · Imbens & Lehner (RDD) |
 | **Clinical change** | Jacobson & Truax (1991, RCI & clinical significance) · Lienert & Raatz (area transformation) |
 | **Effect sizes & power** | Cohen (1988) · Lakens (2022, sample-size justification, SESOI) |
-| **Psychometrics** | Lord & Novick (test theory) · Samejima, Masters, Muraki (IRT) · Shrout & Fleiss (ICC) |
+| **Psychometrics** | Lord & Novick (test theory) · McDonald, Revelle & Zinbarg (ω) · Samejima, Masters, Muraki (IRT) · Shrout & Fleiss (ICC) |
 | **Paradoxes** | Galton (regression to the mean) · Berkson · Lord · Simpson |
 
 > All external references and conceptual frameworks belong to their respective authors. This project is released under the MIT License.

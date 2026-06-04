@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simpson's Paradox — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.02rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn.active{border-color:var(--a3)!important;background:var(--a3)!important;color:var(--bg)!important}
+
+#app{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink)}
+.slider-name em{color:var(--ink3);font-style:normal;font-size:.7rem}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+
+.btn-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem}
+.mbtn{font-family:'DM Mono',monospace;font-size:.71rem;padding:.36rem .3rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center;line-height:1.25}
+.mbtn:hover{border-color:var(--accent);color:var(--accent)}
+.mbtn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.toggle-lbl{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.reset-btn{font-family:'DM Mono',monospace;font-size:.74rem;padding:.4rem .7rem;width:100%;
+  border:1.5px solid var(--a2);background:transparent;cursor:pointer;color:var(--a2);transition:all .15s}
+.reset-btn:hover{background:var(--a2);color:var(--bg)}
+
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1rem}
+.metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.3rem;line-height:1.3}
+.metric-val{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;line-height:1}
+.metric-sub{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.25rem;line-height:1.4}
+
+.verdict{font-family:'DM Mono',monospace;font-size:.92rem;font-weight:500;padding:.6rem .9rem;margin-bottom:1rem;
+  border:1.5px solid;text-align:center;letter-spacing:.02em}
+.v-rev{color:var(--a1);border-color:var(--a1);background:color-mix(in srgb,var(--a1) 12%,transparent)}
+.v-dist{color:var(--a5);border-color:var(--a5);background:color-mix(in srgb,var(--a5) 12%,transparent)}
+.v-none{color:var(--a3);border-color:var(--a3);background:color-mix(in srgb,var(--a3) 12%,transparent)}
+
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block}
+.hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
+
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body a{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+.lcard-body a:hover{opacity:.7}
+.xlink{display:inline-block;margin-top:.5rem;font-family:'DM Mono',monospace;font-size:.74rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4)!important;border-bottom-width:1.5px!important;
+  transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)!important;opacity:1}
+
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Simpson's Paradox — <em>wenn der Trend die Richtung wechselt</em></h1>
+  <button class="tbtn" id="btn-means" onclick="toggleMeans()">Gruppen-Mittel</button>
+  <button class="tbtn" style="border-color:var(--a1);color:var(--a1)" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Szenario</div>
+    <div class="btn-row">
+      <button class="mbtn active" id="sc-rev"  onclick="preset('rev')">Umkehr</button>
+      <button class="mbtn" id="sc-none" onclick="preset('none')">Keine<br>Konfund.</button>
+      <button class="mbtn" id="sc-amp"  onclick="preset('amp')">Verstär&shy;kung</button>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Effekt innerhalb der Gruppen</div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">Within-Slope b<sub>w</sub></span><span class="slider-val" id="v-within">+0.7</span></div>
+      <input type="range" id="s-within" min="-1.2" max="1.2" step="0.1" value="0.7">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Konfundierung (Gruppen)</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Zwischen-Trend b<sub>b</sub></span><span class="slider-val" id="v-between">−1.3</span></div>
+      <input type="range" id="s-between" min="-1.5" max="1.5" step="0.1" value="-1.3">
+    </div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">Gruppen-Versatz</span><span class="slider-val" id="v-conf">0.80</span></div>
+      <input type="range" id="s-conf" min="0" max="1" step="0.05" value="0.8">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Stichprobe</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Gruppen</span><span class="slider-val" id="v-g">3</span></div>
+      <input type="range" id="s-g" min="2" max="5" step="1" value="3">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n pro Gruppe</span><span class="slider-val" id="v-n">40</span></div>
+      <input type="range" id="s-n" min="15" max="80" step="5" value="40">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Streuung <em>(Rauschen)</em></span><span class="slider-val" id="v-noise">6</span></div>
+      <input type="range" id="s-noise" min="2" max="14" step="1" value="6">
+    </div>
+    <button class="reset-btn" onclick="reroll()">🎲 Stichprobe neu würfeln</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Anzeige</div>
+    <div class="toggle-row" style="margin-bottom:.4rem">
+      <span class="toggle-lbl">Within-Geraden</span>
+      <button class="mbtn active" id="t-within" style="width:64px" onclick="toggleWithin()">an</button>
+    </div>
+    <div class="toggle-row">
+      <span class="toggle-lbl">Pooled-Gerade</span>
+      <button class="mbtn active" id="t-pooled" style="width:64px" onclick="togglePooled()">an</button>
+    </div>
+  </div>
+
+</div><!-- #sidebar -->
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 Beispiel — Behandlungsdosis &amp; Genesung</div>
+    Innerhalb jeder Krankheitsschwere-Gruppe gilt: <strong>höhere Dosis → bessere Genesung</strong> (die farbigen Geraden steigen).
+    Aber schwerere Gruppen bekommen <em>mehr</em> Dosis und genesen <em>schlechter</em>. Ignoriert man die Gruppen, scheint die
+    gepoolte Gerade plötzlich zu sagen: <strong>mehr Dosis → schlechtere Genesung</strong>. Derselbe Datensatz, gegenteilige
+    Botschaft — das ist Simpson's Paradox. Es entsteht durch eine <strong>Konfundierungsvariable</strong> (hier: Schweregrad).
+  </div>
+
+  <div class="sec-h">① Vorzeichen-Check</div>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-lbl">Within-Slope (gruppiert)</div>
+      <div class="metric-val" id="m-within">—</div>
+      <div class="metric-sub">Mittel der Gruppen-Geraden</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">Pooled-Slope (aggregiert)</div>
+      <div class="metric-val" id="m-pooled">—</div>
+      <div class="metric-sub">Regression ohne Gruppen</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">Pooled-Korrelation r</div>
+      <div class="metric-val" id="m-r">—</div>
+      <div class="metric-sub">über alle Punkte</div>
+    </div>
+  </div>
+  <div class="verdict" id="verdict">—</div>
+
+  <div class="sec-h">② Streudiagramm — Within vs. Pooled</div>
+  <div class="plot-box">
+    <div class="plot-title">Farbige Geraden = innerhalb der Gruppen · rote Gerade = gepoolt (Gruppen ignoriert)</div>
+    <canvas id="cv" height="470"></canvas>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <div class="sec-h">Konzepte</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">Was ist Simpson's Paradox?</div>
+      <div class="lcard-body">Ein Zusammenhang, der in <strong>jeder Teilgruppe</strong> in eine Richtung zeigt, kann sich
+        <strong>umkehren</strong>, sobald man die Gruppen zusammenwirft. Ursache ist fast immer eine <strong>Konfundierungsvariable</strong>,
+        die sowohl mit dem Prädiktor als auch mit dem Outcome zusammenhängt und über die Gruppen ungleich verteilt ist.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Berkeley-Zulassungen (1973)</div>
+      <div class="lcard-body">Das berühmteste Beispiel: Frauen wurden insgesamt seltener zugelassen — aber in fast <em>jedem
+        einzelnen Fachbereich</em> gleich oft oder häufiger. Frauen bewarben sich nur öfter in Fächern mit niedriger
+        Zulassungsquote. Der Fachbereich war der Confounder.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Ökologischer Fehlschluss</div>
+      <div class="lcard-body">Der Schluss von Gruppen- auf Individualebene (oder umgekehrt) ist nicht zulässig. Simpson's
+        Paradox ist der Extremfall: Der <strong>aggregierte</strong> Trend sagt sogar das <em>Gegenteil</em> des
+        individuellen aus. Welche Ebene „richtig" ist, entscheidet die <strong>kausale Frage</strong>, nicht die Statistik.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Bezug zu Multilevel-Modellen</div>
+      <div class="lcard-body">Genau hier setzt <strong>Partial Pooling</strong> an: Ein Multilevel-Modell trennt den
+        Within- vom Between-Effekt, statt beide zu vermischen wie die gepoolte Regression. Wer Gruppenstruktur ignoriert
+        (Complete Pooling), riskiert Simpson.
+        <br><a class="xlink" href="MLM_interactive.html" target="_blank">→ Zum Multilevel-Tool</a></div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Simpson's Paradox — Hintergrund
+      <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+    </div>
+
+    <div class="help-sh">Das Phänomen</div>
+    <p class="help-p">Ein statistischer Zusammenhang kann in jeder Teilgruppe positiv sein und trotzdem negativ werden,
+      wenn man die Gruppen zusammenfasst (oder umgekehrt). Benannt nach Edward H. Simpson (1951), beschrieben aber schon
+      von Pearson, Yule und Kendall. Es ist <em>kein</em> Rechenfehler — beide Trends sind real, sie beantworten nur
+      verschiedene Fragen.</p>
+
+    <div class="help-sh">Warum passiert das?</div>
+    <p class="help-p">Die gepoolte (aggregierte) Steigung vermischt zwei Quellen von Kovarianz: die <strong>Within-Gruppen-Variation</strong>
+      und die <strong>Between-Gruppen-Variation</strong>. Sind die Gruppen entlang einer gegenläufigen Richtung verschoben
+      (Konfundierung), kann der Between-Anteil den Within-Anteil überstimmen:</p>
+    <span class="help-formula">b_pooled = [ Cov_within(x,y) + Cov_between(x,y) ] / [ Var_within(x) + Var_between(x) ]
+
+Cov_within  = b_within  · Var_within(x)
+Cov_between = b_between · Var_between(x)</span>
+    <p class="help-p">Ist <em>b<sub>within</sub></em> positiv, aber <em>b<sub>between</sub></em> stark negativ und die Gruppen
+      weit auseinander (großer Gruppen-Versatz → großes Var_between), dominiert der zweite Term und <em>b<sub>pooled</sub></em>
+      wird negativ. Genau dann kippt das Vorzeichen.</p>
+
+    <div class="help-sh">Die Regler</div>
+    <p class="help-p"><strong>Within-Slope b<sub>w</sub>:</strong> der wahre Effekt <em>innerhalb</em> jeder Gruppe.<br>
+      <strong>Zwischen-Trend b<sub>b</sub>:</strong> wie die Gruppen-Mittelpunkte angeordnet sind (Richtung &amp; Stärke der Konfundierung).<br>
+      <strong>Gruppen-Versatz:</strong> wie weit die Gruppen voneinander getrennt sind. Bei 0 überlappen sie vollständig →
+      pooled = within, kein Paradox. Je größer, desto stärker dominiert der Between-Trend.</p>
+
+    <div class="help-sh">Drei Szenarien</div>
+    <p class="help-p"><strong>Umkehr:</strong> Within positiv, Between negativ → Pooled negativ (klassisches Paradox).<br>
+      <strong>Keine Konfundierung:</strong> Gruppen-Versatz = 0 → Within und Pooled stimmen überein.<br>
+      <strong>Verstärkung:</strong> Within und Between gleiches Vorzeichen → Pooled <em>übertreibt</em> den Effekt
+      (gleiche Richtung, falsche Größe). Auch das ist eine Form der Verzerrung.</p>
+
+    <div class="help-sh">Was tun?</div>
+    <p class="help-p">Die Lösung ist nicht „immer aufschlüsseln" oder „immer poolen", sondern die <strong>kausale Struktur</strong>
+      zu klären (DAG): Ist die Gruppenvariable ein <em>Confounder</em>, muss man für sie adjustieren (within betrachten).
+      Ist sie ein <em>Mediator</em> auf dem Wirkpfad, würde Adjustieren den Effekt fälschlich wegrechnen. Ein
+      <strong>Multilevel-Modell</strong> (Partial Pooling) trennt Within- und Between-Effekt sauber.</p>
+
+    <div class="help-sh">Literatur</div>
+    <p class="help-p">Simpson, E. H. (1951). The interpretation of interaction in contingency tables. <em>JRSS B, 13</em>(2), 238–241.<br>
+      Bickel, P. J., Hammel, E. A. &amp; O'Connell, J. W. (1975). Sex bias in graduate admissions: Data from Berkeley. <em>Science, 187</em>, 398–404.<br>
+      Pearl, J. (2014). Comment: Understanding Simpson's paradox. <em>The American Statistician, 68</em>(1), 8–13.</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════
+const ST = {
+  within: 0.7, between: -1.3, conf: 0.8,
+  g: 3, n: 40, noise: 6
+};
+let showWithin = true, showPooled = true, showMeans = false;
+let seed = 4242, data = [];
+
+const GROUP_COLORS = ['--a2','--a5','--a3','--a4','--a6'];
+const STEPX = 26;   // base group separation along x
+const SX = 7;       // within-group spread of x
+
+// ── seeded RNG ──
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let rng = mulberry32(seed);
+function randn(){let u=0,v=0;while(u===0)u=rng();while(v===0)v=rng();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function clamp(x,lo,hi){return Math.max(lo,Math.min(hi,x));}
+
+// ══════════════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════════════
+function simulate(){
+  rng = mulberry32(seed);
+  data = [];
+  const G = ST.g;
+  for(let g=0; g<G; g++){
+    const off = (g-(G-1)/2);
+    const mx = 50 + off*STEPX*ST.conf;
+    const my = 50 + off*STEPX*ST.conf*ST.between;
+    for(let i=0;i<ST.n;i++){
+      const x = mx + SX*randn();
+      const y = my + ST.within*(x-mx) + ST.noise*randn();
+      data.push({x:clamp(x,2,98), y:clamp(y,2,98), g});
+    }
+  }
+}
+
+// OLS slope/intercept/r for an array of {x,y}
+function ols(pts){
+  const n=pts.length; if(n<2) return null;
+  let sx=0,sy=0; for(const p of pts){sx+=p.x;sy+=p.y;}
+  const mx=sx/n,my=sy/n;
+  let sxx=0,sxy=0,syy=0;
+  for(const p of pts){const dx=p.x-mx,dy=p.y-my;sxx+=dx*dx;sxy+=dx*dy;syy+=dy*dy;}
+  if(sxx===0) return null;
+  const slope=sxy/sxx;
+  return {slope, intercept:my-slope*mx, r:sxy/Math.sqrt(sxx*syy), mx, my,
+          xmin:Math.min(...pts.map(p=>p.x)), xmax:Math.max(...pts.map(p=>p.x))};
+}
+
+function analysis(){
+  const pooled = ols(data);
+  const groups = [];
+  for(let g=0; g<ST.g; g++){
+    const gp = data.filter(p=>p.g===g);
+    groups.push({g, fit:ols(gp), pts:gp});
+  }
+  const slopes = groups.map(gr=>gr.fit && gr.fit.slope).filter(s=>s!=null);
+  const meanWithin = slopes.reduce((a,b)=>a+b,0)/slopes.length;
+  return {pooled, groups, meanWithin};
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW
+// ══════════════════════════════════════════════════════════════════════
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+function draw(){
+  const A = analysis();
+  const canvas = document.getElementById('cv');
+  const W = canvas.clientWidth; canvas.width = W;
+  const H = canvas.height;
+  const ctx = canvas.getContext('2d');
+  const ml=52, mr=20, mt=18, mb=46;
+  const cW=W-ml-mr, cH=H-mt-mb;
+  const a1=cv('--a1'), ink2=cv('--ink2'), ink3=cv('--ink3'), grid=cv('--grid'), paper=cv('--paper'), bg=cv('--bg');
+  ctx.clearRect(0,0,W,H);
+
+  const lo=0, hi=100;
+  const toX=x=>ml+cW*(x-lo)/(hi-lo);
+  const toY=y=>mt+cH*(1-(y-lo)/(hi-lo));
+
+  // grid
+  ctx.font='13px DM Mono,monospace';
+  for(let v=0; v<=100; v+=20){
+    ctx.strokeStyle=grid; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(toX(v),mt); ctx.lineTo(toX(v),mt+cH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ml,toY(v)); ctx.lineTo(ml+cW,toY(v)); ctx.stroke();
+    ctx.fillStyle=ink3; ctx.textAlign='center'; ctx.fillText(v,toX(v),mt+cH+16);
+    ctx.textAlign='right'; ctx.fillText(v,ml-6,toY(v)+4);
+  }
+  // axes labels
+  ctx.fillStyle=ink2; ctx.font='14px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('Prädiktor X  (z. B. Behandlungsdosis)', ml+cW/2, H-4);
+  ctx.save(); ctx.translate(14,mt+cH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Outcome Y  (z. B. Genesung)', 0,0); ctx.restore();
+
+  // clip
+  ctx.save(); ctx.beginPath(); ctx.rect(ml,mt,cW,cH); ctx.clip();
+
+  // points
+  A.groups.forEach(gr=>{
+    const col=cv(GROUP_COLORS[gr.g%GROUP_COLORS.length]);
+    ctx.fillStyle=col; ctx.globalAlpha=.62;
+    gr.pts.forEach(p=>{ctx.beginPath();ctx.arc(toX(p.x),toY(p.y),3.3,0,2*Math.PI);ctx.fill();});
+    ctx.globalAlpha=1;
+  });
+
+  // within-group lines
+  if(showWithin){
+    A.groups.forEach(gr=>{
+      if(!gr.fit) return;
+      const col=cv(GROUP_COLORS[gr.g%GROUP_COLORS.length]);
+      const x0=gr.fit.xmin, x1=gr.fit.xmax;
+      ctx.strokeStyle=col; ctx.lineWidth=2.6; ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(toX(x0),toY(gr.fit.intercept+gr.fit.slope*x0));
+      ctx.lineTo(toX(x1),toY(gr.fit.intercept+gr.fit.slope*x1)); ctx.stroke();
+    });
+  }
+
+  // group means
+  if(showMeans && A.groups.length>1){
+    ctx.strokeStyle=ink3; ctx.lineWidth=1.4; ctx.setLineDash([5,4]);
+    ctx.beginPath();
+    A.groups.forEach((gr,i)=>{const px=toX(gr.fit.mx),py=toY(gr.fit.my);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
+    ctx.stroke(); ctx.setLineDash([]);
+    A.groups.forEach(gr=>{
+      const col=cv(GROUP_COLORS[gr.g%GROUP_COLORS.length]);
+      ctx.beginPath(); ctx.arc(toX(gr.fit.mx),toY(gr.fit.my),7,0,2*Math.PI);
+      ctx.fillStyle=col; ctx.fill(); ctx.strokeStyle=bg; ctx.lineWidth=2.5; ctx.stroke();
+    });
+  }
+
+  // pooled line
+  if(showPooled && A.pooled){
+    ctx.strokeStyle=a1; ctx.lineWidth=3.4; ctx.setLineDash([9,5]);
+    ctx.beginPath(); ctx.moveTo(toX(2),toY(A.pooled.intercept+A.pooled.slope*2));
+    ctx.lineTo(toX(98),toY(A.pooled.intercept+A.pooled.slope*98)); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.restore(); // clip
+
+  // legend
+  const lgX=ml+cW-150, lgY=mt+6, lh=18;
+  const items=[];
+  A.groups.forEach(gr=>items.push({col:cv(GROUP_COLORS[gr.g%GROUP_COLORS.length]),txt:'Gruppe '+(gr.g+1),dash:false}));
+  if(showPooled) items.push({col:a1,txt:'Pooled',dash:true});
+  ctx.fillStyle=paper; ctx.globalAlpha=.9;
+  ctx.fillRect(lgX-6,lgY-2,156,items.length*lh+8); ctx.globalAlpha=1;
+  ctx.strokeStyle=grid; ctx.lineWidth=1; ctx.strokeRect(lgX-6,lgY-2,156,items.length*lh+8);
+  items.forEach((it,i)=>{
+    const y=lgY+10+i*lh;
+    ctx.strokeStyle=it.col; ctx.lineWidth=it.dash?3.2:2.6; ctx.setLineDash(it.dash?[7,4]:[]);
+    ctx.beginPath(); ctx.moveTo(lgX,y);ctx.lineTo(lgX+22,y);ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=ink2; ctx.font='13px DM Mono,monospace'; ctx.textAlign='left';
+    ctx.fillText(it.txt,lgX+28,y+4);
+  });
+
+  return A;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// METRICS / VERDICT
+// ══════════════════════════════════════════════════════════════════════
+function fmt(v){return (v>=0?'+':'')+v.toFixed(2);}
+
+function update(){
+  const A = draw();
+  const bw = A.meanWithin, bp = A.pooled ? A.pooled.slope : 0, r = A.pooled ? A.pooled.r : 0;
+  const colFor = v => v>0.04 ? cv('--a3') : v<-0.04 ? cv('--a1') : cv('--ink2');
+  const mw=document.getElementById('m-within'), mp=document.getElementById('m-pooled'), mr=document.getElementById('m-r');
+  mw.textContent=fmt(bw); mw.style.color=colFor(bw);
+  mp.textContent=fmt(bp); mp.style.color=colFor(bp);
+  mr.textContent=fmt(r);  mr.style.color=cv('--ink');
+
+  // verdict
+  const v=document.getElementById('verdict');
+  const signW=Math.sign(bw), signP=Math.sign(bp);
+  const both=Math.abs(bw)>0.05 && Math.abs(bp)>0.05;
+  if(both && signW!==signP){
+    v.className='verdict v-rev';
+    v.textContent='⚠ Simpson-Paradox: das Vorzeichen kehrt sich um! Within '+fmt(bw)+'  ↔  Pooled '+fmt(bp);
+  } else if(both && Math.abs(bp-bw)>0.35){
+    v.className='verdict v-dist';
+    v.textContent='Verzerrung gleicher Richtung: Pooled '+fmt(bp)+' übertreibt den Within-Effekt '+fmt(bw);
+  } else {
+    v.className='verdict v-none';
+    v.textContent='Kein Paradox: Within ('+fmt(bw)+') und Pooled ('+fmt(bp)+') stimmen weitgehend überein.';
+  }
+  document.getElementById('hint').innerHTML =
+    'Bei <strong>Gruppen-Versatz = 0</strong> verschwindet das Paradox (Pooled = Within). '+
+    'Je größer der Versatz und je gegenläufiger der Zwischen-Trend, desto stärker kippt die gepoolte Gerade.';
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════════════════════════════════════
+function bind(id,key,valId,fmtFn,isInt,resim){
+  document.getElementById(id).addEventListener('input',function(){
+    ST[key]=isInt?parseInt(this.value):parseFloat(this.value);
+    document.getElementById(valId).textContent=fmtFn?fmtFn(ST[key]):this.value;
+    if(resim) simulate();
+    update();
+  });
+}
+const sgn=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(1);
+bind('s-within','within','v-within',sgn,false,true);
+bind('s-between','between','v-between',sgn,false,true);
+bind('s-conf','conf','v-conf',v=>v.toFixed(2),false,true);
+bind('s-g','g','v-g',null,true,true);
+bind('s-n','n','v-n',null,true,true);
+bind('s-noise','noise','v-noise',null,true,true);
+
+function reroll(){seed=Math.floor(Math.random()*1e9);simulate();update();}
+function toggleWithin(){showWithin=!showWithin;document.getElementById('t-within').classList.toggle('active',showWithin);document.getElementById('t-within').textContent=showWithin?'an':'aus';draw();}
+function togglePooled(){showPooled=!showPooled;document.getElementById('t-pooled').classList.toggle('active',showPooled);document.getElementById('t-pooled').textContent=showPooled?'an':'aus';draw();}
+function toggleMeans(){showMeans=!showMeans;document.getElementById('btn-means').classList.toggle('active',showMeans);draw();}
+
+const PRESETS={
+  rev:{within:0.7,between:-1.3,conf:0.8},
+  none:{within:0.7,between:-1.3,conf:0.0},
+  amp:{within:0.4,between:1.3,conf:0.8}
+};
+function preset(name){
+  Object.assign(ST,PRESETS[name]);
+  ['rev','none','amp'].forEach(k=>document.getElementById('sc-'+k).classList.toggle('active',k===name));
+  document.getElementById('s-within').value=ST.within; document.getElementById('v-within').textContent=sgn(ST.within);
+  document.getElementById('s-between').value=ST.between; document.getElementById('v-between').textContent=sgn(ST.between);
+  document.getElementById('s-conf').value=ST.conf; document.getElementById('v-conf').textContent=ST.conf.toFixed(2);
+  simulate(); update();
+}
+
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+
+// init
+simulate();
+update();
+window.addEventListener('resize',()=>{if(window._rt)clearTimeout(window._rt);window._rt=setTimeout(update,120);});
+</script>
+</body>
+</html>

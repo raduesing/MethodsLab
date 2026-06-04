@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Messmodelle (CFA-Intro) — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:17.5px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+.gk{text-transform:none!important;font-style:normal}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.02rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+
+#app{display:grid;grid-template-columns:288px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.5rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.16rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+input[type=range].acc-l::-webkit-slider-thumb{background:var(--a2)}
+input[type=range].acc-t::-webkit-slider-thumb{background:var(--a1)}
+
+.btn-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem}
+.mbtn{font-family:'DM Mono',monospace;font-size:.71rem;padding:.36rem .25rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center;line-height:1.25}
+.mbtn:hover{border-color:var(--accent);color:var(--accent)}
+.mbtn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+
+.verdict{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:500;padding:.6rem .9rem;margin-bottom:1rem;
+  border:1.5px solid;text-align:center;letter-spacing:.01em;line-height:1.5}
+.v-par{color:var(--a3);border-color:var(--a3);background:color-mix(in srgb,var(--a3) 12%,transparent)}
+.v-tau{color:var(--a2);border-color:var(--a2);background:color-mix(in srgb,var(--a2) 12%,transparent)}
+.v-con{color:var(--a5);border-color:var(--a5);background:color-mix(in srgb,var(--a5) 12%,transparent)}
+.crit{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink2);margin:-.55rem 0 1.1rem;
+  display:flex;flex-wrap:wrap;gap:.35rem 1rem;align-items:center;
+  background:var(--panel);border:1px solid var(--grid);padding:.55rem .8rem}
+.crit b{color:var(--ink)}
+.chk{font-weight:600} .chk.y{color:var(--a3)} .chk.n{color:var(--a1)}
+.crit .arrow{color:var(--ink3)}
+
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1rem}
+.metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.3rem;line-height:1.3}
+.metric-val{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;line-height:1}
+.metric-sub{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.25rem;line-height:1.4}
+
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block}
+.hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
+.two-col{display:grid;grid-template-columns:1.15fr 1fr;gap:.85rem}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr}}
+
+/* covariance matrix */
+.matwrap{overflow-x:auto}
+table.mat{border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.8rem;margin:0 auto}
+table.mat th{color:var(--ink3);font-weight:400;padding:.3rem .5rem;font-size:.72rem}
+table.mat td{border:1px solid var(--grid);padding:.4rem .55rem;text-align:center;color:var(--ink);min-width:46px}
+td.diag{font-weight:600;outline:2px solid var(--a1);outline-offset:-2px}
+
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+table.htab{border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.74rem;margin:.3rem 0 .6rem;width:100%}
+table.htab th,table.htab td{border:1px solid var(--grid);padding:.3rem .45rem;text-align:left;color:var(--ink2)}
+table.htab th{color:var(--accent);font-weight:500}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Messmodelle — <em>parallel · tau-äquivalent · kongenerisch</em></h1>
+  <button class="tbtn" id="btn-nu" onclick="toggleNu()">Intercepts ν</button>
+  <button class="tbtn" id="btn-mat" onclick="toggleMat()">Matrix: Kovarianz</button>
+  <button class="tbtn" style="border-color:var(--a1);color:var(--a1)" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Modell laden</div>
+    <div class="btn-row">
+      <button class="mbtn" id="pr-par" onclick="preset('par')">Parallel</button>
+      <button class="mbtn" id="pr-tau" onclick="preset('tau')">Tau-äqui&shy;valent</button>
+      <button class="mbtn active" id="pr-con" onclick="preset('con')">Kongene&shy;risch</button>
+    </div>
+    <div class="hint" style="border-top:none;padding-top:.4rem;margin-bottom:0">Setzt λ und θ passend; danach jeden Regler frei verändern — die Modellklasse wird automatisch erkannt.</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Anzahl Items k</div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">k</span><span class="slider-val" id="v-k">4</span></div>
+      <input type="range" id="s-k" min="2" max="6" step="1" value="4">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a2)">Ladungen <span class="gk">λ</span> <em style="font-style:normal;color:var(--ink3);font-size:.7rem">(Faktorvarianz = 1)</em></div>
+    <div id="lam-wrap"></div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a1)">Fehlervarianzen <span class="gk">θ</span></div>
+    <div id="th-wrap"></div>
+  </div>
+
+  <div class="scard" id="nu-card" style="display:none">
+    <div class="scard-title" style="color:var(--a4)">Intercepts <span class="gk">ν</span> <em style="font-style:normal;color:var(--ink3);font-size:.7rem">(Item-Mittelwerte)</em></div>
+    <div id="nu-wrap"></div>
+    <div class="hint" style="border-top:none;padding-top:.3rem;margin-bottom:0">Verschieben nur die Mittelwerte — Kovarianzmatrix &amp; Reliabilität bleiben gleich.</div>
+  </div>
+
+</div><!-- #sidebar -->
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 Worum geht's</div>
+    Ein <strong>Messmodell</strong> beschreibt, wie beobachtbare Items mit einer latenten Variable (dem Konstrukt)
+    zusammenhängen: jedes Item <em>i</em> lädt mit <strong>λ<sub>i</sub></strong> auf den Faktor und hat eine
+    <strong>Fehlervarianz θ<sub>i</sub></strong>. Welche Annahmen man über diese Parameter trifft, entscheidet, welcher
+    Reliabilitätskoeffizient korrekt ist. Genau das ist die fehlende Brücke zwischen <em>Faktoranalyse</em> und
+    <em>Reliabilität (α vs. ω)</em>.
+  </div>
+
+  <div class="sec-h">① Modellklasse &amp; Reliabilität</div>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-lbl">McDonalds <span class="gk">ω<sub>total</sub></span> (korrekt)</div>
+      <div class="metric-val" id="m-omega" style="color:var(--a3)">—</div>
+      <div class="metric-sub"><span class="gk">ω<sub>t</sub></span> = (Σλ)² / [(Σλ)² + Σθ]</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">Cronbachs <span class="gk">α</span></div>
+      <div class="metric-val" id="m-alpha" style="color:var(--a5)">—</div>
+      <div class="metric-sub">setzt Tau-Äquivalenz voraus</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">Lücke <span class="gk">ω<sub>total</sub> − α</span></div>
+      <div class="metric-val" id="m-gap">—</div>
+      <div class="metric-sub">Unterschätzung durch α</div>
+    </div>
+  </div>
+  <div class="verdict" id="verdict">—</div>
+  <div class="crit" id="criteria"></div>
+
+  <div class="two-col">
+    <div class="plot-box" style="margin-bottom:0">
+      <div class="plot-title">② Messmodell — Pfaddiagramm</div>
+      <canvas id="cv-path" height="300"></canvas>
+    </div>
+    <div class="plot-box" style="margin-bottom:0">
+      <div class="plot-title">③ Implizierte <span id="mat-kind">Kovarianz</span>matrix</div>
+      <div class="matwrap"><table class="mat" id="mat"></table></div>
+      <div class="hint" id="hint-mat"></div>
+    </div>
+  </div>
+
+  <div class="plot-box" id="means-box" style="display:none">
+    <div class="plot-title">④ Item-Mittelwerte E[X<sub>i</sub>] = <span class="gk" style="text-transform:none">ν</span><sub>i</sub> (Intercepts)</div>
+    <canvas id="cv-means" height="120"></canvas>
+    <div class="hint">Ungleiche Intercepts erzeugen <strong>essenzielle</strong> (Tau-)Äquivalenz: Die Item-<em>Mittelwerte</em> verschieben sich, aber die Kovarianzmatrix oben und damit ω/α bleiben <strong>unverändert</strong>.</div>
+  </div>
+
+  <div class="sec-h">Konzepte</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">Die Modell-Hierarchie</div>
+      <div class="lcard-body"><strong>Parallel</strong> ⊂ <strong>tau-äquivalent</strong> ⊂ <strong>kongenerisch</strong> —
+        jedes Modell lockert eine Annahme: parallel verlangt gleiche λ <em>und</em> gleiche θ, tau-äquivalent nur gleiche λ,
+        kongenerisch lässt beides frei. Je allgemeiner, desto realistischer — aber desto wichtiger der richtige Koeffizient.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Warum <span class="gk">α</span> die Tau-Äquivalenz braucht</div>
+      <div class="lcard-body">Der <em>Grund</em>: α beruht auf dem <strong>ungewichteten Summenscore</strong> — jedes Item zählt
+        gleich viel, ohne eigene Gewichtung. Das ist genau dann optimal, wenn alle Items das Konstrukt gleich gut messen,
+        also <strong>gleiche Ladungen</strong> haben (Tau-Äquivalenz). Sind die Ladungen ungleich, behandelt α starke und
+        schwache Items trotzdem gleich und verschenkt Information → es <strong>unterschätzt</strong> die Reliabilität.
+        <strong>ω</strong> gewichtet jedes Item mit seiner Ladung und bleibt deshalb auch bei kongenerischen Daten korrekt.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Die Matrix verrät das Modell</div>
+      <div class="lcard-body"><strong>Parallel:</strong> alle Diagonalen gleich, alle Kovarianzen gleich.
+        <strong>Tau:</strong> Kovarianzen (λ<sub>i</sub>λ<sub>j</sub>) gleich, Varianzen ungleich.
+        <strong>Kongenerisch:</strong> alles ungleich. Das Modell ist direkt an der implizierten Kovarianzmatrix ablesbar.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Brücke: EFA → Reliabilität</div>
+      <div class="lcard-body">Die <strong>Faktoranalyse</strong> schätzt die Ladungen aus echten Daten; hier siehst du,
+        welches <em>Modell</em> dahintersteht und welcher Koeffizient gilt. Das vertieft dann das α-vs-ω-Tool.
+        <br><a class="xlink" href="Faktoranalyse.html" target="_blank">→ Faktoranalyse (EFA)</a></div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Müssen λ und θ <em>exakt</em> gleich sein?</div>
+      <div class="lcard-body">In der Realität nie — die Modelle sind <strong>Idealisierungen</strong>, echte Werte streuen immer
+        etwas (das Tool nutzt eine kleine Toleranz; minimale Slider-Bewegungen kippen die Klasse daher nicht sofort).
+        Entscheidend ist, <em>welche</em> Gleichheit wofür zählt:<br>
+        • <strong>Ladungen λ</strong> entscheiden über α vs. ω — nur bei (annähernd) gleichen λ ist α exakt, sonst unterschätzt es.<br>
+        • <strong>Fehlervarianzen θ</strong> trennen nur parallel von tau-äquivalent. Da schon Tau-Äquivalenz für α = ω genügt,
+        ist θ-Gleichheit für die <em>Reliabilitätszahl</em> irrelevant — sie zählt erst, wenn man echte Austauschbarkeit braucht.<br>
+        Praxis: Gleichheits-Annahmen per CFA testen (χ²-Differenztest, CFI/RMSEA) — oder gleich <strong>ω</strong> berichten.
+        <strong>Im Zweifel ω.</strong></div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Wozu überhaupt parallel?</div>
+      <div class="lcard-body">Für die <em>Reliabilitätszahl</em> bringt parallel nichts über tau-äquivalent hinaus — dort gilt
+        bereits α = ω exakt. Der Gewinn von parallel ist die <strong>Austauschbarkeit</strong>: gleiche Ladungen <em>und</em>
+        gleiche Fehlervarianzen machen alle Items (und ganze Testhälften oder -formen) zu echten gleichwertigen Replikaten.
+        Erst dann kann man <strong>parallele Testformen</strong> (Form A/B) bauen, den Test <strong>beliebig in äquivalente
+        Hälften</strong> teilen (Split-Half exakt, egal wie geteilt) und Items <strong>ohne Eigenschaftsänderung tauschen
+        oder weglassen</strong> — jedes Item misst mit identischer Präzision (gleicher SEM). Der Preis: parallel ist die
+        strengste und unrealistischste Annahme.</div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Messmodelle — Hintergrund
+      <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+    </div>
+
+    <div class="help-sh">Was dieses Tool zeigt — und was nicht</div>
+    <p class="help-p"><strong>Zeigt:</strong> die einfaktoriellen Messmodelle (parallel / tau-äquivalent / kongenerisch),
+      ihr Pfaddiagramm, die implizierte Kovarianzmatrix und welcher Reliabilitätskoeffizient jeweils exakt ist — also eine
+      sanfte <strong>CFA-Einführung</strong>. <strong>Nicht hier:</strong> die Schätzung der Ladungen aus Daten (→ Faktoranalyse)
+      und die vertiefte α-vs-ω-Demonstration mit Split-Half/KR-20 (→ kommendes Reliabilitäts-Tool).</p>
+
+    <div class="help-sh">Das einfaktorielle Modell</div>
+    <span class="help-formula">X_i = ν_i + λ_i · F + e_i        (F = latentes Konstrukt)
+Var(F) = 1   (zur Identifikation standardisiert)
+Var(X_i)      = λ_i² + θ_i
+Cov(X_i, X_j) = λ_i · λ_j     (i ≠ j)</span>
+    <p class="help-p">λ<sub>i</sub> ist die Ladung (wie stark das Item das Konstrukt misst), θ<sub>i</sub> die Fehlervarianz
+      (Messrauschen). Die Kovarianz zweier Items entsteht <em>nur</em> über den gemeinsamen Faktor — das ist die zentrale
+      Annahme (lokale Unabhängigkeit).</p>
+
+    <div class="help-sh">Die vier Modellstufen</div>
+    <table class="htab">
+      <tr><th>Modell</th><th>λ</th><th>θ</th><th>korrekt</th></tr>
+      <tr><td>Parallel</td><td>gleich</td><td>gleich</td><td>Split-Half = α = ω</td></tr>
+      <tr><td>Tau-äquivalent</td><td>gleich</td><td>frei</td><td>α = ω (exakt)</td></tr>
+      <tr><td>Essenziell tau-äq.</td><td>gleich (+ Konst.)</td><td>frei</td><td>α = ω (exakt)</td></tr>
+      <tr><td>Kongenerisch</td><td>frei</td><td>frei</td><td>ω (α unterschätzt)</td></tr>
+    </table>
+    <p class="help-p"><strong>Essenziell tau-äquivalent</strong> erlaubt zusätzlich unterschiedliche Item-Mittelwerte
+      (Intercepts ν<sub>i</sub>). Da Mittelwerte die <em>Kovarianzen</em> nicht berühren, ist es für die Reliabilität
+      identisch mit tau-äquivalent — an der Kovarianzmatrix nicht unterscheidbar. Schalte oben <strong>„Intercepts ν"</strong>
+      ein: Du kannst die Item-Mittelwerte verschieben und siehst, dass die Klassifikation auf <em>essenziell</em> wechselt,
+      während Matrix und ω/α unverändert bleiben.</p>
+
+    <div class="help-sh">Wie das Tool klassifiziert</div>
+    <p class="help-p">Die Entscheidungs-Zeile unter der Modellklasse prüft die Annahmen direkt: Sind alle <strong>λ gleich</strong>?
+      Sind alle <strong>θ gleich</strong>? (und mit Intercepts: alle <strong>ν gleich</strong>?). Aus den Antworten folgt die
+      Modellklasse — gleiche λ &amp; θ → parallel; nur gleiche λ → tau-äquivalent; ungleiche λ → kongenerisch; gleiche λ
+      aber ungleiche ν → die jeweilige <em>essenzielle</em> Variante.</p>
+    <p class="help-p"><strong>Toleranz &amp; Praxis:</strong> „gleich" heißt hier <em>innerhalb einer kleinen Toleranz</em> —
+      exakte Gleichheit gibt es in echten Daten nie. Real entscheidet man nicht per Augenmaß, sondern testet die
+      Tau-Äquivalenz per CFA (Modellvergleich tau-äquivalent vs. kongenerisch, χ²-Differenztest / Fit-Indizes wie CFI, RMSEA)
+      — oder man berichtet pragmatisch gleich <strong>ω</strong>, das keine Gleichheit voraussetzt und nie kleiner als die
+      wahre Reliabilität ist. <em>Im Zweifel ω.</em></p>
+
+    <div class="help-sh">Reliabilität — hier ist ω = <span class="gk">ω<sub>total</sub></span></div>
+    <span class="help-formula">ω_total = (Σλ_i)² / [ (Σλ_i)² + Σθ_i ]
+α       = k/(k−1) · ( 1 − Σ(λ_i²+θ_i) / [ (Σλ_i)² + Σθ_i ] )</span>
+    <p class="help-p">Das hier berechnete ω ist <strong>McDonalds ω<sub>total</sub></strong> — der Anteil der Gesamtvarianz, der auf
+      <em>alle</em> gemeinsamen Faktoren zurückgeht. Da dieses Tool ein <strong>einfaktorielles</strong> Modell zeigt (nur ein
+      gemeinsamer Faktor), fällt hier ω<sub>total</sub> mit <strong>ω<sub>hierarchical</sub></strong> (dem Anteil eines
+      Generalfaktors) zusammen. Der Unterschied zwischen ω<sub>t</sub> und ω<sub>h</sub> wird erst bei <em>Mehrdimensionalität</em>
+      relevant — das zeigen das Faktoranalyse-Tool (Schmid-Leiman) und das Tool „Reliabilität: α vs. ω".</p>
+    <p class="help-p">Bei gleichen Ladungen lässt sich zeigen: <strong>α = ω<sub>total</sub></strong>. Bei ungleichen Ladungen ist
+      <strong>α &lt; ω<sub>total</sub></strong> — α ist dann eine <em>Untergrenze</em> der Reliabilität. Genau deshalb empfehlen
+      Methodiker (z. B. McDonald, Revelle &amp; Zinbarg) ω statt α, sobald Kongenerität plausibel ist.</p>
+
+    <div class="help-sh">Bezug zu CFA, EFA und IRT</div>
+    <p class="help-p">Diese Modelle sind <strong>konfirmatorische Faktormodelle (CFA)</strong> mit Gleichheits-Restriktionen.
+      Die <em>explorative</em> Faktoranalyse schätzt λ frei aus Daten; die IRT ist das Pendant für kategoriale Items
+      (Ladung ↔ Diskrimination). Der Gruppenvergleich solcher Modelle ist das Thema <em>Messinvarianz</em>.</p>
+
+    <div class="help-sh">Literatur</div>
+    <p class="help-p">Lord, F. M. &amp; Novick, M. R. (1968). <em>Statistical Theories of Mental Test Scores.</em><br>
+      McDonald, R. P. (1999). <em>Test Theory: A Unified Treatment.</em> Erlbaum.<br>
+      Revelle, W. &amp; Zinbarg, R. E. (2009). Coefficients alpha, beta, omega, and the glb. <em>Psychometrika, 74</em>, 145–154.</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════
+const ST = { k:4, lam:[], th:[], nu:[] };
+let showCov = true;   // covariance vs correlation matrix
+let showNu = false;   // intercepts (essential-equivalence)
+
+const PRESETS = {
+  par: k => ({ lam:Array(k).fill(0.70),                         th:Array(k).fill(0.50),  nu:Array(k).fill(0) }),
+  tau: k => ({ lam:Array(k).fill(0.70),                         th:from([0.30,0.50,0.70,0.40,0.60,0.35],k), nu:Array(k).fill(0) }),
+  con: k => ({ lam:from([0.50,0.70,0.85,0.45,0.75,0.60],k),    th:from([0.60,0.45,0.30,0.65,0.40,0.50],k),  nu:Array(k).fill(0) })
+};
+function from(arr,k){const r=[];for(let i=0;i<k;i++)r.push(arr[i%arr.length]);return r;}
+
+// ══════════════════════════════════════════════════════════════════════
+// MATH
+// ══════════════════════════════════════════════════════════════════════
+function vari(i){return ST.lam[i]*ST.lam[i]+ST.th[i];}
+function omega(){const sl=ST.lam.reduce((a,b)=>a+b,0);const st=ST.th.reduce((a,b)=>a+b,0);return sl*sl/(sl*sl+st);}
+function alpha(){
+  const k=ST.k; const sl=ST.lam.reduce((a,b)=>a+b,0); const st=ST.th.reduce((a,b)=>a+b,0);
+  const Vtot=sl*sl+st; const sumVar=ST.lam.reduce((a,l)=>a+l*l,0)+st;
+  return k/(k-1)*(1-sumVar/Vtot);
+}
+function modelClass(){
+  const tol=0.015;
+  const eq=arr=>arr.every(v=>Math.abs(v-arr[0])<tol);
+  const lEq=eq(ST.lam), tEq=eq(ST.th), nEq=eq(ST.nu);
+  let m;
+  if(lEq&&tEq) m={key:'par',cls:'v-par',name:'PARALLEL',
+    txt:'gleiche λ UND gleiche θ → Items austauschbar. Split-Half, α und ω<sub>total</sub> sind hier identisch und exakt.'};
+  else if(lEq) m={key:'tau',cls:'v-tau',name:'TAU-ÄQUIVALENT',
+    txt:'gleiche λ, freie θ → α = ω<sub>total</sub> (exakt). Cronbachs α ist hier gerechtfertigt.'};
+  else m={key:'con',cls:'v-con',name:'KONGENERISCH',
+    txt:'ungleiche λ → ω<sub>total</sub> ist korrekt, α unterschätzt die Reliabilität. Nutze ω.'};
+  // essential variants: loadings equal but intercepts differ (only relevant when ν shown)
+  if(showNu && lEq && !nEq){
+    m.name='ESSENZIELL '+m.name;
+    m.txt+=' Ungleiche Intercepts ν verschieben nur die Item-Mittelwerte — Kovarianzmatrix und Reliabilität bleiben identisch.';
+  }
+  m.lEq=lEq; m.tEq=tEq; m.nEq=nEq;
+  return m;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// SLIDERS (dynamic)
+// ══════════════════════════════════════════════════════════════════════
+function buildSliders(){
+  const lw=document.getElementById('lam-wrap'), tw=document.getElementById('th-wrap'), nw=document.getElementById('nu-wrap');
+  lw.innerHTML=''; tw.innerHTML=''; nw.innerHTML='';
+  for(let i=0;i<ST.k;i++){
+    lw.insertAdjacentHTML('beforeend',`
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">λ<sub>${i+1}</sub></span><span class="slider-val" id="vl-${i}">${ST.lam[i].toFixed(2)}</span></div>
+        <input type="range" class="acc-l" id="sl-${i}" min="0.2" max="1" step="0.01" value="${ST.lam[i]}">
+      </div>`);
+    tw.insertAdjacentHTML('beforeend',`
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">θ<sub>${i+1}</sub></span><span class="slider-val" id="vt-${i}">${ST.th[i].toFixed(2)}</span></div>
+        <input type="range" class="acc-t" id="st-${i}" min="0.1" max="1" step="0.01" value="${ST.th[i]}">
+      </div>`);
+    nw.insertAdjacentHTML('beforeend',`
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">ν<sub>${i+1}</sub></span><span class="slider-val" id="vn-${i}">${ST.nu[i].toFixed(1)}</span></div>
+        <input type="range" id="sn-${i}" min="-2" max="2" step="0.1" value="${ST.nu[i]}">
+      </div>`);
+    document.getElementById('sl-'+i).addEventListener('input',function(){
+      ST.lam[i]=parseFloat(this.value); document.getElementById('vl-'+i).textContent=ST.lam[i].toFixed(2);
+      clearPreset(); update();
+    });
+    document.getElementById('st-'+i).addEventListener('input',function(){
+      ST.th[i]=parseFloat(this.value); document.getElementById('vt-'+i).textContent=ST.th[i].toFixed(2);
+      clearPreset(); update();
+    });
+    document.getElementById('sn-'+i).addEventListener('input',function(){
+      ST.nu[i]=parseFloat(this.value); document.getElementById('vn-'+i).textContent=ST.nu[i].toFixed(1);
+      clearPreset(); update();
+    });
+  }
+}
+function clearPreset(){ ['par','tau','con'].forEach(k=>document.getElementById('pr-'+k).classList.remove('active')); }
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW — path diagram
+// ══════════════════════════════════════════════════════════════════════
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function drawPath(){
+  const c=document.getElementById('cv-path'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d');
+  const a1=cv('--a1'),a2=cv('--a2'),a4=cv('--a4'),ink2=cv('--ink2'),ink3=cv('--ink3'),paper=cv('--paper'),bg=cv('--bg');
+  ctx.clearRect(0,0,W,H);
+  const k=ST.k;
+  const fx=W/2, fy=42, frx=46, fry=26;
+  const iy=196, ih=38, iw=Math.min(58,(W-40)/k-10);
+  const ey=270, er=13;
+  const xOf=i=>20+iw/2+(i+0.5)*((W-40-iw)/(k));   // approx center spacing
+  const cxs=[]; for(let i=0;i<k;i++) cxs.push(20 + (i+0.5)*(W-40)/k);
+
+  // arrows factor -> items
+  for(let i=0;i<k;i++){
+    const cx=cxs[i];
+    ctx.strokeStyle=ink2; ctx.lineWidth=1+ST.lam[i]*2.2;
+    ctx.beginPath(); ctx.moveTo(fx,fy+fry); ctx.lineTo(cx,iy); ctx.stroke();
+    // arrowhead
+    const ang=Math.atan2(iy-(fy+fry),cx-fx);
+    ctx.beginPath();ctx.moveTo(cx,iy);ctx.lineTo(cx-7*Math.cos(ang-0.4),iy-7*Math.sin(ang-0.4));
+    ctx.lineTo(cx-7*Math.cos(ang+0.4),iy-7*Math.sin(ang+0.4));ctx.closePath();ctx.fillStyle=ink2;ctx.fill();
+    // lambda label
+    const lx=fx+(cx-fx)*0.5, ly=fy+fry+(iy-(fy+fry))*0.5;
+    ctx.fillStyle=paper;ctx.globalAlpha=.9;ctx.fillRect(lx-22,ly-9,44,18);ctx.globalAlpha=1;
+    ctx.fillStyle=a2;ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('λ='+ST.lam[i].toFixed(2),lx,ly+4);
+  }
+  // error -> item arrows
+  for(let i=0;i<k;i++){
+    const cx=cxs[i];
+    ctx.strokeStyle=a1;ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(cx,ey-er);ctx.lineTo(cx,iy+ih);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx,iy+ih);ctx.lineTo(cx-5,iy+ih+7);ctx.lineTo(cx+5,iy+ih+7);ctx.closePath();ctx.fillStyle=a1;ctx.fill();
+    // error circle
+    ctx.beginPath();ctx.arc(cx,ey,er,0,2*Math.PI);ctx.fillStyle=bg;ctx.fill();ctx.strokeStyle=a1;ctx.lineWidth=1.6;ctx.stroke();
+    ctx.fillStyle=a1;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('e'+(i+1),cx,ey+4);
+    ctx.fillText('θ='+ST.th[i].toFixed(2),cx,ey+er+13);
+  }
+  // items (squares)
+  for(let i=0;i<k;i++){
+    const cx=cxs[i];
+    ctx.fillStyle=paper;ctx.strokeStyle=a2;ctx.lineWidth=2;
+    ctx.fillRect(cx-iw/2,iy,iw,ih);ctx.strokeRect(cx-iw/2,iy,iw,ih);
+    ctx.fillStyle=a2;ctx.font='bold 15px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('X'+(i+1),cx,iy+ih/2+5);
+  }
+  // factor (ellipse)
+  ctx.beginPath();ctx.ellipse(fx,fy,frx,fry,0,0,2*Math.PI);
+  ctx.fillStyle=paper;ctx.fill();ctx.strokeStyle=a4;ctx.lineWidth=2.4;ctx.stroke();
+  ctx.fillStyle=a4;ctx.font='bold 15px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('F',fx,fy-2);
+  ctx.font='12px DM Mono,monospace';ctx.fillText('Var=1',fx,fy+12);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// MATRIX
+// ══════════════════════════════════════════════════════════════════════
+function drawMatrix(){
+  const k=ST.k; const t=document.getElementById('mat');
+  let html='<tr><th></th>';
+  for(let j=0;j<k;j++) html+=`<th>X${j+1}</th>`;
+  html+='</tr>';
+  // find max for shading
+  let vmax=0;
+  for(let i=0;i<k;i++)for(let j=0;j<k;j++){const v=cell(i,j);if(Math.abs(v)>vmax)vmax=Math.abs(v);}
+  for(let i=0;i<k;i++){
+    html+=`<tr><th>X${i+1}</th>`;
+    for(let j=0;j<k;j++){
+      const v=cell(i,j); const a=(vmax>0?Math.abs(v)/vmax:0)*0.5;
+      const diag=i===j?' diag':'';
+      const shade=`background:color-mix(in srgb, var(--a2) ${(a*100).toFixed(0)}%, transparent)`;
+      html+=`<td class="${diag.trim()}" style="${shade}">${v.toFixed(2)}</td>`;
+    }
+    html+='</tr>';
+  }
+  t.innerHTML=html;
+  document.getElementById('mat-kind').textContent = showCov?'Kovarianz':'Korrelations';
+  document.getElementById('btn-mat').textContent = 'Matrix: '+(showCov?'Kovarianz':'Korrelation');
+  document.getElementById('hint-mat').innerHTML = showCov
+    ? 'Diagonale (rot) = Var(X<sub>i</sub>) = λ<sub>i</sub>²+θ<sub>i</sub> · Off-Diagonal = Cov = λ<sub>i</sub>λ<sub>j</sub>. Gleichmäßige Muster = restriktiveres Modell.'
+    : 'Korrelationen r<sub>ij</sub> = λ<sub>i</sub>λ<sub>j</sub> / √(Var<sub>i</sub>·Var<sub>j</sub>). Diagonale = 1.';
+}
+function cell(i,j){
+  if(showCov){ return i===j ? vari(i) : ST.lam[i]*ST.lam[j]; }
+  else { return i===j ? 1 : ST.lam[i]*ST.lam[j]/Math.sqrt(vari(i)*vari(j)); }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW — item means (intercepts)
+// ══════════════════════════════════════════════════════════════════════
+function drawMeans(){
+  const c=document.getElementById('cv-means'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d');
+  const a2=cv('--a2'),a4=cv('--a4'),ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),bg=cv('--bg');
+  ctx.clearRect(0,0,W,H);
+  const ml=20,mr=20,mt=14,mb=30,cW=W-ml-mr,cH=H-mt-mb;
+  const lo=-2.5,hi=2.5;
+  const toX=v=>ml+cW*(v-lo)/(hi-lo);
+  const axisY=mt+cH*0.55;
+  ctx.strokeStyle=ink3;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(ml,axisY);ctx.lineTo(ml+cW,axisY);ctx.stroke();
+  ctx.font='13px DM Mono,monospace';
+  for(let v=-2;v<=2;v++){const px=toX(v);
+    ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(px,axisY-4);ctx.lineTo(px,axisY+4);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.textAlign='center';ctx.fillText(v.toFixed(0),px,axisY+18);}
+  // zero line (grand mean)
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(toX(0),mt);ctx.lineTo(toX(0),axisY);ctx.stroke();ctx.setLineDash([]);
+  // item dots
+  const eq=ST.nu.every(v=>Math.abs(v-ST.nu[0])<0.015);
+  for(let i=0;i<ST.k;i++){
+    const px=toX(ST.nu[i]);
+    ctx.beginPath();ctx.arc(px,axisY,6,0,2*Math.PI);ctx.fillStyle=eq?a2:a4;ctx.fill();ctx.strokeStyle=bg;ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle=eq?a2:a4;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('X'+(i+1),px,axisY-12);
+  }
+  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Item-Mittelwert  ν',ml+cW/2,H-3);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// UPDATE
+// ══════════════════════════════════════════════════════════════════════
+function update(){
+  const om=omega(), al=alpha(), gap=om-al;
+  document.getElementById('m-omega').textContent=om.toFixed(3);
+  document.getElementById('m-alpha').textContent=al.toFixed(3);
+  const g=document.getElementById('m-gap'); g.textContent=(gap>=0?'+':'')+gap.toFixed(3);
+  g.style.color = gap>0.01 ? cv('--a1') : cv('--ink3');
+  const mc=modelClass();
+  const v=document.getElementById('verdict'); v.className='verdict '+mc.cls;
+  v.innerHTML='<strong>'+mc.name+'</strong> — '+mc.txt;
+  // explicit decision criteria
+  const chk=(ok)=>`<span class="chk ${ok?'y':'n'}">${ok?'✓ gleich':'✗ ungleich'}</span>`;
+  let crit=`<b>Entscheidung:</b> Ladungen λ ${chk(mc.lEq)} · Fehler θ ${chk(mc.tEq)}`;
+  if(showNu) crit+=` · Intercepts ν ${chk(mc.nEq)}`;
+  crit+=` <span class="arrow">→</span> <b>${mc.name}</b>`;
+  document.getElementById('criteria').innerHTML=crit;
+  drawPath(); drawMatrix();
+  if(showNu) drawMeans();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════════════════════════════════════
+function preset(name){
+  const p=PRESETS[name](ST.k); ST.lam=p.lam.slice(); ST.th=p.th.slice(); ST.nu=p.nu.slice();
+  ['par','tau','con'].forEach(k=>document.getElementById('pr-'+k).classList.toggle('active',k===name));
+  buildSliders(); update();
+}
+document.getElementById('s-k').addEventListener('input',function(){
+  ST.k=parseInt(this.value); document.getElementById('v-k').textContent=ST.k;
+  // resize arrays keeping values, fill new from congeneric defaults
+  const def=PRESETS.con(6);
+  while(ST.lam.length<ST.k){ST.lam.push(def.lam[ST.lam.length]);ST.th.push(def.th[ST.th.length]);ST.nu.push(0);}
+  ST.lam=ST.lam.slice(0,ST.k); ST.th=ST.th.slice(0,ST.k); ST.nu=ST.nu.slice(0,ST.k);
+  buildSliders(); update();
+});
+function toggleMat(){showCov=!showCov;drawMatrix();}
+function toggleNu(){
+  showNu=!showNu;
+  document.getElementById('btn-nu').classList.toggle('active',showNu);
+  document.getElementById('btn-nu').textContent=showNu?'Intercepts ν: an':'Intercepts ν';
+  document.getElementById('nu-card').style.display=showNu?'':'none';
+  document.getElementById('means-box').style.display=showNu?'':'none';
+  update();
+}
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+
+// init
+(function(){const p=PRESETS.con(ST.k);ST.lam=p.lam.slice();ST.th=p.th.slice();ST.nu=p.nu.slice();})();
+buildSliders();
+update();
+window.addEventListener('resize',()=>{if(window._rt)clearTimeout(window._rt);window._rt=setTimeout(update,120);});
+</script>
+</body>
+</html>
