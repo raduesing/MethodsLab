@@ -6,12 +6,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Static Badge](https://img.shields.io/badge/Status-Academic_Project-blue)]()
 [![Static Badge](https://img.shields.io/badge/Tech-Vanilla_JS-orange)]()
-[![Static Badge](https://img.shields.io/badge/Tools-33_interactive-green)]()
+[![Static Badge](https://img.shields.io/badge/Tools-36_interactive-green)]()
 [![Static Badge](https://img.shields.io/badge/Version-0.7_beta-lightgrey)]()
 
 ### 🌐 [www.methodslab.uni-osnabrueck.de](https://www.methodslab.uni-osnabrueck.de/)
 
-**A suite of 33 interactive tools that build statistical intuition from the ground up — from OLS regression and effect sizes, through the counter-intuitive paradoxes that trip up even seasoned researchers, into modern causal inference, psychometrics (classical test theory, measurement models, reliability, IRT), and clinical diagnostics. Everything runs entirely in the browser. No code, no server, no data ever leaves your machine.**
+**A suite of 36 interactive tools that build statistical intuition from the ground up — from OLS regression and effect sizes, through the counter-intuitive paradoxes that trip up even seasoned researchers, into modern causal inference, psychometrics (classical test theory, measurement models, reliability, IRT), and clinical diagnostics. Everything runs entirely in the browser. No code, no server, no data ever leaves your machine.**
 
 [ [Learning Path](#-the-learning-path) ] • [ [Ecosystem](#-the-ecosystem) ] • [ [Philosophy](#-scientific-philosophy) ] • [ [Usage](#-getting-started) ] • [ [Sister Project](#-sister-project--bayes-thinking-lab) ]
 
@@ -45,7 +45,7 @@ The lab is organized into six sections that build on one another. Work through t
 | **3 · Statistical Paradoxes** | Why counter-intuitive results are, in fact, plain regression logic | Regression to the Mean · Attenuation · Berkson · Lord |
 | **4 · Causal Inference** | When association may be read as causation — and the toolkit of modern causal analysis | Causal Foundations · RDD · Difference-in-Differences · Propensity Score Matching |
 | **5 · Test Theory & Measurement** | How psychological constructs are measured and how well | Classical Test Theory · Measurement Models (CFA) · Factor Analysis · Reliability (α vs. ω) · IRT · DIF |
-| **6 · Diagnostics & Test Quality** | How accurately an instrument detects what it should — at the level of the individual | Sensitivity/Specificity · ICC · Diagnostic Intervals · Norm-Score Distortion · Jacobson-Truax |
+| **6 · Diagnostics & Test Quality** | How accurately an instrument detects what it should — at the level of the individual | Sensitivity/Specificity · Diagnostic Validity · Taylor-Russell · ICC · Diagnostic Intervals · Norm-Score Distortion · Jacobson-Truax |
 
 ---
 
@@ -77,8 +77,8 @@ Legend: **✓** finished · **⟳** in revision · **◷** planned
 * **✓ Berkson's Paradox** — Talent + effort → success: DAG, diagonal selection boundary, collider bias. Negative correlation in selected samples.
 * **✓ Lord's Paradox** — ANCOVA vs. change scores: when do the two analyses lead to opposite conclusions? DAG, key formula, lege-artis decision.
 * **✓ Simpson's Paradox** — An aggregate (pooled) trend reverses on disaggregation: within- vs. pooled regression, confounding slider, reversal & amplification scenarios. Cross-link to the multilevel tool.
-* **◷ Range Restriction** — Taylor-Russell interactive: correlation attenuation in selected samples, Thorndike correction formulae.
-* **◷ Lindley's Paradox** — p < .05 yet a Bayes factor < 1 is possible: the frequentist–Bayes conflict. Synergy with the Bayes Thinking Lab.
+* **✓ Range Restriction** — How selection on the predictor X attenuates the correlation (variance restriction). Scatter full vs. restricted, dispersion bars, the Thorndike r(u) relationship, Case-II correction. The slope stays, r shrinks. Cross-linked with Berkson and Taylor-Russell.
+* **✓ Lindley's Paradox** — p < .05 yet the Bayes factor supports H₀: the frequentist–Bayes conflict. Lindley mode, z-distribution H₀ vs. H₁, divergence over n. Synergy with the Bayes Thinking Lab.
 * **◷ Will Rogers Phenomenon** — Reclassification raises the mean of both groups at once (stage migration). Crucial for longitudinal and staging data.
 * **◷ Freedman's Paradox** — Stepwise regression on random predictors: spuriously significant variables, R² inflation. A warning to applied statisticians.
 * **◷ Inspection Paradox** — You land by chance in above-average-length intervals (buses, clinical cohorts, survival data). Length-biased sampling.
@@ -108,14 +108,15 @@ Legend: **✓** finished · **⟳** in revision · **◷** planned
 *How well does an instrument detect what it should — at the level of the individual patient?*
 
 * **✓ Sensitivity & Specificity** — ROC curve, AUC, PPV/NPV as a function of prevalence: interactive cut-off, live 2×2 table.
-* **✓ Profile Analysis** — Profile comparison with Cattell rₚ, McCrae Iₚₐ/rₚₐ, ICC_de: elevation, scatter, and shape evaluated separately.
+* **✓ Diagnostic Validity** — Construct, criterion, and content validity: validity coefficients, Taylor-Russell tables, utility analysis.
+* **✓ Taylor-Russell Tables** — The selection utility of a test: success rate (PPV) among those selected, as a function of validity, selection ratio, and base rate. Interactive table plus nomogram with a target-cross reticle; bivariate-normal computation. Cross-linked with Range Restriction.
 * **✓ Test Bias** — Cleary model, Meade & Fetzer, adverse impact: three modules, four scenarios. Differential prediction vs. fairness in practice.
+* **✓ Diagnostic Intervals** — Confidence, prediction, and tolerance intervals compared: what each one says and which question it answers.
+* **✓ Jacobson-Truax Analysis** — Reliable Change Index & clinical significance: RCI band, cut-off criteria a/b/c/d, five-group classification (analogous to the R package JTRCI) in the pre-post plot. BDI-II and SCL-90 as worked examples.
+* **✓ Norm-Score Distortion** — What linear T-scores do to right-skewed distributions (SCL-90 analogy). Gamma, log-normal, exponential, Weibull, ex-Gaussian; empirical vs. T-norm percentile ranks; area-transformation (Lienert & Raatz) overlay.
+* **✓ Profile Analysis** — Profile comparison with Cattell rₚ, McCrae Iₚₐ/rₚₐ, ICC_de: elevation, scatter, and shape evaluated separately.
 * **✓ ICC-Lab** — Intraclass correlation: all six Shrout-&-Fleiss forms, rater count, absolute vs. consistency agreement.
 * **✓ Inter-Rater Agreement** — Cohen's κ, weighted κ, the kappa paradox, prevalence & bias: when κ misleads and what to report instead.
-* **✓ Diagnostic Intervals** — Confidence, prediction, and tolerance intervals compared: what each one says and which question it answers.
-* **✓ Norm-Score Distortion** — What linear T-scores do to right-skewed distributions (SCL-90 analogy). Gamma, log-normal, exponential, Weibull, ex-Gaussian; empirical vs. T-norm percentile ranks; area-transformation (Lienert & Raatz) overlay.
-* **✓ Diagnostic Validity** — Construct, criterion, and content validity: validity coefficients, Taylor-Russell tables, utility analysis.
-* **✓ Jacobson-Truax Analysis** — Reliable Change Index & clinical significance: RCI band, cut-off criteria a/b/c/d, five-group classification (analogous to the R package JTRCI) in the pre-post plot. BDI-II and SCL-90 as worked examples.
 
 ---
 

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lindley's Paradox — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#5a5448;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:17.5px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+.gk{text-transform:none!important;font-style:normal}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.02rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+
+#app{display:grid;grid-template-columns:284px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+input[type=range]:disabled{opacity:.4;cursor:not-allowed}
+
+.btn-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem}
+.mbtn{font-family:'DM Mono',monospace;font-size:.73rem;padding:.34rem .3rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
+.mbtn:hover{border-color:var(--accent);color:var(--accent)}
+.mbtn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.toggle-lbl{font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink2);line-height:1.4}
+
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.cnum{font-size:2em;font-weight:600;vertical-align:-0.18em;color:var(--accent);margin-right:.25em}
+
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:.8rem}
+.metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.3rem;line-height:1.3}
+.metric-val{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:500;line-height:1}
+.metric-sub{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.25rem;line-height:1.4}
+
+.verdict{font-family:'DM Mono',monospace;font-size:.92rem;font-weight:500;padding:.65rem .9rem;margin-bottom:1rem;
+  border:1.5px solid;text-align:center;letter-spacing:.01em;line-height:1.5}
+.v-para{color:var(--a1);border-color:var(--a1);background:color-mix(in srgb,var(--a1) 12%,transparent)}
+.v-agree{color:var(--a3);border-color:var(--a3);background:color-mix(in srgb,var(--a3) 12%,transparent)}
+.v-mix{color:var(--a5);border-color:var(--a5);background:color-mix(in srgb,var(--a5) 12%,transparent)}
+
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block}
+.hint{font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
+
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.85rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;font-family:'DM Mono',monospace;font-size:.74rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Lindley's Paradox — <em>signifikant, aber Bayes stützt H₀</em></h1>
+  <button class="tbtn" style="border-color:var(--a1);color:var(--a1)" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Lindley-Modus</div>
+    <div class="toggle-row">
+      <span class="toggle-lbl">Ergebnis <strong>gerade signifikant</strong><br>halten (p = α)</span>
+      <button class="mbtn active" id="btn-lind" style="width:64px" onclick="toggleLindley()">an</button>
+    </div>
+    <div class="hint" style="border-top:none;padding-top:.4rem;margin-bottom:0">An: der beobachtete Effekt wird so gesetzt, dass p genau = α bleibt — schiebe dann n und beobachte den Bayes-Faktor.</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Stichprobengröße n</div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">n</span><span class="slider-val" id="v-n">50000</span></div>
+      <input type="range" id="s-n" min="0" max="100" step="1" value="70">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Beobachteter Effekt</div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name"><span class="gk">δ</span> = (x̄−μ₀)/σ</span><span class="slider-val" id="v-delta">0.009</span></div>
+      <input type="range" id="s-delta" min="0" max="100" step="1" value="20">
+    </div>
+    <div class="hint" id="delta-note" style="border-top:none;padding-top:.35rem;margin-bottom:0">Im Lindley-Modus von n bestimmt (deaktiviert).</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Prior unter H₁</div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">Prior-SD <span class="gk">τ</span> <em style="color:var(--ink3)">(in σ)</em></span><span class="slider-val" id="v-tau">1.00</span></div>
+      <input type="range" id="s-tau" min="0.1" max="3" step="0.05" value="1">
+    </div>
+    <div class="hint" style="border-top:none;padding-top:.35rem;margin-bottom:0"><span class="gk">θ</span> ~ N(0, <span class="gk">τ</span>²) unter H₁ — wie breit man den Effekt a priori erwartet.</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Signifikanzniveau α</div>
+    <div class="btn-row">
+      <button class="mbtn" id="al-90" onclick="setAlpha(1.645,'.10','90')">.10</button>
+      <button class="mbtn active" id="al-95" onclick="setAlpha(1.96,'.05','95')">.05</button>
+      <button class="mbtn" id="al-99" onclick="setAlpha(2.576,'.01','99')">.01</button>
+    </div>
+    <div class="hint" style="border-top:none;padding-top:.35rem;margin-bottom:0">zweiseitig</div>
+  </div>
+
+</div><!-- #sidebar -->
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 Das Rätsel</div>
+    Ein Test gegen die Punkt-Nullhypothese <strong>H₀: θ = 0</strong> an <strong>n = 50 000</strong> Personen ergibt <em>p ≈ .05</em> —
+    also <strong>signifikant</strong>, H₀ wird abgelehnt. Doch der <strong>Bayes-Faktor</strong> sagt: Die Daten sind <em>vielfach
+    wahrscheinlicher unter H₀</em> als unter H₁. Frequentist und Bayesianer kommen zum <strong>gegenteiligen Schluss</strong> —
+    aus <em>denselben</em> Daten. Wer hat recht, und warum?
+  </div>
+
+  <div class="sec-h"><span class="cnum">①</span>Frequentist vs. Bayes</div>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-lbl">Teststatistik z</div>
+      <div class="metric-val" id="m-z" style="color:var(--a1)">—</div>
+      <div class="metric-sub"><span class="gk">δ</span>·√n</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">p-Wert (2-seitig)</div>
+      <div class="metric-val" id="m-p" style="color:var(--a1)">—</div>
+      <div class="metric-sub" id="m-p-sub">—</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">BF₀₁ (für H₀)</div>
+      <div class="metric-val" id="m-bf01" style="color:var(--a4)">—</div>
+      <div class="metric-sub">Daten×wahrscheinlicher unter H₀</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">BF₁₀ (für H₁)</div>
+      <div class="metric-val" id="m-bf10" style="color:var(--a4)">—</div>
+      <div class="metric-sub" id="m-bf-sub">Jeffreys-Skala</div>
+    </div>
+  </div>
+  <div class="verdict" id="verdict">—</div>
+
+  <div class="sec-h"><span class="cnum">②</span>Warum? Die Verteilung der Teststatistik unter H₀ vs. H₁</div>
+  <div class="plot-box">
+    <div class="plot-title">Randverteilung von z — H₀ (fest) vs. H₁ (wird mit n breiter)</div>
+    <canvas id="cv-dist" height="300"></canvas>
+    <div class="hint" id="hint-dist"></div>
+  </div>
+
+  <div class="sec-h"><span class="cnum">③</span>Die Divergenz mit wachsendem n</div>
+  <div class="plot-box">
+    <div class="plot-title">p-Wert (rot) vs. Bayes-Faktor BF₀₁ (lila) über die Stichprobengröße</div>
+    <canvas id="cv-div" height="320"></canvas>
+    <div class="hint" id="hint-div"></div>
+  </div>
+
+  <div class="sec-h">Konzepte</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">Worin besteht das Paradox?</div>
+      <div class="lcard-body">Bei <strong>festem Signifikanzniveau</strong> kann ein gerade-signifikantes Ergebnis (p = .05) mit
+        wachsendem n zu <strong>immer stärkerer Evidenz für H₀</strong> werden. Der Frequentist lehnt H₀ ab, der Bayesianer
+        stützt sie — beide aus denselben Daten. Lindley (1957) zeigte das formal.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Der Effekt wird winzig</div>
+      <div class="lcard-body">Damit p = .05 bleibt, muss bei großem n der beobachtete Effekt <strong><span class="gk">δ</span> = z/√n</strong>
+        immer kleiner werden. Ein „signifikanter" Effekt bei n = 1 000 000 ist praktisch null. Die Signifikanz misst hier nur,
+        dass der Effekt <em>nicht exakt</em> 0 ist — nicht, dass er bedeutsam ist.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Warum stützt Bayes H₀?</div>
+      <div class="lcard-body">H₁ verteilt seine Wahrscheinlichkeit über <em>alle</em> möglichen Effekte (Prior <span class="gk">τ</span>).
+        Je größer n, desto schärfer wäre ein <em>echter</em> Effekt sichtbar — ein winziges z spricht dann gegen große Effekte
+        und damit <strong>für H₀</strong>. H₁ wird durch seine Streuung „bestraft" (Ockhams Rasiermesser, automatisch).</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Die Rolle des Priors</div>
+      <div class="lcard-body">Der Bayes-Faktor hängt von der Prior-Breite <span class="gk">τ</span> ab — ein bekannter Kritikpunkt.
+        Breiterer Prior → stärkere H₀-Stützung (mehr „Bestrafung" von H₁). Der <em>p</em>-Wert ignoriert diese Frage ganz,
+        zahlt dafür aber mit der n-Abhängigkeit der Signifikanz.</div>
+    </div>
+    <div class="lcard" style="grid-column:1/-1">
+      <div class="lcard-h">Warum dreht der BF im freien Modus „um"?</div>
+      <div class="lcard-body">Bei <strong>festem echtem Effekt <span class="gk">δ</span></strong> (Lindley-Modus aus) durchläuft BF₀₁ zwei Phasen,
+        weil er aus zwei gegenläufigen Kräften besteht:
+        <strong>BF₀₁ = √(1+n<span class="gk">τ</span>²) · exp(−½ z²·…)</strong>.<br>
+        • <strong>Occam-Faktor √(1+n<span class="gk">τ</span>²)</strong> — wächst mit n und <strong>stützt H₀</strong>: er bestraft H₁ dafür,
+        dass es seine Wahrscheinlichkeit über einen breiten Prior verteilt.<br>
+        • <strong>Fit-Term exp(−½z²·…)</strong> — bricht ein, sobald z groß wird (echter Effekt sichtbar), und <strong>stützt H₁</strong>.<br>
+        <strong>Kleines n:</strong> z = <span class="gk">δ</span>√n ist winzig → der Effekt ist noch nicht auflösbar → Occam gewinnt → BF für H₀.
+        <strong>Großes n:</strong> der echte Effekt ist aufgelöst → Fit gewinnt → BF für H₁. Das „Umdrehen" ist also <strong>Ockhams
+        Rasiermesser</strong>: H₁ muss sich seinen Vorteil erst durch genug Daten verdienen.<br>
+        <strong>Pointe:</strong> Wenn ein echter Effekt existiert, sind sich p und BF am Ende <em>einig</em> (beide → H₁) — dann ist es
+        wirklich nur unterschiedliche Sensitivität plus Occam-Aufschlag. Das <em>echte</em> Paradox tritt nur im <strong>Lindley-Modus</strong>
+        auf: dort schrumpft der Effekt mit (<span class="gk">δ</span> = z/√n → 0), p bleibt für immer bei α, und BF₀₁ steigt <em>monoton</em>
+        gegen H₀ — sie widersprechen sich dauerhaft.</div>
+    </div>
+    <div class="lcard" style="grid-column:1/-1">
+      <div class="lcard-h">Und ein Credible Interval / Probability of Direction?</div>
+      <div class="lcard-body">Mit <strong>flachem Prior</strong> ist der Posterior N(x̄, SE²). Die <strong>Probability of Direction</strong>
+        ist dann <strong>pd = Φ(|z|) = 1 − p/2</strong> — also eine monotone Funktion des p-Werts. Im Lindley-Modus bliebe pd
+        <strong>konstant bei 1 − α/2</strong> (z. B. 0.975) und das flat-prior-CrI schlösse die 0 stets <em>knapp</em> aus → beide verhalten
+        sich wie der <strong>p-Wert</strong> und zeigen das Paradox <em>nicht</em>. Grund: pd und CrI sind <strong>Schätz</strong>-Maße
+        („wo liegt <span class="gk">θ</span>?") ohne Punkt-Null und damit ohne Occam-Faktor. Erst der <strong>Bayes-Faktor</strong>
+        (Punkt-Null-Vergleich) oder ein <strong>ROPE</strong> — bei dem das mit n schrumpfende CrI komplett <em>in</em> die Region
+        praktischer Äquivalenz fällt — lösen das Paradox Richtung H₀ auf. Kurz: das Lindley-Paradox ist ein Phänomen des
+        <strong>Punkt-Null-Modellvergleichs</strong>, nicht der Bayes-Schätzung.</div>
+    </div>
+    <div class="lcard" style="grid-column:1/-1">
+      <div class="lcard-h">Auflösung &amp; Bezug zum Bayes Thinking Lab</div>
+      <div class="lcard-body">Das Paradox ist kein Rechenfehler, sondern zeigt: <strong>p-Wert und Bayes-Faktor beantworten
+        verschiedene Fragen.</strong> Der p-Wert: „Wie überraschend sind die Daten <em>unter H₀</em>?" Der Bayes-Faktor:
+        „Welche Hypothese sagt die Daten <em>besser</em> voraus?" Bei großem n und einer Punkt-Null divergieren beide.
+        Tiefer in Priors, Bayes-Faktoren und ROPE-Entscheidungen geht das Schwesterprojekt:
+        <br><a class="xlink" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/" target="_blank">→ Bayes Thinking Lab</a></div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Lindley's Paradox — Hintergrund
+      <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+    </div>
+
+    <div class="help-sh">Der Aufbau</div>
+    <p class="help-p">Wir testen den Mittelwert θ einer Normalverteilung mit bekannter Streuung σ. Beobachtet wird der
+      Stichprobenmittelwert x̄ aus n Beobachtungen, standardisiert als <strong>z = (x̄ − μ₀)·√n / σ</strong>. Alle Effekte sind
+      in σ-Einheiten ausgedrückt (σ = 1), der beobachtete Effekt ist <strong>δ = (x̄ − μ₀)/σ</strong>, also z = δ·√n.</p>
+
+    <div class="help-sh">Frequentistisch: der p-Wert</div>
+    <span class="help-formula">p = 2·(1 − Φ(|z|))        (zweiseitig)</span>
+    <p class="help-p">H₀ wird abgelehnt, wenn p &lt; α. Für festes δ &gt; 0 wächst z = δ√n mit n — irgendwann wird <em>jeder</em>
+      noch so winzige Effekt signifikant. Signifikanz ist also stark von n abhängig.</p>
+
+    <div class="help-sh">Bayesianisch: der Bayes-Faktor</div>
+    <p class="help-p">H₀: θ = 0 (Punkt-Null) gegen H₁: θ ~ N(0, τ²). Der Bayes-Faktor vergleicht, wie gut jede Hypothese die
+      Daten <em>vorhersagt</em> (marginale Likelihood). Für dieses Normal-Normal-Modell:</p>
+    <span class="help-formula">BF₀₁ = √(1 + n·τ²) · exp( −½ · z² · n·τ²/(1 + n·τ²) )</span>
+    <p class="help-p">BF₀₁ &gt; 1 bedeutet Evidenz <em>für</em> H₀, BF₁₀ = 1/BF₀₁ Evidenz für H₁. Jeffreys-Faustregel: 1–3 anekdotisch,
+      3–10 moderat, 10–30 stark, &gt;30 sehr stark.</p>
+
+    <div class="help-sh">Das Paradox</div>
+    <p class="help-p">Hält man das Ergebnis <strong>gerade signifikant</strong> (z = z<sub>krit</sub>, also p = α konstant) und lässt
+      n wachsen, gilt √(1+nτ²) → ∞, während der Exponentialterm gegen exp(−½ z<sub>krit</sub>²) strebt. Also
+      <strong>BF₀₁ → ∞</strong>: dasselbe „signifikante" Ergebnis wird zu immer stärkerer Evidenz <em>für</em> H₀.
+      Anschaulich (Panel ②): Die z-Verteilung unter H₀ bleibt fix N(0,1), die unter H₁ wird mit n immer breiter und
+      flacher. Ein festes z = 1.96 liegt dann zwar im Ablehnungsbereich von H₀, hat aber unter dem breiten H₁ eine noch
+      <em>kleinere</em> Dichte — die Daten passen besser zu H₀.</p>
+
+    <div class="help-sh">Die Auflösung</div>
+    <p class="help-p"><strong>p-Wert und Bayes-Faktor beantworten verschiedene Fragen.</strong> Der p-Wert bedingt nur auf H₀
+      („wie extrem sind die Daten, wenn H₀ gilt?"). Der Bayes-Faktor vergleicht H₀ und H₁ direkt und „bestraft" H₁ für seine
+      Vagheit (Ockham). Zudem: ein bei großem n gerade signifikanter Effekt ist <em>praktisch null</em> — die Signifikanz sagt
+      nur, dass θ ≠ 0 exakt gilt. Wer eine relevante Mindestgröße prüfen will, braucht ohnehin ein Intervall/ROPE statt einer
+      Punkt-Null.</p>
+
+    <div class="help-sh">Grenzen dieses Tools</div>
+    <p class="help-p">Verwendet wird ein Normalprior unter H₁ (analytisch sauber). Gängige Default-Bayes-Faktoren (JZS, Rouder
+      et al.) nehmen einen Cauchy-Prior — qualitativ identisches Paradox, andere Zahlen. Der BF hängt sichtbar von τ ab.</p>
+
+    <div class="help-sh">Literatur</div>
+    <p class="help-p">Lindley, D. V. (1957). A statistical paradox. <em>Biometrika, 44</em>, 187–192.<br>
+      Jeffreys, H. (1939). <em>Theory of Probability.</em><br>
+      Wagenmakers, E.-J. (2007). A practical solution to the pervasive problems of p values. <em>Psychon. Bull. Rev., 14</em>, 779–804.<br>
+      Rouder et al. (2009). Bayesian t tests. <em>Psychon. Bull. Rev., 16</em>, 225–237.</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// MATH
+// ══════════════════════════════════════════════════════════════════════
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);
+  const y=1-((((1.061405429*t-1.453152027)*t+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;}
+function ncdf(x){return 0.5*(1+erf(x/Math.SQRT2));}
+function npdf(x,mu,sd){return Math.exp(-0.5*((x-mu)/sd)**2)/(sd*Math.sqrt(2*Math.PI));}
+
+// ══════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════
+const ST = { n:50000, delta:0.0088, tau:1.0, zcrit:1.96, alpha:0.05, alphaLbl:'.05', lindley:true };
+
+// n on a log slider 10 .. 1e6
+function sliderToN(v){return Math.round(Math.exp(Math.log(10)+(Math.log(1e6)-Math.log(10))*v/100));}
+function nToSlider(n){return Math.round((Math.log(n)-Math.log(10))/(Math.log(1e6)-Math.log(10))*100);}
+// delta slider 0..100 → 0 .. 0.6
+function sliderToDelta(v){return v/100*0.6;}
+function deltaToSlider(d){return Math.round(d/0.6*100);}
+
+function bf01(n,z,tau){const s2=1+n*tau*tau;return Math.sqrt(s2)*Math.exp(-0.5*z*z*(n*tau*tau)/s2);}
+
+function compute(){
+  // in Lindley mode, delta is driven so z = zcrit (p = alpha)
+  if(ST.lindley) ST.delta = ST.zcrit/Math.sqrt(ST.n);
+  const z = ST.delta*Math.sqrt(ST.n);
+  const p = 2*(1-ncdf(Math.abs(z)));
+  const b01 = bf01(ST.n, z, ST.tau);
+  return {z, p, b01, b10:1/b01};
+}
+
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW — z distribution under H0 vs H1
+// ══════════════════════════════════════════════════════════════════════
+function drawDist(){
+  const c=document.getElementById('cv-dist'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d'); const ml=46,mr=18,mt=16,mb=42,cW=W-ml-mr,cH=H-mt-mb;
+  const a1=cv('--a1'),a2=cv('--a2'),a4=cv('--a4'),a5=cv('--a5'),ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),bg=cv('--bg'),paper=cv('--paper');
+  ctx.clearRect(0,0,W,H);
+  const R=compute(); const z=R.z;
+  const s1=Math.sqrt(1+ST.n*ST.tau*ST.tau);          // SD of z under H1
+  const xMax=Math.max(5, Math.abs(z)+0.6);
+  const toX=v=>ml+cW*(v+xMax)/(2*xMax);
+  const yMax=0.45;
+  const toY=v=>mt+cH*(1-v/yMax);
+  // grid
+  ctx.font='13px DM Mono,monospace';
+  for(let xv=-Math.floor(xMax);xv<=Math.floor(xMax);xv++){const px=toX(xv);
+    ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(px,mt);ctx.lineTo(px,mt+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.textAlign='center';ctx.fillText(xv,px,mt+cH+16);}
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ml,mt+cH);ctx.lineTo(ml+cW,mt+cH);ctx.stroke();
+  ctx.fillStyle=ink2;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Teststatistik z',ml+cW/2,H-3);
+
+  ctx.save();ctx.beginPath();ctx.rect(ml,mt,cW,cH);ctx.clip();
+  // rejection region shading (|z|>zcrit)
+  ctx.fillStyle=a1;ctx.globalAlpha=.10;
+  ctx.fillRect(toX(ST.zcrit),mt,toX(xMax)-toX(ST.zcrit),cH);
+  ctx.fillRect(toX(-xMax),mt,toX(-ST.zcrit)-toX(-xMax),cH);
+  ctx.globalAlpha=1;
+  const NX=240;
+  const curve=(sd,col,dash)=>{ctx.strokeStyle=col;ctx.lineWidth=2.4;ctx.setLineDash(dash);ctx.beginPath();
+    for(let i=0;i<=NX;i++){const x=-xMax+2*xMax*i/NX;const px=toX(x),py=toY(npdf(x,0,sd));i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);}
+    ctx.stroke();ctx.setLineDash([]);};
+  curve(s1,a5,[8,4]);   // H1 (wide)
+  curve(1, a2,[]);      // H0 (standard normal)
+  // observed z line + height dots
+  ctx.strokeStyle=ink2;ctx.lineWidth=1.6;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(toX(z),mt);ctx.lineTo(toX(z),mt+cH);ctx.stroke();ctx.setLineDash([]);
+  const h0=npdf(z,0,1), h1=npdf(z,0,s1);
+  ctx.beginPath();ctx.arc(toX(z),toY(h0),5,0,2*Math.PI);ctx.fillStyle=a2;ctx.fill();ctx.strokeStyle=bg;ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.arc(toX(z),toY(h1),5,0,2*Math.PI);ctx.fillStyle=a5;ctx.fill();ctx.strokeStyle=bg;ctx.lineWidth=2;ctx.stroke();
+  ctx.restore();
+  // legend
+  ctx.font='13px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillStyle=a2;ctx.fillText('● H₀: N(0,1)',ml+6,mt+16);
+  ctx.fillStyle=a5;ctx.fillText('● H₁: breiter mit n',ml+6,mt+34);
+  ctx.fillStyle=ink3;ctx.fillText('rot = Ablehnungsbereich',ml+6,mt+52);
+
+  document.getElementById('hint-dist').innerHTML=
+    `Beobachtetes z = ${z.toFixed(2)} (gestrichelt). Dichte unter H₀ = ${h0.toFixed(3)}, unter H₁ = ${h1.toFixed(3)} → `+
+    `<strong>BF₀₁ = ${(h0/h1).toFixed(2)}</strong>. Wird H₁ mit n breiter, sinkt seine Dichte am festen z unter die von H₀.`;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW — divergence vs n (dual axis)
+// ══════════════════════════════════════════════════════════════════════
+function drawDiv(){
+  const c=document.getElementById('cv-div'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d'); const ml=52,mr=54,mt=18,mb=46,cW=W-ml-mr,cH=H-mt-mb;
+  const a1=cv('--a1'),a4=cv('--a4'),ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),bg=cv('--bg');
+  ctx.clearRect(0,0,W,H);
+  const nLo=10,nHi=1e6;
+  const toX=n=>ml+cW*(Math.log(n)-Math.log(nLo))/(Math.log(nHi)-Math.log(nLo));
+  const pMax=0.30;                       // left axis: p 0..0.30
+  const toYp=p=>mt+cH*(1-Math.min(p,pMax)/pMax);
+  const Llo=-2,Lhi=3;                     // right axis: log10(BF01)
+  const toYb=L=>mt+cH*(1-(Math.max(Llo,Math.min(Lhi,L))-Llo)/(Lhi-Llo));
+
+  // x grid (powers of 10)
+  ctx.font='13px DM Mono,monospace';
+  for(let e=1;e<=6;e++){const n=Math.pow(10,e);const px=toX(n);
+    ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(px,mt);ctx.lineTo(px,mt+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.textAlign='center';ctx.fillText('10'+'⁰¹²³⁴⁵⁶'[e],px,mt+cH+16);}
+  // left p ticks
+  ctx.textAlign='right';
+  for(let p=0;p<=0.30001;p+=0.05){ctx.fillStyle=a1;ctx.fillText(p.toFixed(2),ml-6,toYp(p)+4);}
+  // right BF ticks
+  ctx.textAlign='left';
+  [-2,-1,0,1,2,3].forEach(L=>{ctx.fillStyle=a4;
+    const lbl = L===0?'1':(L>0?('10'+'⁰¹²³'[L]):('10⁻'+(-L)));
+    ctx.fillText(lbl,ml+cW+6,toYb(L)+4);});
+  // axis titles
+  ctx.save();ctx.translate(14,mt+cH/2);ctx.rotate(-Math.PI/2);ctx.fillStyle=a1;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('p-Wert',0,0);ctx.restore();
+  ctx.save();ctx.translate(W-12,mt+cH/2);ctx.rotate(-Math.PI/2);ctx.fillStyle=a4;ctx.textAlign='center';ctx.fillText('BF₀₁ (für H₀)',0,0);ctx.restore();
+  ctx.fillStyle=ink2;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('Stichprobengröße n (log)',ml+cW/2,H-3);
+
+  // reference lines: alpha (p) and BF01=1
+  ctx.strokeStyle=a1;ctx.lineWidth=1;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(ml,toYp(ST.alpha));ctx.lineTo(ml+cW,toYp(ST.alpha));ctx.stroke();
+  ctx.strokeStyle=a4;ctx.beginPath();ctx.moveTo(ml,toYb(0));ctx.lineTo(ml+cW,toYb(0));ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=a1;ctx.font='12px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('α='+ST.alphaLbl,ml+4,toYp(ST.alpha)-4);
+  ctx.fillStyle=a4;ctx.fillText('BF₀₁=1',ml+4,toYb(0)-4);
+
+  ctx.save();ctx.beginPath();ctx.rect(ml,mt-2,cW,cH+4);ctx.clip();
+  const NP=160;
+  // p curve (red) and BF curve (purple)
+  const pLine=()=>{ctx.strokeStyle=a1;ctx.lineWidth=2.4;ctx.beginPath();};
+  pLine();
+  for(let i=0;i<=NP;i++){const n=Math.exp(Math.log(nLo)+(Math.log(nHi)-Math.log(nLo))*i/NP);
+    const d=ST.lindley?ST.zcrit/Math.sqrt(n):ST.delta;const z=d*Math.sqrt(n);const p=2*(1-ncdf(Math.abs(z)));
+    const px=toX(n),py=toYp(p);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);}
+  ctx.stroke();
+  ctx.strokeStyle=a4;ctx.lineWidth=2.4;ctx.beginPath();
+  for(let i=0;i<=NP;i++){const n=Math.exp(Math.log(nLo)+(Math.log(nHi)-Math.log(nLo))*i/NP);
+    const d=ST.lindley?ST.zcrit/Math.sqrt(n):ST.delta;const z=d*Math.sqrt(n);const L=Math.log10(bf01(n,z,ST.tau));
+    const px=toX(n),py=toYb(L);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);}
+  ctx.stroke();
+  // current n marker
+  ctx.strokeStyle=ink3;ctx.lineWidth=1.4;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(toX(ST.n),mt);ctx.lineTo(toX(ST.n),mt+cH);ctx.stroke();ctx.setLineDash([]);
+  const R=compute();
+  ctx.beginPath();ctx.arc(toX(ST.n),toYp(R.p),5,0,2*Math.PI);ctx.fillStyle=a1;ctx.fill();ctx.strokeStyle=bg;ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.arc(toX(ST.n),toYb(Math.log10(R.b01)),5,0,2*Math.PI);ctx.fillStyle=a4;ctx.fill();ctx.strokeStyle=bg;ctx.lineWidth=2;ctx.stroke();
+  ctx.restore();
+  document.getElementById('hint-div').innerHTML = ST.lindley
+    ? 'Lindley-Modus: der p-Wert bleibt flach bei α (rot), während BF₀₁ (lila) mit n steigt — die beiden Schlüsse driften auseinander.'
+    : 'Fester Effekt δ: p (rot) fällt und BF₀₁ (lila) fällt — beide sprechen mit wachsendem n zunehmend für H₁ (kein Paradox).';
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// UPDATE
+// ══════════════════════════════════════════════════════════════════════
+function jeffreys(bf10){
+  const b=bf10;
+  if(b>=30) return 'sehr stark für H₁'; if(b>=10) return 'stark für H₁'; if(b>=3) return 'moderat für H₁';
+  if(b>1/3) return 'anekdotisch / unentschieden';
+  if(b>1/10) return 'moderat für H₀'; if(b>1/30) return 'stark für H₀'; return 'sehr stark für H₀';
+}
+function update(){
+  const R=compute();
+  // reflect driven delta in slider when in Lindley mode
+  if(ST.lindley){ document.getElementById('s-delta').value=deltaToSlider(ST.delta); }
+  document.getElementById('v-delta').textContent=ST.delta.toFixed(ST.delta<0.01?4:3);
+  document.getElementById('m-z').textContent=R.z.toFixed(2);
+  document.getElementById('m-p').textContent=R.p<0.001?R.p.toExponential(1):R.p.toFixed(3);
+  document.getElementById('m-p-sub').innerHTML = R.p<ST.alpha?'<span style="color:var(--a1)">signifikant — H₀ ablehnen</span>':'n.s. — H₀ beibehalten';
+  document.getElementById('m-bf01').textContent=R.b01>=1?R.b01.toFixed(R.b01>=100?0:1):R.b01.toPrecision(2);
+  document.getElementById('m-bf10').textContent=R.b10>=1?R.b10.toFixed(R.b10>=100?0:1):R.b10.toPrecision(2);
+  document.getElementById('m-bf-sub').textContent=jeffreys(R.b10);
+
+  const sig=R.p<ST.alpha, favH0=R.b01>3, favH1=R.b10>3;
+  const v=document.getElementById('verdict');
+  if(sig && favH0){ v.className='verdict v-para';
+    v.innerHTML='⚠ <strong>Lindley-Paradox</strong>: p = '+(R.p<0.001?R.p.toExponential(1):R.p.toFixed(3))+' &lt; α (signifikant, H₀ ablehnen) — '+
+      'aber BF₀₁ = '+R.b01.toFixed(1)+' stützt H₀ ('+jeffreys(R.b10)+').'; }
+  else if(sig && favH1){ v.className='verdict v-agree';
+    v.innerHTML='✓ Einigkeit: signifikant <strong>und</strong> Bayes-Evidenz für H₁ (BF₁₀ = '+R.b10.toFixed(1)+').'; }
+  else if(!sig && favH0){ v.className='verdict v-agree';
+    v.innerHTML='✓ Einigkeit: nicht signifikant <strong>und</strong> Bayes-Evidenz für H₀ (BF₀₁ = '+R.b01.toFixed(1)+').'; }
+  else { v.className='verdict v-mix';
+    v.innerHTML='Uneindeutig: '+(sig?'signifikant':'n.s.')+', Bayes '+jeffreys(R.b10)+'.'; }
+
+  drawDist(); drawDiv();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════════════════════════════════════
+document.getElementById('s-n').addEventListener('input',function(){
+  ST.n=sliderToN(+this.value);
+  document.getElementById('v-n').textContent=ST.n.toLocaleString('de-DE');
+  update();
+});
+document.getElementById('s-delta').addEventListener('input',function(){
+  if(ST.lindley) return;
+  ST.delta=sliderToDelta(+this.value);
+  document.getElementById('v-delta').textContent=ST.delta.toFixed(3);
+  update();
+});
+document.getElementById('s-tau').addEventListener('input',function(){
+  ST.tau=+this.value; document.getElementById('v-tau').textContent=ST.tau.toFixed(2); update();
+});
+function setAlpha(zc,lbl,id){
+  ST.zcrit=zc; ST.alpha=parseFloat('0'+lbl); ST.alphaLbl=lbl;
+  ['90','95','99'].forEach(k=>document.getElementById('al-'+k).classList.toggle('active',k===id));
+  update();
+}
+function toggleLindley(){
+  ST.lindley=!ST.lindley;
+  const b=document.getElementById('btn-lind');
+  b.textContent=ST.lindley?'an':'aus'; b.classList.toggle('active',ST.lindley);
+  document.getElementById('s-delta').disabled=ST.lindley;
+  document.getElementById('delta-note').textContent=ST.lindley?'Im Lindley-Modus von n bestimmt (deaktiviert).':'Frei einstellbar.';
+  update();
+}
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+
+// init
+document.getElementById('s-n').value=nToSlider(50000);
+document.getElementById('v-n').textContent=(50000).toLocaleString('de-DE');
+document.getElementById('s-delta').disabled=true;
+update();
+window.addEventListener('resize',()=>{if(window._rt)clearTimeout(window._rt);window._rt=setTimeout(update,120);});
+</script>
+</body>
+</html>
