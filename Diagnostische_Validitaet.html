@@ -18,6 +18,7 @@
   --grid:#1e242e;--panel:#171d28;--border:#2a3040;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
 body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
 #topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
   padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
@@ -27,6 +28,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 #app{display:grid;grid-template-columns:290px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
@@ -122,13 +125,25 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
   line-height:1.85;margin-bottom:.55rem}
 .help-formula2{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
   font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+/* Learn cards */
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+@media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
 <div id="topbar">
   <h1>Diagnostische <em>Validität</em> — Test &amp; Kriterium</h1>
-  <button class="tbtn" id="help-btn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 
@@ -238,6 +253,36 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     </div>
 
   </div>
+
+  <div class="learn-section">
+    <div class="sec-h">Konzepte</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">Drei Arten der Validität</div>
+        <div class="lcard-body">Validität fragt: misst der Test, was er messen soll? Man unterscheidet <strong>Konstruktvalidität</strong> (bildet der Test das theoretische Konstrukt ab?), <strong>Kriteriumsvalidität</strong> (sagt er ein externes Kriterium vorher — konkurrent oder prädiktiv?) und <strong>Inhaltsvalidität</strong> (decken die Items das Merkmal repräsentativ ab?). Dieses Tool zeigt die <strong>Kriteriumsvalidität</strong>: den Zusammenhang zwischen Testwert X und einem Kriterium Y.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Validität r &amp; Varianzaufklärung</div>
+        <div class="lcard-body">Die Validität wird hier als Korrelation <strong>r</strong> zwischen Test und Kriterium operationalisiert. <code>r²</code> ist der Anteil gemeinsamer Varianz — bei r = 0.50 also 25 %. Die 95 %-Konfidenzellipse zeigt die Enge des Zusammenhangs: je schmaler, desto höher r. Gute diagnostische Tests liegen typischerweise bei r = 0.40–0.70; r = 1 (perfekte Vorhersage) gibt es real nicht.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Testeigenschaft vs. Situationsnutzen</div>
+        <div class="lcard-body"><strong>Sensitivität</strong> (TP/(TP+FN)) und <strong>Spezifität</strong> (TN/(TN+FP)) sind Eigenschaften des Tests — prävalenzunabhängig und auf andere Populationen übertragbar. <strong>PPV</strong> und <strong>NPV</strong> beantworten dagegen die klinische Frage <em>für diese konkrete Person</em>: Wie wahrscheinlich liegt bei positivem (PPV) bzw. negativem (NPV) Befund die Störung wirklich vor? Sie hängen von der Basisrate ab.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Die Basisrate entscheidet</div>
+        <div class="lcard-body"><code>PPV = TP/(TP+FP)</code> sinkt drastisch, wenn die Störung <strong>selten</strong> ist: Bei niedriger Prävalenz ist der Nenner voll von Gesunden, von denen ein kleiner Prozentsatz falsch-positiv ist — und die wenigen echten Fälle gehen darin unter. Ein hochvalider Test kann bei seltener Störung trotzdem einen enttäuschend niedrigen PPV haben. Verschiebe den Kriteriums-Cut-Off, um die Basisrate zu verändern. <a class="xlink" href="Sens_Spez.html" target="_blank" rel="noopener">→ Sensitivität &amp; Spezifität</a></div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Likelihood Ratios</div>
+        <div class="lcard-body"><code>LR+ = Sens/(1−Spez)</code> und <code>LR− = (1−Sens)/Spez</code> sind prävalenzunabhängige Maße der Ergebnis-Stärke. Über die Bayes-Formel übersetzen sie die Prä-Test- in die Post-Test-Wahrscheinlichkeit: <code>Post-Odds = Prä-Odds · LR</code>. Faustregel: LR+ &gt; 10 verschiebt die Diagnose stark in Richtung „krank", LR− &lt; 0.1 schließt sie weitgehend aus.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Nützlichkeit &amp; Taylor-Russell</div>
+        <div class="lcard-body">Validität ist notwendig, aber nicht hinreichend — erst zusammen mit Basisrate und Cut-Off entsteht <strong>Nützlichkeit</strong> (ein Nebengütekriterium). In Selektionssituationen (Personal, Therapieplätze) heißt der PPV <strong>Erfolgsquote</strong>: der Anteil der Ausgewählten, der das Kriterium erfüllt — mathematisch identisch (TP/(TP+FP)), nur ein anderes Anwendungsfeld. Die Taylor-Russell-Tafeln formalisieren das aus Validität, Selektions- und Basisrate. <a class="xlink" href="Taylor_Russell.html" target="_blank" rel="noopener">→ Taylor-Russell-Tafeln</a></div>
+      </div>
+    </div>
+  </div>
 </div>
 </div>
 
@@ -284,7 +329,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
       <li><strong>Basisrate BR</strong> — wie viele wären auch ohne Test erfolgreich/geeignet?</li>
       <li><strong>Selektionsquote SR</strong> — welcher Anteil der Bewerber wird ausgewählt?</li>
     </ul>
-    <p class="help-p">Aus diesen drei Größen ergibt sich die <strong>Erfolgsquote</strong>: der Anteil der Ausgewählten, der tatsächlich geeignet ist. Das zeigt, wann ein Test mit moderater Validität (r=0.30) unter günstigen Bedingungen (niedrige SR, mittlere BR) erheblichen Nutzen hat — und wann ein Test mit hoher Validität wenig bringt (z. B. wenn fast alle ohnehin ausgewählt werden). Ein interaktives Taylor-Russell-Tool ist in Vorbereitung.</p>
+    <p class="help-p">Aus diesen drei Größen ergibt sich die <strong>Erfolgsquote</strong>: der Anteil der Ausgewählten, der tatsächlich geeignet ist. Das zeigt, wann ein Test mit moderater Validität (r=0.30) unter günstigen Bedingungen (niedrige SR, mittlere BR) erheblichen Nutzen hat — und wann ein Test mit hoher Validität wenig bringt (z. B. wenn fast alle ohnehin ausgewählt werden). Das interaktive <a href="Taylor_Russell.html" target="_blank" rel="noopener" style="color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)">Taylor-Russell-Tool</a> zeigt diese Erfolgsquote als Tafel und Nomogramm mit Zielkreuz.</p>
     <p class="help-p"><strong>Erfolgsquote = PPV</strong> — mathematisch dasselbe, unterschiedliche Sprache: In der klinischen Diagnostik heißt der Anteil richtig positiver an allen positiv Getesteten PPV; in der Eignungsdiagnostik und Personalpsychologie heißt der Anteil geeigneter Personen an allen Ausgewählten Erfolgsquote. Die Formel ist identisch: TP/(TP+FP). Der Begriff wechselt mit dem Anwendungsfeld — das Konzept bleibt.</p>
   </div>
 </div>
