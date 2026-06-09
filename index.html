@@ -48,23 +48,14 @@ a:hover{text-decoration:underline}
   display:flex;align-items:center;
   padding:0 1.25rem;gap:1rem;
 }
-#topbar .tb-brand{flex:1;display:flex;flex-direction:column;justify-content:center;gap:.06rem}
-#topbar .tb-brand-name{
-  font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600;
-  color:var(--ink);letter-spacing:.01em;line-height:1.1;
-}
-#topbar .tb-brand-name em{font-style:italic;color:var(--a2)}
-#topbar .tb-brand-sub{
-  font-family:'DM Mono',monospace;font-size:.6rem;
-  color:var(--ink3);letter-spacing:.04em;
-}
-.tb-btn{
-  background:none;border:1px solid var(--border);
-  color:var(--ink2);font-family:'DM Mono',monospace;font-size:.78rem;
-  padding:.3rem .7rem;cursor:pointer;
-  transition:border-color .15s,color .15s;
-}
-.tb-btn:hover{border-color:var(--a2);color:var(--a2)}
+#topbar .tb-h1{flex:1;font-family:'Fraunces',serif;font-size:1.05rem;font-weight:300;
+  letter-spacing:-.01em;color:var(--ink);line-height:1.1}
+#topbar .tb-h1 em{font-style:italic;color:var(--a2)}
+.tb-ver{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--ink3);font-weight:400;vertical-align:middle}
+.tb-author{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
 .tb-sep{width:1px;height:24px;background:var(--border)}
 
 /* ── Layout ────────────────────────────────────────────────────────── */
@@ -339,11 +330,9 @@ a:hover{text-decoration:underline}
 
 <!-- ═══ TOPBAR ═══════════════════════════════════════════════════════ -->
 <div id="topbar">
-  <div class="tb-brand">
-    <span class="tb-brand-name">Methods&thinsp;<em>Lab</em> <span style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--ink3);font-weight:400;vertical-align:middle">beta 0.7</span></span>
-    <span class="tb-brand-sub">Dr. Rainer Düsing · Universität Osnabrück</span>
-  </div>
-  <button class="tb-btn" onclick="toggleTheme()" id="theme-btn">☀ Hell</button>
+  <h1 class="tb-h1">Methods&thinsp;<em>Lab</em> <span class="tb-ver">beta 0.7</span></h1>
+  <span class="tb-author">Dr. Rainer Düsing · Universität Osnabrück</span>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 
 <!-- ═══ LAYOUT ═══════════════════════════════════════════════════════ -->
@@ -416,35 +405,30 @@ a:hover{text-decoration:underline}
   <div class="tool-grid">
 
     <a href="OLS_Regression.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">📈</div>
       <div class="tcard-title">OLS &amp; Multiple Regression</div>
       <div class="tcard-desc">Einfache und multiple Regression — Koeffizienten, R², Annahmen und typische Verletzungen. Interaktive Dateninjektion.</div>
     </a>
 
     <a href="Partialkorrelation.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🔗</div>
       <div class="tcard-title">Partialkorrelation</div>
       <div class="tcard-desc">Korrelation zweier Variablen bereinigt um den Einfluss einer dritten. Suppressor-Effekte, Semipartialkorrelation, Pfad&shy;koeffizienten.</div>
     </a>
 
     <a href="Mediationsanalyse.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">➡️</div>
       <div class="tcard-title">Mediationsanalyse</div>
       <div class="tcard-desc">Hayes/PROCESS Model&nbsp;4 — DAG-Visualisierung, direkter und indirekter Effekt, Sobel/Aroian live, Bootstrap auf Knopfdruck.</div>
     </a>
 
     <a href="Moderationsanalyse.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">✂️</div>
       <div class="tcard-title">Moderationsanalyse</div>
       <div class="tcard-desc">Hayes/PROCESS Model&nbsp;1 — Simple Slopes, Johnson-Neyman-Technik, Floodlight-Plot. Wann moderiert W den Effekt von X auf Y?</div>
     </a>
 
     <a href="MLM_interactive.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🏗️</div>
       <div class="tcard-title">Multilevel-Modelle</div>
       <div class="tcard-desc">Complete / No / Partial Pooling im Vergleich, Shrinkage-Caterpillar-Plot, ICC-Schieber, Random Slopes (τ₁, ρ), Simpson-Paradoxon live erleben.</div>
@@ -476,14 +460,12 @@ a:hover{text-decoration:underline}
     </a>
 
     <a href="Power_Stichprobe.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">⚡</div>
       <div class="tcard-title">Power &amp; Stichprobengröße</div>
       <div class="tcard-desc">4-Kurven-Schar, H₀/H₁-Verteilung, Heatmap n×d, Sensitivitätskurve, MDES, SESOI. α, β, d, n interaktiv.</div>
     </a>
 
     <a href="Missing_Data.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🕳️</div>
       <div class="tcard-title">Missing Data</div>
       <div class="tcard-desc">MCAR, MAR, MNAR — Mechanismen verstehen, vier Imputationsstrategien vergleichen, Ampel-Grid für Bias und Effizienz.</div>
@@ -509,49 +491,42 @@ a:hover{text-decoration:underline}
   <div class="tool-grid">
 
     <a href="Regression_zur_Mitte.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">↩️</div>
       <div class="tcard-title">Regression zur Mitte</div>
       <div class="tcard-desc">Blutdruck-Beispiel, r-Slider, bidirektionale Selektion. Warum „schlechte" Extremwerte beim zweiten Mal besser aussehen.</div>
     </a>
 
     <a href="Messfehler_Attenuierung.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">📡</div>
       <div class="tcard-title">Messfehler-Attenuation</div>
       <div class="tcard-desc">Intelligenz & Schulleistung — Disattenuation, Lernkarten zur N-Instabilität und Reliabilitätswahl. Wie Messungenauigkeit Korrelationen verzerrt.</div>
     </a>
 
     <a href="Berksons_Paradox.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🌀</div>
       <div class="tcard-title">Berkson's Paradox</div>
       <div class="tcard-desc">Talent + Fleiß → Erfolg — DAG, diagonale Selektionsgrenze, Collider Bias. Negative Korrelation in selektierten Stichproben.</div>
     </a>
 
     <a href="Lords_Paradox.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">⚖️</div>
       <div class="tcard-title">Lord's Paradox</div>
       <div class="tcard-desc">ANCOVA vs. Differenzwert — wann führen beide Analysen zu gegensätzlichen Schlüssen? DAG, Schlüsselformel, Lege-artis-Entscheidung.</div>
     </a>
 
     <a href="Simpsons_Paradox.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">📊</div>
       <div class="tcard-title">Simpson's Paradox</div>
       <div class="tcard-desc">Aggregierter Trend kehrt sich bei Aufschlüsselung um — Within- vs. Pooled-Regression, Konfundierungs-Slider, Verstärkung &amp; Umkehr. Cross-Link zum Multilevel-Tool.</div>
     </a>
 
     <a href="Range_Restriction.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🔭</div>
       <div class="tcard-title">Range Restriction</div>
       <div class="tcard-desc">Varianzeinschränkung interaktiv — wie Selektion auf X die Korrelation attenuiert. Scatter Gesamt vs. eingeschränkt, Streuungsbalken, Thorndike-Beziehung r(u), Korrektur Fall II. Steigung bleibt, r sinkt.</div>
     </a>
 
     <a href="Lindleys_Paradox.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">⚔️</div>
       <div class="tcard-title">Lindley's Paradox</div>
       <div class="tcard-desc">p &lt; .05, aber der Bayes-Faktor stützt H₀ — der Konflikt zwischen Frequentist und Bayes. Lindley-Modus, z-Verteilung H₀ vs. H₁, Divergenz über n. Synergie mit dem Bayes Thinking Lab.</div>
@@ -597,28 +572,24 @@ a:hover{text-decoration:underline}
   <div class="tool-grid">
 
     <a href="Causal_Teaching.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🔬</div>
       <div class="tcard-title">Kausale Inferenz — Grundlagen</div>
       <div class="tcard-desc">DAGs, Potential Outcomes, IPW, G-Computation — fünf Module im Vollbild-Layout. Starkes Konfunding, live ATE-Schätzung.</div>
     </a>
 
     <a href="RDD.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🚧</div>
       <div class="tcard-title">Regression Discontinuity</div>
       <div class="tcard-desc">Sharp RDD — Szenarien A–D, Polynomgrad-Slider, Fuzzy RDD und Polynomial-Fallstricke als aufklappbare Module.</div>
     </a>
 
     <a href="DiD.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">📉</div>
       <div class="tcard-title">Difference-in-Differences</div>
       <div class="tcard-desc">Regressionsmodell, ATT, Selektionsbias, naive Vergleiche ①②, live-aktualisierte Pfeile. Parallel-Trends-Annahme visuell.</div>
     </a>
 
     <a href="PSM.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🎯</div>
       <div class="tcard-title">Propensity Score Matching</div>
       <div class="tcard-desc">Logistische PS-Schätzung, Greedy 1:1 Matching, IPW (ATT), Love Plot, Effektschätzer-Vergleich vor/nach Matching.</div>
@@ -643,49 +614,42 @@ a:hover{text-decoration:underline}
   <div class="tool-grid">
 
     <a href="KTT_Grundlagen.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">📋</div>
       <div class="tcard-title">KTT — Grundlagen</div>
       <div class="tcard-desc">Wahrer-Wert-Modell X = T + E, Reliabilität als Varianzanteil, SEM, Konfidenzband um Testwerte, Spearman-Brown-Testlänge. Anker des Reliabilitätsthemas.</div>
     </a>
 
     <a href="Messmodelle.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🔗</div>
       <div class="tcard-title">Messmodelle (CFA-Intro)</div>
       <div class="tcard-desc">Parallel, tau-äquivalent, kongenerisch — Pfaddiagramm, implizierte Kovarianzmatrix, automatische Modellklassifikation, ω vs. α live. Brücke EFA → Reliabilität.</div>
     </a>
 
     <a href="Faktoranalyse.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🧩</div>
       <div class="tcard-title">Faktoranalyse</div>
       <div class="tcard-desc">PAF (echte EFA), korrektes Oblique (Pattern Matrix Λ), Reliabilitäts-Panel (α / ωt / ωh Schmid-Leiman), 3 Szenarien, Biplot.</div>
     </a>
 
     <a href="Reliabilitaet.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🎯</div>
       <div class="tcard-title">Reliabilität: α vs. ω</div>
       <div class="tcard-desc">Cronbachs α vs. McDonalds ω_t/ω_h — wann α unterschätzt (Kongenerität) und wann es Eindimensionalität vortäuscht (Mehrdimensionalität). Varianzzerlegung, Split-Half-Verteilung.</div>
     </a>
 
     <a href="IRT.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">📐</div>
       <div class="tcard-title">IRT — Dichotome Modelle</div>
       <div class="tcard-desc">1PL / 2PL / 3PL / 4PL + Rasch — ICC, TIF, Wright Map, MLE-Personenschätzer. Rasch vs. 1PL Unterschied explizit.</div>
     </a>
 
     <a href="IRT_Ordinal.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🎚️</div>
       <div class="tcard-title">IRT — Ordinale Modelle</div>
       <div class="tcard-desc">PCM, GPCM, GRM — CRF, ESC, Item-Info für alle Items. Disordered-Threshold-Warnung, Faktoranalyse-Bezug in Hilfe.</div>
     </a>
 
     <a href="DIF.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🔍</div>
       <div class="tcard-title">Differential Item Functioning</div>
       <div class="tcard-desc">2PL-Modell, 4 Items, Δb/Δa-Schieberegler, ICC-Vergleich, Differenzkurve, Gruppenverteilungen, Raju SA/UA, ETS A/B/C.</div>
@@ -725,70 +689,60 @@ a:hover{text-decoration:underline}
   <div class="tool-grid">
 
     <a href="Sens_Spez.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🎯</div>
       <div class="tcard-title">Sensitivität &amp; Spezifität</div>
       <div class="tcard-desc">ROC-Kurve, AUC, PPV/NPV in Abhängigkeit von Prävalenz — interaktiver Cutoff, Vierfeldertafel live.</div>
     </a>
 
     <a href="Diagnostische_Validitaet.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">✅</div>
       <div class="tcard-title">Diagnostische Validität</div>
       <div class="tcard-desc">Konstrukt-, Kriterium- und Inhaltsvalidität — Validitätskoeffizienten, Taylor-Russell-Tabellen, Nutzenwert-Analyse.</div>
     </a>
 
     <a href="Taylor_Russell.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🎯</div>
       <div class="tcard-title">Taylor-Russell-Tafeln</div>
       <div class="tcard-desc">Selektionsnutzen eines Tests — Erfolgsquote (PPV) aus Validität, Selektionsrate und Basisrate. Interaktive Tafel + Nomogramm mit Zielkreuz. Bivariate Normalverteilung, Cross-Link zu Range Restriction.</div>
     </a>
 
     <a href="Test_Bias.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">⚖️</div>
       <div class="tcard-title">Test Bias</div>
       <div class="tcard-desc">Cleary-Modell, Meade &amp; Fetzer, Adverse Impact — 3 Module, 4 Szenarien. Differential Prediction vs. Fairness in der Praxis.</div>
     </a>
 
     <a href="Diagnostische_Intervalle.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">📊</div>
       <div class="tcard-title">Diagnostische Intervalle</div>
       <div class="tcard-desc">Einzelfalldiagnostik — der wahre Wert τ aus einem Testwert: Konfidenzintervall nach Äquivalenz- vs. Regressionshypothese und bayesianisches Credible-Interval. SEM, Regression zur Mitte, direkte Wahrscheinlichkeitsaussagen P(τ&gt;T).</div>
     </a>
 
     <a href="Jacobson_Truax.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">📈</div>
       <div class="tcard-title">Jacobson-Truax-Analyse</div>
       <div class="tcard-desc">Reliable Change Index &amp; klinische Signifikanz — RCI-Band, Cutoff a/b/c, 4-Felder-Klassifikation im Prä-Post-Plot. BDI-II als Beispiel.</div>
     </a>
 
     <a href="Normierungsverzerrung.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">📊</div>
       <div class="tcard-title">Normierungsverzerrung</div>
       <div class="tcard-desc">T-Werte bei rechtsschiefen Verteilungen (SCL-90-Analogie) — Gamma, Log-Normal, Exponential, Ex-Gauss. Empirischer PR vs. T-Norm PR, Diskrepanztabelle, interaktive Parameter.</div>
     </a>
 
     <a href="Profilanalyse.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">👤</div>
       <div class="tcard-title">Profilanalyse</div>
       <div class="tcard-desc">Profilvergleich mit Cattell rₚ, McCrae Iₚₐ / rₚₐ, ICC_de — Profil-Elevation, Streuung und Form getrennt bewertet.</div>
     </a>
 
     <a href="ICC_Lab.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">👥</div>
       <div class="tcard-title">ICC-Lab</div>
       <div class="tcard-desc">Intraklassenkorrelation — alle 6 Shrout-&amp;-Fleiss-Formen, Rater-Anzahl, absolute vs. konsistente Übereinstimmung.</div>
     </a>
 
     <a href="Beurteileruebereinstimmung.html" class="tcard" target="_blank">
-      <span class="tcard-badge badge-ready">Fertig</span>
       <div class="tcard-icon">🤝</div>
       <div class="tcard-title">Beurteilerübereinstimmung</div>
       <div class="tcard-desc">Cohens κ, gewichtetes κ, Kappa-Paradox, Prävalenz &amp; Bias — wann κ täuscht und was man stattdessen berichten sollte.</div>
@@ -880,7 +834,7 @@ function toggleTheme(){
   const isDark=h.getAttribute('data-theme')==='dark';
   const newTheme=isDark?'light':'dark';
   h.setAttribute('data-theme',newTheme);
-  document.getElementById('theme-btn').textContent=newTheme==='dark'?'☾ Dunkel':'☀ Hell';
+  document.getElementById('theme-btn').textContent=newTheme==='dark'?'☀ Light':'🌙 Dark';
   localStorage.setItem('ml-theme',newTheme);
 }
 // init: localStorage → default dark
@@ -888,7 +842,7 @@ function toggleTheme(){
   const saved=localStorage.getItem('ml-theme');
   const isDark=saved?saved==='dark':true;
   document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
-  document.getElementById('theme-btn').textContent=isDark?'☾ Dunkel':'☀ Hell';
+  document.getElementById('theme-btn').textContent=isDark?'☀ Light':'🌙 Dark';
 })();
 
 // ── Active TOC highlight on scroll ──────────────────────────────────
