@@ -144,6 +144,17 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 .gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
 .gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
 .gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+/* Learn cards */
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+@media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -315,6 +326,35 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
     <canvas id="cv-jn" height="360" style="width:100%;display:block;margin-top:.6rem"></canvas>
   </div>
 
+  <div class="learn-section">
+    <div class="sec-h">Konzepte</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">Was ist Moderation?</div>
+        <div class="lcard-body">Eine Moderation liegt vor, wenn eine dritte Variable W die <strong>Stärke oder Richtung</strong> des Effekts von X auf Y verändert. Modelliert wird das über einen <strong>Interaktionsterm</strong>: <code>Y = b₀ + b₁X + b₂W + b₃(X·W)</code>. Der entscheidende Koeffizient ist <strong>b₃</strong>: ist er ≠ 0, hängt der X-Effekt vom W-Wert ab. (Hayes/PROCESS Model 1.)</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Simple Slopes / Spotlight</div>
+        <div class="lcard-body">Der Effekt von X auf Y bei einem <em>festen</em> W-Wert heißt <strong>Simple Slope</strong>: <code>θ(X→Y|W) = b₁ + b₃·W</code>. Die <strong>Spotlight-Analyse</strong> betrachtet ihn an ausgewählten W-Werten — klassisch M−1SD, M, M+1SD oder robuster die <strong>Prozentränge 16, 50, 84</strong>. Bei normalverteiltem Moderator (keine Voraussetzung der Moderation!) liefern beide dasselbe Ergebnis; bei <em>schiefen</em> Verteilungen garantiert der Prozentrang-Ansatz, dass die gewählten Werte auf jeden Fall im tatsächlichen Wertebereich des Moderators liegen. Jeder Simple Slope ist eine Punktschätzung mit Konfidenzintervall und t-Test — so sieht man, bei welchem Unterstützungsniveau Stress signifikant auf Depression wirkt.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Johnson-Neyman / Floodlight</div>
+        <div class="lcard-body">Statt einzelner W-Werte beantwortet die <strong>Johnson-Neyman-Technik</strong> die Frage über den <em>gesamten</em> W-Bereich: ab welchem <strong>W*</strong> wechselt der X-Effekt von signifikant zu nicht-signifikant? Der <strong>Floodlight-Plot</strong> zeigt θ(W) mit 95 %-KI; wo das Band die Null einschließt, ist der Effekt nicht bedeutsam. Das vermeidet die Willkür fester Spotlight-Punkte.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Zentrierung</div>
+        <div class="lcard-body">X und W sollten vor der Analyse <strong>zentriert</strong> (oder z-standardisiert) werden. Dann sind b₁ und b₂ die Effekte <em>am Mittelwert</em> der jeweils anderen Variable — statt bei einem oft sinnlosen Wert 0. Der Interaktionskoeffizient <strong>b₃ bleibt davon unberührt</strong>. Zentrierung mindert zudem die (rechnerisch unproblematische, aber verwirrende) Kollinearität des Produktterms X·W. Das kann die Power für die <strong>konditionalen Effekte b₁ und b₂</strong> (Effekt von X bzw. W beim Wert 0 des jeweils anderen, nicht Haupteffekte!) erhöhen, weil deren Standardfehler meist kleiner werden — auf die Power des <strong>Interaktionsterms b₃</strong> hat es dagegen keinen Einfluss.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Ordinale vs. disordinale Interaktion</div>
+        <div class="lcard-body"><strong>Ordinal:</strong> die Rangordnung der Simple-Slope-Linien bleibt über den X-Bereich gleich — W dämpft oder verstärkt den Effekt nur. <strong>Disordinal:</strong> die Linien <em>kreuzen</em> sich im Datenbereich, der X-Effekt kehrt sein Vorzeichen um. Im Beispiel erzeugt ein stark negatives b₃ eine disordinale Interaktion — bei hoher sozialer Unterstützung kann Stress gegenläufig wirken.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Moderation vs. Mediation</div>
+        <div class="lcard-body">Leicht zu verwechseln, aber grundverschieden: <strong>Moderation</strong> fragt <em>wann / für wen</em> ein Effekt auftritt (W verändert den X→Y-Effekt, Interaktion b₃). <strong>Mediation</strong> fragt <em>warum / über welchen Weg</em> (ein Mediator M überträgt den Effekt, indirekter Pfad a·b). Moderation = Hayes Model 1, Mediation = Model 4. <a class="xlink" href="Mediationsanalyse.html" target="_blank" rel="noopener">→ Mediationsanalyse</a></div>
+      </div>
+    </div>
+  </div>
 
 </div><!-- /main -->
 </div><!-- /app -->
