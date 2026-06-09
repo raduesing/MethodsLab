@@ -18,6 +18,7 @@
   --grid:#1e242e;--panel:#171d28;--border:#2a3040;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
 body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
 #topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
   padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
@@ -27,6 +28,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 #app{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
@@ -126,13 +129,25 @@ select:focus{outline:1px solid var(--accent)}
   line-height:1.85;margin-bottom:.55rem}
 .help-formula2{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
   font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+/* Learn cards */
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+@media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
 <div id="topbar">
   <h1>Profilanalyse — <em>Diagnostische Profilvergleiche</em></h1>
-  <button class="tbtn" id="help-btn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 
@@ -219,6 +234,36 @@ select:focus{outline:1px solid var(--accent)}
 
   <div class="sec-h">③ Profilvergleich</div>
   <div id="pairwise-stats" class="pair-blocks n1"></div>
+
+  <div class="learn-section">
+    <div class="sec-h">Konzepte</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">Elevation, Streuung, Form</div>
+        <div class="lcard-body">Jedes Profil zerfällt in drei <em>unabhängige</em> Komponenten (Cronbach &amp; Gleser 1953): <strong>Elevation</strong> = mittleres Niveau, <strong>Streuung S²</strong> = Variabilität der Subtestwerte um das eigene Niveau, <strong>Form</strong> = Muster der Hoch-/Tiefpunkte unabhängig von Niveau und Streuung. Ein Profilunterschied kann allein aus einer dieser Komponenten stammen — die Kennwerte unten gewichten sie unterschiedlich.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">D² — die Gesamtdistanz, zerlegt</div>
+        <div class="lcard-body">Die quadrierte euklidische Distanz misst den Gesamtunterschied und zerfällt <strong>additiv</strong> in die drei Komponenten: <code>D² = k·ΔM̄² + k·ΔS² + 2k·S₁S₂(1−r)</code> (Niveau- + Streuungs- + Form-Anteil). So sieht man nicht nur, <em>dass</em>, sondern <em>woran</em> sich zwei Profile unterscheiden. D² = 0 → identische Profile.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Warum einfache Korrelation täuscht</div>
+        <div class="lcard-body">Die gewöhnliche Pearson-Korrelation über die Subtests misst nur die <strong>Form</strong>: zwei Profile mit identischem Muster, aber konstantem Niveauabstand, bekommen r ≈ 1 — obwohl die Person durchgängig schwächer ist. In der klinischen Diagnostik ist das oft irreführend; deshalb gibt es spezielle Profilkennwerte, die das <strong>Niveau mitberücksichtigen</strong>.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Cattell- &amp; McCrae-Indizes</div>
+        <div class="lcard-body"><strong>rₚ (Cattell 1949)</strong> ist eine distanzbasierte Profilkorrelation: <code>rₚ = (2Eₖ − d²<sub>z</sub>)/(2Eₖ + d²<sub>z</sub>)</code> — anders als einfaches r reagiert sie auf Niveauunterschiede (sinkt, wenn A generell unter Norm liegt), hängt aber von k und Streuung ab. <strong>Iₚₐ / rₚₐ (McCrae 1993)</strong> sind normiert (≈ 0 bei Zufallsähnlichkeit) und erlauben hohe Formähnlichkeit auch bei vorhandenem Niveauunterschied.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">ICC_de (Griffin &amp; Gonzalez)</div>
+        <div class="lcard-body">Pearson-Korrelation auf einem <strong>doppelt eingetragenen</strong> Datensatz (Spalte 1 = [P₁;P₂], Spalte 2 = [P₂;P₁]). Dadurch reagiert ICC_de <strong>am stärksten</strong> auf Niveauunterschiede — geeignet, wenn das absolute Niveau voll zählt, z.&thinsp;B. im Re-Test- oder Verlaufsvergleich nach Therapie. Konzeptuell die Intraklassenkorrelation auf Profilebene.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Welcher Kennwert wann?</div>
+        <div class="lcard-body"><strong>D²:</strong> globales, zerlegbares Distanzmaß — zeigt die Quelle des Unterschieds. <strong>rₚ (Cattell):</strong> etabliert in der klinischen Diagnostik, aber k-/streuungsabhängig. <strong>Iₚₐ/rₚₐ (McCrae):</strong> klare Null-Referenz und Normierung. <strong>ICC_de:</strong> wenn Niveauunterschiede voll zählen. Eng verwandt mit der Intraklassenkorrelation und der Reliabilitätslogik. <a class="xlink" href="ICC_Lab.html" target="_blank" rel="noopener">→ ICC-Lab</a> · <a class="xlink" href="KTT_Grundlagen.html" target="_blank" rel="noopener">→ KTT-Grundlagen</a></div>
+      </div>
+    </div>
+  </div>
 
 </div>
 </div>
