@@ -342,7 +342,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     <div class="lcard-grid">
       <div class="lcard">
         <div class="lcard-h">Sensitivität vs. Spezifität — der Trade-off</div>
-        <div class="lcard-body"><strong>Sensitivität</strong> = TP/(TP+FN) ist der Anteil der Kranken, der korrekt erkannt wird (wenige verpasste Fälle). <strong>Spezifität</strong> = TN/(TN+FP) ist der Anteil der Gesunden, der korrekt ausgeschlossen wird (wenige Fehlalarme). Bei überlappenden Verteilungen ist beides zugleich nicht maximierbar: ein <em>niedrigerer</em> Cut-Off hebt die Sensitivität und senkt die Spezifität — und umgekehrt. Welche Seite wichtiger ist, entscheiden die klinischen Konsequenzen.</div>
+        <div class="lcard-body"><strong>Sensitivität (SE)</strong> = <code>TP / (TP + FN)</code> — Anteil der Kranken, der korrekt als positiv erkannt wird (wenige verpasste Fälle, FN). <strong>Spezifität (SP)</strong> = <code>TN / (TN + FP)</code> — Anteil der Gesunden, der korrekt ausgeschlossen wird (wenige Fehlalarme, FP). Bei überlappenden Verteilungen ist beides zugleich nicht maximierbar: ein <em>niedrigerer</em> Cut-Off hebt SE und senkt SP — und umgekehrt. Welche Seite wichtiger ist, entscheiden die klinischen Konsequenzen.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">ROC-Kurve &amp; AUC</div>
@@ -350,11 +350,11 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
       </div>
       <div class="lcard">
         <div class="lcard-h">Prädiktive Werte &amp; Prävalenz</div>
-        <div class="lcard-body"><code>PPV = P(krank | Test+)</code> und <code>NPV = P(gesund | Test−)</code> beantworten die Frage <em>für die konkrete Person</em>. Sie hängen — anders als SE/SP — stark von der <strong>Prävalenz</strong> ab: Bei seltener Störung wird der PPV selbst bei gutem Test niedrig, weil unter vielen Gesunden auch wenige Prozent Fehlalarme die wenigen echten Fälle überwiegen.</div>
+        <div class="lcard-body"><code>PPV = TP / (TP + FP)</code> und <code>NPV = TN / (TN + FN)</code> beantworten die Frage <em>für die konkrete Person</em>: Wie verlässlich ist ein positiver bzw. negativer Befund? Sie hängen — anders als SE und SP — stark von der <strong>Prävalenz</strong> ab: Bei seltener Störung wird der PPV selbst bei gutem Test niedrig, weil unter vielen Gesunden schon wenige Prozent Fehlalarme (FP) die wenigen echten Fälle überwiegen. Prävalenzform: <code>PPV = (SE·Präv) / (SE·Präv + (1−SP)·(1−Präv))</code>.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Likelihood Ratios</div>
-        <div class="lcard-body"><code>LR+ = SE/(1−SP)</code> und <code>LR− = (1−SE)/SP</code> sind <strong>prävalenzunabhängige</strong> Maße der Ergebnis-Stärke. Über die Bayes-Formel übersetzen sie die Prä-Test- in die Post-Test-Wahrscheinlichkeit (<code>Post-Odds = Prä-Odds · LR</code>). Faustregel: LR+ &gt; 10 spricht stark für die Diagnose, LR− &lt; 0.1 schließt sie weitgehend aus.</div>
+        <div class="lcard-body"><code>LR+ = SE/(1−SP)</code> und <code>LR− = SP/(1−SE)</code> sind <strong>prävalenzunabhängige</strong> Maße der Trennschärfe. Sie sind hier bewusst so definiert, dass bei <strong>beiden je höher, desto besser</strong> gilt: LR+ stützt die Diagnose bei positivem, LR− schließt sie aus bei negativem Befund. Die in vielen Quellen übliche Variante <code>LR− = (1−SE)/SP</code> ist der Kehrwert — nötig zur Umrechnung in Odds (<code>Post-Odds = Prä-Odds · LR</code>), aber interpretativ weniger eingängig (dort gilt „je kleiner, desto besser"). Achte deshalb immer auf die verwendete Definition.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Den Cut-Off wählen</div>
@@ -391,7 +391,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     <p class="help-p"><strong>PPV</strong> (positiver prädiktiver Wert) = P(ADHS+ | Test+): Wie wahrscheinlich ist die Diagnose bei positivem Test? Stark prävalenzabhängig: bei seltener ADHS (Prävalenz 5%) sinkt PPV stark — viele FP unter wenigen echten Positiven.</p>
     <span class="help-formula2">PPV = TP / (TP + FP) = (SE · Präv) / (SE · Präv + (1−SP) · (1−Präv))</span>
     <p class="help-p"><strong>NPV</strong> = P(ADHS− | Test−): Wie sicher ist ein negativer Befund? Im Beispiel: bei hoher Sensitivität und moderater ADHS-Prävalenz ist ein negatives Ergebnis sehr verlässlich.</p>
-    <p class="help-p"><strong>Likelihood Ratios:</strong> LR+ = SE/(1−SP) — wie viel wahrscheinlicher ist ein positives Ergebnis bei ADHS+ als bei ADHS−? LR− = (1−SE)/SP — wie viel wahrscheinlicher ist ein negatives Ergebnis bei ADHS−? LR sind prävalenzunabhängig.</p>
+    <p class="help-p"><strong>Likelihood Ratios:</strong> LR+ = SE/(1−SP) — wie viel wahrscheinlicher ist ein positives Ergebnis bei ADHS+ als bei ADHS−? LR− = SP/(1−SE) — wie viel wahrscheinlicher ist ein negatives Ergebnis bei ADHS− als bei ADHS+? (Hier bewusst so herum, damit wie bei LR+ „je höher, desto besser" gilt; die Standardvariante (1−SE)/SP ist der Kehrwert.) LR sind prävalenzunabhängig.</p>
 
     <div class="help-sh">ROC-Kurve &amp; AUC</div>
     <p class="help-p">Die <strong>ROC-Kurve</strong> zeigt Sensitivität gegen 1−Spezifität für alle möglichen Cut-Offs. Ein perfekter Test verläuft durch den Punkt (0,1): SE=1, 1−SP=0. Eine diagonale Kurve entspricht Raten.</p>
