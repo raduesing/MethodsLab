@@ -18,6 +18,7 @@
   --grid:#1e242e;--panel:#171d28;--border:#2a3040;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
 body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
 #topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
   padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
@@ -26,6 +27,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 #app{display:grid;grid-template-columns:258px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
@@ -146,13 +149,25 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 .gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
 .gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
 .gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+/* Learn cards */
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.xlink{color:var(--a3);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a3)}
+@media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
 <div id="topbar">
   <h1>Regression <em>Discontinuity</em> Design</h1>
-  <button class="tbtn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 
@@ -332,6 +347,36 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
       <input type="range" id="sl-confound" min="0" max="40" step="1" value="15" oninput="onFuzzySlider('confound',this)">
     </div>
     <div id="fuzzy-result"></div>
+  </div>
+
+  <div class="learn-section">
+    <div class="sec-h">Konzepte</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">Was ist ein RDD?</div>
+        <div class="lcard-body">Ein Regression-Discontinuity-Design nutzt einen scharfen <strong>Cutoff c</strong> auf einer kontinuierlichen Zuweisungsvariable X: wer ≥ c liegt, wird behandelt, wer darunter liegt, nicht. Knapp über und unter c unterscheiden sich Einheiten nur noch <strong>zufällig</strong> — wie in einem lokalen Experiment. Ein <strong>Sprung in Y</strong> genau am Cutoff ist dann der kausale Effekt der Behandlung.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Continuity-Annahme</div>
+        <div class="lcard-body">Die zentrale Identifikationsannahme: alles außer der Behandlung verläuft am Cutoff <strong>stetig</strong>. Ohne Programm gäbe es <em>keinen</em> Sprung in Y bei c — alle anderen Einflussgrößen ändern sich glatt. Ist das plausibel, ist der Sprung kausal interpretierbar. (Das RDD-Pendant zur Parallel-Trends-Annahme bei DiD.) Manipulieren Einheiten ihren Score gezielt über c, ist die Annahme verletzt (McCrary-Dichtetest).</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">LATE — der lokale Effekt am Cutoff</div>
+        <div class="lcard-body">Das RDD schätzt einen <strong>Local Average Treatment Effect (LATE)</strong>: den Behandlungseffekt <em>genau am Cutoff</em> — den Sprung in Y bei c. Er gilt nur für Einheiten <em>nahe</em> am Cutoff; Personen weit unter c unterscheiden sich systematisch von knapp darunter, der Effekt ist daher nicht ohne Weiteres auf sie übertragbar. Hohe interne, eingeschränkte externe Validität.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Das Schätzmodell</div>
+        <div class="lcard-body">Geschätzt wird das LATE mit <code>Y = b₀ + b₁(X−c) + b₂·T + b₃·T(X−c)</code>. Die Zuweisungsvariable wird am Cutoff zentriert (X−c), damit <strong>b₂ = der Sprung bei c = LATE</strong> ist. b₁ ist die Steigung links, b₃ der Steigungsunterschied rechts. So bekommen beide Seiten getrennte Geraden, und man liest den vertikalen Abstand am Cutoff direkt als Effekt ab.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Bandbreite &amp; Polynome — Fallstricke</div>
+        <div class="lcard-body">Ein <strong>schmaleres Fenster</strong> um c reduziert Verzerrung (nur vergleichbare Einheiten), erhöht aber die Varianz (weniger Daten) — der klassische Bias-Varianz-Trade-off. <strong>Hohe Polynomgrade</strong> wirken flexibel, erzeugen aber Overfitting und Artefakte an den Rändern, die den Sprung verfälschen. Empfehlung (Gelman &amp; Imbens 2019): lokal-lineare Schätzung in enger Bandbreite statt globaler Polynome hohen Grades.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Sharp vs. Fuzzy &amp; Einordnung</div>
+        <div class="lcard-body"><strong>Sharp RDD:</strong> Überschreiten des Cutoffs bestimmt die Behandlung vollständig (T = 1 ⇔ X ≥ c). <strong>Fuzzy RDD:</strong> der Cutoff <em>erhöht</em> nur die Behandlungswahrscheinlichkeit, erzwingt sie aber nicht — manche knapp über c machen nicht mit (No-Shows), manche knapp darunter werden trotzdem behandelt (Crossover). Die Behandlungsrate springt bei c also um <em>weniger als 100 %</em>. Ein naiver Vergleich der Y-Werte unterschätzt den Effekt deshalb. Der <strong>Wald-Schätzer</strong> korrigiert das: er teilt den Sprung in Y durch den Sprung in der Behandlungsrate und gewinnt so den Effekt für die <em>Complier</em> (jene, die sich tatsächlich vom Cutoff zur Teilnahme bewegen lassen) zurück. RDD gehört zu den quasi-experimentellen Designs ohne Randomisierung. <a class="xlink" href="DiD.html" target="_blank" rel="noopener">→ Difference-in-Differences</a> · <a class="xlink" href="PSM.html" target="_blank" rel="noopener">→ Propensity Score Matching</a> · <a class="xlink" href="Causal_Teaching.html" target="_blank" rel="noopener">→ Kausale Inferenz</a></div>
+      </div>
+    </div>
   </div>
 
 </div><!-- /main -->
