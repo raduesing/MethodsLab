@@ -214,7 +214,7 @@ If you use the **Methods Lab** for research, teaching, or software development, 
 **Methods Lab** · University of Osnabrück
 Fachgebiet Forschungsmethodik, Diagnostik & Evaluation
 Dr. Rainer Düsing · [ResearchGate](https://www.researchgate.net/profile/Rainer-Duesing)
-✉️ [methods-lab@uni-osnabrueck.de](mailto:methods-lab@uni-osnabrueck.de)
+✉️ [wwwmelab@uni-osnabrueck.de](mailto:wwwmelab@uni-osnabrueck.de)
 
 ---
 
