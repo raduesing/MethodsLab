@@ -53,6 +53,8 @@ a:hover{text-decoration:underline}
 #topbar .tb-h1 em{font-style:italic;color:var(--a2)}
 .tb-ver{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--ink3);font-weight:400;vertical-align:middle}
 .tb-author{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap}
+[data-theme="dark"] .logo-light{display:none}
+[data-theme="light"] .logo-dark{display:none}
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover{background:var(--ink);color:var(--bg)}
@@ -119,6 +121,14 @@ a:hover{text-decoration:underline}
   padding:3.5rem 0 2.8rem;
   border-bottom:1px solid var(--border);
   margin-bottom:3rem;
+  display:flex;align-items:center;gap:2.8rem;
+}
+.hero-text{flex:0 1 660px;min-width:0}
+.hero-logo{flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.hero-logo img{height:clamp(270px,32vw,414px);width:auto;display:block}
+@media(max-width:720px){
+  #hero{flex-direction:column-reverse;align-items:flex-start;gap:1.6rem}
+  .hero-logo img{height:250px}
 }
 #hero .hero-eyebrow{
   font-family:'DM Mono',monospace;font-size:.75rem;
@@ -369,6 +379,7 @@ a:hover{text-decoration:underline}
 
 <!-- ── Hero ──────────────────────────────────────────────────────── -->
 <section id="hero">
+  <div class="hero-text">
   <div class="hero-eyebrow">Interaktive Statistik · Open Source · Universität Osnabrück</div>
   <h1>Methods <em>Lab</em></h1>
   <p class="hero-sub">
@@ -396,6 +407,11 @@ a:hover{text-decoration:underline}
     📖 <strong>Glossar:</strong> Zentrale Fachbegriffe dieses Labs werden im gemeinsamen
     <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html" target="_blank" rel="noopener">Glossar des Bayes&nbsp;Thinking&nbsp;Lab ↗</a>
     erklärt — ein kuratiertes Nachschlagewerk für beide Labs.
+  </div>
+  </div><!-- /hero-text -->
+  <div class="hero-logo">
+    <img class="logo-light" src="Logo_light.jpg" alt="Methods Lab Logo">
+    <img class="logo-dark" src="Logo_dark.jpg" alt="Methods Lab Logo">
   </div>
 </section>
 
