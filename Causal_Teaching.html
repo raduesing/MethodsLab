@@ -18,6 +18,7 @@
   --grid:#1e242e;--panel:#171d28;--border:#2a3040;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
 body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh;overflow:hidden}
 /* Topbar */
 #topbar{position:fixed;top:0;left:0;right:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
@@ -53,6 +54,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 .help-btn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.18rem .5rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .12s}
 .help-btn:hover{background:var(--a1);color:var(--bg)}
@@ -154,13 +157,25 @@ canvas{display:block;width:100%}
 .gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
 .gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
 .gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+/* Learn cards */
+.learn-section{margin-top:2rem;border-top:1px solid var(--grid);padding-top:1.3rem}
+.sec-h{font-family:'DM Mono',monospace;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.9rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body em{color:var(--ink);font-style:italic}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.xlink{color:var(--accent);font-weight:500;text-decoration:none;border-bottom:1px solid var(--accent)}
+@media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div id="topbar">
   <h1>Kausal <em>Denken</em> — DAGs · Potential Outcomes · Konfundierung · IPW · G-Computation</h1>
-  <span style="font-family:'DM Mono',monospace;font-size:.71rem;color:var(--ink3)">Dr. R. Düsing</span>
-  <button class="tbtn" onclick="openHelp('overview')" style="border-color:var(--a1);color:var(--a1)">? Hilfe</button>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
+  <button class="tbtn tbtn-red" onclick="openHelp('overview')">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 <div id="mod-nav">
@@ -476,6 +491,37 @@ canvas{display:block;width:100%}
     </div>
   </div>
   <div id="gc-result"></div>
+</div>
+
+<!-- LERNKARTEN -->
+<div class="learn-section">
+  <div class="sec-h">Lernkarten — Konzepte im Überblick</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">Potential Outcomes &amp; das fundamentale Problem</div>
+      <div class="lcard-body">Jede Person hat <em>zwei</em> potenzielle Outcomes: <code>Y(1)</code> (mit Behandlung) und <code>Y(0)</code> (ohne). Der individuelle Effekt wäre <code>Y(1)−Y(0)</code> — aber wir beobachten immer nur <em>eine</em> Welt, die andere bleibt kontrafaktisch. Darum schätzen wir <strong>Durchschnittseffekte</strong> über Gruppen statt individueller Effekte. <strong>ATE</strong> = ganze Population, <strong>ATT</strong> = nur Behandelte, <strong>ATU</strong> = nur Unbehandelte.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">DAG-Bausteine: Confounder · Mediator · Collider</div>
+      <div class="lcard-body">Die kausale Struktur entscheidet, <em>wofür</em> man kontrollieren darf. <strong>Confounder</strong> (X→T, X→Y): <em>muss</em> adjustiert werden. <strong>Mediator</strong> (T→M→Y): <em>nicht</em> adjustieren, sonst verschwindet der zu messende Effekt. <strong>Collider</strong> (T→K←Y): adjustieren <em>erzeugt</em> Scheinassoziation. Faustregel: erst den DAG zeichnen, dann das Modell wählen — nicht umgekehrt.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Konfundierung &amp; Backdoor-Verzerrung</div>
+      <div class="lcard-body">Der naive Vergleich <code>E[Y|T=1] − E[Y|T=0]</code> misst den kausalen Effekt <strong>plus</strong> die gesamte Confounding-Verzerrung über den offenen „Backdoor"-Pfad T←X→Y. Im Beispiel treiben SES-hohe Personen häufiger Sport <em>und</em> sind gesünder — der SES-Effekt wird dem Sport zugeschrieben. Die <strong>OVB-Formel</strong> zerlegt die Verzerrung in (Effekt von X auf Y) × (Imbalance von X zwischen den T-Gruppen).</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">IPW — Pseudo-Population</div>
+      <div class="lcard-body"><strong>Inverse Probability Weighting</strong> gewichtet jede Beobachtung mit <code>1/P(T=t|X)</code> (Propensity Score). Seltene Konstellationen — etwa eine Low-SES-Person, die <em>trotzdem</em> Sport treibt — bekommen großes Gewicht. Das erzeugt eine <strong>Pseudo-Population</strong>, in der T und X unabhängig sind, als ob die Behandlung randomisiert wäre. Voraussetzung: das Propensity-Modell muss korrekt sein.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">G-Computation &amp; Doubly Robust</div>
+      <div class="lcard-body">G-Computation schätzt ein <strong>Outcomemodell</strong> <code>E[Y|T,X]</code>, sagt für <em>jede</em> Person beide kontrafaktischen Welten vorher (Ŷ(1), Ŷ(0)) und <strong>standardisiert</strong> über die Covariate-Verteilung. Es ist das statistische Gegenstück zu Modul ②. <strong>Doubly Robust</strong> kombiniert Outcome- und Propensity-Modell: konsistent, wenn <em>mindestens eines</em> der beiden korrekt ist — eine doppelte Absicherung.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Identifikationsannahmen &amp; verwandte Tools</div>
+      <div class="lcard-body">Kausale Schätzung steht und fällt mit drei Annahmen: <strong>SUTVA</strong> (keine Interferenz, eine Behandlungsversion), <strong>Ignorierbarkeit</strong> (alle Confounder gemessen — nicht prüfbar!) und <strong>Positivität</strong> (jede Person kann jede Behandlung erhalten, <code>0&lt;P(T=1|X)&lt;1</code>). <a class="xlink" href="Simpsons_Paradox.html" target="_blank" rel="noopener">→ Simpsons Paradox</a> · <a class="xlink" href="Berksons_Paradox.html" target="_blank" rel="noopener">→ Collider/Berkson</a> · <a class="xlink" href="Mediationsanalyse.html" target="_blank" rel="noopener">→ Mediation</a> · <a class="xlink" href="PSM.html" target="_blank" rel="noopener">→ Propensity Score Matching</a></div>
+    </div>
+  </div>
 </div>
 
 </div><!-- /main -->
