@@ -467,7 +467,7 @@ function drawDiff(){
     const y0=dy(diffs[k-1]),y1=dy(diffs[k]);
     if(diffs[k-1]>=0&&diffs[k]>=0){
       ctx.fillStyle=a2c;
-      ctx.fillRect(x0,Math.min(y0,y1),x1-x0,Math.abs(y0-mid)+Math.abs(y1-mid));
+      ctx.fillRect(x0,Math.min(y0,y1),x1-x0,mid-Math.min(y0,y1));
     }else if(diffs[k-1]<0&&diffs[k]<0){
       ctx.fillStyle=a1c;
       ctx.fillRect(x0,mid,x1-x0,Math.max(y0,y1)-mid);
