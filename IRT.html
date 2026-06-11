@@ -244,8 +244,29 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="hint" id="tif-note"></div>
 
   <div class="sec-h">Wright Map — Items und Personen auf einer Skala</div>
-  <canvas id="cv-wright" height="360"></canvas>
-  <div class="hint">θ senkrecht · Personen-Histogramm N(0,1) links · Items rechts auf ihrer Schwierigkeit b, bei ähnlicher Schwierigkeit horizontal aufgefächert · farbiger Tick auf der θ-Achse markiert jede Item-Schwierigkeit · Punktgröße = Trennschärfe a · türkise Linie + Band = Person Max und ihre informative Zone (|b−θ| ≤ 0.5), dort hervorgehobene Items messen präzise · Item-Nummern → Seitenleiste</div>
+  <div style="display:flex;gap:1.2rem;align-items:flex-start;flex-wrap:wrap">
+    <div style="flex:0 0 588px;max-width:100%">
+      <canvas id="cv-wright" height="504"></canvas>
+    </div>
+    <div style="flex:1;min-width:230px;font-size:.83rem;line-height:1.55;color:var(--ink2)">
+      <div style="font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.55rem">So liest du die Wright Map</div>
+      <p style="margin:0 0 .6rem"><strong>Eine gemeinsame Skala θ</strong> (senkrecht): links die Personen, rechts die Items — beide auf derselben Fähigkeits- bzw. Schwierigkeitsachse. Das ist das Alleinstellungsmerkmal der IRT.</p>
+      <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.45rem">
+        <li><span style="display:inline-block;width:11px;height:11px;background:color-mix(in srgb,var(--a2) 45%,transparent);vertical-align:middle;margin-right:.45rem"></span><strong>Personen</strong> — Histogramm der Referenzpopulation N(0,1).</li>
+        <li><span style="display:inline-block;width:15px;height:0;border-top:2px dashed var(--a6);vertical-align:middle;margin-right:.45rem"></span><strong>Max</strong> — die aktuelle Person; das türkise Band ist ihre <em>informative Zone</em> (|b−θ| ≤ 0.5).</li>
+        <li><span style="display:inline-block;width:13px;height:13px;border-radius:50%;background:var(--a3);vertical-align:middle;margin-right:.45rem"></span><strong>Items</strong> — auf ihrer Schwierigkeit b; <strong>Punktgröße = Trennschärfe a</strong> (größer = trennt schärfer). Gleich schwere Items werden horizontal aufgefächert.</li>
+        <li><span style="display:inline-block;width:13px;height:3px;background:var(--a3);vertical-align:middle;margin-right:.45rem"></span><strong>Tick</strong> (in Item-Farbe) auf der θ-Achse — markiert die Schwierigkeit jedes Items auf der Skala.</li>
+        <li><span style="vertical-align:middle;margin-right:.3rem">◉</span><strong>Hervorgehoben</strong> (Halo + Ring) = Item nahe θ → dort misst der Test präzise; ausgeblasste Items sind für Max zu leicht oder zu schwer.</li>
+      </ul>
+      <p style="margin:.7rem 0 .35rem"><strong>Überlappen Items und Personen?</strong></p>
+      <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.4rem">
+        <li><strong style="color:var(--a3)">Gute Passung (Targeting):</strong> Liegen Items auf Höhe von Max (b ≈ θ), misst der Test dort <em>präzise</em> — kleiner Standardfehler. Idealerweise decken die Item-Schwierigkeiten genau den θ-Bereich ab, in dem die Personen liegen.</li>
+        <li><strong>Lücke:</strong> In θ-Bereichen <em>ohne</em> Items misst der Test ungenau, selbst wenn dort Personen sitzen — die Testinformation ist niedrig (siehe Reiter TIF, dort steigt der SE).</li>
+        <li><strong style="color:var(--a1)">Keine Überlappung:</strong> Sind <em>alle</em> Items zu leicht (b ≪ θ), löst Max praktisch alles → <em>Deckeneffekt</em>, θ kaum schätzbar (SE wird sehr groß). Spiegelbildlich bei durchweg zu schweren Items → <em>Bodeneffekt</em>.</li>
+      </ul>
+      <p style="margin:.55rem 0 0"><strong>Ausprobieren:</strong> Ziehe Max' θ-Slider aus der Item-Wolke heraus — sobald kein Item mehr hervorgehoben ist, gibt es keine Überlappung, und der Test ist für diese Fähigkeit schlecht abgestimmt. Item-Nummern entsprechen der Seitenleiste.</p>
+    </div>
+  </div>
 
   <div class="sec-h" style="margin-top:1.6rem">Modell-Formel & Interpretation</div>
   <div class="erklaer" id="erklaer-formula"></div>
@@ -456,7 +477,7 @@ function drawTIF(){
 // ── Wright Map ───────────────────────────────────────────────────────────────
 function drawWright(){
   const{ctx,W,H}=setupCv('cv-wright');
-  const pad={l:34,r:14,t:18,b:14};
+  const pad={l:42,r:14,t:20,b:14};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2'),ink3=cv('--ink3');
   const a2c=cv('--a2'),a6c=cv('--a6');
@@ -466,22 +487,22 @@ function drawWright(){
   const midX=pad.l+cW*0.40;                        // Trennung Personen | Items
 
   // Gridlines + θ-Achsenbeschriftung
-  ctx.font=`10px 'DM Mono',monospace`;ctx.textBaseline='middle';
+  ctx.font=`13px 'DM Mono',monospace`;ctx.textBaseline='middle';
   for(let t=-4;t<=4;t++){
     const y=ty(t);
     ctx.strokeStyle=grid;ctx.lineWidth=(t===0?1.1:.6);
     ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
-    if(t%2===0){ctx.fillStyle=ink3;ctx.textAlign='right';ctx.fillText(t,pad.l-3,y);}
+    if(t%2===0){ctx.fillStyle=ink3;ctx.textAlign='right';ctx.fillText(t,pad.l-4,y);}
   }
-  ctx.fillStyle=ink2;ctx.font=`bold 11px 'DM Mono',monospace`;
-  ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText('θ',2,pad.t-3);
+  ctx.fillStyle=ink2;ctx.font=`bold 15px 'DM Mono',monospace`;
+  ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText('θ',3,pad.t-4);
 
   // Trennlinie + Spaltenköpfe
   ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.globalAlpha=.45;
   ctx.beginPath();ctx.moveTo(midX,pad.t);ctx.lineTo(midX,pad.t+cH);ctx.stroke();ctx.globalAlpha=1;
-  ctx.fillStyle=ink3;ctx.font=`10px 'DM Mono',monospace`;ctx.textBaseline='alphabetic';ctx.textAlign='center';
-  ctx.fillText('Personen',pad.l+(midX-pad.l)/2,pad.t+9);
-  ctx.fillText('Items',midX+(pad.l+cW-midX)/2,pad.t+9);
+  ctx.fillStyle=ink3;ctx.font=`12px 'DM Mono',monospace`;ctx.textBaseline='alphabetic';ctx.textAlign='center';
+  ctx.fillText('Personen',pad.l+(midX-pad.l)/2,pad.t+10);
+  ctx.fillText('Items',midX+(pad.l+cW-midX)/2,pad.t+10);
 
   // Personen-Histogramm N(0,1) — Balken wachsen nach links von der Trennlinie
   const N01=x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);
@@ -510,8 +531,8 @@ function drawWright(){
 
   // Items — auf b-Höhe, horizontal aufgefächert (Beeswarm) + farbiger Tick auf der θ-Achse
   const items=ST.items.map((it,i)=>{const e=eff(it);return{i,b:e[1],a:e[0],col:cv(ICOLS[i])};});
-  const rOf=o=>4+Math.min(6,Math.max(0,(o.a-0.6))*3.4);   // Punktgröße ~ Trennschärfe a
-  const baseX=midX+16,colW=18;
+  const rOf=o=>6.5+Math.min(7,Math.max(0,(o.a-0.6))*4);   // Punktgröße ~ Trennschärfe a
+  const baseX=midX+18,colW=24;
   const placed=[];
   [...items].sort((p,q)=>q.b-p.b).forEach(o=>{           // oben (hohes b) zuerst
     o.yB=ty(o.b);o.r=rOf(o);o.slot=0;
@@ -533,7 +554,7 @@ function drawWright(){
     ctx.globalAlpha=al;ctx.fillStyle=o.col;
     ctx.beginPath();ctx.arc(x,o.yB,o.r,0,Math.PI*2);ctx.fill();
     if(near){ctx.strokeStyle=paper;ctx.lineWidth=1.8;ctx.stroke();}
-    ctx.fillStyle=paper;ctx.font=`bold ${o.r>5.5?10:9}px 'DM Mono',monospace`;
+    ctx.fillStyle=paper;ctx.font=`bold ${Math.max(11,Math.round(o.r*1.2))}px 'DM Mono',monospace`;
     ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(o.i+1,x,o.yB+0.5);
     ctx.globalAlpha=1;
