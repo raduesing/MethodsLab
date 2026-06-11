@@ -17,6 +17,7 @@
   --grid:#1e242e;--panel:#171d28;--border:#2a3040;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
 body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
 
 /* ── Topbar ── */
@@ -27,6 +28,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 
 /* ── App-Layout ── */
 #app{display:grid;grid-template-columns:268px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
@@ -126,8 +129,9 @@ canvas{width:100%;display:block}
 
 <div id="topbar">
   <h1>Power &amp; Stichprobengröße — <em>Warum Power eine Kurve ist</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn" id="btn-cohen" onclick="toggleCohen()">Cohen-Konventionen</button>
-  <button class="tbtn" style="border-color:var(--a1);color:var(--a1)" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
 </div>
 

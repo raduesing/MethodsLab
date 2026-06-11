@@ -23,13 +23,12 @@
 
 /* ── Reset & Base ──────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;font-size:18px}
 body{
   font-family:'Fraunces',Georgia,serif;
   background:var(--bg);color:var(--ink);
   font-size:1rem;line-height:1.65;
-  padding-top:var(--topbar-h);
-  min-height:100vh;
+  height:100vh;overflow:hidden;
 }
 a{color:var(--a2);text-decoration:none}
 a:hover{text-decoration:underline}
@@ -51,26 +50,20 @@ a:hover{text-decoration:underline}
 
 /* ── Topbar ────────────────────────────────────────────────────── */
 #topbar{
-  position:fixed;top:0;left:0;right:0;z-index:200;
+  position:fixed;top:0;left:0;right:0;z-index:300;
   height:var(--topbar-h);
-  background:var(--paper);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 1.25rem;gap:.7rem;
+  background:var(--paper);border-bottom:1px solid var(--grid);
+  display:flex;align-items:center;padding:0 1.2rem;gap:.8rem;
 }
-.tb-title{
-  font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;
-  color:var(--ink);letter-spacing:.01em;flex:1;
-}
-.tb-title em{font-style:italic;color:var(--a2)}
-.tb-btn{
-  background:none;border:1px solid var(--border);
-  color:var(--ink2);font-family:'DM Mono',monospace;font-size:.76rem;
-  padding:.28rem .65rem;cursor:pointer;
-  transition:border-color .15s,color .15s;white-space:nowrap;
-}
-.tb-btn:hover{border-color:var(--a2);color:var(--a2)}
-.tb-btn.red{border-color:var(--a1);color:var(--a1)}
-.tb-btn.red:hover{background:color-mix(in srgb,var(--a1) 10%,transparent)}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 .tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
+#scroll{height:calc(100vh - var(--topbar-h));overflow-y:scroll;margin-top:var(--topbar-h)}
 
 /* ── Story Banner ──────────────────────────────────────────────── */
 #story{
@@ -99,7 +92,7 @@ a:hover{text-decoration:underline}
 /* ── Module Tabs ───────────────────────────────────────────────── */
 #mod-tabs{
   display:flex;border-bottom:1px solid var(--border);
-  background:var(--paper);position:sticky;top:var(--topbar-h);z-index:100;
+  background:var(--paper);position:sticky;top:0;z-index:100;
   overflow-x:auto;
 }
 .mod-tab{
@@ -460,13 +453,15 @@ input[type=range]::-moz-range-thumb{
 
 <!-- ══ TOPBAR ══════════════════════════════════════════════════════ -->
 <div id="topbar">
-  <div class="tb-title">OLS &amp; Multiple <em>Regression</em></div>
-  <button class="tb-btn" id="btn-neue-daten" onclick="neueDaten()">↻ Neue Daten</button>
+  <h1>OLS &amp; Multiple <em>Regression</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
+  <button class="tbtn" id="btn-neue-daten" onclick="neueDaten()">↻ Neue Daten</button>
   <div class="tb-sep"></div>
-  <button class="tb-btn red" onclick="openModal('help-modal')">? Hilfe</button>
-  <button class="tb-btn" id="btn-theme" onclick="toggleTheme()">☀ Hell</button>
+  <button class="tbtn tbtn-red" onclick="openModal('help-modal')">? Hilfe</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
 </div>
 
+<div id="scroll">
 <!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
 <div id="story">
   <span class="story-label">Beispiel</span>
@@ -1117,6 +1112,7 @@ input[type=range]::-moz-range-thumb{
 
   </div><!-- .lcard-grid -->
 </section>
+</div><!-- #scroll -->
 
 <!-- ══ HILFE-MODAL ═══════════════════════════════════════════════════ -->
 <div id="help-modal" class="ml-modal" onclick="if(event.target===this)closeModal('help-modal')">
@@ -2380,7 +2376,7 @@ function toggleTheme(){
   const isDark=h.getAttribute('data-theme')==='dark';
   const nt=isDark?'light':'dark';
   h.setAttribute('data-theme',nt);
-  document.getElementById('btn-theme').textContent=nt==='dark'?'☀ Hell':'☾ Dunkel';
+  document.getElementById('btn-theme').textContent=nt==='dark'?'☀ Light':'🌙 Dark';
   localStorage.setItem('ml-theme',nt);
   draw();
 }
@@ -2388,7 +2384,7 @@ function toggleTheme(){
   const saved=localStorage.getItem('ml-theme');
   const isDark=saved?saved==='dark':true;
   document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
-  document.getElementById('btn-theme').textContent=isDark?'☾ Dunkel':'☀ Hell';
+  document.getElementById('btn-theme').textContent=isDark?'☀ Light':'🌙 Dark';
 })();
 
 /* ── Modals ───────────────────────────────────────────────────────── */
