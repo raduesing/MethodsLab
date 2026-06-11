@@ -749,12 +749,12 @@ input[type=range]::-moz-range-thumb{
 <!-- ══ MODULE 3 ════════════════════════════════════════════════════ -->
 <div id="mod3" class="mod-panel">
   <div class="mod-h">Modellgüte &amp; <em>Varianzzerlegung</em></div>
-  <div class="mod-sub">SST = SSR + SSE, R², adjusted R² und die Annahmen des OLS-Modells</div>
+  <div class="mod-sub">TSS = SSM + RSS, R², adjusted R² und die Annahmen des OLS-Modells</div>
 
   <div class="cv-row" style="align-items:flex-start">
     <!-- Canvas -->
     <div>
-      <div class="cv-label" id="m3-cv-label">Gesamtvarianz (SST) — Abweichungen vom Mittelwert ȳ</div>
+      <div class="cv-label" id="m3-cv-label">Gesamt (TSS) — Abstände der Punkte vom Mittelwert ȳ</div>
       <div class="cv-wrap">
         <canvas id="cv-var" width="880" height="640"></canvas>
       </div>
@@ -768,23 +768,24 @@ input[type=range]::-moz-range-thumb{
 
         <!-- Modus-Toggle -->
         <div class="btn-row" style="margin-bottom:0">
-          <button class="btn primary" id="btn-m3-sst" onclick="setVarMode('SST')">TSS</button>
-          <button class="btn" id="btn-m3-sse" onclick="setVarMode('SSE')">SSR + RSS</button>
+          <button class="btn primary" id="btn-m3-tss" onclick="setVarMode('TSS')">TSS</button>
+          <button class="btn" id="btn-m3-ssm" onclick="setVarMode('SSM')">SSM</button>
+          <button class="btn" id="btn-m3-rss" onclick="setVarMode('RSS')">RSS</button>
         </div>
 
         <!-- Varianzzerlegungsbalken -->
         <div>
           <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-bottom:.3rem">
-            TSS = SSR + RSS
+            TSS = SSM + RSS
           </div>
           <div class="var-bar">
-            <div class="var-seg ssr" id="m3-ssr-seg" style="width:50%">SSR</div>
+            <div class="var-seg ssr" id="m3-ssr-seg" style="width:50%">SSM</div>
             <div class="var-seg sse" id="m3-sse-seg" style="width:50%">RSS</div>
           </div>
           <div style="display:flex;justify-content:space-between;
             font-family:'DM Mono',monospace;font-size:.62rem;margin-top:.25rem">
-            <span style="color:var(--a3)" id="m3-ssr-lbl">SSR = —</span>
-            <span style="color:var(--a1)" id="m3-sse-lbl">SSE = —</span>
+            <span style="color:var(--a3)" id="m3-ssr-lbl">SSM = —</span>
+            <span style="color:var(--a1)" id="m3-sse-lbl">RSS = —</span>
           </div>
         </div>
 
@@ -809,9 +810,9 @@ input[type=range]::-moz-range-thumb{
         </div>
 
         <div class="erklaer" style="margin-bottom:0">
-          <strong>R²</strong> = SSR/TSS = <span id="m3-r2-pct">—</span>% der Gesamtvarianz
+          <strong>R²</strong> = SSM/TSS = <span id="m3-r2-pct">—</span>% der Gesamtvarianz
           in Y werden durch X₁ erklärt.<br>
-          <strong>f²</strong> = R²/(1−R²) = SSR/RSS: &nbsp;klein ≥ .02 · mittel ≥ .15 · groß ≥ .35
+          <strong>f²</strong> = R²/(1−R²) = SSM/RSS: &nbsp;klein ≥ .02 · mittel ≥ .15 · groß ≥ .35
         </div>
 
       </div><!-- /Steuerungsspalte -->
@@ -819,20 +820,20 @@ input[type=range]::-moz-range-thumb{
       <!-- Info-Spalte -->
       <div class="info-box" style="flex:1">
         <div class="info-box-h">Tutorial — Varianzzerlegung &amp; Modellgüte</div>
-        <p><strong>Was Sie sehen</strong><br>
-        <em>Modus TSS:</em> Abstände aller Punkte von ȳ (blau) — die Gesamtvarianz in Y, unabhängig vom Modell. <em>Modus SSR + RSS:</em> grüne Striche = durch X₁ erklärte Varianz, rote Striche = Residuen (nicht erklärte Varianz). Der Balken links zeigt das SSR : RSS-Verhältnis. Wechseln Sie die Modi über die Schaltflächen.</p>
+        <p><strong>Was Sie sehen — drei Modi (TSS = SSM + RSS)</strong><br>
+        <em>TSS</em> (graue Striche): Abstände aller Punkte vom Mittelwert ȳ — die Gesamtstreuung in Y, unabhängig vom Modell. <em>SSM</em> (grüne Striche): Abstände des Modells (Regressionsgerade) vom Mittelwert ȳ — der Anteil, den das Modell gegenüber „nur ȳ als Vorhersage" erklärt. <em>RSS</em> (rote Striche): Abstände der Punkte vom Modell — die Residuen, also was unerklärt bleibt. Der Balken links zeigt das SSM : RSS-Verhältnis. Wechseln Sie die Modi über die Schaltflächen.</p>
         <p><strong>TSS = <span id="m3-info-sst">—</span> — Total Sum of Squares</strong><br>
         TSS = Σ(yᵢ − ȳ)². Gesamtvarianz in Y — wie stark schwanken die Noten generell? TSS hängt <em>nicht</em> vom Modell ab. Es ist die Ausgangslage, die erklärt werden soll.</p>
-        <p><strong>SSR = <span id="m3-info-ssr">—</span> (<span id="m3-info-ssr-pct">—</span>% von TSS) — Sum of Squares Regression</strong><br>
-        SSR = Σ(ŷᵢ − ȳ)². Varianzanteil, den X₁ (Lernzeit) erklärt. Je größer SSR relativ zu TSS, desto besser der Fit. OLS <em>maximiert</em> SSR (äquivalent zum Minimieren von RSS).</p>
+        <p><strong>SSM = <span id="m3-info-ssr">—</span> (<span id="m3-info-ssr-pct">—</span>% von TSS) — Sum of Squares Model</strong><br>
+        SSM = Σ(ŷᵢ − ȳ)². Der vom Modell erklärte Anteil — der Abstand der Regressionsgeraden vom Mittelwert ȳ an der Stelle jedes Datenpunktes (ein Beitrag pro Beobachtung), also die Verbesserung gegenüber „nur ȳ". Je größer SSM relativ zu TSS, desto besser der Fit. OLS <em>maximiert</em> SSM (äquivalent zum Minimieren von RSS).</p>
         <p><strong>RSS = <span id="m3-info-sse">—</span> (<span id="m3-info-sse-pct">—</span>% von TSS) — Residual Sum of Squares</strong><br>
-        RSS = Σeᵢ² = Σ(yᵢ − ŷᵢ)² — quadrierte Summe aller Residuen, das was das Modell nicht erklärt. TSS = SSR + RSS ist mathematisch exakt. RSS = 0 wäre perfekter Fit — in der Praxis unmöglich und nicht wünschenswert (Überanpassung).</p>
+        RSS = Σeᵢ² = Σ(yᵢ − ŷᵢ)² — quadrierte Summe aller Residuen, das was das Modell nicht erklärt. TSS = SSM + RSS ist mathematisch exakt. RSS = 0 wäre perfekter Fit — in der Praxis unmöglich und nicht wünschenswert (Überanpassung).</p>
         <p><strong>R² und f² (Cohens Effektgröße)</strong><br>
-        R² = SSR/TSS (→ Kennwerte links): Anteil erklärter Varianz. <em>Achtung:</em> R² steigt immer mit jedem weiteren Prädiktor — auch nutzlosen! Adjusted R² korrigiert mit einem Strafterm pro Prädiktor.<br>
-        f² = R²/(1−R²) = SSR/RSS = <span id="m3-info-f2">—</span> → <span id="m3-info-f2-lbl">—</span> Effekt. f² ist das Verhältnis von erklärter zu nicht erklärter Varianz. Cohen (1988): .02 klein · .15 mittel · .35 groß.<br>
+        R² = SSM/TSS (→ Kennwerte links): Anteil erklärter Varianz. <em>Achtung:</em> R² steigt immer mit jedem weiteren Prädiktor — auch nutzlosen! Adjusted R² korrigiert mit einem Strafterm pro Prädiktor.<br>
+        f² = R²/(1−R²) = SSM/RSS = <span id="m3-info-f2">—</span> → <span id="m3-info-f2-lbl">—</span> Effekt. f² ist das Verhältnis von erklärter zu nicht erklärter Varianz. Cohen (1988): .02 klein · .15 mittel · .35 groß.<br>
         <em>Modellvergleiche:</em> AIC und BIC penalisieren Komplexität stärker als adj. R² — empfehlenswert bei mehreren konkurrierenden Modellen.</p>
         <p><strong>Was gut / problematisch ist</strong><br>
-        · Gut: Großer grüner Balken (SSR ≫ RSS), R² nahe 1, f² ≥ .15.<br>
+        · Gut: Großer grüner Balken (SSM ≫ RSS), R² nahe 1, f² ≥ .15.<br>
         · R² = 0: Das Modell erklärt nichts — nicht besser als ȳ als Prognose.<br>
         · R² allein ist nicht ausreichend — ein gutes R² trotz verletzter Annahmen täuscht. Residualdiagnostik ist Pflicht (→ Akkordion OLS-Annahmen unten).</p>
       </div>
@@ -1080,7 +1081,7 @@ input[type=range]::-moz-range-thumb{
     <div class="lcard">
       <div class="lcard-h"><span class="tab-num">④</span> R² und adj. R²</div>
       <div class="lcard-body">
-        <code>R² = SSR/SST ∈ [0, 1]</code> — Anteil erklärter Varianz.
+        <code>R² = SSM/SST ∈ [0, 1]</code> — Anteil erklärter Varianz.
         R² steigt mit jedem hinzugefügten Prädiktor, auch nutzlosen.
         Adjusted R² korrigiert dafür:
         <code>adj.R² = 1 − (1−R²)·(n−1)/(n−k−1)</code>.
@@ -1151,7 +1152,7 @@ input[type=range]::-moz-range-thumb{
       Vorsicht: β ist stichprobenspezifisch und darf nicht zwischen Studien verglichen werden.</p>
 
       <h3>R² und Modellgüte</h3>
-      <p><code>R² = SSR/SST = 1 − SSE/SST</code>. Im bivariaten Fall gilt <code>R² = r²</code>.
+      <p><code>R² = SSM/TSS = 1 − RSS/TSS</code>. Im bivariaten Fall gilt <code>R² = r²</code>.
       R² steigt mit jedem Prädiktor, auch bei zufälligen Variablen (<em>Freedman's Paradox</em>).
       Adjusted R² korrigiert für die Anzahl der Prädiktoren k:</p>
       <p><code>adj.R² = 1 − (1−R²)·(n−1)/(n−k−1)</code></p>
@@ -1252,12 +1253,12 @@ function olsBivariate(x,y){
   const resid=y.map((yi,i)=>yi-yhat[i]);
   const sse=resid.reduce((s,e)=>s+e**2,0);
   const sst=y.reduce((s,yi)=>s+(yi-my)**2,0);
-  const ssr=sst-sse;
+  const ssm=sst-sse;
   const r2=1-sse/sst;
   const sdx=Math.sqrt(sxx/(n-1));
   const sdy=Math.sqrt(sst/(n-1));
   const beta1=b1*sdx/sdy; // standardisierter Koeffizient
-  return{b0,b1,beta1,yhat,resid,sse,sst,ssr,r2,rss:sse,mx,my,sdx,sdy};
+  return{b0,b1,beta1,yhat,resid,sse,sst,ssm,r2,rss:sse,mx,my,sdx,sdy};
 }
 
 /* ── OLS Multiple (Y ~ X1 + X2, Gauß-Elimination 3×3) ─────────────── */
@@ -1298,7 +1299,7 @@ function olsMultiple(x1,x2,y){
   const sse=resid.reduce((s,e)=>s+e**2,0);
   const my=Sy/n;
   const sst=y.reduce((s,yi)=>s+(yi-my)**2,0);
-  const ssr=sst-sse;
+  const ssm=sst-sse;
   const r2=1-sse/sst;
   const adjR2=1-(1-r2)*(n-1)/(n-3);
   // Standardisierte Koeffizienten
@@ -1306,7 +1307,7 @@ function olsMultiple(x1,x2,y){
   const sdX2=Math.sqrt(x2.reduce((s,v)=>s+(v-Sx2/n)**2,0)/(n-1));
   const sdY=Math.sqrt(sst/(n-1));
   const beta1=b1*sdX1/sdY, beta2=b2*sdX2/sdY;
-  return{b0,b1,b2,beta1,beta2,yhat,resid,sse,sst,ssr,r2,adjR2,my,sdY};
+  return{b0,b1,b2,beta1,beta2,yhat,resid,sse,sst,ssm,r2,adjR2,my,sdY};
 }
 
 /* ── Added Variable Plot Helfer ───────────────────────────────────── */
@@ -1350,7 +1351,7 @@ const ST={
   // Modul 2
   showBeta:false,m2showSlope:false,m2showMean:false,
   // Modul 3
-  m3mode:'SST',showBenchmark:false,
+  m3mode:'TSS',showBenchmark:false,
   // Modul 4
   r12:0.20,           // Korrelation X1↔X2 (für Szenarien)
   avpStep:0,          // 0=Ausgangslage,1=eY|X2,2=eX1|X2,3=AVP-Slope,4=3D
@@ -1828,34 +1829,46 @@ function drawMod3(){
 
   const{b0,b1,my,yhat}=ST.fitBiv;
 
-  if(ST.m3mode==='SST'){
-    // ȳ-Linie gestrichelt
+  const drawMeanLine=(dash,alpha,col)=>{
     ctx.beginPath();ctx.moveTo(pad.l,sy(my));ctx.lineTo(W-pad.r,sy(my));
-    ctx.strokeStyle=a2;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);ctx.stroke();ctx.setLineDash([]);
-    // Abweichungen vom Mittelwert (grau, SST)
+    ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.setLineDash(dash);ctx.globalAlpha=alpha;
+    ctx.stroke();ctx.globalAlpha=1;ctx.setLineDash([]);
+  };
+  const drawOLSLine=()=>{
+    ctx.beginPath();ctx.moveTo(sx(1),sy(b0+b1*1));ctx.lineTo(sx(22),sy(b0+b1*22));
+    ctx.strokeStyle=a2;ctx.lineWidth=2;ctx.stroke();
+  };
+  const meanLabel=()=>{
+    ctx.fillStyle=a2;ctx.font='10px DM Mono,monospace';
+    ctx.textAlign='left';ctx.textBaseline='bottom';
+    ctx.fillText('ȳ = '+my.toFixed(1),W-pad.r-58,sy(my)-3);
+  };
+
+  if(ST.m3mode==='TSS'){
+    // Total: Punkte ↔ Mittelwert ȳ (grau)
+    drawMeanLine([5,3],1,a2);
     ST.data.x1.forEach((xi,i)=>{
       ctx.beginPath();ctx.moveTo(sx(xi),sy(ST.data.y[i]));ctx.lineTo(sx(xi),sy(my));
       ctx.strokeStyle=ink2;ctx.globalAlpha=.45;ctx.lineWidth=1.5;ctx.stroke();ctx.globalAlpha=1;
     });
-    // ȳ-Label
-    ctx.fillStyle=a2;ctx.font='10px DM Mono,monospace';
-    ctx.textAlign='left';ctx.textBaseline='bottom';
-    ctx.fillText('ȳ = '+my.toFixed(1),W-pad.r-58,sy(my)-3);
-  }else{
-    // SSR+SSE: OLS-Linie + farbige Residuen
+    meanLabel();
+  }else if(ST.m3mode==='SSM'){
+    // Model: Mittelwert ȳ ↔ Modell (erklärt, grün)
+    drawMeanLine([5,3],.85,a2);
+    drawOLSLine();
     ST.data.x1.forEach((xi,i)=>{
-      const yi=ST.data.y[i],yhi=yhat[i];
-      ctx.beginPath();ctx.moveTo(sx(xi),sy(yi));ctx.lineTo(sx(xi),sy(yhi));
-      ctx.strokeStyle=yi>yhi?a3:a1;ctx.globalAlpha=.42;ctx.lineWidth=1.5;
-      ctx.stroke();ctx.globalAlpha=1;
+      ctx.beginPath();ctx.moveTo(sx(xi),sy(my));ctx.lineTo(sx(xi),sy(yhat[i]));
+      ctx.strokeStyle=a3;ctx.globalAlpha=.6;ctx.lineWidth=2;ctx.stroke();ctx.globalAlpha=1;
     });
-    // ȳ-Ghost (sehr blass)
-    ctx.beginPath();ctx.moveTo(pad.l,sy(my));ctx.lineTo(W-pad.r,sy(my));
-    ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.globalAlpha=.35;
-    ctx.stroke();ctx.globalAlpha=1;ctx.setLineDash([]);
-    // OLS-Linie
-    ctx.beginPath();ctx.moveTo(sx(1),sy(b0+b1*1));ctx.lineTo(sx(22),sy(b0+b1*22));
-    ctx.strokeStyle=a2;ctx.lineWidth=2;ctx.stroke();
+    meanLabel();
+  }else{
+    // Residual (RSS): Punkte ↔ Modell (rot)
+    drawMeanLine([4,4],.3,ink3);
+    drawOLSLine();
+    ST.data.x1.forEach((xi,i)=>{
+      ctx.beginPath();ctx.moveTo(sx(xi),sy(ST.data.y[i]));ctx.lineTo(sx(xi),sy(yhat[i]));
+      ctx.strokeStyle=a1;ctx.globalAlpha=.45;ctx.lineWidth=1.5;ctx.stroke();ctx.globalAlpha=1;
+    });
   }
 
   // Datenpunkte
@@ -1869,7 +1882,7 @@ function drawMod3(){
 
 function updateMod3Display(){
   if(!ST.fitBiv||!ST.data)return;
-  const{r2,sse,ssr,sst,b1}=ST.fitBiv;
+  const{r2,sse,ssm,sst,b1}=ST.fitBiv;
   const n=ST.data.n;
   const adjR2=1-(1-r2)*(n-1)/(n-2);
   const f2=r2/(1-r2);
@@ -1880,16 +1893,16 @@ function updateMod3Display(){
   document.getElementById('m3-f2').textContent=fmt3(f2);
   document.getElementById('m3-r').textContent=fmt3(r);
   document.getElementById('m3-r2-pct').textContent=(r2*100).toFixed(1);
-  const ssrPct=ssr/sst*100,ssePct=sse/sst*100;
-  document.getElementById('m3-ssr-seg').style.width=ssrPct+'%';
+  const ssmPct=ssm/sst*100,ssePct=sse/sst*100;
+  document.getElementById('m3-ssr-seg').style.width=ssmPct+'%';
   document.getElementById('m3-sse-seg').style.width=ssePct+'%';
-  document.getElementById('m3-ssr-lbl').textContent='SSR = '+Math.round(ssr);
+  document.getElementById('m3-ssr-lbl').textContent='SSM = '+Math.round(ssm);
   document.getElementById('m3-sse-lbl').textContent='RSS = '+Math.round(sse);
   // Infobox aktualisieren
   const setTxt=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   setTxt('m3-info-sst',Math.round(sst));
-  setTxt('m3-info-ssr',Math.round(ssr));
-  setTxt('m3-info-ssr-pct',ssrPct.toFixed(1));
+  setTxt('m3-info-ssr',Math.round(ssm));
+  setTxt('m3-info-ssr-pct',ssmPct.toFixed(1));
   setTxt('m3-info-sse',Math.round(sse));
   setTxt('m3-info-sse-pct',ssePct.toFixed(1));
   setTxt('m3-info-f2',fmt3(f2));
@@ -1899,12 +1912,14 @@ function updateMod3Display(){
 
 function setVarMode(mode){
   ST.m3mode=mode;
-  document.getElementById('btn-m3-sst').classList.toggle('primary',mode==='SST');
-  document.getElementById('btn-m3-sse').classList.toggle('primary',mode==='SSE');
+  document.getElementById('btn-m3-tss').classList.toggle('primary',mode==='TSS');
+  document.getElementById('btn-m3-ssm').classList.toggle('primary',mode==='SSM');
+  document.getElementById('btn-m3-rss').classList.toggle('primary',mode==='RSS');
   const lbl=document.getElementById('m3-cv-label');
-  if(lbl)lbl.textContent=mode==='SST'?
-    'Gesamtvarianz (TSS) — Abweichungen vom Mittelwert ȳ':
-    'Varianzzerlegung: SSR (erklärt, grün) + RSS (Residuen, rot)';
+  if(lbl)lbl.textContent=
+    mode==='TSS'?'Gesamt (TSS) — Abstände der Punkte vom Mittelwert ȳ':
+    mode==='SSM'?'Modell (SSM) — Abstände des Modells vom Mittelwert ȳ (erklärt)':
+    'Residual (RSS) — Abstände der Punkte vom Modell (unerklärt)';
   drawMod3();
 }
 
