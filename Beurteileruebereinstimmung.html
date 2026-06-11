@@ -18,19 +18,20 @@
   --grid:#1e242e;--panel:#171d28;--border:#2a3040;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;height:100vh;overflow:hidden;display:flex;flex-direction:column}
 /* ── Topbar ── */
 #topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
-  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem;flex:none}
 #topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em}
 #topbar h1 em{color:var(--accent);font-style:italic}
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover{background:var(--ink);color:var(--bg)}
-.tbtn-red{border-color:var(--a1);color:var(--a1)}
-.tbtn-red:hover{background:var(--a1);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 /* ── Layout ── */
-#app{display:grid;grid-template-columns:272px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#app{display:grid;grid-template-columns:272px 1fr;flex:1;min-height:0;overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
 #sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
@@ -199,8 +200,8 @@ canvas{width:100%;display:block}
     <div style="font-family:'DM Mono',monospace;font-size:.62rem;color:var(--ink3);margin-top:.1rem">
       © Dr. Rainer Düsing · Diagnostik-Kurs · Universität Osnabrück · Interactive Tools by Claude</div>
   </div>
-  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
   <button class="tbtn tbtn-red" onclick="showModal()">? Hilfe</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 
 <!-- ═══ HELP MODAL ════════════════════════════════════════════════════════════ -->
