@@ -198,6 +198,7 @@ a:hover{text-decoration:underline}
 .tool-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  grid-auto-rows:1fr;
   gap:1rem;
 }
 
@@ -208,6 +209,7 @@ a:hover{text-decoration:underline}
   border-left:3px solid transparent;
   padding:1.1rem 1rem 1rem calc(1.1rem - 2px);
   position:relative;
+  min-height:13.5rem;
   transition:border-color .2s,border-left-color .2s,transform .15s,box-shadow .2s;
   display:flex;flex-direction:column;gap:.45rem;
   text-decoration:none;color:inherit;
@@ -235,11 +237,13 @@ a:hover{text-decoration:underline}
 }
 .tcard-title{
   font-size:.97rem;font-weight:600;color:var(--ink);
-  line-height:1.25;
+  line-height:1.25;min-height:2.45em;
+  overflow-wrap:break-word;word-break:break-word;hyphens:auto;
 }
 .tcard-desc{
   font-family:'DM Mono',monospace;font-size:.73rem;
   color:var(--ink2);line-height:1.55;flex:1;
+  display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;
 }
 .tcard-badge{
   font-family:'DM Mono',monospace;font-size:.64rem;
