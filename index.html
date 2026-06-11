@@ -223,6 +223,8 @@ a:hover{text-decoration:underline}
   opacity:.58;cursor:default;pointer-events:none;
 }
 .tcard.planned:hover{transform:none;box-shadow:none}
+.tcard.tool-only{background:color-mix(in srgb,var(--panel) 88%,var(--ink));
+  border-color:color-mix(in srgb,var(--a2) 45%,var(--border));border-left-color:var(--a2)}
 .tcard-icon{
   font-size:1.35rem;line-height:1;
   width:2.2rem;height:2.2rem;
@@ -248,6 +250,7 @@ a:hover{text-decoration:underline}
 .badge-ready{background:color-mix(in srgb,var(--a3) 15%,transparent);color:var(--a3);border:1px solid var(--a3)}
 .badge-soon{background:color-mix(in srgb,var(--ink3) 12%,transparent);color:var(--ink3);border:1px solid var(--border)}
 .badge-bug{background:color-mix(in srgb,var(--a1) 12%,transparent);color:var(--a1);border:1px solid var(--a1)}
+.badge-tool{background:color-mix(in srgb,var(--a2) 13%,transparent);color:var(--a2);border:1px solid var(--a2)}
 
 /* ── BTL Cross-Promo ───────────────────────────────────────────────── */
 #btl-promo{
@@ -771,7 +774,8 @@ a:hover{text-decoration:underline}
       <div class="tcard-desc">Intraklassenkorrelation — alle 6 Shrout-&amp;-Fleiss-Formen, Rater-Anzahl, absolute vs. konsistente Übereinstimmung.</div>
     </a>
 
-    <a href="Beurteileruebereinstimmung.html" class="tcard" target="_blank">
+    <a href="Beurteileruebereinstimmung.html" class="tcard tool-only" target="_blank">
+      <span class="tcard-badge badge-tool">Tool only</span>
       <div class="tcard-icon">🤝</div>
       <div class="tcard-title">Beurteilerübereinstimmung</div>
       <div class="tcard-desc">Cohens κ, gewichtetes κ, Kappa-Paradox, Prävalenz &amp; Bias — wann κ täuscht und was man stattdessen berichten sollte.</div>
