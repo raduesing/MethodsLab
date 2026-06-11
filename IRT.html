@@ -165,7 +165,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <p class="help-p"><strong>Interpretation:</strong> Die TIF zeigt relativ, <em>wo</em> ein Test präzise misst — nicht ob er einen absoluten Schwellenwert erreicht. Entscheidend ist die Form der Kurve: Ein schmales, hohes Maximum bedeutet präzise Messung in einem engen θ-Bereich (typisch für Selektionstests); eine breite, flache Kurve bedeutet gleichmäßige, aber weniger präzise Messung über viele Fähigkeitsniveaus (typisch für Screening). Der Standardfehler SE(θ) = 1/√I(θ) übersetzt die Information direkt in Messunsicherheit auf der θ-Skala — bei SE = 0.5 liegt die Schätzung typischerweise innerhalb von ±1 um den wahren Wert. Mehr Items verschieben die gesamte Kurve nach oben; schwerere oder leichtere Items verschieben das Informationsmaximum entlang der θ-Achse.</p>
 
   <div class="help-sh">Wright Map — Personen und Items auf einer Skala</div>
-  <p class="help-p">Ein Alleinstellungsmerkmal der IRT: Personenfähigkeit θ und Itemschwierigkeit b liegen auf derselben Skala. Die Wright Map (Item-Person-Map) zeigt beides zusammen. Items mit b ≈ θ sind am informativsten für eine Person. Items, die zu leicht (b ≪ θ) oder zu schwer (b ≫ θ) sind, tragen kaum zur Messung bei.</p>
+  <p class="help-p">Ein Alleinstellungsmerkmal der IRT: Personenfähigkeit θ und Itemschwierigkeit b liegen auf derselben Skala. Die Wright Map (Item-Person-Map) zeigt beides zusammen. Items mit b ≈ θ sind am informativsten für eine Person. Items, die zu leicht (b ≪ θ) oder zu schwer (b ≫ θ) sind, tragen kaum zur Messung bei. In diesem Tool steht θ senkrecht: links das Personen-Histogramm (N(0,1)-Referenzpopulation), rechts die Items auf ihrer Schwierigkeit b. Items mit ähnlicher Schwierigkeit werden horizontal nebeneinander aufgefächert, und ein farbiger Tick auf der θ-Achse markiert die genaue Schwierigkeit jedes Items. Die Punktgröße kodiert die Trennschärfe a (steilere Items = größer = informativer), und Items innerhalb des türkisen Bands um die θ-Linie der Person (Max) sind hervorgehoben — genau dort misst der Test präzise.</p>
 
   <div class="help-sh">Antwortmuster und θ̂ (MLE)</div>
   <p class="help-p">Aus einem beobachteten Antwortvektor (z.B. 1,1,0,0,0) lässt sich θ̂ via Maximum-Likelihood schätzen: Finde das θ, das die Wahrscheinlichkeit des beobachteten Musters maximiert. Antwortet jemand alles richtig oder alles falsch, ist die MLE nicht definiert (±∞) — in der Praxis werden dann EAP- oder MAP-Schätzer verwendet.</p>
@@ -245,7 +245,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
   <div class="sec-h">Wright Map — Items und Personen auf einer Skala</div>
   <canvas id="cv-wright" height="360"></canvas>
-  <div class="hint">Items (●) liegen auf b-Wert · Personen als N(0,1)-Referenzverteilung · türkise Linie = aktuelles θ</div>
+  <div class="hint">θ senkrecht · Personen-Histogramm N(0,1) links · Items rechts auf ihrer Schwierigkeit b, bei ähnlicher Schwierigkeit horizontal aufgefächert · farbiger Tick auf der θ-Achse markiert jede Item-Schwierigkeit · Punktgröße = Trennschärfe a · türkise Linie + Band = Person Max und ihre informative Zone (|b−θ| ≤ 0.5), dort hervorgehobene Items messen präzise · Item-Nummern → Seitenleiste</div>
 
   <div class="sec-h" style="margin-top:1.6rem">Modell-Formel & Interpretation</div>
   <div class="erklaer" id="erklaer-formula"></div>
@@ -456,46 +456,90 @@ function drawTIF(){
 // ── Wright Map ───────────────────────────────────────────────────────────────
 function drawWright(){
   const{ctx,W,H}=setupCv('cv-wright');
-  const pad={l:48,r:18,t:8,b:28};
+  const pad={l:34,r:14,t:18,b:14};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
   const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2'),ink3=cv('--ink3');
-  const a2c=cv('--a2'),a4c=cv('--a6');
+  const a2c=cv('--a2'),a6c=cv('--a6');
   ctx.fillStyle=paper;ctx.fillRect(0,0,W,H);
   const thMin=-4,thMax=4;
-  const tx=t=>(t-thMin)/(thMax-thMin)*cW+pad.l;
-  const midY=pad.t+cH/2;
-  ctx.strokeStyle=grid;ctx.lineWidth=.8;
-  ctx.beginPath();ctx.moveTo(pad.l,midY);ctx.lineTo(pad.l+cW,midY);ctx.stroke();
-  [-4,-3,-2,-1,0,1,2,3,4].forEach(t=>{
-    ctx.strokeStyle=grid;ctx.lineWidth=.7;
-    ctx.beginPath();ctx.moveTo(tx(t),pad.t);ctx.lineTo(tx(t),pad.t+cH);ctx.stroke();
-  });
-  const N01=x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);
-  const NB=120,barW=cW/NB*.82;
-  for(let k=0;k<NB;k++){
-    const t=thMin+k*(thMax-thMin)/NB;
-    const h=N01(t)*cH*0.44*2.8;
-    ctx.fillStyle=`color-mix(in srgb,${a2c} 32%,transparent)`;
-    ctx.fillRect(tx(t),pad.t+cH-h,barW,h);
+  const ty=t=>pad.t+(thMax-t)/(thMax-thMin)*cH;   // θ senkrecht: hoch = oben
+  const midX=pad.l+cW*0.40;                        // Trennung Personen | Items
+
+  // Gridlines + θ-Achsenbeschriftung
+  ctx.font=`10px 'DM Mono',monospace`;ctx.textBaseline='middle';
+  for(let t=-4;t<=4;t++){
+    const y=ty(t);
+    ctx.strokeStyle=grid;ctx.lineWidth=(t===0?1.1:.6);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
+    if(t%2===0){ctx.fillStyle=ink3;ctx.textAlign='right';ctx.fillText(t,pad.l-3,y);}
   }
-  ST.items.forEach((it,i)=>{
-    const b=eff(it)[1];
-    const col=cv(ICOLS[i]);
-    ctx.fillStyle=col;
-    ctx.beginPath();ctx.arc(tx(b),midY-cH*.22,5,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle=col;ctx.font=`bold 10px 'DM Mono',monospace`;ctx.textAlign='center';
-    ctx.fillText(i+1,tx(b),midY-cH*.22+3.5);
+  ctx.fillStyle=ink2;ctx.font=`bold 11px 'DM Mono',monospace`;
+  ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText('θ',2,pad.t-3);
+
+  // Trennlinie + Spaltenköpfe
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.globalAlpha=.45;
+  ctx.beginPath();ctx.moveTo(midX,pad.t);ctx.lineTo(midX,pad.t+cH);ctx.stroke();ctx.globalAlpha=1;
+  ctx.fillStyle=ink3;ctx.font=`10px 'DM Mono',monospace`;ctx.textBaseline='alphabetic';ctx.textAlign='center';
+  ctx.fillText('Personen',pad.l+(midX-pad.l)/2,pad.t+9);
+  ctx.fillText('Items',midX+(pad.l+cW-midX)/2,pad.t+9);
+
+  // Personen-Histogramm N(0,1) — Balken wachsen nach links von der Trennlinie
+  const N01=x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);
+  const leftW=(midX-pad.l)*0.86,peak=N01(0),NB=64;
+  for(let k=0;k<NB;k++){
+    const tA=thMin+k*(thMax-thMin)/NB,tB=thMin+(k+1)*(thMax-thMin)/NB;
+    const len=N01((tA+tB)/2)/peak*leftW,yTop=ty(tB),yBot=ty(tA);
+    ctx.fillStyle=`color-mix(in srgb,${a2c} 30%,transparent)`;
+    ctx.fillRect(midX-len,yTop,len,yBot-yTop+0.6);
+  }
+
+  // Informatives Band der Person (|b−θ| ≤ 0.5) — Hintergrund
+  const tp=ST.thetaPerson;
+  const bandTop=Math.max(pad.t,ty(tp+0.5)),bandBot=Math.min(pad.t+cH,ty(tp-0.5));
+  ctx.fillStyle=`color-mix(in srgb,${a6c} 13%,transparent)`;
+  ctx.fillRect(pad.l,bandTop,cW,bandBot-bandTop);
+
+  // Person Max — horizontale Linie über die ganze Breite + Marker links
+  const yP=ty(tp);
+  ctx.strokeStyle=a6c;ctx.lineWidth=1.8;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(pad.l,yP);ctx.lineTo(pad.l+cW,yP);ctx.stroke();ctx.setLineDash([]);
+  const mx=Math.max(pad.l+6,midX-N01(tp)/peak*leftW-7);
+  ctx.fillStyle=a6c;ctx.beginPath();ctx.arc(mx,yP,4.5,0,Math.PI*2);ctx.fill();
+  ctx.font=`bold 10px 'DM Mono',monospace`;ctx.textAlign='left';ctx.textBaseline='bottom';
+  ctx.fillStyle=a6c;ctx.fillText(`Max θ=${tp.toFixed(1)}`,pad.l+4,yP-4);
+
+  // Items — auf b-Höhe, horizontal aufgefächert (Beeswarm) + farbiger Tick auf der θ-Achse
+  const items=ST.items.map((it,i)=>{const e=eff(it);return{i,b:e[1],a:e[0],col:cv(ICOLS[i])};});
+  const rOf=o=>4+Math.min(6,Math.max(0,(o.a-0.6))*3.4);   // Punktgröße ~ Trennschärfe a
+  const baseX=midX+16,colW=18;
+  const placed=[];
+  [...items].sort((p,q)=>q.b-p.b).forEach(o=>{           // oben (hohes b) zuerst
+    o.yB=ty(o.b);o.r=rOf(o);o.slot=0;
+    while(placed.some(p=>p.slot===o.slot&&Math.abs(p.yB-o.yB)<(p.r+o.r+3)))o.slot++;
+    placed.push(o);
   });
-  ctx.strokeStyle=a4c;ctx.lineWidth=2;ctx.setLineDash([4,3]);
-  ctx.beginPath();ctx.moveTo(tx(ST.thetaPerson),pad.t);ctx.lineTo(tx(ST.thetaPerson),pad.t+cH);ctx.stroke();
-  ctx.setLineDash([]);
-  ctx.fillStyle=ink2;ctx.font=`11px 'DM Mono',monospace`;ctx.textAlign='center';
-  [-4,-2,0,2,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+14));
-  ctx.textAlign='left';ctx.font=`10px 'DM Mono',monospace`;
-  ctx.fillStyle=ink3;
-  ctx.fillText('Items ↑',pad.l+4,pad.t+12);
-  ctx.fillText('Personen ↓',pad.l+4,pad.t+cH-4);
-  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.strokeRect(pad.l,pad.t,cW,cH);
+  placed.forEach(o=>{
+    const near=Math.abs(o.b-tp)<=0.5,al=near?1:0.4,x=baseX+o.slot*colW;
+    // Niveau-Linie von der θ-Achse zum Item
+    ctx.strokeStyle=o.col;ctx.globalAlpha=al*0.4;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,o.yB);ctx.lineTo(x-o.r-1,o.yB);ctx.stroke();
+    // farbiger Tick auf der θ-Achse
+    ctx.globalAlpha=al;ctx.lineWidth=2.6;
+    ctx.beginPath();ctx.moveTo(pad.l,o.yB);ctx.lineTo(pad.l+8,o.yB);ctx.stroke();
+    // Glow-Halo bei nahe θ
+    if(near){ctx.globalAlpha=1;ctx.fillStyle=`color-mix(in srgb,${o.col} 26%,transparent)`;
+      ctx.beginPath();ctx.arc(x,o.yB,o.r+4.5,0,Math.PI*2);ctx.fill();}
+    // Item-Punkt (Größe ~ a)
+    ctx.globalAlpha=al;ctx.fillStyle=o.col;
+    ctx.beginPath();ctx.arc(x,o.yB,o.r,0,Math.PI*2);ctx.fill();
+    if(near){ctx.strokeStyle=paper;ctx.lineWidth=1.8;ctx.stroke();}
+    ctx.fillStyle=paper;ctx.font=`bold ${o.r>5.5?10:9}px 'DM Mono',monospace`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(o.i+1,x,o.yB+0.5);
+    ctx.globalAlpha=1;
+  });
+
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.globalAlpha=.55;ctx.strokeRect(pad.l,pad.t,cW,cH);ctx.globalAlpha=1;
 }
 
 // ── Formel-Text ─────────────────────────────────────────────────────────────
