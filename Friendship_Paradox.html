@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Friendship Paradox — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;background:var(--a1);border-radius:50%;cursor:pointer}
+.reset-btn{font-family:'DM Mono',monospace;font-size:.74rem;padding:.45rem .7rem;width:100%;margin-top:.2rem;border:1.5px solid var(--a2);background:transparent;cursor:pointer;color:var(--a2);transition:all .15s}
+.reset-btn:hover{background:var(--a2);color:var(--bg)}
+.legend-row{display:flex;align-items:center;gap:.5rem;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink2);margin-bottom:.4rem;line-height:1.3}
+.legend-dot{width:13px;height:13px;border-radius:50%;flex-shrink:0}
+
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a4);padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a4);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+
+.pred-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1rem}
+.pred-btn{font-family:'DM Mono',monospace;font-size:.85rem;padding:.6rem 1.1rem;border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink);transition:all .15s}
+.pred-btn:hover{border-color:var(--a4);color:var(--a4)}
+.pred-btn.picked{border-color:var(--a4);background:color-mix(in srgb,var(--a4) 14%,transparent);color:var(--a4);font-weight:500}
+
+.sel-card{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a4);padding:.85rem .95rem;font-size:.96rem;line-height:1.55}
+.sel-card b{font-family:'DM Mono',monospace}
+.tag-up{display:inline-block;font-family:'DM Mono',monospace;font-size:.72rem;padding:.12rem .55rem;border:1px solid var(--a3);color:var(--a3);background:color-mix(in srgb,var(--a3) 12%,transparent);margin-left:.2rem;white-space:nowrap}
+.tag-dn{display:inline-block;font-family:'DM Mono',monospace;font-size:.72rem;padding:.12rem .55rem;border:1px solid var(--ink3);color:var(--ink3);margin-left:.2rem;white-space:nowrap}
+.cmp{margin-top:.7rem;display:flex;flex-direction:column;gap:.4rem}
+.cmp-row{display:grid;grid-template-columns:185px 1fr;align-items:center;gap:.6rem;font-family:'DM Mono',monospace;font-size:.74rem}
+.cmp-lbl b{font-size:.82rem}
+.cmp-lbl{color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .cmp-track{height:16px;background:var(--grid);overflow:hidden} .cmp-fill{height:100%;min-width:2px;transition:width .25s} .cmp-v{text-align:right;color:var(--ink);font-weight:500}
+
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:.85rem}
+.metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink3);margin-bottom:.3rem;line-height:1.3}
+.metric-val{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:500;line-height:1}
+.metric-sub{font-family:'DM Mono',monospace;font-size:.64rem;color:var(--ink3);margin-top:.3rem;line-height:1.4}
+
+.verdict{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:500;padding:.7rem .95rem;margin:.2rem 0 1rem;border:1.5px solid;text-align:center;letter-spacing:.01em;line-height:1.5}
+.v-up{color:var(--a3);border-color:var(--a3);background:color-mix(in srgb,var(--a3) 12%,transparent)}
+.v-flat{color:var(--ink3);border-color:var(--border);background:var(--panel)}
+
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block;cursor:pointer}
+
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)} .lcard-body strong{color:var(--ink)}
+.lcard.funfact{margin-bottom:1.4rem;border-style:dashed;background:color-mix(in srgb,var(--a4) 7%,var(--paper))}
+.lcard.funfact .lcard-h{color:var(--a4)}
+.xlink{display:inline-block;margin-top:.5rem;font-family:'DM Mono',monospace;font-size:.73rem;padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+@media(max-width:820px){.metric-grid{grid-template-columns:1fr 1fr}.lcard-grid{grid-template-columns:1fr}}
+
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Friendship Paradox — <em>wie viele Freunde haben eigentlich deine Freunde?</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- HELP -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+<div class="help-box">
+  <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+  <div class="help-box-h">Friendship Paradox — Hilfe</div>
+
+  <div class="help-sh">Die Behauptung</div>
+  <p class="help-p">„Deine Freunde haben im Schnitt mehr Freunde als du." Klingt nach Selbstzweifel, ist aber ein mathematischer Fakt für fast jedes soziale Netzwerk (Feld 1991). Klick im Tool eine Person an: meistens haben ihre Freunde im Schnitt mehr Freunde als sie selbst.</p>
+
+  <div class="help-sh">Warum?</div>
+  <p class="help-p">Besonders gut vernetzte Personen stehen auf <em>vielen</em> Freundeslisten — du selbst stehst nur auf so vielen Listen, wie du Freunde hast. Wenn du also „die Freunde der Leute" anschaust, kommen diese Vielvernetzten immer wieder vor und ziehen den Durchschnitt nach oben.</p>
+
+  <div class="help-sh">Die Mathematik</div>
+  <p class="help-p">Durchschnittliche Freundeszahl einer Person: E[k]. Durchschnittliche Freundeszahl, wenn man über Freundschaften zählt:</p>
+  <code class="help-formula">E[Freund] = E[k²]/E[k] = E[k] + Var(k)/E[k]</code>
+  <p class="help-p">Weil Var(k) ≥ 0, ist <strong>E[Freund] ≥ E[Person]</strong> — gleich nur, wenn alle gleich viele Freunde haben. Je ungleicher das Netz (größere Unterschiede in der Freundeszahl ⇒ größere Var), desto größer die Lücke. Schiebe „Vernetzung" hoch und beobachte die Differenz.</p>
+
+  <div class="help-sh">Size-biased Sampling</div>
+  <p class="help-p">Der Kern ist <em>größenverzerrtes Zählen</em>: über Freundschaften gewichtet man jede Person mit ihrer Freundeszahl. Dasselbe Muster wie der <em>Inspection Paradox</em> (man landet in langen Intervallen) oder „Kurse wirken größer als der Schnitt".</p>
+
+  <div class="help-sh">Alltag &amp; Nutzen</div>
+  <p class="help-p">„Deine Follower haben mehr Follower." Das Fitnessstudio wirkt immer voll. Nützlich: „Impfe/beobachte zufällige <em>Freunde</em> von Zufallspersonen" trifft im Mittel zentralere Knoten — eine günstige Strategie ohne globale Netzwerkkenntnis.</p>
+
+  <div class="help-sh">Literatur</div>
+  <p class="help-p">Feld, S. L. (1991). Why your friends have more friends than you do. <em>American Journal of Sociology, 96</em>(6), 1464–1477.</p>
+</div>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══ -->
+<div id="sidebar">
+  <div class="scard">
+    <div class="scard-title">Netzwerk</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Personen</span><span class="slider-val" id="v-n">42</span></div>
+      <input type="range" id="s-n" min="20" max="80" step="2" value="42">
+    </div>
+    <div class="slider-row" style="margin-bottom:.5rem">
+      <div class="slider-lbl"><span class="slider-name">Vernetzung <em style="color:var(--ink3);font-style:normal;font-size:.7rem">(größere Unterschiede)</em></span><span class="slider-val" id="v-m">2</span></div>
+      <input type="range" id="s-m" min="1" max="4" step="1" value="2">
+    </div>
+    <button class="reset-btn" onclick="reroll()">🎲 Neues Netzwerk</button>
+  </div>
+  <div class="scard">
+    <div class="scard-title">Legende</div>
+    <div class="legend-row"><span class="legend-dot" style="background:var(--a6);width:8px;height:8px"></span> wenige Freunde (kleiner Knoten)</div>
+    <div class="legend-row"><span class="legend-dot" style="background:var(--a4)"></span> viele Freunde — stark vernetzt (großer Knoten)</div>
+    <div class="legend-row"><span class="legend-dot" style="width:9px;height:9px;background:var(--a2);outline:2px solid var(--a2);outline-offset:2px"></span>&nbsp; ausgewählte Person (mit Ring)</div>
+    <div class="legend-row"><span class="legend-dot" style="background:var(--a5)"></span> ihre Freunde (+ orange Linien)</div>
+  </div>
+  <div class="scard">
+    <div class="scard-title">Hinweis</div>
+    <div style="font-size:.86rem;line-height:1.55;color:var(--ink2)">Klick eine Person an — sie und ihre Freunde leuchten auf. Vergleiche ihre eigene Freundeszahl mit dem Schnitt ihrer Freunde.</div>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 Eine simple Frage (Scott Feld, 1991)</div>
+    Vergleicht man die eigene Freundeszahl mit der seiner Freunde — wer hat im Schnitt mehr? Die Antwort fällt für fast jedes Netzwerk überraschend systematisch aus. Triff unten <strong>erst deine Vorhersage</strong>, dann klick dich durchs Netz und schau nach.
+  </div>
+
+  <div class="sec-h">① Deine Vorhersage</div>
+  <div style="font-size:.95rem;line-height:1.6;margin-bottom:.6rem">Stell dir eine <strong>zufällige Person</strong> vor. Haben <strong>ihre Freunde</strong> im Schnitt mehr, gleich viele oder weniger Freunde als sie selbst?</div>
+  <div class="pred-row">
+    <button class="pred-btn" id="pred-more" onclick="predict('more')">Ihre Freunde haben mehr</button>
+    <button class="pred-btn" id="pred-eq" onclick="predict('eq')">Etwa gleich</button>
+    <button class="pred-btn" id="pred-less" onclick="predict('less')">Sie selbst hat mehr</button>
+  </div>
+
+  <div class="sec-h">② Klick eine Person an</div>
+  <div class="plot-box">
+    <div class="plot-title">jeder Knoten = eine Person · Linien = Freundschaften · Knotengröße = Anzahl Freunde · klicke einen Knoten</div>
+    <canvas id="cv-net" height="420"></canvas>
+  </div>
+  <div class="sel-card">
+    <div id="sel-text">Klicke eine Person im Netz an (oder würfle) — und vergleiche ihre Freundeszahl mit der ihrer Freunde.</div>
+    <div class="cmp" id="sel-cmp" style="display:none">
+      <div class="cmp-row"><span class="cmp-lbl" id="cl-self">… selbst</span><span class="cmp-track"><span class="cmp-fill" id="bar-self" style="background:var(--a2)"></span></span></div>
+      <div class="cmp-row"><span class="cmp-lbl" id="cl-fr">… ihre Freunde</span><span class="cmp-track"><span class="cmp-fill" id="bar-fr" style="background:var(--a5)"></span></span></div>
+    </div>
+  </div>
+  <button class="reset-btn" id="b-rand" style="width:auto;padding:.45rem 1.1rem;border-color:var(--a4);color:var(--a4);margin-top:.6rem">🎲 Zufällige Person ziehen</button>
+
+  <div class="sec-h">③ Bilanz über alle Personen</div>
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-lbl">„Freunde haben mehr" gilt für</div><div class="metric-val" id="m-share" style="color:var(--a5)">—</div><div class="metric-sub" id="m-share-sub">—</div></div>
+    <div class="metric"><div class="metric-lbl">Ø Freunde pro Person</div><div class="metric-val" id="m-ek" style="color:var(--a2)">—</div><div class="metric-sub">E[k] = 2·Kanten/Personen</div></div>
+    <div class="metric"><div class="metric-lbl">Ø Freunde eines Freundes</div><div class="metric-val" id="m-ef" style="color:var(--a5)">—</div><div class="metric-sub">E[k²]/E[k]</div></div>
+    <div class="metric"><div class="metric-lbl">Differenz</div><div class="metric-val" id="m-gap">—</div><div class="metric-sub">= Var(k)/E[k]</div></div>
+  </div>
+  <div class="verdict v-flat" id="verdict">Triff erst eine Vorhersage (① oben), dann klick dich durchs Netz.</div>
+
+  <div class="sec-h">Konzepte</div>
+  <div class="lcard-grid">
+    <div class="lcard"><div class="lcard-h">Warum „mehr"?</div><div class="lcard-body">Fragt man <strong>zufällige Personen</strong>, hat jede dieselbe Chance, gezogen zu werden. Geht man stattdessen über <strong>Freundschaften</strong> („die Freunde der Leute"), wird jede Person so oft gezählt, wie sie Freunde hat. Gut vernetzte Personen stehen auf <strong>vielen</strong> Listen und tauchen darum immer wieder auf — sie ziehen den Schnitt der „Freunde" nach oben. Deshalb haben fast alle das Gefühl, ihre Freunde seien beliebter als sie selbst.</div></div>
+    <div class="lcard"><div class="lcard-h">Die Formel</div><div class="lcard-body">E[Freund] = E[k²]/E[k] = E[k] + Var(k)/E[k] ≥ E[k]. Gleichheit nur, wenn <strong>alle</strong> gleich viele Freunde haben. Mehr Ungleichheit ⇒ größere Lücke.</div></div>
+    <div class="lcard"><div class="lcard-h">Size-biased Sampling</div><div class="lcard-body">Über Freundschaften gewichtet man jede Person mit ihrer Freundeszahl. Dasselbe Prinzip wie der <strong>Inspection Paradox</strong> und die Klassengröße-Verzerrung.</div></div>
+    <div class="lcard"><div class="lcard-h">Wozu nützlich?</div><div class="lcard-body">„Beobachte zufällige Freunde von Zufallspersonen" trifft im Mittel zentralere Knoten — eine günstige Früherkennungs-/Impfstrategie ohne globale Netzwerkkenntnis.
+      <a class="xlink" href="Regression_zur_Mitte.html">→ verwandte Effekte</a></div></div>
+  </div>
+
+  <div class="lcard funfact"><div class="lcard-h">🦾 Fun Fact: fast alle haben „überdurchschnittlich viele Arme"</div><div class="lcard-body">Praktisch jeder Mensch hat <strong>2 Arme</strong> — ein paar wenige haben durch Unfall oder Geburt nur einen oder keinen. Der <strong>Durchschnitt</strong> liegt damit knapp <strong>unter 2</strong> (z. B. 1,999). Ergebnis: Über 99 % der Menschen haben <strong>mehr</strong> Arme als der Durchschnitt. Beim Freundschaftsparadox ist es genau andersherum: Dort haben die meisten <strong>weniger</strong> Freunde als „der Schnitt ihrer Freunde".<br><br><em style="color:var(--ink3)">Ähnliches Aha-Gefühl, aber anderer Mechanismus:</em> Beim Arm-Beispiel liegt es allein an der <strong>Schiefe</strong> der Verteilung (Median ≠ Mittelwert). Das Freundschaftsparadox kommt zusätzlich durch das <strong>size-biased Sampling über Kanten</strong> zustande — gut Vernetzte werden mehrfach gezählt.</div></div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<script>
+'use strict';
+const FIRST=['Anna','Ben','Sophie','Luca','Mia','Jonas','Emma','Paul','Lena','Tim','Lisa','Max','Hannah','Felix','Marie','Leon','Clara','Noah','Sara','Finn','Lara','Elias','Nina','Jan','Eva','Tom','Julia','David','Laura','Nico','Pia','Moritz','Lea','Jakob','Greta','Ole','Frida','Ida','Theo','Mats','Romy','Levi','Carla','Bruno','Ella','Henry','Mara','Oskar','Nele','Aaron','Zoe','Linus','Maja','Erik','Johanna','Karl','Amelie','Vincent','Stella','Milan','Nora','Samuel','Lotta','Jasper','Emilia','Til','Frieda','Mika','Hedi','Rasmus','Alma','Bela','Nika','Joris','Selma','Arne','Lina','Marlene','Cem','Yara'];
+const ST={n:42, m:2};
+let seed=8, NODES=[], EDGES=[], DEG=[], ADJ=[], FAVG=[], sel=null, guess=null, maxDeg=1, shareMore=0;
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let rng=mulberry32(seed);
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function mean(a){return a.length?a.reduce((s,x)=>s+x,0)/a.length:0;}
+
+// ── Netzwerk (Preferential Attachment ⇒ Hubs) + FR-Layout ──
+function build(){
+  rng=mulberry32(seed);
+  const n=ST.n,m=ST.m;
+  EDGES=[];DEG=Array(n).fill(0);ADJ=Array.from({length:n},()=>[]);
+  const targets=[],m0=m+1;
+  const add=(a,b)=>{EDGES.push([a,b]);DEG[a]++;DEG[b]++;ADJ[a].push(b);ADJ[b].push(a);targets.push(a,b);};
+  for(let i=0;i<m0;i++)for(let j=i+1;j<m0;j++)add(i,j);
+  for(let v=m0;v<n;v++){const chosen=new Set();let g=0;while(chosen.size<m&&g++<500){const t=targets[(rng()*targets.length)|0];if(t!==v)chosen.add(t);}chosen.forEach(t=>add(v,t));}
+  maxDeg=Math.max(...DEG);
+  FAVG=DEG.map((d,i)=>mean(ADJ[i].map(j=>DEG[j])));
+  shareMore=0;for(let i=0;i<n;i++)if(FAVG[i]>DEG[i]+1e-9)shareMore++;
+  // Fruchterman-Reingold mit Cooling
+  NODES=[];for(let i=0;i<n;i++)NODES.push({x:0.2+0.6*rng(),y:0.2+0.6*rng(),name:FIRST[i%FIRST.length]});
+  const kI=0.9*Math.sqrt(1/n),iters=440;
+  for(let it=0;it<iters;it++){
+    const temp=0.10*(1-it/iters)+0.004;
+    const FX=new Float64Array(n),FY=new Float64Array(n);
+    for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){let dx=NODES[i].x-NODES[j].x,dy=NODES[i].y-NODES[j].y,d=Math.hypot(dx,dy)||1e-3;const f=kI*kI/d,ux=dx/d,uy=dy/d;FX[i]+=ux*f;FY[i]+=uy*f;FX[j]-=ux*f;FY[j]-=uy*f;}
+    EDGES.forEach(([a,b])=>{let dx=NODES[a].x-NODES[b].x,dy=NODES[a].y-NODES[b].y,d=Math.hypot(dx,dy)||1e-3;const f=d*d/kI,ux=dx/d,uy=dy/d;FX[a]-=ux*f;FY[a]-=uy*f;FX[b]+=ux*f;FY[b]+=uy*f;});
+    for(let i=0;i<n;i++){const mm=Math.hypot(FX[i],FY[i]);if(mm>0){const s=Math.min(temp,mm)/mm;NODES[i].x+=FX[i]*s;NODES[i].y+=FY[i]*s;}NODES[i].x=Math.max(0.02,Math.min(0.98,NODES[i].x));NODES[i].y=Math.max(0.02,Math.min(0.98,NODES[i].y));}
+  }
+  let mnX=1,mxX=0,mnY=1,mxY=0;NODES.forEach(nd=>{mnX=Math.min(mnX,nd.x);mxX=Math.max(mxX,nd.x);mnY=Math.min(mnY,nd.y);mxY=Math.max(mxY,nd.y);});
+  const sc=Math.min(0.92/Math.max(.01,mxX-mnX),0.92/Math.max(.01,mxY-mnY));
+  NODES.forEach(nd=>{nd.x=0.5+(nd.x-(mnX+mxX)/2)*sc;nd.y=0.5+(nd.y-(mnY+mxY)/2)*sc;});
+  sel=null;
+}
+function ek(){return 2*EDGES.length/ST.n;}
+function ef(){const s1=DEG.reduce((s,d)=>s+d,0),s2=DEG.reduce((s,d)=>s+d*d,0);return s2/s1;}
+
+function predict(g){guess=g;['more','eq','less'].forEach(x=>document.getElementById('pred-'+x).classList.toggle('picked',x===g));render();}
+function randomPerson(){sel=(rng()*ST.n)|0;render();}
+
+function render(){
+  const pct=Math.round(shareMore/ST.n*100);
+  document.getElementById('m-share').textContent=pct+' %';
+  document.getElementById('m-share-sub').textContent=shareMore+' von '+ST.n+' Personen';
+  document.getElementById('m-ek').textContent=ek().toFixed(2);
+  document.getElementById('m-ef').textContent=ef().toFixed(2);
+  document.getElementById('m-gap').textContent='+'+(ef()-ek()).toFixed(2);
+  const txt=document.getElementById('sel-text'),cmp=document.getElementById('sel-cmp');
+  if(sel===null){txt.innerHTML='Klicke eine Person im Netz an (oder würfle) — und vergleiche ihre Freundeszahl mit der ihrer Freunde.';cmp.style.display='none';}
+  else{
+    const k=DEG[sel],kf=FAVG[sel],nm=NODES[sel].name;
+    const tag=kf>k+0.05?`<span class="tag-up">▲ ${nm}s Freunde haben mehr</span>`:(Math.abs(kf-k)<=0.05?`<span class="tag-dn">≈ etwa gleich</span>`:`<span class="tag-dn">▼ ${nm} hat mehr</span>`);
+    txt.innerHTML=`<strong>${nm}</strong> hat <b style="color:var(--a2)">${k}</b> Freund${k===1?'':'e'}. Diese ${k} haben im Schnitt <b style="color:var(--a5)">${kf.toFixed(1)}</b> Freunde. ${tag}`;
+    cmp.style.display='flex';
+    const mx=Math.max(k,kf,1);
+    document.getElementById('bar-self').style.width=(k/mx*100)+'%';
+    document.getElementById('bar-fr').style.width=(kf/mx*100)+'%';
+    document.getElementById('cl-self').innerHTML=`${nm} selbst: <b>${k}</b>`;
+    document.getElementById('cl-fr').innerHTML=`${nm}s Freunde ⌀: <b style="color:var(--a5)">${kf.toFixed(1)}</b>`;
+  }
+  const vd=document.getElementById('verdict');
+  if(guess===null){vd.className='verdict v-flat';vd.textContent='Triff erst eine Vorhersage (① oben), dann klick dich durchs Netz.';}
+  else{const right=guess==='more';vd.className='verdict v-up';
+    vd.innerHTML=(right?'🎉 Richtig! ':'Überraschung — ')+`bei <strong>${pct} %</strong> der Personen haben die Freunde im Schnitt mehr Freunde. Über das ganze Netz: ein Freund hat im Mittel <strong>${ef().toFixed(2)}</strong> Freunde, eine Person nur <strong>${ek().toFixed(2)}</strong>. Grund: einige sehr gut vernetzte Personen stehen auf vielen Freundeslisten.`;}
+  drawNet();
+}
+
+// ── Netzwerk zeichnen ──
+function drawNet(){
+  const c=document.getElementById('cv-net');const W=c.clientWidth||640;c.width=W;const H=c.height,ctx=c.getContext('2d');
+  const ink2=cv('--ink2'),bg=cv('--bg'),a2=cv('--a2'),a4=cv('--a4'),a5=cv('--a5'),a6=cv('--a6');
+  ctx.clearRect(0,0,W,H);
+  const pad=24,px=x=>pad+x*(W-2*pad),py=y=>pad+y*(H-2*pad);
+  const line=(a,b)=>{ctx.beginPath();ctx.moveTo(px(NODES[a].x),py(NODES[a].y));ctx.lineTo(px(NODES[b].x),py(NODES[b].y));ctx.stroke();};
+  if(sel===null){ctx.strokeStyle=`color-mix(in srgb,${ink2} 45%,transparent)`;ctx.lineWidth=1.3;EDGES.forEach(([a,b])=>line(a,b));}
+  else{ctx.strokeStyle=`color-mix(in srgb,${ink2} 16%,transparent)`;ctx.lineWidth=1;EDGES.forEach(([a,b])=>line(a,b));ctx.strokeStyle=a5;ctx.lineWidth=2.8;ADJ[sel].forEach(j=>line(sel,j));}
+  const nbr=sel===null?null:new Set(ADJ[sel]);
+  NODES.forEach((nd,i)=>{
+    const r=4.5+Math.sqrt(DEG[i]/maxDeg)*15;
+    let fill;
+    if(sel===null){const t=DEG[i]/maxDeg;fill=`color-mix(in srgb,${a4} ${Math.round(25+t*60)}%,${a6})`;}
+    else if(i===sel)fill=a2; else if(nbr.has(i))fill=a5; else fill=`color-mix(in srgb,${ink2} 26%,transparent)`;
+    ctx.beginPath();ctx.arc(px(nd.x),py(nd.y),r,0,2*Math.PI);ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=bg;ctx.lineWidth=1.5;ctx.stroke();
+    if(i===sel){ctx.strokeStyle=a2;ctx.lineWidth=3.5;ctx.beginPath();ctx.arc(px(nd.x),py(nd.y),r+4,0,2*Math.PI);ctx.stroke();}
+  });
+}
+
+// Klick → nächster Knoten
+const cnet=document.getElementById('cv-net');
+cnet.addEventListener('click',e=>{
+  const r=cnet.getBoundingClientRect();const mx=(e.clientX-r.left)*(cnet.width/r.width),my=(e.clientY-r.top)*(cnet.height/r.height);
+  const W=cnet.width,H=cnet.height,pad=24,px=x=>pad+x*(W-2*pad),py=y=>pad+y*(H-2*pad);
+  let best=-1,bd=1e9;NODES.forEach((nd,i)=>{const dx=px(nd.x)-mx,dy=py(nd.y)-my,d=dx*dx+dy*dy;if(d<bd){bd=d;best=i;}});
+  const rr=4.5+Math.sqrt(DEG[best]/maxDeg)*15;
+  if(best>=0&&bd<(rr+10)*(rr+10)){sel=best;render();}
+});
+
+// ── Controls ──
+document.getElementById('b-rand').addEventListener('click',randomPerson);
+document.getElementById('s-n').addEventListener('input',function(){ST.n=+this.value;document.getElementById('v-n').textContent=ST.n;build();render();});
+document.getElementById('s-m').addEventListener('input',function(){ST.m=+this.value;document.getElementById('v-m').textContent=ST.m;build();render();});
+function reroll(){seed=(seed*1103515245+12345)>>>0;build();render();}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+function toggleTheme(){const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(drawNet);}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('help-overlay').classList.remove('open');});
+window.addEventListener('resize',()=>requestAnimationFrame(drawNet));
+
+// ── Init ──
+build(); render();
+</script>
+</body>
+</html>
