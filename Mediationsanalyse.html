@@ -90,6 +90,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .lcard-body{font-size:.82rem;line-height:1.7;color:var(--ink2)}
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.lcard-body a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.lcard-body a:hover{border-bottom-color:var(--accent)}
 .story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a4);
   padding:.7rem 1rem;margin-bottom:1.1rem;font-family:'DM Mono',monospace;font-size:.8rem}
 .story-lbl{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a4);margin-bottom:.35rem}
@@ -343,8 +345,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
         <div class="lcard-body">Der <strong>direkte Effekt c′</strong> ist der X→Y-Einfluss bei konstantem M. Der <strong>indirekte Effekt a·b</strong> läuft über M. Zusammen ergibt sich der <strong>totale Effekt c = c′ + a·b</strong> — identisch mit dem einfachen bivariaten Koeffizienten von X auf Y ohne M im Modell.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Mediation, Konfunding &amp; Suppression</div>
-        <div class="lcard-body">MacKinnon, Krull &amp; Lockwood (2000, <em>Prevention Science</em>) zeigen: <strong>Mediation, Konfunding und Suppression sind mathematisch äquivalent</strong> — dieselben Gleichungen, verschiedene kausale Interpretationen. Bei <strong>Suppression</strong> haben a und b entgegengesetzte Vorzeichen: a·b ist negativ, deshalb ist |c′| &gt; |c| — der direkte Effekt überschätzt den totalen Effekt. In Szenario D ist das sichtbar: X und Y korrelieren schwächer als X direkt auf Y wirkt, weil M einen Anteil des X-Effekts supprimiert. Ob M Mediator, Konfunder oder Suppressor ist, entscheidet die <em>kausale Theorie</em>, nicht die Daten.</div>
+        <div class="lcard-h">Mediation, Konfundierung &amp; Suppression</div>
+        <div class="lcard-body">MacKinnon, Krull &amp; Lockwood (2000, <em>Prevention Science</em>) zeigen: <strong>Mediation, Konfundierung und Suppression sind mathematisch äquivalent</strong> — dieselben Gleichungen, verschiedene kausale Interpretationen. Bei <strong>Suppression</strong> haben a und b entgegengesetzte Vorzeichen: a·b ist negativ, deshalb ist |c′| &gt; |c| — der direkte Effekt überschätzt den totalen Effekt. In Szenario D ist das sichtbar: X und Y korrelieren schwächer als X direkt auf Y wirkt, weil M einen Anteil des X-Effekts supprimiert. Ob M Mediator, Confounder oder Suppressor ist, entscheidet die <em>kausale Theorie</em>, nicht die Daten.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Sobel-Test &amp; Limitation</div>
@@ -356,7 +358,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Kausale Mediationsanalyse</div>
-        <div class="lcard-body">Regressionsmediation beschreibt Muster, beweist aber keine Kausalität. Ein Befund a·b ≠ 0 kann entstehen, weil M wirklich vermittelt — oder weil eine dritte Variable M und Y gemeinsam beeinflusst (Konfunding). Für kausale Aussagen braucht es zwei Bedingungen: <strong>(1)</strong> Alle Konfunder zwischen X und Y sind kontrolliert (idealerweise: X ist randomisiert). <strong>(2)</strong> Alle Konfunder zwischen M und Y sind gemessen — das ist die härtere Bedingung und in der Praxis oft nicht erfüllbar. <strong>DAGs</strong> machen sichtbar, welche Variablen überhaupt als Konfunder in Frage kommen. Das <strong>Potential-Outcomes-Framework</strong> (PO) definiert präzise, was "kausaler indirekter Effekt" bedeutet: Wie ändert sich Y, wenn der Pfad über M unterbrochen wird? <strong>IPW</strong> schätzt diesen Effekt, sofern die Annahmen gelten (Imai et al., 2010; VanderWeele, 2015). Ob die Annahmen zutreffen, ist eine theoretische Entscheidung — keine empirische.</div>
+        <div class="lcard-body">Regressionsmediation beschreibt Muster, beweist aber keine Kausalität. Ein Befund a·b ≠ 0 kann entstehen, weil M wirklich vermittelt — oder weil eine dritte Variable M und Y gemeinsam beeinflusst (Konfundierung). Für kausale Aussagen braucht es zwei Bedingungen: <strong>(1)</strong> Alle Confounder zwischen X und Y sind kontrolliert (idealerweise: X ist randomisiert). <strong>(2)</strong> Alle Confounder zwischen M und Y sind gemessen — das ist die härtere Bedingung und in der Praxis oft nicht erfüllbar. <strong>DAGs</strong> machen sichtbar, welche Variablen überhaupt als Confounder in Frage kommen. Das <strong>Potential-Outcomes-Framework</strong> (PO) definiert präzise, was "kausaler indirekter Effekt" bedeutet: Wie ändert sich Y, wenn der Pfad über M unterbrochen wird? <strong>IPW</strong> schätzt diesen Effekt, sofern die Annahmen gelten (Imai et al., 2010; VanderWeele, 2015). Ob die Annahmen zutreffen, ist eine theoretische Entscheidung — keine empirische.<br><br><strong>Vertiefende Tools:</strong> <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Golem_Builder.html" target="_blank" rel="noopener">DAGs (Golem Builder)</a> und <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/GComp_Builder.html" target="_blank" rel="noopener">G-Computation (GComp Builder)</a> im Bayes Thinking Lab sowie <a href="Causal_Teaching.html" target="_blank" rel="noopener">Kausale Inferenz — Grundlagen</a> und <a href="PSM.html" target="_blank" rel="noopener">Propensity Score Matching / Weighting</a> hier im Methodslab.</div>
       </div>
     </div>
   </div>
@@ -392,7 +394,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <p class="help-p">Das <strong>Bootstrap-KI</strong> (Preacher & Hayes, 2008) macht keine Verteilungsannahme: 5000 Resamples approximieren die tatsächliche Form der a·b-Verteilung. Es hat in Simulationen bessere Power <em>und</em> korrektere α-Kontrolle — besonders bei n &lt; 100 oder asymmetrischen Effekten.</p>
 
     <div class="help-sh">Kausalität</div>
-    <p class="help-p">Ein signifikantes a·b beweist keine Kausalität. Für kausale Aussagen müssen <strong>(1)</strong> alle Konfunder zwischen X und Y und <strong>(2)</strong> alle Konfunder zwischen M und Y kontrolliert sein. Bedingung 2 ist in Beobachtungsstudien selten erfüllbar. DAGs helfen, die nötigen Kontrollvariablen zu identifizieren.</p>
+    <p class="help-p">Ein signifikantes a·b beweist keine Kausalität. Für kausale Aussagen müssen <strong>(1)</strong> alle Confounder zwischen X und Y und <strong>(2)</strong> alle Confounder zwischen M und Y kontrolliert sein. Bedingung 2 ist in Beobachtungsstudien selten erfüllbar. DAGs helfen, die nötigen Kontrollvariablen zu identifizieren.</p>
   </div>
 </div>
 
