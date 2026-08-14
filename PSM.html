@@ -201,6 +201,16 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
         <div class="slider-lbl"><span class="slider-name">Caliper</span><span class="slider-val" id="vcaliper">0.10</span></div>
         <input type="range" id="scaliper" min="0.01" max="0.35" step="0.01" value="0.10" oninput="onCaliper(+this.value)">
       </div>
+      <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.6">Max. erlaubte PS-Distanz |eᵢ−eⱼ| für ein Paar. Kleiner = strenger (weniger, aber ähnlichere Paare).</div>
+    </div>
+    <div id="estimand-wrap" style="display:none;margin-top:.55rem">
+      <div class="slider-lbl" style="margin-bottom:.3rem"><span class="slider-name">IPW-Estimand</span></div>
+      <div class="method-grid">
+        <button class="mbtn act" id="eb-att" onclick="setEstimand('att')">ATT</button>
+        <button class="mbtn" id="eb-ate" onclick="setEstimand('ate')">ATE</button>
+        <button class="mbtn" id="eb-atu" onclick="setEstimand('atu')">ATU</button>
+      </div>
+      <div id="estimand-note" style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.6;margin-top:.35rem"></div>
     </div>
   </div>
 
@@ -212,7 +222,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div style="border-top:1px solid var(--grid);margin:.35rem 0 .4rem"></div>
     <div class="rv-row"><span class="rv-lbl">Naiver Schätzer</span><span class="rv-num" id="rv-naive">—</span></div>
     <div class="rv-row"><span class="rv-lbl">Matching ATT</span><span class="rv-num" id="rv-match">—</span></div>
-    <div class="rv-row"><span class="rv-lbl">IPW ATT</span><span class="rv-num" id="rv-ipw">—</span></div>
+    <div class="rv-row"><span class="rv-lbl" id="rv-ipw-lbl">IPW ATT</span><span class="rv-num" id="rv-ipw">—</span></div>
     <div class="rv-row"><span class="rv-lbl">Wahrer Effekt τ</span><span class="rv-num" id="rv-true">—</span></div>
   </div>
 
@@ -225,12 +235,14 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="phase-num">①</div>
     <div class="phase-text">
       <div class="phase-title">Das Problem — Selektionsbias &amp; Propensity Score</div>
-      <div class="phase-sub">Behandelte und Kontrollen unterscheiden sich in Vormerkmalen (X₁–X₃). Der Propensity Score e(X) = P(T=1|X) verdichtet alle Kovariaten zu einem Skalar — und zeigt, wo die Gruppen überlappen (<em>Common Support</em>). Ohne Überlappung ist kein Matching möglich.</div>
+      <div class="phase-sub">Behandelte und Kontrollen unterscheiden sich in Vormerkmalen (X₁–X₃). Der Propensity Score e(X) = P(T=1|X) verdichtet alle Kovariaten zu einem Skalar — und zeigt, wo die Gruppen überlappen (<em>Common Support</em>). Bei IPW zeigt die helle Fläche die <em>gewichtete Pseudo-Population</em>: wie sich die Stichprobe durch die Gewichte verschiebt.</div>
     </div>
   </div>
   <div class="erklaer" id="erklaer">Wird berechnet…</div>
   <div class="warn-box" id="warn-box"></div>
-  <canvas id="cv-ps" height="290"></canvas>
+  <canvas id="cv-ps" height="320"></canvas>
+  <div id="match-caption" style="display:none;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);text-align:center;margin-top:.3rem;padding:.3rem;background:var(--panel);border:1px solid var(--grid)"></div>
+  <div id="ipw-formula" style="display:none;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);text-align:center;margin-top:.3rem;padding:.3rem;background:var(--panel);border:1px solid var(--grid)"></div>
 
   <div class="phase-h">
     <div class="phase-num">②</div>
@@ -245,7 +257,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <tr>
         <th style="text-align:left">Kovariate</th>
         <th>SMD vorher</th>
-        <th id="th-match">SMD Matching</th>
+        <th id="th-match">SMD Matching (ATT)</th>
         <th id="th-ipw">SMD IPW</th>
       </tr>
     </thead>
@@ -281,8 +293,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
         <div class="lcard-body">Nur im Überlappungsbereich der PS-Verteilungen ist Schätzung valide. Behandelte mit PS ≈ 1 haben keine ähnlichen Kontrollen — sie werden beim Matching ausgeschlossen. Bei IPW bekommen diese Einheiten extreme Gewichte (w → ∞) — Clipping oder stabilisierte Gewichte nötig.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">IPW für ATT</div>
-        <div class="lcard-body">Behandelte: w = 1 · Kontrollen: w = e(X)/(1−e(X)). Kontrollen mit hohem PS (die eigentlich hätten teilnehmen können) erhalten mehr Gewicht. Resultat: pseudo-randomisierte Stichprobe. Effizienter als Matching, sensitiver bei extremen PS-Werten.</div>
+        <div class="lcard-h">IPW-Gewichte: ATE, ATT, ATU</div>
+        <div class="lcard-body">Je nachdem, <em>wessen</em> Perspektive der Zielparameter einnimmt, werden unterschiedliche Gruppen reweightet: <strong>ATT</strong> (w<sub>T</sub>=1, w<sub>K</sub>=e/(1−e)) hält die Behandelten fest und formt die Kontrollen zu ihrem Gegenstück um. <strong>ATU</strong> macht es umgekehrt (w<sub>T</sub>=(1−e)/e, w<sub>K</sub>=1). <strong>ATE</strong> (w<sub>T</sub>=1/e, w<sub>K</sub>=1/(1−e)) reweightet beide Gruppen zur Gesamtpopulation. Unterschiedliche Gewichte → unterschiedliche Pseudo-Populationen (siehe Plot oben). Wann sich ATE, ATT und ATU auch <em>rechnerisch</em> unterscheiden (heterogene Effekte, HTEB) und wie man sie interpretiert, zeigt <a href="Causal_Teaching.html" target="_blank" rel="noopener">Kausale Inferenz — Grundlagen</a> im Detail.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Love Plot &amp; SMD</div>
@@ -315,8 +327,27 @@ function randn(){
 function sig(x){ return 1/(1+Math.exp(-Math.min(Math.max(x,-25),25))); }
 
 // ── State ─────────────────────────────────────────────────────────────────────
-const ST = {n:300, gamma:1.5, tau:0.4, caliper:0.10, method:'match'};
+const ST = {n:300, gamma:1.5, tau:0.4, caliper:0.10, method:'match', estimand:'att'};
 let DATA=[], PAIRS=[], SMDS={}, ESTS={};
+
+const ESTIMAND_INFO = {
+  att:{label:'ATT', full:'Average Treatment Effect on the Treated',
+       formula:'Behandelte: w = 1  ·  Kontrolle: w = e(X) / (1 − e(X))',
+       note:'Hält die Behandelten fest, formt die Kontrollen zu ihrem Gegenstück um.'},
+  ate:{label:'ATE', full:'Average Treatment Effect',
+       formula:'Behandelte: w = 1 / e(X)  ·  Kontrolle: w = 1 / (1 − e(X))',
+       note:'Reweightet beide Gruppen zur Gesamtpopulation — sensitiv bei extremen PS-Werten.'},
+  atu:{label:'ATU', full:'Average Treatment Effect on the Untreated',
+       formula:'Behandelte: w = (1 − e(X)) / e(X)  ·  Kontrolle: w = 1',
+       note:'Hält die Kontrollen fest, formt die Behandelten zu ihrem Gegenstück um.'}
+};
+function ipwWeight(d, estimand){
+  const p=Math.min(Math.max(d.ps,0.02),0.98);
+  if(estimand==='ate') return d.t===1 ? 1/p : 1/(1-p);
+  if(estimand==='atu') return d.t===1 ? (1-p)/p : 1;
+  return d.t===1 ? 1 : p/(1-p); // att
+}
+function wmean(vals,w){ const sw=w.reduce((s,v)=>s+v,0)||1; return vals.reduce((s,v,i)=>s+v*w[i],0)/sw; }
 
 // ── Controls ──────────────────────────────────────────────────────────────────
 function onSlider(key, val, vid, dec){
@@ -333,7 +364,13 @@ function setMethod(m){
   ST.method = m;
   ['match','ipw','both'].forEach(x=>document.getElementById('mb-'+x).classList.toggle('act',x===m));
   document.getElementById('caliper-wrap').style.display = m==='ipw'?'none':'';
-  draw(); updateUI();
+  document.getElementById('estimand-wrap').style.display = m==='match'?'none':'';
+  computeSMDs(); computeEstimates(); draw(); updateUI();
+}
+function setEstimand(e){
+  ST.estimand = e;
+  ['att','ate','atu'].forEach(x=>document.getElementById('eb-'+x).classList.toggle('act',x===e));
+  computeSMDs(); computeEstimates(); draw(); updateUI();
 }
 function resimulate(){
   _seed = (Date.now()^(Math.random()*0xffffffff))>>>0;
@@ -413,13 +450,11 @@ function computeSMDs(){
   keys.forEach((k,i)=>{
     SMDS.before[k]=smdCalc(tr.map(d=>d[k]),ct.map(d=>d[k]));
     SMDS.match[k]=PAIRS.length>0?smdCalc(PAIRS.map(p=>p.tr[k]),PAIRS.map(p=>p.ct[k])):null;
-    // IPW ATT: treated w=1, controls w=ps/(1-ps)
-    const ctw=ct.map(d=>d.ps/Math.max(1-d.ps,0.001));
-    const sumW=ctw.reduce((s,v)=>s+v,0)||1;
-    const mu_tr=mean(tr.map(d=>d[k]));
-    const mu_ctw=ct.reduce((s,d,j)=>s+d[k]*ctw[j],0)/sumW;
+    const trw=tr.map(d=>ipwWeight(d,ST.estimand)), ctw=ct.map(d=>ipwWeight(d,ST.estimand));
+    const mu_trw=wmean(tr.map(d=>d[k]),trw);
+    const mu_ctw=wmean(ct.map(d=>d[k]),ctw);
     const poolSD=Math.sqrt((vari(tr.map(d=>d[k]))+vari(ct.map(d=>d[k])))/2);
-    SMDS.ipw[k]=poolSD<1e-10?0:(mu_tr-mu_ctw)/poolSD;
+    SMDS.ipw[k]=poolSD<1e-10?0:(mu_trw-mu_ctw)/poolSD;
   });
 }
 
@@ -427,11 +462,10 @@ function computeEstimates(){
   const tr=DATA.filter(d=>d.t===1), ct=DATA.filter(d=>d.t===0);
   const naive=mean(tr.map(d=>d.y))-mean(ct.map(d=>d.y));
   const matched=PAIRS.length>0?mean(PAIRS.map(p=>p.tr.y-p.ct.y)):null;
-  const ctw=ct.map(d=>d.ps/Math.max(1-d.ps,0.001));
-  const sumW=ctw.reduce((s,v)=>s+v,0)||1;
-  const mu_tr=mean(tr.map(d=>d.y));
-  const mu_ctw=ct.reduce((s,d,j)=>s+d.y*ctw[j],0)/sumW;
-  const ipw=mu_tr-mu_ctw;
+  const trw=tr.map(d=>ipwWeight(d,ST.estimand)), ctw=ct.map(d=>ipwWeight(d,ST.estimand));
+  const mu_trw=wmean(tr.map(d=>d.y),trw);
+  const mu_ctw=wmean(ct.map(d=>d.y),ctw);
+  const ipw=mu_trw-mu_ctw;
   ESTS={naive,matched,ipw,nT:tr.length,nC:ct.length,nP:PAIRS.length};
 }
 
@@ -450,6 +484,24 @@ function updateUI(){
   document.getElementById('rv-match').textContent=e.matched!==null?f2(e.matched):'—';
   document.getElementById('rv-ipw').textContent=e.ipw!==undefined?f2(e.ipw):'—';
   document.getElementById('rv-true').textContent=f2(ST.tau);
+
+  const eInfo=ESTIMAND_INFO[ST.estimand];
+  document.getElementById('rv-ipw-lbl').textContent='IPW '+eInfo.label;
+  document.getElementById('th-ipw').textContent='SMD IPW ('+eInfo.label+')';
+  const noteEl=document.getElementById('estimand-note');
+  if(noteEl) noteEl.textContent=eInfo.note;
+  const fEl=document.getElementById('ipw-formula');
+  if(fEl){
+    const showF=ST.method!=='match';
+    fEl.style.display=showF?'block':'none';
+    if(showF) fEl.innerHTML=`<strong style="color:var(--accent)">IPW-${eInfo.label}</strong> (${eInfo.full}) — ${eInfo.formula}`;
+  }
+  const mEl=document.getElementById('match-caption');
+  if(mEl){
+    const showM2=ST.method!=='ipw';
+    mEl.style.display=showM2?'block':'none';
+    if(showM2) mEl.innerHTML=`<strong style="color:var(--accent)">Balken je PS-Bereich:</strong> volle, helle Fläche = alle Personen dieses Bereichs · solider, satter Sockel = davon <strong>gematcht</strong> (Partner mit |Δe| ≤ ${ST.caliper.toFixed(2)} gefunden). Je größer der helle Rest oben, desto mehr Personen ohne Match.`;
+  }
 
   const bias=e.naive-ST.tau;
   const absBias=Math.abs(bias).toFixed(2);
@@ -477,7 +529,7 @@ function updateUI(){
     }
   }
   if(ST.method!=='match'){
-    adjMsg+=` IPW: <strong>${f2(e.ipw)}</strong>.`;
+    adjMsg+=` IPW (${eInfo.label}): <strong>${f2(e.ipw)}</strong>.`;
   }
   // Warn box
   const warnEl=document.getElementById('warn-box');
@@ -505,27 +557,39 @@ function updateUI(){
 }
 
 // ── Canvas setup ──────────────────────────────────────────────────────────────
+const CV_BASE_H={};
 function setupCv(id){
   const el=document.getElementById(id);
   const dpr=window.devicePixelRatio||1;
-  const h=+el.getAttribute('height');
+  if(!(id in CV_BASE_H)) CV_BASE_H[id]=+el.getAttribute('height');
+  const h=CV_BASE_H[id];
   const w=el.offsetWidth;
-  el.width=w*dpr; el.height=h*dpr;
+  el.width=Math.round(w*dpr); el.height=Math.round(h*dpr);
   el.style.height=h+'px';
   const ctx=el.getContext('2d');
-  ctx.scale(dpr,dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.W=w; ctx.H=h;
   return ctx;
 }
 
 // ── Draw PS Overlap ───────────────────────────────────────────────────────────
+function weightedBinHist(arr,estimand,BINS){
+  const h=new Array(BINS).fill(0);
+  arr.forEach(d=>{
+    const b=Math.min(Math.floor(d.ps*BINS),BINS-1);
+    h[b]+=ipwWeight(d,estimand);
+  });
+  const total=h.reduce((s,v)=>s+v,0)||1;
+  const scale=(arr.length||1)/total;
+  return h.map(v=>v*scale);
+}
 function drawPS(){
   const ctx=setupCv('cv-ps');
   const W=ctx.W, H=ctx.H;
-  const pad={l:38,r:20,t:20,b:36};
+  const pad={l:42,r:24,t:48,b:44};
   const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
   const ink=cv('--ink'),ink2=cv('--ink2'),ink3=cv('--ink3');
-  const grid=cv('--grid'),bg=cv('--bg'),a1=cv('--a1'),a2=cv('--a2');
+  const grid=cv('--grid'),bg=cv('--bg'),a1=cv('--a1'),a2=cv('--a2'),a6=cv('--a6');
 
   ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
 
@@ -544,7 +608,15 @@ function drawPS(){
     ctH[b]++; if(matchedCt.has(d)) ctM[b]++;
   });
 
-  const maxC=Math.max(...trH,...ctH,1);
+  // Pseudo-Population je nach Estimand: ATT reweightet nur Kontrolle, ATU nur
+  // Behandelte, ATE beide Seiten. Bei w≡1 entfällt die Fläche (nichts zu zeigen).
+  const showIPW=ST.method!=='match';
+  const reweightTr=showIPW&&ST.estimand!=='att';
+  const reweightCt=showIPW&&ST.estimand!=='atu';
+  const trW=reweightTr?weightedBinHist(treated,ST.estimand,BINS):null;
+  const ctW=reweightCt?weightedBinHist(controls,ST.estimand,BINS):null;
+
+  const maxC=Math.max(...trH,...ctH,...(trW||[0]),...(ctW||[0]),1);
   const midY=pad.t+ph/2, halfH=ph/2-4;
   const tx=p=>pad.l+p*pw;
   const tyU=v=>midY-(v/maxC)*halfH;
@@ -556,49 +628,82 @@ function drawPS(){
   [0,.2,.4,.6,.8,1].forEach(v=>{
     const x=tx(v);
     ctx.beginPath(); ctx.moveTo(x,pad.t); ctx.lineTo(x,H-pad.b); ctx.stroke();
-    ctx.fillStyle=ink3; ctx.font=`${9.5}px DM Mono,monospace`; ctx.textAlign='center';
-    ctx.fillText(v.toFixed(1),x,H-pad.b+14);
+    ctx.fillStyle=ink3; ctx.font=`11px DM Mono,monospace`; ctx.textAlign='center';
+    ctx.fillText(v.toFixed(1),x,H-pad.b+18);
   });
   ctx.beginPath(); ctx.moveTo(pad.l,midY); ctx.lineTo(W-pad.r,midY);
   ctx.strokeStyle=ink3; ctx.lineWidth=1; ctx.stroke();
 
+  const showMatch=ST.method!=='ipw';
   for(let i=0;i<BINS;i++){
     const x0=tx(i/BINS)+0.5, bpx=bw-1.5;
-    // Treated all (faint)
+    // Treated: helle Fläche = alle, solider Sockel (von der Achse aus) = gematcht
     if(trH[i]>0){
-      ctx.fillStyle=a2+'50'; ctx.fillRect(x0,tyU(trH[i]),bpx,midY-tyU(trH[i]));
-      ctx.strokeStyle=a2+'99'; ctx.lineWidth=0.7;
+      ctx.fillStyle=a2+'40'; ctx.fillRect(x0,tyU(trH[i]),bpx,midY-tyU(trH[i]));
+      if(showMatch&&trM[i]>0){
+        ctx.fillStyle=a2; ctx.fillRect(x0,tyU(trM[i]),bpx,midY-tyU(trM[i]));
+      }
+      ctx.strokeStyle=a2+'aa'; ctx.lineWidth=0.8;
       ctx.strokeRect(x0,tyU(trH[i]),bpx,midY-tyU(trH[i]));
     }
-    // Matched treated (solid)
-    if(ST.method!=='ipw'&&trM[i]>0){
-      ctx.fillStyle=a2; ctx.fillRect(x0+bpx*.2,tyU(trM[i]),bpx*.6,midY-tyU(trM[i]));
-    }
-    // Control all (faint)
+    // Control: helle Fläche = alle, solider Sockel (von der Achse aus) = gematcht
     if(ctH[i]>0){
-      ctx.fillStyle=a1+'50'; ctx.fillRect(x0,midY,bpx,tyD(ctH[i])-midY);
-      ctx.strokeStyle=a1+'99'; ctx.lineWidth=0.7;
+      ctx.fillStyle=a1+'40'; ctx.fillRect(x0,midY,bpx,tyD(ctH[i])-midY);
+      if(showMatch&&ctM[i]>0){
+        ctx.fillStyle=a1; ctx.fillRect(x0,midY,bpx,tyD(ctM[i])-midY);
+      }
+      ctx.strokeStyle=a1+'aa'; ctx.lineWidth=0.8;
       ctx.strokeRect(x0,midY,bpx,tyD(ctH[i])-midY);
-    }
-    // Matched control (solid)
-    if(ST.method!=='ipw'&&ctM[i]>0){
-      ctx.fillStyle=a1; ctx.fillRect(x0+bpx*.2,midY,bpx*.6,tyD(ctM[i])-midY);
     }
   }
 
-  // Labels
-  ctx.font=`500 ${9.5}px DM Mono,monospace`;
-  ctx.fillStyle=a2; ctx.textAlign='left'; ctx.fillText('Behandelt (T=1) ↑',pad.l+4,pad.t+14);
-  ctx.fillStyle=a1; ctx.fillText('Kontrolle (T=0) ↓',pad.l+4,H-pad.b-6);
+  // IPW-Pseudo-Population als Flächen-Overlay: zeigt, wie sich die reweightete
+  // Seite an die Form der festgehaltenen Seite annähert (Heiss 2024)
+  function drawPseudoArea(wArr,tyFn,baseY){
+    ctx.beginPath();
+    for(let i=0;i<BINS;i++){
+      const xL=tx(i/BINS), xR=tx((i+1)/BINS), y=tyFn(wArr[i]);
+      if(i===0) ctx.moveTo(xL,y); else ctx.lineTo(xL,y);
+      ctx.lineTo(xR,y);
+    }
+    ctx.lineTo(tx(1),baseY); ctx.lineTo(tx(0),baseY); ctx.closePath();
+    ctx.fillStyle=a6+'30'; ctx.fill();
+    ctx.beginPath();
+    for(let i=0;i<BINS;i++){
+      const xL=tx(i/BINS), xR=tx((i+1)/BINS), y=tyFn(wArr[i]);
+      if(i===0) ctx.moveTo(xL,y); else ctx.lineTo(xL,y);
+      ctx.lineTo(xR,y);
+    }
+    ctx.strokeStyle=a6; ctx.lineWidth=2; ctx.stroke();
+  }
+  if(trW) drawPseudoArea(trW,tyU,midY);
+  if(ctW) drawPseudoArea(ctW,tyD,midY);
+
+  // Achsenbeschriftung
+  ctx.font=`600 12px DM Mono,monospace`;
+  ctx.fillStyle=a2; ctx.textAlign='left'; ctx.fillText('Behandelt (T=1) ↑',pad.l+2,pad.t-10);
+  ctx.fillStyle=a1; ctx.fillText('Kontrolle (T=0) ↓',pad.l+2,H-pad.b+34);
+  ctx.font=`11px DM Mono,monospace`;
   ctx.fillStyle=ink3; ctx.textAlign='center';
-  ctx.fillText('Geschätzter Propensity Score  e(X)',pad.l+pw/2,H);
+  ctx.fillText('Geschätzter Propensity Score  e(X)',pad.l+pw/2,H-2);
+
+  // Legende: farbige Swatches oben rechts, klar getrennt
+  const legItems=[];
+  if(ST.method!=='ipw') legItems.push({sw:'sq',col:cv('--ink2'),lbl:'solide Fläche = gematcht'});
+  if(trW||ctW) legItems.push({sw:'area',col:a6,lbl:'IPW-Pseudo-Population'});
+  let lx=pad.l, ly=14;
+  ctx.font=`11px DM Mono,monospace`; ctx.textAlign='left';
+  legItems.forEach(it=>{
+    if(it.sw==='sq'){ ctx.fillStyle=it.col; ctx.fillRect(lx,ly-8,10,10); }
+    else { ctx.fillStyle=it.col+'55'; ctx.fillRect(lx,ly-8,16,10); ctx.strokeStyle=it.col; ctx.lineWidth=1.5; ctx.strokeRect(lx,ly-8,16,10); lx+=6; }
+    ctx.fillStyle=ink2; ctx.fillText(it.lbl,lx+16,ly);
+    lx+=16+ctx.measureText(it.lbl).width+22;
+  });
   if(ST.method!=='ipw'){
-    ctx.fillStyle=ink2; ctx.textAlign='right';
-    ctx.fillText('■ = gematcht',W-pad.r,pad.t+14);
     const nUnmatched=(ESTS.nT||0)-(ESTS.nP||0);
     if(nUnmatched>0){
-      ctx.fillStyle=cv('--a1');
-      ctx.fillText(nUnmatched+' ohne Match',W-pad.r,pad.t+30);
+      ctx.textAlign='right'; ctx.fillStyle=a1; ctx.font=`500 11px DM Mono,monospace`;
+      ctx.fillText(nUnmatched+' Behandelte ohne Match',W-pad.r,14);
     }
   }
 }
@@ -641,23 +746,23 @@ function drawLove(){
   ctx.setLineDash([]);
 
   // X labels
-  ctx.fillStyle=ink3; ctx.font=`${9}px DM Mono,monospace`; ctx.textAlign='center';
-  [-0.5,-0.25,0,0.25,0.5].forEach(v=>ctx.fillText(v.toFixed(2),tx(v),H-pad.b+14));
+  ctx.fillStyle=ink3; ctx.font=`10.5px DM Mono,monospace`; ctx.textAlign='center';
+  [-0.5,-0.25,0,0.25,0.5].forEach(v=>ctx.fillText(v.toFixed(2),tx(v),H-pad.b+16));
   ctx.fillText('Standardisierter Mittlerer Unterschied (SMD)',pad.l+pw/2,H);
 
   // Legend (right)
   let ly=pad.t+10;
   const lx=W-pad.r+8;
-  ctx.font=`${9}px DM Mono,monospace`; ctx.textAlign='left';
-  ctx.fillStyle=a1; ctx.fillRect(lx,ly-4,8,8);
-  ctx.fillStyle=ink3; ctx.fillText('Vorher',lx+12,ly+4); ly+=16;
+  ctx.font=`11px DM Mono,monospace`; ctx.textAlign='left';
+  ctx.fillStyle=a1; ctx.fillRect(lx,ly-4,9,9);
+  ctx.fillStyle=ink2; ctx.fillText('Vorher',lx+14,ly+4); ly+=18;
   if(ST.method!=='ipw'){
-    ctx.fillStyle=a2; ctx.beginPath(); ctx.arc(lx+4,ly,4,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle=ink3; ctx.fillText('Match',lx+12,ly+4); ly+=16;
+    ctx.fillStyle=a2; ctx.beginPath(); ctx.arc(lx+4,ly,4.5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=ink2; ctx.fillText('Match (ATT)',lx+14,ly+4); ly+=18;
   }
   if(ST.method!=='match'){
-    ctx.fillStyle=a6; diamond(ctx,lx+4,ly,4);
-    ctx.fillStyle=ink3; ctx.fillText('IPW',lx+12,ly+4);
+    ctx.fillStyle=a6; diamond(ctx,lx+4,ly,4.5);
+    ctx.fillStyle=ink2; ctx.fillText('IPW ('+ESTIMAND_INFO[ST.estimand].label+')',lx+14,ly+4);
   }
 
   // Rows
@@ -666,7 +771,7 @@ function drawLove(){
     ctx.strokeStyle=grid; ctx.lineWidth=0.5;
     ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(W-pad.r,y); ctx.stroke();
 
-    ctx.fillStyle=ink2; ctx.font=`${10}px DM Mono,monospace`; ctx.textAlign='right';
+    ctx.fillStyle=ink2; ctx.font=`11px DM Mono,monospace`; ctx.textAlign='right';
     ctx.fillText(labels[i],pad.l-6,y+4);
 
     const b=SMDS.before[k], m=SMDS.match[k], ipw=SMDS.ipw[k];
@@ -708,7 +813,7 @@ function drawEst(){
   const rows=[
     {lbl:'Naiv',val:ESTS.naive,col:a1},
     ...(showM?[{lbl:'Matching ATT',val:ESTS.matched,col:a2}]:[]),
-    ...(showI?[{lbl:'IPW ATT',val:ESTS.ipw,col:a6}]:[]),
+    ...(showI?[{lbl:'IPW '+ESTIMAND_INFO[ST.estimand].label,val:ESTS.ipw,col:a6}]:[]),
   ];
 
   const allV=[ST.tau,...rows.map(r=>r.val)].filter(v=>v!==null);
@@ -725,8 +830,8 @@ function drawEst(){
     const v=lo+i/nT*range;
     const x=tx(v);
     ctx.beginPath(); ctx.moveTo(x,pad.t); ctx.lineTo(x,H-pad.b); ctx.stroke();
-    ctx.fillStyle=ink3; ctx.font=`${9}px DM Mono,monospace`; ctx.textAlign='center';
-    ctx.fillText(v.toFixed(2),x,H-pad.b+14);
+    ctx.fillStyle=ink3; ctx.font=`10.5px DM Mono,monospace`; ctx.textAlign='center';
+    ctx.fillText(v.toFixed(2),x,H-pad.b+16);
   }
 
   // True effect line — prominent green, solid
@@ -734,12 +839,12 @@ function drawEst(){
   ctx.strokeStyle=a3; ctx.lineWidth=2.5; ctx.setLineDash([]);
   ctx.beginPath(); ctx.moveTo(trueX,pad.t); ctx.lineTo(trueX,H-pad.b); ctx.stroke();
   // Label above line
-  ctx.fillStyle=a3; ctx.font=`500 ${10}px DM Mono,monospace`; ctx.textAlign='center';
-  ctx.fillText('τ = '+ST.tau.toFixed(2),trueX,pad.t-14);
-  ctx.font=`${8.5}px DM Mono,monospace`;
-  ctx.fillText('wahrer Effekt',trueX,pad.t-4);
+  ctx.fillStyle=a3; ctx.font=`600 11px DM Mono,monospace`; ctx.textAlign='center';
+  ctx.fillText('τ = '+ST.tau.toFixed(2),trueX,pad.t-16);
+  ctx.font=`10px DM Mono,monospace`;
+  ctx.fillText('wahrer Effekt',trueX,pad.t-5);
 
-  ctx.fillStyle=ink3; ctx.font=`${9}px DM Mono,monospace`; ctx.textAlign='center';
+  ctx.fillStyle=ink3; ctx.font=`10.5px DM Mono,monospace`; ctx.textAlign='center';
   ctx.fillText('Geschätzter Effekt (SD-Einheiten)',pad.l+pw/2,H);
 
   rows.forEach((row,i)=>{
@@ -747,7 +852,7 @@ function drawEst(){
     const y=pad.t+(i+1)*rowH;
     const x=tx(row.val);
     // Label
-    ctx.fillStyle=ink2; ctx.font=`${10}px DM Mono,monospace`; ctx.textAlign='right';
+    ctx.fillStyle=ink2; ctx.font=`11px DM Mono,monospace`; ctx.textAlign='right';
     ctx.fillText(row.lbl,pad.l-6,y+4);
     // Bias dashes to true
     ctx.strokeStyle=row.col+'77'; ctx.lineWidth=1; ctx.setLineDash([2,2]);
@@ -757,7 +862,7 @@ function drawEst(){
     ctx.beginPath(); ctx.arc(x,y,7,0,Math.PI*2); ctx.fill();
     // Value
     const offset=x>trueX?12:-12;
-    ctx.fillStyle=row.col; ctx.font=`500 ${9.5}px DM Mono,monospace`;
+    ctx.fillStyle=row.col; ctx.font=`600 11px DM Mono,monospace`;
     ctx.textAlign=x>trueX?'left':'right';
     ctx.fillText(row.val.toFixed(2),x+offset,y+4);
   });

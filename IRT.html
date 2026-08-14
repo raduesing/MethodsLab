@@ -346,14 +346,16 @@ function estimateTheta(){
 
 // ── Canvas Helfer ──────────────────────────────────────────────────────────
 function cv(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+const CV_BASE_H={};
 function setupCv(id){
   const el=document.getElementById(id);
-  const origH=parseInt(el.getAttribute('height'))||360;
+  if(!(id in CV_BASE_H)) CV_BASE_H[id]=parseInt(el.getAttribute('height'))||360;
+  const origH=CV_BASE_H[id];
   const W=el.offsetWidth||el.parentElement.offsetWidth||600;
   const dpr=window.devicePixelRatio||1;
-  el.width=W*dpr; el.height=origH*dpr;
+  el.width=Math.round(W*dpr); el.height=Math.round(origH*dpr);
   const ctx=el.getContext('2d');
-  ctx.scale(dpr,dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
   return{ctx,W,H:origH};
 }
 
