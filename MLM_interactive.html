@@ -2,6 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Multilevel &amp; Mixed Models — Methods Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -585,7 +586,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
       <div class="info-box" style="flex:1">
         <div class="info-box-h">Tutorial — Random Slopes verstehen</div>
         <p><strong>Was Sie sehen</strong><br>
-        Farbige Geraden = gruppenspezifische NP-Geraden (eine pro Klasse). Graue gestrichelte Gerade = der gemeinsame Fixed Slope γ₁₀. Bei τ₁=0 sind alle farbigen Geraden parallel — nur die Intercepts unterscheiden sich (reines Random-Intercepts-Modell).</p>
+        Farbige Geraden = gruppenspezifische NP-Geraden (eine pro Klasse, geschätzt nur aus den n_j Beobachtungen dieser Klasse). Graue gestrichelte Gerade = der gemeinsame Fixed Slope γ₁₀. Bei τ₁=0 sind die <em>wahren</em> Steigungen aller Klassen identisch — die farbigen NP-Geraden können trotzdem leicht unterschiedlich aussehen, weil jede einzelne nur aus n_j=10 verrauschten Beobachtungen geschätzt wird (reines Stichprobenrauschen, keine echte Heterogenität). Genau das ist ein Grund für Random-Slopes-Shrinkage: Sie zieht diese zufällig verrauschten NP-Steigungen zurück zu γ₁₀, statt sie für bare Münze zu nehmen.</p>
         <p><strong>Schieber τ₁ (Steigungsvarianz)</strong><br>
         τ₁=0: Alle Klassen profitieren gleich von Lernzeit — Random Intercepts genügt.<br>
         τ₁&gt;0: Die Steigungen fächern auf (Fan-out oder -in). Inhaltliche Frage: Ist der Lernzeit-Effekt in manchen Klassen stärker als in anderen?</p>
@@ -1125,7 +1126,9 @@ function showMod(n){
   document.querySelectorAll('.mod-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('mod'+n).classList.add('active');
   document.querySelector(`[data-mod="${n}"]`).classList.add('active');
-  ST.activeModule=n;redrawActive();
+  ST.activeModule=n;
+  const scrollEl=document.getElementById('scroll');if(scrollEl)scrollEl.scrollTop=0;
+  redrawActive();
 }
 
 /* ── Scenarios ───────────────────────────────────────────── */
@@ -1168,6 +1171,7 @@ function neueDaten(){ST.seed=Math.floor(Math.random()*99999)+1;runSim();}
 function toggleAcc(btn){const b=btn.nextElementSibling;const o=b.classList.toggle('open');btn.classList.toggle('open',o);}
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.ml-modal.open').forEach(m=>m.classList.remove('open'));});
 function toggleTheme(){
   const ct=document.documentElement.getAttribute('data-theme')||'dark';
   const nt=ct==='dark'?'light':'dark';
@@ -1179,10 +1183,8 @@ function toggleTheme(){
 
 /* ── Init ────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded',function(){
-  // Theme
-  const t=localStorage.getItem('ml-theme');
-  if(t){document.documentElement.setAttribute('data-theme',t);
-    document.getElementById('btn-theme').textContent=t==='dark'?'☀ Light':'🌙 Dark';}
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.getElementById('btn-theme').textContent=isDark?'☀ Light':'🌙 Dark';
   ST.tau0_m2=ST.tau0;ST.sig_m2=ST.sig;ST.nj_m2=ST.nj;ST.g10_m3=ST.g10;
   runSim();
 });

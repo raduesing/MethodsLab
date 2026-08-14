@@ -63,6 +63,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 #cv-rdd{width:100%;display:block}
 .cv-sticky{position:sticky;top:0;z-index:20;background:var(--bg);
   border-bottom:1px solid var(--grid);padding-bottom:4px;margin-bottom:.6rem}
+.cv-sticky.unpinned{position:static}
 /* Equation display */
 .eq-wrap{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem;margin-bottom:.8rem}
 .eq-main{font-family:'DM Mono',monospace;font-size:.9rem;line-height:2;letter-spacing:.01em;
@@ -244,6 +245,13 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     <div class="toggle-row">
       <input type="checkbox" id="tog-yafix" onchange="onToggleYFix()">
       <label for="tog-yafix">Y-Achse fixieren</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tog-pin" checked onchange="onTogglePin(this)">
+      <label for="tog-pin">Plot fixiert (statt mitscrollend)</label>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.3rem;line-height:1.5">
+      Auf kleinen Bildschirmen: deaktivieren, damit mehr Platz für den Text bleibt.
     </div>
   </div>
 
@@ -1041,6 +1049,11 @@ function onToggleYFix(){
   }
   if(ST.data) drawCanvas(ST.data,ST.fitResult?.beta,ST.fitITT?.beta||null);
 }
+function onTogglePin(el){
+  const sticky=document.querySelector('.cv-sticky');
+  if(sticky)sticky.classList.toggle('unpinned',!el.checked);
+  localStorage.setItem('ml-cv-pin',el.checked?'1':'0');
+}
 function onFuzzySlider(key,el){
   ST[key]=parseFloat(el.value);
   const dec=key==='confound'?0:2;
@@ -1100,6 +1113,10 @@ window.addEventListener('resize',()=>{
 });
 
 // Init
+if(localStorage.getItem('ml-cv-pin')==='0'){
+  const cb=document.getElementById('tog-pin');if(cb)cb.checked=false;
+  const sticky=document.querySelector('.cv-sticky');if(sticky)sticky.classList.add('unpinned');
+}
 setPreset('B');
 </script>
 </body>

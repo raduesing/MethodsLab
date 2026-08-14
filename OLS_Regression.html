@@ -2,6 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OLS &amp; Multiple Regression — Methods Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -574,7 +575,7 @@ input[type=range]::-moz-range-thumb{
         <p><strong>Was Sie sehen</strong><br>
         30 simulierte Studierende: Lernzeit X₁ (h/Woche) → Klausurnote Y (Punkte). Die <em>orangene Gerade</em> ist Ihre Schätzlinie — ziehbar über zwei runde Anker am linken und rechten Rand. Schalten Sie <em>● Residuals</em> ein: grüne Striche = positive Residuen (Punkt liegt über der Gerade), rote Striche = negative Residuen (Punkt liegt darunter). Ein <strong>Residuum</strong> eᵢ = yᵢ − ŷᵢ ist die Abweichung des beobachteten vom vorhergesagten Wert.</p>
         <p><strong>Was tun</strong><br>
-        Ziehen Sie die Anker, bis Ihre RSS (orangener Balken, absoluter Wert) möglichst klein wird. Klicken Sie dann <em>◎ OLS zeigen</em> — die teal-farbene OLS-Gerade erscheint. Der zweite Balken zeigt deren RSS. Vergleich: Wie nah kamen Sie ans Minimum?</p>
+        Ziehen Sie die Anker, bis Ihre RSS (orangener Balken, absoluter Wert) möglichst klein wird. Klicken Sie dann <em>◎ OLS zeigen</em> — die blaue OLS-Gerade erscheint. Der zweite Balken zeigt deren RSS. Vergleich: Wie nah kamen Sie ans Minimum?</p>
         <p><strong>Was ist RSS? (Residual Sum of Squares)</strong><br>
         RSS = Σeᵢ² = Σ(yᵢ − ŷᵢ)². OLS findet analytisch exakt das b₀ und b₁, für das RSS global minimal ist — eindeutig und beweisbar. Kein Ausprobieren: b₁ = Cov(X,Y)/Var(X), b₀ = ȳ − b₁·x̄.</p>
         <p><strong>Warum Quadrate, nicht Beträge?</strong><br>
@@ -591,7 +592,7 @@ input[type=range]::-moz-range-thumb{
 
   <!-- Erklärer -->
   <div class="erklaer" style="margin-top:.9rem">
-    <strong>Was ist ein Residual?</strong>
+    <strong>Was ist ein Residuum?</strong>
     eᵢ = yᵢ − <span class="gk gk-hat" style="display:inline-block">y</span>ᵢ
     ist die Abweichung des <em>beobachteten</em> Wertes vom <em>vorhergesagten</em>.
     <strong>Warum quadrieren?</strong> Erstens werden positive und negative Residuen gleich
@@ -879,7 +880,11 @@ input[type=range]::-moz-range-thumb{
               color:var(--ink2);line-height:1.85">
               <strong style="color:var(--ink)">Homoskedastizität:</strong>
               Varianz der Residuen ist konstant über alle X-Werte — kein Streufächer.
-              Verletzung: heteroskedastizitätsrobuste Standardfehler (HC3) oder WLS.
+              Verletzung: heteroskedastizitätsrobuste Standardfehler
+              (<strong>HC3</strong> — sandwich-basierte, leverage-korrigierte Kovarianzschätzung,
+              robust auch bei kleinen Stichproben) oder <strong>WLS</strong>
+              (Weighted Least Squares — gewichtet jede Beobachtung invers zu ihrer geschätzten
+              Varianz, statt nur die Standardfehler nachträglich zu korrigieren).
               Anscombe-Datensatz III zeigt klassische Verletzung.
             </div>
           </div>
@@ -1388,6 +1393,7 @@ function showMod(n){
   document.getElementById('mod'+n).classList.add('active');
   document.querySelector(`.mod-tab[data-mod="${n}"]`).classList.add('active');
   ST.activeModule=n;
+  const scrollEl=document.getElementById('scroll');if(scrollEl)scrollEl.scrollTop=0;
   draw();
 }
 
@@ -1601,30 +1607,6 @@ function toggleShowOLS(){
   drawMod1();
 }
 
-function snapToOLS(){
-  if(!ST.handLine.active)return;
-  const f=ST.fitBiv;
-  const tA=f.b0+f.b1*3,tB=f.b0+f.b1*19;
-  const sA=ST.handLine.yA,sB=ST.handLine.yB;
-  let i=0;const steps=22;
-  function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
-  function frame(){
-    i++;const t=ease(i/steps);
-    ST.handLine.yA=sA+(tA-sA)*t;ST.handLine.yB=sB+(tB-sB)*t;
-    drawMod1();
-    if(i<steps){requestAnimationFrame(frame);}
-    else{
-      ST.handLine.active=false;ST.showOLS=false;
-      const btn=document.getElementById('btn-hand');
-      if(btn){btn.classList.remove('accent1');btn.textContent='✏ Selbst anpassen';}
-      const btnO=document.getElementById('btn-show-ols');
-      if(btnO)btnO.classList.remove('primary');
-      drawMod1();
-    }
-  }
-  requestAnimationFrame(frame);
-}
-
 function toggleResiduals(){
   ST.showResiduals=!ST.showResiduals;
   document.getElementById('btn-resid').textContent=
@@ -1649,7 +1631,8 @@ function initCanvasEvents(){
   cv.addEventListener('mousedown',e=>{
     if(!ST.handLine.active)return;
     const r=cv.getBoundingClientRect();
-    const mx=e.clientX-r.left,my=e.clientY-r.top;
+    const scX=cv.width/r.width,scY=cv.height/r.height;
+    const mx=(e.clientX-r.left)*scX,my=(e.clientY-r.top)*scY;
     const{ax,ay,bx,by}=anchorPx();
     if(dist(mx,my,ax,ay)<14){_drag='A';e.preventDefault();}
     else if(dist(mx,my,bx,by)<14){_drag='B';e.preventDefault();}
@@ -1657,7 +1640,8 @@ function initCanvasEvents(){
 
   cv.addEventListener('mousemove',e=>{
     const r=cv.getBoundingClientRect();
-    const mx=e.clientX-r.left,my=e.clientY-r.top;
+    const scX=cv.width/r.width,scY=cv.height/r.height;
+    const mx=(e.clientX-r.left)*scX,my=(e.clientY-r.top)*scY;
     const{sx,sy,sy_inv}=getScales();
 
     // Anker ziehen
@@ -1919,7 +1903,7 @@ function setVarMode(mode){
   if(lbl)lbl.textContent=
     mode==='TSS'?'Gesamt (TSS) — Abstände der Punkte vom Mittelwert ȳ':
     mode==='SSM'?'Modell (SSM) — Abstände des Modells vom Mittelwert ȳ (erklärt)':
-    'Residual (RSS) — Abstände der Punkte vom Modell (unerklärt)';
+    'Residuum (RSS) — Abstände der Punkte vom Modell (unerklärt)';
   drawMod3();
 }
 
@@ -2327,7 +2311,8 @@ function setAvpStep(step){
     · Die Neigung in X₂-Richtung = b₂ (partieller Slope X₂)<br>
     · Grüne Punkte liegen <em>über</em> der Fläche (positive Residuen), rote <em>unter</em> ihr (negative Residuen).</p>
     <p><strong>Warum eine Ebene?</strong><br>
-    Im bivariaten Fall (Schritt <span class="tab-num">①</span>) war es eine Gerade in 2D — OLS minimiert die <em>Strecken</em> der Residuen auf dieser Linie. Bei zwei Prädiktoren minimiert OLS die <em>vertikalen Abstände</em> der Datenpunkte von der Ebene — dasselbe Prinzip, eine Dimension höher.</p>`
+    Im bivariaten Fall (Schritt <span class="tab-num">①</span>) war es eine Gerade in 2D — OLS minimiert die <em>Strecken</em> der Residuen auf dieser Linie. Bei zwei Prädiktoren minimiert OLS die <em>vertikalen Abstände</em> der Datenpunkte von der Ebene — dasselbe Prinzip, eine Dimension höher.</p>
+    <p>Ziehen zum Drehen — Doppelklick zum Zurücksetzen.</p>`
   ];
   const lbl=document.getElementById('m4-cv-label');
   if(lbl)lbl.innerHTML=labels[step];
@@ -2396,9 +2381,7 @@ function toggleTheme(){
   draw();
 }
 (function(){
-  const saved=localStorage.getItem('ml-theme');
-  const isDark=saved?saved==='dark':true;
-  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
   document.getElementById('btn-theme').textContent=isDark?'☀ Light':'🌙 Dark';
 })();
 

@@ -2,6 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Messfehler-Attenuierung — MethodsLab</title>
 <style>
@@ -129,7 +130,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
   <div class="scard">
     <div class="scard-title">Szenarien</div>
-    <button class="preset-btn" id="pre-A" onclick="setPreset('A')">A — Perfekte Reliabilität (kein Effekt)</button>
+    <button class="preset-btn" id="pre-A" onclick="setPreset('A')">A — Perfekte Reliabilität (keine Attenuierung)</button>
     <button class="preset-btn active" id="pre-B" onclick="setPreset('B')">B — Intelligenz &amp; Schulleistung</button>
     <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — Beide stark fehlerbehaftet</button>
     <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — Einseitig unzuverlässig</button>
@@ -182,9 +183,9 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <strong>Intelligenz &amp; Schulleistung</strong> — Eine Studie misst Intelligenz (X) mit einem IQ-Test
     (r_xx = <span id="ex-rxx">0.85</span>) und Schulleistung (Y) über Schulnoten (r_yy = <span id="ex-ryy">0.70</span>).
     Die wahre Korrelation zwischen den latenten Konstrukten beträgt ρ = <span id="ex-rtrue">0.60</span>.
-    In den Daten ist nur r ≈ <span id="ex-robs" style="color:var(--a2);font-weight:600">0.46</span> sichtbar —
-    eine Unterschätzung von <span id="ex-pct" style="color:var(--a1);font-weight:600">.14</span>.
-    Ohne Korrektur wird der Zusammenhang systematisch unterschätzt.
+    <span id="ex-tail">In den Daten erscheint sie abgeschwächt als r ≈ <span style="color:var(--a2);font-weight:600">0.46</span> —
+    eine Unterschätzung von <span style="color:var(--a1);font-weight:600">.14</span>.
+    Ohne Korrektur wird der Zusammenhang systematisch unterschätzt.</span>
   </div>
 
   <div class="sec-h">Grundprinzip</div>
@@ -250,12 +251,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   </div>
 
   <div class="insight-box">
-    <strong>Schlussfolgerung:</strong> Die beobachtete Korrelation r = <span id="ins-robs">—</span>
-    unterschätzt die wahre Korrelation ρ = <span id="ins-rtrue">—</span> um
-    <span id="ins-pct" style="color:var(--a1);font-weight:600">—</span>.
-    Die Disattenuation liefert <span id="ins-rdisatt">—</span> — nahe am wahren Wert,
-    aber nur wenn r_xx und r_yy korrekt bekannt sind.
-    Fehlgeschätzte Reliabilitäten führen zu über- oder unterschätzten Korrekturen.
+    <strong>Schlussfolgerung:</strong> <span id="ins-body">—</span>
   </div>
 
   <div class="learn-section">
@@ -279,7 +275,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Konsequenzen für Forschungspraxis</div>
-        <div class="lcard-body">Rohe (unkorrigierte) Korrelationen aus Primärstudien sind systematisch zu klein. Das hat Folgen für: <strong>theoretische Schlussfolgerungen</strong> (der wahre Zusammenhang ist stärker als gedacht), <strong>Kriteriumsvalidität</strong> von Tests (Prädiktoren erscheinen schwächer), und <strong>Power-Analysen</strong> (zu kleine erwartete Effekte → zu große geplante Stichproben). Ohne Korrektur wird Theorie auf attenueiten Befunden aufgebaut.</div>
+        <div class="lcard-body">Rohe (unkorrigierte) Korrelationen aus Primärstudien sind systematisch zu klein. Das hat Folgen für: <strong>theoretische Schlussfolgerungen</strong> (der wahre Zusammenhang ist stärker als gedacht), <strong>Kriteriumsvalidität</strong> von Tests (Prädiktoren erscheinen schwächer), und <strong>Power-Analysen</strong> (zu kleine erwartete Effekte → zu große geplante Stichproben). Ohne Korrektur wird Theorie auf attenuierten Befunden aufgebaut.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Grenzen &amp; Instabilität bei kleinem N</div>
@@ -447,17 +443,16 @@ function updateStats(){
   const rObsPop=ST.rTrue*att;
   const rObsSamp=ST.data?sampleCorr(ST.data,p=>p.xO,p=>p.yO):rObsPop;
   const rDisatt=att>0?rObsSamp/att:NaN;
-  const pct=ST.rTrue>0?Math.round((1-rObsPop/ST.rTrue)*100):0;
+  const noAtt=att>=0.9995;
 
   document.getElementById('kw-rtrue').textContent=f2u(ST.rTrue);
   document.getElementById('kw-robs-pop').textContent=f2u(rObsPop);
   document.getElementById('kw-robs-samp').textContent=f2u(rObsSamp);
   document.getElementById('kw-rdisatt').textContent=f2u(rDisatt)+(rDisatt>1?' ⚠':'');
 
-  document.getElementById('ins-robs').textContent=f2u(rObsSamp);
-  document.getElementById('ins-rtrue').textContent=f2u(ST.rTrue);
-  document.getElementById('ins-pct').textContent=fAbs(ST.rTrue-rObsSamp);
-  document.getElementById('ins-rdisatt').textContent=f2u(rDisatt);
+  document.getElementById('ins-body').innerHTML=noAtt
+    ?`Die beobachtete Korrelation r ≈ ${f2u(rObsSamp)} liegt (bis auf Stichprobenrauschen) bei der wahren Korrelation ρ = ${f2u(ST.rTrue)} — bei (nahezu) perfekt reliablen Messungen gibt es keine Attenuierung, daher ist auch keine Korrektur nötig.`
+    :`Die beobachtete Korrelation r = ${f2u(rObsSamp)} unterschätzt die wahre Korrelation ρ = ${f2u(ST.rTrue)} um <span style="color:var(--a1);font-weight:600">${fAbs(ST.rTrue-rObsSamp)}</span>. Die Disattenuation liefert ${f2u(rDisatt)} — nahe am wahren Wert, aber nur wenn r_xx und r_yy korrekt bekannt sind. Fehlgeschätzte Reliabilitäten führen zu über- oder unterschätzten Korrekturen.`;
 
   document.getElementById('sl-sqrtrr').textContent=f2u(att);
   document.getElementById('sl-robs').textContent=f2u(rObsPop);
@@ -468,8 +463,9 @@ function updateStats(){
   document.getElementById('ex-rxx').textContent=f2u(ST.rXX);
   document.getElementById('ex-ryy').textContent=f2u(ST.rYY);
   document.getElementById('ex-rtrue').textContent=f2u(ST.rTrue);
-  document.getElementById('ex-robs').textContent=f2u(rObsPop);
-  document.getElementById('ex-pct').textContent=fAbs(ST.rTrue-rObsPop);
+  document.getElementById('ex-tail').innerHTML=noAtt
+    ?`Da beide Messungen (nahezu) perfekt reliabel sind, erscheint in den Daten dieselbe Korrelation r ≈ <span style="color:var(--a2);font-weight:600">${f2u(rObsPop)}</span> — keine Abschwächung. Eine Korrektur ist hier nicht nötig, weil es nichts zu korrigieren gibt.`
+    :`In den Daten erscheint sie abgeschwächt als r ≈ <span style="color:var(--a2);font-weight:600">${f2u(rObsPop)}</span> — eine Unterschätzung von <span style="color:var(--a1);font-weight:600">${fAbs(ST.rTrue-rObsPop)}</span>. Ohne Korrektur wird der Zusammenhang systematisch unterschätzt.`;
 }
 
 function recompute(){
@@ -509,11 +505,18 @@ function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  const nt=dark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',nt);
   document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  localStorage.setItem('ml-theme',nt);
   recompute();
 }
 
+window.addEventListener('resize',drawCanvas);
+
+if(document.documentElement.getAttribute('data-theme')==='light'){
+  const tb=document.getElementById('theme-btn');if(tb)tb.textContent='🌙 Dark';
+}
 setPreset('B');
 </script>
 </body>

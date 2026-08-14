@@ -2,6 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Causal Teaching — Kausalität &amp; Potential Outcomes</title>
 <style>
@@ -31,7 +32,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tab-btn{flex:1;font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.03em;
   border:none;background:transparent;cursor:pointer;color:var(--ink3);
   border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;padding:.2rem .3rem;white-space:nowrap}
-.tab-num{font-size:1.65em;vertical-align:-.12em;line-height:1}
+.tab-num{font-size:2em;vertical-align:-.15em;line-height:1}
+.circ{font-size:1.4em;vertical-align:-.1em;line-height:1;display:inline-block}
 .tab-btn:hover{color:var(--ink);background:var(--grid)}
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
 /* App layout */
@@ -213,7 +215,8 @@ canvas{display:block;width:100%}
       <button class="step-btn active" id="sb1-btn0" onclick="setStep(0)">A · Confounder entdecken</button>
       <button class="step-btn" id="sb1-btn1" onclick="setStep(1)">B · Mediator verstehen</button>
       <button class="step-btn" id="sb1-btn2" onclick="setStep(2)">C · Collider erkennen</button>
-      <button class="step-btn" id="sb1-btn3" onclick="setStep(3)">D · Das volle Modell</button>
+      <button class="step-btn" id="sb1-btn3" onclick="setStep(3)">D · Präzisionsvariable</button>
+      <button class="step-btn" id="sb1-btn4" onclick="setStep(4)">E · Das volle Modell</button>
     </div>
     <div class="scard" id="dag-sb-info">
       <div class="scard-title">Interpretation</div>
@@ -298,7 +301,7 @@ canvas{display:block;width:100%}
     </div>
     <div class="scard">
       <div class="scard-title">Aktion</div>
-      <button class="tbtn" id="btn-gc" style="width:100%" onclick="revealGC()">③ G-Computation zeigen</button>
+      <button class="tbtn" id="btn-gc" style="width:100%" onclick="revealGC()"><span class="circ">③</span> G-Computation zeigen</button>
     </div>
     <div class="scard" id="gc-nums-sb">
       <div class="scard-title">Schätzervergleich</div>
@@ -327,12 +330,12 @@ canvas{display:block;width:100%}
 <!-- MODULE 1: DAG -->
 <div class="module active" id="mod-1">
   <div class="module-header">
-    <div class="mod-super">Modul ① von ⑤</div>
+    <div class="mod-super">Modul <span class="circ">①</span> von <span class="circ">⑤</span></div>
     <div class="mod-title">Kausale Struktur — <em>Directed Acyclic Graphs</em></div>
-    <div class="mod-lead">Ein DAG zeigt, <strong>wer wen kausal beeinflusst</strong>. Bevor wir irgendeinen Effekt schätzen, müssen wir die kausale Struktur kennen — denn sie bestimmt, für welche Variablen wir <em>dürfen</em>, <em>müssen</em> und <em>nicht dürfen</em> kontrollieren.</div>
+    <div class="mod-lead">Ein DAG zeigt, <strong>wer wen kausal beeinflusst</strong>. Bevor wir irgendeinen Effekt schätzen, müssen wir die kausale Struktur kennen — denn sie bestimmt, welche Variablen wir kontrollieren <em>müssen</em>, welche wir kontrollieren <em>dürfen</em> und welche wir auf keinen Fall kontrollieren <em>dürfen</em>.</div>
   </div>
   <div class="prob-box"><strong>Das Problem:</strong> Nicht jede beobachtete Assoziation ist kausal. Und nicht jede Adjustierung hilft — manche verschlimmert die Verzerrung sogar.</div>
-  <div class="sol-box"><strong>Vorgehen:</strong> Schritt A–C erklärt die drei Grundtypen. Schritt D zeigt das vollständige Modell unserer Studie — die Grundlage für alle folgenden Module.</div>
+  <div class="sol-box"><strong>Vorgehen:</strong> Schritt A–D erklärt die vier Grundtypen. Schritt E zeigt das vollständige Modell unserer Studie — die Grundlage für alle folgenden Module.</div>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.4rem">
     <div id="dag-step-lbl" style="font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500"></div>
     <div style="display:flex;gap:.4rem">
@@ -348,12 +351,12 @@ canvas{display:block;width:100%}
 <!-- MODULE 2: POTENTIAL OUTCOMES -->
 <div class="module" id="mod-2">
   <div class="module-header">
-    <div class="mod-super">Modul ② von ⑤</div>
+    <div class="mod-super">Modul <span class="circ">②</span> von <span class="circ">⑤</span></div>
     <div class="mod-title"><em>Potential Outcomes</em> — Das fundamentale Problem</div>
     <div class="mod-lead">Was wäre passiert, wenn eine Person <em>nicht</em> Sport getrieben hätte — obwohl sie es tat? Diese Frage können wir nie direkt beantworten. Das Potential Outcomes Framework macht diese Unmöglichkeit mathematisch greifbar und zeigt, wie wir trotzdem kausale Schlüsse ziehen können.</div>
   </div>
-  <div class="prob-box"><strong>Die Kernidee:</strong> Jede Person i hat <em>zwei</em> potenzielle Outcomes: <strong style="color:var(--a3)">Y_i(1)</strong> — ihr Gesundheitsscore, wenn sie Sport treibt — und <strong style="color:var(--a1)">Y_i(0)</strong> — ihr Score, wenn sie keinen Sport treibt. Der individuelle kausale Effekt wäre ITE_i = Y_i(1) − Y_i(0). Das Problem: Wir sehen immer nur <em>eine</em> dieser Welten — die andere ist kontrafaktisch und für immer unbeobachtbar. Wir können nie dieselbe Person gleichzeitig Sport treiben und nicht treiben lassen.</div>
-  <div class="sol-box"><strong>Die Lösung:</strong> Statt individueller Effekte schätzen wir <em>durchschnittliche</em> Effekte über Gruppen: <strong>ATE</strong> = E[Y(1) − Y(0)] für die Gesamtpopulation, <strong>ATT</strong> für die Behandelten, <strong>ATU</strong> für die Unbehandelten. Dafür brauchen wir Annahmen (SUTVA, Ignorierbarkeit) — und Methoden wie IPW oder G-Computation, die in Modulen ④ und ⑤ erklärt werden.</div>
+  <div class="prob-box"><strong>Die Kernidee:</strong> Jede Person i hat <em>zwei</em> potenzielle Outcomes: <strong style="color:var(--a3)">Y_i(1)</strong> — ihr Gesundheitsscore, wenn sie Sport treibt — und <strong style="color:var(--a1)">Y_i(0)</strong> — ihr Score, wenn sie keinen Sport treibt. Der individuelle kausale Effekt wäre ICE_i = Y_i(1) − Y_i(0). Das Problem: Wir sehen immer nur <em>eine</em> dieser Welten — die andere ist kontrafaktisch und für immer unbeobachtbar. Wir können nie dieselbe Person gleichzeitig Sport treiben und nicht treiben lassen.</div>
+  <div class="sol-box"><strong>Die Lösung:</strong> Statt individueller Effekte schätzen wir <em>durchschnittliche</em> Effekte über Gruppen: <strong>ATE</strong> = E[Y(1) − Y(0)] für die Gesamtpopulation, <strong>ATT</strong> für die Behandelten, <strong>ATU</strong> für die Unbehandelten. Dafür brauchen wir Annahmen (SUTVA, Ignorierbarkeit) — und Methoden wie IPW oder G-Computation, die in Modulen <span class="circ">④</span> und <span class="circ">⑤</span> erklärt werden.</div>
 
   <canvas id="cv-po-vis" height="200" style="border:1px solid var(--grid);background:var(--panel);margin-bottom:1rem"></canvas>
 
@@ -365,21 +368,21 @@ canvas{display:block;width:100%}
         <th>T (Sport)</th>
         <th style="color:var(--a3)">Y(1) — mit Sport</th>
         <th style="color:var(--a1)">Y(0) — ohne Sport</th>
-        <th>ITE = Y(1)−Y(0)</th>
+        <th>ICE = Y(1)−Y(0)</th>
         <th>beobachtetes Y</th>
       </tr></thead>
       <tbody id="po-tbody"></tbody>
     </table>
   </div>
   <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin-top:.6rem">
-    Hover über „?" für den hypothetischen Wert · Skala: Herzgesundheits-Score (0–100)
+    <strong style="color:var(--ink2)">ICE</strong> = Individual Causal Effect (individueller kausaler Effekt) · Hover über „?" für den hypothetischen Wert · Skala: Herzgesundheits-Score (0–100)
   </div>
 </div>
 
 <!-- MODULE 3: KONFUNDIERUNG -->
 <div class="module" id="mod-3">
   <div class="module-header">
-    <div class="mod-super">Modul ③ von ⑤</div>
+    <div class="mod-super">Modul <span class="circ">③</span> von <span class="circ">⑤</span></div>
     <div class="mod-title">Konfundierung — <em>Warum der naive Vergleich täuscht</em></div>
     <div class="mod-lead">Ein einfacher Vergleich von T=1 vs. T=0 misst nicht den kausalen Effekt. Er misst den Effekt <strong>inklusive der gesamten Confounding-Verzerrung</strong>. Wie groß ist der Unterschied?</div>
   </div>
@@ -409,7 +412,7 @@ canvas{display:block;width:100%}
 <!-- MODULE 4: IPW -->
 <div class="module" id="mod-4">
   <div class="module-header">
-    <div class="mod-super">Modul ④ von ⑤ — Lösung 1</div>
+    <div class="mod-super">Modul <span class="circ">④</span> von <span class="circ">⑤</span> — Lösung 1</div>
     <div class="mod-title">Inverse Probability Weighting — <em>Pseudo-Population</em></div>
     <div class="mod-lead">IPW erstellt eine gewichtete Pseudo-Population, in der T und SES statistisch unabhängig sind — als ob Sport zufällig vergeben worden wäre. Jede Beobachtung erhält ein Gewicht, das ihrer Seltenheit entspricht.</div>
   </div>
@@ -419,12 +422,12 @@ canvas{display:block;width:100%}
   <div style="margin-bottom:.8rem">
     <div class="instr"><div class="instr-num">1</div><div>Oben: Propensity-Score-Verteilung — gespiegelt. <span style="color:var(--a3)">▲ Sport (T=1)</span> oben, <span style="color:var(--a1)">▼ Kein Sport (T=0)</span> unten. Die Schieflage ist deutlich sichtbar.</div></div>
     <div class="instr"><div class="instr-num">2</div><div>Wähle einen Estimanden (ATE/ATT/ATU) links und klicke <strong>„Gewichtung anwenden"</strong>. Beobachte, wie die Verteilung sich symmetrisiert.</div></div>
-    <div class="instr"><div class="instr-num">3</div><div>Der IPW-Schätzer erscheint links — vergleiche mit dem naiven Wert aus Modul ③.</div></div>
+    <div class="instr"><div class="instr-num">3</div><div>Der IPW-Schätzer erscheint links — vergleiche mit dem naiven Wert aus Modul <span class="circ">③</span>.</div></div>
   </div>
 
   <div class="panel-box" style="margin-bottom:.9rem">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem">
-      <div class="panel-title" style="margin:0">① Propensity-Score-Verteilung — Rohzählung</div>
+      <div class="panel-title" style="margin:0"><span class="circ">①</span> Propensity-Score-Verteilung — Rohzählung</div>
       <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3)">
         <span style="color:var(--a3)">▲ Sport T=1</span> &nbsp;|&nbsp; <span style="color:var(--a1)">▼ Kein Sport T=0</span>
       </div>
@@ -435,7 +438,7 @@ canvas{display:block;width:100%}
 
   <div class="panel-box" style="margin-bottom:.9rem">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem">
-      <div class="panel-title" style="margin:0">② Gewichtete Pseudo-Population</div>
+      <div class="panel-title" style="margin:0"><span class="circ">②</span> Gewichtete Pseudo-Population</div>
       <span id="wt-state" style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3)"></span>
     </div>
     <canvas id="cv-wt" height="240"></canvas>
@@ -447,21 +450,21 @@ canvas{display:block;width:100%}
 <!-- MODULE 5: G-COMPUTATION -->
 <div class="module" id="mod-5">
   <div class="module-header">
-    <div class="mod-super">Modul ⑤ von ⑤ — Lösung 2</div>
+    <div class="mod-super">Modul <span class="circ">⑤</span> von <span class="circ">⑤</span> — Lösung 2</div>
     <div class="mod-title">G-Computation — <em>Standardisierung</em></div>
-    <div class="mod-lead">G-Computation ist das <em>statistische Gegenstück</em> zu den Potential Outcomes aus Modul ②. Dort wollten wir Y_i(1) und Y_i(0) für jede Person kennen — das ist unmöglich. G-Computation <em>schätzt</em> genau diese kontrafaktischen Welten aus einem Outcomemodell und standardisiert dann über die Covariate-Verteilung.</div>
+    <div class="mod-lead">G-Computation ist das <em>statistische Gegenstück</em> zu den Potential Outcomes aus Modul <span class="circ">②</span>. Dort wollten wir Y_i(1) und Y_i(0) für jede Person kennen — das ist unmöglich. G-Computation <em>schätzt</em> genau diese kontrafaktischen Welten aus einem Outcomemodell und standardisiert dann über die Covariate-Verteilung.</div>
   </div>
   <div class="prob-box"><strong>Die Verbindung zu Potential Outcomes:</strong> Ê[Y(1)] aus G-Computation entspricht direkt dem E[Y_i(1)] aus dem PO-Framework — dem mittleren Outcome, wenn <em>alle</em> Personen behandelt würden. Ê[Y(0)] entspricht E[Y_i(0)]. Die Differenz Ê[Y(1)] − Ê[Y(0)] ist der ATE. G-Computation macht das kontrafaktisch Unsichtbare schätzbar.</div>
-  <div class="sol-box"><strong>Vorgehen:</strong> Schritt ① fit das Outcomemodell E[Y|T,SES]. Schritte ② und ③ zeigen die zwei kontrafaktischen Welten (alle Sport vs. niemand Sport). Klicke „G-Computation zeigen" für den Schätzer und den Vergleich mit IPW und dem Doubly Robust Estimator.</div>
+  <div class="sol-box"><strong>Vorgehen:</strong> Schritt <span class="circ">①</span> fit das Outcomemodell E[Y|T,SES]. Schritte <span class="circ">②</span> und <span class="circ">③</span> zeigen die zwei kontrafaktischen Welten (alle Sport vs. niemand Sport). Klicke „G-Computation zeigen" für den Schätzer und den Vergleich mit IPW und dem Doubly Robust Estimator.</div>
 
   <div style="margin-bottom:.8rem">
     <div class="instr"><div class="instr-num">1</div><div>Das Outcomemodell zeigt die vorhergesagten Y-Werte für T=1 und T=0, getrennt nach SES.</div></div>
     <div class="instr"><div class="instr-num">2</div><div>Die zwei Welten unten zeigen: Ê[Y(1)] wenn alle Sport treiben, Ê[Y(0)] wenn niemand Sport treibt — mit derselben SES-Verteilung.</div></div>
-    <div class="instr"><div class="instr-num">3</div><div>Klicke <strong>„G-Computation zeigen"</strong> links — der Schätzer erscheint zusammen mit dem Vergleich zu IPW aus Modul ④.</div></div>
+    <div class="instr"><div class="instr-num">3</div><div>Klicke <strong>„G-Computation zeigen"</strong> links — der Schätzer erscheint zusammen mit dem Vergleich zu IPW aus Modul <span class="circ">④</span>.</div></div>
   </div>
 
   <div class="panel-box" style="margin-bottom:.9rem">
-    <div class="panel-title">① Outcomemodell: Ê[Y | T, SES]</div>
+    <div class="panel-title"><span class="circ">①</span> Outcomemodell: Ê[Y | T, SES]</div>
     <canvas id="cv-gmod" height="260"></canvas>
     <div style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);text-align:center;margin-top:.35rem">
       <span style="color:var(--a3)">● T=1 (Sport)</span> &nbsp;·&nbsp; <span style="color:var(--a1)">● T=0 (kein Sport)</span> &nbsp;·&nbsp; Punkte = beobachtete Daten · Linien = Modellvorhersage
@@ -469,23 +472,23 @@ canvas{display:block;width:100%}
   </div>
 
   <div class="panel-box" style="margin-bottom:.9rem">
-    <div class="panel-title">① Individuelles Vorhersage-Panel — Ŷ(1) und Ŷ(0) für jede Person</div>
+    <div class="panel-title"><span class="circ">①</span> Individuelles Vorhersage-Panel — Ŷ(1) und Ŷ(0) für jede Person</div>
     <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75;margin-bottom:.5rem">
       Das Outcomemodell sagt für <strong>jede Person</strong> zwei Werte vorher: wie wäre ihr Score, wenn sie Sport treibt (Ŷ(1)), und wie, wenn sie es nicht tut (Ŷ(0))?
       Diese Vorhersagen basieren auf der SES-Gruppe — jede Person bekommt den Gruppenmittelwert ihrer Kombinationsgruppe (T×SES) zugewiesen.
-      Die letzte Spalte (Ŷ(1)−Ŷ(0)) ist der <strong>geschätzte individuelle Effekt</strong> — genau das, was in Modul ② als ITE bezeichnet, aber dort unbeobachtbar war.
+      Die letzte Spalte (Ŷ(1)−Ŷ(0)) ist der <strong>geschätzte individuelle Effekt</strong> — genau das, was in Modul <span class="circ">②</span> als ICE bezeichnet, aber dort unbeobachtbar war.
     </div>
     <div id="gc-pred-table"></div>
   </div>
 
   <div class="two-col" style="margin-bottom:.9rem">
     <div class="panel-box">
-      <div class="panel-title" style="color:var(--a3)">② Kontrafaktische Welt T=1 — Alle treiben Sport</div>
+      <div class="panel-title" style="color:var(--a3)"><span class="circ">②</span> Kontrafaktische Welt T=1 — Alle treiben Sport</div>
       <canvas id="cv-w1" height="220"></canvas>
       <div id="gc-y1-lbl" style="font-family:'DM Mono',monospace;font-size:.88rem;text-align:center;margin-top:.5rem;color:var(--a3)"></div>
     </div>
     <div class="panel-box">
-      <div class="panel-title" style="color:var(--a1)">② Kontrafaktische Welt T=0 — Niemand treibt Sport</div>
+      <div class="panel-title" style="color:var(--a1)"><span class="circ">②</span> Kontrafaktische Welt T=0 — Niemand treibt Sport</div>
       <canvas id="cv-w0" height="220"></canvas>
       <div id="gc-y0-lbl" style="font-family:'DM Mono',monospace;font-size:.88rem;text-align:center;margin-top:.5rem;color:var(--a1)"></div>
     </div>
@@ -502,8 +505,8 @@ canvas{display:block;width:100%}
       <div class="lcard-body">Jede Person hat <em>zwei</em> potenzielle Outcomes: <code>Y(1)</code> (mit Behandlung) und <code>Y(0)</code> (ohne). Der individuelle Effekt wäre <code>Y(1)−Y(0)</code> — aber wir beobachten immer nur <em>eine</em> Welt, die andere bleibt kontrafaktisch. Darum schätzen wir <strong>Durchschnittseffekte</strong> über Gruppen statt individueller Effekte. <strong>ATE</strong> = ganze Population, <strong>ATT</strong> = nur Behandelte, <strong>ATU</strong> = nur Unbehandelte.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">DAG-Bausteine: Confounder · Mediator · Collider</div>
-      <div class="lcard-body">Die kausale Struktur entscheidet, <em>wofür</em> man kontrollieren darf. <strong>Confounder</strong> (X→T, X→Y): <em>muss</em> adjustiert werden. <strong>Mediator</strong> (T→M→Y): <em>nicht</em> adjustieren, sonst verschwindet der zu messende Effekt. <strong>Collider</strong> (T→K←Y): adjustieren <em>erzeugt</em> Scheinassoziation. Faustregel: erst den DAG zeichnen, dann das Modell wählen — nicht umgekehrt.</div>
+      <div class="lcard-h">DAG-Bausteine: Confounder · Mediator · Collider · Präzisionsvariable</div>
+      <div class="lcard-body">Die kausale Struktur entscheidet, <em>wofür</em> man kontrollieren darf. <strong>Confounder</strong> (X→T, X→Y): <em>muss</em> adjustiert werden. <strong>Mediator</strong> (T→M→Y): <em>nicht</em> adjustieren, sonst verschwindet der zu messende Effekt. <strong>Collider</strong> (T→K←Y): adjustieren <em>erzeugt</em> Scheinassoziation. <strong>Präzisionsvariable</strong> P (nur P→Y, kein Pfeil zu T) — die klassische <em>Kovariable</em> aus einem ANCOVA-Modell: Sie muss nur mit Y assoziiert sein, nicht mit T (bzw. X), um korrekt eingesetzt zu werden. Kein Confounding, Adjustierung ist <em>optional</em> — sie verzerrt nicht, senkt aber die Varianz der Schätzung (mehr Power). Faustregel: erst den DAG zeichnen, dann das Modell wählen — nicht umgekehrt.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h">Konfundierung &amp; Backdoor-Verzerrung</div>
@@ -515,7 +518,7 @@ canvas{display:block;width:100%}
     </div>
     <div class="lcard">
       <div class="lcard-h">G-Computation &amp; Doubly Robust</div>
-      <div class="lcard-body">G-Computation schätzt ein <strong>Outcomemodell</strong> <code>E[Y|T,X]</code>, sagt für <em>jede</em> Person beide kontrafaktischen Welten vorher (Ŷ(1), Ŷ(0)) und <strong>standardisiert</strong> über die Covariate-Verteilung. Es ist das statistische Gegenstück zu Modul ②. <strong>Doubly Robust</strong> kombiniert Outcome- und Propensity-Modell: konsistent, wenn <em>mindestens eines</em> der beiden korrekt ist — eine doppelte Absicherung.</div>
+      <div class="lcard-body">G-Computation schätzt ein <strong>Outcomemodell</strong> <code>E[Y|T,X]</code>, sagt für <em>jede</em> Person beide kontrafaktischen Welten vorher (Ŷ(1), Ŷ(0)) und <strong>standardisiert</strong> über die Covariate-Verteilung. Es ist das statistische Gegenstück zu Modul <span class="circ">②</span>. <strong>Doubly Robust</strong> kombiniert Outcome- und Propensity-Modell: konsistent, wenn <em>mindestens eines</em> der beiden korrekt ist — eine doppelte Absicherung.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h">Identifikationsannahmen &amp; verwandte Tools</div>
@@ -538,7 +541,7 @@ function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a
 function mkGauss(r){return()=>{const u=Math.max(r(),1e-15);return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*r());};}
 
 // ═══ STATE ═══════════════════════════════════════════════════════════════════
-const ST={seed:42,data:null,dagStep:0,dagAdj:{ses:false,kg:false,ab:false},
+const ST={seed:42,data:null,dagStep:0,dagAdj:{ses:false,kg:false,ab:false,prec:false},
   poRevealed:false,confStr:1.0,estimand:'ate',weighted:false,gcRevealed:false,gcEstimand:'ate'};
 
 // ═══ DATA ════════════════════════════════════════════════════════════════════
@@ -570,6 +573,8 @@ function goTo(n){
   document.getElementById('mod-'+n).classList.add('active');
   document.getElementById('sb-'+n).classList.add('active');
   document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i+1===n));
+  const mainEl=document.getElementById('main');if(mainEl)mainEl.scrollTop=0;
+  const sbEl=document.getElementById('sidebar');if(sbEl)sbEl.scrollTop=0;
   setTimeout(()=>{
     if(n===1)drawDAG();
     if(n===2){drawPOVis();renderPO();}
@@ -580,8 +585,10 @@ function goTo(n){
 }
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  const nt=dark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',nt);
   document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  localStorage.setItem('ml-theme',nt);
   redrawAll();
 }
 function redrawAll(){
@@ -601,50 +608,58 @@ const STEPS=[
    edges:[{f:'SES',t:'T',tp:'back'},{f:'SES',t:'Y',tp:'back'},{f:'T',t:'Y',tp:'causal'}],
    ctl:'ses',verdict:'<span class="badge b-warn">Backdoor offen</span> <span class="badge b-ok">→ SES adjustieren</span>'},
   {label:'B — Mediator: Gewicht liegt auf dem Kausalweg',
-   interp:'<strong>Körpergewicht (KG)</strong> ist ein <em>Mediator</em>: Sport (T) reduziert das Gewicht → Gewicht verbessert Gesundheit (Y).<br><br><strong>Zwei Pfade von T nach Y:</strong><br>① Direkter Effekt: T → Y (Sport direkt auf Herzgesundheit)<br>② Indirekter Effekt: T → KG → Y (über Gewichtsreduktion)<br><br><strong>Gesamteffekt = Direkter + Indirekter Effekt</strong><br><br>Wenn wir für KG adjustieren:<br>• Indirekter Pfad T→KG→Y wird blockiert<br>• Wir messen nur den direkten Effekt<br><br><em>Wenn du den Gesamteffekt willst: KG NICHT adjustieren!</em><br>Wenn du nur den direkten Effekt willst: adjustieren.',
+   interp:'<strong>Körpergewicht (KG)</strong> ist ein <em>Mediator</em>: Sport (T) reduziert das Gewicht → Gewicht verbessert Gesundheit (Y).<br><br><strong>Zwei Pfade von T nach Y:</strong><br><span class="circ">①</span> Direkter Effekt: T → Y (Sport direkt auf Herzgesundheit)<br><span class="circ">②</span> Indirekter Effekt: T → KG → Y (über Gewichtsreduktion)<br><br><strong>Gesamteffekt = Direkter + Indirekter Effekt</strong><br><br>Wenn wir für KG adjustieren:<br>• Indirekter Pfad T→KG→Y wird blockiert<br>• Wir messen nur den direkten Effekt<br><br><em>Wenn du den Gesamteffekt willst: KG NICHT adjustieren!</em><br>Wenn du nur den direkten Effekt willst: adjustieren.',
    nodes:[{id:'T',lbl:'T\nSport',x:.15,y:.25,c:'--a3'},{id:'KG',lbl:'KG\nGewicht',x:.5,y:.72,c:'--a2'},{id:'Y',lbl:'Y\nGesundheit',x:.85,y:.25,c:'--a1'}],
    edges:[{f:'T',t:'Y',tp:'causal'},{f:'T',t:'KG',tp:'med'},{f:'KG',t:'Y',tp:'med'}],
    ctl:'kg',verdict:'<span class="badge b-warn">Für Gesamteffekt: KG NICHT adjustieren</span> <span class="badge b-info">Für direkten Effekt: adjustieren</span>'},
   {label:'C — Collider: Arztbesuche werden durch T und Y verursacht',
-   interp:'<strong>Arztbesuch (AB)</strong> ist ein <em>Collider</em>: Sowohl Sport als auch schlechte Gesundheit führen zu mehr Arztbesuchen.<br><br>Der kausale Pfad T → Y ist vorhanden! Das Pfad T → AB ← Y ist initial <strong>blockiert</strong> — kein Problem!<br><br>Aber wenn wir für AB <em>konditionieren</em> (adjustieren, stratifizieren, selektieren), öffnen wir einen spuriösen Pfad zwischen T und Y — sogenannter M-Bias oder Berkson-Bias.<br><br><em>Konsequenz: AB NICHT adjustieren, auch wenn man es intuitiv für sinnvoll hält!</em><br><br>Teste es: Klicke "AB adjustieren" und beobachte den sich öffnenden spuriösen Pfad.',
+   interp:'<strong>Arztbesuch (AB)</strong> ist ein <em>Collider</em>: Sowohl Sport als auch schlechte Gesundheit führen zu mehr Arztbesuchen.<br><br>Der kausale Pfad T → Y ist vorhanden! Das Pfad T → AB ← Y ist initial <strong>blockiert</strong> — kein Problem!<br><br>Aber wenn wir für AB <em>konditionieren</em> (adjustieren, stratifizieren, selektieren), öffnen wir einen spuriösen Pfad zwischen T und Y — dieses Phänomen heißt allgemein <strong>Collider Bias</strong> (der Spezialfall mit dieser M-förmigen Pfadstruktur wird auch <strong>M-Bias</strong> genannt; eng verwandt: <strong>Berkson-Bias</strong> bei Selektion auf einen Collider).<br><br><em>Konsequenz: AB NICHT adjustieren, auch wenn man es intuitiv für sinnvoll hält!</em><br><br>Teste es: Klicke "AB adjustieren" und beobachte den sich öffnenden spuriösen Pfad.',
    nodes:[{id:'T',lbl:'T\nSport',x:.2,y:.28,c:'--a3'},{id:'Y',lbl:'Y\nGesundheit',x:.8,y:.28,c:'--a1'},{id:'AB',lbl:'AB\nArztbesuch',x:.5,y:.75,c:'--a4'}],
    edges:[{f:'T',t:'Y',tp:'causal'},{f:'T',t:'AB',tp:'coll'},{f:'Y',t:'AB',tp:'coll'}],
    ctl:'ab',verdict:'<span class="badge b-warn">Collider: NICHT adjustieren</span>'},
-  {label:'D — Komplexes Modell: Die vollständige Kausalstruktur unserer Studie',
-   interp:'Das vollständige Modell vereint alle drei Typen.<br><br><span style="color:var(--a5)">■ SES</span> → Confounder: <span class="badge b-ok">adjustieren</span><br><span style="color:var(--a2)">■ KG</span> → Mediator: <span class="badge b-warn">nicht adjustieren</span> (für Gesamteffekt)<br><span style="color:var(--a4)">■ AB</span> → Collider: <span class="badge b-warn">nicht adjustieren</span><br><br>Dieses Modell ist die Grundlage für <strong>alle folgenden Module</strong>. Adjustiere korrekt und falsch und beobachte die Unterschiede.',
+  {label:'D — Präzisionsvariable: Baseline-Wert beeinflusst nur die Gesundheit',
+   interp:'<strong>Baseline-Herzgesundheit (BL)</strong> — der Ausgangswert vor Studienbeginn — ist eine <em>Präzisionsvariable</em>: Sie beeinflusst den späteren Gesundheitsscore Y, hat aber <strong>keinen Pfeil zu T</strong> — wie fit jemand zu Studienbeginn war, entscheidet nicht darüber, ob die Person anschließend Sport treibt.<br><br>Es gibt <strong>keinen Backdoor-Pfad</strong> zwischen T und Y über BL — anders als bei SES besteht hier kein Confounding-Risiko.<br><br>Trotzdem lohnt sich die Adjustierung: BL erklärt einen Teil der Streuung in Y und macht die Schätzung <strong>präziser</strong> (kleinerer Standardfehler) — dieselbe Logik wie bei einer Kovariable in einer ANCOVA. Eine solche Kovariable muss nur mit Y, nicht mit T zusammenhängen, um korrekt zu sein.<br><br><em>Konsequenz: Adjustierung ist optional — sie verzerrt nicht, hilft aber der Präzision.</em><br><br>Teste es: Klicke "BL adjustieren" — der Pfad bleibt geschlossen, es ändert sich nur die Unsicherheit der Schätzung.',
+   nodes:[{id:'T',lbl:'T\nSport',x:.2,y:.55,c:'--a3'},{id:'Y',lbl:'Y\nGesundheit',x:.8,y:.55,c:'--a1'},{id:'BL',lbl:'BL\nBaseline',x:.5,y:.18,c:'--a6'}],
+   edges:[{f:'BL',t:'Y',tp:'prec'},{f:'T',t:'Y',tp:'causal'}],
+   ctl:'prec',verdict:'<span class="badge b-info">Kein Backdoor — Adjustierung optional</span> <span class="badge b-ok">Erhöht Präzision</span>'},
+  {label:'E — Komplexes Modell: Die vollständige Kausalstruktur unserer Studie',
+   interp:'Das vollständige Modell vereint alle drei bias-relevanten Typen (die Präzisionsvariable BL aus Schritt D ist hier der Übersicht halber ausgeblendet, da sie kein Adjustierungsrisiko birgt).<br><br><span style="color:var(--a5)">■ SES</span> → Confounder: <span class="badge b-ok">adjustieren</span><br><span style="color:var(--a2)">■ KG</span> → Mediator: <span class="badge b-warn">nicht adjustieren</span> (für Gesamteffekt)<br><span style="color:var(--a4)">■ AB</span> → Collider: <span class="badge b-warn">nicht adjustieren</span><br><br>Dieses Modell ist die Grundlage für <strong>alle folgenden Module</strong>. Adjustiere korrekt und falsch und beobachte die Unterschiede.',
    nodes:[{id:'T',lbl:'T\nSport',x:.18,y:.32,c:'--a3'},{id:'Y',lbl:'Y\nGesundheit',x:.82,y:.32,c:'--a1'},{id:'SES',lbl:'SES\nStatus',x:.5,y:.10,c:'--a5'},{id:'KG',lbl:'KG\nGewicht',x:.5,y:.60,c:'--a2'},{id:'AB',lbl:'AB\nArztbesuch',x:.5,y:.87,c:'--a4'}],
    edges:[{f:'SES',t:'T',tp:'back'},{f:'SES',t:'Y',tp:'back'},{f:'T',t:'Y',tp:'causal'},{f:'T',t:'KG',tp:'med'},{f:'KG',t:'Y',tp:'med'},{f:'T',t:'AB',tp:'coll'},{f:'Y',t:'AB',tp:'coll'}],
    ctl:'complex',verdict:'<span class="badge b-ok">SES adjustieren</span> <span class="badge b-warn">KG + AB NICHT adjustieren</span>'},
 ];
 
 function setStep(n){
-  ST.dagStep=n;ST.dagAdj={ses:false,kg:false,av:false};
-  [0,1,2,3].forEach(i=>{const b=document.getElementById('sb1-btn'+i);if(b)b.classList.toggle('active',i===n);});
+  ST.dagStep=n;ST.dagAdj={ses:false,kg:false,ab:false,prec:false};
+  [0,1,2,3,4].forEach(i=>{const b=document.getElementById('sb1-btn'+i);if(b)b.classList.toggle('active',i===n);});
   const lbl=document.getElementById('dag-step-lbl');if(lbl)lbl.textContent=STEPS[n].label;
   const interp=document.getElementById('dag-interp');if(interp)interp.innerHTML=STEPS[n].interp;
   updateDagControls();drawDAG();
 }
-function dagNav(d){setStep(Math.max(0,Math.min(3,ST.dagStep+d)));}
+function dagNav(d){setStep(Math.max(0,Math.min(4,ST.dagStep+d)));}
 
 function updateDagControls(){
   const cfg=STEPS[ST.dagStep];
   const dc=document.getElementById('dag-controls');if(!dc)return;
   let html='';
-  const adjBtn=(key,lbl,bad)=>{
+  const adjBtn=(key,lbl,mode)=>{
     const on=ST.dagAdj[key];
-    return `<button class="tbtn ${on?'active':''}" onclick="toggleAdj('${key}')" style="width:100%;margin-bottom:.3rem;text-align:left">${on?'⊠':'⊡'} ${lbl}${on&&bad?' ⚠':on?' ✓':''}</button>`;
+    const icon=!on?'':mode==='warn'?' ⚠':mode==='ok'?' ✓':' ℹ';
+    return `<button class="tbtn ${on?'active':''}" onclick="toggleAdj('${key}')" style="width:100%;margin-bottom:.3rem;text-align:left">${on?'⊠':'⊡'} ${lbl}${icon}</button>`;
   };
-  if(cfg.ctl==='ses')html=adjBtn('ses','SES adjustieren',false);
-  else if(cfg.ctl==='kg')html=adjBtn('kg','KG adjustieren',true);
-  else if(cfg.ctl==='ab')html=adjBtn('ab','AB adjustieren',true);
+  if(cfg.ctl==='ses')html=adjBtn('ses','SES adjustieren','ok');
+  else if(cfg.ctl==='kg')html=adjBtn('kg','KG adjustieren','neutral');
+  else if(cfg.ctl==='ab')html=adjBtn('ab','AB adjustieren','warn');
+  else if(cfg.ctl==='prec')html=adjBtn('prec','BL adjustieren','ok');
   else if(cfg.ctl==='complex'){
-    html=adjBtn('ses','SES adjustieren',false)+adjBtn('kg','KG adjustieren',true)+adjBtn('ab','AB adjustieren',true);
+    html=adjBtn('ses','SES adjustieren','ok')+adjBtn('kg','KG adjustieren','warn')+adjBtn('ab','AB adjustieren','warn');
   }
   // Feedback
   let fb='';
   if(ST.dagAdj.kg&&cfg.ctl==='kg')fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a2);margin-top:.35rem">ℹ Indirekter Pfad T→KG→Y blockiert. Nur direkter Effekt T→Y bleibt messbar.</div>';
   else if(ST.dagAdj.kg)fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a1);margin-top:.35rem">⚠ Mediatorpfad blockiert — Gesamteffekt unterschätzt!</div>';
-  if(ST.dagAdj.ab)fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a1);margin-top:.35rem">⚠ Spuriöser Pfad T ↔ Y geöffnet — M-Bias eingeführt!</div>';
+  if(ST.dagAdj.ab)fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a1);margin-top:.35rem">⚠ Spuriöser Pfad T ↔ Y geöffnet — Collider Bias (M-Bias) eingeführt!</div>';
+  if(ST.dagAdj.prec)fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a6);margin-top:.35rem">ℹ Kein Backdoor betroffen — Adjustierung verzerrt nicht, senkt aber die Varianz (mehr Präzision, wie eine ANCOVA-Kovariable).</div>';
   if(ST.dagAdj.ses&&!ST.dagAdj.kg&&!ST.dagAdj.ab)fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a3);margin-top:.35rem">✓ Korrekt adjustiert — Backdoor geschlossen.</div>';
   dc.innerHTML=html+fb;
   const dv=document.getElementById('dag-verdict');if(dv)dv.innerHTML=cfg.verdict;
@@ -668,6 +683,7 @@ function drawDAG(){
     else if(e.tp==='back'){col=adjSES?css('--a3'):css('--a1');if(adjSES)dash=[4,4];}
     else if(e.tp==='med'){col=adjKG?css('--ink3'):css('--a2');if(adjKG)dash=[4,4];}
     else if(e.tp==='coll'){col=adjAB?css('--a1'):css('--ink3');if(adjAB)dash=[3,3];}
+    else if(e.tp==='prec'){col=css('--a6');}
     drawArrow(ctx,p1.x,p1.y,p2.x,p2.y,col,dash,r,3);
   });
   // Spurious path when collider adjusted
@@ -677,12 +693,12 @@ function drawDAG(){
     ctx.beginPath();const mx=(p1.x+p2.x)/2,my=Math.min(p1.y,p2.y)-70;
     ctx.moveTo(p1.x+r,p1.y);ctx.quadraticCurveTo(mx,my,p2.x-r,p2.y);ctx.stroke();
     ctx.setLineDash([]);ctx.fillStyle=css('--a1');ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='center';
-    ctx.fillText('spuriöser Pfad (M-Bias)',mx,my-10);ctx.restore();
+    ctx.fillText('spuriöser Pfad (Collider Bias)',mx,my-10);ctx.restore();
   }
   // Nodes
   cfg.nodes.forEach(n=>{
     const {x,y}=pos[n.id];
-    const adjThis=(n.id==='SES'&&ST.dagAdj.ses)||(n.id==='KG'&&ST.dagAdj.kg)||(n.id==='AB'&&ST.dagAdj.ab);
+    const adjThis=(n.id==='SES'&&ST.dagAdj.ses)||(n.id==='KG'&&ST.dagAdj.kg)||(n.id==='AB'&&ST.dagAdj.ab)||(n.id==='BL'&&ST.dagAdj.prec);
     // outer ring if adjusted
     if(adjThis){
       ctx.beginPath();ctx.arc(x,y,r+7,0,2*Math.PI);
@@ -697,7 +713,7 @@ function drawDAG(){
     if(lines[1]){ctx.font='11px DM Mono,monospace';ctx.fillStyle=css(n.c||'--ink2');ctx.fillText(lines[1],x,y+10);}
   });
   const leg=document.getElementById('dag-legend');
-  if(leg)leg.innerHTML=`<span style="color:var(--a3)">━ Kausalpfad</span><span style="color:var(--a1)">━ Backdoor-Pfad</span><span style="color:var(--a2)">━ Mediationspfad</span><span style="color:var(--ink3)">━ Collider (blockiert)</span><span style="color:var(--a3)">⊙ = adjustiert</span>`;
+  if(leg)leg.innerHTML=`<span style="color:var(--a3)">━ Kausalpfad</span><span style="color:var(--a1)">━ Backdoor-Pfad</span><span style="color:var(--a2)">━ Mediationspfad</span><span style="color:var(--ink3)">━ Collider (blockiert)</span><span style="color:var(--a6)">━ Präzisionspfad</span><span style="color:var(--a3)">⊙ = adjustiert</span>`;
 }
 function drawArrow(ctx,x1,y1,x2,y2,col,dash,r,lw){
   const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);if(len<1)return;
@@ -763,7 +779,7 @@ function renderPO(){
     const y1c=u.t?`<strong style="color:var(--a3)">${u.y1}</strong>`:rev?`<span style="color:var(--a3);opacity:.5">${u.y1}</span>`:`<span class="po-qm" data-tip="hypothetisch: ${u.y1}">?</span>`;
     const y0c=!u.t?`<strong style="color:var(--a1)">${u.y0}</strong>`:rev?`<span style="color:var(--a1);opacity:.5">${u.y0}</span>`:`<span class="po-qm" data-tip="hypothetisch: ${u.y0}">?</span>`;
     const ite=u.y1-u.y0;
-    const itec=rev?`<span style="color:${ite>=0?'var(--a3)':'var(--a1)'}">${ite>0?'+':''}${ite}</span>`:`<span class="po-qm" data-tip="ITE = ${ite}">?</span>`;
+    const itec=rev?`<span style="color:${ite>=0?'var(--a3)':'var(--a1)'}">${ite>0?'+':''}${ite}</span>`:`<span class="po-qm" data-tip="ICE = ${ite}">?</span>`;
     html+=`<tr><td style="text-align:left;color:var(--ink2);font-size:.75rem">P${u.id}</td><td>${sLbl}</td><td>${tLbl}</td><td>${y1c}</td><td>${y0c}</td><td>${itec}</td><td style="color:var(--ink2)">${u.y}</td></tr>`;
   });
   const tb=document.getElementById('po-tbody');if(tb)tb.innerHTML=html;
@@ -1055,7 +1071,7 @@ function renderGCompPredTable(D,gm){
   html+='</tbody></table></div>';
   html+=`<div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.45rem">`;
   html+=`Ŷ(t) = Ê[Y|T=t, SES] = Gruppenmittelwert. Personen mit gleicher SES erhalten denselben Wert. `;
-  html+=`Das ist der G-Computation-Schätzer des individuellen Effekts — analog zum ITE aus Modul ②, aber <em>aus Daten geschätzt, nicht direkt beobachtet</em>.</div>`;
+  html+=`Das ist der G-Computation-Schätzer des individuellen Effekts — analog zum ICE aus Modul <span class="circ">②</span>, aber <em>aus Daten geschätzt, nicht direkt beobachtet</em>.</div>`;
   const el=document.getElementById('gc-pred-table');if(el)el.innerHTML=html;
 }
 function getGCRefPop(D){
@@ -1070,7 +1086,7 @@ function drawGComp(){
   document.getElementById('gc-result').innerHTML='';
   document.getElementById('gc-y1-lbl').innerHTML='';document.getElementById('gc-y0-lbl').innerHTML='';
   document.getElementById('gc-nums').innerHTML='';
-  const btn=document.getElementById('btn-gc');if(btn){btn.textContent='③ G-Computation zeigen';btn.classList.remove('active');}
+  const btn=document.getElementById('btn-gc');if(btn){btn.innerHTML='<span class="circ">③</span> G-Computation zeigen';btn.classList.remove('active');}
 }
 const GC_DESC={ate:'Standardisierung über alle 300 Personen (Gesamtpopulation)',att:'Standardisierung über die SES-Verteilung der Behandelten (T=1)',atu:'Standardisierung über die SES-Verteilung der Unbehandelten (T=0)'};
 function setGCEst(e){
@@ -1080,7 +1096,7 @@ function setGCEst(e){
   document.getElementById('gc-result').innerHTML='';
   document.getElementById('gc-y1-lbl').innerHTML='';document.getElementById('gc-y0-lbl').innerHTML='';
   document.getElementById('gc-nums').innerHTML='';
-  const btn=document.getElementById('btn-gc');if(btn){btn.textContent='③ G-Computation zeigen';btn.classList.remove('active');}
+  const btn=document.getElementById('btn-gc');if(btn){btn.innerHTML='<span class="circ">③</span> G-Computation zeigen';btn.classList.remove('active');}
   setTimeout(()=>{drawWorld(ST.data,1,getGCRefPop(ST.data));drawWorld(ST.data,0,getGCRefPop(ST.data));},20);
 }
 function drawGModel(D){
@@ -1225,14 +1241,14 @@ const HELP={
     <ul>
       <li><strong>SES</strong> (sozioökon. Status): beeinflusst sowohl, wer Sport treibt, als auch die Herzgesundheit direkt — klassischer <strong>Confounder</strong>. SES→T und SES→Y. Backdoor-Pfad ist offen → <em>muss</em> adjustiert werden.</li>
       <li><strong>Körpergewicht (KG)</strong>: Sport senkt Körpergewicht, niedrigeres Gewicht verbessert Herzgesundheit — T→KG→Y. Das ist ein <strong>Mediator</strong>, also Teil des kausalen Pfades. Ob adjustiert werden darf, hängt von der Forschungsfrage ab: Interessiert der <em>totale</em> Effekt von Sport (generelle Wirksamkeit), darf KG <em>nicht</em> kontrolliert werden — sonst blockiert man den Wirkpfad. Interessiert der <em>direkte</em> Effekt von Sport jenseits des Gewichtspfades (z. B. kardiovaskuläre Anpassung unabhängig vom Gewicht), muss für KG adjustiert und der indirekte Pfad separat berechnet werden.</li>
-      <li><strong>Arbeitsstatus (AB)</strong>: Weder Sport noch SES verursachen Arbeitsstatus direkt — aber beide beeinflussen ihn (T→AB und SES→AB). Das macht AB zu einem <strong>Collider</strong>. Ohne Adjustierung ist der Pfad T→AB←SES blockiert und erzeugt keine Verzerrung. Adjustiert man AB, öffnet man diesen Pfad und erzeugt einen spuriösen Zusammenhang zwischen T und SES — <em>nicht</em> adjustieren!</li>
+      <li><strong>Arztbesuch (AB)</strong>: Weder Sport noch SES verursachen Arztbesuche direkt — aber sowohl Sport als auch (schlechte) Herzgesundheit führen zu mehr Arztbesuchen (T→AB und Y→AB). Das macht AB zu einem <strong>Collider</strong> auf dem Pfad zwischen T und Y. Ohne Adjustierung ist der Pfad T→AB←Y blockiert und erzeugt keine Verzerrung. Adjustiert man AB, öffnet man diesen Pfad und erzeugt eine spuriöse Assoziation zwischen T und Y — <em>nicht</em> adjustieren!</li>
     </ul>
-    <p>Die zentrale Frage: Woher weiß man, was was ist? Nur aus kausalen Vorannahmen — nicht aus den Daten. Dafür braucht man einen <strong>DAG</strong> (Modul ①).</p>
-    <h3>Modul ② — Potential Outcomes: Was wären kausale Effekte?</h3>
+    <p>Die zentrale Frage: Woher weiß man, was was ist? Nur aus kausalen Vorannahmen — nicht aus den Daten. Dafür braucht man einen <strong>DAG</strong> (Modul <span class="circ">①</span>).</p>
+    <h3>Modul <span class="circ">②</span> — Potential Outcomes: Was wären kausale Effekte?</h3>
     <p>Um den kausalen Effekt von Sport für Person i zu definieren, denkt man in zwei parallelen Welten:
     <strong>Y_i(1)</strong> = Herzgesundheit von i, wenn sie Sport treibt, und
     <strong>Y_i(0)</strong> = Herzgesundheit von i, wenn sie keinen Sport treibt.
-    Der individuelle kausale Effekt wäre ITE_i = Y_i(1) − Y_i(0).</p>
+    Der individuelle kausale Effekt wäre ICE_i = Y_i(1) − Y_i(0).</p>
     <p>Das fundamentale Problem: Wir beobachten für jede Person immer nur <em>eine</em> dieser Welten —
     die andere ist kontrafaktisch und logisch unbeobachtbar. Es ist kein Datenproblem, das mehr Daten lösen würden: dieselbe Person kann nicht gleichzeitig Sport treiben und es lassen.</p>
     <p>Um trotzdem etwas zu lernen, wechselt man die Ebene: Statt individueller Effekte schätzt man
@@ -1247,7 +1263,7 @@ const HELP={
     <strong>IPW</strong> rebalanciert die beobachteten Gruppen so, dass sie einer randomisierten Zuteilung ähneln — und schätzt so E[Y(1)] und E[Y(0)] ohne die fehlenden Kontrafaktualen direkt zu benötigen.
     <strong>G-Computation</strong> geht noch einen Schritt weiter und schätzt für jede Person beide Potenzialzustände aus einem Outcome-Modell — die nächste Annäherung an das, was ein echtes Experiment direkt liefern würde.
     Beide Verfahren lösen das Problem nicht im logischen Sinne, sondern umgehen es durch gezielte Annahmen — und genau diese Annahmen (Ignorierbarkeit, korrektes Modell) müssen inhaltlich begründet werden.</p>
-    <h3>Modul ③ — Konfundierung: Zwei Quellen des Bias</h3>
+    <h3>Modul <span class="circ">③</span> — Konfundierung: Zwei Quellen des Bias</h3>
     <p>Der naive Gruppenvergleich E[Y|T=1] − E[Y|T=0] ist nicht E[Y(1)] − E[Y(0)].
     Die Heckman-Zerlegung zeigt, woher die Verzerrung kommt:</p>
     <span class="formula">Naiv = ATE + Selection Bias + HTEB</span>
@@ -1256,12 +1272,12 @@ const HELP={
       <li><strong>HTEB</strong> (Heterogeneous Treatment Effect Bias) = (1−π)·(ATT−ATU): Selbst wenn keine Baseline-Unterschiede bestünden, könnte die Gruppe, die Sport treibt, stärker davon profitieren als die Gruppe, die es lässt — weil sie körperlich prädisponierter ist. HTEB ist null, wenn ATT = ATU (homogene Effekte) oder wenn π = 1.</li>
     </ul>
     <p>Im Tool: Naiver Schätzer ≈ 19 Punkte, wahrer ATE ≈ 10 Punkte — der Bias von ~9 Punkten stammt überwiegend aus dem Selection Bias durch SES.</p>
-    <h3>Modul ④ — IPW (Inverse Probability Weighting)</h3>
+    <h3>Modul <span class="circ">④</span> — IPW (Inverse Probability Weighting)</h3>
     <p>Propensity Score e(C) = P(T=1|C) schätzt die Wahrscheinlichkeit, Sport zu treiben, gegeben SES.
     IPW-Gewichte w = T/e(C) + (1−T)/(1−e(C)) rebalancieren die Stichprobe so, dass SES in der
     gewichteten Population nicht mehr mit T zusammenhängt — eine pseudo-randomisierte Verteilung entsteht.
     Der gewichtete Mittelwertvergleich schätzt dann den ATE ohne Confounder-Bias.</p>
-    <h3>Modul ⑤ — G-Computation: Potential Outcomes aus Modelldaten</h3>
+    <h3>Modul <span class="circ">⑤</span> — G-Computation: Potential Outcomes aus Modelldaten</h3>
     <p>G-Computation schließt den Kreis zu Potential Outcomes: Statt in der Realität zwei Welten zu beobachten,
     schätzt man sie aus einem Regressionsmodell (Y ~ T + C). Dann wird für <em>jede Person</em> das Modell
     zweimal ausgewertet — einmal mit T=1 (als wäre sie Sportler), einmal mit T=0 (als wäre sie kein Sportler).
@@ -1276,8 +1292,8 @@ const HELP={
     robuster als jedes Verfahren allein.</p>
     <p class="ref">Pearl (2009). <em>Causality.</em> · Hernán &amp; Robins (2020). <em>Causal Inference: What If.</em> · Heckman et al. (1998). JASA. · Robins et al. (1994). G-Computation.</p>
   `},
-  dag:{title:'DAG — Directed Acyclic Graph',body:`<h3>Was ist ein DAG?</h3><p>Ein DAG (Directed Acyclic Graph) ist eine formale Darstellung kausaler Annahmen. Knoten = Variablen, Pfeile = kausale Einflüsse. „Acyclic" bedeutet: keine Rückschleifen — Ursache und Wirkung werden klar getrennt.</p><h3>Drei kausale Rollen</h3><ul><li><strong>Confounder C:</strong> C→T und C→Y. Backdoor-Pfad offen → adjustieren!</li><li><strong>Mediator M:</strong> T→M→Y. Auf dem Kausalweg → nicht adjustieren!</li><li><strong>Collider K:</strong> T→K←Y. Blockiert → bei Adjustierung öffnet sich spuriöser Pfad!</li></ul><h3>d-Separation</h3><p>Zwei Variablen sind d-separiert (bedingt unabhängig), wenn alle verbindenden Pfade blockiert sind. Collider blockieren, Confounder und Mediatoren können durch Konditionieren blockiert werden.</p><p class="ref">Pearl, J. (2009). <em>Causality</em> (2nd ed.). Cambridge. · Hernán & Robins (2020). <em>Causal Inference: What If.</em></p>`},
-  po:{title:'Potential Outcomes Framework',body:`<h3>Das Framework (Rubin, 1974)</h3><p>Jede Person i hat zwei potenzielle Outcomes: Y_i(1) bei Behandlung, Y_i(0) ohne Behandlung. Der individuelle kausale Effekt (ITE) ist ITE_i = Y_i(1) − Y_i(0).</p><h3>Das fundamentale Problem</h3><p>Wir beobachten immer nur eines der beiden — das andere ist kontrafaktisch und für immer unbeobachtbar. Das ist kein statistisches, sondern ein logisches Problem.</p><h3>Populationsschätzer</h3><span class="formula">ATE = E[Y(1) − Y(0)]</span><span class="formula">ATT = E[Y(1) − Y(0) | T=1]</span><span class="formula">ATU = E[Y(1) − Y(0) | T=0]</span><p>Bei heterogenen Effekten gilt: ATE ≠ ATT ≠ ATU. Welcher Estimand relevant ist, hängt von der Forschungsfrage ab.</p><p class="ref">Rubin, D. B. (1974). <em>JASA, 69</em>, 689–701. · Imbens & Rubin (2015). <em>Causal Inference for Statistics.</em></p>`},
+  dag:{title:'DAG — Directed Acyclic Graph',body:`<h3>Was ist ein DAG?</h3><p>Ein DAG (Directed Acyclic Graph) ist eine formale Darstellung kausaler Annahmen. Knoten = Variablen, Pfeile = kausale Einflüsse. „Acyclic" bedeutet: keine Rückschleifen — Ursache und Wirkung werden klar getrennt.</p><h3>Vier kausale Rollen</h3><ul><li><strong>Confounder C:</strong> C→T und C→Y. Backdoor-Pfad offen → adjustieren <em>müssen</em>!</li><li><strong>Mediator M:</strong> T→M→Y. Auf dem Kausalweg → nicht adjustieren, sonst verschwindet der zu messende (Gesamt-)Effekt!</li><li><strong>Collider K:</strong> T→K←Y. Blockiert → bei Adjustierung öffnet sich spuriöser Pfad (<strong>Collider Bias</strong>; Spezialfall mit M-förmiger Struktur: <strong>M-Bias</strong>) → nicht adjustieren!</li><li><strong>Präzisionsvariable P:</strong> nur P→Y, kein Pfeil zu T. Kein Confounder, da keine Verbindung zu T besteht → adjustieren <em>dürfen</em> (nicht müssen) — verringert die Varianz der Schätzung, ohne Bias einzuführen.</li></ul><h3>d-Separation</h3><p>Zwei Variablen sind d-separiert (bedingt unabhängig), wenn alle verbindenden Pfade blockiert sind. Collider blockieren, Confounder und Mediatoren können durch Konditionieren blockiert werden.</p><p class="ref">Pearl, J. (2009). <em>Causality</em> (2nd ed.). Cambridge. · Hernán & Robins (2020). <em>Causal Inference: What If.</em></p>`},
+  po:{title:'Potential Outcomes Framework',body:`<h3>Das Framework (Rubin, 1974)</h3><p>Jede Person i hat zwei potenzielle Outcomes: Y_i(1) bei Behandlung, Y_i(0) ohne Behandlung. Der individuelle kausale Effekt (ICE) ist ICE_i = Y_i(1) − Y_i(0).</p><h3>Das fundamentale Problem</h3><p>Wir beobachten immer nur eines der beiden — das andere ist kontrafaktisch und für immer unbeobachtbar. Das ist kein statistisches, sondern ein logisches Problem.</p><h3>Populationsschätzer</h3><span class="formula">ATE = E[Y(1) − Y(0)]</span><span class="formula">ATT = E[Y(1) − Y(0) | T=1]</span><span class="formula">ATU = E[Y(1) − Y(0) | T=0]</span><p>Bei heterogenen Effekten gilt: ATE ≠ ATT ≠ ATU. Welcher Estimand relevant ist, hängt von der Forschungsfrage ab.</p><p class="ref">Rubin, D. B. (1974). <em>JASA, 69</em>, 689–701. · Imbens & Rubin (2015). <em>Causal Inference for Statistics.</em></p>`},
   conf:{title:'Konfundierung und Omitted Variable Bias',body:`<h3>Definition</h3><p>Konfundierung liegt vor, wenn eine Variable C sowohl T als auch Y beeinflusst. Der naive Schätzer misst E[Y|T=1]−E[Y|T=0] — eine Mischung aus kausalem Effekt und Confounder-Effekt.</p><h3>Omitted Variable Bias</h3><span class="formula">Naiver Effekt = ATE + Bias</span><p>Der Bias ist: Corr(T,C) × Effekt(C→Y) / SD(T). Je stärker C mit T korreliert und je stärker C auf Y wirkt, desto größer der Bias.</p><h3>Wahrer ATE vs. adjustierter Wert</h3><p>In echten Daten ist der „wahre" ATE unbekannt. Im Tool können wir ihn aus den simulierten Potential Outcomes berechnen (mean(Y_i(1)−Y_i(0))). Der adjustierte Stratifikationsschätzer nähert sich dem wahren ATE, ist aber kein exakter Wert — er hat Stichprobenvarianz und kann leicht davon abweichen.</p><h3>Lösung</h3><p>Wenn alle Confounder beobachtet: Stratifizierung, Regression, IPW oder G-Computation. Wenn nicht: Instrumentalvariablen, DiD, RDD etc.</p><p class="ref">Hernán & Robins (2020). <em>Causal Inference: What If.</em> · VanderWeele (2015). <em>Explanation in Causal Inference.</em></p>`},
   ovb:{title:'Omitted Variable Bias — Die Formel',body:`<h3>Formale Zerlegung</h3><p>Wenn Confounder C weggelassen wird, ergibt die OLS-Schätzung:</p><span class="formula">β̂_naiv = β_T + β_C · δ_TC</span><p>wobei β_T = wahrer kausaler Effekt von T, β_C = Effekt von C auf Y, δ_TC = Regressionskoeffizient von T auf C (= Corr(T,C)·SD(C)/SD(T)).</p><h3>Richtung des Bias</h3><ul><li>C und T positiv korreliert + C positiver Effekt auf Y → Bias positiv (Überschätzung)</li><li>C und T negativ korreliert oder C negativer Effekt → Bias negativ (Unterschätzung)</li></ul><h3>In diesem Tool</h3><p>SES ist positiv mit T korreliert (P(T=1|SES=1)≈0.91) und positiv mit Y (SES-Effekt ≈ +11 Punkte). Daher: Bias > 0, naiver Effekt überschätzt ATE.</p><span class="formula">Bias = Naiv − Adjustiert ≈ 9–10 Punkte</span><p class="ref">Angrist & Pischke (2009). <em>Mostly Harmless Econometrics.</em> Kap. 3.</p>`},
   pscore:{title:'Propensity Score',body:`<h3>Definition</h3><p>Der Propensity Score ist die bedingte Wahrscheinlichkeit der Behandlung gegeben die Kovariaten:</p><span class="formula">e(X) = P(T=1 | X)</span><h3>Balancing Property</h3><p>Wenn X alle Confounder enthält, gilt: T ⊥ X | e(X). Innerhalb desselben Propensity-Score-Wertes sind Behandelte und Kontrollpersonen bzgl. X vergleichbar — wie in einer Randomisierung.</p><h3>Schätzung</h3><p>In der Praxis wird e(X) aus den Daten geschätzt, meist per logistischer Regression: P(T=1|X) = logistic(α + βX). In diesem Tool ist SES die einzige Kovariate.</p><p class="ref">Rosenbaum & Rubin (1983). <em>Biometrika, 70</em>, 41–55.</p>`},
@@ -1291,6 +1307,9 @@ function closeHelp(){document.getElementById('help-modal').classList.remove('ope
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
 
 // ═══ INIT ════════════════════════════════════════════════════════════════════
+if(document.documentElement.getAttribute('data-theme')==='light'){
+  const tb=document.getElementById('theme-btn');if(tb)tb.textContent='🌙 Dark';
+}
 setStep(0);
 document.getElementById('est-desc').textContent=EST_DESC['ate'];
 document.getElementById('conf-lbl').textContent='sehr stark';
