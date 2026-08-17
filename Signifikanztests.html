@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Signifikanztests — MethodsLab</title>
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+.tbtn-accent{border-color:var(--accent)!important;color:var(--accent)!important}
+.tbtn-accent:hover{background:var(--accent)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:250px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sb-stat{font-family:'DM Mono',monospace;font-size:.78rem;line-height:1.9;color:var(--ink2)}
+.sb-stat b{color:var(--ink)}
+.sb-note{font-size:.82rem;line-height:1.65;color:var(--ink2)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.7rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.circ{font-size:1.4em;vertical-align:-.1em;line-height:1;display:inline-block}
+.p-intro{font-size:.92rem;line-height:1.85;color:var(--ink2);margin-bottom:.75rem}
+.p-intro strong{color:var(--ink)}
+.example-box{background:var(--panel);border-left:3px solid var(--a2);padding:.85rem 1rem;
+  margin-bottom:.9rem;font-size:.88rem;line-height:1.75}
+.example-box strong{color:var(--a2)}
+.slider-panel{background:var(--panel);border:1px solid var(--grid);padding:1rem 1.1rem;margin-bottom:.85rem}
+.slider-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem 1.4rem}
+.slider-row{margin-bottom:.15rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.22rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink);border-radius:50%;cursor:pointer;border:none}
+.btn-row{display:flex;gap:.5rem;flex-wrap:wrap;margin:.7rem 0}
+.canvas-wrap{background:var(--panel);border:1px solid var(--grid);margin-bottom:.6rem;overflow:hidden}
+.canvas-wrap canvas{width:100%;display:block}
+.canvas-axis-note{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);
+  padding:.5rem .85rem;border-top:1px solid var(--grid);line-height:1.5}
+.live-readout{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a5);
+  padding:.7rem .9rem;margin-bottom:.9rem;font-family:'DM Mono',monospace;font-size:.83rem;line-height:1.7;color:var(--ink)}
+.live-readout .big{font-size:1.05rem;font-weight:500}
+.step-block{margin-bottom:1.1rem}
+.step-h{font-size:1rem;font-weight:300;margin-bottom:.35rem}
+.step-body{font-size:.87rem;line-height:1.8;color:var(--ink2)}
+.step-body strong{color:var(--ink)}
+.step-body a{color:var(--a2)}
+.myth-card{background:var(--panel);border:1px solid var(--grid);padding:.9rem 1rem;margin-bottom:.8rem}
+.myth-row{display:flex;gap:.6rem;align-items:baseline;margin-bottom:.35rem}
+.myth-tag{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:.12rem .5rem;border:1px solid var(--a1);color:var(--a1);white-space:nowrap}
+.myth-tag.fact{border-color:var(--a3);color:var(--a3)}
+.myth-txt{font-size:.9rem;line-height:1.6}
+.myth-txt.myth{color:var(--ink2);font-style:italic}
+.myth-txt.fact-txt{color:var(--ink)}
+.myth-demo{margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--grid);font-size:.85rem;line-height:1.6}
+.myth-demo a{color:var(--a2)}
+.mini-table{width:100%;border-collapse:collapse;margin-top:.4rem;font-family:'DM Mono',monospace;font-size:.79rem}
+.mini-table th{text-align:left;padding:.28rem .5rem;border-bottom:1px solid var(--grid);color:var(--ink3);
+  font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;background:var(--paper)}
+.mini-table th.num{text-align:right}
+.mini-table td{padding:.28rem .5rem;border-bottom:1px solid var(--grid);background:var(--paper)}
+.mini-table td.num{text-align:right;font-weight:500;color:var(--ink)}
+.learn-section{margin-top:2.2rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body a{color:var(--a2)}
+.gk{text-transform:none!important;font-style:normal}
+.help-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.82);overflow-y:auto;padding:2rem 1rem}
+.help-overlay.open{display:block}
+.help-panel{max-width:700px;margin:0 auto;background:var(--paper);border:1px solid var(--border);padding:2rem}
+.help-panel h2{font-family:'Fraunces',serif;font-weight:300;font-size:1.2rem;margin-bottom:1.2rem}
+.help-h3{font-family:'DM Mono',monospace;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--a1);margin:1.1rem 0 .35rem}
+.help-p{font-size:.85rem;line-height:1.8;color:var(--ink2);margin-bottom:.6rem}
+.help-p code{font-family:'DM Mono',monospace;font-size:.8rem;background:var(--panel);padding:.1rem .35rem;color:var(--ink)}
+.help-p a{color:var(--a2)}
+.help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
+  border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
+.help-close:hover{background:var(--a1);color:var(--bg)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Signifikanztests — <em>was p wirklich bedeutet</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- HELP OVERLAY -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-panel">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
+      <h2>Hilfe — Signifikanztests</h2>
+      <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+    </div>
+    <div class="help-h3">Was zeigt dieses Tool?</div>
+    <p class="help-p">Eine geführte Einführung in den p-Wert anhand eines einzigen durchgehenden Beispiels: eines Zwei-Gruppen-Vergleichs. Zwei Simulationen machen die Definition und die Grenzen des p-Werts direkt erlebbar, statt sie nur zu behaupten.</p>
+    <div class="help-h3">Die Definition</div>
+    <p class="help-p">p&nbsp;=&nbsp;P(Daten, die mindestens so extrem sind wie die beobachteten&nbsp;|&nbsp;H₀ ist wahr). Das ist eine bedingte Wahrscheinlichkeit über <strong style="color:var(--ink)">Daten</strong>, keine Aussage über die Wahrscheinlichkeit von H₀ selbst — eine der häufigsten Verwechslungen überhaupt (siehe Mythos&nbsp;①).</p>
+    <div class="help-h3">Abschnitt ①: Wiederholte Ziehung unter H₀</div>
+    <p class="help-p">Jeder Klick auf "Stichprobe ziehen" simuliert zwei neue Gruppen, zwischen denen in Wahrheit kein Unterschied besteht (H₀ trifft in der Simulation garantiert zu). Der resultierende t-Wert wird auf der t-Verteilung markiert; die Trefferquote "mindestens so extrem wie unser t" konvergiert mit wachsender Anzahl Ziehungen gegen den formal berechneten p-Wert.</p>
+    <div class="help-h3">Abschnitt ②: Der p-Wert-Tanz</div>
+    <p class="help-p">Jetzt mit einem <strong style="color:var(--ink)">echten, festen</strong> Effekt (Regler). Jede "Replikation" zieht neue Stichproben aus exakt derselben Population und berechnet einen neuen p-Wert. Das Ergebnis: selbst bei identischem wahren Effekt streuen die p-Werte stark — ein einzelner p-Wert ist kein verlässliches Maß für die Stärke oder Replizierbarkeit eines Befunds (Geoff Cummings "Dance of the p-values").</p>
+    <div class="help-h3">Statistischer Test im Hintergrund</div>
+    <p class="help-p">Alle Simulationen verwenden einen ungepaarten Zwei-Stichproben-t-Test mit gleicher Gruppengröße n und angenommener Varianzhomogenität: t&nbsp;=&nbsp;(M₁−M₂)/(SD·√(2/n)), df&nbsp;=&nbsp;2n−2, zweiseitiger p-Wert über die t-Verteilung.</p>
+  </div>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Unsere Studie</div>
+    <div class="sb-stat">
+      n&nbsp;=&nbsp;<b>25</b> pro Gruppe<br>
+      M<sub>Kontrolle</sub>&nbsp;=&nbsp;<b>100.0</b><br>
+      M<sub>Intervention</sub>&nbsp;=&nbsp;<b>107.0</b><br>
+      SD&nbsp;=&nbsp;<b>12.0</b> (gepoolt)<br>
+      <span style="border-top:1px solid var(--grid);display:block;margin-top:.35rem;padding-top:.35rem">
+      t(48)&nbsp;=&nbsp;<b id="sb-t">2.062</b><br>
+      p&nbsp;=&nbsp;<b id="sb-p">.045</b></span>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Kernaussage</div>
+    <div class="sb-note">Ein p-Wert ist eine Aussage über <strong style="color:var(--ink)">Daten unter H₀</strong> — nicht über die Wahrscheinlichkeit, dass H₀ (oder H₁) stimmt.</div>
+  </div>
+
+</div><!-- /sidebar -->
+
+<div id="main">
+
+  <div class="p-intro">
+    <strong>Was ist eigentlich ein p-Wert?</strong> p&nbsp;=&nbsp;die Wahrscheinlichkeit, ein Ergebnis <em>mindestens so extrem</em> wie das beobachtete zu erhalten, <em>wenn die Nullhypothese H₀ (kein wahrer Unterschied) zuträfe</em>. Das ist eine sehr spezifische, bedingte Aussage über Daten — und wird trotzdem ständig mit ganz anderen Aussagen verwechselt (dazu unten mehr). Am besten versteht man sie nicht durch die Formel, sondern durch Wiederholung: was würde passieren, wenn wir dieselbe Studie unter H₀ immer wieder durchführen könnten?
+  </div>
+
+  <div class="example-box">
+    <strong>Laufendes Beispiel:</strong> Ein neues Lernprogramm soll die Merkfähigkeit verbessern. Kontrollgruppe (klassisches Lernen, n=25) vs. Interventionsgruppe (neues Programm, n=25), Testergebnis 0–150 Punkte. Beobachtet: M<sub>Kontrolle</sub>=100, M<sub>Intervention</sub>=107, SD=12 (gepoolt) → t(48)=2.06, p=.045. Knapp signifikant bei α=.05 — aber was heißt das eigentlich?
+  </div>
+
+  <div class="sec-h">① Wiederholte Ziehung unter H₀: Was der p-Wert wirklich zählt</div>
+
+  <div class="step-block">
+    <div class="step-body">Stell dir vor, das Lernprogramm hätte in Wahrheit <strong>keinen</strong> Effekt (H₀ trifft zu). Jeder Klick unten zieht zwei neue, fiktive Gruppen aus <em>derselben</em> Population und berechnet deren t-Wert. Beobachte, wie oft ein Ergebnis mindestens so extrem wie unser t=2.06 rein zufällig auftritt.</div>
+  </div>
+
+  <div class="btn-row">
+    <button class="tbtn tbtn-accent" onclick="drawOne()">🎲 Eine Stichprobe ziehen</button>
+    <button class="tbtn tbtn-accent" onclick="drawMany(50)">⏩ 50 auf einmal</button>
+    <button class="tbtn" onclick="resetSim1()">↺ Zurücksetzen</button>
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="cv1" height="450"></canvas>
+  </div>
+  <div class="canvas-axis-note">x-Achse: simulierter t-Wert · Kurve = theoretische t-Verteilung unter H₀ (df=48) · rote Fläche = "mindestens so extrem wie unser t=2.06"</div>
+
+  <div class="live-readout" id="readout1">Noch keine Stichprobe gezogen.</div>
+
+  <div class="step-block">
+    <div class="step-h"><span class="circ">①</span>&nbsp; Konvergenz gegen den p-Wert</div>
+    <div class="step-body">Mit wachsender Anzahl Ziehungen nähert sich der simulierte Anteil "mindestens so extrem" dem formal berechneten p=.045 an. Das <em>ist</em> die Definition — keine Interpretation, keine Zusatzannahme über die Nullhypothese selbst. p ist eine Eigenschaft der <strong>Daten unter H₀</strong>, nicht eine Eigenschaft von H₀.</div>
+  </div>
+
+  <div class="sec-h">② Der p-Wert-Tanz: Wie stabil ist ein einzelner p-Wert?</div>
+
+  <div class="step-block">
+    <div class="step-body">Jetzt umgekehrt: Es gibt einen <strong>echten, festen</strong> Effekt — aber jede Replikation zieht neue, zufällige Stichproben. Wie sehr springt der p-Wert von Replikation zu Replikation, obwohl der wahre Effekt sich nie ändert?</div>
+  </div>
+
+  <div class="slider-panel">
+    <div class="slider-grid">
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">Wahrer Effekt d</span><span class="slider-val" id="v-d2">0.50</span></div>
+        <input type="range" id="sl-d2" min="0" max="120" step="1" value="50" oninput="onDance2Change()">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">n pro Gruppe</span><span class="slider-val" id="v-n2">25</span></div>
+        <input type="range" id="sl-n2" min="10" max="100" step="1" value="25" oninput="onDance2Change()">
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="tbtn tbtn-accent" onclick="danceOne()">🎲 Nächste Replikation</button>
+    <button class="tbtn tbtn-accent" onclick="danceMany(10)">⏩ 10 automatisch</button>
+    <button class="tbtn tbtn-accent" onclick="danceMany(100)">⏩⏩ 100 automatisch</button>
+    <button class="tbtn" onclick="resetSim2()">↺ Zurücksetzen</button>
+  </div>
+
+  <div class="canvas-wrap">
+    <canvas id="cv2" height="690"></canvas>
+  </div>
+  <div class="canvas-axis-note">Oben: jeder Punkt eine Replikation (p-Wert, 0–1) · unten: Histogramm aller bisherigen p-Werte, dieselbe x-Achse · <strong style="color:var(--a3)">grüne Kurve</strong> = theoretisch erwartete Dichte bei aktuellem d und n (bei d=0 flach, sonst linkssteil) · gestrichelte Linie = α=.05</div>
+
+  <div class="live-readout" id="readout2">Noch keine Replikation gezogen.</div>
+
+  <div class="step-block">
+    <div class="step-h"><span class="circ">②</span>&nbsp; Ein p-Wert ist kein Replizierbarkeits-Maß</div>
+    <div class="step-body">Bei realistischer Power (z.&nbsp;B. 50–70%) ist es normal, dass eine knapp signifikante Replikation direkt gefolgt wird von einer, die es nicht ist — obwohl der wahre Effekt konstant bleibt. Ein einzelner p-Wert sagt fast nichts darüber aus, wie ein zweiter Versuch ausgehen würde. Das ist als <strong>"Dance of the p-values"</strong> bekannt (Geoff Cumming).</div>
+  </div>
+
+  <div class="step-block">
+    <div class="step-h"><span class="circ">③</span>&nbsp; Die Form der p-Wert-Verteilung</div>
+    <div class="step-body">Die <strong style="color:var(--a3)">grüne Kurve</strong> im unteren Panel zeigt die theoretisch erwartete Dichte der p-Werte für den aktuell eingestellten wahren Effekt d und n — nicht simuliert, sondern exakt berechnet. Bei <strong>d=0</strong> (H₀ stimmt exakt) ist sie <strong>flach bei 1</strong>: eine Gleichverteilung, egal wie groß n ist. Erhöhst du d, wird sie zunehmend <strong>linkssteil</strong>: kleine p-Werte werden wahrscheinlicher, große seltener — und je größer d (oder n), desto steiler. Die blauen/roten Balken sind die tatsächlich gezogenen Replikationen; klicke ein paar Mal auf "automatisch" und beobachte, wie sich das Histogramm der grünen Kurve annähert.</div>
+  </div>
+
+  <div class="sec-h">Mythen vs. Fakten</div>
+
+  <div class="myth-card">
+    <div class="myth-row"><span class="myth-tag">Mythos</span><span class="myth-txt myth">"p ist die Wahrscheinlichkeit, dass H₀ stimmt."</span></div>
+    <div class="myth-row"><span class="myth-tag fact">Fakt</span><span class="myth-txt fact-txt">p = P(Daten | H₀), nicht P(H₀ | Daten). Diese beiden bedingten Wahrscheinlichkeiten sind nur in Ausnahmefällen gleich groß — eine Verwechslung, die in der Bayes-Statistik besonders sichtbar wird.</span></div>
+    <div class="myth-demo"><a href="Lindleys_Paradox.html">→ Lindley's Paradox: wenn p&lt;.05, der Bayes-Faktor aber H₀ stützt</a></div>
+  </div>
+
+  <div class="myth-card">
+    <div class="myth-row"><span class="myth-tag">Mythos</span><span class="myth-txt myth">"p&lt;.05 heißt: der Effekt ist praktisch bedeutsam."</span></div>
+    <div class="myth-row"><span class="myth-tag fact">Fakt</span><span class="myth-txt fact-txt">p hängt von Effektgröße <em>und</em> Stichprobengröße ab. Ein winziger, irrelevanter Effekt wird bei genug Daten fast immer signifikant.</span></div>
+    <div class="myth-demo">
+      <div class="slider-row" style="max-width:420px">
+        <div class="slider-lbl"><span class="slider-name">n pro Gruppe (bei festem, winzigem d=0.05)</span><span class="slider-val" id="v-n3">20</span></div>
+        <input type="range" id="sl-n3" min="10" max="5000" step="10" value="20" oninput="onMyth2Change()">
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:.83rem;margin-top:.4rem" id="myth2-out">—</div>
+    </div>
+  </div>
+
+  <div class="myth-card">
+    <div class="myth-row"><span class="myth-tag">Mythos</span><span class="myth-txt myth">"1−p ist die Wahrscheinlichkeit, dass sich der Befund repliziert."</span></div>
+    <div class="myth-row"><span class="myth-tag fact">Fakt</span><span class="myth-txt fact-txt">Siehe Abschnitt ② oben — der p-Wert-Tanz zeigt direkt, wie wenig ein einzelner p-Wert über eine Replikation aussagt.</span></div>
+  </div>
+
+  <div class="myth-card">
+    <div class="myth-row"><span class="myth-tag">Mythos</span><span class="myth-txt myth">"Nicht signifikant heißt: es gibt keinen Effekt."</span></div>
+    <div class="myth-row"><span class="myth-tag fact">Fakt</span><span class="myth-txt fact-txt">Absence of evidence ist nicht evidence of absence. Oft fehlt schlicht die Power, einen realen Effekt zu entdecken — ein n.s.-Ergebnis kann ebenso gut "kein Effekt" wie "zu wenig Daten, um ihn zu sehen" bedeuten.</span></div>
+    <div class="myth-demo">Ein tieferliegender Grund kommt hinzu: der p-Wert wird <strong>unter der Annahme berechnet, dass H₀ zutrifft</strong> — H₀ ist die feste Prämisse des gesamten Verfahrens, nicht dessen Ergebnis. Ein Test, der H₀ von vornherein voraussetzt, kann strukturell keine Evidenz <em>für</em> H₀ liefern, sondern höchstens sie nicht verwerfen. Wer tatsächlich quantifizieren will, wie stark Daten für H₀ (statt nur "nicht gegen sie") sprechen, braucht ein anderes Werkzeug, z.&nbsp;B. einen Bayes-Faktor.<br>
+    <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/" target="_blank" rel="noopener">→ Bayes Thinking Lab</a> · <a href="Power_Stichprobe.html">→ Power &amp; Stichprobengröße</a></div>
+  </div>
+
+  <div class="myth-card">
+    <div class="myth-row"><span class="myth-tag">Mythos</span><span class="myth-txt myth">"Ein kleinerer p-Wert bedeutet einen größeren Effekt."</span></div>
+    <div class="myth-row"><span class="myth-tag fact">Fakt</span><span class="myth-txt fact-txt">p vermengt Effektgröße und Stichprobengröße — zwei Studien mit demselben p können völlig unterschiedliche Effektgrößen haben:</span></div>
+    <div class="myth-demo">
+      <table class="mini-table" id="myth5-table"></table>
+      <div style="margin-top:.4rem"><a href="Effektgroessen.html">→ Effektgrößen: was Cohen's d tatsächlich bedeutet</a></div>
+    </div>
+  </div>
+
+  <!-- Konzepte -->
+  <div class="learn-section">
+    <div class="sec-h">Konzepte &amp; Einordnung</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">Fisher vs. Neyman-Pearson</div>
+        <div class="lcard-body">Fisher verstand den p-Wert als graduelles Evidenzmaß gegen H₀. Neyman &amp; Pearson entwickelten unabhängig davon ein Entscheidungsschema mit vorab fixierten Fehlerraten α und β. Die heutige Praxis vermischt beide Ansätze unsauber zu einem Hybrid — eine Hauptursache vieler Missverständnisse.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h"><span class="gk">α</span> ist fix, p ist zufällig</div>
+        <div class="lcard-body">α wird <strong>vor</strong> der Studie als feste Fehlerrate für die Entscheidungsregel festgelegt. p wird <strong>aus</strong> den Daten berechnet und schwankt von Stichprobe zu Stichprobe (siehe Abschnitt ②). Die beiden zu verwechseln führt zu genau den Mythen oben.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Ein- vs. zweiseitig testen</div>
+        <div class="lcard-body">Ein einseitiger Test hat mehr Power in die erwartete Richtung, ignoriert aber Effekte in die Gegenrichtung vollständig. Die Richtung muss <strong>vor</strong> der Datenerhebung feststehen — nachträglicher Wechsel je nach Ergebnis ist eine Form von p-Hacking.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Was statt nur p berichten?</div>
+        <div class="lcard-body">Aktuelle Leitlinien (u.&nbsp;a. das ASA-Statement 2016) empfehlen, Effektgröße und Konfidenzintervall gemeinsam mit p zu berichten — p allein sagt weder etwas über die Größe noch über die Präzision eines Effekts.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Wenn p nicht reicht: Bayes</div>
+        <div class="lcard-body">Bayes-Faktoren beantworten direkt die Frage, die viele fälschlich in p hineinlesen: wie stark sprechen die Daten für H₁ gegenüber H₀? <a href="Lindleys_Paradox.html">→ Lindley's Paradox</a> zeigt einen Fall, in dem beide Antworten auseinanderfallen. Oft noch informativer als ein einzelner Bayes-Faktor ist die <strong>bayesianische Parameterschätzung</strong>: statt nur H₀ vs. H₁ gegeneinander abzuwägen, liefert sie eine vollständige Posterior-Verteilung des Effekts selbst — inklusive Unsicherheit, ganz ohne den Umweg über eine Nullhypothese. <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/" target="_blank" rel="noopener">→ Bayes Thinking Lab</a></div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Verwandte Tools</div>
+        <div class="lcard-body">Mehrfachtestung und der Zusammenhang zur "Anzahl an Chancen" auf einen Zufallstreffer: <a href="Data_Dredging.html">→ Data Dredging</a>. Wie Stichprobenumfang und Effektgröße gemeinsam über Power entscheiden: <a href="Power_Stichprobe.html">→ Power &amp; Stichprobengröße</a>.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ─── Theme ────────────────────────────────────────────────────────────────────
+function toggleTheme(){
+  const d=document.documentElement;
+  const dark=d.getAttribute('data-theme')==='dark';
+  const next=dark?'light':'dark';
+  d.setAttribute('data-theme',next);
+  localStorage.setItem('ml-theme',next);
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  redrawAll();
+}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('help-overlay').classList.remove('open')});
+
+// ─── PRNG & math ──────────────────────────────────────────────────────────────
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let rng=mulberry32(20260817);
+function randn(){let u=0,v=0;while(u===0)u=rng();while(v===0)v=rng();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+function lgamma(x){
+  const c=[76.18009172947146,-86.50532032941677,24.01409824083091,
+    -1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+  let y=x,tmp=x+5.5;
+  tmp-=(x+.5)*Math.log(tmp);
+  let s=1.000000000190015;
+  for(let j=0;j<6;j++) s+=c[j]/++y;
+  return -tmp+Math.log(2.5066282746310005*s/x);
+}
+function ibeta(x,a,b){
+  if(x<=0) return 0;
+  if(x>=1) return 1;
+  const lbeta=lgamma(a+b)-lgamma(a)-lgamma(b);
+  function cf(x,a,b){
+    const maxit=200,eps=3e-7,fpmin=1e-30;
+    const qab=a+b,qap=a+1,qam=a-1;
+    let c=1,d=1-(qab*x/qap);
+    if(Math.abs(d)<fpmin) d=fpmin; d=1/d;
+    let h=d;
+    for(let m=1;m<=maxit;m++){
+      const m2=2*m;
+      let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+      d=1+aa*d; if(Math.abs(d)<fpmin) d=fpmin;
+      c=1+aa/c; if(Math.abs(c)<fpmin) c=fpmin;
+      d=1/d; h*=d*c;
+      aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+      d=1+aa*d; if(Math.abs(d)<fpmin) d=fpmin;
+      c=1+aa/c; if(Math.abs(c)<fpmin) c=fpmin;
+      d=1/d; const del=d*c; h*=del;
+      if(Math.abs(del-1)<eps) break;
+    }
+    return h;
+  }
+  const bt=Math.exp(lbeta+a*Math.log(x)+b*Math.log(1-x));
+  if(x<(a+1)/(a+b+2)) return bt*cf(x,a,b)/a;
+  return 1-bt*cf(1-x,b,a)/b;
+}
+function tCDF(t,df){
+  const x=df/(df+t*t);
+  const p=0.5*ibeta(x,df/2,0.5);
+  return t>=0?1-p:p;
+}
+function tPDF(t,df){
+  const logf=lgamma((df+1)/2)-lgamma(df/2)-0.5*Math.log(df*Math.PI)-(df+1)/2*Math.log(1+t*t/df);
+  return Math.exp(logf);
+}
+function tQuantile(p,df){
+  let lo=-30,hi=30;
+  for(let i=0;i<100;i++){ const mid=0.5*(lo+hi); if(tCDF(mid,df)<p) lo=mid; else hi=mid; }
+  return 0.5*(lo+hi);
+}
+function stdNorm(z){
+  const p=0.2316419,b1=0.319381530,b2=-0.356563782,b3=1.781477937,b4=-1.821255978,b5=1.330274429;
+  const t2=1/(1+p*Math.abs(z));
+  const poly=t2*(b1+t2*(b2+t2*(b3+t2*(b4+t2*b5))));
+  const pdf=Math.exp(-0.5*z*z)/Math.sqrt(2*Math.PI);
+  const q=1-pdf*poly;
+  return z>=0?q:1-q;
+}
+// Noncentral t CDF via direct numerical integration (Simpson's rule) over the
+// definitional chi-square mixture T=(Z+ncp)/sqrt(V/df) -- same method used in the
+// Effektgroessen-Rechner (the earlier Poisson-series approach was numerically unstable).
+function nctCDF(t,df,ncp){
+  if(!isFinite(t)) return t>0?1:0;
+  const mean=df, sd=Math.sqrt(2*df);
+  const a=Math.max(1e-9, mean-12*sd), b=mean+12*sd;
+  const N=300;
+  const h=(b-a)/N;
+  const lg=lgamma(df/2), log2=Math.log(2);
+  let sum=0;
+  for(let i=0;i<=N;i++){
+    const v=a+i*h;
+    const logf=(df/2-1)*Math.log(v)-v/2-(df/2)*log2-lg;
+    const val=stdNorm(t*Math.sqrt(v/df)-ncp);
+    const w=(i===0||i===N)?1:(i%2===1?4:2);
+    sum+=w*Math.exp(logf)*val;
+  }
+  return Math.min(1,Math.max(0,(h/3)*sum));
+}
+// Theoretical distribution of the two-sided p-value under a true effect d, n per group:
+// T ~ noncentral-t(df, ncp=d*sqrt(n/2)); p = 2*(1-CentralCDF(|T|)).
+// CDF_P(p) = 1 - nctCDF(t_p,df,ncp) + nctCDF(-t_p,df,ncp), where t_p = tQuantile(1-p/2, df).
+// Density obtained by central finite differences on a p-grid.
+function theoreticalPDensity(d,n){
+  const df=2*n-2, ncp=d*Math.sqrt(n/2);
+  function cdfP(p){
+    const tp=tQuantile(1-p/2, df);
+    return 1-nctCDF(tp,df,ncp)+nctCDF(-tp,df,ncp);
+  }
+  // Quadratic spacing: denser grid near p=0, where the density can rise steeply
+  // for larger true effects (well-powered tests pile p up close to zero).
+  const pts=[], NP=120;
+  for(let i=0;i<=NP;i++){
+    const frac=i/NP;
+    const p=0.001+0.997*frac*frac;
+    const hstep=Math.max(0.0015, p*0.06);
+    const lo=Math.max(0.0002,p-hstep), hi=Math.min(0.9998,p+hstep);
+    const dens=(cdfP(hi)-cdfP(lo))/(hi-lo);
+    pts.push({p, dens:Math.max(0,dens)});
+  }
+  return pts;
+}
+function tTest2(n){
+  // two independent standard-normal-based groups, group B shifted by d (in SD units); returns {t,df,p}
+  return function(d){
+    let s1=0,s2=0,ss1=0,ss2=0;
+    for(let i=0;i<n;i++){ const a=randn(), b=randn()+d; s1+=a; s2+=b; ss1+=a*a; ss2+=b*b; }
+    const m1=s1/n, m2=s2/n;
+    const v1=(ss1-n*m1*m1)/(n-1), v2=(ss2-n*m2*m2)/(n-1);
+    const sp=Math.sqrt(((n-1)*v1+(n-1)*v2)/(2*n-2));
+    const se=sp*Math.sqrt(2/n);
+    const t=(m2-m1)/se;
+    const df=2*n-2;
+    const p=2*(1-tCDF(Math.abs(t),df));
+    return {t,df,p};
+  };
+}
+function fmt(x,d=3){return isNaN(x)||!isFinite(x)?'—':x.toFixed(d)}
+function fmtp(p){return p<.001?'<.001':p.toFixed(3)}
+
+// ─── Colors ───────────────────────────────────────────────────────────────────
+function getC(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  return{
+    ink: dark?'#ece6d8':'#18130e', ink2: dark?'#8a8070':'#5a4f42', ink3: dark?'#857c68':'#8a7f72',
+    paper: dark?'#111520':'#f8f3e8', panel: dark?'#171d28':'#e8e0ce', grid: dark?'#1e242e':'#ddd5c5',
+    a1: dark?'#e8614a':'#c94a2a', a2: dark?'#4ab0d8':'#2a6e8a', a3: dark?'#80cb52':'#5a8a2a',
+  };
+}
+
+// ═══ Section ① — repeated sampling under H0 ═══════════════════════════════════
+const OBS_N=25, OBS_DF=48, OBS_T=2.062;
+let sim1=[]; // array of simulated t-values
+const draw1=tTest2(OBS_N);
+
+function drawOne(){ sim1.push(draw1(0).t); updateSim1(); }
+function drawMany(k){ for(let i=0;i<k;i++) sim1.push(draw1(0).t); updateSim1(); }
+function resetSim1(){ sim1=[]; updateSim1(); }
+
+function updateSim1(){
+  const n=sim1.length;
+  const extreme=sim1.filter(t=>Math.abs(t)>=OBS_T).length;
+  const pct=n>0?(extreme/n*100):0;
+  const trueP=2*(1-tCDF(OBS_T,OBS_DF));
+  document.getElementById('sb-t').textContent=fmt(OBS_T,3);
+  document.getElementById('sb-p').textContent=fmtp(trueP);
+  const ro=document.getElementById('readout1');
+  if(n===0){ ro.textContent='Noch keine Stichprobe gezogen.'; }
+  else{
+    ro.innerHTML='<span class="big">'+n+'</span> Stichproben unter H₀ gezogen · <span class="big">'+extreme+'</span> davon (='+fmt(pct,1)+'%) mindestens so extrem wie t='+fmt(OBS_T,2)+' · formaler p-Wert: <span class="big">'+fmtp(trueP)+'</span>';
+  }
+  drawCv1();
+}
+
+function drawCv1(){
+  const H=450, cv=document.getElementById('cv1');
+  const W=cv.offsetWidth||800; cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d'); const C=getC();
+  ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
+
+  const padL=50,padR=50,padT=45,padB=63;
+  const plotW=W-padL-padR, plotH=H-padT-padB, yBase=padT+plotH;
+  const xMin=-4.5,xMax=4.5;
+  const xpx=x=>padL+(x-xMin)/(xMax-xMin)*plotW;
+
+  const peak=tPDF(0,OBS_DF);
+  const yScale=(plotH*0.85)/peak;
+
+  // shaded critical region
+  ctx.beginPath();
+  const x0=xpx(OBS_T);
+  ctx.moveTo(x0,yBase);
+  for(let px=x0;px<=padL+plotW;px++){ const x=xMin+(px-padL)/plotW*(xMax-xMin); ctx.lineTo(px,yBase-tPDF(x,OBS_DF)*yScale); }
+  ctx.lineTo(padL+plotW,yBase); ctx.closePath();
+  ctx.fillStyle=C.a1; ctx.globalAlpha=.22; ctx.fill(); ctx.globalAlpha=1;
+  ctx.beginPath();
+  const xm0=xpx(-OBS_T);
+  ctx.moveTo(padL,yBase);
+  for(let px=padL;px<=xm0;px++){ const x=xMin+(px-padL)/plotW*(xMax-xMin); ctx.lineTo(px,yBase-tPDF(x,OBS_DF)*yScale); }
+  ctx.lineTo(xm0,yBase); ctx.closePath();
+  ctx.fillStyle=C.a1; ctx.globalAlpha=.22; ctx.fill(); ctx.globalAlpha=1;
+
+  // histogram of simulated draws
+  if(sim1.length>0){
+    const nbins=56, bw=(xMax-xMin)/nbins, counts=new Array(nbins).fill(0);
+    sim1.forEach(t=>{ let b=Math.floor((t-xMin)/bw); if(b<0)b=0; if(b>=nbins)b=nbins-1; counts[b]++; });
+    const maxDensity=Math.max(...counts.map((c,i)=>c/(sim1.length*bw)));
+    const histScale = maxDensity>0 ? Math.min(yScale, (plotH*0.85)/maxDensity) : yScale;
+    for(let i=0;i<nbins;i++){
+      if(counts[i]===0) continue;
+      const dens=counts[i]/(sim1.length*bw);
+      const xL=xMin+i*bw, xR=xL+bw;
+      const h=dens*histScale;
+      const extreme=(xL>=OBS_T-1e-9)||(xR<=-OBS_T+1e-9);
+      ctx.fillStyle=extreme?C.a1:C.a2; ctx.globalAlpha=.5;
+      ctx.fillRect(xpx(xL),yBase-h,xpx(xR)-xpx(xL),h);
+      ctx.globalAlpha=1;
+    }
+  }
+
+  // theoretical t-density curve
+  ctx.strokeStyle=C.ink; ctx.lineWidth=2; ctx.beginPath();
+  for(let px=padL;px<=padL+plotW;px++){ const x=xMin+(px-padL)/plotW*(xMax-xMin); const py=yBase-tPDF(x,OBS_DF)*yScale; px===padL?ctx.moveTo(px,py):ctx.lineTo(px,py); }
+  ctx.stroke();
+
+  // baseline
+  ctx.strokeStyle=C.grid; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(padL,yBase); ctx.lineTo(padL+plotW,yBase); ctx.stroke();
+
+  // observed t markers
+  [OBS_T,-OBS_T].forEach(t=>{
+    const px=xpx(t);
+    ctx.strokeStyle=C.a1; ctx.lineWidth=1.5; ctx.setLineDash([5,3]);
+    ctx.beginPath(); ctx.moveTo(px,padT); ctx.lineTo(px,yBase); ctx.stroke(); ctx.setLineDash([]);
+  });
+  ctx.fillStyle=C.a1; ctx.font='bold 12px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('t='+fmt(OBS_T,2), xpx(OBS_T), padT-8);
+
+  // x ticks
+  ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='center';
+  for(let v=-4;v<=4;v++){
+    const px=xpx(v);
+    ctx.strokeStyle=C.grid; ctx.beginPath(); ctx.moveTo(px,yBase); ctx.lineTo(px,yBase+5); ctx.stroke();
+    ctx.fillText(v.toFixed(0),px,yBase+18);
+  }
+}
+
+// ═══ Section ② — the p-value dance ═════════════════════════════════════════════
+let sim2=[]; // array of p-values, all accumulated under the current d/n
+let theoCurve=[]; // cached theoretical p-value density for the current d/n (recomputed only on slider change)
+const SIM2_CAP=600;
+const DANCE_ROWS=40; // how many of the most recent replications show as individual dots
+
+function currentDN(){
+  return {d:parseFloat(document.getElementById('sl-d2').value)/100, n:parseInt(document.getElementById('sl-n2').value)};
+}
+function updateTheoCurve(){
+  const {d,n}=currentDN();
+  theoCurve=theoreticalPDensity(d,n);
+}
+
+function onDance2Change(){
+  document.getElementById('v-d2').textContent=(parseFloat(document.getElementById('sl-d2').value)/100).toFixed(2);
+  document.getElementById('v-n2').textContent=document.getElementById('sl-n2').value;
+  updateTheoCurve();
+  resetSim2(); // true effect/n changed -> old replications no longer belong to the same scenario
+}
+function danceOne(){
+  const d=parseFloat(document.getElementById('sl-d2').value)/100;
+  const n=parseInt(document.getElementById('sl-n2').value);
+  const res=tTest2(n)(d);
+  sim2.push(res.p);
+  if(sim2.length>SIM2_CAP) sim2.shift();
+  updateSim2();
+}
+function danceMany(k){ for(let i=0;i<k;i++) danceOne(); }
+function resetSim2(){ sim2=[]; updateSim2(); }
+
+function updateSim2(){
+  const n=sim2.length;
+  const ro=document.getElementById('readout2');
+  if(n===0){ ro.textContent='Noch keine Replikation gezogen.'; drawCv2(); return; }
+  const sig=sim2.filter(p=>p<.05).length;
+  const lo=Math.min(...sim2), hi=Math.max(...sim2);
+  ro.innerHTML='<span class="big">'+n+'</span> Replikationen (identischer wahrer Effekt) · <span class="big">'+sig+'</span> davon signifikant (='+fmt(sig/n*100,0)+'%) · p-Bereich: '+fmtp(lo)+' – '+fmtp(hi);
+  drawCv2();
+}
+
+function drawCv2(){
+  const H=690, cv=document.getElementById('cv2');
+  const W=cv.offsetWidth||800; cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d'); const C=getC();
+  ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
+
+  const padL=50,padR=50;
+  const plotW=W-padL-padR;
+  const xpx=p=>padL+p*plotW;
+
+  // ── Panel A (top): individual replications as a dot strip ──────────────────
+  const padT_A=30, padB_A=21, plotH_A=255, yBase_A=padT_A+plotH_A;
+
+  ctx.strokeStyle=C.a1; ctx.lineWidth=1.5; ctx.setLineDash([5,3]);
+  ctx.beginPath(); ctx.moveTo(xpx(.05),padT_A); ctx.lineTo(xpx(.05),yBase_A); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle=C.a1; ctx.font='bold 11px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('α=.05', xpx(.05)+6, padT_A+12);
+
+  ctx.strokeStyle=C.grid; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(padL,yBase_A); ctx.lineTo(padL+plotW,yBase_A); ctx.stroke();
+
+  const recent=sim2.slice(-DANCE_ROWS);
+  const rowH=Math.min(20,(plotH_A-10)/DANCE_ROWS);
+  recent.forEach((p,i)=>{
+    const rowFromBottom=recent.length-1-i;
+    const py=yBase_A-10-rowFromBottom*rowH;
+    const px=xpx(Math.max(0.006,Math.min(0.994,p)));
+    ctx.beginPath(); ctx.arc(px,py,5,0,2*Math.PI);
+    ctx.fillStyle=p<.05?C.a1:C.a3; ctx.globalAlpha=.85; ctx.fill(); ctx.globalAlpha=1;
+    ctx.strokeStyle=C.ink; ctx.lineWidth=.5; ctx.stroke();
+  });
+  ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('jeder Punkt = eine Replikation (letzte '+DANCE_ROWS+')', padL, padT_A-6);
+
+  // ── Panel B (bottom): empirical histogram vs. theoretical p-value density ──
+  const padT_B=378, padB_B=63, plotH_B=H-padT_B-padB_B, yBase_B=padT_B+plotH_B;
+
+  ctx.strokeStyle=C.a1; ctx.lineWidth=1.5; ctx.setLineDash([5,3]);
+  ctx.beginPath(); ctx.moveTo(xpx(.05),padT_B); ctx.lineTo(xpx(.05),yBase_B); ctx.stroke(); ctx.setLineDash([]);
+
+  const nbins=20, bw=1/nbins, counts=new Array(nbins).fill(0);
+  sim2.forEach(p=>{ let b=Math.floor(p/bw); if(b<0)b=0; if(b>=nbins)b=nbins-1; counts[b]++; });
+  const maxDensEmp = sim2.length>0 ? Math.max(...counts.map(c=>c/(sim2.length*bw))) : 0;
+  const maxDensTheo = theoCurve.length>0 ? Math.max(...theoCurve.map(pt=>pt.dens)) : 1;
+  const maxDens = Math.max(maxDensEmp, maxDensTheo, 1);
+  const yScale = (plotH_B*0.86)/maxDens;
+
+  if(sim2.length>0){
+    for(let i=0;i<nbins;i++){
+      const dens=counts[i]/(sim2.length*bw);
+      const h=dens*yScale;
+      const xL=i*bw, xR=xL+bw;
+      ctx.fillStyle=xL<.05?C.a1:C.a2; ctx.globalAlpha=.55;
+      ctx.fillRect(xpx(xL),yBase_B-h,xpx(xR)-xpx(xL)-1,h);
+      ctx.globalAlpha=1;
+    }
+  }
+
+  // theoretical p-value density for the current true effect d, n — thick green curve
+  if(theoCurve.length>0){
+    ctx.strokeStyle=C.a3; ctx.lineWidth=3.5; ctx.lineJoin='round'; ctx.beginPath();
+    theoCurve.forEach((pt,i)=>{
+      const px=xpx(pt.p), py=yBase_B-Math.min(pt.dens*yScale, plotH_B);
+      i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+    });
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle=C.grid; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(padL,yBase_B); ctx.lineTo(padL+plotW,yBase_B); ctx.stroke();
+  ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('Empirisches Histogramm (alle '+sim2.length+' Replikationen)', padL, padT_B-6);
+
+  // Legend for the green curve, placed in the empty gap between panels A and B —
+  // never covered by histogram bars, regardless of their height.
+  const legY=(yBase_A+padT_B)/2-4;
+  ctx.strokeStyle=C.a3; ctx.lineWidth=3.5;
+  ctx.beginPath(); ctx.moveTo(padL,legY); ctx.lineTo(padL+34,legY); ctx.stroke();
+  ctx.fillStyle=C.a3; ctx.font='bold 12px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('theoretische p-Wert-Dichte bei aktuellem d, n', padL+42, legY+4);
+
+  // shared x ticks (bottom panel only, applies to both since x-axis is identical)
+  ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='center';
+  [0,.2,.4,.6,.8,1].forEach(v=>{
+    const px=xpx(v);
+    ctx.strokeStyle=C.grid; ctx.beginPath(); ctx.moveTo(px,yBase_B); ctx.lineTo(px,yBase_B+5); ctx.stroke();
+    ctx.fillText(v.toFixed(1),px,yBase_B+18);
+  });
+  ctx.textAlign='left'; ctx.fillText('p-Wert', padL+plotW-40, yBase_B+18);
+}
+
+// ═══ Myth ② mini-demo: n vs. p at fixed tiny d ═════════════════════════════════
+function onMyth2Change(){
+  const n=parseInt(document.getElementById('sl-n3').value);
+  document.getElementById('v-n3').textContent=n;
+  const d=0.05;
+  const t=d*Math.sqrt(n/2), df=2*n-2;
+  const p=2*(1-tCDF(Math.abs(t),df));
+  const sig=p<.05;
+  document.getElementById('myth2-out').innerHTML=
+    'n='+n+' pro Gruppe, d=0.05 (winzig) → t='+fmt(t,2)+', p='+fmtp(p)+
+    ' <span style="color:'+(sig?'var(--a1)':'var(--ink3)')+'">'+(sig?'— signifikant!':'— n.s.')+'</span>';
+}
+
+// ═══ Myth ⑤ static table: same p, different effect size ═══════════════════════
+function buildMyth5Table(){
+  const rows=[
+    {n:20, d:0.73, lbl:'Studie A'},
+    {n:5000, d:0.043, lbl:'Studie B'},
+  ];
+  const tbl=document.getElementById('myth5-table');
+  tbl.innerHTML='<thead><tr><th></th><th class="num">n pro Gruppe</th><th class="num">Cohen\'s d</th><th class="num">p-Wert</th></tr></thead>';
+  const tbody=document.createElement('tbody');
+  rows.forEach(r=>{
+    const t=r.d*Math.sqrt(r.n/2), df=2*r.n-2;
+    const p=2*(1-tCDF(Math.abs(t),df));
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>'+r.lbl+'</td><td class="num">'+r.n+'</td><td class="num">'+r.d.toFixed(3)+'</td><td class="num">'+fmtp(p)+'</td>';
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+function redrawAll(){ drawCv1(); drawCv2(); }
+window.addEventListener('resize', redrawAll);
+if(document.documentElement.getAttribute('data-theme')==='light'){
+  const tb=document.getElementById('theme-btn');if(tb)tb.textContent='🌙 Dark';
+}
+updateSim1();
+updateTheoCurve();
+updateSim2();
+onMyth2Change();
+buildMyth5Table();
+</script>
+</body>
+</html>

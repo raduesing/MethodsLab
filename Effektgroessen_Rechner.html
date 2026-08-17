@@ -165,7 +165,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
     <div class="help-h3">Konfidenzintervalle</div>
     <p class="help-p"><strong style="color:var(--ink)">Bonett (2015) approx:</strong> z-basiert (Formeln 8, 9, 16). Verfügbar für d<sub>z</sub>, d<sub>rm</sub>, d<sub>av</sub>.<br>
     <strong style="color:var(--ink)">Rosenthal (1994) approx:</strong> t-basiert, nur für d<sub>rm</sub> — dort identische SE wie Bonett, aber crit_t statt crit_z. Für d<sub>z</sub> und d<sub>av</sub> ist kein Rosenthal-CI in der Originalliteratur definiert.<br>
-    <strong style="color:var(--ink)">NCT (Momenten-Approx.):</strong> Nichtzentrale t-Verteilung via Momenten-Anpassung und CDF-Inversion. Sehr akkurat für n ≥ 10; kein Simulationsaufwand.</p>
+    <strong style="color:var(--ink)">NCT (exakt):</strong> Nichtzentrale t-Verteilung über direkte numerische Integration (Simpson-Regel) der Definition T=(Z+ncp)/√(V/df); CDF-Inversion per Bisektion liefert die ncp-Grenzen. Akkurat für beliebige df, auch nicht-ganzzahlig (z.&nbsp;B. Welch-df).</p>
+    <div class="help-h3">Between: Student's t vs. Welch's t</div>
+    <p class="help-p">Ob Varianzhomogenität vorliegt, ist eine inhaltliche Entscheidung — das Tool trifft sie nicht für Sie, sondern zeigt <strong style="color:var(--ink)">immer beide</strong> Effektgrößen-Familien:<br>
+    <strong style="color:var(--ink)">A) Student's t</strong> — gepoolte SD, setzt gleiche Populationsvarianzen voraus: d<sub>s</sub>, g<sub>s</sub>, mit Bonett-, Rosenthal- und NCT-KI.<br>
+    <strong style="color:var(--ink)">B) Welch's t</strong> — Welch-Satterthwaite-df, keine Homogenitätsannahme (Delacre, Lakens &amp; Leys 2017 empfehlen dies als Standard): <code>d<sub>Welch</sub></code> (ungewichtetes 1:1-Mittel der Varianzen) und <code>g<sub>Welch</sub></code> (Hedges-Korrektur mit df<sub>Welch</sub>), sowie eine alternative t-zu-d-Konversion <code>d = t<sub>Welch</sub>·√(1/n₁+1/n₂)</code> (Borenstein et al. 2009) — identisch mit d<sub>Welch</sub> bei n₁=n₂, sonst abweichend. Beide erhalten ein NCT-KI durch Reskalierung von <code>conf.limits.nct(t<sub>Welch</sub>, df<sub>Welch</sub>)</code> — derselbe Trick wie bei d<sub>rm</sub> aus d<sub>z</sub>. Für Welch gibt es hier bewusst keine geschlossene Näherungs-KI (Bonett-Stil) — dafür fehlt eine verlässliche Quelle für die Varianzformel unter Heteroskedastizität.</p>
     <div class="help-h3">CSV-Upload</div>
     <p class="help-p">Laden Sie eine CSV-Datei mit zwei numerischen Spalten hoch. Im Within-Modus: Spalte 1 = Messung 1, Spalte 2 = Messung 2. Im Between-Modus: Spalte 1 = Gruppe 1, Spalte 2 = Gruppe 2 (verschiedene Längen erlaubt). Erste Zeile wird als Header erkannt, wenn sie nicht-numerisch ist.</p>
   </div>
@@ -345,14 +349,24 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 
     </div>
 
-    <!-- Between mode: table -->
+    <!-- Between mode: Student's t and Welch's t side by side -->
     <div id="between-results" style="display:none">
 
       <div class="sec-h">Effektgröße: Between-Gruppen-Vergleich</div>
 
       <div class="results-section">
-        <div class="rs-head">Cohen's d — Verschiedene Definitionen</div>
-        <table class="d-table" id="tbl-between"></table>
+        <div class="rs-head" style="color:var(--a2)">A) Student's t — gepoolte Varianz (setzt Varianzhomogenität voraus)</div>
+        <div id="tbl-between"></div>
+      </div>
+
+      <div class="results-section">
+        <div class="rs-head" style="color:var(--a5)">B) Welch's t — ungleiche Varianzen (Delacre, Lakens &amp; Leys 2017)</div>
+        <div id="tbl-welch"></div>
+      </div>
+
+      <div class="results-section">
+        <div class="rs-head">Weitere Maße</div>
+        <table class="d-table" id="tbl-other-between"></table>
       </div>
 
     </div>
@@ -451,7 +465,7 @@ function lgamma(x){
 function ibeta(x,a,b){
   if(x<=0) return 0;
   if(x>=1) return 1;
-  const lbeta=lgamma(a)+lgamma(b)-lgamma(a+b);
+  const lbeta=lgamma(a+b)-lgamma(a)-lgamma(b);
   function cf(x,a,b){
     const maxit=200,eps=3e-7,fpmin=1e-30;
     const qab=a+b,qap=a+1,qam=a-1;
@@ -478,27 +492,27 @@ function ibeta(x,a,b){
 }
 
 // Non-central t CDF: P(T_{df,ncp} <= t)
-// Exact Poisson-weighted series (matches R's pt() / conf.limits.nct()):
-//   t>0: F = Φ(-δ) + Φ(+δ) · S     where S = Σ_j p_j · I_{t²/(t²+ν)}(j+½, ν/2)
-//   t<0: F = Φ(-δ) · (1 − S)        p_j = exp(-δ²/2)·(δ²/2)^j/j!
+// T = (Z+ncp)/sqrt(V/df) with Z~N(0,1), V~χ²(df) independent, so
+// P(T<=t) = E_V[ Φ(t·√(v/df) − ncp) ], computed by direct numerical integration
+// (Simpson's rule) over V's χ² density. Avoids the Poisson-series/incomplete-beta
+// route entirely, which turned out to be numerically unstable for moderate-to-large
+// noncentrality (verified: it produced a near step-function instead of a smooth CDF).
 function nctCDF(t, df, ncp){
   if(!isFinite(t)) return t>0?1:0;
-  if(t===0) return stdNorm(-ncp);
-  if(ncp===0) return tCDF(t, df);
-  const absT=Math.abs(t);
-  const x=absT*absT/(absT*absT+df);
-  const halfD2=ncp*ncp/2;
-  let S=0, logWj=-halfD2;
-  for(let j=0;j<=300;j++){
-    const wj=Math.exp(logWj);
-    S+=wj*ibeta(x, j+0.5, df/2);
-    if(j>5 && wj<1e-13) break;
-    if(halfD2===0) break;
-    logWj+=Math.log(halfD2)-Math.log(j+1);
+  const mean=df, sd=Math.sqrt(2*df);
+  const a=Math.max(1e-9, mean-12*sd), b=mean+12*sd;
+  const N=400; // even, required for Simpson's rule
+  const h=(b-a)/N;
+  const lg=lgamma(df/2), log2=Math.log(2);
+  let sum=0;
+  for(let i=0;i<=N;i++){
+    const v=a+i*h;
+    const logf=(df/2-1)*Math.log(v)-v/2-(df/2)*log2-lg;
+    const val=stdNorm(t*Math.sqrt(v/df)-ncp);
+    const w=(i===0||i===N)?1:(i%2===1?4:2);
+    sum+=w*Math.exp(logf)*val;
   }
-  const pn=stdNorm(-ncp);
-  if(t>0) return Math.min(1, pn+(1-pn)*S);
-  return Math.max(0, pn*(1-S));
+  return Math.min(1, Math.max(0, (h/3)*sum));
 }
 
 function stdNorm(z){
@@ -534,10 +548,9 @@ function invNCTncp(t, df, targetP){
   // Bracket: ncp_low gives CDF near 1, ncp_high gives CDF near 0
   const range=Math.max(Math.abs(t)*3+6, 12);
   let lo=t-range, hi=t+range;
-  for(let i=0;i<160;i++){
+  for(let i=0;i<60;i++){
     const mid=0.5*(lo+hi);
     const p=nctCDF(t, df, mid);
-    if(Math.abs(p-targetP)<1e-10) return mid;
     if(p<targetP) hi=mid; else lo=mid;
   }
   return 0.5*(lo+hi);
@@ -687,11 +700,46 @@ function computeBetween(m1,m2,sd1,sd2,n1,n2,alpha){
   // CLES McGraw & Wong (1992): P(X1 > X2) = Phi(d_s / sqrt(2))
   const cles_mw=stdNorm(ds/Math.sqrt(2));
 
+  // ── Welch's t (unequal variances) — Delacre, Lakens & Leys (2017) recommend this
+  // as the default and discuss d_welch (unweighted 1:1 SD average) as its companion
+  // effect size. Whether variances are actually homogeneous is left to the user to
+  // judge (e.g. via a Levene test) — both families are always shown side by side.
+  const se_welch=Math.sqrt(sd1*sd1/n1+sd2*sd2/n2);
+  const t_welch=m_dif/se_welch;
+  const df_welch=Math.pow(sd1*sd1/n1+sd2*sd2/n2,2)/((Math.pow(sd1*sd1/n1,2)/(n1-1))+(Math.pow(sd2*sd2/n2,2)/(n2-1)));
+  const p_welch=2*(1-tCDF(Math.abs(t_welch),df_welch));
+  const t_a_welch=tQuantile(1-alpha/2,df_welch);
+  const ci_raw_welch={lo:m_dif-t_a_welch*se_welch, hi:m_dif+t_a_welch*se_welch};
+
+  const s_welch=Math.sqrt((sd1*sd1+sd2*sd2)/2);
+  const d_welch=m_dif/s_welch;
+  // Classic t-to-d conversion (Borenstein et al. 2009), applied to Welch's t;
+  // identical to d_welch iff n1===n2, diverges as group sizes become more unequal.
+  const d_welch_t=t_welch*Math.sqrt(1/n1+1/n2);
+  const j_welch=1-3/(4*df_welch-1);
+  const g_welch=d_welch*j_welch;
+
+  // Both d_welch and d_welch_t are fixed linear rescalings of t_welch (by
+  // se_welch/s_welch and by sqrt(1/n1+1/n2) respectively) for given sd1,sd2,n1,n2 —
+  // so the same ncp-CI on the t_welch scale rescales to a CI for either one, exactly
+  // like d_rm's CI is derived by rescaling d_z's in within mode.
+  const ncp_L_w=invNCTncp(t_welch, df_welch, 1-alpha/2);
+  const ncp_U_w=invNCTncp(t_welch, df_welch, alpha/2);
+  const welchScale=se_welch/s_welch;
+  const ci_welch_nct={lo:ncp_L_w*welchScale, hi:ncp_U_w*welchScale};
+  const tScale=Math.sqrt(1/n1+1/n2);
+  const ci_welch_t_nct={lo:ncp_L_w*tScale, hi:ncp_U_w*tScale};
+
   return {mode:'between',m1,m2,sd1,sd2,n1,n2,alpha,
     t:t_b,df,p,s_pool,s_av,m_dif,ci_raw,
     ds,d_pool_n,glass,gs,cles_mw,j,
     ci:{
       ds:{bonett:ci_ds_bonett, rosenthal:ci_ds_rosenthal, nct:ci_ds_nct}
+    },
+    welch:{
+      t:t_welch, df:df_welch, p:p_welch, ci_raw:ci_raw_welch,
+      d_welch, g_welch, d_welch_t,
+      ci:{ welch_nct:ci_welch_nct, welch_t_nct:ci_welch_t_nct }
     }
   };
 }
@@ -757,34 +805,132 @@ function buildWithinBlock(container, d, ci, j, nag, bon, dname){
   container.appendChild(tbl2);
 }
 
-function buildBetweenTable(r){
-  const tbl=document.getElementById('tbl-between');
-  tbl.innerHTML='';
-  const thead=document.createElement('thead');
-  const hrow=document.createElement('tr');
-  ['Maß','Wert','Beschreibung','CI (NCT)'].forEach((h,i)=>{
-    const th=document.createElement('th'); th.textContent=h;
-    if(i===1||i===3) th.className='num';
-    hrow.appendChild(th);
+// Point-estimate + CI block for a between-groups d with a single (Hedges j) correction —
+// same two-part layout as buildWithinBlock, just one correction column instead of three.
+function buildBetweenBlock(container, d, ci, j, dname){
+  container.innerHTML='';
+  const tbl1=document.createElement('table');
+  tbl1.className='d-table';
+  tbl1.style.cssText='margin-bottom:.3rem';
+  const h1=document.createElement('thead');
+  const hr1=document.createElement('tr');
+  ['', dname+' (unkorr.)', 'g · j (Hedges)'].forEach((t,i)=>{
+    const th=document.createElement('th'); th.textContent=t;
+    if(i>0) th.className='num';
+    hr1.appendChild(th);
   });
-  thead.appendChild(hrow); tbl.appendChild(thead);
-  const tbody=document.createElement('tbody');
-  [
-    ['d_s (Cohen/Hedges)', fmt(r.ds), 'n−1 gepoolte SD; gängigste Def.', fmtCI(r.ci.ds.nct)],
-    ['g_s (Hedges j-korr.)', fmt(r.gs), 'd_s · j (bias-korrigiert)', '—'],
-    ['d_pool_n', fmt(r.d_pool_n), 'n-gepoolte SD', '—'],
-    ['Glass Δ', fmt(r.glass), 'Nur SD₁ als Nenner', '—'],
-    ['CLES (McGraw & Wong)', fmt(r.cles_mw,3), 'Φ(d_s/√2) — P(X₁ > X₂)', '—'],
-  ].forEach(row=>{
-    const tr=document.createElement('tr');
-    row.forEach((v,i)=>{
-      const td=document.createElement('td'); td.textContent=v;
-      td.className=i===1||i===3?'num':'lbl';
-      tr.appendChild(td);
+  h1.appendChild(hr1); tbl1.appendChild(h1);
+  const b1=document.createElement('tbody');
+  const tr1=document.createElement('tr');
+  ['Punktschätzer', fmt(d), fmt(d*j)].forEach((v,i)=>{
+    const td=document.createElement('td'); td.textContent=v;
+    td.className=i===0?'lbl':'num'; tr1.appendChild(td);
+  });
+  b1.appendChild(tr1); tbl1.appendChild(b1);
+  container.appendChild(tbl1);
+
+  if(ci){
+    const note=document.createElement('div');
+    note.className='ci-note';
+    note.textContent='KIs beziehen sich auf '+dname+' (unkorrigiert) — nicht auf g';
+    container.appendChild(note);
+
+    const tbl2=document.createElement('table');
+    tbl2.className='d-table-ci';
+    const h2=document.createElement('thead');
+    const hr2=document.createElement('tr');
+    ['CI-Methode', '95% Konfidenzintervall'].forEach((t,i)=>{
+      const th=document.createElement('th'); th.textContent=t;
+      if(i>0) th.className='num';
+      hr2.appendChild(th);
     });
-    tbody.appendChild(tr);
+    h2.appendChild(hr2); tbl2.appendChild(h2);
+    const b2=document.createElement('tbody');
+    const ciRowList=[];
+    if(ci.bonett) ciRowList.push(['Bonett (2015)', ci.bonett]);
+    if(ci.rosenthal) ciRowList.push(['Rosenthal (1994)', ci.rosenthal]);
+    if(ci.nct) ciRowList.push(['Nichtzentrale t', ci.nct]);
+    ciRowList.forEach(([lbl,c])=>{
+      const tr=document.createElement('tr');
+      const td1=document.createElement('td'); td1.textContent=lbl; td1.className='lbl'; tr.appendChild(td1);
+      const td2=document.createElement('td'); td2.textContent=fmtCI(c); td2.className='num'; tr.appendChild(td2);
+      b2.appendChild(tr);
+    });
+    tbl2.appendChild(b2);
+    container.appendChild(tbl2);
+  }
+}
+
+// Welch family: d_welch (unweighted SD average) + Hedges g_welch, and the alternative
+// t-to-d conversion d_welch_t — each with its own noncentral-t CI (see computeBetween).
+function buildWelchBlock(container, w){
+  container.innerHTML='';
+
+  const tbl1=document.createElement('table');
+  tbl1.className='d-table';
+  tbl1.style.cssText='margin-bottom:.3rem';
+  const h1=document.createElement('thead');
+  const hr1=document.createElement('tr');
+  ['', 'd_Welch (unkorr.)', 'g_Welch (j via df_Welch)'].forEach((t,i)=>{
+    const th=document.createElement('th'); th.textContent=t;
+    if(i>0) th.className='num';
+    hr1.appendChild(th);
   });
-  tbl.appendChild(tbody);
+  h1.appendChild(hr1); tbl1.appendChild(h1);
+  const b1=document.createElement('tbody');
+  const tr1=document.createElement('tr');
+  ['Punktschätzer', fmt(w.d_welch), fmt(w.g_welch)].forEach((v,i)=>{
+    const td=document.createElement('td'); td.textContent=v;
+    td.className=i===0?'lbl':'num'; tr1.appendChild(td);
+  });
+  b1.appendChild(tr1); tbl1.appendChild(b1);
+  container.appendChild(tbl1);
+
+  const note=document.createElement('div');
+  note.className='ci-note';
+  note.textContent='95%-KI (nichtzentrale t, aus t_Welch reskaliert) bezieht sich auf d_Welch (unkorrigiert)';
+  container.appendChild(note);
+
+  const tbl2=document.createElement('table');
+  tbl2.className='d-table-ci';
+  const h2=document.createElement('thead');
+  const hr2=document.createElement('tr');
+  ['CI-Methode', '95% Konfidenzintervall'].forEach((t,i)=>{
+    const th=document.createElement('th'); th.textContent=t;
+    if(i>0) th.className='num';
+    hr2.appendChild(th);
+  });
+  h2.appendChild(hr2); tbl2.appendChild(h2);
+  const b2=document.createElement('tbody');
+  const tr2=document.createElement('tr');
+  const td1=document.createElement('td'); td1.textContent='Nichtzentrale t'; td1.className='lbl'; tr2.appendChild(td1);
+  const td2=document.createElement('td'); td2.textContent=fmtCI(w.ci.welch_nct); td2.className='num'; tr2.appendChild(td2);
+  b2.appendChild(tr2);
+  tbl2.appendChild(b2);
+  container.appendChild(tbl2);
+
+  const tbl3=document.createElement('table');
+  tbl3.className='d-table';
+  tbl3.style.cssText='margin-top:.7rem;margin-bottom:.3rem';
+  const h3=document.createElement('thead');
+  const hr3=document.createElement('tr');
+  ['t-zu-d-Konversion (Borenstein et al. 2009)', 'Wert'].forEach((t,i)=>{
+    const th=document.createElement('th'); th.textContent=t;
+    if(i>0) th.className='num';
+    hr3.appendChild(th);
+  });
+  h3.appendChild(hr3); tbl3.appendChild(h3);
+  const b3=document.createElement('tbody');
+  const tr3=document.createElement('tr');
+  const td3a=document.createElement('td'); td3a.textContent='d = t_Welch · √(1/n₁+1/n₂)'; td3a.className='lbl'; tr3.appendChild(td3a);
+  const td3b=document.createElement('td'); td3b.textContent=fmt(w.d_welch_t); td3b.className='num'; tr3.appendChild(td3b);
+  b3.appendChild(tr3); tbl3.appendChild(b3);
+  container.appendChild(tbl3);
+
+  const note2=document.createElement('div');
+  note2.className='ci-note';
+  note2.textContent='95%-KI (nichtzentrale t) '+fmtCI(w.ci.welch_t_nct)+' — identisch mit d_Welch bei n₁=n₂, sonst abweichend';
+  container.appendChild(note2);
 }
 
 function buildConversionTable(d_ref, overrideCles){
@@ -896,9 +1042,26 @@ function updateResultsUI(res){
     document.getElementById('sb-dz').textContent=fmt(res.ds,3);
     document.getElementById('sb-rm-row').style.display='none';
     document.getElementById('sb-av-row').style.display='none';
-    buildBetweenTable(res);
+
+    buildBetweenBlock(document.getElementById('tbl-between'), res.ds, res.ci.ds, res.j, 'd_s');
+    buildWelchBlock(document.getElementById('tbl-welch'), res.welch);
+
+    const otherTblB=document.getElementById('tbl-other-between');
+    otherTblB.innerHTML='<thead><tr><th style="width:40%">Maß</th><th style="width:20%">Wert</th><th style="width:40%">Beschreibung</th></tr></thead>';
+    const otbB=document.createElement('tbody');
+    [['d_pool_n', fmt(res.d_pool_n), 'n-gepoolte SD (statt n−1)'],
+     ['Glass Δ', fmt(res.glass), 'Nur SD₁ (Kontrollgruppe) als Nenner'],
+     ['CLES (McGraw & Wong)', fmt(res.cles_mw*100,1)+'%', 'Φ(d_s/√2) — P(X₁ > X₂)'],
+     ['t_Welch(df_Welch)', fmt(res.welch.t)+' ('+fmt(res.welch.df,1)+')', 'p = '+fmtp(res.welch.p)+'; 95%-KI Mittelwertsdiff. '+fmtCI(res.welch.ci_raw)]
+    ].forEach(row=>{
+      const tr=document.createElement('tr');
+      row.forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;td.className=i===1?'num':'lbl';tr.appendChild(td);});
+      otbB.appendChild(tr);
+    });
+    otherTblB.appendChild(otbB);
+
     buildConversionTable(res.ds, res.cles_mw);
-    document.getElementById('nct-sec-h').textContent='Nichtzentrale t-Verteilung & CI — d_s';
+    document.getElementById('nct-sec-h').textContent='Nichtzentrale t-Verteilung & CI — d_s (Student, gepoolt)';
   }
 
   drawCanvases(res);
