@@ -2,6 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Berkson's Paradox — MethodsLab</title>
 <style>
@@ -197,7 +198,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
   <div class="sec-h" style="margin-top:0">Laufendes Beispiel</div>
   <div class="example-box">
-    <strong>Talent &amp; Fleiß im Bewerbungskontext</strong> — Eine Personalabteilung betrachtet <span id="ex-nsel">300</span> Bewerber: die erfolgreichsten <span id="ex-pct">25</span>% und die erfolglosesten <span id="ex-pct2">25</span>% nach Berufserfolg Z. In der Bevölkerung sind Talent (X) und Fleiß (Y) unkorreliert (ρ = <span id="ex-rxy" style="color:var(--a2);font-weight:600">0.00</span>). In der selektierten Gruppe beträgt die Korrelation r = <span id="ex-rsel" style="color:var(--a1);font-weight:600">—</span> — Berksons Paradox.
+    <strong>Talent &amp; Fleiß im Bewerbungskontext</strong> — <span id="ex-body">—</span>
   </div>
 
   <div class="sec-h">Kausale Struktur (DAG)</div>
@@ -572,13 +573,17 @@ function updateStats(){
   dEl.textContent=dObj.s;dEl.style.color=dObj.col;
   document.getElementById('eq-rsel').textContent=f2u(rSel);
 
-  // Example box
-  document.getElementById('ex-rxy').textContent=f2u(ST.rXY);
-  document.getElementById('ex-rsel').textContent=f2u(rSel);
-  const modeLabel={none:'keine',top:'obere',bottom:'untere',both:'extremsten'}[ST.selMode];
-  document.getElementById('ex-nsel').textContent=selPts.length;
-  document.getElementById('ex-pct').textContent=ST.selPct;
-  document.getElementById('ex-pct2').textContent=ST.selPct;
+  // Example box — Satzbau haengt vom gewaehlten Selektionsmodus ab
+  const rxyTxt=f2u(ST.rXY),rselTxt=f2u(rSel);
+  let exSubject;
+  if(ST.selMode==='top') exSubject='Eine Personalabteilung betrachtet nur die erfolgreichsten '+ST.selPct+'% von '+pts.length+' Bewerbern ('+selPts.length+' Personen) nach Berufserfolg Z.';
+  else if(ST.selMode==='bottom') exSubject='Eine Personalabteilung betrachtet nur die erfolglosesten '+ST.selPct+'% von '+pts.length+' Bewerbern ('+selPts.length+' Personen) nach Berufserfolg Z.';
+  else if(ST.selMode==='both') exSubject='Eine Personalabteilung betrachtet die erfolgreichsten '+ST.selPct+'% und die erfolglosesten '+ST.selPct+'% von '+pts.length+' Bewerbern ('+selPts.length+' Personen insgesamt) nach Berufserfolg Z.';
+  else exSubject='Eine Personalabteilung betrachtet alle '+pts.length+' Bewerber ohne Selektion nach Berufserfolg Z.';
+  const exTail=ST.selMode==='none'
+    ?'Da keine Selektion erfolgt, entspricht die beobachtete Korrelation r = <span style="color:var(--a1);font-weight:600">'+rselTxt+'</span> der wahren Korrelation — kein Berkson-Effekt.'
+    :'In der selektierten Gruppe beträgt die Korrelation r = <span style="color:var(--a1);font-weight:600">'+rselTxt+'</span> — Berksons Paradox.';
+  document.getElementById('ex-body').innerHTML=exSubject+' In der Bevölkerung sind Talent (X) und Fleiß (Y) unkorreliert (ρ = <span style="color:var(--a2);font-weight:600">'+rxyTxt+'</span>). '+exTail;
 
   // Insight
   let txt='';
@@ -650,11 +655,18 @@ function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  const nt=dark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',nt);
   document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  localStorage.setItem('ml-theme',nt);
   recompute();
 }
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('help-overlay').classList.remove('open');});
+window.addEventListener('resize',drawCanvas);
 
+if(document.documentElement.getAttribute('data-theme')==='light'){
+  const tb=document.getElementById('theme-btn');if(tb)tb.textContent='🌙 Dark';
+}
 setPreset('B');
 </script>
 </body>

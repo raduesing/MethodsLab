@@ -92,13 +92,6 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
 .hark-body{font-size:.9rem;line-height:1.62;color:var(--ink2)} .hark-body em{font-style:italic;color:var(--ink)}
 .hark-d{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.6rem;border-top:1px solid var(--grid);padding-top:.55rem}
 
-.bars{display:flex;flex-direction:column;gap:.32rem;margin-bottom:.9rem}
-.bar-row{display:grid;grid-template-columns:120px 1fr 56px;align-items:center;gap:.5rem;font-family:'DM Mono',monospace;font-size:.72rem}
-.bar-name{color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar-track{height:13px;background:var(--grid);position:relative;overflow:hidden}
-.bar-fill{height:100%;background:color-mix(in srgb,var(--ink2) 45%,transparent)}
-.bar-row.sel .bar-fill{background:var(--a1)} .bar-row.sel .bar-name{color:var(--ink)} .bar-row.sel .bar-p{color:var(--a1)}
-.bar-p{color:var(--ink3);text-align:right}
 
 .r2-compare{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:.6rem}
 .r2-side{background:var(--panel);border:1px solid var(--grid);padding:.85rem .9rem;text-align:center}
@@ -111,7 +104,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
 .pp-bars{display:flex;flex-direction:column;gap:.3rem}
 .pp-bar{display:grid;grid-template-columns:72px 1fr 60px;align-items:center;gap:.45rem;font-family:'DM Mono',monospace;font-size:.68rem}
 .pp-lab{color:var(--ink3)} .pp-track{height:12px;background:var(--grid);overflow:hidden}
-.pp-fill{height:100%;min-width:1px} .pp-fill.train{background:var(--a1)} .pp-fill.new{background:color-mix(in srgb,var(--a3) 60%,transparent)}
+.pp-fill{display:block;height:100%;min-width:1px} .pp-fill.train{background:var(--a1)} .pp-fill.new{background:color-mix(in srgb,var(--a3) 60%,transparent)}
 .pp-v{text-align:right;color:var(--ink2)}
 .step-note{font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);line-height:1.65;margin-top:.7rem;border-top:1px solid var(--grid);padding-top:.5rem}
 
@@ -413,7 +406,11 @@ function renderStep(){
   }
   const b=document.getElementById('step-bars'); b.innerHTML='';
   const note=document.getElementById('step-note');
-  if(sel.length===0){ note.textContent=''; return; }
+  if(sel.length===0){
+    note.textContent='';
+    b.innerHTML='<button class="reset-btn" onclick="rerollStep()" style="width:auto">🎲 Neu würfeln, bis etwas „gefunden" wird</button>';
+    return;
+  }
   const mx=Math.max(0.1,...sel.map(t=>Math.abs(t.r)));
   sel.slice().sort((a,c)=>Math.abs(c.r)-Math.abs(a.r)).forEach(t=>{
     const row=document.createElement('div'); row.className='pp-row';
@@ -449,6 +446,13 @@ function hark(){
 }
 
 // ── Modus / Controls ──
+// stellt sicher, dass es mind. 1 "signifikanten" Treffer gibt (sonst zeigt der Stepwise-Modus nichts an)
+function ensureHit(maxTries){
+  for(let i=0;i<(maxTries||40);i++){
+    if(R.tests.some(t=>t.p<ST.alpha)) return;
+    seed=(seed*1103515245+12345)>>>0; build();
+  }
+}
 function setMode(mode){
   ST.mode=mode;
   document.getElementById('tab-dredge').classList.toggle('active',mode==='dredge');
@@ -457,6 +461,7 @@ function setMode(mode){
   document.getElementById('mode-step').classList.toggle('hide',mode!=='step');
   document.getElementById('row-bonf').style.display = mode==='dredge'?'':'none';
   document.getElementById('lbl-cnt').textContent = mode==='dredge'?'Anzahl Tests m':'Anzahl Prädiktoren k';
+  if(mode==='step') ensureHit();
   render();
 }
 function toggleBonf(){ ST.bonf=!ST.bonf; document.getElementById('tg-bonf').textContent=ST.bonf?'an':'aus'; document.getElementById('tg-bonf').classList.toggle('on',ST.bonf); render(); }
@@ -465,6 +470,7 @@ document.getElementById('s-n').addEventListener('input',function(){ST.n=+this.va
 document.getElementById('s-a').addEventListener('input',function(){ST.alpha=[0.01,0.05,0.10][+this.value-1];document.getElementById('v-a').textContent=ST.alpha.toFixed(2);render();});
 document.getElementById('btn-hark').addEventListener('click',hark);
 function reroll(){ seed=(seed*1103515245+12345)>>>0; build(); document.getElementById('hark-box').classList.add('hide'); render(); }
+function rerollStep(){ ensureHit(); render(); }
 
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 function toggleTheme(){const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';}
