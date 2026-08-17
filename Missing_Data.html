@@ -71,7 +71,18 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   padding:.7rem .9rem;margin-bottom:.85rem;font-family:'DM Mono',monospace;
   font-size:.77rem;color:var(--ink2);line-height:1.9}
 .erklaer strong{color:var(--ink)}
+.circ{font-size:1.35em;vertical-align:-.08em;line-height:1;display:inline-block}
 .hint{font-family:'DM Mono',monospace;font-size:.70rem;color:var(--ink3);line-height:1.7}
+.acc-item{border:1px solid var(--border);margin-bottom:.85rem}
+.acc-trigger{width:100%;text-align:left;background:var(--panel);border:none;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);padding:.6rem .9rem;cursor:pointer;
+  display:flex;align-items:center;gap:.6rem;transition:color .15s}
+.acc-trigger:hover{color:var(--ink)}
+.acc-trigger.open{color:var(--accent)}
+.acc-arrow{font-size:.7rem;color:var(--ink3);transition:transform .2s;flex-shrink:0;margin-left:auto}
+.acc-trigger.open .acc-arrow{transform:rotate(90deg)}
+.acc-body{display:none;padding:.85rem .9rem;border-top:1px solid var(--border)}
+.acc-body.open{display:block}
 .res-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.82rem;margin-bottom:.85rem}
 .res-table th{font-size:.70rem;letter-spacing:.06em;color:var(--ink3);padding:.3rem .5rem;
   border-bottom:2px solid var(--grid);text-align:left}
@@ -105,7 +116,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);
   padding:.3rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.35rem 0 .55rem;
-  white-space:pre}
+  white-space:pre-wrap;word-break:break-word}
 .dgp-bar{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a5);
   padding:.55rem .9rem;margin-bottom:.75rem;font-family:'DM Mono',monospace}
 .dgp-bar-lbl{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--a5);margin-bottom:.28rem}
@@ -144,7 +155,10 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
 
     <div class="help-sh">Beispiel</div>
-    <p class="help-p">Eine Längsschnittstudie erhebt <strong>Soziale Unterstützung Z</strong> und <strong>Stresslevel X</strong> (beide z-standardisiert, t=1, vollständig beobachtet; r(X,Z)=−.40) sowie <strong>Wohlbefinden Y</strong> (0–100, t=2, teilweise fehlend). Wahres DGP: <strong>Y = 60 − 6·X + 3·Z + ε</strong>. <strong>Zielanalyse: Y ~ X</strong> (einfache Regression). Z ist Auxiliary-Variable: beobachtet, im Imputationsmodell, aber nicht im Analysemodell. Der marginale Populationseffekt bei Y~X ist β_X = −7.20 (= −6 + 3·(−.40), wegen r_XZ·β_Z).</p>
+    <p class="help-p">Eine Längsschnittstudie erhebt <strong>Soziale Unterstützung Z</strong> und <strong>Stresslevel X</strong> (beide z-standardisiert, t=1, vollständig beobachtet; r(X,Z)=−.40) sowie <strong>Wohlbefinden Y</strong> (0–100, t=2, teilweise fehlend). Wahrer Datengenerierungsprozess (DGP): <strong>Y = 60 − 6·X + 3·Z + ε</strong>. <strong>Zielanalyse: Y ~ X</strong> (einfache Regression). Z ist Auxiliary-Variable: beobachtet, im Imputationsmodell, aber nicht im Analysemodell. Der marginale Populationseffekt bei Y~X ist β_X = −7.20 (= −6 + 3·(−.40), wegen r_XZ·β_Z).</p>
+
+    <div class="help-sh">Die Frage dahinter</div>
+    <p class="help-p">Y liegt nicht für alle Personen vor. Bevor man irgendetwas rechnet, muss man klären: <strong>Warum</strong> fehlen die Werte — hängt das vom Zufall ab, von anderen beobachteten Variablen, oder vom fehlenden Wert selbst? Davon hängt ab, welche der drei gängigen Strategien überhaupt unverzerrte Schätzer liefert: <strong>Listwise Deletion</strong> (unvollständige Fälle streichen), <strong>Single Imputation</strong> (einen Schätzwert einsetzen, z. B. den Mittelwert) oder <strong>Multiple Imputation</strong> (mehrere plausible Werte ziehen und die Ergebnisse poolen). Die folgenden drei Abschnitte beschreiben die drei möglichen „Warum" — danach folgen die Strategien im Detail.</p>
 
     <div class="help-sh">MCAR — Missing Completely At Random</div>
     <p class="help-p">P(Y fehlt) ist konstant und unabhängig von X, Z und Y — z. B. technischer Serverausfall. Listwise in Y~X liefert unverzerrte Schätzer, verliert aber Effizienz. MI (Imputation mit X+Z, Analyse Y~X) ist ebenfalls unverzerrt und effizienter.</p>
@@ -251,20 +265,44 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
 
   <div class="story-box">
     <div class="story-lbl">Durchgehendes Beispiel</div>
+    <div style="font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink2);line-height:1.75;margin-bottom:.6rem">
+      Eine Längsschnittstudie erhebt <strong style="color:var(--ink)">Stresslevel X</strong> und <strong style="color:var(--ink)">Soziale Unterstützung Z</strong> vollständig zu t1 — <strong style="color:var(--ink)">Wohlbefinden Y</strong> wird zu t2 erhoben, liegt aber nur für einen Teil der Stichprobe vor. Zielanalyse: der Effekt von Stress auf Wohlbefinden, <strong style="color:var(--ink)">Y ~ X</strong>.
+    </div>
     <div class="story-vars">
       <span class="sv">Z</span><span class="sd"><strong>Auxiliary-Variable</strong> — vollständig beobachtet, beeinflusst Y (β_Z = +3) und (unter MAR) die Missingness. Nicht Teil der Forschungsfrage, aber nötig im Imputationsmodell.</span>
       <span class="sv">X</span><span class="sd"><strong>Hauptprädiktor</strong> — vollständig beobachtet, r(X,Z) = −.40</span>
       <span class="sv">Y</span><span class="sd"><strong>Outcome</strong> — Wohlbefinden t=2 (0–100), teilweise fehlend</span>
-      <span class="sv">Wahrer DGP</span><span class="sd"><span id="sb-dgp-formula">Y = 60 − 6.0·X + 3·Z + ε</span> — Z beeinflusst Y in der Realität, auch wenn der Forscher nur Y ~ X modelliert. Ohne Z→Y könnte PMM keine besseren Spender finden und MI hätte keinen Vorteil.</span>
-      <span class="sv">Zielanalyse</span><span class="sd">Y ~ X — marginaler Populationseffekt β_X = <span id="sb-bxm">−7.20</span> (= <span id="sb-bxmf">−6.0 + 3·(−0.40)</span>, weil Z→Y und r_XZ = −.40)</span>
-      <span class="sv">MAR-Bias</span><span class="sd">Z↓ und X↑ → Dropout. Fehlende haben niedrigeres Y. Listwise: (1) μ_Y↑ und (2) β_X zu flach. MI-Fix: Z im Imputationsmodell → PMM findet Spender mit korrekt niedrigen Y-Werten.</span>
     </div>
-    <div class="story-q">Warum Z ins Imputationsmodell, wenn die Analyse nur Y ~ X ist? — Z sagt sowohl die Missingness als auch Y voraus. Ohne Z würde PMM die fehlenden Y-Werte systematisch zu hoch schätzen. Das Imputationsmodell muss reicher sein als das Analysemodell (Rubin 1987).</div>
+    <div class="story-q">Y liegt für einen Teil der Stichprobe nicht vor. Drei Fragen: <strong>Warum</strong> führt das überhaupt zu Problemen? <strong>Welche Muster</strong> kann das Fehlen von Y annehmen (MCAR, MAR, MNAR)? Und <strong>was tut man</strong> dagegen? Antworten in den Grundlagen unten.</div>
   </div>
 
+  <div class="sec-h" style="margin-top:0">Grundlagen — bevor Sie loslegen</div>
+  <div style="font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.8;margin-bottom:.7rem">
+    Die wichtigsten Begriffe im Überblick: <strong style="color:var(--ink)">Bias</strong> (systematische Verzerrung), die drei Fehlmechanismen <strong style="color:var(--ink)">MCAR / MAR / MNAR</strong>, die drei Strategien <strong style="color:var(--ink)">Listwise Deletion / Single Imputation / Multiple Imputation</strong>, sowie <strong style="color:var(--ink)">Auxiliary-Variablen</strong> im Imputationsmodell. Sagt Ihnen das schon etwas? Dann direkt unten ausprobieren. Falls nicht — hier aufklappen:
+  </div>
+  <div class="acc-item">
+    <button class="acc-trigger" onclick="toggleAcc(this)">
+      Begriffe Schritt für Schritt am Beispiel erklärt
+      <span class="acc-arrow">▶</span>
+    </button>
+    <div class="acc-body">
+      <div class="erklaer" style="line-height:2;margin-bottom:0">
+        <strong><span class="circ">①</span> Bias — worum geht es eigentlich?</strong><br>
+        Ein Schätzer ist <em>verzerrt (biased)</em>, wenn er im Mittel über viele Wiederholungen systematisch vom wahren Populationswert abweicht — nicht nur zufällig streut, sondern in eine bestimmte Richtung „schief" liegt. Bei Missing Data entsteht Bias, wenn die <em>beobachtete</em> Teilstichprobe keine Zufallsstichprobe der vollständigen Population mehr ist: Fehlt Y bevorzugt bei gestressten Personen (hohes X), sagen die Restdaten systematisch etwas anderes über den Zusammenhang X→Y als die vollständigen Daten. Ob das passiert, hängt genau davon ab, <em>warum</em> Werte fehlen — deshalb Schritt ②.<br><br>
+        <strong><span class="circ">②</span> Die drei Mechanismen — warum fehlen Werte?</strong><br>
+        <strong>MCAR</strong> (Missing Completely At Random): das Fehlen hängt von nichts ab — reiner Zufall, z. B. Serverausfall. <strong>MAR</strong> (Missing At Random): das Fehlen hängt von <em>beobachteten</em> Variablen ab — hier: hoher Stress X <em>und</em> niedrige Unterstützung Z gemeinsam. <strong>MNAR</strong> (Missing Not At Random): das Fehlen hängt vom <em>fehlenden Wert selbst</em> ab — hier: niedriges Wohlbefinden Y führt zum Abbruch. Nur bei MCAR sind die Restdaten noch eine Zufallsstichprobe; bei MAR und MNAR entsteht potenziell Bias (Schritt ①).<br><br>
+        <strong><span class="circ">③</span> Drei Strategien im Umgang damit</strong><br>
+        <strong>Listwise Deletion:</strong> alle unvollständigen Fälle streichen, nur mit dem Rest rechnen — einfach, aber nur bei MCAR unverzerrt. <strong>Single Imputation</strong> (z. B. Mean Imputation): einen einzelnen Schätzwert pro Lücke einsetzen — kann den Mittelwert grob retten, zerstört aber die Varianz. <strong>Multiple Imputation (MI):</strong> mehrere plausible Werte pro Lücke ziehen, mehrfach analysieren und die Ergebnisse poolen — korrigiert Bias unter MAR und liefert korrekte Standardfehler.<br><br>
+        <strong><span class="circ">④</span> Imputation &amp; Auxiliary-Variablen</strong><br>
+        <em>Imputation</em> heißt: fehlende Werte durch geschätzte, plausible Werte ersetzen, basierend auf einem Modell der beobachteten Daten. Damit dieses Modell den Bias wirklich behebt, muss es <strong>reicher</strong> sein als die Zielanalyse — es braucht <em>Auxiliary-Variablen</em>: beobachtete Variablen, die nicht Teil der Forschungsfrage sind, aber ins Imputationsmodell gehören. <strong>Auswahlkriterium:</strong> Eine gute Auxiliary-Variable korreliert entweder mit der <em>Missingness</em> (sagt vorher, wer fehlt) oder mit dem <em>Outcome</em> selbst — idealerweise mit beidem. Hier ist Z genau das: Z beeinflusst sowohl, wer aussteigt (MAR-Mechanismus), als auch Y direkt. Ohne Z im Imputationsmodell könnte PMM den MAR-Bias nicht beheben, obwohl Z in der Zielanalyse Y~X gar nicht vorkommt.
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-h">Ausprobieren — wählen Sie links einen Mechanismus</div>
   <div id="dgp-bar" class="dgp-bar"><!-- filled by updateDGPDisplay() --></div>
 
-  <div class="sec-h" style="margin-top:0">Scatter — Stresslevel X vs. Wohlbefinden Y</div>
+  <div class="sec-h">Scatter — Stresslevel X vs. Wohlbefinden Y</div>
   <canvas id="cv-miss" height="555"></canvas>
 
   <div class="erklaer" id="erklaer-box" style="margin-top:.7rem">
@@ -589,12 +627,6 @@ function drawDensity(){
 
 // ── Canvas ─────────────────────────────────────────────────────────────────────
 function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
-function zCol(z,hexLow,hexHigh){  // Farbe nach Z-Wert: orange(niedrig) → blau(hoch)
-  const t=Math.max(0,Math.min(1,(z+2.5)/5));
-  const p=h=>{h=h.replace(/[^0-9a-fA-F]/g,'');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
-  const [r1,g1,b1]=p(hexLow),[r2,g2,b2]=p(hexHigh);
-  return`rgb(${Math.round(r1+(r2-r1)*t)},${Math.round(g1+(g2-g1)*t)},${Math.round(b1+(b2-b1)*t)})`;
-}
 
 function drawPlot(){
   const canvas=document.getElementById('cv-miss');
@@ -603,7 +635,7 @@ function drawPlot(){
   const pad={l:56,r:18,t:18,b:54};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
 
-  const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5');
+  const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4');
   const ink2=cv('--ink2'),ink3=cv('--ink3');
   const grid=cv('--grid'),bg=cv('--bg'),paper=cv('--paper');
 
@@ -827,14 +859,14 @@ function updateErklaerTable(){
 
 // ── Mechanismus-UI ─────────────────────────────────────────────────────────────
 const HINTS={
-  mcar:'<strong style="color:var(--a3)">MCAR:</strong> Rein zufällige Fehlmuster — ○ gleichmäßig über X-, Y- und Z-Werte verteilt (gemischte Farben). Listwise Y~X und MI liefern beide unverzerrte Schätzer.',
-  mar: '<strong style="color:var(--a5)">MAR (X+Z):</strong> Hoher Stress (X↑) UND niedrige Unterstützung (Z↓) → Dropout. Orangene ○ (Z↓) und hoch-X ○ häufen sich. Das Fehlmuster ist durch beobachtete Variablen vollständig erklärbar — MI nutzt X+Z im Imputationsmodell.',
-  mnar:'<strong style="color:var(--a1)">MNAR:</strong> Niedriges Wohlbefinden (Y↓) → Dropout — ○ clustern am unteren Y-Rand, unabhängig von der Z-Farbe. Weder Listwise noch MI kann den Bias vollständig korrigieren.'
+  mcar:'<strong style="color:var(--a3)">MCAR:</strong> Rein zufällige Fehlmuster — ○ gleichmäßig über X- und Y-Werte verteilt, kein Cluster-Muster. Listwise Y~X und MI liefern beide unverzerrte Schätzer.',
+  mar: '<strong style="color:var(--a5)">MAR (X+Z):</strong> Hoher Stress (X↑) UND niedrige Unterstützung (Z↓) → Dropout. Die fehlenden ○ häufen sich bei hohem X und im unteren Y-Bereich. Das Fehlmuster ist durch beobachtete Variablen vollständig erklärbar — MI nutzt X+Z im Imputationsmodell.',
+  mnar:'<strong style="color:var(--a1)">MNAR:</strong> Niedriges Wohlbefinden (Y↓) → Dropout — ○ clustern am unteren Y-Rand. Weder Listwise noch MI kann den Bias vollständig korrigieren.'
 };
 const ERKLAER={
-  mcar:'<strong>MCAR:</strong> ○ (wahre Y-Werte fehlender Personen) sind gleichmäßig verteilt — gemischte Farben, kein Cluster-Muster. Listwise Y~X (rot) und MI (grün) weichen kaum von der vollständigen-Daten-Geraden ab.',
-  mar: '<strong>MAR (X+Z):</strong> Orangene ○ (Z↓) clustern tendenziell im unteren Y-Bereich; hoch-X ○ fehlen überproportional. Listwise Y~X ist <strong>doppelt verzerrt</strong> (β_X zu flach + μ_Y zu hoch). MI-PMM imputiert mit X+Z als Auxiliary → Zielanalyse Y~X nach MI ist nahezu unverzerrt.',
-  mnar:'<strong>MNAR:</strong> ○ clustern am unteren Y-Rand — unabhängig von Z-Farbe. Das Fehlmuster hängt direkt von Y ab. MI trainiert auf selektierten Daten → ähnlicher Bias wie Listwise in Y~X.'
+  mcar:'<strong>MCAR:</strong> ○ (wahre Y-Werte fehlender Personen) sind gleichmäßig verteilt, kein Cluster-Muster. Listwise Y~X (rot) und MI (grün) weichen kaum von der vollständigen-Daten-Geraden ab.',
+  mar: '<strong>MAR (X+Z):</strong> Die fehlenden ○ clustern tendenziell im unteren Y-Bereich; hoch-X ○ fehlen überproportional. Listwise Y~X ist <strong>doppelt verzerrt</strong> (β_X zu flach + μ_Y zu hoch). MI-PMM imputiert mit X+Z als Auxiliary → Zielanalyse Y~X nach MI ist nahezu unverzerrt.',
+  mnar:'<strong>MNAR:</strong> ○ clustern am unteren Y-Rand. Das Fehlmuster hängt direkt von Y ab. MI trainiert auf selektierten Daten → ähnlicher Bias wie Listwise in Y~X.'
 };
 
 function setMech(mech){
@@ -876,17 +908,7 @@ function downloadCSV(){
 }
 function updateDGPDisplay(){
   const neg=v=>typeof v==='number'?v.toFixed(2).replace('-','−'):String(v).replace('-','−');
-  const bxMag=ST.bxMag,bx=-bxMag,bxMarg=trueBX_MARG(),p=ST.pMiss;
-
-  // Story-box: DGP-Formel
-  const sbF=document.getElementById('sb-dgp-formula');
-  if(sbF) sbF.textContent=bxMag===0?'Y = 60 + 3·Z + ε':`Y = 60 − ${bxMag.toFixed(1)}·X + 3·Z + ε`;
-
-  // Story-box: marginaler β_X
-  const sbBxm=document.getElementById('sb-bxm');
-  if(sbBxm) sbBxm.textContent=neg(bxMarg);
-  const sbBxmf=document.getElementById('sb-bxmf');
-  if(sbBxmf) sbBxmf.textContent=`${neg(bx.toFixed(2))} + 3·(−0.40)`;
+  const bxMag=ST.bxMag,bxMarg=trueBX_MARG(),p=ST.pMiss;
 
   // DGP-Bar
   const mechColor={mcar:'var(--a3)',mar:'var(--a5)',mnar:'var(--a1)'};
@@ -922,6 +944,10 @@ function toggleTheme(){
   drawPlot();drawDensity();
 }
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+function toggleAcc(trigger){
+  trigger.classList.toggle('open');
+  trigger.nextElementSibling.classList.toggle('open');
+}
 
 window.addEventListener('load',()=>{
   setMech('mcar');

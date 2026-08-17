@@ -20,6 +20,7 @@
 html{font-size:18px}
 body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
 .gk{text-transform:none!important;font-style:normal}
+.circ{font-size:1.4em;vertical-align:-.1em;line-height:1;display:inline-block}
 
 #topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
   padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
@@ -51,6 +52,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 input[type=range].acc-s::-webkit-slider-thumb{background:var(--a5)}
 
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.arrive-btns{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.7rem}
+.arrive-btns .mbtn{padding:.45rem 1rem}
 .mbtn{font-family:'DM Mono',monospace;font-size:.71rem;padding:.45rem .3rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center;line-height:1.25}
 .mbtn:hover{border-color:var(--accent);color:var(--accent)}
@@ -58,6 +61,17 @@ input[type=range].acc-s::-webkit-slider-thumb{background:var(--a5)}
 .mbtn.full{grid-column:1 / -1}
 .hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.7;
   border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
+
+.conv-table{width:100%;border-collapse:collapse;border:1.5px solid var(--border);font-family:'DM Mono',monospace;font-size:.71rem}
+.conv-table th{font-size:.6rem;text-transform:uppercase;letter-spacing:.02em;color:var(--ink3);
+  font-weight:600;text-align:right;padding:.28rem .35rem;background:var(--grid);border:1px solid var(--border)}
+.conv-table th:first-child{text-align:left}
+.conv-table td{padding:.3rem .35rem;text-align:right;border:1px solid var(--grid)}
+.conv-table td:first-child{text-align:left;color:var(--ink2)}
+.conv-table tr.you{background:color-mix(in srgb,var(--a5) 10%,transparent)}
+.conv-table tr.you td{color:var(--a5);font-weight:600}
+.conv-table tr.true td{color:var(--ink)}
+.conv-note{margin-top:.35rem;color:var(--ink3)}
 
 .story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
   padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
@@ -80,6 +94,10 @@ input[type=range].acc-s::-webkit-slider-thumb{background:var(--a5)}
   border:1.5px solid;text-align:center;letter-spacing:.01em;line-height:1.6;
   color:var(--a5);border-color:var(--a5);background:color-mix(in srgb,var(--a5) 12%,transparent)}
 
+.lock-card{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink3);padding:1.1rem 1rem;
+  border:1.5px dashed var(--border);background:var(--panel);text-align:center;line-height:1.7;margin-bottom:1rem}
+#reveal-wrap.locked{display:none}
+
 .metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:1rem}
 .metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem}
 .metric-lbl{font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.05em;text-transform:uppercase;
@@ -97,11 +115,19 @@ canvas{width:100%;display:block}
   color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
 
 .lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard-grid .lcard:last-child{grid-column:1/-1}
 .lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
 .lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
   text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
 .lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)}
 .lcard-body strong{color:var(--ink)}
+.lcard-body code{display:block;background:var(--panel);border:1px solid var(--grid);padding:.35rem .55rem;
+  margin:.4rem 0;font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);white-space:pre-wrap;line-height:1.6}
+.lcard-body table{width:100%;border-collapse:collapse;border:1.5px solid var(--border);margin:.5rem 0;font-family:'DM Mono',monospace;font-size:.74rem}
+.lcard-body th{font-size:.64rem;text-transform:uppercase;letter-spacing:.02em;color:var(--ink3);font-weight:600;
+  text-align:right;padding:.28rem .4rem;background:var(--grid);border:1px solid var(--border)}
+.lcard-body th:first-child,.lcard-body td:first-child{text-align:left}
+.lcard-body td{padding:.28rem .4rem;text-align:right;border:1px solid var(--grid);color:var(--ink2)}
 .xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
   padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
 .xlink:hover{background:var(--a4);color:var(--bg)}
@@ -162,16 +188,6 @@ canvas{width:100%;display:block}
     <div class="hint" style="margin-bottom:0">Mittlerer Soll-Abstand fest bei <strong>10&nbsp;min</strong>; nur die Verteilung der Lücken ändert sich.</div>
   </div>
 
-  <div class="scard">
-    <div class="scard-title" style="color:var(--a1)">Zufällig ankommen</div>
-    <div class="btn-row">
-      <button class="mbtn" onclick="arrive(1)">🚶 1×</button>
-      <button class="mbtn" onclick="arrive(200)">🚶 200×</button>
-    </div>
-    <button class="mbtn full" style="margin-top:.4rem" onclick="resetDarts()">Stichprobe zurücksetzen</button>
-    <div class="hint" id="dart-info">Noch keine Ankunft. Komm zu einer zufälligen Zeit an die Haltestelle — in welcher Lücke landest du?</div>
-  </div>
-
 </div><!-- #sidebar -->
 
 <!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
@@ -181,9 +197,8 @@ canvas{width:100%;display:block}
     <div class="story-lbl">🚌 Worum geht's</div>
     Ein Bus fährt im Schnitt alle <strong>10&nbsp;Minuten</strong> — mal nach 4, mal nach 18&nbsp;Minuten. Der Betreiber sagt
     stolz: „mittlerer Abstand 10&nbsp;min, mittlere Wartezeit also 5&nbsp;min." Du als Fahrgast kommst aber zu einer
-    <em>zufälligen</em> Zeit an die Haltestelle und wartest gefühlt <em>immer</em> länger. Wer hat recht? Beide — und das
-    ist das <strong>Inspektionsparadox</strong>: Eine zufällige Zeit fällt mit höherer Wahrscheinlichkeit in eine
-    <strong>lange</strong> Lücke, weil lange Lücken mehr von der Zeitachse einnehmen.
+    <em>zufälligen</em> Zeit an die Haltestelle und wartest gefühlt <em>immer</em> länger. <strong>Wer hat recht — der
+    Betreiber oder du?</strong>
   </div>
 
   <div class="pred" id="pred">
@@ -196,80 +211,130 @@ canvas{width:100%;display:block}
     <div class="pred-fb" id="pred-fb"></div>
   </div>
 
-  <div class="verdict" id="verdict">—</div>
-
-  <div class="metric-grid">
-    <div class="metric">
-      <div class="metric-lbl">Soll-Abstand E[L]<br>(Betreiber)</div>
-      <div class="metric-val" id="m-mean" style="color:var(--a2)">—</div>
-      <div class="metric-sub">Ø aller Lücken</div>
-    </div>
-    <div class="metric">
-      <div class="metric-lbl">Erlebter Abstand<br>(Fahrgast)</div>
-      <div class="metric-val" id="m-exp" style="color:var(--a5)">—</div>
-      <div class="metric-sub">E[L²]/E[L]</div>
-    </div>
-    <div class="metric">
-      <div class="metric-lbl">Wartezeit naiv</div>
-      <div class="metric-val" id="m-wn">—</div>
-      <div class="metric-sub">E[L]/2</div>
-    </div>
-    <div class="metric">
-      <div class="metric-lbl">Wartezeit echt</div>
-      <div class="metric-val" id="m-we" style="color:var(--a1)">—</div>
-      <div class="metric-sub">E[L²]/(2·E[L])</div>
-    </div>
-  </div>
+  <div class="lock-card" id="reveal-locked">🔒 Erst tippen, dann aufdecken — wähle oben eine Vorhersage, um Verdict, Kennzahlen und das Häufigkeitsdiagramm zu sehen.</div>
 
   <div class="plot-box">
-    <div class="plot-title">① Der Fahrplan als Zeitstrahl — wo landen die Ankünfte?</div>
+    <div class="plot-title"><span class="circ">①</span> Der Fahrplan als Zeitstrahl — wo landen die Ankünfte?</div>
     <canvas id="cv-line" height="150"></canvas>
     <div class="hint" id="hint-line">Senkrechte Striche = Busse, Bänder dazwischen = Lücken (länger = breiter). Dreiecke = deine zufälligen Ankünfte; die zuletzt getroffene Lücke ist hervorgehoben.</div>
   </div>
 
-  <div class="plot-box">
-    <div class="plot-title">② Verteilung der Lücken: gezählt vs. erlebt</div>
-    <canvas id="cv-hist" height="270"></canvas>
-    <div class="hint">Blau = jede Lücke zählt <strong>einmal</strong> (Betreibersicht). Orange = jede Lücke nach ihrer <strong>Länge</strong> gewichtet (Fahrgastsicht) — dieselben Lücken, aber nach rechts verschoben. Senkrechte Linien = die beiden Mittelwerte.</div>
+  <div id="reveal-wrap" class="locked">
+    <div class="verdict" id="verdict">—</div>
+
+    <div class="plot-box">
+      <div class="plot-title"><span class="circ">②</span> Jetzt selbst ausprobieren — zufällig ankommen</div>
+      <div class="hint" style="border-top:none;padding-top:0;margin-top:0;margin-bottom:.6rem">Komm mehrfach zu einem zufälligen Zeitpunkt an der Haltestelle an und beobachte, wie sich „Dein Schnitt" mit jedem Wurf dem wahren Erwartungswert annähert.</div>
+      <div class="arrive-btns">
+        <button class="mbtn" onclick="arrive(1)">🚶 1×</button>
+        <button class="mbtn" onclick="arrive(200)">🚶 200×</button>
+        <button class="mbtn" onclick="resetDarts()">⟲ Zurücksetzen</button>
+      </div>
+      <div id="dart-last">Noch keine Ankunft. Komm zu einer zufälligen Zeit an die Haltestelle — in welcher Lücke landest du?</div>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric">
+        <div class="metric-lbl">Soll-Abstand E[L]<br>(Betreiber)</div>
+        <div class="metric-val" id="m-mean" style="color:var(--a2)">—</div>
+        <div class="metric-sub">Ø aller Lücken</div>
+      </div>
+      <div class="metric">
+        <div class="metric-lbl">Erlebter Abstand<br>(Fahrgast)</div>
+        <div class="metric-val" id="m-exp" style="color:var(--a5)">—</div>
+        <div class="metric-sub">E[L²]/E[L]</div>
+      </div>
+      <div class="metric">
+        <div class="metric-lbl">Wartezeit naiv</div>
+        <div class="metric-val" id="m-wn">—</div>
+        <div class="metric-sub">E[L]/2</div>
+      </div>
+      <div class="metric">
+        <div class="metric-lbl">Wartezeit echt</div>
+        <div class="metric-val" id="m-we" style="color:var(--a1)">—</div>
+        <div class="metric-sub">E[L²]/(2·E[L])</div>
+      </div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title"><span class="circ">③</span> Verteilung der Lücken: gezählt vs. erlebt</div>
+      <canvas id="cv-hist" height="270"></canvas>
+      <div class="hint">Blau = jede Lücke zählt <strong>einmal</strong> (Betreibersicht). Orange = jede Lücke nach ihrer <strong>Länge</strong> gewichtet (Fahrgastsicht) — dieselben Lücken, aber nach rechts verschoben. Senkrechte Linien = die beiden Mittelwerte.</div>
+    </div>
   </div>
 
   <div class="sec-h">Konzepte</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">Length-biased Sampling</div>
-      <div class="lcard-body">Stichprobeneinheiten werden mit ihrer eigenen <strong>Größe gewichtet</strong> gezogen. Eine zufällige
-        <em>Zeit</em> trifft eine Lücke mit Wahrscheinlichkeit ∝ ihrer Länge. Darum ist die erlebte Lücke im Schnitt
-        <strong>E[L²]/E[L] = E[L] + Var(L)/E[L] ≥ E[L]</strong> — Gleichheit nur, wenn alle Lücken gleich lang sind.</div>
+      <div class="lcard-h"><span class="circ">①</span> Die Symbole — was steht wofür?</div>
+      <div class="lcard-body">In den Formeln unten kommen immer dieselben paar Größen vor. <strong>L₁, L₂, … Lₙ</strong> sind
+        die einzelnen Lücken zwischen den Bussen (n Stück). <strong>T = L₁+L₂+…+Lₙ</strong> ist die gesamte Fahrplan-Zeit.
+        <strong>E[L]</strong> ist der ganz normale Mittelwert aller Lücken — das, was der Betreiber „Soll-Abstand" nennt.
+        <strong>E[L²]</strong> ist der Mittelwert der <em>quadrierten</em> Lücken — er taucht gleich auf, weil lange Lücken
+        dabei überproportional stark ins Gewicht fallen. <strong>Var(L) = E[L²] − E[L]²</strong> misst, wie stark die
+        Lücken streuen. Mehr braucht es nicht — alles unten baut nur auf diesen vier Größen auf.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Mehr Streuung ⇒ größerer Effekt</div>
-      <div class="lcard-body">Der Aufschlag ist genau <strong>Var(L)/E[L]</strong>. Bei exaktem Takt (Var = 0) gibt es kein Paradox.
-        Bei rein zufälligen (Poisson-)Ankünften ist Var = E[L]², dann ist die erlebte Lücke <strong>doppelt</strong> so lang
-        und die Wartezeit gleich dem <em>ganzen</em> mittleren Abstand statt der Hälfte.</div>
+      <div class="lcard-h"><span class="circ">②</span> Welche Lücke triffst du überhaupt?</div>
+      <div class="lcard-body">Du kommst zu einem <em>zufälligen Zeitpunkt</em> zwischen 0 und T an — nicht zu einer zufälligen
+        Lücken-Nummer. Eine Lücke der Länge L nimmt den Anteil <strong>L/T</strong> der gesamten Fahrplanzeit ein, also gilt:
+        <code>P(du landest in dieser Lücke) = L/T</code>
+        Eine 12-Minuten-Lücke wird dadurch sechsmal so oft getroffen wie eine 2-Minuten-Lücke — obwohl der Betreiber beide
+        beim Berechnen seines Mittelwerts völlig gleich zählt (jede einmal).</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Das Wartezeit-Paradox</div>
-      <div class="lcard-body">Weil du in einer überlangen Lücke landest und darin im Mittel auf halber Strecke ankommst, ist
-        die echte Wartezeit <strong>E[L²]/(2·E[L])</strong> statt naiv <strong>E[L]/2</strong>. Gefühl und Rechnung stimmen
-        also überein — der naive Mittelwert war die falsche Bezugsgröße.</div>
+      <div class="lcard-h"><span class="circ">③</span> Wo in der Lücke landest du?</div>
+      <div class="lcard-body">Angenommen, du bist in einer Lücke der Länge L gelandet — <em>wo</em> genau darin, ist
+        gleichverteilt. Mal stehst du ganz am Anfang (fast die volle Lücke Wartezeit), mal kurz vor dem nächsten Bus (fast
+        keine). Über viele Ankünfte in gleich lange Lücken gemittelt, liegt die Restwartezeit im Schnitt bei <strong>L/2</strong>.
+        Landest du z. B. bei Minute 8 von 12, wartest du nur 4 Minuten — das widerspricht L/2 = 6 nicht, es ist einfach ein
+        einzelner Wurf aus genau dieser Streuung.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Das Klassengrößen-Paradox</div>
-      <div class="lcard-body">Dieselbe Mathematik: Die Uni meldet eine mittlere Kursgröße, aber befragt man <em>Studierende</em>,
-        erscheint sie größer — weil mehr Studierende in den großen Kursen sitzen. Ebenso „erscheinen" Server ausgelastet,
-        Restaurants voll, Autobahnen verstopft: Man beobachtet Zustände proportional zu ihrer Dauer/Größe.</div>
+      <div class="lcard-h"><span class="circ">④</span> Beide Effekte kombiniert — die Formel</div>
+      <div class="lcard-body">Die Wartezeit gewichtet jede Lücke mit ihrer Trefferwahrscheinlichkeit aus <span class="circ">②</span> und multipliziert
+        mit der mittleren Restwartezeit aus <span class="circ">③</span>:
+        <code>E[Wartezeit] = Σᵢ (Lᵢ/T) · (Lᵢ/2) = E[L²] / (2·E[L])</code>
+        Genauso entsteht die „erlebte Lücke" — statt wie der Betreiber jede Lücke mit 1 zu gewichten, gewichtet man sie mit
+        ihrer eigenen Länge:
+        <code>E[erlebte Lücke] = Σᵢ Lᵢ·(Lᵢ/T) = E[L²]/E[L] = E[L] + Var(L)/E[L]</code>
+        Die letzte Umformung zeigt direkt: ohne Streuung (Var = 0) verschwindet der ganze Effekt.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Verwandt mit dem Friendship Paradox</div>
-      <div class="lcard-body">Beide gehören zur Familie der <strong>size-biased</strong> Stichproben: dort werden gut vernetzte
-        Personen über Kanten mehrfach gezählt (E[k²]/E[k]), hier lange Intervalle über die Zeit. Dieselbe Formel, anderes Gewand.
-        <a class="xlink" href="Friendship_Paradox.html" target="_blank">→ Friendship Paradox</a></div>
+      <div class="lcard-h"><span class="circ">⑤</span> Mehr Streuung ⇒ größerer Effekt</div>
+      <div class="lcard-body">Der Aufschlag in der Formel oben ist genau <strong>Var(L)/E[L]</strong>. Bei exaktem Takt
+        (Var = 0) gibt es also kein Paradox. Bei rein zufälligen (Poisson-)Ankünften ist Var = E[L]² — dann ist die erlebte
+        Lücke <strong>doppelt</strong> so lang wie E[L], und die Wartezeit entspricht dem <em>ganzen</em> mittleren Abstand
+        statt der Hälfte.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Wo es täuscht — und wo es nützt</div>
-      <div class="lcard-body"><strong>Täuscht:</strong> In Überlebens-/Verweildauerdaten überschätzt man die Dauer, wenn man zu einem
-        Stichtag „anwesende" Fälle zieht (length-biased Sampling, z. B. Screening-Studien). <strong>Nützt:</strong> Man kann den
-        Bias gezielt korrigieren (Gewichtung mit 1/L) — Voraussetzung ist, ihn zu kennen.
+      <div class="lcard-h"><span class="circ">⑥</span> Durchgerechnetes Beispiel</div>
+      <div class="lcard-body">Vier Lücken: 2, 4, 6, 12 Minuten (Summe T = 24, Betreiber-Mittelwert E[L] = 6 min).
+        <table>
+          <thead><tr><th>Lücke L</th><th>Anteil an n</th><th>Trefferw. L/T</th><th>Ø Rest L/2</th></tr></thead>
+          <tbody>
+            <tr><td>2 min</td><td>25 %</td><td>8 %</td><td>1 min</td></tr>
+            <tr><td>4 min</td><td>25 %</td><td>17 %</td><td>2 min</td></tr>
+            <tr><td>6 min</td><td>25 %</td><td>25 %</td><td>3 min</td></tr>
+            <tr><td>12 min</td><td>25 %</td><td><strong>50 %</strong></td><td>6 min</td></tr>
+          </tbody>
+        </table>
+        Der Betreiber zählt jede Lücke gleich (Spalte „Anteil an n"). Du triffst sie aber ∝ Länge (Spalte „Trefferw.") — die
+        12-min-Lücke also in der <strong>Hälfte</strong> aller Fälle, obwohl sie nur 1 von 4 Lücken ist. Erlebte Lücke:
+        E[L²]/E[L] = (4+16+36+144)/4 / 6 = 50/6 ≈ <strong>8,3 min</strong>. Echte Wartezeit: E[L²]/(2·E[L]) = 50/12 ≈
+        <strong>4,2 min</strong> statt naiv 3 min — nicht weil du in der 12-min-Lücke immer bis zum Schluss wartest (dort
+        sind es im Schnitt auch nur 6 min), sondern weil du so oft überhaupt dort landest.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Verwandte Phänomene &amp; Tools</div>
+      <div class="lcard-body">Dieselbe Mathematik taucht überall auf, wo man Zustände proportional zu ihrer Dauer oder Größe
+        beobachtet, statt sie einzeln gleich zu zählen: das <strong>Klassengrößen-Paradox</strong> (Studierende erleben im
+        Schnitt größere Kurse als die Uni meldet — weil mehr Studierende in großen Kursen sitzen), ausgelastet wirkende
+        Server, Restaurants oder Autobahnen, und <strong>Length-biased Sampling</strong> in Überlebens-/Screening-Studien
+        (zu einem Stichtag „anwesende" Fälle haben überlange Verläufe — korrigierbar durch Gewichtung mit 1/L, wenn man den
+        Bias kennt). Eng verwandt: der <strong>Friendship Paradox</strong> — dieselbe Formel E[k²]/E[k], nur für
+        Netzwerk-Kontakte statt Zeitintervalle.
+        <a class="xlink" href="Friendship_Paradox.html" target="_blank">→ Friendship Paradox</a>
         <a class="xlink" href="Survivorship_Bias.html" target="_blank">→ Survivorship Bias</a></div>
     </div>
   </div>
@@ -312,8 +377,10 @@ naiv erwartet: E[L]/2   →   Differenz = Var(L)/(2·E[L])</span>
       <strong>Renewal-Reward-Theorem</strong> der Erneuerungstheorie.</p>
 
     <div class="help-sh">Was das Tool zeigt</div>
-    <p class="help-p">Es erzeugt n Lücken mit mittlerem Soll-Abstand 10 und einstellbarer Streuung (CV). Zeitstrahl ① zeigt die
-      Lücken und deine zufälligen Ankünfte (∝ Länge). Histogramm ② vergleicht die <em>gezählte</em> mit der <em>längen-gewichteten</em>
+    <p class="help-p">Es erzeugt n Lücken mit mittlerem Soll-Abstand 10 und einstellbarer Streuung (CV). Zeitstrahl <span class="circ">①</span> zeigt die
+      Lücken und deine zufälligen Ankünfte (∝ Länge). Nach der Vorhersage kannst du unter <span class="circ">②</span> selbst
+      mehrfach „ankommen" — die Tabelle zeigt den letzten Wurf sowie deinen kumulierten Schnitt im Vergleich zum wahren
+      Erwartungswert. Histogramm <span class="circ">③</span> vergleicht die <em>gezählte</em> mit der <em>längen-gewichteten</em>
       Verteilung. Die Kacheln zeigen E[L], E[L²]/E[L] und beide Wartezeiten. „200× ankommen" bestätigt per Simulation, dass der
       erlebte Schnitt gegen E[L²]/E[L] strebt.</p>
 
@@ -328,7 +395,8 @@ naiv erwartet: E[L]/2   →   Differenz = Var(L)/(2·E[L])</span>
 // ══════════════════════════════════════════════════════════════════════
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 const MEAN=10;
-let seed=7, spread=0.6, n=14, GAPS=[], BUS=[], T=0, darts=[], expSum=0, expN=0, lastIdx=-1, guess=null;
+let seed=7, spread=0.6, n=14, GAPS=[], BUS=[], T=0, darts=[], expSum=0, waitSum=0, expN=0, lastIdx=-1, guess=null, predicted=false;
+let lastGapLen=null, lastPos=null, lastWait=null;
 
 function genGaps(){
   const rng=mulberry32(seed);
@@ -338,7 +406,7 @@ function genGaps(){
     GAPS.push(MEAN*((1-spread)+spread*e));
   }
   BUS=[0]; let t=0; GAPS.forEach(g=>{t+=g;BUS.push(t);}); T=t;
-  darts=[]; expSum=0; expN=0; lastIdx=-1;
+  darts=[]; expSum=0; waitSum=0; expN=0; lastIdx=-1; lastGapLen=null; lastPos=null; lastWait=null;
 }
 function stats(){
   const m=GAPS.reduce((a,b)=>a+b,0)/n;
@@ -354,13 +422,15 @@ function arrive(k){
     const u=rng*T;
     // locate gap
     let idx=0; while(idx<n-1 && u>BUS[idx+1]) idx++;
-    expSum+=GAPS[idx]; expN++; lastIdx=idx;
+    const pos=u-BUS[idx], rest=BUS[idx+1]-u;
+    expSum+=GAPS[idx]; waitSum+=rest; expN++; lastIdx=idx;
+    lastGapLen=GAPS[idx]; lastPos=pos; lastWait=rest;
     if(k===1) darts.push(u); else if(j>=k-40) darts.push(u);
   }
   if(darts.length>60) darts=darts.slice(-60);
   update();
 }
-function resetDarts(){ darts=[]; expSum=0; expN=0; lastIdx=-1; update(); }
+function resetDarts(){ darts=[]; expSum=0; waitSum=0; expN=0; lastIdx=-1; lastGapLen=null; lastPos=null; lastWait=null; update(); }
 function regen(){ seed=(seed*1103515245+12345)&0x7fffffff; genGaps(); guess=null; resetPred(); update(); }
 
 function predict(g){
@@ -368,11 +438,18 @@ function predict(g){
   document.querySelectorAll('.pred-btn').forEach((b,i)=>b.classList.toggle('sel',['short','equal','long'][i]===g));
   const fb=document.getElementById('pred-fb');
   fb.className='pred-fb show '+(g==='long'?'right':'wrong');
-  fb.innerHTML = g==='long'
+  fb.innerHTML = (g==='long'
     ? '✓ Richtig! Eine zufällige Zeit fällt häufiger in lange Lücken — die erlebte Lücke ist E[L²]/E[L] ≥ E[L].'
     : (g==='equal'
       ? '✗ Knapp daneben: nur bei <em>exaktem</em> Takt (Streuung 0) wäre es 10. Sobald die Lücken streuen, ist die erlebte Lücke länger.'
-      : '✗ Andersherum: Du landest häufiger in den <em>langen</em> Lücken, nie systematisch in den kurzen — der Schnitt liegt über 10.');
+      : '✗ Andersherum: Du landest häufiger in den <em>langen</em> Lücken, nie systematisch in den kurzen — der Schnitt liegt über 10.'))
+    + ' <br><strong>Auflösung:</strong> Betreiber und Fahrgast haben <em>beide</em> recht — das ist das Inspektionsparadox: eine zufällige Zeit fällt mit höherer Wahrscheinlichkeit in eine lange Lücke, weil lange Lücken mehr von der Zeitachse einnehmen. Aufgedeckt unten ↓';
+  if(!predicted){
+    predicted=true;
+    document.getElementById('reveal-locked').style.display='none';
+    document.getElementById('reveal-wrap').classList.remove('locked');
+  }
+  update();
 }
 function resetPred(){ guess=null; document.querySelectorAll('.pred-btn').forEach(b=>b.classList.remove('sel')); document.getElementById('pred-fb').className='pred-fb'; }
 
@@ -476,11 +553,21 @@ function update(){
     ? `Exakter Takt: alle Lücken ≈ ${st.m.toFixed(1)} min → erlebte Lücke = Soll-Abstand, kein Paradox.`
     : `Erlebte Lücke <b>${st.exp.toFixed(1)} min</b> vs. Soll-Abstand <b>${st.m.toFixed(1)} min</b> — das ${ratio.toFixed(2)}-fache. Aufschlag = Var/E[L] = <b>${(st.exp-st.m).toFixed(1)} min</b>. Deine echte Wartezeit: <b>${st.waitR.toFixed(1)}</b> statt naiv ${st.waitN.toFixed(1)} min.`;
 
-  document.getElementById('dart-info').innerHTML = expN===0
-    ? 'Noch keine Ankunft. Komm zu einer zufälligen Zeit an die Haltestelle — in welcher Lücke landest du?'
-    : `<strong>${expN}</strong> Ankünfte · erlebter Schnitt <strong style="color:var(--a5)">${(expSum/expN).toFixed(1)} min</strong> (strebt gegen E[L²]/E[L] = ${st.exp.toFixed(1)}); Soll-Schnitt wäre ${st.m.toFixed(1)}.`;
+  if(lastGapLen===null){
+    document.getElementById('dart-last').innerHTML = 'Noch keine Ankunft. Komm zu einer zufälligen Zeit an die Haltestelle — in welcher Lücke landest du?';
+  } else {
+    let rows = `<tr><td>Letzte Ankunft</td><td>${lastGapLen.toFixed(1)} min</td><td>${lastPos.toFixed(1)} min</td><td style="color:var(--a1);font-weight:600">${lastWait.toFixed(1)} min</td></tr>`;
+    if(predicted){
+      rows += `<tr class="you"><td>Dein Schnitt (N=${expN})</td><td>${(expSum/expN).toFixed(2)} min</td><td>–</td><td>${(waitSum/expN).toFixed(2)} min</td></tr>`;
+      rows += `<tr class="true"><td>Wahrer Erwartungswert</td><td>${st.exp.toFixed(2)} min</td><td>–</td><td>${st.waitR.toFixed(2)} min</td></tr>`;
+    }
+    document.getElementById('dart-last').innerHTML =
+      `<table class="conv-table"><thead><tr><th></th><th>Lücke</th><th>Position</th><th>Rest / Ø Warten</th></tr></thead><tbody>${rows}</tbody></table>`
+      + (predicted ? `<div class="conv-note">Ein einzelner Wurf kann nah dran oder weit weg liegen — über viele Würfe („Dein Schnitt") konvergiert es zum Erwartungswert (Gesetz der großen Zahlen). Mehrfach „1×" oder „200×" klicken, um es zu beobachten.</div>` : '');
+  }
 
-  drawLine(); drawHist();
+  drawLine();
+  if(predicted) drawHist();
 }
 
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
