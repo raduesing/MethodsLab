@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Effektgrößen-Werkzeug — MethodsLab</title>
+<title>Effektgrößen — MethodsLab</title>
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
 :root{
@@ -29,8 +30,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
-.tbtn-active{border-color:var(--accent)!important;background:var(--accent)!important;color:var(--bg)!important}
-#app{display:grid;grid-template-columns:272px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#app{display:grid;grid-template-columns:220px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
 #sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
@@ -38,50 +38,36 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
 .scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
-.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.5rem}
-.mode-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.32rem .5rem;border:1.5px solid var(--border);
+.mode-row{display:grid;grid-template-columns:1fr;gap:.4rem;margin-bottom:.2rem}
+.mode-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.4rem .5rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
 .mode-btn:hover{border-color:var(--accent);color:var(--accent)}
 .mode-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
-.tab-row{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.7rem}
-.tab-btn{font-family:'DM Mono',monospace;font-size:.73rem;padding:.28rem .4rem;border:1.5px solid var(--border);
-  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
-.tab-btn:hover{border-color:var(--accent);color:var(--accent)}
-.tab-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
-.field-row{margin-bottom:.52rem}
-.field-lbl{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2);margin-bottom:.2rem;display:block}
-.field-lbl em{color:var(--ink3);font-style:normal;font-size:.7rem}
-.field-inp{font-family:'DM Mono',monospace;font-size:.82rem;width:100%;background:var(--bg);border:1.5px solid var(--border);
-  color:var(--ink);padding:.3rem .5rem;outline:none;transition:border-color .15s}
-.field-inp:focus{border-color:var(--accent)}
-.field-inp.err{border-color:var(--a1)}
-.field-row-2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.52rem}
-.file-drop{border:2px dashed var(--border);padding:.9rem;text-align:center;cursor:pointer;
-  font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);transition:border-color .15s;margin-bottom:.5rem}
-.file-drop:hover,.file-drop.drag{border-color:var(--accent);color:var(--accent)}
-.file-drop input{display:none}
-.file-status{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.4rem;min-height:1.1rem}
-.col-sel-row{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.52rem}
-.col-sel{font-family:'DM Mono',monospace;font-size:.75rem;width:100%;background:var(--bg);border:1.5px solid var(--border);
-  color:var(--ink);padding:.28rem .4rem;outline:none}
-.calc-btn{font-family:'DM Mono',monospace;font-size:.78rem;padding:.38rem .7rem;
-  border:1.5px solid var(--accent);background:var(--accent);cursor:pointer;color:var(--bg);
-  transition:all .15s;width:100%;margin-top:.3rem}
-.calc-btn:hover{opacity:.85}
-.alpha-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem}
-.alpha-lbl{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
-.alpha-sel{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--bg);border:1.5px solid var(--border);
-  color:var(--ink);padding:.22rem .4rem;outline:none}
+.sb-note{font-size:.78rem;line-height:1.65;color:var(--ink3);margin-top:.5rem}
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+  color:var(--ink3);margin:1.6rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
 .sec-h:first-child{margin-top:0}
+.p-intro{font-size:.92rem;line-height:1.85;color:var(--ink2);margin-bottom:.75rem}
+.p-intro strong{color:var(--ink)}
 .example-box{background:var(--panel);border-left:3px solid var(--a2);padding:.85rem 1rem;
-  margin-bottom:.85rem;font-size:.88rem;line-height:1.75}
+  margin-bottom:1.1rem;font-size:.88rem;line-height:1.75}
 .example-box strong{color:var(--a2)}
-.insight-box{background:var(--panel);border-left:3px solid var(--a1);padding:.85rem 1rem;
-  margin-bottom:.85rem;font-size:.88rem;line-height:1.75}
-.insight-box strong{color:var(--a1)}
-.results-section{margin-bottom:1.2rem}
+.circ{font-size:1.4em;vertical-align:-.1em;line-height:1;display:inline-block}
+.slider-panel{background:var(--panel);border:1px solid var(--grid);padding:1rem 1.1rem;margin-bottom:.85rem}
+.slider-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem 1.4rem}
+.slider-row{margin-bottom:.15rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.22rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink);border-radius:50%;cursor:pointer;border:none}
+.canvas-wrap{background:var(--panel);border:1px solid var(--grid);margin-bottom:1.1rem;overflow:hidden}
+.canvas-wrap canvas{width:100%;display:block}
+.canvas-axis-note{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);
+  padding:.5rem .85rem;border-top:1px solid var(--grid);line-height:1.5}
+.results-section{margin-bottom:1rem}
 .rs-head{font-family:'DM Mono',monospace;font-size:.73rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--ink3);margin-bottom:.55rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
 .d-table{width:100%;border-collapse:collapse;margin-bottom:.35rem;table-layout:auto}
@@ -94,31 +80,10 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .d-table tr:last-child td{border-bottom:none}
 .d-table td.num{text-align:right;color:var(--ink);font-weight:500}
 .d-table td.lbl{color:var(--ink2)}
-.d-table td.ci{color:var(--ink3);font-size:.74rem;text-align:right}
-.ci-note{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);
-  border-left:2px solid var(--a1);padding:.3rem .55rem;margin:.25rem 0 .35rem;
-  background:var(--panel);line-height:1.5}
-.d-table-ci{width:100%;border-collapse:collapse;margin-bottom:.7rem;table-layout:auto}
-.d-table-ci th{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;
-  color:var(--ink3);text-align:left;padding:.28rem .5rem;border-bottom:1px solid var(--grid);background:var(--panel);
-  white-space:nowrap}
-.d-table-ci th.num{text-align:right}
-.d-table-ci td{font-family:'DM Mono',monospace;font-size:.79rem;padding:.28rem .5rem;border-bottom:1px solid var(--grid);
-  background:var(--paper);vertical-align:middle;white-space:nowrap}
-.d-table-ci tr:last-child td{border-bottom:none}
-.d-table-ci td.num{text-align:right;color:var(--ink);font-weight:500}
-.d-table-ci td.lbl{color:var(--ink2)}
-.canvas-wrap{background:var(--panel);border:1px solid var(--grid);margin-bottom:.85rem;overflow:hidden}
-.canvas-wrap canvas{width:100%;display:block}
-.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.85rem}
-.rb{background:var(--panel);border:1px solid var(--grid);padding:.75rem .9rem}
-.rb-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--ink3);margin-bottom:.2rem}
-.rb-val{font-family:'DM Mono',monospace;font-size:1.05rem;font-weight:500;color:var(--ink)}
-.rb-sub{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.15rem}
-.placeholder{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink3);
-  background:var(--panel);border:1px solid var(--grid);padding:1.8rem 1.4rem;
-  text-align:center;margin-bottom:.85rem}
+.step-block{margin-bottom:1.2rem}
+.step-h{font-size:1rem;font-weight:300;margin-bottom:.35rem}
+.step-body{font-size:.87rem;line-height:1.8;color:var(--ink2)}
+.step-body strong{color:var(--ink)}
 .learn-section{margin-top:2.2rem}
 .lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
 .lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
@@ -126,10 +91,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
   letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
 .lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
 .lcard-body strong{color:var(--ink)}
-.eq-wrap{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem;margin-bottom:.8rem}
-.eq-main{font-family:'DM Mono',monospace;font-size:.85rem;line-height:2.1;letter-spacing:.01em}
-.eq-note{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);line-height:1.6;
-  border-top:1px solid var(--grid);margin-top:.5rem;padding-top:.5rem}
+.lcard-body a{color:var(--a2)}
+.lcard.rechner{border-color:var(--a2);border-left-width:3px}
 .help-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.82);overflow-y:auto;padding:2rem 1rem}
 .help-overlay.open{display:block}
 .help-panel{max-width:700px;margin:0 auto;background:var(--paper);border:1px solid var(--border);padding:2rem}
@@ -138,6 +101,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
   color:var(--a1);margin:1.1rem 0 .35rem}
 .help-p{font-size:.85rem;line-height:1.8;color:var(--ink2);margin-bottom:.6rem}
 .help-p code{font-family:'DM Mono',monospace;font-size:.8rem;background:var(--panel);padding:.1rem .35rem;color:var(--ink)}
+.help-p a{color:var(--a2)}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
@@ -146,39 +110,51 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 <body>
 
 <div id="topbar">
-  <h1>Effektgrößen-<em>Werkzeug</em> — Berechnung &amp; Übersetzung</h1>
+  <h1>Effektgrößen — <em>verstehen &amp; interpretieren</em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
 </div>
 
 <!-- HELP OVERLAY -->
-<div class="help-overlay" id="help-overlay">
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
   <div class="help-panel">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
-      <h2>Hilfe — Effektgrößen-Werkzeug</h2>
+      <h2>Hilfe — Effektgrößen</h2>
       <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
     </div>
     <div class="help-h3">Was zeigt dieses Tool?</div>
-    <p class="help-p">Das Werkzeug berechnet und übersetzt Effektgrößen für <strong style="color:var(--ink)">Within-t-Tests (Messwiederholung)</strong> und <strong style="color:var(--ink)">Between-t-Tests (unabhängige Gruppen)</strong>. Es zeigt drei Standardisierungen gleichzeitig — d<sub>z</sub>, d<sub>rm</sub>, d<sub>av</sub> — sowie drei kleine-Stichproben-Korrekturen und drei CI-Methoden.</p>
+    <p class="help-p">Eine geführte Einführung in Effektgrößen für Mittelwertsvergleiche — anhand eines durchgehenden Beispiels, dessen Parameter per Slider verändert werden können. Für exakte Berechnungen mit eigenen Daten (CSV-Upload, Konfidenzintervalle nach Bonett/Rosenthal/NCT, alle Korrekturen) siehe den <a href="Effektgroessen_Rechner.html">Effektgrößen-Rechner</a>.</p>
     <div class="help-h3">Das laufende Beispiel</div>
-    <p class="help-p">Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. <strong style="color:var(--ink)">Within:</strong> 40 Teilnehmende, M<sub>prä</sub>=45.8 (SD=8.4), M<sub>post</sub>=52.4 (SD=9.6), r=.65. Konvention: d = Post − Prä, d > 0 = Anstieg. <strong style="color:var(--ink)">Between:</strong> 40 Teilnehmende je Gruppe (Training vs. Warteliste-Kontrolle).</p>
-    <div class="help-h3">Drei Standardisierungen (Within)</div>
-    <p class="help-p"><code>d<sub>z</sub></code> — Differenzen-SD als Nenner; direkt für t-Test-Power und CLES (Wuensch).<br>
-    <code>d<sub>rm</sub></code> — d<sub>z</sub> · √(2(1−r)) (Becker 1988): gleich d<sub>av</sub> bei Varianzhomogenität, gleich d<sub>z</sub> bei r=.5.<br>
-    <code>d<sub>av</sub></code> — Mittlere SD als Nenner (Lakens 2013); kein r im Nenner.</p>
+    <p class="help-p">Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. <strong style="color:var(--ink)">Between:</strong> Trainingsgruppe vs. Warteliste-Kontrollgruppe, je n Personen. <strong style="color:var(--ink)">Within:</strong> dieselben Personen vor (Prä) und nach (Post) dem Training, mit Prä-Post-Korrelation r. Alle Mittelwerte, Streuungen, n (und r) sind frei einstellbar — die Zahlen im Beispiel sind ein plausibler Startpunkt, keine feste Vorgabe.</p>
+    <div class="help-h3">Was zeigt der Plot?</div>
+    <p class="help-p">Die beiden Kurven sind die <strong style="color:var(--ink)">angenommenen Populationsverteilungen</strong> der beiden Gruppen auf der tatsächlichen Messwert-Skala (x-Achse) — mit ihren jeweils eingestellten Mittelwerten und Streuungen. Eine schmalere, höhere Kurve hat eine kleinere Streuung; das ist keine Verzerrung, sondern korrekt: die Fläche unter jeder Kurve ist immer gleich groß (=&nbsp;100% dieser Gruppe). Die <strong style="color:var(--ink)">grau schattierte Fläche</strong> ist der Bereich, in dem sich beide Verteilungen überschneiden — je mehr Überlappung, desto schwerer lässt sich anhand eines einzelnen Werts erkennen, aus welcher Gruppe eine Person stammt. Der <strong style="color:var(--ink)">Pfeil</strong> zeigt den rohen Mittelwertsunterschied auf der Originalskala; die Zahl <code>d</code> daneben ist derselbe Unterschied, standardisiert an einer Streuung (siehe unten) — deshalb ohne Einheit und über Studien hinweg vergleichbar.</p>
+    <div class="help-h3">Cohen's d im Detail</div>
+    <p class="help-p">d&nbsp;=&nbsp;(M₁&nbsp;−&nbsp;M₂)&nbsp;/&nbsp;SD. Das Vorzeichen zeigt die Richtung (hier: positiv&nbsp;=&nbsp;Zunahme), der Betrag die Größe. Cohens (1988) informelle Konvention: |d|&nbsp;≈&nbsp;0.2 klein, 0.5 mittel, 0.8 groß — als grobe Orientierung gedacht, nicht als feste Schwelle; die praktische Bedeutsamkeit hängt immer vom Feld und der Fragestellung ab.</p>
+    <div class="help-h3">Warum mehrere Standardisierungen bei Messwiederholung?</div>
+    <p class="help-p">Bei unabhängigen Gruppen gibt es einen naheliegenden Nenner: die gepoolte Streuung beider Gruppen. Bei Messwiederholung dagegen ist unklar, <em>wessen</em> Streuung standardisiert werden soll. Drei Konventionen haben sich etabliert:</p>
+    <p class="help-p"><code>d<sub>z</sub></code> — Differenzen-SD als Nenner; direkt nutzbar für t-Test-Power und CLES nach Wuensch.<br>
+    <code>d<sub>rm</sub></code> — d<sub>z</sub>&nbsp;·&nbsp;√(2(1−r)) (Becker 1988): gleich d<sub>av</sub> bei Varianzhomogenität, gleich d<sub>z</sub> bei r&nbsp;=&nbsp;.5.<br>
+    <code>d<sub>av</sub></code> — mittlere SD von Prä und Post als Nenner (Lakens 2013); kein r im Nenner.</p>
+    <p class="help-p">Die drei Werte fallen umso stärker auseinander, je höher die Prä-Post-Korrelation r ist — das lässt sich im Within-Modus direkt am Regler beobachten.</p>
     <div class="help-h3">d_av und Vergleichbarkeit mit Between-Designs</div>
-    <p class="help-p"><strong style="color:var(--ink)">d<sub>av</sub> ist am ehesten mit Between-Designs vergleichbar.</strong> Da die Prä-Post-Korrelation nicht in den Nenner eingeht, ist d<sub>av</sub> — ceteris paribus — identisch mit Cohen's d aus einem unabhängigen Gruppenvergleich. Das ermöglicht eine direkte Replikation über Designs hinweg: Ein Within-d<sub>av</sub> von 0.5 bedeutet dasselbe wie ein Between-d<sub>s</sub> von 0.5. d<sub>z</sub> und d<sub>rm</sub> hingegen hängen von r ab und sind designspezifisch.</p>
+    <p class="help-p"><strong style="color:var(--ink)">d<sub>av</sub> ist am ehesten mit Between-Designs vergleichbar.</strong> Da die Prä-Post-Korrelation nicht in den Nenner eingeht, ist d<sub>av</sub> — ceteris paribus — identisch mit Cohen's d aus einem unabhängigen Gruppenvergleich. Das ermöglicht eine direkte Gegenüberstellung über Designs hinweg: ein Within-d<sub>av</sub> von 0.5 bedeutet dasselbe wie ein Between-d<sub>s</sub> von 0.5. d<sub>z</sub> und d<sub>rm</sub> hingegen hängen von r ab und sind designspezifisch — deshalb verwendet dieses Tutorial d<sub>av</sub> als Effektgröße im Plot und in der Umrechnungstabelle.</p>
     <div class="help-h3">Korrekturen für kleine Stichproben</div>
-    <p class="help-p"><code>j (Hedges)</code> — 1 − 3/(4(n−1)−1); am gebräuchlichsten.<br>
-    <code>nag (Nakagawa)</code> — 1 − 3/(4(2n−2)−1); empfohlen für Within-Designs.<br>
-    <code>Bon (Bonett)</code> — √((n−2)/(n−1)); basiert auf Varianz-Unbiasedness.</p>
-    <div class="help-h3">Konfidenzintervalle</div>
-    <p class="help-p"><strong style="color:var(--ink)">Bonett (2015) approx:</strong> z-basiert (Formeln 8, 9, 16). Verfügbar für d<sub>z</sub>, d<sub>rm</sub>, d<sub>av</sub>.<br>
-    <strong style="color:var(--ink)">Rosenthal (1994) approx:</strong> t-basiert, nur für d<sub>rm</sub> — dort identische SE wie Bonett, aber crit_t statt crit_z. Für d<sub>z</sub> und d<sub>av</sub> ist kein Rosenthal-CI in der Originalliteratur definiert.<br>
-    <strong style="color:var(--ink)">NCT (Momenten-Approx.):</strong> Nichtzentrale t-Verteilung via Momenten-Anpassung und CDF-Inversion. Sehr akkurat für n ≥ 10; kein Simulationsaufwand.</p>
-    <div class="help-h3">CSV-Upload</div>
-    <p class="help-p">Laden Sie eine CSV-Datei mit zwei numerischen Spalten hoch. Im Within-Modus: Spalte 1 = Messung 1, Spalte 2 = Messung 2. Im Between-Modus: Spalte 1 = Gruppe 1, Spalte 2 = Gruppe 2 (verschiedene Längen erlaubt). Erste Zeile wird als Header erkannt, wenn sie nicht-numerisch ist.</p>
+    <p class="help-p">Cohens d ist ein nach oben verzerrter Schätzer der wahren Populations-Effektgröße δ — die Verzerrung hängt von den Freiheitsgraden ab, nicht vom wahren Effekt. Drei gebräuchliche Korrekturfaktoren überführen d in ein "Hedges' g":</p>
+    <p class="help-p"><code>j (Hedges 1981)</code> — j&nbsp;=&nbsp;1&nbsp;−&nbsp;3/(4df−1); am gebräuchlichsten.<br>
+    <code>nag (Nakagawa &amp; Cuthill 2007)</code> — eigene df-Zählung, empfohlen speziell für Messwiederholungen.<br>
+    <code>Bon (Bonett 2015)</code> — Bon&nbsp;=&nbsp;√((n−2)/(n−1)); basiert auf Varianz-Unbiasedness statt auf dem Erwartungswert von d, tendenziell konservativer.</p>
+    <p class="help-p">Bei n&nbsp;≥&nbsp;40 unterscheiden sich die drei kaum; bei sehr kleinem n (z.&nbsp;B. &lt;&nbsp;15) können sie spürbar auseinanderfallen — probiere es mit dem n-Regler aus.</p>
+    <div class="help-h3">Cohen's U₃ und CLES</div>
+    <p class="help-p">Beide übersetzen d in eine Wahrscheinlichkeit und sind oft leichter zu kommunizieren als d selbst.</p>
+    <p class="help-p"><code>U₃&nbsp;=&nbsp;Φ(d)</code> — der Anteil der Referenzgruppe, den der Mittelwert der anderen Gruppe übertrifft (bei d&nbsp;=&nbsp;0.5 also 69.1%).<br>
+    <code>CLES&nbsp;=&nbsp;Φ(d/√2)</code> — die Wahrscheinlichkeit, dass eine zufällig gezogene Person der höheren Gruppe einen höheren Wert hat als eine zufällig gezogene Person der anderen Gruppe.</p>
+    <div class="help-h3">Weitere Umrechnungen</div>
+    <p class="help-p"><code>r&nbsp;=&nbsp;d/√(d²+4)</code> — punktbiseriale Korrelation zwischen Gruppenzugehörigkeit und Messwert.<br>
+    <code>r²</code> bzw. <code>η²</code> — Anteil der durch die Gruppierung aufgeklärten Varianz.<br>
+    <code>OR&nbsp;=&nbsp;exp(d·π/√3)</code> — Odds Ratio unter Normalverteilungsannahme, verbreitet in Medizin und Epidemiologie.</p>
+    <div class="help-h3">Für die eigene Studie</div>
+    <p class="help-p">Dieses Tutorial arbeitet mit einem festen (aber frei einstellbaren) Beispiel und zeigt keine Konfidenzintervalle. Für exakte Berechnungen mit eigenen Daten — CSV-Upload, Konfidenzintervalle nach Bonett, Rosenthal und exakter nichtzentraler t-Verteilung — siehe den <a href="Effektgroessen_Rechner.html">Effektgrößen-Rechner</a>.</p>
   </div>
 </div>
 
@@ -188,231 +164,142 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
   <div class="scard">
     <div class="scard-title">Design</div>
     <div class="mode-row">
-      <button class="mode-btn active" id="mode-within" onclick="setMode('within')">Within<br><span style="font-size:.65rem;opacity:.7">Messwiederholung</span></button>
-      <button class="mode-btn" id="mode-between" onclick="setMode('between')">Between<br><span style="font-size:.65rem;opacity:.7">Unabh. Gruppen</span></button>
+      <button class="mode-btn active" id="mode-between" onclick="setMode('between')">Between<br><span style="font-size:.65rem;opacity:.7">Unabh. Gruppen</span></button>
+      <button class="mode-btn" id="mode-within" onclick="setMode('within')">Within<br><span style="font-size:.65rem;opacity:.7">Messwiederholung</span></button>
     </div>
-  </div>
-
-  <div class="scard">
-    <div class="scard-title">Eingabe</div>
-    <div class="tab-row">
-      <button class="tab-btn active" id="tab-stats" onclick="setTab('stats')">Kennwerte</button>
-      <button class="tab-btn" id="tab-csv" onclick="setTab('csv')">CSV-Upload</button>
-    </div>
-
-    <!-- Stats input panel -->
-    <div id="panel-stats">
-      <div class="field-row-2">
-        <div>
-          <label class="field-lbl" id="lbl-m1">M₁ <em>(Prä)</em></label>
-          <input type="number" class="field-inp" id="inp-m1" value="45.8" step="0.1" oninput="onInput()">
-        </div>
-        <div>
-          <label class="field-lbl" id="lbl-m2">M₂ <em>(Post)</em></label>
-          <input type="number" class="field-inp" id="inp-m2" value="52.4" step="0.1" oninput="onInput()">
-        </div>
-      </div>
-      <div class="field-row-2">
-        <div>
-          <label class="field-lbl" id="lbl-sd1">SD₁ <em>(Prä)</em></label>
-          <input type="number" class="field-inp" id="inp-sd1" value="8.4" min="0.001" step="0.1" oninput="onInput()">
-        </div>
-        <div>
-          <label class="field-lbl" id="lbl-sd2">SD₂ <em>(Post)</em></label>
-          <input type="number" class="field-inp" id="inp-sd2" value="9.6" min="0.001" step="0.1" oninput="onInput()">
-        </div>
-      </div>
-      <div class="field-row">
-        <label class="field-lbl" id="lbl-n1">n <em>(Paare)</em></label>
-        <input type="number" class="field-inp" id="inp-n1" value="40" min="3" step="1" oninput="onInput()">
-      </div>
-      <div class="field-row" id="row-n2" style="display:none">
-        <label class="field-lbl" id="lbl-n2">n₂ <em>(Gruppe 2)</em></label>
-        <input type="number" class="field-inp" id="inp-n2" value="40" min="3" step="1" oninput="onInput()">
-      </div>
-      <div class="field-row" id="row-r">
-        <label class="field-lbl">r <em>(Prä-Post-Korr.)</em></label>
-        <input type="number" class="field-inp" id="inp-r" value="0.65" min="-0.999" max="0.999" step="0.01" oninput="onInput()">
-      </div>
-    </div>
-
-    <!-- CSV upload panel -->
-    <div id="panel-csv" style="display:none">
-      <div class="file-drop" id="file-drop" onclick="document.getElementById('file-input').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="fileDrop(event)">
-        <input type="file" id="file-input" accept=".csv,.txt" onchange="fileSelect(event)">
-        CSV hier ablegen<br>oder klicken
-      </div>
-      <div class="file-status" id="file-status">Keine Datei geladen</div>
-      <div id="col-sel-wrap" style="display:none">
-        <div class="field-row">
-          <label class="field-lbl" id="csv-lbl-1">Spalte 1 (Prä / Gr.1)</label>
-          <select class="col-sel" id="csv-col1" onchange="csvCompute()"></select>
-        </div>
-        <div class="field-row">
-          <label class="field-lbl" id="csv-lbl-2">Spalte 2 (Post / Gr.2)</label>
-          <select class="col-sel" id="csv-col2" onchange="csvCompute()"></select>
-        </div>
-      </div>
-    </div>
-
-    <div class="alpha-row" style="margin-top:.4rem">
-      <span class="alpha-lbl">α =</span>
-      <select class="alpha-sel" id="sel-alpha" onchange="onInput()">
-        <option value="0.05" selected>.05</option>
-        <option value="0.01">.01</option>
-        <option value="0.10">.10</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Sidebar: key results summary -->
-  <div class="scard" id="sb-summary" style="display:none">
-    <div class="scard-title" id="sb-sum-title">Kernbefunde</div>
-    <div style="font-family:'DM Mono',monospace;font-size:.78rem;line-height:2">
-      <div>t = <span id="sb-t" style="color:var(--ink);font-weight:600">—</span></div>
-      <div>p = <span id="sb-p" style="color:var(--ink);font-weight:600">—</span></div>
-      <div style="border-top:1px solid var(--grid);margin:.3rem 0;padding-top:.3rem">
-        d<sub>z</sub> = <span id="sb-dz" style="color:var(--a2);font-weight:600">—</span>
-      </div>
-      <div id="sb-rm-row">d<sub>rm</sub> = <span id="sb-drm" style="color:var(--a6);font-weight:600">—</span></div>
-      <div id="sb-av-row">d<sub>av</sub> = <span id="sb-dav" style="color:var(--a4);font-weight:600">—</span></div>
-    </div>
+    <div class="sb-note" id="mode-note">Zwei unabhängige Gruppen — der einfachere Fall: ein Nenner, eine Standardisierung.</div>
   </div>
 
 </div><!-- /sidebar -->
 
 <div id="main">
 
-  <div class="example-box">
-    <strong>Laufendes Beispiel:</strong> Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. <strong>Within-Design:</strong> 40 Teilnehmende, M<sub>prä</sub>=45.8 (SD=8.4), M<sub>post</sub>=52.4 (SD=9.6), r=.65. Konvention: d = Post − Prä, positiver Wert = Anstieg. Wie groß ist der Effekt — und hängt die Antwort von der gewählten Standardisierung ab?
+  <div class="p-intro">
+    <strong>Was ist eine Effektgröße?</strong> Ein p-Wert sagt nur, ob ein Unterschied von Null verschieden ist — nichts über seine praktische Bedeutsamkeit. Eine Effektgröße drückt aus, <em>wie groß</em> ein Unterschied ist, unabhängig von der verwendeten Skala und der Stichprobengröße. Die gebräuchlichste Effektgröße für Mittelwertsvergleiche ist <strong>Cohen's d</strong>: die Differenz zweier Mittelwerte, standardisiert an einer Streuung. d&nbsp;=&nbsp;0.5 heißt: die beiden Verteilungen liegen im Mittel eine halbe Standardabweichung auseinander — egal ob es um Testpunkte oder Körpergröße geht. Das macht Effekte über Studien und Maße hinweg vergleichbar.
   </div>
 
-  <!-- placeholder shown before first computation -->
-  <div id="placeholder-msg" class="placeholder">
-    Kennwerte eingeben oder CSV laden — Ergebnisse erscheinen hier.
+  <div class="example-box" id="example-box"></div>
+
+  <div class="sec-h">Visualisierung: Wie stark unterscheiden sich die Gruppen?</div>
+
+  <div class="slider-panel">
+    <div class="slider-grid">
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name" id="lbl-m1">M₁</span><span class="slider-val" id="v-m1">45.8</span></div>
+        <input type="range" id="sl-m1" min="30" max="65" step="0.1" value="45.8" oninput="onSlider()">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name" id="lbl-m2">M₂</span><span class="slider-val" id="v-m2">52.4</span></div>
+        <input type="range" id="sl-m2" min="30" max="65" step="0.1" value="52.4" oninput="onSlider()">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name" id="lbl-sd1">SD₁</span><span class="slider-val" id="v-sd1">8.4</span></div>
+        <input type="range" id="sl-sd1" min="2" max="15" step="0.1" value="8.4" oninput="onSlider()">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name" id="lbl-sd2">SD₂</span><span class="slider-val" id="v-sd2">9.6</span></div>
+        <input type="range" id="sl-sd2" min="2" max="15" step="0.1" value="9.6" oninput="onSlider()">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name" id="lbl-n">n</span><span class="slider-val" id="v-n">40</span></div>
+        <input type="range" id="sl-n" min="10" max="150" step="1" value="40" oninput="onSlider()">
+      </div>
+      <div class="slider-row" id="row-r" style="display:none">
+        <div class="slider-lbl"><span class="slider-name">r (Prä-Post-Korr.)</span><span class="slider-val" id="v-r">.65</span></div>
+        <input type="range" id="sl-r" min="-90" max="90" step="1" value="65" oninput="onSlider()">
+      </div>
+    </div>
   </div>
 
-  <!-- RESULTS (hidden until computed) -->
-  <div id="results-wrap" style="display:none">
+  <div class="canvas-wrap">
+    <canvas id="overlap-canvas" height="390"></canvas>
+    <div class="canvas-axis-note" id="axis-note">x-Achse: Wohlbefinden-Score (fiktive Skala, wie im Beispiel) · Kurven = angenommene Populationsverteilungen beider Gruppen</div>
+  </div>
 
-    <!-- t-test info bar -->
-    <div class="results-grid" id="ttest-grid">
-      <div class="rb">
-        <div class="rb-lbl" id="rb-test-lbl">Within-t-Test</div>
-        <div class="rb-val" id="rb-t">—</div>
-        <div class="rb-sub" id="rb-df">df = —</div>
-      </div>
-      <div class="rb">
-        <div class="rb-lbl">p-Wert</div>
-        <div class="rb-val" id="rb-p">—</div>
-        <div class="rb-sub" id="rb-sig">—</div>
-      </div>
-      <div class="rb">
-        <div class="rb-lbl" id="rb-d1lbl">M₁ (Prä)</div>
-        <div class="rb-val" id="rb-m1">—</div>
-        <div class="rb-sub" id="rb-sd1">SD = —</div>
-      </div>
-      <div class="rb">
-        <div class="rb-lbl" id="rb-d2lbl">M₂ (Post)</div>
-        <div class="rb-val" id="rb-m2">—</div>
-        <div class="rb-sub" id="rb-sd2">SD = —</div>
-      </div>
-      <div class="rb">
-        <div class="rb-lbl" id="rb-mdif-lbl">M_dif (Post − Prä)</div>
-        <div class="rb-val" id="rb-mdif">—</div>
-        <div class="rb-sub" id="rb-mdif-sub">Rohwertsdifferenz</div>
-      </div>
-      <div class="rb">
-        <div class="rb-lbl" id="rb-ci-raw-lbl">95%-KI (Rohwert)</div>
-        <div class="rb-val" id="rb-ci-raw" style="font-size:.85rem">—</div>
-        <div class="rb-sub" id="rb-ci-raw-sub">KI für Mittelwertsdiff.</div>
-      </div>
+  <!-- Point estimates -->
+  <div id="between-est">
+    <div class="results-section">
+      <div class="rs-head">Punktschätzer — Cohen's d (n−1 gepoolte SD)</div>
+      <div id="tbl-between"></div>
     </div>
+  </div>
 
-    <!-- Within mode: three standardizer tables -->
-    <div id="within-results">
-
-      <div class="sec-h">Effektgröße: Standardisierungen im Vergleich</div>
-
-      <div class="results-section">
-        <div class="rs-head" style="color:var(--a2)">d<sub>z</sub> — Differenzen-SD als Nenner (Direktwert für Within-Power)</div>
-        <div id="tbl-dz"></div>
-      </div>
-
-      <div class="results-section">
-        <div class="rs-head" style="color:var(--a6)">d<sub>rm</sub> — Korrigiert für Messwiederholung (Becker 1988)</div>
-        <div id="tbl-drm"></div>
-      </div>
-
-      <div class="results-section">
-        <div class="rs-head" style="color:var(--a4)">d<sub>av</sub> — Mittlere SD als Nenner (Lakens 2013)</div>
-        <div id="tbl-dav"></div>
-      </div>
-
-      <div class="results-section">
-        <div class="rs-head">Weitere Maße</div>
-        <table class="d-table" id="tbl-other-within"></table>
-      </div>
-
+  <div id="within-est" style="display:none">
+    <div class="results-section">
+      <div class="rs-head" style="color:var(--a2)">d<sub>z</sub> — Differenzen-SD als Nenner</div>
+      <div id="tbl-dz"></div>
     </div>
-
-    <!-- Between mode: table -->
-    <div id="between-results" style="display:none">
-
-      <div class="sec-h">Effektgröße: Between-Gruppen-Vergleich</div>
-
-      <div class="results-section">
-        <div class="rs-head">Cohen's d — Verschiedene Definitionen</div>
-        <table class="d-table" id="tbl-between"></table>
-      </div>
-
+    <div class="results-section">
+      <div class="rs-head" style="color:var(--a6)">d<sub>rm</sub> — korrigiert für Messwiederholung (Becker 1988)</div>
+      <div id="tbl-drm"></div>
     </div>
-
-    <!-- Overlap Canvas -->
-    <div class="sec-h">Visualisierung: Überlappung</div>
-    <div class="canvas-wrap">
-      <canvas id="overlap-canvas" height="360"></canvas>
+    <div class="results-section">
+      <div class="rs-head" style="color:var(--a4)">d<sub>av</sub> — mittlere SD als Nenner (Lakens 2013), am ehesten mit Between vergleichbar</div>
+      <div id="tbl-dav"></div>
     </div>
+  </div>
 
-    <!-- NCT Distribution Canvas -->
-    <div class="sec-h" id="nct-sec-h">Nichtzentrale t-Verteilung &amp; CI</div>
-    <div class="canvas-wrap">
-      <canvas id="nct-canvas" height="180"></canvas>
-    </div>
+  <div class="sec-h">Was bedeuten diese Zahlen?</div>
 
-    <!-- Conversion table -->
-    <div class="sec-h">Effektgrößen-Übersetzer (aus d<sub>av</sub> / d<sub>s</sub>)</div>
-    <table class="d-table" id="tbl-convert"></table>
+  <div class="step-block">
+    <div class="step-h"><span class="circ">①</span>&nbsp; Unkorrigiert vs. korrigiert</div>
+    <div class="step-body">Die Spalte "unkorr." ist das rohe Cohen's d — ein leicht nach oben verzerrter Schätzer, besonders bei kleinem n. Die drei Korrekturspalten (g·j, g·nag, g·Bon) ziehen den Wert etwas näher an Null. Bei n&nbsp;=&nbsp;40 ist der Unterschied klein; bei n&nbsp;&lt;&nbsp;15 kann er relevant werden — probiere es mit dem n-Regler aus.</div>
+  </div>
 
-  </div><!-- /results-wrap -->
+  <div class="step-block" id="step-within-only" style="display:none">
+    <div class="step-h"><span class="circ">②</span>&nbsp; Drei Standardisierungen, eine Entscheidung</div>
+    <div class="step-body">Bei Messwiederholung liefern d<sub>z</sub>, d<sub>rm</sub> und d<sub>av</sub> unterschiedliche Werte — und keiner ist grundsätzlich "richtig". Erhöhe r im Regler: d<sub>z</sub> wird größer (die Differenzen-Streuung schrumpft), d<sub>av</sub> bleibt unverändert (r geht nicht in den Nenner ein). d<sub>rm</sub> liegt dazwischen und trifft bei r&nbsp;=&nbsp;.5 genau d<sub>z</sub>. Für Vergleiche mit Between-Designs (z.&nbsp;B. in einer Meta-Analyse) ist <strong>d<sub>av</sub></strong> die richtige Wahl, weil r nicht in den Nenner eingeht.</div>
+  </div>
 
-  <!-- Learn cards -->
+  <div class="step-block">
+    <div class="step-h"><span class="circ" id="step-conv-num">②</span>&nbsp; Effektgröße in andere Maße übersetzen</div>
+    <div class="step-body">Cohen's d lässt sich in weitere gebräuchliche Maße umrechnen — je nachdem, was im eigenen Feld üblich ist oder besser kommuniziert werden kann. <code>r</code> und <code>η²</code> sind aus der Varianzaufklärung bekannt, <code>OR</code> aus der Logistik-/Epidemiologie-Welt, <code>U₃</code> und <code>CLES</code> sind Wahrscheinlichkeits-basierte Maße ("wie oft übertrifft eine Person aus Gruppe&nbsp;1 eine aus Gruppe&nbsp;2?") und oft leichter zu vermitteln als d selbst.</div>
+    <table class="d-table" id="tbl-convert" style="margin-top:.5rem"></table>
+  </div>
+
+  <!-- Konzepte -->
   <div class="learn-section">
-    <div class="sec-h">Konzepte</div>
+    <div class="sec-h">Konzepte &amp; Grenzen</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">Warum drei Standardisierungen?</div>
-        <div class="lcard-body">Im Within-Design gibt es keinen einzigen "richtigen" Nenner. <strong>d<sub>z</sub></strong> nutzt die Variabilität der Differenzen — kleiner bei hoher r, gut für Power-Rechnungen. <strong>d<sub>av</sub></strong> ignoriert r im Nenner — daher direkt mit Between-d vergleichbar (<em>ceteris paribus identisch</em>). <strong>d<sub>rm</sub></strong> (Becker 1988) = d<sub>z</sub>·√(2(1−r)): gleich d<sub>av</sub> bei gleichen SDs, gleich d<sub>z</sub> bei r=.5.</div>
+        <div class="lcard-h">Warum ist Cohen's d verzerrt?</div>
+        <div class="lcard-body">Das rohe d überschätzt die wahre Populations-Effektgröße δ systematisch — stärker bei kleinem n. Die Verzerrung hängt von den Freiheitsgraden ab, nicht von der Größe des wahren Effekts. Deshalb gibt es mehrere Korrekturformeln statt einer einzigen: sie treffen leicht unterschiedliche Annahmen über die Stichprobenverteilung.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Kleine Stichproben: Korrekturen</div>
-        <div class="lcard-body">Cohens d ist ein nach oben verzerrter Schätzer von δ. Die <strong>Hedges-j-Korrektur</strong> ist am gebräuchlichsten. <strong>Nakagawa/Cuthill (2007)</strong> empfehlen eine angepasste Formel für Messwiederholungen. <strong>Bonett (2015)</strong> basiert auf Varianz-Unbiasedness und ist konservativ.</div>
+        <div class="lcard-h">Hedges' j-Korrektur</div>
+        <div class="lcard-body">j&nbsp;=&nbsp;1&nbsp;−&nbsp;3/(4df−1) (Hedges 1981). Die gebräuchlichste Korrektur, asymptotisch exakt und in den meisten Statistik-Programmen (z.&nbsp;B. R-Paket <code>effsize</code>) als Standard hinterlegt. Ergebnis wird als <strong>Hedges' g</strong> bezeichnet.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">NCT-Konfidenzintervalle</div>
-        <div class="lcard-body">Cohen's d ist ein Nicht-zentralitäts-Parameter λ = δ·√n. Exakte CIs invertieren die CDF der nichtzentranen t-Verteilung: finde λ<sub>L</sub> und λ<sub>U</sub> sodass P(T ≤ t_obs | λ) = 1−α/2 und α/2. Keine Simulation nötig — die <strong>ibeta-Funktion</strong> berechnet die CDF analytisch.</div>
+        <div class="lcard-h">Nakagawa &amp; Cuthill-Korrektur</div>
+        <div class="lcard-body">Eigene df-Zählung, die speziell für Messwiederholungsdesigns hergeleitet wurde (Nakagawa &amp; Cuthill 2007). Berücksichtigt, dass bei Within-Designs effektiv mit den Paaren, nicht mit unabhängigen Beobachtungen gerechnet wird.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Effektgrößen übersetzen</div>
-        <div class="lcard-body">Zwischen Konventionen gilt: <strong>r = d/√(d²+4)</strong>, <strong>η² ≈ r²</strong>, <strong>OR = exp(d·π/√3)</strong>. Cohens U₃ = Φ(d) zeigt den Anteil der Kontrollgruppe, den der Treatment-Mittelwert übersteigt. CLES = Φ(d/√2) ist die Wahrscheinlichkeit, dass Person aus Gr.1 > Person aus Gr.2.</div>
+        <div class="lcard-h">Bonett-Korrektur</div>
+        <div class="lcard-body">Bon&nbsp;=&nbsp;√((n−2)/(n−1)) (Bonett 2015). Beruht nicht auf dem Erwartungswert von d, sondern auf Varianz-Unbiasedness — einer anderen statistischen Zielgröße. Tendenziell etwas konservativer als j oder nag. Wird typischerweise bei <strong>Within-Designs</strong> herangezogen, wo sie neben j und nag als dritte Korrekturoption angeboten wird (siehe Tabellen oben).</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Grenzen</div>
-        <div class="lcard-body">Standardisierte Effektgrößen sind nur vergleichbar, wenn die Populationsstreuungen ähnlich sind. Bei hochselektiven Stichproben (<strong>Range Restriction</strong>) unterschätzt d den wahren Effekt. Reliability-Attenuation zieht d weiter nach unten — Disattenuation kann notwendig sein.</div>
+        <div class="lcard-h">Cohen's U₃</div>
+        <div class="lcard-body">U₃&nbsp;=&nbsp;Φ(d): der Anteil der Referenzgruppe, den der Mittelwert der anderen Gruppe übertrifft. Bei d&nbsp;=&nbsp;0 liegt U₃ bei 50%, bei d&nbsp;=&nbsp;0.8 (großer Effekt) bei rund 78.8%. Leicht als "wie viel Prozent der Kontrollgruppe liegen unter dem Trainings-Mittelwert?" zu vermitteln.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">CSV-Tipp</div>
-        <div class="lcard-body">Spalten-Header werden automatisch erkannt (erste Zeile nicht-numerisch). Fehlende Werte (NA, "", leer) werden fallweise ausgeschlossen. Im Between-Modus dürfen die Spalten verschieden lang sein — n₁ und n₂ werden separat berechnet. Dezimalkomma (,) wird automatisch in Dezimalpunkt (.) konvertiert.</div>
+        <div class="lcard-h">CLES — Common Language Effect Size</div>
+        <div class="lcard-body">CLES&nbsp;=&nbsp;Φ(d/√2) (McGraw &amp; Wong 1992): die Wahrscheinlichkeit, dass eine zufällig gezogene Person aus der einen Gruppe einen höheren Wert hat als eine zufällig gezogene Person aus der anderen. Anders als U₃ vergleicht CLES zwei einzelne Personen statt eine Person mit einer ganzen Verteilung.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">r, r² und η²</div>
+        <div class="lcard-body">d lässt sich als punktbiseriale Korrelation r zwischen Gruppenzugehörigkeit und Messwert ausdrücken. r² (bzw. η² bei mehr als zwei Gruppen) ist der Anteil der durch die Gruppierung aufgeklärten Varianz — dasselbe Konzept wie bei linearer Regression, nur mit einer binären statt kontinuierlichen Prädiktorvariable.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Odds Ratio</div>
+        <div class="lcard-body">OR&nbsp;=&nbsp;exp(d·π/√3) approximiert die Umrechnung zwischen Cohen's d und dem Chancenverhältnis unter der Annahme, dass eine zugrundeliegende Normalverteilung logistisch dichotomisiert wurde. Verbreitet in Medizin und Epidemiologie, wo Ergebnisse oft ohnehin als Odds Ratios berichtet werden.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Grenzen standardisierter Effektgrößen</div>
+        <div class="lcard-body">d ist nur vergleichbar, wenn die Populationsstreuungen ähnlich sind. Bei hochselektiven Stichproben (<a href="Range_Restriction.html">Range Restriction</a>) unterschätzt d den wahren Effekt. Messfehler zieht d durch <a href="Messfehler_Attenuierung.html">Attenuierung</a> zusätzlich nach unten.</div>
+      </div>
+      <div class="lcard rechner">
+        <div class="lcard-h">Für die eigene Studie</div>
+        <div class="lcard-body">Der <a href="Effektgroessen_Rechner.html"><strong>Effektgrößen-Rechner</strong></a> berechnet exakte Werte aus eigenen Daten (CSV-Upload) — inklusive Konfidenzintervallen nach Bonett, Rosenthal und exakter nichtzentraler t-Verteilung.</div>
       </div>
     </div>
   </div>
@@ -422,120 +309,51 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 
 <script>
 // ─── State ───────────────────────────────────────────────────────────────────
-let state = {
-  mode: 'within',   // 'within' | 'between'
-  tab: 'stats',     // 'stats' | 'csv'
-  csvData: null,    // parsed CSV rows
-  csvHeaders: [],
-  results: null
-};
+let state = { mode: 'between' };
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
 function toggleTheme(){
   const d=document.documentElement;
   const dark=d.getAttribute('data-theme')==='dark';
-  d.setAttribute('data-theme',dark?'light':'dark');
+  const next=dark?'light':'dark';
+  d.setAttribute('data-theme',next);
+  localStorage.setItem('ml-theme',next);
   document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
-  if(state.results) drawCanvases(state.results);
+  recompute();
 }
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('help-overlay').classList.remove('open')});
 
-// ─── Mode / Tab switching ─────────────────────────────────────────────────────
+// ─── Mode switching ────────────────────────────────────────────────────────────
 function setMode(m){
   state.mode=m;
-  ['within','between'].forEach(x=>{
-    document.getElementById('mode-'+x).classList.toggle('active',x===m);
-  });
   const isW=m==='within';
-  document.getElementById('lbl-m1').innerHTML=isW?'M₁ <em>(Prä)</em>':'M₁ <em>(Gruppe 1)</em>';
-  document.getElementById('lbl-m2').innerHTML=isW?'M₂ <em>(Post)</em>':'M₂ <em>(Gruppe 2)</em>';
-  document.getElementById('lbl-sd1').innerHTML=isW?'SD₁ <em>(Prä)</em>':'SD₁ <em>(Gruppe 1)</em>';
-  document.getElementById('lbl-sd2').innerHTML=isW?'SD₂ <em>(Post)</em>':'SD₂ <em>(Gruppe 2)</em>';
-  document.getElementById('lbl-n1').innerHTML=isW?'n <em>(Paare)</em>':'n₁ <em>(Gruppe 1)</em>';
+  document.getElementById('mode-between').classList.toggle('active',!isW);
+  document.getElementById('mode-within').classList.toggle('active',isW);
+  document.getElementById('mode-note').textContent=isW
+    ? 'Dieselben Personen vor und nach dem Training — hier entsteht die Standardisierungsfrage: SD wovon?'
+    : 'Zwei unabhängige Gruppen — der einfachere Fall: ein Nenner, eine Standardisierung.';
+  document.getElementById('lbl-m1').textContent=isW?'M₁ (Prä)':'M₁ (Gruppe 1)';
+  document.getElementById('lbl-m2').textContent=isW?'M₂ (Post)':'M₂ (Gruppe 2)';
+  document.getElementById('lbl-sd1').textContent=isW?'SD₁ (Prä)':'SD₁ (Gruppe 1)';
+  document.getElementById('lbl-sd2').textContent=isW?'SD₂ (Post)':'SD₂ (Gruppe 2)';
+  document.getElementById('lbl-n').textContent=isW?'n (Paare)':'n (pro Gruppe)';
   document.getElementById('row-r').style.display=isW?'':'none';
-  document.getElementById('row-n2').style.display=isW?'none':'';
-  document.getElementById('sb-rm-row').style.display=isW?'':'none';
-  document.getElementById('sb-av-row').style.display=isW?'':'none';
-  document.getElementById('csv-lbl-1').textContent=isW?'Spalte 1 (Prä)':'Spalte 1 (Gruppe 1)';
-  document.getElementById('csv-lbl-2').textContent=isW?'Spalte 2 (Post)':'Spalte 2 (Gruppe 2)';
-  if(state.tab==='csv'&&state.csvData) csvCompute(); else onInput();
+  document.getElementById('between-est').style.display=isW?'none':'';
+  document.getElementById('within-est').style.display=isW?'':'none';
+  document.getElementById('step-within-only').style.display=isW?'':'none';
+  document.getElementById('step-conv-num').textContent=isW?'③':'②';
+  document.getElementById('example-box').innerHTML = isW
+    ? '<strong>Laufendes Beispiel (Within):</strong> Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. Dieselben Teilnehmenden werden vor (Prä) und nach (Post) dem Training befragt. Verändere M<sub>prä</sub>, M<sub>post</sub>, die Streuungen, die Prä-Post-Korrelation r und n mit den Reglern.'
+    : '<strong>Laufendes Beispiel (Between):</strong> Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. Trainingsgruppe vs. Warteliste-Kontrollgruppe, je n Personen. Verändere die Mittelwerte und Streuungen beider Gruppen sowie n mit den Reglern.';
+  document.getElementById('axis-note').textContent = isW
+    ? 'x-Achse: Wohlbefinden-Score (fiktive Skala) · Kurven = angenommene Verteilungen vor (blau) und nach (orange) dem Training'
+    : 'x-Achse: Wohlbefinden-Score (fiktive Skala) · Kurven = angenommene Verteilungen der Kontroll- (blau) und Trainingsgruppe (orange)';
+  recompute();
 }
 
-function setTab(t){
-  state.tab=t;
-  ['stats','csv'].forEach(x=>{
-    document.getElementById('tab-'+x).classList.toggle('active',x===t);
-    document.getElementById('panel-'+x).style.display=x===t?'':'none';
-  });
-  if(t==='csv'&&state.csvData) csvCompute();
-}
-
-// ─── Math utilities ──────────────────────────────────────────────────────────
-function lgamma(x){
-  const c=[76.18009172947146,-86.50532032941677,24.01409824083091,
-    -1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
-  let y=x,tmp=x+5.5;
-  tmp-=(x+.5)*Math.log(tmp);
-  let s=1.000000000190015;
-  for(let j=0;j<6;j++) s+=c[j]/++y;
-  return -tmp+Math.log(2.5066282746310005*s/x);
-}
-
-function ibeta(x,a,b){
-  if(x<=0) return 0;
-  if(x>=1) return 1;
-  const lbeta=lgamma(a)+lgamma(b)-lgamma(a+b);
-  function cf(x,a,b){
-    const maxit=200,eps=3e-7,fpmin=1e-30;
-    const qab=a+b,qap=a+1,qam=a-1;
-    let c=1,d=1-(qab*x/qap);
-    if(Math.abs(d)<fpmin) d=fpmin; d=1/d;
-    let h=d;
-    for(let m=1;m<=maxit;m++){
-      const m2=2*m;
-      let aa=m*(b-m)*x/((qam+m2)*(a+m2));
-      d=1+aa*d; if(Math.abs(d)<fpmin) d=fpmin;
-      c=1+aa/c; if(Math.abs(c)<fpmin) c=fpmin;
-      d=1/d; h*=d*c;
-      aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
-      d=1+aa*d; if(Math.abs(d)<fpmin) d=fpmin;
-      c=1+aa/c; if(Math.abs(c)<fpmin) c=fpmin;
-      d=1/d; const del=d*c; h*=del;
-      if(Math.abs(del-1)<eps) break;
-    }
-    return h;
-  }
-  const bt=Math.exp(lbeta+a*Math.log(x)+b*Math.log(1-x));
-  if(x<(a+1)/(a+b+2)) return bt*cf(x,a,b)/a;
-  return 1-bt*cf(1-x,b,a)/b;
-}
-
-// Non-central t CDF: P(T_{df,ncp} <= t)
-// Exact Poisson-weighted series (matches R's pt() / conf.limits.nct()):
-//   t>0: F = Φ(-δ) + Φ(+δ) · S     where S = Σ_j p_j · I_{t²/(t²+ν)}(j+½, ν/2)
-//   t<0: F = Φ(-δ) · (1 − S)        p_j = exp(-δ²/2)·(δ²/2)^j/j!
-function nctCDF(t, df, ncp){
-  if(!isFinite(t)) return t>0?1:0;
-  if(t===0) return stdNorm(-ncp);
-  if(ncp===0) return tCDF(t, df);
-  const absT=Math.abs(t);
-  const x=absT*absT/(absT*absT+df);
-  const halfD2=ncp*ncp/2;
-  let S=0, logWj=-halfD2;
-  for(let j=0;j<=300;j++){
-    const wj=Math.exp(logWj);
-    S+=wj*ibeta(x, j+0.5, df/2);
-    if(j>5 && wj<1e-13) break;
-    if(halfD2===0) break;
-    logWj+=Math.log(halfD2)-Math.log(j+1);
-  }
-  const pn=stdNorm(-ncp);
-  if(t>0) return Math.min(1, pn+(1-pn)*S);
-  return Math.max(0, pn*(1-S));
-}
-
+// ─── Math ────────────────────────────────────────────────────────────────────
 function stdNorm(z){
-  // Rational approximation for Φ(z)
   const p=0.2316419,b1=0.319381530,b2=-0.356563782,b3=1.781477937,b4=-1.821255978,b5=1.330274429;
   const t2=1/(1+p*Math.abs(z));
   const poly=t2*(b1+t2*(b2+t2*(b3+t2*(b4+t2*b5))));
@@ -543,284 +361,78 @@ function stdNorm(z){
   const q=1-pdf*poly;
   return z>=0?q:1-q;
 }
+function fmt(x,d=3){return isNaN(x)||!isFinite(x)?'—':x.toFixed(d)}
 
-function invStdNorm(p){
-  // Beasley-Springer-Moro
-  const a=[2.50662823884,-18.61500062529,41.39119773534,-25.44106049637];
-  const b=[-8.47351093090,23.08336743743,-21.06224101826,3.13082909833];
-  const c=[-2.78718931138,-2.29796479134,4.85014127135,2.32121276858];
-  const d=[3.54388924762,1.63706781897];
-  const q=p-0.5;
-  let r;
-  if(Math.abs(q)<=0.42){
-    r=q*q;
-    return q*(((a[3]*r+a[2])*r+a[1])*r+a[0])/((((b[3]*r+b[2])*r+b[1])*r+b[0])*r+1);
-  }
-  r=p<0.5?p:1-p;
-  r=Math.sqrt(-Math.log(r));
-  let x=(((c[3]*r+c[2])*r+c[1])*r+c[0])/((d[1]*r+d[0])*r+1);
-  return p<0.5?-x:x;
+function computeBetween(m1,m2,sd1,sd2,n){
+  const df=2*n-2;
+  const s_pool=Math.sqrt(((n-1)*sd1*sd1+(n-1)*sd2*sd2)/df);
+  const ds=(m2-m1)/s_pool;
+  const j=1-3/(4*df-1);
+  const gs=ds*j;
+  const cles_mw=stdNorm(ds/Math.sqrt(2));
+  return {mode:'between',ds,gs,cles_mw};
 }
-
-// Find ncp s.t. P(T_{df,ncp} <= t) = targetP  (bisection; CDF is decreasing in ncp)
-function invNCTncp(t, df, targetP){
-  // Bracket: ncp_low gives CDF near 1, ncp_high gives CDF near 0
-  const range=Math.max(Math.abs(t)*3+6, 12);
-  let lo=t-range, hi=t+range;
-  for(let i=0;i<160;i++){
-    const mid=0.5*(lo+hi);
-    const p=nctCDF(t, df, mid);
-    if(Math.abs(p-targetP)<1e-10) return mid;
-    if(p<targetP) hi=mid; else lo=mid;
-  }
-  return 0.5*(lo+hi);
-}
-
-// NCT CI for d_z: t_obs = d_z * sqrt(n), scale ncp back to d
-function nctCI_dz(dz, n, alpha){
-  const t=dz*Math.sqrt(n);
-  const df=n-1, a2=alpha/2;
-  // ncp_L: P(T_{df,ncp_L} <= t_obs) = 1-alpha/2 (ncp_L is below t for t>0)
-  // ncp_U: P(T_{df,ncp_U} <= t_obs) = alpha/2   (ncp_U is above t for t>0)
-  const ncp_L=invNCTncp(t, df, 1-a2);
-  const ncp_U=invNCTncp(t, df, a2);
-  return {lo: ncp_L/Math.sqrt(n), hi: ncp_U/Math.sqrt(n)};
-}
-
-// NCT CI for d_av (Algina & Keselman 2003)
-// lambda = d_av * sqrt(n / (2*(1-r)))  ... only when using the within-design SE
-// Actually for d_av: t_w = M_dif / (s_dif/sqrt(n)), d_av = M_dif / s_av
-// So d_av = d_z * (s_dif/s_av) → scale ncp by s_av/s_dif
-function nctCI_dav(dav, dz, n, alpha){
-  if(dz===0) return {lo:0,hi:0};
-  const scale=dav/dz;  // = s_dif/s_av
-  const ci_z=nctCI_dz(dz, n, alpha);
-  return {lo: ci_z.lo*scale, hi: ci_z.hi*scale};
-}
-
-function tCDF(t, df){
-  const x=df/(df+t*t);
-  const p=0.5*ibeta(x, df/2, 0.5);
-  return t>=0 ? 1-p : p;
-}
-
-function tQuantile(p, df){
-  // Binary search on tCDF
-  let lo=-30, hi=30;
-  for(let i=0;i<120;i++){
-    const mid=0.5*(lo+hi);
-    if(tCDF(mid,df)<p) lo=mid; else hi=mid;
-  }
-  return 0.5*(lo+hi);
-}
-
-// ─── Effect size computation ──────────────────────────────────────────────────
-function computeWithin(m1,m2,sd1,sd2,n,r,alpha){
-  const m_dif=m2-m1;  // Post − Prä: positive d = increase
+function computeWithin(m1,m2,sd1,sd2,n,r){
+  const m_dif=m2-m1;
   const s_dif=Math.sqrt(sd1*sd1+sd2*sd2-2*r*sd1*sd2);
   const s_av=Math.sqrt((sd1*sd1+sd2*sd2)/2);
-  const df=n-1;
-
-  const t_w=m_dif/(s_dif/Math.sqrt(n));
-  const p=2*(1-tCDF(Math.abs(t_w),df));
-
   const dz=m_dif/s_dif;
-  // d_rm = d_z * sqrt(2*(1-r))  — Becker (1988): at SD1=SD2 → equals d_av; at r=0.5 → equals d_z
   const drm=dz*Math.sqrt(2*(1-r));
   const dav=m_dif/s_av;
-
-  // Small sample corrections
   const j=1-3/(4*(n-1)-1);
   const nag=1-3/(4*(2*n-2)-1);
   const bon=Math.sqrt((n-2)/(n-1));
-
-  // Glass delta (sd1 as control denominator)
-  const glass=m_dif/sd1;
-
-  // CLES — two variants
-  // Wuensch: P(D > 0) = Phi(d_z), probability a randomly chosen person improves
-  const cles_w=stdNorm(dz);
-  // McGraw & Wong (1992): P(X_post > X_pre) treating as independent draws, = Phi(d_av / sqrt(2))
   const cles_mw=stdNorm(dav/Math.sqrt(2));
-
-  const z_a=invStdNorm(1-alpha/2);
-  const t_a=tQuantile(1-alpha/2, df);
-
-  // --- d_z CIs (Bonett 2015 Eq.16; Rosenthal 1994 not defined for d_z) ---
-  const se_dz_bonett=Math.sqrt(dz*dz/(2*(n-1))+1/n);
-  const ci_dz_bonett={lo:dz-z_a*se_dz_bonett, hi:dz+z_a*se_dz_bonett};
-  const ci_dz_nct=nctCI_dz(dz, n, alpha);
-  const ci_raw={lo:m_dif-t_a*s_dif/Math.sqrt(n), hi:m_dif+t_a*s_dif/Math.sqrt(n)};
-
-  // --- d_av CIs (Bonett 2015 Eq.9; Rosenthal 1994 not defined for d_av) ---
-  const s_av4=(s_av*s_av)*(s_av*s_av);
-  const se_dav_bonett=Math.sqrt(
-    dav*dav*(sd1*sd1*sd1*sd1+sd2*sd2*sd2*sd2+2*r*r*sd1*sd1*sd2*sd2)/(8*s_av4*(n-1))
-    +(sd1*sd1+sd2*sd2-2*r*sd1*sd2)/((n-1)*s_av*s_av));
-  const ci_dav_bonett={lo:dav-z_a*se_dav_bonett, hi:dav+z_a*se_dav_bonett};
-  const ci_dav_nct=nctCI_dav(dav,dz,n,alpha);
-
-  // --- d_rm CIs (Bonett 2015 Eq.8; Rosenthal 1994: same SE, t instead of z) ---
-  const rmScale=Math.sqrt(2*(1-r));
-  const ci_drm_nct={lo:ci_dz_nct.lo*rmScale, hi:ci_dz_nct.hi*rmScale};
-  const se_drm=Math.sqrt(2*(1-r)*(drm*drm/(2*n)+1/n));
-  const ci_drm_bonett={lo:drm-z_a*se_drm, hi:drm+z_a*se_drm};
-  const ci_drm_rosenthal={lo:drm-t_a*se_drm, hi:drm+t_a*se_drm};
-
-  return {mode:'within',m1,m2,sd1,sd2,n,r,alpha,
-    t:t_w,df,p,s_dif,s_av,m_dif,ci_raw,
-    dz,drm,dav,glass,cles_w,cles_mw,
-    j,nag,bon,
-    ci:{
-      dz:{bonett:ci_dz_bonett, nct:ci_dz_nct},
-      drm:{bonett:ci_drm_bonett, rosenthal:ci_drm_rosenthal, nct:ci_drm_nct},
-      dav:{bonett:ci_dav_bonett, nct:ci_dav_nct},
-    }
-  };
+  return {mode:'within',dz,drm,dav,j,nag,bon,cles_mw};
 }
 
-function computeBetween(m1,m2,sd1,sd2,n1,n2,alpha){
-  const df=n1+n2-2;
-  const s_pool=Math.sqrt(((n1-1)*sd1*sd1+(n2-1)*sd2*sd2)/df);
-  const s_pool_n=Math.sqrt((n1*sd1*sd1+n2*sd2*sd2)/(n1+n2));
-  const s_av=Math.sqrt((sd1*sd1+sd2*sd2)/2);
-  const m_dif=m1-m2;
-
-  const se_pool=s_pool*Math.sqrt(1/n1+1/n2);
-  const t_b=m_dif/se_pool;
-  const p=2*(1-tCDF(Math.abs(t_b),df));
-
-  // Cohen's d_s (n-1 pooled, most common)
-  const ds=m_dif/s_pool;
-  // Cohen's d pool_n
-  const d_pool_n=m_dif/s_pool_n;
-  // Glass delta (SD1 = control group denominator)
-  const glass=m_dif/sd1;
-  // Hedges g_s = d_s * j
-  const j=1-3/(4*df-1);
-  const gs=ds*j;
-  // CLES
-  const cles=stdNorm(ds/Math.sqrt(2));
-
-  const z_a=invStdNorm(1-alpha/2);
-  const t_a=tQuantile(1-alpha/2,df);
-
-  // NCT CI for d_s: lambda = d_s * sqrt(n1*n2/(n1+n2))
-  const lambda_scale=Math.sqrt(n1*n2/(n1+n2));
-  const t_obs=ds*lambda_scale;
-  const ncp_L=invNCTncp(t_obs, df, 1-alpha/2);
-  const ncp_U=invNCTncp(t_obs, df, alpha/2);
-  const ci_ds_nct={lo:ncp_L/lambda_scale, hi:ncp_U/lambda_scale};
-
-  const se_ds_bonett=Math.sqrt(ds*ds/(2*df)+(n1+n2)/(n1*n2));
-  const ci_ds_bonett={lo:ds-z_a*se_ds_bonett, hi:ds+z_a*se_ds_bonett};
-  const ci_ds_rosenthal={lo:ds-t_a*Math.sqrt((n1+n2)/(n1*n2)+ds*ds/(2*(n1+n2))), hi:ds+t_a*Math.sqrt((n1+n2)/(n1*n2)+ds*ds/(2*(n1+n2)))};
-  const ci_raw={lo:m_dif-t_a*se_pool, hi:m_dif+t_a*se_pool};
-
-  // CLES McGraw & Wong (1992): P(X1 > X2) = Phi(d_s / sqrt(2))
-  const cles_mw=stdNorm(ds/Math.sqrt(2));
-
-  return {mode:'between',m1,m2,sd1,sd2,n1,n2,alpha,
-    t:t_b,df,p,s_pool,s_av,m_dif,ci_raw,
-    ds,d_pool_n,glass,gs,cles_mw,j,
-    ci:{
-      ds:{bonett:ci_ds_bonett, rosenthal:ci_ds_rosenthal, nct:ci_ds_nct}
-    }
-  };
-}
-
-// ─── UI helpers ───────────────────────────────────────────────────────────────
-function fmt(x,d=3){return isNaN(x)||!isFinite(x)?'—':x.toFixed(d)}
-function fmtp(p){if(p<.001) return '<.001'; if(p<.01) return p.toFixed(3); return p.toFixed(3)}
-function fmtCI(ci){return '['+fmt(ci.lo,3)+', '+fmt(ci.hi,3)+']'}
-
-// Builds two-part block: (1) point estimates table, (2) CI note + CI table
-// container: DOM element to append into; d, ci, j, nag, bon: numbers; dname: e.g. 'd_z'
-function buildWithinBlock(container, d, ci, j, nag, bon, dname){
-  // --- Part 1: point estimates ---
-  const tbl1=document.createElement('table');
-  tbl1.className='d-table';
-  tbl1.style.cssText='margin-bottom:.3rem';
-  const h1=document.createElement('thead');
-  const hr1=document.createElement('tr');
-  // 5 cols: label | d (unkorr.) | g·j | g·nag | g·Bon
+// ─── Tables ──────────────────────────────────────────────────────────────────
+function buildPointTable(container, d, j, nag, bon, dname){
+  container.innerHTML='';
+  const tbl=document.createElement('table');
+  tbl.className='d-table';
+  const thead=document.createElement('thead');
+  const hr=document.createElement('tr');
   ['', dname+' (unkorr.)', 'g · j', 'g · nag', 'g · Bon'].forEach((t,i)=>{
     const th=document.createElement('th'); th.textContent=t;
     if(i>0) th.className='num';
-    hr1.appendChild(th);
+    hr.appendChild(th);
   });
-  h1.appendChild(hr1); tbl1.appendChild(h1);
-  const b1=document.createElement('tbody');
-  const tr1=document.createElement('tr');
+  thead.appendChild(hr); tbl.appendChild(thead);
+  const tbody=document.createElement('tbody');
+  const tr=document.createElement('tr');
   ['Punktschätzer', fmt(d), fmt(d*j), fmt(d*nag), fmt(d*bon)].forEach((v,i)=>{
     const td=document.createElement('td'); td.textContent=v;
-    td.className=i===0?'lbl':'num'; tr1.appendChild(td);
+    td.className=i===0?'lbl':'num'; tr.appendChild(td);
   });
-  b1.appendChild(tr1); tbl1.appendChild(b1);
-  container.appendChild(tbl1);
-
-  // --- CI note ---
-  const note=document.createElement('div');
-  note.className='ci-note';
-  note.textContent='KIs beziehen sich auf '+dname+' (unkorrigiert) — nicht auf g (Lakens 2013; Cousineau & Goulet-Pelletier 2021)';
-  container.appendChild(note);
-
-  // --- Part 2: CI table ---
-  const tbl2=document.createElement('table');
-  tbl2.className='d-table-ci';
-  const h2=document.createElement('thead');
-  const hr2=document.createElement('tr');
-  ['CI-Methode', '95% Konfidenzintervall'].forEach((t,i)=>{
-    const th=document.createElement('th'); th.textContent=t;
-    if(i>0) th.className='num';
-    hr2.appendChild(th);
-  });
-  h2.appendChild(hr2); tbl2.appendChild(h2);
-  const b2=document.createElement('tbody');
-  const ciRowList=[['Bonett (2015)', ci.bonett]];
-  if(ci.rosenthal) ciRowList.push(['Rosenthal (1994)', ci.rosenthal]);
-  ciRowList.push(['NCT', ci.nct]);
-  ciRowList.forEach(([lbl,c])=>{
-    const tr=document.createElement('tr');
-    const td1=document.createElement('td'); td1.textContent=lbl; td1.className='lbl'; tr.appendChild(td1);
-    const td2=document.createElement('td'); td2.textContent=fmtCI(c); td2.className='num'; tr.appendChild(td2);
-    b2.appendChild(tr);
-  });
-  tbl2.appendChild(b2);
-  container.appendChild(tbl2);
+  tbody.appendChild(tr); tbl.appendChild(tbody);
+  container.appendChild(tbl);
 }
 
 function buildBetweenTable(r){
-  const tbl=document.getElementById('tbl-between');
-  tbl.innerHTML='';
+  const c=document.getElementById('tbl-between');
+  c.innerHTML='';
+  const tbl=document.createElement('table');
+  tbl.className='d-table';
   const thead=document.createElement('thead');
-  const hrow=document.createElement('tr');
-  ['Maß','Wert','Beschreibung','CI (NCT)'].forEach((h,i)=>{
-    const th=document.createElement('th'); th.textContent=h;
-    if(i===1||i===3) th.className='num';
-    hrow.appendChild(th);
+  const hr=document.createElement('tr');
+  ['', "d_s (unkorr.)", 'g_s (Hedges j-korr.)'].forEach((t,i)=>{
+    const th=document.createElement('th'); th.textContent=t;
+    if(i>0) th.className='num';
+    hr.appendChild(th);
   });
-  thead.appendChild(hrow); tbl.appendChild(thead);
+  thead.appendChild(hr); tbl.appendChild(thead);
   const tbody=document.createElement('tbody');
-  [
-    ['d_s (Cohen/Hedges)', fmt(r.ds), 'n−1 gepoolte SD; gängigste Def.', fmtCI(r.ci.ds.nct)],
-    ['g_s (Hedges j-korr.)', fmt(r.gs), 'd_s · j (bias-korrigiert)', '—'],
-    ['d_pool_n', fmt(r.d_pool_n), 'n-gepoolte SD', '—'],
-    ['Glass Δ', fmt(r.glass), 'Nur SD₁ als Nenner', '—'],
-    ['CLES (McGraw & Wong)', fmt(r.cles_mw,3), 'Φ(d_s/√2) — P(X₁ > X₂)', '—'],
-  ].forEach(row=>{
-    const tr=document.createElement('tr');
-    row.forEach((v,i)=>{
-      const td=document.createElement('td'); td.textContent=v;
-      td.className=i===1||i===3?'num':'lbl';
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
+  const tr=document.createElement('tr');
+  ['Punktschätzer', fmt(r.ds), fmt(r.gs)].forEach((v,i)=>{
+    const td=document.createElement('td'); td.textContent=v;
+    td.className=i===0?'lbl':'num'; tr.appendChild(td);
   });
-  tbl.appendChild(tbody);
+  tbody.appendChild(tr); tbl.appendChild(tbody);
+  c.appendChild(tbl);
 }
 
-function buildConversionTable(d_ref, overrideCles){
+function buildConversionTable(d_ref, cles_mw){
   const tbl=document.getElementById('tbl-convert');
   tbl.innerHTML='';
   const thead=document.createElement('thead');
@@ -839,7 +451,6 @@ function buildConversionTable(d_ref, overrideCles){
   const eta2=d*d/(d*d+4);
   const OR=Math.exp(d*Math.PI/Math.sqrt(3));
   const u3=stdNorm(d)*100;
-  const cles_mw=overrideCles!==undefined?overrideCles*100:stdNorm(d/Math.sqrt(2))*100;
   [
     ['d (Cohen)', fmt(d_ref,3), '0.2 / 0.5 / 0.8'],
     ['r (Pearson)', fmt(r,3), '0.1 / 0.3 / 0.5'],
@@ -847,7 +458,7 @@ function buildConversionTable(d_ref, overrideCles){
     ['η² (eta²)', fmt(eta2,3), '0.01 / 0.06 / 0.14'],
     ['OR (Odds Ratio)', fmt(OR,2), '1.49 / 3.45 / 9.00'],
     ["Cohen's U₃", fmt(u3,1)+'%', '57.9 / 69.1 / 78.8%'],
-    ['CLES (McGraw & Wong)', fmt(cles_mw,1)+'%', '55.6 / 63.8 / 71.4%'],
+    ['CLES (McGraw & Wong)', fmt(cles_mw*100,1)+'%', '55.6 / 63.8 / 71.4%'],
   ].forEach(row=>{
     const tr=document.createElement('tr');
     row.forEach((v,i)=>{
@@ -860,439 +471,162 @@ function buildConversionTable(d_ref, overrideCles){
   tbl.appendChild(tbody);
 }
 
-function updateResultsUI(res){
-  state.results=res;
-  document.getElementById('placeholder-msg').style.display='none';
-  document.getElementById('results-wrap').style.display='';
-  document.getElementById('sb-summary').style.display='';
-
-  // t-test bar
-  document.getElementById('rb-test-lbl').textContent=res.mode==='within'?'Within-t (t_w)':'Between-t (t_b)';
-  document.getElementById('rb-t').textContent='t = '+fmt(res.t,3);
-  document.getElementById('rb-df').textContent='df = '+res.df;
-  document.getElementById('rb-p').textContent=fmtp(res.p);
-  document.getElementById('rb-sig').textContent=res.p<res.alpha?'signifikant (α='+res.alpha+')':'n.s. (α='+res.alpha+')';
-  const d1=res.mode==='within'?'M₁ (Prä)':'M₁ (Gruppe 1)';
-  const d2=res.mode==='within'?'M₂ (Post)':'M₂ (Gruppe 2)';
-  document.getElementById('rb-d1lbl').textContent=d1;
-  document.getElementById('rb-d2lbl').textContent=d2;
-  document.getElementById('rb-m1').textContent=fmt(res.m1,2);
-  document.getElementById('rb-m2').textContent=fmt(res.m2,2);
-  document.getElementById('rb-sd1').textContent='SD = '+fmt(res.sd1,2);
-  document.getElementById('rb-sd2').textContent='SD = '+fmt(res.sd2,2);
-  const ciPct=Math.round((1-res.alpha)*100);
-  document.getElementById('rb-mdif-lbl').textContent=res.mode==='within'?'M_dif (Post − Prä)':'M_dif (Gr.1 − Gr.2)';
-  document.getElementById('rb-mdif').textContent=fmt(res.m_dif,2);
-  document.getElementById('rb-mdif-sub').textContent='Rohwertsdifferenz';
-  document.getElementById('rb-ci-raw-lbl').textContent=ciPct+'%-KI (Rohwert)';
-  document.getElementById('rb-ci-raw').textContent='['+fmt(res.ci_raw.lo,2)+', '+fmt(res.ci_raw.hi,2)+']';
-  document.getElementById('rb-ci-raw-sub').textContent=ciPct+'%-KI für Mittelwertsdiff.';
-
-  // Sidebar summary
-  document.getElementById('sb-t').textContent=fmt(res.t,3);
-  document.getElementById('sb-p').textContent=fmtp(res.p);
-
-  if(res.mode==='within'){
-    document.getElementById('within-results').style.display='';
-    document.getElementById('between-results').style.display='none';
-    document.getElementById('sb-dz').textContent=fmt(res.dz,3);
-    document.getElementById('sb-drm').textContent=fmt(res.drm,3);
-    document.getElementById('sb-dav').textContent=fmt(res.dav,3);
-    document.getElementById('sb-rm-row').style.display='';
-    document.getElementById('sb-av-row').style.display='';
-
-    // Populate standardizer blocks
-    ['dz','drm','dav'].forEach(key=>{
-      const wrap=document.getElementById('tbl-'+key);
-      if(wrap){ wrap.innerHTML=''; buildWithinBlock(wrap, res[key], res.ci[key], res.j, res.nag, res.bon, key==='dz'?'d_z':key==='drm'?'d_rm':'d_av'); }
-    });
-
-    // Other measures table
-    const otherTbl=document.getElementById('tbl-other-within');
-    otherTbl.innerHTML='<thead><tr><th style="width:40%">Maß</th><th style="width:20%">Wert</th><th style="width:40%">Beschreibung</th></tr></thead>';
-    const otb=document.createElement('tbody');
-    [['Glass Δ', fmt(res.glass,3), 'SD₁ (Prä) als Nenner'],
-     ['CLES Wuensch', fmt(res.cles_w*100,1)+'%', 'Φ(d_z) — P(eine Person verbessert sich)'],
-     ['CLES McGraw & Wong', fmt(res.cles_mw*100,1)+'%', 'Φ(d_av/√2) — vergleichbar mit Unabh.']
-    ].forEach(row=>{
-      const tr=document.createElement('tr');
-      row.forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;td.className=i===1?'num':'lbl';tr.appendChild(td);});
-      otb.appendChild(tr);
-    });
-    otherTbl.appendChild(otb);
-
-    buildConversionTable(res.dav, res.cles_mw);
-    document.getElementById('nct-sec-h').textContent='Nichtzentrale t-Verteilung & CI — d_av';
-  } else {
-    document.getElementById('within-results').style.display='none';
-    document.getElementById('between-results').style.display='';
-    document.getElementById('sb-dz').textContent=fmt(res.ds,3);
-    document.getElementById('sb-rm-row').style.display='none';
-    document.getElementById('sb-av-row').style.display='none';
-    buildBetweenTable(res);
-    buildConversionTable(res.ds, res.cles_mw);
-    document.getElementById('nct-sec-h').textContent='Nichtzentrale t-Verteilung & CI — d_s';
-  }
-
-  drawCanvases(res);
-}
-
-// ─── Canvas drawing ────────────────────────────────────────────────────────────
+// ─── Canvas ──────────────────────────────────────────────────────────────────
 function getC(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   return{
-    ink: dark?'#ece6d8':'#18130e',
-    ink2: dark?'#8a8070':'#5a4f42',
-    ink3: dark?'#857c68':'#8a7f72',
-    paper: dark?'#111520':'#f8f3e8',
-    panel: dark?'#171d28':'#e8e0ce',
-    grid: dark?'#1e242e':'#ddd5c5',
-    a1: dark?'#e8614a':'#c94a2a',
-    a2: dark?'#4ab0d8':'#2a6e8a',
-    a3: dark?'#80cb52':'#5a8a2a',
-    a4: dark?'#c87ad8':'#7a3a8a',
-    a5: dark?'#e07830':'#b85c00',
-    a6: dark?'#2bc7c4':'#0e7c7b',
+    ink: dark?'#ece6d8':'#18130e', ink2: dark?'#8a8070':'#5a4f42', ink3: dark?'#857c68':'#8a7f72',
+    paper: dark?'#111520':'#f8f3e8', panel: dark?'#171d28':'#e8e0ce', grid: dark?'#1e242e':'#ddd5c5',
+    a2: dark?'#4ab0d8':'#2a6e8a', a5: dark?'#e07830':'#b85c00',
   };
 }
 
-function drawCanvases(res){
-  drawOverlap(res);
-  drawNCT(res);
+function niceStep(rough){
+  const mag=Math.pow(10,Math.floor(Math.log10(rough)));
+  const norm=rough/mag;
+  let step; if(norm<1.5) step=1; else if(norm<3) step=2; else if(norm<7) step=5; else step=10;
+  return step*mag;
 }
 
-function drawOverlap(res){
-  const H=360;
+// Draws the two actual raw-score population distributions (mean m_i, SD sd_i)
+// on a shared raw-score x-axis; d is only used for the annotated arrow label.
+function drawOverlap(m1, sd1, m2, sd2, d, lbl1, lbl2, cles_mw){
+  const H=390;
   const cv=document.getElementById('overlap-canvas');
   const W=cv.offsetWidth||800; cv.width=W; cv.height=H;
   const ctx=cv.getContext('2d');
   const C=getC();
   ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
 
-  const d=res.mode==='within'?res.dav:res.ds;
-  const isWithin=res.mode==='within';
-  const lbl1=isWithin?'Prä':'Gruppe 1';
-  const lbl2=isWithin?'Post':'Gruppe 2';
-
-  const padL=64, padR=64, padT=46, padB=90;
+  const padL=60, padR=60, padT=54, padB=140;
   const plotW=W-padL-padR, plotH=H-padT-padB;
-  const cx=padL+plotW/2;
   const yBase=padT+plotH;
 
-  // Scale: show ±4 SD around midpoint
-  const xRange=8;
-  const scale=plotW/xRange;
-  const yPeak=plotH*0.82;  // pixel height for the Gaussian peak
+  const maxSD=Math.max(sd1,sd2);
+  const xMin=Math.min(m1,m2)-3.3*maxSD, xMax=Math.max(m1,m2)+3.3*maxSD;
+  const xpx=x=>padL+(x-xMin)/(xMax-xMin)*plotW;
 
-  function xpx(x){ return cx+(x-d/2)*scale; }
-  function norm01(x){ return Math.exp(-0.5*x*x)/Math.sqrt(2*Math.PI); }
+  function dens(x,mu,sd){ const z=(x-mu)/sd; return Math.exp(-0.5*z*z)/(sd*Math.sqrt(2*Math.PI)); }
+  const peak1=dens(m1,m1,sd1), peak2=dens(m2,m2,sd2);
+  const yPeak=plotH*0.72;
+  const scaleY=yPeak/Math.max(peak1,peak2);
 
-  function drawDist(mu, col){
-    // filled area
-    ctx.beginPath();
-    const xL=mu-4, xR=mu+4;
-    ctx.moveTo(xpx(xL), yBase);
-    for(let i=0;i<=300;i++){
-      const x=xL+i*(xR-xL)/300;
-      ctx.lineTo(xpx(x), yBase-norm01(x-mu)*yPeak/norm01(0));
-    }
-    ctx.lineTo(xpx(xR), yBase);
-    ctx.closePath();
+  function drawDist(mu,sd,col){
+    const xL=mu-4.2*sd, xR=mu+4.2*sd;
+    ctx.beginPath(); ctx.moveTo(xpx(xL),yBase);
+    for(let i=0;i<=300;i++){ const x=xL+i*(xR-xL)/300; ctx.lineTo(xpx(x), yBase-dens(x,mu,sd)*scaleY); }
+    ctx.lineTo(xpx(xR),yBase); ctx.closePath();
     ctx.globalAlpha=0.22; ctx.fillStyle=col; ctx.fill(); ctx.globalAlpha=1;
-    // outline
-    ctx.strokeStyle=col; ctx.lineWidth=2.2;
-    ctx.beginPath();
-    for(let i=0;i<=300;i++){
-      const x=xL+i*(xR-xL)/300;
-      const py=yBase-norm01(x-mu)*yPeak/norm01(0);
-      i===0?ctx.moveTo(xpx(x),py):ctx.lineTo(xpx(x),py);
-    }
+    ctx.strokeStyle=col; ctx.lineWidth=2.2; ctx.beginPath();
+    for(let i=0;i<=300;i++){ const x=xL+i*(xR-xL)/300; const py=yBase-dens(x,mu,sd)*scaleY; i===0?ctx.moveTo(xpx(x),py):ctx.lineTo(xpx(x),py); }
     ctx.stroke();
   }
 
-  // Draw overlap region (shaded) between the two Gaussians
-  if(Math.abs(d)>0.05){
-    const xL=Math.min(0,d)-4, xR=Math.max(0,d)+4;
-    ctx.beginPath();
-    for(let i=0;i<=600;i++){
-      const x=xL+i*(xR-xL)/600;
-      const y1=norm01(x-0), y2=norm01(x-d);
-      const py=yBase-Math.min(y1,y2)*yPeak/norm01(0);
-      i===0?ctx.moveTo(xpx(x),py):ctx.lineTo(xpx(x),py);
-    }
-    const pts=[];
-    for(let i=600;i>=0;i--){
-      const x=xL+i*(xR-xL)/600;
-      pts.push([xpx(x),yBase]);
-    }
-    pts.forEach(([px,py],i)=>i===0?ctx.lineTo(px,py):ctx.lineTo(px,py));
-    ctx.closePath();
-    ctx.globalAlpha=0.18; ctx.fillStyle=C.ink3; ctx.fill(); ctx.globalAlpha=1;
+  // Overlap shading (min of the two densities, each with its own SD)
+  ctx.beginPath();
+  for(let i=0;i<=600;i++){
+    const x=xMin+i*(xMax-xMin)/600;
+    const py=yBase-Math.min(dens(x,m1,sd1),dens(x,m2,sd2))*scaleY;
+    i===0?ctx.moveTo(xpx(x),py):ctx.lineTo(xpx(x),py);
   }
+  for(let i=600;i>=0;i--){ const x=xMin+i*(xMax-xMin)/600; ctx.lineTo(xpx(x),yBase); }
+  ctx.closePath();
+  ctx.globalAlpha=0.18; ctx.fillStyle=C.ink3; ctx.fill(); ctx.globalAlpha=1;
 
-  drawDist(0, C.a2);
-  drawDist(d, C.a5);
+  drawDist(m1,sd1,C.a2);
+  drawDist(m2,sd2,C.a5);
 
   // Baseline
   ctx.strokeStyle=C.grid; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(padL,yBase); ctx.lineTo(W-padR,yBase); ctx.stroke();
 
-  // X axis ticks and labels
+  // X-axis ticks at "nice" raw-score intervals
+  const step=niceStep((xMax-xMin)/6);
+  const t0=Math.ceil(xMin/step)*step;
   ctx.fillStyle=C.ink3; ctx.font='12px DM Mono,monospace'; ctx.textAlign='center';
-  for(let v=-4;v<=4;v++){
-    const px=xpx(v+d/2);
-    if(px>=padL-5 && px<=W-padR+5){
-      ctx.strokeStyle=C.grid; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(px,yBase); ctx.lineTo(px,yBase+5); ctx.stroke();
-      if(v!==0||Math.abs(d/2)<0.15) ctx.fillText(v.toFixed(0),px,yBase+18);
-    }
+  for(let v=t0; v<=xMax; v+=step){
+    const px=xpx(v);
+    ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(px,yBase); ctx.lineTo(px,yBase+5); ctx.stroke();
+    ctx.fillText(v.toFixed(step<1?1:0),px,yBase+18);
   }
 
-  // Mean lines + group labels
-  [0,d].forEach((mu,i)=>{
+  // Mean lines + group labels (positioned above each curve's own peak)
+  [[m1,sd1,C.a2,lbl1,peak1],[m2,sd2,C.a5,lbl2,peak2]].forEach(([mu,sd,col,lbl,peak])=>{
     const px=xpx(mu);
-    const col=i===0?C.a2:C.a5;
     ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.setLineDash([5,3]);
     ctx.beginPath(); ctx.moveTo(px,padT+8); ctx.lineTo(px,yBase); ctx.stroke();
     ctx.setLineDash([]);
-    // Group label above curve
     ctx.fillStyle=col; ctx.font='bold 13px DM Mono,monospace'; ctx.textAlign='center';
-    const peakY=yBase-yPeak-6;
-    ctx.fillText(i===0?lbl1:lbl2, px, peakY);
+    const peakY=yBase-peak*scaleY-8;
+    ctx.fillText(lbl, px, Math.max(padT-6,peakY));
   });
 
-  // d arrow between means
-  const px1=xpx(0), px2=xpx(d);
-  const arrY=yBase+38;
+  // d arrow between the two raw means
+  const px1=xpx(m1), px2=xpx(m2);
+  const arrY=yBase+40;
   ctx.strokeStyle=C.ink; ctx.lineWidth=1.8; ctx.setLineDash([]);
-  // Arrow line
   ctx.beginPath(); ctx.moveTo(px1,arrY); ctx.lineTo(px2,arrY); ctx.stroke();
-  // Arrowheads
   const ah=6;
-  [[px1,1],[px2,-1]].forEach(([px,dir])=>{
+  [[px1,px2>px1?1:-1],[px2,px2>px1?-1:1]].forEach(([px,dir])=>{
     ctx.beginPath(); ctx.moveTo(px,arrY); ctx.lineTo(px+dir*ah,arrY-ah); ctx.moveTo(px,arrY); ctx.lineTo(px+dir*ah,arrY+ah); ctx.stroke();
   });
-  // d label
   ctx.fillStyle=C.ink; ctx.font='bold 13px DM Mono,monospace'; ctx.textAlign='center';
-  ctx.fillText('d = '+fmt(d,3), (px1+px2)/2, arrY+18);
+  ctx.fillText('Rohwertdiff. = '+fmt(m2-m1,1)+'  →  d = '+fmt(d,3), (px1+px2)/2, arrY+18);
 
-  // Statistics legend box (bottom right)
+  // Stats box (U3 / CLES) — short labels; full definitions live in the Hilfe/step text below
   const u3=stdNorm(Math.abs(d))*100;
-  const cles_mw=res.mode==='within'?(res.cles_mw||stdNorm(d/Math.sqrt(2)))*100:res.cles_mw*100;
-  const cles_w=res.mode==='within'?(res.cles_w||stdNorm(res.dz))*100:null;
-
-  const bx=W-padR-220, by=yBase+28, bw=218, bh=cles_w!==null?70:54;
-  ctx.fillStyle=C.paper;
-  ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+  const bw=Math.min(230,plotW), bx=padL+(plotW-bw)/2, by=arrY+34, bh=48;
+  ctx.fillStyle=C.paper; ctx.strokeStyle=C.grid; ctx.lineWidth=1;
   ctx.fillRect(bx,by,bw,bh); ctx.strokeRect(bx,by,bw,bh);
-
   ctx.fillStyle=C.ink2; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
-  const lx=bx+8;
-  ctx.fillText("Cohen's U₃ = "+u3.toFixed(1)+'%  (% überlap. > M₁)', lx, by+16);
-  ctx.fillText('CLES McGraw & Wong = '+cles_mw.toFixed(1)+'%', lx, by+32);
-  if(cles_w!==null){
-    ctx.fillText('CLES Wuensch = '+cles_w.toFixed(1)+'%  (P(Verb.))', lx, by+48);
-  }
-  // Legend color patches
-  const lgY=by+bh+14;
-  [[C.a2, lbl1],[C.a5, lbl2]].forEach(([col,lbl],i)=>{
-    const lx2=padL+i*140;
-    ctx.fillStyle=col; ctx.fillRect(lx2,lgY-10,14,12);
-    ctx.fillStyle=C.ink2; ctx.font='12px DM Mono,monospace'; ctx.textAlign='left';
-    ctx.fillText(lbl, lx2+18, lgY);
-  });
-}
-
-function drawNCT(res){
-  const cv=document.getElementById('nct-canvas');
-  const W=cv.offsetWidth||800; cv.width=W; cv.height=180;
-  const ctx=cv.getContext('2d');
-  const C=getC();
-  ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,180);
-
-  const n=res.mode==='within'?res.n:null;
-  const d=res.mode==='within'?res.dav:res.ds;
-  const df=res.df;
-  const ci_b=res.mode==='within'?res.ci.dav.bonett:res.ci.ds.bonett;
-  const ci_r=res.mode==='within'?res.ci.dav.rosenthal:res.ci.ds.rosenthal;
-  const ci_n=res.mode==='within'?res.ci.dav.nct:res.ci.ds.nct;
-
-  const pad={l:55,r:30,t:28,b:40};
-  const pw=W-pad.l-pad.r;
-  const ph=180-pad.t-pad.b;
-  const dRange=Math.max(Math.abs(d)*3, 1.5);
-  const dLo=-dRange, dHi=dRange;
-
-  const tx=v=>pad.l+pw*(v-dLo)/(dHi-dLo);
-
-  // Grid
-  ctx.strokeStyle=C.grid; ctx.lineWidth=1;
-  ctx.beginPath(); ctx.moveTo(pad.l,pad.t+ph); ctx.lineTo(pad.l+pw,pad.t+ph); ctx.stroke();
-
-  // CIs as horizontal bars — only include rows that are defined
-  const ciList=[];
-  ciList.push({ci:ci_b, col:C.a5, lbl:'Bonett'});
-  if(ci_r) ciList.push({ci:ci_r, col:C.a3, lbl:'Rosenthal'});
-  ciList.push({ci:ci_n, col:C.a2, lbl:'NCT'});
-  const step=1/(ciList.length+1);
-  ciList.forEach((item,i)=>{ item.y=(i+1)*step; });
-
-  ciList.forEach(({ci,col,lbl,y})=>{
-    const yp=pad.t+ph*y;
-    ctx.strokeStyle=col; ctx.lineWidth=2;
-    ctx.beginPath(); ctx.moveTo(tx(ci.lo),yp); ctx.lineTo(tx(ci.hi),yp); ctx.stroke();
-    [ci.lo,ci.hi].forEach(v=>{
-      ctx.beginPath(); ctx.moveTo(tx(v),yp-6); ctx.lineTo(tx(v),yp+6); ctx.stroke();
-    });
-    ctx.fillStyle=col; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
-    ctx.fillText(lbl, pad.l+4, yp-8);
-  });
-
-  // Point estimate
-  const dpx=tx(d);
-  ctx.fillStyle=C.ink; ctx.strokeStyle=C.ink; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.arc(dpx, pad.t+ph*0.5, 5, 0, 2*Math.PI); ctx.fill();
-  ctx.strokeStyle=C.ink2; ctx.lineWidth=1; ctx.setLineDash([3,3]);
-  ctx.beginPath(); ctx.moveTo(dpx,pad.t); ctx.lineTo(dpx,pad.t+ph); ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Zero line
-  const zpx=tx(0);
-  ctx.strokeStyle=C.a1; ctx.lineWidth=1; ctx.setLineDash([2,3]);
-  ctx.beginPath(); ctx.moveTo(zpx,pad.t); ctx.lineTo(zpx,pad.t+ph); ctx.stroke();
-  ctx.setLineDash([]);
-
-  // X axis labels
-  ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='center';
-  [-1.5,-1,-.5,0,.5,1,1.5].forEach(v=>{
-    if(v>=dLo&&v<=dHi) ctx.fillText(fmt(v,1), tx(v), pad.t+ph+14);
-  });
-  ctx.fillStyle=C.ink2; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
-  ctx.fillText('d', pad.l+pw+4, pad.t+ph+14);
+  ctx.fillText("Cohen's U₃  =  "+u3.toFixed(1)+'%', bx+10, by+18);
+  ctx.fillText('CLES         =  '+(cles_mw*100).toFixed(1)+'%', bx+10, by+34);
 }
 
 // ─── Input handling ────────────────────────────────────────────────────────────
-function onInput(){
-  const m1=parseFloat(document.getElementById('inp-m1').value);
-  const m2=parseFloat(document.getElementById('inp-m2').value);
-  const sd1=parseFloat(document.getElementById('inp-sd1').value);
-  const sd2=parseFloat(document.getElementById('inp-sd2').value);
-  const n1=parseInt(document.getElementById('inp-n1').value);
-  const alpha=parseFloat(document.getElementById('sel-alpha').value);
-  if(isNaN(m1)||isNaN(m2)||isNaN(sd1)||isNaN(sd2)||isNaN(n1)) return;
-  if(sd1<=0||sd2<=0||n1<3) return;
-
-  if(state.mode==='within'){
-    const r=parseFloat(document.getElementById('inp-r').value);
-    if(isNaN(r)||r<=-1||r>=1) return;
-    const res=computeWithin(m1,m2,sd1,sd2,n1,r,alpha);
-    updateResultsUI(res);
-  } else {
-    const n2=parseInt(document.getElementById('inp-n2').value);
-    if(isNaN(n2)||n2<3) return;
-    const res=computeBetween(m1,m2,sd1,sd2,n1,n2,alpha);
-    updateResultsUI(res);
-  }
+function onSlider(){
+  document.getElementById('v-m1').textContent=fmt(parseFloat(document.getElementById('sl-m1').value),1);
+  document.getElementById('v-m2').textContent=fmt(parseFloat(document.getElementById('sl-m2').value),1);
+  document.getElementById('v-n').textContent=document.getElementById('sl-n').value;
+  document.getElementById('v-sd1').textContent=fmt(parseFloat(document.getElementById('sl-sd1').value),1);
+  document.getElementById('v-sd2').textContent=fmt(parseFloat(document.getElementById('sl-sd2').value),1);
+  document.getElementById('v-r').textContent=fmt(parseFloat(document.getElementById('sl-r').value)/100,2).replace('0.','.');
+  recompute();
 }
 
-// ─── CSV upload ────────────────────────────────────────────────────────────────
-function dragOver(e){e.preventDefault();document.getElementById('file-drop').classList.add('drag')}
-function dragLeave(){document.getElementById('file-drop').classList.remove('drag')}
-function fileDrop(e){e.preventDefault();dragLeave();if(e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0])}
-function fileSelect(e){if(e.target.files[0]) processFile(e.target.files[0])}
+function recompute(){
+  const m1=parseFloat(document.getElementById('sl-m1').value);
+  const m2=parseFloat(document.getElementById('sl-m2').value);
+  const n=parseInt(document.getElementById('sl-n').value);
+  const sd1=parseFloat(document.getElementById('sl-sd1').value);
+  const sd2=parseFloat(document.getElementById('sl-sd2').value);
+  const isW=state.mode==='within';
+  const lbl1=isW?'Prä':'Kontrolle';
+  const lbl2=isW?'Post':'Training';
 
-function processFile(file){
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      parseCSV(e.target.result, file.name);
-    } catch(err){
-      document.getElementById('file-status').textContent='Fehler: '+err.message;
-    }
-  };
-  reader.readAsText(file);
-}
-
-function parseCSV(text, fname){
-  const lines=text.trim().split(/\r?\n/);
-  if(lines.length<2) throw new Error('Datei zu kurz');
-  const delim=lines[0].includes(';')?';':',';
-  const rows=lines.map(l=>l.split(delim).map(v=>v.trim()));
-  const ncols=rows[0].length;
-  if(ncols<2) throw new Error('Mindestens 2 Spalten benötigt');
-
-  let headers=[], dataStart=0;
-  const firstRowNums=rows[0].map(v=>!isNaN(parseFloat(v.replace(',','.'))));
-  if(firstRowNums.every(Boolean)){
-    headers=rows[0].map((_,i)=>'Spalte '+(i+1));
-    dataStart=0;
+  if(isW){
+    const r=parseFloat(document.getElementById('sl-r').value)/100;
+    const res=computeWithin(m1,m2,sd1,sd2,n,r);
+    buildPointTable(document.getElementById('tbl-dz'), res.dz, res.j, res.nag, res.bon, 'd_z');
+    buildPointTable(document.getElementById('tbl-drm'), res.drm, res.j, res.nag, res.bon, 'd_rm');
+    buildPointTable(document.getElementById('tbl-dav'), res.dav, res.j, res.nag, res.bon, 'd_av');
+    buildConversionTable(res.dav, res.cles_mw);
+    drawOverlap(m1,sd1,m2,sd2, res.dav, lbl1, lbl2, res.cles_mw);
   } else {
-    headers=rows[0];
-    dataStart=1;
-  }
-
-  const data=rows.slice(dataStart).map(r=>r.map(v=>v.replace(',','.')));
-  state.csvData=data; state.csvHeaders=headers;
-
-  const sel1=document.getElementById('csv-col1');
-  const sel2=document.getElementById('csv-col2');
-  [sel1,sel2].forEach(s=>{s.innerHTML='';headers.forEach((h,i)=>{const o=document.createElement('option');o.value=i;o.textContent=h;s.appendChild(o);});});
-  sel2.value=Math.min(1,headers.length-1);
-
-  document.getElementById('col-sel-wrap').style.display='';
-  document.getElementById('file-status').textContent='✓ '+fname+' — '+data.length+' Zeilen, '+ncols+' Spalten';
-  csvCompute();
-}
-
-function csvCompute(){
-  if(!state.csvData) return;
-  const c1=parseInt(document.getElementById('csv-col1').value);
-  const c2=parseInt(document.getElementById('csv-col2').value);
-  const alpha=parseFloat(document.getElementById('sel-alpha').value);
-
-  const col1=state.csvData.map(r=>parseFloat(r[c1])).filter(v=>!isNaN(v));
-  const col2=state.csvData.map(r=>parseFloat(r[c2])).filter(v=>!isNaN(v));
-
-  if(state.mode==='within'){
-    // Paired: use only rows where both columns have values
-    const pairs=state.csvData.map(r=>[parseFloat(r[c1]),parseFloat(r[c2])]).filter(([a,b])=>!isNaN(a)&&!isNaN(b));
-    if(pairs.length<3){document.getElementById('file-status').textContent+=' — Zu wenig gültige Paare';return;}
-    const n=pairs.length;
-    const a=pairs.map(p=>p[0]), b=pairs.map(p=>p[1]);
-    const m1=a.reduce((s,v)=>s+v,0)/n, m2=b.reduce((s,v)=>s+v,0)/n;
-    const sd1=Math.sqrt(a.map(v=>(v-m1)**2).reduce((s,v)=>s+v,0)/(n-1));
-    const sd2=Math.sqrt(b.map(v=>(v-m2)**2).reduce((s,v)=>s+v,0)/(n-1));
-    const cov=pairs.reduce((s,p)=>s+(p[0]-m1)*(p[1]-m2),0)/(n-1);
-    const r=(sd1>0&&sd2>0)?cov/(sd1*sd2):0;
-    // Update sidebar inputs
-    document.getElementById('inp-m1').value=m1.toFixed(3);
-    document.getElementById('inp-m2').value=m2.toFixed(3);
-    document.getElementById('inp-sd1').value=sd1.toFixed(3);
-    document.getElementById('inp-sd2').value=sd2.toFixed(3);
-    document.getElementById('inp-n1').value=n;
-    document.getElementById('inp-r').value=Math.max(-0.999,Math.min(0.999,r)).toFixed(3);
-    const res=computeWithin(m1,m2,sd1,sd2,n,Math.max(-0.999,Math.min(0.999,r)),alpha);
-    updateResultsUI(res);
-  } else {
-    if(col1.length<3||col2.length<3){return;}
-    const n1=col1.length, n2=col2.length;
-    const m1=col1.reduce((s,v)=>s+v,0)/n1, m2=col2.reduce((s,v)=>s+v,0)/n2;
-    const sd1=Math.sqrt(col1.map(v=>(v-m1)**2).reduce((s,v)=>s+v,0)/(n1-1));
-    const sd2=Math.sqrt(col2.map(v=>(v-m2)**2).reduce((s,v)=>s+v,0)/(n2-1));
-    document.getElementById('inp-m1').value=m1.toFixed(3);
-    document.getElementById('inp-m2').value=m2.toFixed(3);
-    document.getElementById('inp-sd1').value=sd1.toFixed(3);
-    document.getElementById('inp-sd2').value=sd2.toFixed(3);
-    document.getElementById('inp-n1').value=n1;
-    document.getElementById('inp-n2').value=n2;
-    const res=computeBetween(m1,m2,sd1,sd2,n1,n2,alpha);
-    updateResultsUI(res);
+    const res=computeBetween(m1,m2,sd1,sd2,n);
+    buildBetweenTable(res);
+    buildConversionTable(res.ds, res.cles_mw);
+    drawOverlap(m1,sd1,m2,sd2, res.ds, lbl1, lbl2, res.cles_mw);
   }
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
-window.addEventListener('resize', ()=>{ if(state.results) drawCanvases(state.results); });
-onInput();
+window.addEventListener('resize', recompute);
+if(document.documentElement.getAttribute('data-theme')==='light'){
+  const tb=document.getElementById('theme-btn');if(tb)tb.textContent='🌙 Dark';
+}
+setMode('between');
 </script>
 </body>
 </html>
