@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ANOVA — MethodsLab</title>
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a2);--topbar-h:54px;--tabbar-h:44px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+
+/* ── Tab bar ──────────────────────────────────────────────────────── */
+#tab-bar{position:sticky;top:var(--topbar-h);z-index:250;display:flex;background:var(--paper);
+  border-bottom:1px solid var(--border);overflow-x:auto;height:var(--tabbar-h)}
+.mod-tab{background:none;border:none;border-bottom:2px solid transparent;
+  font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink3);
+  padding:0 1.3rem;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:.5rem;
+  transition:color .15s,border-color .15s}
+.mod-tab:hover{color:var(--ink)}
+.mod-tab.active{color:var(--a2);border-bottom-color:var(--a2)}
+.tab-num{font-size:1.7rem;font-weight:600;line-height:1;vertical-align:-.15em}
+
+#app{display:grid;grid-template-columns:270px 1fr;height:calc(100vh - var(--topbar-h) - var(--tabbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.mod-panel{display:none}
+.mod-panel.active{display:block}
+.mod-h{font-size:1.3rem;font-weight:300;letter-spacing:-.01em;margin-bottom:.25rem}
+.mod-h em{font-style:italic;color:var(--a2)}
+.mod-sub{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink3);margin-bottom:1.1rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sb-stat{font-family:'DM Mono',monospace;font-size:.78rem;line-height:1.9;color:var(--ink2)}
+.sb-stat b{color:var(--ink)}
+.sb-note{font-size:.82rem;line-height:1.65;color:var(--ink2)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.7rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.circ{font-size:2em;font-weight:600;vertical-align:-.18em;line-height:1;display:inline-block}
+.gk{font-family:'Fraunces',Georgia,serif;font-style:italic;text-transform:none}
+.p-intro{font-size:.92rem;line-height:1.85;color:var(--ink2);margin-bottom:.75rem}
+.p-intro strong{color:var(--ink)}
+.example-box{background:var(--panel);border-left:3px solid var(--a2);padding:.85rem 1rem;
+  margin-bottom:.9rem;font-size:.88rem;line-height:1.75}
+.example-box strong{color:var(--a2)}
+.tutorial-box{background:var(--panel);border-left:3px solid var(--a4);padding:.85rem 1rem;
+  margin-bottom:.9rem;font-size:.88rem;line-height:1.75}
+.tutorial-box strong{color:var(--a4)}
+
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer;border:none}
+.seed-btn{font-family:'DM Mono',monospace;font-size:.76rem;padding:.32rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .12s;width:100%;text-align:left;margin-top:.4rem}
+.seed-btn:hover{border-color:var(--accent);color:var(--accent)}
+.toggle-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem}
+.toggle-row label{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);cursor:pointer}
+.radio-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem}
+.radio-row label{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);cursor:pointer}
+input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--accent);flex-shrink:0}
+input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accent);flex-shrink:0}
+.swatch{width:11px;height:11px;display:inline-block;border-radius:2px;flex-shrink:0}
+
+.pp-grid{display:grid;grid-template-columns:auto 1fr 1fr;gap:.35rem .55rem;align-items:end;margin-bottom:.65rem}
+.pp-colhead{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.04em;color:var(--ink3);
+  text-align:center;padding-bottom:.2rem;border-bottom:1px solid var(--grid)}
+.pp-rowhead{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink2);white-space:nowrap;padding-right:.15rem}
+.pp-cell{display:flex;flex-direction:column;gap:.2rem}
+.pp-cell .slider-val{font-family:'DM Mono',monospace;font-size:.74rem;color:var(--accent);font-weight:500;text-align:center}
+
+.btn-row{display:flex;gap:.5rem;flex-wrap:wrap;margin:.7rem 0}
+.canvas-wrap{background:var(--panel);border:1px solid var(--grid);margin-bottom:.6rem;overflow:hidden}
+.canvas-wrap canvas{width:100%;display:block}
+.canvas-axis-note{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);
+  padding:.5rem .85rem;border-top:1px solid var(--grid);line-height:1.5}
+.live-readout{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a5);
+  padding:.7rem .9rem;margin-bottom:.9rem;font-family:'DM Mono',monospace;font-size:.83rem;line-height:1.7;color:var(--ink)}
+.live-readout .big{font-size:1.05rem;font-weight:500}
+.step-block{margin-bottom:1.1rem}
+.step-h{font-size:1rem;font-weight:300;margin-bottom:.35rem}
+.step-body{font-size:.87rem;line-height:1.8;color:var(--ink2)}
+.step-body strong{color:var(--ink)}
+.step-body a{color:var(--a2)}
+.mini-table{width:100%;border-collapse:collapse;margin-top:.4rem;margin-bottom:.8rem;font-family:'DM Mono',monospace;font-size:.79rem}
+.mini-table th{text-align:left;padding:.28rem .5rem;border-bottom:1px solid var(--grid);color:var(--ink3);
+  font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;background:var(--paper)}
+.mini-table th.num{text-align:right}
+.mini-table td{padding:.32rem .5rem;border-bottom:1px solid var(--grid);background:var(--paper);transition:background .15s,color .15s}
+.mini-table td.num{text-align:right;font-weight:500;color:var(--ink)}
+.mini-table tr.hl td{color:var(--accent);font-weight:600}
+.mini-table tr.row-between td{color:var(--a3)}
+.mini-table tr.row-within td{color:var(--a5)}
+.coef-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.78rem;margin-bottom:.6rem}
+.coef-table th{font-size:.66rem;letter-spacing:.06em;color:var(--ink3);padding:.26rem .45rem;
+  border-bottom:2px solid var(--grid);text-align:left}
+.coef-table td{padding:.3rem .45rem;border-bottom:1px solid var(--grid);vertical-align:middle}
+.coef-table td.num{text-align:right;font-weight:600}
+.coef-table td.interp{color:var(--ink2);font-size:.71rem;line-height:1.4}
+.coef-table th.r{text-align:right}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media (max-width:820px){.two-col{grid-template-columns:1fr}}
+.col-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.4rem}
+.compare-box{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);
+  background:var(--panel);border:1px solid var(--grid);padding:.5rem .75rem;line-height:2;margin-bottom:.9rem}
+.compare-box strong{color:var(--ink)}
+.learn-section{margin-top:2.2rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+@media (max-width:820px){.lcard-grid{grid-template-columns:1fr}}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body a{color:var(--a2)}
+.help-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.82);overflow-y:auto;padding:2rem 1rem}
+.help-overlay.open{display:block}
+.help-panel{max-width:700px;margin:0 auto;background:var(--paper);border:1px solid var(--border);padding:2rem}
+.help-panel h2{font-family:'Fraunces',serif;font-weight:300;font-size:1.2rem;margin-bottom:1.2rem}
+.help-h3{font-family:'DM Mono',monospace;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--a1);margin:1.1rem 0 .35rem}
+.help-p{font-size:.85rem;line-height:1.8;color:var(--ink2);margin-bottom:.6rem}
+.help-p code{font-family:'DM Mono',monospace;font-size:.8rem;background:var(--panel);padding:.1rem .35rem;color:var(--ink)}
+.help-p a{color:var(--a2)}
+.help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
+  border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
+.help-close:hover{background:var(--a1);color:var(--bg)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>ANOVA — <em>ein Spezialfall der Regression</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="tab-bar">
+  <button class="mod-tab active" data-tab="1" onclick="showTab(1)"><span class="tab-num">①</span> Einfaktoriell</button>
+  <button class="mod-tab" data-tab="2" onclick="showTab(2)"><span class="tab-num">②</span> Zweifaktoriell</button>
+  <button class="mod-tab" data-tab="3" onclick="showTab(3)"><span class="tab-num">③</span> Regressions-Brücke</button>
+</div>
+
+<!-- HELP OVERLAY -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-panel">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
+      <h2>Hilfe — ANOVA</h2>
+      <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
+    </div>
+    <div class="help-h3">Was zeigt dieses Tool?</div>
+    <p class="help-p">Eine geführte Einführung in die Varianzanalyse (ANOVA) — mit dem Ziel, sie <strong style="color:var(--ink)">nicht</strong> als eigenständiges Verfahren zu verstehen, sondern als Spezialfall des allgemeinen linearen Modells (GLM), das auch der Regression zugrunde liegt. Drei Reiter oben: einfaktorielle ANOVA, zweifaktorielle ANOVA mit Interaktion, und die Regressions-Brücke, die dieselben Stichproben aus ① und ② noch einmal als Regression analysiert.</p>
+    <div class="help-h3">Regler in der Seitenleiste</div>
+    <p class="help-p">Populationsmittelwerte, Streuung und Stichprobengröße stellst du links ein — Ergebnis-Tabelle und Plot reagieren sofort. "Neue Stichprobe ziehen" behält die aktuellen Regler-Einstellungen, zieht aber neues Zufallsrauschen.</p>
+    <div class="help-h3">Y-Achse fixieren</div>
+    <p class="help-p">Standardmäßig aktiv: die y-Achse behält den Wertebereich, der beim letzten Aktivieren des Hakens galt. So siehst du direkt, wie sich z.&nbsp;B. eine größere Streuung (SD) auf die Punktwolke auswirkt — ohne dass der Plot automatisch mitskaliert und den Effekt wieder "wegkorrigiert". Deaktivieren, um wieder automatisch auf die aktuellen Daten zu skalieren.</p>
+    <div class="help-h3">SAQ-Bereich hervorheben</div>
+    <p class="help-p">Blendet die beiden Bausteine der Quadratsummen-Zerlegung (SAQ) farbig ein: <strong style="color:var(--a3)">Zwischen den Gruppen/Zellen</strong> (Abstand Gruppen-/Zellmittelwert zum Gesamtmittelwert) und <strong style="color:var(--a5)">Innerhalb</strong> (Abstand jeder Beobachtung zu ihrem Gruppen-/Zellmittelwert). In beiden Tabs sind die Kästchen unabhängig voneinander zuschaltbar — die zugehörigen Tabellenzeilen sind dauerhaft in derselben Farbe eingefärbt, die Grafik zeigt nur das jeweils angehakte Element. In der Tabelle wird zusätzlich F und p <strong style="color:var(--a1)">rot</strong> hervorgehoben, sobald ein Effekt signifikant wird (p&nbsp;&lt;&nbsp;.05).</p>
+    <div class="help-h3">Statistischer Hintergrund</div>
+    <p class="help-p">F-Verteilung über die unvollständige Betafunktion: CDF<sub>F</sub>(f;d₁,d₂) = I<sub>x</sub>(d₁/2, d₂/2) mit x = d₁f/(d₁f+d₂). Die Regressionen in Tab ③ werden per gewöhnlicher kleinster Quadrate (OLS) über die Normalgleichungen (X'X)b = X'y gelöst.</p>
+  </div>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <!-- ═══ SIDEBAR: TAB 1 ═══ -->
+  <div id="side-tab1" class="side-tab">
+    <div class="scard">
+      <div class="scard-title">Unsere Studie</div>
+      <div class="sb-stat">
+        n&nbsp;=&nbsp;<b id="sb-n">20</b> pro Gruppe<br>
+        M<sub>Kontrolle</sub>&nbsp;=&nbsp;<b id="sb-m1">100.0</b><br>
+        M<sub>A</sub>&nbsp;=&nbsp;<b id="sb-m2">107.0</b><br>
+        M<sub>B</sub>&nbsp;=&nbsp;<b id="sb-m3">114.0</b><br>
+        <span style="border-top:1px solid var(--grid);display:block;margin-top:.35rem;padding-top:.35rem">
+        <span id="sb-row1">F(<span id="sb-df1">2,57</span>)&nbsp;=&nbsp;<b id="sb-F1">—</b><br>
+        p&nbsp;=&nbsp;<b id="sb-p1">—</b></span></span>
+      </div>
+    </div>
+    <div class="scard">
+      <div class="scard-title">Populationsparameter</div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name"><span class="gk">μ</span> Kontrolle</span><span class="slider-val" id="v-m1">100</span></div>
+        <input type="range" id="sl-m1" min="60" max="140" step="1" value="100" oninput="onParam1Change()">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name"><span class="gk">μ</span> Methode A</span><span class="slider-val" id="v-m2">107</span></div>
+        <input type="range" id="sl-m2" min="60" max="140" step="1" value="107" oninput="onParam1Change()">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name"><span class="gk">μ</span> Methode B</span><span class="slider-val" id="v-m3">114</span></div>
+        <input type="range" id="sl-m3" min="60" max="140" step="1" value="114" oninput="onParam1Change()">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">SD (gepoolt)</span><span class="slider-val" id="v-sd1">12</span></div>
+        <input type="range" id="sl-sd1" min="4" max="25" step="1" value="12" oninput="onParam1Change()">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">n pro Gruppe</span><span class="slider-val" id="v-n1">20</span></div>
+        <input type="range" id="sl-n1" min="5" max="50" step="1" value="20" oninput="onParam1Change()">
+      </div>
+      <button class="seed-btn" onclick="drawSample1()">🎲 Neue Stichprobe ziehen</button>
+    </div>
+    <div class="scard">
+      <div class="scard-title">Darstellung</div>
+      <div class="toggle-row">
+        <input type="checkbox" id="tog-yfix1" checked onchange="onToggleYFix(1)">
+        <label for="tog-yfix1">Y-Achse fixieren</label>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);margin:.2rem 0 .55rem">SAQ-Bereich hervorheben (einzeln zuschaltbar):</div>
+      <div class="toggle-row">
+        <input type="checkbox" id="ss1-between" onchange="onSSModeChange(1)">
+        <span class="swatch" style="background:var(--a3)"></span>
+        <label for="ss1-between">Zwischen den Gruppen</label>
+      </div>
+      <div class="toggle-row">
+        <input type="checkbox" id="ss1-within" onchange="onSSModeChange(1)">
+        <span class="swatch" style="background:var(--a5)"></span>
+        <label for="ss1-within">Innerhalb der Gruppen</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SIDEBAR: TAB 2 ═══ -->
+  <div id="side-tab2" class="side-tab" style="display:none">
+    <div class="scard">
+      <div class="scard-title">Unsere Studie</div>
+      <div class="sb-stat">
+        <span id="sb-rowA">F<sub>A</sub>&nbsp;=&nbsp;<b id="sb-FA">—</b>, p&nbsp;=&nbsp;<b id="sb-pA">—</b></span><br>
+        <span id="sb-rowB">F<sub>B</sub>&nbsp;=&nbsp;<b id="sb-FB">—</b>, p&nbsp;=&nbsp;<b id="sb-pB">—</b></span><br>
+        <span id="sb-rowAB">F<sub>A×B</sub>&nbsp;=&nbsp;<b id="sb-FAB">—</b>, p&nbsp;=&nbsp;<b id="sb-pAB">—</b></span>
+      </div>
+    </div>
+    <div class="scard">
+      <div class="scard-title">Populationsparameter</div>
+      <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);margin-bottom:.35rem"><span class="gk">μ</span> je Zelle (Faktor A × Faktor B):</div>
+      <div class="pp-grid">
+        <div></div>
+        <div class="pp-colhead">ohne FB</div>
+        <div class="pp-colhead">mit FB</div>
+
+        <div class="pp-rowhead">Klassisch</div>
+        <div class="pp-cell">
+          <span class="slider-val" id="v-c11">90</span>
+          <input type="range" id="sl-c11" min="60" max="140" step="1" value="90" oninput="onParam2Change()">
+        </div>
+        <div class="pp-cell">
+          <span class="slider-val" id="v-c12">105</span>
+          <input type="range" id="sl-c12" min="60" max="140" step="1" value="105" oninput="onParam2Change()">
+        </div>
+
+        <div class="pp-rowhead">Verteilt</div>
+        <div class="pp-cell">
+          <span class="slider-val" id="v-c21">90</span>
+          <input type="range" id="sl-c21" min="60" max="140" step="1" value="90" oninput="onParam2Change()">
+        </div>
+        <div class="pp-cell">
+          <span class="slider-val" id="v-c22">105</span>
+          <input type="range" id="sl-c22" min="60" max="140" step="1" value="105" oninput="onParam2Change()">
+        </div>
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">SD (gepoolt)</span><span class="slider-val" id="v-sd2">12</span></div>
+        <input type="range" id="sl-sd2" min="4" max="25" step="1" value="12" oninput="onParam2Change()">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">n pro Zelle</span><span class="slider-val" id="v-n2">15</span></div>
+        <input type="range" id="sl-n2" min="5" max="50" step="1" value="15" oninput="onParam2Change()">
+      </div>
+      <button class="seed-btn" onclick="drawSample2()">🎲 Neue Stichprobe ziehen</button>
+    </div>
+    <div class="scard">
+      <div class="scard-title">Darstellung</div>
+      <div class="toggle-row">
+        <input type="checkbox" id="tog-yfix2" checked onchange="onToggleYFix(2)">
+        <label for="tog-yfix2">Y-Achse fixieren</label>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);margin:.2rem 0 .55rem">SAQ-Bereich hervorheben (einzeln zuschaltbar):</div>
+      <div class="toggle-row">
+        <input type="checkbox" id="ss2-between" onchange="onSSModeChange(2)">
+        <span class="swatch" style="background:var(--a3)"></span>
+        <label for="ss2-between">Zwischen den Zellen</label>
+      </div>
+      <div class="toggle-row">
+        <input type="checkbox" id="ss2-within" onchange="onSSModeChange(2)">
+        <span class="swatch" style="background:var(--a5)"></span>
+        <label for="ss2-within">Innerhalb der Zellen</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SIDEBAR: TAB 3 ═══ -->
+  <div id="side-tab3" class="side-tab" style="display:none">
+    <div class="scard">
+      <div class="scard-title">Kernaussage</div>
+      <div class="sb-note">ANOVA und Regression sind <strong style="color:var(--ink)">dasselbe lineare Modell</strong> — nur die Codierung der Gruppenprädiktoren unterscheidet sich. Dummy- und Effekt-Codierung liefern exakt dieselben F- und p-Werte.</div>
+    </div>
+    <div class="scard">
+      <div class="scard-title">Hinweis</div>
+      <div class="sb-note">Diese Analyse nutzt die aktuellen Stichproben aus ① und ②. Regler zum Ändern findest du auf den jeweiligen Reitern.</div>
+    </div>
+  </div>
+
+</div><!-- /sidebar -->
+
+<div id="main">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       PANEL 1 — EINFAKTORIELLE ANOVA
+       ═══════════════════════════════════════════════════════════════ -->
+  <div id="panel-tab1" class="mod-panel active">
+
+    <div class="mod-h">Einfaktorielle ANOVA: Varianz zerlegen</div>
+    <div class="mod-sub">Ein Faktor, drei Gruppen — wie viel der Gesamtstreuung erklärt die Gruppenzugehörigkeit?</div>
+
+    <div class="example-box">
+      <strong>Laufendes Beispiel:</strong> Ein Institut für Psychologie testet drei Varianten eines Lernprogramms für den Statistik-Einführungskurs. 60 Studienanfänger:innen werden per Zufallszahlengenerator zu gleichen Teilen (n&nbsp;=&nbsp;20) auf drei Gruppen verteilt, damit sich Vorwissen und Motivation im Mittel gleichmäßig verteilen und nicht systematisch mit der Gruppe zusammenhängen. <strong>Kontrollgruppe</strong> lernt wie gewohnt mit Skript und Karteikarten in einer Sitzung. <strong>Methode A</strong> verteilt dieselbe Lernzeit über mehrere kürzere Sitzungen auf zwei Wochen (verteiltes Lernen / spaced practice). <strong>Methode B</strong> mischt während des Lernens verschiedene Aufgabentypen, statt sie block­weise abzuarbeiten (Interleaving). Zwei Wochen nach Kursende schreiben alle denselben Gedächtnistest (0–150 Punkte, höher = besser erinnert). Frage: Unterscheiden sich die drei Gruppen im Mittel — und wenn ja, wie stark?
+    </div>
+
+    <div class="step-block">
+      <div class="step-body">Stell dir die drei Gruppenmittelwerte auf einem Zahlenstrahl vor. Liegen sie eng beieinander, ist der Unterschied vermutlich Zufall (Stichprobenrauschen). Liegen sie weit auseinander — <em>weiter, als man angesichts der Streuung innerhalb jeder Gruppe erwarten würde</em> — spricht das für einen echten Effekt des Faktors. Genau dieses Verhältnis misst der F-Wert: <strong>Varianz zwischen den Gruppen</strong> geteilt durch <strong>Varianz innerhalb der Gruppen</strong>. Links unter "SAQ-Bereich hervorheben" kannst du beide Bausteine einzeln im Plot sichtbar machen — sie sind unabhängig voneinander an- und ausschaltbar.</div>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="cv1" height="420"></canvas>
+    </div>
+    <div class="canvas-axis-note">Punkte = einzelne Beobachtungen (minimal versetzt, damit sie sich nicht überlappen — der x-Wert selbst trägt keine Information) · dicke Linie = Gruppenmittelwert · gestrichelte Linie = Gesamtmittelwert</div>
+
+    <div id="anova-table-1"></div>
+
+    <div class="live-readout" id="readout1">—</div>
+
+    <div class="step-block">
+      <div class="step-h">Die ANOVA-Tabelle</div>
+      <div class="step-body">SAQ<sub style="color:var(--a3)">zwischen</sub> misst, wie weit die Gruppenmittelwerte vom Gesamtmittelwert entfernt liegen (gewichtet mit der Gruppengröße). SAQ<sub style="color:var(--a5)">innerhalb</sub> misst die Streuung der einzelnen Beobachtungen um ihren jeweiligen Gruppenmittelwert — das, was ein Gruppenunterschied <em>nicht</em> erklären kann. Division durch die jeweiligen Freiheitsgrade ergibt die mittleren Quadratsummen (MQ); ihr Verhältnis MQ<sub style="color:var(--a3)">zwischen</sub>/MQ<sub style="color:var(--a5)">innerhalb</sub> ist der F-Wert. <span class="gk">η</span>² = SAQ<sub style="color:var(--a3)">zwischen</sub>/SAQ<sub style="color:var(--accent)">total</sub> gibt an, welcher Anteil der Gesamtvarianz durch die Gruppenzugehörigkeit erklärt wird.</div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-h">Warum reicht der Vergleich der SAQ nicht — wozu die MQ?</div>
+      <div class="step-body">SAQ<sub style="color:var(--a3)">zwischen</sub> ist eine Summe über <strong>k−1</strong> Termen (hier: 2, einer pro Gruppe minus 1), SAQ<sub style="color:var(--a5)">innerhalb</sub> eine Summe über <strong>N−k</strong> Termen (hier: 57, einer pro Beobachtung minus Gruppenanzahl). Das sind unterschiedlich viele Summanden — und mit jedem zusätzlichen Summanden wächst eine Quadratsumme tendenziell weiter, unabhängig davon, ob überhaupt ein Effekt vorliegt. Ein direkter Vergleich der rohen Summen SAQ<sub style="color:var(--a3)">zwischen</sub> vs. SAQ<sub style="color:var(--a5)">innerhalb</sub> würde also vor allem widerspiegeln, wie viele Freiheitsgrade in jede Summe eingeflossen sind — nicht, wie stark der Gruppenunterschied wirklich ist. Erst die Division durch die jeweiligen df "normiert" beide Summen auf eine <em>durchschnittliche</em> quadrierte Abweichung pro Freiheitsgrad — eine Varianzschätzung. Diese beiden Varianzschätzungen (MQ<sub style="color:var(--a3)">zwischen</sub> und MQ<sub style="color:var(--a5)">innerhalb</sub>) sind unter H₀ (kein echter Effekt) im Erwartungswert gleich groß, und ihr Verhältnis folgt dann einer bekannten Verteilung, der F-Verteilung — das ist die Grundlage für den Signifikanztest. Ohne die Division durch df gäbe es keine Verteilung, gegen die man vergleichen könnte.</div>
+    </div>
+
+    <div class="learn-section">
+      <div class="sec-h">Konzepte &amp; Einordnung</div>
+      <div class="lcard-grid">
+        <div class="lcard">
+          <div class="lcard-h">"Innerhalb" = Fehlervarianz</div>
+          <div class="lcard-body">SAQ<sub style="color:var(--a5)">innerhalb</sub> bzw. MQ<sub style="color:var(--a5)">innerhalb</sub> wird in Tabellen und Software meist <strong>MQ<sub style="color:var(--a5)">Fehler</sub></strong> genannt (engl. <em>error</em> oder <em>residual</em>) — dieselbe Größe, anderer Name. Gemeint ist die Streuung, die übrig bleibt, <em>nachdem</em> man die Gruppenzugehörigkeit berücksichtigt hat: individuelle Unterschiede, Messungenauigkeit, alles, was das Modell nicht erklären kann. "Fehler" heißt hier nicht "Messfehler" im engeren Sinn, sondern <strong>unerklärte, als zufällig behandelte Streuung</strong> — der Rest, den die Gruppenzugehörigkeit nicht aufklärt.</div>
+        </div>
+        <div class="lcard">
+          <div class="lcard-h">SAQ und MQ auf einen Blick</div>
+          <div class="lcard-body">SAQ<sub style="color:var(--a3)">zwischen</sub> + SAQ<sub style="color:var(--a5)">innerhalb</sub> = SAQ<sub style="color:var(--accent)">total</sub> — die Gesamtstreuung zerfällt vollständig in einen erklärten und einen unerklärten Teil. MQ = SAQ/df macht daraus vergleichbare Varianzschätzungen; F = MQ<sub style="color:var(--a3)">zwischen</sub>/MQ<sub style="color:var(--a5)">innerhalb</sub> ist das Verhältnis von erklärter zu unerklärter Varianz pro Freiheitsgrad.</div>
+        </div>
+        <div class="lcard">
+          <div class="lcard-h"><span class="gk">η</span>² als Effektgröße</div>
+          <div class="lcard-body"><span class="gk">η</span>² = SAQ<sub style="color:var(--a3)">zwischen</sub>/SAQ<sub style="color:var(--accent)">total</sub> beantwortet eine andere Frage als p: nicht "gibt es einen Effekt?", sondern "wie groß ist er, relativ zur Gesamtstreuung?". Ein winziger, aber signifikanter Effekt (großes n) kann ein kleines <span class="gk">η</span>² haben — und umgekehrt. Einordnung neben Cohen's d, r und Odds Ratio: <a href="Effektgroessen.html">→ Effektgrößen</a>.</div>
+        </div>
+        <div class="lcard">
+          <div class="lcard-h">Verwandte Tools</div>
+          <div class="lcard-body">Dieselbe Analyse als Regression: <a href="#" onclick="showTab(3);return false">→ Tab ③ Regressions-Brücke</a>. Was p wirklich bedeutet: <a href="Signifikanztests.html">→ Signifikanztests</a>. Zwei statt drei Gruppen: ein t-Test ist eine ANOVA mit k=2. Wie groß muss n sein, um einen Effekt zuverlässig zu entdecken? <a href="Power_Stichprobe.html">→ Power &amp; Stichprobengröße</a>.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       PANEL 2 — ZWEIFAKTORIELLE ANOVA
+       ═══════════════════════════════════════════════════════════════ -->
+  <div id="panel-tab2" class="mod-panel">
+
+    <div class="mod-h">Zweifaktorielle ANOVA mit Interaktion</div>
+    <div class="mod-sub">Zwei Faktoren, vier Zellen — wirkt Faktor A, wirkt Faktor B, und hängt die Wirkung des einen vom anderen ab?</div>
+
+    <div class="example-box">
+      <strong>Eigenständiges Beispiel:</strong> Zur Illustration der Interaktion reduzieren wir hier bewusst auf <strong>zwei</strong> Lernmethoden statt der drei aus Tab ① — Klassisch und Verteiltes Lernen — und kreuzen sie mit einem zweiten Faktor: Feedback (ohne / mit unmittelbarer Rückmeldung nach jeder Lerneinheit). Vier Zellen, balanciertes Design (gleiche Zellgröße n pro Zelle). Die Populationswerte hier sind unabhängig von Tab ① gewählt — beide Tabs lassen sich unabhängig voneinander bedienen.
+    </div>
+
+    <div class="step-block">
+      <div class="step-h">Was bedeutet eine Interaktion überhaupt?</div>
+      <div class="step-body">Neben den beiden <strong>Haupteffekten</strong> (wirkt A im Mittel über beide B-Stufen? wirkt B im Mittel über beide A-Stufen?) interessiert die <strong>Interaktion</strong>: hängt die <em>Größe</em> des Feedback-Effekts davon ab, welche Lernmethode verwendet wird? Ohne Interaktion sind die Effekte <strong>additiv</strong> — der Feedback-Effekt ist für beide Methoden gleich groß, man kann ihn einfach zum Haupteffekt der Methode dazuzählen. Mit Interaktion lässt sich das nicht mehr trennen: die Wirkung von Feedback unterscheidet sich je nach Methode, und man muss die vier Zellmittelwerte einzeln betrachten, um zu verstehen, was passiert.</div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="col-h">Additiv — keine Interaktion</div>
+        <table class="mini-table">
+          <thead><tr><th></th><th class="num">ohne FB</th><th class="num">mit FB</th></tr></thead>
+          <tbody>
+            <tr><td>Klassisch</td><td class="num">100</td><td class="num">108</td></tr>
+            <tr><td>Verteilt</td><td class="num">100</td><td class="num">108</td></tr>
+          </tbody>
+        </table>
+        <div class="sb-note" style="font-size:.8rem">Feedback-Effekt = +8, bei beiden Methoden identisch → im Plot zwei <strong style="color:var(--ink)">parallele</strong> Linien.</div>
+      </div>
+      <div>
+        <div class="col-h">Mit Interaktion</div>
+        <table class="mini-table">
+          <thead><tr><th></th><th class="num">ohne FB</th><th class="num">mit FB</th></tr></thead>
+          <tbody>
+            <tr><td>Klassisch</td><td class="num">100</td><td class="num">102</td></tr>
+            <tr><td>Verteilt</td><td class="num">100</td><td class="num">120</td></tr>
+          </tbody>
+        </table>
+        <div class="sb-note" style="font-size:.8rem">Feedback-Effekt = +2 bei Klassisch, +20 bei Verteilt → im Plot <strong style="color:var(--ink)">unterschiedlich steile</strong>, sich öffnende Linien.</div>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-body">Wenn sich die Linien dabei sogar <em>kreuzen</em> (Feedback hilft bei einer Methode, schadet aber bei der anderen), spricht man von einer <strong>disordinalen</strong> Interaktion — die Richtung des Effekts kehrt sich um. Öffnen sich die Linien nur unterschiedlich stark, ohne sich zu kreuzen (wie im Beispiel rechts oben), ist es eine <strong>ordinale</strong> Interaktion — die Richtung bleibt gleich, nur die Stärke unterscheidet sich. Beide Formen sind statistisch "Interaktion", aber inhaltlich sehr unterschiedlich zu interpretieren.</div>
+    </div>
+
+    <div class="tutorial-box">
+      <strong>Tutorial — probier's aus:</strong> Die Regler links sind so voreingestellt, dass <strong>nur</strong> ein Haupteffekt von Feedback existiert (mit FB liegt für beide Methoden gleichermaßen höher), aber <strong>kein</strong> Haupteffekt der Lernmethode und <strong>keine</strong> Interaktion. Ändere jetzt gezielt <strong>genau eine</strong> Zelle — z.&nbsp;B. im 2×2-Regler-Raster links unten rechts (Zeile "Verteilt", Spalte "mit FB") deutlich nach oben. Beobachte: Die <strong>Interaktion</strong> wird signifikant (die F/p-Werte in der Tabelle unten färben sich rot), während der Haupteffekt der Lernmethode oft weiterhin <em>nicht</em> signifikant bleibt — weil Haupteffekte über die jeweils andere Faktorstufe <em>mitteln</em>, und sich eine Veränderung in nur einer Zelle in diesem Mittel teilweise wegkürzt, obwohl sie lokal sehr wohl einen Unterschied macht.
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="cv2" height="440"></canvas>
+    </div>
+    <div class="canvas-axis-note">x-Achse: Faktor A (Lernmethode) · Linienfarbe: Faktor B (Feedback) · kleine Punkte = einzelne Beobachtungen · Fehlerbalken: ±1 SE</div>
+
+    <div id="anova-table-2"></div>
+
+    <div class="live-readout" id="readout3">—</div>
+
+    <div class="step-block">
+      <div class="step-h">Warum das nur bei balancierten Designs so glatt aufgeht</div>
+      <div class="step-body">Bei gleicher Zellgröße n sind die drei Effekte (A, B, Interaktion) statistisch unabhängig voneinander — deshalb lässt sich jeder für sich betrachten, ohne die anderen "herauszurechnen". Bei <strong>unbalancierten</strong> Zellgrößen gilt das nicht mehr — mehr dazu in Tab ③ und den Konzeptkarten dort. Kontinuierliche statt kategoriale Interaktionen behandelt <a href="Moderationsanalyse.html">→ Moderationsanalyse</a>.</div>
+    </div>
+
+    <div class="learn-section">
+      <div class="sec-h">Konzepte &amp; Einordnung</div>
+      <div class="lcard-grid">
+        <div class="lcard">
+          <div class="lcard-h">"Innerhalb der Zellen" = Fehlervarianz</div>
+          <div class="lcard-body">Genau wie in Tab ① heißt SAQ<sub style="color:var(--a5)">innerhalb</sub>/MQ<sub style="color:var(--a5)">innerhalb</sub> in Tabellen oft <strong>MQ<sub style="color:var(--a5)">Fehler</sub></strong> — die Streuung <em>innerhalb</em> der vier Zellen, gepoolt über alle vier. Sie bleibt dieselbe Rolle spielen, egal ob ein oder zwei Faktoren im Modell stehen: das, was nach Berücksichtigung aller Zellzugehörigkeiten an Streuung übrig bleibt und als zufällig behandelt wird. Alle drei F-Tests (A, B, Interaktion) teilen sich dasselbe MQ<sub style="color:var(--a5)">Fehler</sub> im Nenner.</div>
+        </div>
+        <div class="lcard">
+          <div class="lcard-h">Haupteffekt vs. Interaktion</div>
+          <div class="lcard-body">Ein Haupteffekt ist ein <strong>Mittelwert über die Stufen des jeweils anderen Faktors</strong> — er kann täuschen, wenn eine Interaktion vorliegt (siehe Tutorial oben: nur eine Zelle verändert sich, aber die gemittelten Haupteffekte bleiben unauffällig). Deshalb gilt als Faustregel: <strong>immer zuerst die Interaktion prüfen</strong>. Ist sie signifikant, sind Haupteffekte allein oft nicht mehr aussagekräftig interpretierbar — dann lohnt der Blick auf die einzelnen Zellmittelwerte statt auf die Randmittelwerte.</div>
+        </div>
+        <div class="lcard">
+          <div class="lcard-h">Ordinal vs. disordinal</div>
+          <div class="lcard-body">Bei einer <strong>ordinalen</strong> Interaktion bleibt die Rangfolge der Stufen über den anderen Faktor hinweg gleich — nur der Abstand ändert sich (Linien öffnen sich, kreuzen sich aber nicht). Bei einer <strong>disordinalen</strong> (Crossover-)Interaktion kehrt sich die Richtung um — was auf einer Stufe hilft, schadet auf der anderen. Disordinale Interaktionen sind praktisch meist die interessanteren, weil sie bedeuten: es gibt keine pauschal "beste" Stufe, es kommt darauf an.</div>
+        </div>
+        <div class="lcard">
+          <div class="lcard-h">Verwandte Tools</div>
+          <div class="lcard-body">Dieselbe Analyse als Regression mit Produktterm: <a href="#" onclick="showTab(3);return false">→ Tab ③ Regressions-Brücke</a>. Kontinuierliche statt kategoriale Interaktionen (z.&nbsp;B. Alter statt Lernmethode): <a href="Moderationsanalyse.html">→ Moderationsanalyse</a>. Faktoren mit zufälligen statt festen Stufen (z.&nbsp;B. Schulklassen): <a href="MLM_interactive.html">→ Multilevel-Modelle</a>.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       PANEL 3 — REGRESSIONS-BRÜCKE
+       ═══════════════════════════════════════════════════════════════ -->
+  <div id="panel-tab3" class="mod-panel">
+
+    <div class="mod-h">Regressions-Brücke: dieselbe Analyse, andere Codierung</div>
+    <div class="mod-sub">Genau dieselben Stichproben aus ① und ②, noch einmal als multiple Regression gerechnet.</div>
+
+    <div class="p-intro">
+      Eine ANOVA <strong>ist</strong> eine multiple Regression, deren kategorialer Prädiktor auf eine bestimmte Weise numerisch codiert wurde. Das lässt sich direkt nachrechnen: dieselben Rohdaten, einmal mit der klassischen ANOVA-Formel analysiert (Tabs ① und ②), einmal als Regression mit codierten Gruppenprädiktoren — und beide liefern exakt dieselben F- und p-Werte.
+    </div>
+
+    <div class="sec-h">Einfaktoriell: Dummy- vs. Effekt-Codierung</div>
+
+    <div class="step-block">
+      <div class="step-body">Zwei gängige Codierschemata im direkten Vergleich: <strong style="color:var(--ink)">Dummy-Codierung</strong> (eine Referenzgruppe, Koeffizienten = Mittelwertsdifferenzen zur Referenz) und <strong style="color:var(--ink)">Effekt-Codierung</strong> (Summe-Null-Kontraste, Koeffizienten = Abweichungen vom Gesamtmittelwert). Beide Modelle haben drei freie Parameter für drei Gruppen — sie sind "gesättigt" und reproduzieren die drei Gruppenmittelwerte aus Tab ① exakt, unabhängig von der Codierung.</div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="col-h">Dummy-Codierung (Referenz: Kontrolle)</div>
+        <div id="coef-dummy"></div>
+      </div>
+      <div>
+        <div class="col-h">Effekt-Codierung (Summe-Null-Kontraste)</div>
+        <div id="coef-effect"></div>
+      </div>
+    </div>
+
+    <div class="live-readout" id="readout2">—</div>
+
+    <div class="step-block">
+      <div class="step-h">Eine Parametrisierung, keine zwei Verfahren</div>
+      <div class="step-body">F, p, R² und die vorhergesagten Gruppenmittelwerte sind in beiden Codierungen identisch — nur die Bedeutung der einzelnen Koeffizienten ändert sich. R² dieser Regression ist übrigens identisch mit <span class="gk">η</span>² aus Tab ①: dieselbe Größe, zweimal berechnet.</div>
+    </div>
+
+    <div class="sec-h">Zweifaktoriell: Effekt-Codierung + Produktterm (Typ-III-Quadratsummen)</div>
+
+    <div class="step-block">
+      <div class="step-body">Die Regression codiert A und B als ±1-Kontraste und bildet die Interaktion als Produktterm X<sub>A</sub>·X<sub>B</sub>. Bei einem balancierten 2×2-Design (gleiche Zellgröße n) stehen alle drei Kontrastspalten wechselseitig senkrecht aufeinander (unkorreliert) — deshalb liefert das Herausnehmen je einer Spalte aus dem vollen Modell (die "Typ-III-Quadratsumme") exakt dieselbe SAQ wie die klassische Formel aus Tab ②.</div>
+    </div>
+
+    <div id="coef-twoway"></div>
+    <div id="compare-twoway"></div>
+
+    <div class="step-block">
+      <div class="step-body">Bei <strong>unbalancierten</strong> Zellgrößen gilt die Orthogonalität nicht mehr — dann unterscheiden sich Typ-I-, Typ-II- und Typ-III-Quadratsummen, und die Wahl wird zu einer echten Modellierungsentscheidung (siehe Konzeptkarte unten).</div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-h">Dieselbe Rechnung heißt woanders "Moderationsanalyse"</div>
+      <div class="step-body">Die Produktterm-Regression oben <strong>ist</strong> eine Moderationsanalyse: X<sub>A</sub>·X<sub>B</sub> ist exakt der Interaktions-/Moderationsterm, und der F-Test darauf beantwortet dieselbe Frage wie in Tab ②: hängt der Effekt von A von der Stufe von B ab (und umgekehrt)? Es ist nicht "ANOVA versus Moderationsanalyse" — es ist <strong>dasselbe Modell mit zwei Vokabularen für dieselben Bausteine</strong>: Faktor A und Faktor B (ANOVA) heißen in der Moderationssprache Prädiktor und Moderator, und die Interaktion A×B heißt dort Interaktionsterm bzw. Moderationseffekt. Ein "Haupteffekt" hat dabei kein eigenes Gegenstück in der Moderationssprache — gemeint ist dort einfach der Effekt von Prädiktor oder Moderator für sich genommen, bei einem festen (meist mittleren) Wert des jeweils anderen. Der praktische Unterschied liegt nur darin, wofür jedes Vokabular typischerweise verwendet wird: die klassische ANOVA-Rechnung setzt kategoriale Faktoren voraus, während die allgemeinere Moderationsanalyse nominale und metrische Prädiktoren beliebig mischen und kombinieren kann — z.&nbsp;B. Lernmethode (kategorial) × Vorwissen-Testscore (metrisch) statt Lernmethode × Feedback-ja/nein. Mehr dazu, inklusive stetiger Moderator-Plots: <a href="Moderationsanalyse.html">→ Moderationsanalyse</a>.</div>
+    </div>
+
+    <!-- Konzepte -->
+    <div class="learn-section">
+      <div class="sec-h">Konzepte &amp; Einordnung</div>
+      <div class="lcard-grid">
+        <div class="lcard">
+          <div class="lcard-h">Dummy- vs. Effekt-Codierung</div>
+          <div class="lcard-body">Dummy-Codierung (R nennt es "treatment contrasts") setzt eine Referenzgruppe; Koeffizienten sind Mittelwertsdifferenzen zu dieser Referenz. Effekt-Codierung (Summe-Null-Kontraste) setzt keinen festen Bezugspunkt; Koeffizienten sind Abweichungen vom Gesamtmittelwert, wie sie SPSS und die meisten ANOVA-Ausgaben implizit verwenden. Beides sind Reparametrisierungen <strong>desselben</strong> Modells — identische Vorhersagen, identisches F, identisches p.</div>
+        </div>
+        <div class="lcard">
+          <div class="lcard-h">SAQ Typ I, II, III</div>
+          <div class="lcard-body"><strong>Typ I</strong> (sequenziell): jeder Term wird nur unter Kontrolle der zuvor eingegebenen Terme getestet — reihenfolgeabhängig. <strong>Typ II</strong>: jeder Haupteffekt unter Kontrolle aller anderen Haupteffekte, aber ohne Interaktionen höherer Ordnung. <strong>Typ III</strong>: jeder Term unter Kontrolle aller anderen Terme inklusive Interaktionen — das, was die Regression mit Effekt-Codierung liefert. Bei balancierten Designs sind alle drei identisch (Tab ②); bei unbalancierten weichen sie voneinander ab.</div>
+        </div>
+        <div class="lcard">
+          <div class="lcard-h">ANOVA-Tabelle: Anatomie</div>
+          <div class="lcard-body">SAQ (Summe der Abweichungsquadrate, engl. Sum of Squares) = Streuung in Quadrateinheiten der AV. df = Freiheitsgrade. MQ = SAQ/df, eine Varianzschätzung. F = MQ<sub style="color:var(--a3)">Effekt</sub>/MQ<sub style="color:var(--a5)">Fehler</sub>, verglichen mit der F-Verteilung unter H₀ (kein Effekt). Dieselbe Logik wie der F-Test auf R²-Zuwachs in der Regression — nur mit ANOVA-typischem Vokabular für die Quellen der Varianz.</div>
+        </div>
+        <div class="lcard">
+          <div class="lcard-h"><span class="gk">η</span>² und partielles <span class="gk">η</span>²</div>
+          <div class="lcard-body"><span class="gk">η</span>² = SAQ<sub style="color:var(--a3)">Effekt</sub>/SAQ<sub style="color:var(--accent)">total</sub>, bei einfaktorieller ANOVA identisch mit R² der äquivalenten Regression. Bei mehrfaktoriellen Designs wird meist <strong>partielles</strong> <span class="gk">η</span>² = SAQ<sub style="color:var(--a3)">Effekt</sub>/(SAQ<sub style="color:var(--a3)">Effekt</sub>+SAQ<sub style="color:var(--a5)">Fehler</sub>) berichtet. Einordnung neben Cohen's d, r und Odds Ratio: <a href="Effektgroessen.html">→ Effektgrößen</a>.</div>
+        </div>
+        <div class="lcard">
+          <div class="lcard-h">Wann ANOVA, wann Regression?</div>
+          <div class="lcard-body">Es ist keine inhaltliche Entscheidung, sondern eine Frage der Berichtskonvention und Softwaregewohnheit — denn die Verfahren sind ineinander verschachtelte Spezialfälle. Ein t-Test ist eine ANOVA mit nur zwei Gruppen. Eine ANOVA wiederum ist eine Regression mit einem oder mehreren kategorialen Dummy-Prädiktoren. Und eine Regression selbst ist nur ein Spezialfall des allgemeinen linearen Modells (GLM) — das sich, sobald verschachtelte oder wiederholt gemessene Daten dazukommen (z.&nbsp;B. Schulklassen, Messwiederholungen), bis zum gemischten Modell (GLMM) erweitern lässt.</div>
+        </div>
+        <div class="lcard">
+          <div class="lcard-h">Verwandte Tools</div>
+          <div class="lcard-body">Regressionsgrundlagen: <a href="OLS_Regression.html">→ OLS &amp; Multiple Regression</a>. Kontinuierliche Interaktionen: <a href="Moderationsanalyse.html">→ Moderationsanalyse</a>. Random statt Fixed Effects: <a href="MLM_interactive.html">→ Multilevel-Modelle</a>. Power für Gruppenvergleiche: <a href="Power_Stichprobe.html">→ Power &amp; Stichprobengröße</a>. Was p wirklich bedeutet: <a href="Signifikanztests.html">→ Signifikanztests</a>.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+function showTab(n){
+  document.querySelectorAll('.mod-tab').forEach(t=>t.classList.toggle('active', t.dataset.tab==String(n)));
+  document.querySelectorAll('.mod-panel').forEach((p,i)=>p.classList.toggle('active', i===n-1));
+  document.getElementById('side-tab1').style.display = n===1?'block':'none';
+  document.getElementById('side-tab2').style.display = n===2?'block':'none';
+  document.getElementById('side-tab3').style.display = n===3?'block':'none';
+  document.getElementById('main').scrollTop = 0;
+  if(n===1) drawCv1();
+  if(n===2) drawCv2();
+}
+
+// ─── Theme ────────────────────────────────────────────────────────────────────
+function toggleTheme(){
+  const d=document.documentElement;
+  const dark=d.getAttribute('data-theme')==='dark';
+  const next=dark?'light':'dark';
+  d.setAttribute('data-theme',next);
+  localStorage.setItem('ml-theme',next);
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  redrawAll();
+}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('help-overlay').classList.remove('open')});
+
+// ─── PRNG & math ──────────────────────────────────────────────────────────────
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let rng=mulberry32(20260818);
+function randn(){let u=0,v=0;while(u===0)u=rng();while(v===0)v=rng();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+function lgamma(x){
+  const c=[76.18009172947146,-86.50532032941677,24.01409824083091,
+    -1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+  let y=x,tmp=x+5.5;
+  tmp-=(x+.5)*Math.log(tmp);
+  let s=1.000000000190015;
+  for(let j=0;j<6;j++) s+=c[j]/++y;
+  return -tmp+Math.log(2.5066282746310005*s/x);
+}
+function ibeta(x,a,b){
+  if(x<=0) return 0;
+  if(x>=1) return 1;
+  const lbeta=lgamma(a+b)-lgamma(a)-lgamma(b);
+  function cf(x,a,b){
+    const maxit=200,eps=3e-7,fpmin=1e-30;
+    const qab=a+b,qap=a+1,qam=a-1;
+    let c=1,d=1-(qab*x/qap);
+    if(Math.abs(d)<fpmin) d=fpmin; d=1/d;
+    let h=d;
+    for(let m=1;m<=maxit;m++){
+      const m2=2*m;
+      let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+      d=1+aa*d; if(Math.abs(d)<fpmin) d=fpmin;
+      c=1+aa/c; if(Math.abs(c)<fpmin) c=fpmin;
+      d=1/d; h*=d*c;
+      aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+      d=1+aa*d; if(Math.abs(d)<fpmin) d=fpmin;
+      c=1+aa/c; if(Math.abs(c)<fpmin) c=fpmin;
+      d=1/d; const del=d*c; h*=del;
+      if(Math.abs(del-1)<eps) break;
+    }
+    return h;
+  }
+  const bt=Math.exp(lbeta+a*Math.log(x)+b*Math.log(1-x));
+  if(x<(a+1)/(a+b+2)) return bt*cf(x,a,b)/a;
+  return 1-bt*cf(1-x,b,a)/b;
+}
+function fCDF(f,d1,d2){
+  if(f<=0) return 0;
+  if(!isFinite(f)) return 1;
+  const x=d1*f/(d1*f+d2);
+  return ibeta(x,d1/2,d2/2);
+}
+function fPValue(f,d1,d2){ return Math.max(0,1-fCDF(f,d1,d2)); }
+function fmt(x,d=3){return isNaN(x)||!isFinite(x)?'—':x.toFixed(d)}
+function fmtp(p){return isNaN(p)?'—':(p<.001?'<.001':p.toFixed(3))}
+function mean(arr){return arr.reduce((s,v)=>s+v,0)/arr.length}
+function sd(arr){const m=mean(arr);return Math.sqrt(arr.reduce((s,v)=>s+(v-m)**2,0)/(arr.length-1))}
+// deterministic per-index pseudo-jitter in [-0.5,0.5], stable across redraws without new data
+function hashJitter(i){const x=Math.sin(i*12.9898+4.1414)*43758.5453; return (x-Math.floor(x))-0.5;}
+
+// ─── Generic OLS engine ─────────────────────────────────────────────────────────
+function solveLinear(A,b){
+  const n=A.length;
+  const M=A.map((row,i)=>row.concat([b[i]]));
+  for(let col=0;col<n;col++){
+    let piv=col;
+    for(let r=col+1;r<n;r++) if(Math.abs(M[r][col])>Math.abs(M[piv][col])) piv=r;
+    const tmp=M[col]; M[col]=M[piv]; M[piv]=tmp;
+    const pv=M[col][col];
+    if(Math.abs(pv)<1e-12) continue;
+    for(let c=col;c<=n;c++) M[col][c]/=pv;
+    for(let r=0;r<n;r++){
+      if(r===col) continue;
+      const f=M[r][col];
+      if(f===0) continue;
+      for(let c=col;c<=n;c++) M[r][c]-=f*M[col][c];
+    }
+  }
+  return M.map(row=>row[n]);
+}
+function olsFit(X,y){
+  const n=X.length, p=X[0].length;
+  const XtX=Array.from({length:p},()=>new Array(p).fill(0));
+  const Xty=new Array(p).fill(0);
+  for(let i=0;i<n;i++){
+    for(let a=0;a<p;a++){
+      Xty[a]+=X[i][a]*y[i];
+      for(let b=0;b<p;b++) XtX[a][b]+=X[i][a]*X[i][b];
+    }
+  }
+  const beta=solveLinear(XtX,Xty);
+  const fitted=X.map(row=>row.reduce((s,v,idx)=>s+v*beta[idx],0));
+  const my=mean(y);
+  let SSE=0,SST=0;
+  for(let i=0;i<n;i++){ SSE+=(y[i]-fitted[i])**2; SST+=(y[i]-my)**2; }
+  return {beta,fitted,SSE,SST,SSR:SST-SSE,n,p};
+}
+function partialSS(X,y,dropIdx,full){
+  const Xred=X.map(row=>row.filter((_,idx)=>idx!==dropIdx));
+  const red=olsFit(Xred,y);
+  return red.SSE-full.SSE;
+}
+
+// ─── Colors ───────────────────────────────────────────────────────────────────
+function getC(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  return{
+    ink: dark?'#ece6d8':'#18130e', ink2: dark?'#8a8070':'#5a4f42', ink3: dark?'#857c68':'#8a7f72',
+    paper: dark?'#111520':'#f8f3e8', panel: dark?'#171d28':'#e8e0ce', grid: dark?'#1e242e':'#ddd5c5',
+    a1: dark?'#e8614a':'#c94a2a', a2: dark?'#4ab0d8':'#2a6e8a', a3: dark?'#80cb52':'#5a8a2a',
+    a4: dark?'#c87ad8':'#7a3a8a', a5: dark?'#e07830':'#b85c00', a6: dark?'#2bc7c4':'#0e7c7b',
+  };
+}
+
+// ═══ SECTION ① — one-way ANOVA ═════════════════════════════════════════════════
+const GNAMES1=['Kontrolle','Methode A','Methode B'];
+const GCOL1=['a2','a4','a6'];
+let data1={groups:[[],[],[]]};
+let ST1={fixY:true, fixedYMin:null, fixedYMax:null, showBetween:false, showWithin:false};
+
+function currentParams1(){
+  return{
+    mu:[parseFloat(document.getElementById('sl-m1').value),
+        parseFloat(document.getElementById('sl-m2').value),
+        parseFloat(document.getElementById('sl-m3').value)],
+    sd: parseFloat(document.getElementById('sl-sd1').value),
+    n: parseInt(document.getElementById('sl-n1').value)
+  };
+}
+function onParam1Change(){
+  document.getElementById('v-m1').textContent=document.getElementById('sl-m1').value;
+  document.getElementById('v-m2').textContent=document.getElementById('sl-m2').value;
+  document.getElementById('v-m3').textContent=document.getElementById('sl-m3').value;
+  document.getElementById('v-sd1').textContent=document.getElementById('sl-sd1').value;
+  document.getElementById('v-n1').textContent=document.getElementById('sl-n1').value;
+  drawSample1();
+}
+function onSSModeChange(tab){
+  if(tab===1){
+    ST1.showBetween=document.getElementById('ss1-between').checked;
+    ST1.showWithin=document.getElementById('ss1-within').checked;
+    drawCv1();
+  }else{
+    ST2.showBetween=document.getElementById('ss2-between').checked;
+    ST2.showWithin=document.getElementById('ss2-within').checked;
+    drawCv2();
+  }
+}
+function onToggleYFix(tab){
+  if(tab===1){
+    ST1.fixY=document.getElementById('tog-yfix1').checked;
+    if(ST1.fixY) captureFixedY1();
+    drawCv1();
+  }else{
+    ST2.fixY=document.getElementById('tog-yfix2').checked;
+    if(ST2.fixY) captureFixedY2();
+    drawCv2();
+  }
+}
+function captureFixedY1(){
+  const allVals=data1.groups.flat();
+  const dataMin=Math.min(...allVals), dataMax=Math.max(...allVals);
+  const pad=(dataMax-dataMin)*0.15||5;
+  ST1.fixedYMin=dataMin-pad; ST1.fixedYMax=dataMax+pad;
+}
+function drawSample1(){
+  const p=currentParams1();
+  data1.groups=p.mu.map(m=>{
+    const arr=[];
+    for(let i=0;i<p.n;i++) arr.push(m+p.sd*randn());
+    return arr;
+  });
+  if(ST1.fixY && ST1.fixedYMin===null) captureFixedY1();
+  updateSection1();
+}
+function anovaOneWay(groups){
+  const k=groups.length;
+  const ns=groups.map(g=>g.length);
+  const N=ns.reduce((a,b)=>a+b,0);
+  const means=groups.map(mean);
+  const grand=mean(groups.flat());
+  const SSb=groups.reduce((s,g,i)=>s+ns[i]*(means[i]-grand)**2,0);
+  const SSw=groups.reduce((s,g,i)=>s+g.reduce((ss,v)=>ss+(v-means[i])**2,0),0);
+  const SSt=SSb+SSw;
+  const dfb=k-1, dfw=N-k;
+  const MSb=SSb/dfb, MSw=SSw/dfw;
+  const F=MSb/MSw;
+  const p=fPValue(F,dfb,dfw);
+  const eta2=SSb/SSt;
+  return{k,ns,N,means,grand,SSb,SSw,SSt,dfb,dfw,MSb,MSw,F,p,eta2};
+}
+let res1=null, resDummy=null, resEffect=null;
+
+function updateSection1(){
+  res1=anovaOneWay(data1.groups);
+  const p=currentParams1();
+  document.getElementById('sb-n').textContent=p.n;
+  document.getElementById('sb-m1').textContent=fmt(res1.means[0],1);
+  document.getElementById('sb-m2').textContent=fmt(res1.means[1],1);
+  document.getElementById('sb-m3').textContent=fmt(res1.means[2],1);
+  document.getElementById('sb-df1').textContent=res1.dfb+','+res1.dfw;
+  document.getElementById('sb-F1').textContent=fmt(res1.F,2);
+  document.getElementById('sb-p1').textContent=fmtp(res1.p);
+  document.getElementById('sb-row1').style.color=res1.p<.05?'var(--a1)':'';
+  renderTable1();
+  const verdict=res1.p<.05?'signifikant':'nicht signifikant';
+  const mag=res1.eta2<.01?'sehr klein':res1.eta2<.06?'klein':res1.eta2<.14?'mittel':'groß';
+  document.getElementById('readout1').innerHTML=
+    '<span class="big">F('+res1.dfb+','+res1.dfw+') = '+fmt(res1.F,2)+'</span> · p = '+fmtp(res1.p)+' — '+verdict+
+    ' (<span class="gk">α</span>=.05) · <span class="gk">η</span>² = '+fmt(res1.eta2,3)+' ('+mag+' nach Cohens Konvention)';
+  drawCv1();
+  updateSection2();
+}
+
+function renderTable1(){
+  if(!res1) return;
+  const sig1=res1.p<.05?' style="color:var(--a1);font-weight:700"':'';
+  document.getElementById('anova-table-1').innerHTML=
+    '<table class="mini-table"><thead><tr><th>Quelle</th><th class="num">SAQ</th><th class="num">df</th>'+
+    '<th class="num">MQ</th><th class="num">F</th><th class="num">p</th></tr></thead><tbody>'+
+    '<tr class="row-between"><td>Zwischen den Gruppen</td><td class="num">'+fmt(res1.SSb,1)+'</td><td class="num">'+res1.dfb+'</td>'+
+    '<td class="num">'+fmt(res1.MSb,1)+'</td><td class="num"'+sig1+'>'+fmt(res1.F,2)+'</td><td class="num"'+sig1+'>'+fmtp(res1.p)+'</td></tr>'+
+    '<tr class="row-within"><td>Innerhalb der Gruppen</td><td class="num">'+fmt(res1.SSw,1)+'</td><td class="num">'+res1.dfw+'</td>'+
+    '<td class="num">'+fmt(res1.MSw,1)+'</td><td class="num">—</td><td class="num">—</td></tr>'+
+    '<tr class="hl"><td>Total</td><td class="num">'+fmt(res1.SSt,1)+'</td><td class="num">'+(res1.N-1)+'</td>'+
+    '<td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>'+
+    '</tbody></table>';
+}
+
+function drawCv1(){
+  const H=420, cv=document.getElementById('cv1');
+  const W=cv.offsetWidth||800; cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d'); const C=getC();
+  ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
+  if(!res1) return;
+
+  const padL=55,padR=30,padT=30,padB=50;
+  const plotW=W-padL-padR, plotH=H-padT-padB, yBase=padT+plotH;
+  let yMin,yMax;
+  if(ST1.fixY && ST1.fixedYMin!==null){ yMin=ST1.fixedYMin; yMax=ST1.fixedYMax; }
+  else{
+    const allVals=data1.groups.flat();
+    const dataMin=Math.min(...allVals), dataMax=Math.max(...allVals);
+    const pad=(dataMax-dataMin)*0.15||5;
+    yMin=dataMin-pad; yMax=dataMax+pad;
+  }
+  const ypx=v=>yBase-(v-yMin)/(yMax-yMin)*plotH;
+
+  const k=3, bandW=plotW/k;
+  const bandCenter=i=>padL+bandW*(i+0.5);
+  const jitterAmp=Math.min(bandW*0.09, 10);
+
+  // SAQ "zwischen" overlay — dimension bracket (grand mean ↔ group mean), left of the point cluster so it never covers data
+  if(ST1.showBetween){
+    for(let i=0;i<k;i++){
+      const x=bandCenter(i)-bandW*0.4;
+      const yG=ypx(res1.grand), yM=ypx(res1.means[i]);
+      ctx.strokeStyle=C.a3; ctx.lineWidth=2; ctx.globalAlpha=.95;
+      ctx.beginPath(); ctx.moveTo(x,yG); ctx.lineTo(x,yM); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x-5,yG); ctx.lineTo(x+5,yG); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x-5,yM); ctx.lineTo(x+5,yM); ctx.stroke();
+      ctx.globalAlpha=1;
+      ctx.fillStyle=C.a3; ctx.font='10px DM Mono,monospace'; ctx.textAlign='right';
+      ctx.fillText((res1.means[i]-res1.grand>=0?'+':'')+fmt(res1.means[i]-res1.grand,1), x-8, (yG+yM)/2+3);
+    }
+  }
+  // SAQ "innerhalb" overlay — thin connector from each point to its group mean, behind the points
+  if(ST1.showWithin){
+    ctx.strokeStyle=C.a5; ctx.lineWidth=1.1; ctx.globalAlpha=.55;
+    for(let i=0;i<k;i++){
+      const cx=bandCenter(i);
+      data1.groups[i].forEach((v,j)=>{
+        const x=cx+hashJitter(j+i*997)*jitterAmp;
+        ctx.beginPath(); ctx.moveTo(x,ypx(v)); ctx.lineTo(x,ypx(res1.means[i])); ctx.stroke();
+      });
+    }
+    ctx.globalAlpha=1;
+  }
+
+  // grand mean dashed line
+  ctx.strokeStyle=C.ink3; ctx.lineWidth=1.5; ctx.setLineDash([6,4]);
+  ctx.beginPath(); ctx.moveTo(padL,ypx(res1.grand)); ctx.lineTo(padL+plotW,ypx(res1.grand)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('Gesamtmittelwert = '+fmt(res1.grand,1), padL+4, ypx(res1.grand)-6);
+
+  // points + group mean lines
+  for(let i=0;i<k;i++){
+    const cx=bandCenter(i);
+    const col=C[GCOL1[i]];
+    data1.groups[i].forEach((v,j)=>{
+      const x=cx+hashJitter(j+i*997)*jitterAmp;
+      ctx.beginPath(); ctx.arc(x,ypx(v),3.6,0,2*Math.PI);
+      ctx.fillStyle=col; ctx.globalAlpha=.55; ctx.fill(); ctx.globalAlpha=1;
+    });
+    ctx.strokeStyle=col; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(cx-bandW*0.3,ypx(res1.means[i])); ctx.lineTo(cx+bandW*0.3,ypx(res1.means[i])); ctx.stroke();
+    ctx.fillStyle=col; ctx.font='bold 12px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(GNAMES1[i], cx, yBase+22);
+    ctx.font='11px DM Mono,monospace';
+    ctx.fillText('M='+fmt(res1.means[i],1), cx, yBase+37);
+  }
+
+  // y ticks
+  ctx.strokeStyle=C.grid; ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='right';
+  const nticks=5;
+  for(let t=0;t<=nticks;t++){
+    const v=yMin+(yMax-yMin)*t/nticks;
+    const py=ypx(v);
+    ctx.beginPath(); ctx.moveTo(padL-5,py); ctx.lineTo(padL,py); ctx.stroke();
+    ctx.fillText(v.toFixed(0), padL-9, py+4);
+  }
+  ctx.strokeStyle=C.grid; ctx.beginPath(); ctx.moveTo(padL,padT); ctx.lineTo(padL,yBase); ctx.stroke();
+}
+
+// ═══ SECTION ③ (data) — regression bridge for one-way ══════════════════════════
+function buildDesignDummy(groups){
+  const X=[],y=[];
+  groups.forEach((g,gi)=>g.forEach(v=>{ X.push([1, gi===1?1:0, gi===2?1:0]); y.push(v); }));
+  return{X,y};
+}
+function buildDesignEffect(groups){
+  const X=[],y=[];
+  groups.forEach((g,gi)=>g.forEach(v=>{
+    let row = gi===0?[1,1,0] : gi===1?[1,0,1] : [1,-1,-1];
+    X.push(row); y.push(v);
+  }));
+  return{X,y};
+}
+function regF(fit){
+  const dfr=fit.p-1, dfe=fit.n-fit.p;
+  const F=(fit.SSR/dfr)/(fit.SSE/dfe);
+  return{F,dfr,dfe,p:fPValue(F,dfr,dfe),R2:fit.SSR/fit.SST};
+}
+
+function updateSection2(){
+  const {X:Xd,y:yd}=buildDesignDummy(data1.groups);
+  const {X:Xe,y:ye}=buildDesignEffect(data1.groups);
+  resDummy=olsFit(Xd,yd);
+  resEffect=olsFit(Xe,ye);
+  const fD=regF(resDummy), fE=regF(resEffect);
+
+  const p=currentParams1();
+  const popGrand=(p.mu[0]+p.mu[1]+p.mu[2])/3;
+
+  document.getElementById('coef-dummy').innerHTML=
+    '<table class="coef-table"><tr><th>Parameter</th><th class="r">Populationswert</th><th class="r">Geschätzt</th><th>Interpretation</th></tr>'+
+    '<tr><td>b₀ (Intercept)</td><td class="num" style="color:var(--ink3)">'+fmt(p.mu[0],2)+'</td><td class="num">'+fmt(resDummy.beta[0],2)+'</td>'+
+    '<td class="interp">Geschätzter Mittelwert der Referenzgruppe (Kontrolle)</td></tr>'+
+    '<tr><td>b₁ (D<sub>A</sub>)</td><td class="num" style="color:var(--ink3)">'+fmt(p.mu[1]-p.mu[0],2)+'</td><td class="num">'+fmt(resDummy.beta[1],2)+'</td>'+
+    '<td class="interp">Differenz Methode A − Kontrolle</td></tr>'+
+    '<tr><td>b₂ (D<sub>B</sub>)</td><td class="num" style="color:var(--ink3)">'+fmt(p.mu[2]-p.mu[0],2)+'</td><td class="num">'+fmt(resDummy.beta[2],2)+'</td>'+
+    '<td class="interp">Differenz Methode B − Kontrolle</td></tr></table>';
+
+  document.getElementById('coef-effect').innerHTML=
+    '<table class="coef-table"><tr><th>Parameter</th><th class="r">Populationswert</th><th class="r">Geschätzt</th><th>Interpretation</th></tr>'+
+    '<tr><td>b₀ (Intercept)</td><td class="num" style="color:var(--ink3)">'+fmt(popGrand,2)+'</td><td class="num">'+fmt(resEffect.beta[0],2)+'</td>'+
+    '<td class="interp">Gesamtmittelwert (Durchschnitt der 3 Gruppenmittelwerte)</td></tr>'+
+    '<tr><td>b₁ (E₁)</td><td class="num" style="color:var(--ink3)">'+fmt(p.mu[0]-popGrand,2)+'</td><td class="num">'+fmt(resEffect.beta[1],2)+'</td>'+
+    '<td class="interp">Abweichung Kontrolle − Gesamtmittelwert</td></tr>'+
+    '<tr><td>b₂ (E₂)</td><td class="num" style="color:var(--ink3)">'+fmt(p.mu[1]-popGrand,2)+'</td><td class="num">'+fmt(resEffect.beta[2],2)+'</td>'+
+    '<td class="interp">Abweichung Methode A − Gesamtmittelwert</td></tr>'+
+    '<tr><td>(implizit) −(b₁+b₂)</td><td class="num" style="color:var(--ink3)">'+fmt(p.mu[2]-popGrand,2)+'</td><td class="num">'+fmt(-(resEffect.beta[1]+resEffect.beta[2]),2)+'</td>'+
+    '<td class="interp">Abweichung Methode B − Gesamtmittelwert (nicht direkt geschätzt)</td></tr></table>';
+
+  document.getElementById('readout2').innerHTML=
+    '<span class="big">F<sub>Dummy</sub>('+fD.dfr+','+fD.dfe+') = '+fmt(fD.F,2)+'</span>, p = '+fmtp(fD.p)+
+    ' · <span class="big">F<sub>Effekt</sub>('+fE.dfr+','+fE.dfe+') = '+fmt(fE.F,2)+'</span>, p = '+fmtp(fE.p)+
+    ' · beide ≡ F<sub>ANOVA</sub> = '+fmt(res1.F,2)+' aus Tab ① · R² = '+fmt(fD.R2,3)+' = <span class="gk">η</span>² = '+fmt(res1.eta2,3);
+}
+
+// ═══ SECTION ② — two-way ANOVA with interaction ════════════════════════════════
+const ANAMES=['Klassisch','Verteilt'], BNAMES=['ohne Feedback','mit Feedback'];
+let data2={cells:[[[],[]],[[],[]]]};
+let ST2={fixY:true, fixedYMin:null, fixedYMax:null, showBetween:false, showWithin:false};
+
+function currentParams2(){
+  return{
+    mu:[[parseFloat(document.getElementById('sl-c11').value),parseFloat(document.getElementById('sl-c12').value)],
+        [parseFloat(document.getElementById('sl-c21').value),parseFloat(document.getElementById('sl-c22').value)]],
+    sd: parseFloat(document.getElementById('sl-sd2').value),
+    n: parseInt(document.getElementById('sl-n2').value)
+  };
+}
+function onParam2Change(){
+  document.getElementById('v-c11').textContent=document.getElementById('sl-c11').value;
+  document.getElementById('v-c12').textContent=document.getElementById('sl-c12').value;
+  document.getElementById('v-c21').textContent=document.getElementById('sl-c21').value;
+  document.getElementById('v-c22').textContent=document.getElementById('sl-c22').value;
+  document.getElementById('v-sd2').textContent=document.getElementById('sl-sd2').value;
+  document.getElementById('v-n2').textContent=document.getElementById('sl-n2').value;
+  drawSample2();
+}
+function captureFixedY2(){
+  const allVals=data2.cells.flat(2);
+  const dataMin=Math.min(...allVals), dataMax=Math.max(...allVals);
+  const pad=(dataMax-dataMin)*0.15||5;
+  ST2.fixedYMin=dataMin-pad; ST2.fixedYMax=dataMax+pad;
+}
+function drawSample2(){
+  const p=currentParams2();
+  data2.cells=[[[],[]],[[],[]]];
+  for(let i=0;i<2;i++) for(let j=0;j<2;j++){
+    const arr=[];
+    for(let t=0;t<p.n;t++) arr.push(p.mu[i][j]+p.sd*randn());
+    data2.cells[i][j]=arr;
+  }
+  if(ST2.fixY && ST2.fixedYMin===null) captureFixedY2();
+  updateSection3();
+}
+function anovaTwoWay(cells){
+  const n=cells[0][0].length, N=4*n;
+  const cellMeans=[[mean(cells[0][0]),mean(cells[0][1])],[mean(cells[1][0]),mean(cells[1][1])]];
+  const grand=mean(cells.flat(2));
+  const mA=[(cellMeans[0][0]+cellMeans[0][1])/2,(cellMeans[1][0]+cellMeans[1][1])/2];
+  const mB=[(cellMeans[0][0]+cellMeans[1][0])/2,(cellMeans[0][1]+cellMeans[1][1])/2];
+  const SSA=2*n*mA.reduce((s,m)=>s+(m-grand)**2,0);
+  const SSB=2*n*mB.reduce((s,m)=>s+(m-grand)**2,0);
+  let SSAB=0;
+  for(let i=0;i<2;i++) for(let j=0;j<2;j++) SSAB+=n*(cellMeans[i][j]-mA[i]-mB[j]+grand)**2;
+  let SSw=0;
+  for(let i=0;i<2;i++) for(let j=0;j<2;j++) cells[i][j].forEach(v=>SSw+=(v-cellMeans[i][j])**2);
+  const SSt=SSA+SSB+SSAB+SSw;
+  const dfw=N-4;
+  const MSA=SSA/1, MSB=SSB/1, MSAB=SSAB/1, MSw=SSw/dfw;
+  const FA=MSA/MSw, FB=MSB/MSw, FAB=MSAB/MSw;
+  return{n,N,cellMeans,grand,mA,mB,SSA,SSB,SSAB,SSw,SSt,dfw,MSA,MSB,MSAB,MSw,
+    FA,FB,FAB,pA:fPValue(FA,1,dfw),pB:fPValue(FB,1,dfw),pAB:fPValue(FAB,1,dfw)};
+}
+function buildDesignTwoWay(cells){
+  const X=[],y=[];
+  for(let i=0;i<2;i++) for(let j=0;j<2;j++){
+    const XA=i===0?-1:1, XB=j===0?-1:1, XAB=XA*XB;
+    cells[i][j].forEach(v=>{ X.push([1,XA,XB,XAB]); y.push(v); });
+  }
+  return{X,y};
+}
+let res2=null, resTwoFull=null;
+
+function updateSection3(){
+  res2=anovaTwoWay(data2.cells);
+  const {X,y}=buildDesignTwoWay(data2.cells);
+  resTwoFull=olsFit(X,y);
+  const dfE=resTwoFull.n-resTwoFull.p, MSE=resTwoFull.SSE/dfE;
+  const SS_A_reg=partialSS(X,y,1,resTwoFull);
+  const SS_B_reg=partialSS(X,y,2,resTwoFull);
+  const SS_AB_reg=partialSS(X,y,3,resTwoFull);
+  const F_A_reg=SS_A_reg/MSE, F_B_reg=SS_B_reg/MSE, F_AB_reg=SS_AB_reg/MSE;
+
+  document.getElementById('sb-FA').textContent=fmt(res2.FA,2);
+  document.getElementById('sb-pA').textContent=fmtp(res2.pA);
+  document.getElementById('sb-FB').textContent=fmt(res2.FB,2);
+  document.getElementById('sb-pB').textContent=fmtp(res2.pB);
+  document.getElementById('sb-FAB').textContent=fmt(res2.FAB,2);
+  document.getElementById('sb-pAB').textContent=fmtp(res2.pAB);
+  document.getElementById('sb-rowA').style.color=res2.pA<.05?'var(--a1)':'';
+  document.getElementById('sb-rowB').style.color=res2.pB<.05?'var(--a1)':'';
+  document.getElementById('sb-rowAB').style.color=res2.pAB<.05?'var(--a1)':'';
+
+  renderTable2();
+
+  const sigTxt=p=>p<.05?'signifikant':'n.s.';
+  document.getElementById('readout3').innerHTML=
+    '<span class="big">F<sub>A</sub>(1,'+res2.dfw+') = '+fmt(res2.FA,2)+'</span>, p='+fmtp(res2.pA)+' ('+sigTxt(res2.pA)+') · '+
+    '<span class="big">F<sub>B</sub>(1,'+res2.dfw+') = '+fmt(res2.FB,2)+'</span>, p='+fmtp(res2.pB)+' ('+sigTxt(res2.pB)+') · '+
+    '<span class="big">F<sub>A×B</sub>(1,'+res2.dfw+') = '+fmt(res2.FAB,2)+'</span>, p='+fmtp(res2.pAB)+' ('+sigTxt(res2.pAB)+')'+
+    (res2.pAB<.05?' — signifikante Interaktion: Haupteffekte lassen sich nicht isoliert interpretieren.':' — keine signifikante Interaktion: Haupteffekte sind additiv interpretierbar.');
+
+  document.getElementById('coef-twoway').innerHTML=
+    '<div class="col-h">Koeffizienten</div>'+
+    '<table class="coef-table"><tr><th>Parameter</th><th class="r">b (Regression)</th><th>Interpretation</th></tr>'+
+    '<tr><td>b₀ (Intercept)</td><td class="num">'+fmt(resTwoFull.beta[0],2)+'</td><td class="interp">Gesamtmittelwert über alle vier Zellen</td></tr>'+
+    '<tr><td>b<sub>A</sub> (X<sub>A</sub>)</td><td class="num">'+fmt(resTwoFull.beta[1],2)+'</td><td class="interp">Halber Haupteffekt A: (M<sub>Verteilt</sub> − M<sub>Klassisch</sub>)/2</td></tr>'+
+    '<tr><td>b<sub>B</sub> (X<sub>B</sub>)</td><td class="num">'+fmt(resTwoFull.beta[2],2)+'</td><td class="interp">Halber Haupteffekt B: (M<sub>mit</sub> − M<sub>ohne</sub>)/2</td></tr>'+
+    '<tr><td>b<sub>AB</sub> (X<sub>A</sub>·X<sub>B</sub>)</td><td class="num">'+fmt(resTwoFull.beta[3],2)+'</td><td class="interp">Halbe Interaktion: wie stark weicht die Feedback-Wirkung zwischen den Methoden voneinander ab</td></tr></table>';
+
+  document.getElementById('compare-twoway').innerHTML=
+    '<div class="compare-box"><strong>Klassische Formel vs. Typ-III-Regression (identisch bei balanciertem Design):</strong><br>'+
+    'SAQ<sub style="color:var(--a3)">A</sub> = '+fmt(res2.SSA,2)+' ≡ '+fmt(SS_A_reg,2)+' &nbsp;|&nbsp; F<sub>A</sub> = '+fmt(res2.FA,2)+' ≡ '+fmt(F_A_reg,2)+'<br>'+
+    'SAQ<sub style="color:var(--a3)">B</sub> = '+fmt(res2.SSB,2)+' ≡ '+fmt(SS_B_reg,2)+' &nbsp;|&nbsp; F<sub>B</sub> = '+fmt(res2.FB,2)+' ≡ '+fmt(F_B_reg,2)+'<br>'+
+    'SAQ<sub style="color:var(--a3)">A×B</sub> = '+fmt(res2.SSAB,2)+' ≡ '+fmt(SS_AB_reg,2)+' &nbsp;|&nbsp; F<sub>A×B</sub> = '+fmt(res2.FAB,2)+' ≡ '+fmt(F_AB_reg,2)+
+    '</div>';
+
+  drawCv2();
+}
+
+function renderTable2(){
+  if(!res2) return;
+  const sig=p=>p<.05?' style="color:var(--a1);font-weight:700"':'';
+  document.getElementById('anova-table-2').innerHTML=
+    '<table class="mini-table"><thead><tr><th>Quelle</th><th class="num">SAQ</th><th class="num">df</th>'+
+    '<th class="num">MQ</th><th class="num">F</th><th class="num">p</th></tr></thead><tbody>'+
+    '<tr class="row-between"><td>Faktor A (Lernmethode)</td><td class="num">'+fmt(res2.SSA,1)+'</td><td class="num">1</td>'+
+    '<td class="num">'+fmt(res2.MSA,1)+'</td><td class="num"'+sig(res2.pA)+'>'+fmt(res2.FA,2)+'</td><td class="num"'+sig(res2.pA)+'>'+fmtp(res2.pA)+'</td></tr>'+
+    '<tr class="row-between"><td>Faktor B (Feedback)</td><td class="num">'+fmt(res2.SSB,1)+'</td><td class="num">1</td>'+
+    '<td class="num">'+fmt(res2.MSB,1)+'</td><td class="num"'+sig(res2.pB)+'>'+fmt(res2.FB,2)+'</td><td class="num"'+sig(res2.pB)+'>'+fmtp(res2.pB)+'</td></tr>'+
+    '<tr class="row-between"><td>Interaktion A×B</td><td class="num">'+fmt(res2.SSAB,1)+'</td><td class="num">1</td>'+
+    '<td class="num">'+fmt(res2.MSAB,1)+'</td><td class="num"'+sig(res2.pAB)+'>'+fmt(res2.FAB,2)+'</td><td class="num"'+sig(res2.pAB)+'>'+fmtp(res2.pAB)+'</td></tr>'+
+    '<tr class="row-within"><td>Innerhalb der Zellen</td><td class="num">'+fmt(res2.SSw,1)+'</td><td class="num">'+res2.dfw+'</td>'+
+    '<td class="num">'+fmt(res2.MSw,1)+'</td><td class="num">—</td><td class="num">—</td></tr>'+
+    '<tr class="hl"><td>Total</td><td class="num">'+fmt(res2.SSt,1)+'</td><td class="num">'+(res2.N-1)+'</td>'+
+    '<td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>'+
+    '</tbody></table>';
+}
+
+function drawCv2(){
+  const H=440, cv=document.getElementById('cv2');
+  const W=cv.offsetWidth||800; cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d'); const C=getC();
+  ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
+  if(!res2) return;
+
+  const padL=55,padR=140,padT=35,padB=55;
+  const plotW=W-padL-padR, plotH=H-padT-padB, yBase=padT+plotH;
+
+  let yMin,yMax;
+  if(ST2.fixY && ST2.fixedYMin!==null){ yMin=ST2.fixedYMin; yMax=ST2.fixedYMax; }
+  else{
+    const allVals=data2.cells.flat(2);
+    const dataMin=Math.min(...allVals), dataMax=Math.max(...allVals);
+    const pad=(dataMax-dataMin)*0.15||5;
+    yMin=dataMin-pad; yMax=dataMax+pad;
+  }
+  const ypx=v=>yBase-(v-yMin)/(yMax-yMin)*plotH;
+  const xpx=i=>padL+plotW*(i===0?0.25:0.75);
+  const dodge=j=>j===0?-9:9;
+
+  // axis
+  ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(padL,padT); ctx.lineTo(padL,yBase); ctx.lineTo(padL+plotW,yBase); ctx.stroke();
+
+  // x labels
+  ctx.fillStyle=C.ink; ctx.font='bold 12px DM Mono,monospace'; ctx.textAlign='center';
+  for(let i=0;i<2;i++) ctx.fillText(ANAMES[i], xpx(i), yBase+24);
+
+  // y ticks
+  ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='right';
+  for(let t=0;t<=5;t++){
+    const v=yMin+(yMax-yMin)*t/5, py=ypx(v);
+    ctx.strokeStyle=C.grid; ctx.beginPath(); ctx.moveTo(padL-5,py); ctx.lineTo(padL,py); ctx.stroke();
+    ctx.fillText(v.toFixed(0), padL-9, py+4);
+  }
+
+  // grand mean dashed line (reference for "between" overlay)
+  if(ST2.showBetween){
+    ctx.strokeStyle=C.ink3; ctx.lineWidth=1.5; ctx.setLineDash([6,4]);
+    ctx.beginPath(); ctx.moveTo(padL,ypx(res2.grand)); ctx.lineTo(padL+plotW,ypx(res2.grand)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
+    ctx.fillText('Gesamtmittelwert = '+fmt(res2.grand,1), padL+4, ypx(res2.grand)-6);
+  }
+
+  // raw points (behind lines/markers)
+  for(let i=0;i<2;i++) for(let j=0;j<2;j++){
+    const col=j===0?C.a2:C.a4;
+    const cx=xpx(i)+dodge(j);
+    data2.cells[i][j].forEach((v,idx)=>{
+      const x=cx+hashJitter(idx+i*131+j*977)*7;
+      ctx.beginPath(); ctx.arc(x,ypx(v),2.6,0,2*Math.PI);
+      ctx.fillStyle=col; ctx.globalAlpha=.4; ctx.fill(); ctx.globalAlpha=1;
+    });
+  }
+
+  // SS overlays anchored at each cell marker
+  for(let i=0;i<2;i++) for(let j=0;j<2;j++){
+    const cx=xpx(i)+dodge(j);
+    const yCell=ypx(res2.cellMeans[i][j]);
+    if(ST2.showBetween){
+      const yG=ypx(res2.grand);
+      ctx.fillStyle=C.a3; ctx.globalAlpha=.28;
+      ctx.fillRect(cx-8, Math.min(yG,yCell), 16, Math.abs(yG-yCell));
+      ctx.globalAlpha=1;
+    }
+    if(ST2.showWithin){
+      ctx.strokeStyle=C.a5; ctx.lineWidth=1.2; ctx.globalAlpha=.7;
+      data2.cells[i][j].forEach((v,idx)=>{
+        const x=cx+hashJitter(idx+i*131+j*977)*7;
+        ctx.beginPath(); ctx.moveTo(x,ypx(v)); ctx.lineTo(x,yCell); ctx.stroke();
+      });
+      ctx.globalAlpha=1;
+    }
+  }
+
+  // two lines: B=0 (ohne) and B=1 (mit)
+  [0,1].forEach(j=>{
+    const col=j===0?C.a2:C.a4;
+    const pts=[[0,res2.cellMeans[0][j]],[1,res2.cellMeans[1][j]]];
+    ctx.strokeStyle=col; ctx.lineWidth=2.5;
+    ctx.beginPath();
+    pts.forEach((pt,idx)=>{ const x=xpx(pt[0])+dodge(j),y=ypx(pt[1]); idx===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+    ctx.stroke();
+    pts.forEach(pt=>{
+      const x=xpx(pt[0])+dodge(j), y=ypx(pt[1]);
+      const se=sd(data2.cells[pt[0]][j])/Math.sqrt(res2.n);
+      ctx.strokeStyle=col; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(x,ypx(pt[1]-se)); ctx.lineTo(x,ypx(pt[1]+se)); ctx.stroke();
+      ctx.beginPath(); ctx.arc(x,y,5,0,2*Math.PI); ctx.fillStyle=col; ctx.fill();
+      ctx.strokeStyle=C.ink; ctx.lineWidth=.6; ctx.stroke();
+    });
+  });
+
+  // legend
+  const legX=padL+plotW+16;
+  [0,1].forEach((j,idx)=>{
+    const col=j===0?C.a2:C.a4;
+    const ly=padT+20+idx*22;
+    ctx.strokeStyle=col; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(legX,ly); ctx.lineTo(legX+22,ly); ctx.stroke();
+    ctx.fillStyle=col; ctx.beginPath(); ctx.arc(legX+11,ly,4,0,2*Math.PI); ctx.fill();
+    ctx.fillStyle=C.ink; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
+    ctx.fillText(BNAMES[j], legX+28, ly+4);
+  });
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+function redrawAll(){ drawCv1(); drawCv2(); }
+window.addEventListener('resize', redrawAll);
+if(document.documentElement.getAttribute('data-theme')==='light'){
+  const tb=document.getElementById('theme-btn');if(tb)tb.textContent='🌙 Dark';
+}
+drawSample1();
+drawSample2();
+</script>
+</body>
+</html>
