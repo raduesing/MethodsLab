@@ -30,7 +30,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
-#app{display:grid;grid-template-columns:220px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#app{display:grid;grid-template-columns:272px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
 #sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
@@ -52,10 +52,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .example-box{background:var(--panel);border-left:3px solid var(--a2);padding:.85rem 1rem;
   margin-bottom:1.1rem;font-size:.88rem;line-height:1.75}
 .example-box strong{color:var(--a2)}
-.circ{font-size:2em;font-weight:600;vertical-align:-.18em;line-height:1;display:inline-block}
-.slider-panel{background:var(--panel);border:1px solid var(--grid);padding:1rem 1.1rem;margin-bottom:.85rem}
-.slider-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem 1.4rem}
-.slider-row{margin-bottom:.15rem}
+.circ{font-size:1.5em;font-weight:600;vertical-align:-.13em;line-height:1;display:inline-block}
+.slider-row{margin-bottom:.55rem}
 .slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.22rem}
 .slider-name{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink)}
 .slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
@@ -85,8 +83,9 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 .step-body{font-size:.87rem;line-height:1.8;color:var(--ink2)}
 .step-body strong{color:var(--ink)}
 .learn-section{margin-top:2.2rem}
-.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
-.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-grid{column-count:2;column-gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem;
+  break-inside:avoid;margin-bottom:.7rem}
 .lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);
   letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
 .lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
@@ -170,6 +169,34 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
     <div class="sb-note" id="mode-note">Zwei unabhängige Gruppen — der einfachere Fall: ein Nenner, eine Standardisierung.</div>
   </div>
 
+  <div class="scard">
+    <div class="scard-title">Populationsparameter</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" id="lbl-m1">M₁</span><span class="slider-val" id="v-m1">45.8</span></div>
+      <input type="range" id="sl-m1" min="30" max="65" step="0.1" value="45.8" oninput="onSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" id="lbl-m2">M₂</span><span class="slider-val" id="v-m2">52.4</span></div>
+      <input type="range" id="sl-m2" min="30" max="65" step="0.1" value="52.4" oninput="onSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" id="lbl-sd1">SD₁</span><span class="slider-val" id="v-sd1">8.4</span></div>
+      <input type="range" id="sl-sd1" min="2" max="15" step="0.1" value="8.4" oninput="onSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" id="lbl-sd2">SD₂</span><span class="slider-val" id="v-sd2">9.6</span></div>
+      <input type="range" id="sl-sd2" min="2" max="15" step="0.1" value="9.6" oninput="onSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" id="lbl-n">n</span><span class="slider-val" id="v-n">40</span></div>
+      <input type="range" id="sl-n" min="10" max="150" step="1" value="40" oninput="onSlider()">
+    </div>
+    <div class="slider-row" id="row-r" style="display:none">
+      <div class="slider-lbl"><span class="slider-name">r (Prä-Post)</span><span class="slider-val" id="v-r">.65</span></div>
+      <input type="range" id="sl-r" min="-90" max="90" step="1" value="65" oninput="onSlider()">
+    </div>
+  </div>
+
 </div><!-- /sidebar -->
 
 <div id="main">
@@ -181,35 +208,6 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
   <div class="example-box" id="example-box"></div>
 
   <div class="sec-h">Visualisierung: Wie stark unterscheiden sich die Gruppen?</div>
-
-  <div class="slider-panel">
-    <div class="slider-grid">
-      <div class="slider-row">
-        <div class="slider-lbl"><span class="slider-name" id="lbl-m1">M₁</span><span class="slider-val" id="v-m1">45.8</span></div>
-        <input type="range" id="sl-m1" min="30" max="65" step="0.1" value="45.8" oninput="onSlider()">
-      </div>
-      <div class="slider-row">
-        <div class="slider-lbl"><span class="slider-name" id="lbl-m2">M₂</span><span class="slider-val" id="v-m2">52.4</span></div>
-        <input type="range" id="sl-m2" min="30" max="65" step="0.1" value="52.4" oninput="onSlider()">
-      </div>
-      <div class="slider-row">
-        <div class="slider-lbl"><span class="slider-name" id="lbl-sd1">SD₁</span><span class="slider-val" id="v-sd1">8.4</span></div>
-        <input type="range" id="sl-sd1" min="2" max="15" step="0.1" value="8.4" oninput="onSlider()">
-      </div>
-      <div class="slider-row">
-        <div class="slider-lbl"><span class="slider-name" id="lbl-sd2">SD₂</span><span class="slider-val" id="v-sd2">9.6</span></div>
-        <input type="range" id="sl-sd2" min="2" max="15" step="0.1" value="9.6" oninput="onSlider()">
-      </div>
-      <div class="slider-row">
-        <div class="slider-lbl"><span class="slider-name" id="lbl-n">n</span><span class="slider-val" id="v-n">40</span></div>
-        <input type="range" id="sl-n" min="10" max="150" step="1" value="40" oninput="onSlider()">
-      </div>
-      <div class="slider-row" id="row-r" style="display:none">
-        <div class="slider-lbl"><span class="slider-name">r (Prä-Post-Korr.)</span><span class="slider-val" id="v-r">.65</span></div>
-        <input type="range" id="sl-r" min="-90" max="90" step="1" value="65" oninput="onSlider()">
-      </div>
-    </div>
-  </div>
 
   <div class="canvas-wrap">
     <canvas id="overlap-canvas" height="390"></canvas>
@@ -257,6 +255,11 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
     <table class="d-table" id="tbl-convert" style="margin-top:.5rem"></table>
   </div>
 
+  <div class="step-block">
+    <div class="step-h"><span class="circ" id="step-caveat-num">③</span>&nbsp; Konventionen sind kein Naturgesetz</div>
+    <div class="step-body">Die Spalte "Konvention" in der Tabelle oben (0.2&nbsp;/&nbsp;0.5&nbsp;/&nbsp;0.8 für klein/mittel/groß) stammt von Cohen (1988) — eine grobe Faustregel, gemittelt über sehr unterschiedliche Verhaltens- und Sozialwissenschaften, gedacht für Situationen, in denen sonst gar keine Orientierung verfügbar war. Es ist <strong>keine feste Schwelle und keine empirisch hergeleitete Grenze</strong>. Derselbe Wert d&nbsp;=&nbsp;0.3 kann in einem Kontext vernachlässigbar sein (z.&nbsp;B. bei einem folgenlosen Persönlichkeitsmerkmal) und in einem anderen enorm bedeutsam (z.&nbsp;B. bei einer Sterblichkeitsreduktion in einer Medikamentenstudie, oder einem kleinen Effekt, der über Millionen Nutzer:innen skaliert). Ob ein Effekt <em>praktisch bedeutsam</em> ist, lässt sich nicht aus der Statistik allein ablesen — das ist immer eine inhaltliche Entscheidung: abhängig vom Feld, von den Kosten und Risiken einer Intervention, vom Vergleich mit bereits bekannten Effekten in genau diesem Forschungsbereich, und von den praktischen Konsequenzen für die betroffenen Personen.</div>
+  </div>
+
   <!-- Konzepte -->
   <div class="learn-section">
     <div class="sec-h">Konzepte &amp; Grenzen</div>
@@ -301,6 +304,10 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
         <div class="lcard-h">Für die eigene Studie</div>
         <div class="lcard-body">Der <a href="Effektgroessen_Rechner.html"><strong>Effektgrößen-Rechner</strong></a> berechnet exakte Werte aus eigenen Daten (CSV-Upload) — inklusive Konfidenzintervallen nach Bonett, Rosenthal und exakter nichtzentraler t-Verteilung.</div>
       </div>
+      <div class="lcard">
+        <div class="lcard-h">Unstandardisiert ist auch eine Effektgröße</div>
+        <div class="lcard-body">Standardisierung macht d einheitenlos und über Studien vergleichbar — aber genau dabei geht die Originalskala verloren. Eine unstandardisierte Mittelwertsdifferenz (im Plot oben: "Rohwertdiff. = …") oder ein unstandardisierter Regressionskoeffizient b sind oft <strong>unmittelbarer interpretierbar</strong>, weil sie in der Metrik der abhängigen Variable selbst vorliegen — einer Metrik, die man im eigenen Feld in der Regel gut kennt (Punkte auf einer bekannten Testskala, Tage Krankenhausaufenthalt, Euro Umsatz …). Ein d von 0.4 sagt für sich genommen wenig; ein Unterschied von "6 Punkten auf dem Wohlbefindens-Score" lässt sich dagegen direkt gegen bekannte Referenzwerte einordnen. Am informativsten ist meist, <strong>beides zu berichten</strong>: die Rohwert-Differenz für die inhaltliche Einordnung, die standardisierte Version für die Vergleichbarkeit über Studien hinweg.</div>
+      </div>
     </div>
   </div>
 
@@ -343,6 +350,7 @@ function setMode(m){
   document.getElementById('within-est').style.display=isW?'':'none';
   document.getElementById('step-within-only').style.display=isW?'':'none';
   document.getElementById('step-conv-num').textContent=isW?'③':'②';
+  document.getElementById('step-caveat-num').textContent=isW?'④':'③';
   document.getElementById('example-box').innerHTML = isW
     ? '<strong>Laufendes Beispiel (Within):</strong> Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. Dieselben Teilnehmenden werden vor (Prä) und nach (Post) dem Training befragt. Verändere M<sub>prä</sub>, M<sub>post</sub>, die Streuungen, die Prä-Post-Korrelation r und n mit den Reglern.'
     : '<strong>Laufendes Beispiel (Between):</strong> Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. Trainingsgruppe vs. Warteliste-Kontrollgruppe, je n Personen. Verändere die Mittelwerte und Streuungen beider Gruppen sowie n mit den Reglern.';
