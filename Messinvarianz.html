@@ -61,6 +61,7 @@ input[type=range].acc-l::-webkit-slider-thumb{background:var(--a5)}
 
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
 .sec-h:first-child{margin-top:0}
 
 .story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
@@ -268,7 +269,7 @@ table.htab th{color:var(--accent);font-weight:500}
     </tbody>
   </table>
 
-  <div class="sec-h">① Was würdest du schließen?</div>
+  <div class="sec-h"><span class="circ">①</span> Was würdest du schließen?</div>
   <div class="verdict v-bad" id="verdict">—</div>
   <div class="crit" id="criteria"></div>
 
@@ -293,25 +294,25 @@ table.htab th{color:var(--accent);font-weight:500}
   <div class="chain" id="chain"></div>
 
   <div class="plot-box">
-    <div class="plot-title">② Das Messmodell als Mehrgruppen-CFA</div>
+    <div class="plot-title"><span class="circ">②</span> Das Messmodell als Mehrgruppen-CFA</div>
     <canvas id="cv-path" height="460"></canvas>
     <div class="hint" id="hint-path">Links Gruppe A, rechts Gruppe B — je ein vollständiges Pfaddiagramm (ein Faktor ξ, vier Items), mit den Parameterwerten <em>dieser</em> Gruppe. <span style="color:var(--a3)">Grün</span> = der Parameter ist in <strong>beiden</strong> Gruppen gleich (invariant), <span style="color:var(--a1)">rot</span> = er <strong>unterscheidet sich</strong> zwischen den Gruppen (nicht-invariant). Im Mehrgruppen-SEM setzt man die Parameter testweise gleich; bleibt das Modell passend, besteht auf dieser Stufe Invarianz.</div>
   </div>
 
   <div class="two-col">
     <div class="plot-box" style="margin-bottom:0">
-      <div class="plot-title">③ Beobachtete Item-Mittelwerte je Gruppe</div>
+      <div class="plot-title"><span class="circ">③</span> Beobachtete Item-Mittelwerte je Gruppe</div>
       <canvas id="cv-items" height="300"></canvas>
       <div class="hint" id="hint-items">Graue Balken = Gruppe A, blaue = Gruppe B. Das verletzte Item ist rot umrandet.</div>
     </div>
     <div class="plot-box" style="margin-bottom:0">
-      <div class="plot-title">④ Zerlegung der beobachteten Differenz</div>
+      <div class="plot-title"><span class="circ">④</span> Zerlegung der beobachteten Differenz</div>
       <canvas id="cv-decomp" height="300"></canvas>
       <div class="hint">Der blaue Anteil ist die <strong>zulässige</strong> (latente) Differenz, der orange Anteil das <strong>Artefakt</strong>. Nur wenn Orange = 0 ist, misst der beobachtete Unterschied wirklich das Konstrukt.</div>
     </div>
   </div>
 
-  <div class="sec-h">⑤ Vollständige Rechnung: nur Items → Summenscore vs. SEM</div>
+  <div class="sec-h"><span class="circ">⑤</span> Vollständige Rechnung: nur Items → Summenscore vs. SEM</div>
   <button class="work-toggle" id="work-toggle" onclick="toggleWork()">▸ Lückenlose Rechnung zum aktuellen Szenario anzeigen</button>
   <div class="work" id="work"></div>
 

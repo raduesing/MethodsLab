@@ -61,6 +61,7 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 .seed-btn:hover{border-color:var(--accent);color:var(--accent)}
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
 .sec-h:first-child{margin-top:0}
 #cv-mod{width:100%;display:block}
 #cv-jn{width:100%;display:block}
@@ -297,7 +298,7 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 
   <div class="cv-sticky">
     <div class="sec-h" style="margin-top:0;padding-top:.35rem;display:flex;align-items:center;gap:.5rem">
-      <span id="canvas-title">① Streudiagramm</span>
+      <span id="canvas-title"><span class="circ">①</span> Streudiagramm</span>
       <span style="flex:1"></span>
       <button id="btn-2d" class="vtbtn active" onclick="toggleView3D(false)">2D</button>
       <button id="btn-3d" class="vtbtn" onclick="toggleView3D(true)">3D</button>
@@ -305,13 +306,13 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
     <canvas id="cv-mod" height="510"></canvas>
   </div>
 
-  <div class="sec-h" style="margin-top:.4rem">② Regressionsgleichung</div>
+  <div class="sec-h" style="margin-top:.4rem"><span class="circ">②</span> Regressionsgleichung</div>
   <div class="eq-wrap" id="eq-wrap"></div>
 
-  <div class="sec-h">③ Koeffizienten</div>
+  <div class="sec-h"><span class="circ">③</span> Koeffizienten</div>
   <div id="coef-wrap"></div>
 
-  <div class="sec-h">④ Simple Slopes / Spotlight-Analyse</div>
+  <div class="sec-h"><span class="circ">④</span> Simple Slopes / Spotlight-Analyse</div>
   <div id="slopes-wrap"></div>
 
   <div class="mod-header" id="hd-jn" onclick="toggleMod('jn')">
@@ -1554,8 +1555,8 @@ function toggleView3D(is3d){
   ST.view3d=is3d;
   document.getElementById('btn-2d').classList.toggle('active',!is3d);
   document.getElementById('btn-3d').classList.toggle('active',is3d);
-  document.getElementById('canvas-title').textContent=
-    is3d?'① Regressionsfläche 3D':'① Streudiagramm';
+  document.getElementById('canvas-title').innerHTML=
+    is3d?'<span class="circ">①</span> Regressionsfläche 3D':'<span class="circ">①</span> Streudiagramm';
   const cv=document.getElementById('cv-mod');
   cv.height = is3d ? 680 : 510;
   cv.style.cursor = is3d ? 'grab' : 'default';

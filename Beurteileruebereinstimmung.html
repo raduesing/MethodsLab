@@ -43,6 +43,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
 .sec-h:first-child{margin-top:0}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
 /* ── Rater slot ── */
 .rater-slot{background:var(--bg);border:1px solid var(--border);padding:.6rem .75rem;margin-bottom:.5rem;position:relative}
 .rater-slot-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
@@ -296,7 +297,7 @@ canvas{width:100%;display:block}
 
   <!-- Daten -->
   <div class="scard">
-    <div class="scard-title">① Daten</div>
+    <div class="scard-title"><span class="circ">①</span> Daten</div>
     <div id="rater-list"></div>
     <button class="add-rater-btn" onclick="addRaterSlot()">+ Beurteiler hinzufügen</button>
     <div id="struct-info"></div>
@@ -304,7 +305,7 @@ canvas{width:100%;display:block}
 
   <!-- Skalenniveau -->
   <div class="scard">
-    <div class="scard-title">② Skalenniveau</div>
+    <div class="scard-title"><span class="circ">②</span> Skalenniveau</div>
     <div class="dropdown-row">
       <select id="sel-scale" onchange="onScaleChange()">
         <option value="">— bitte wählen —</option>
@@ -317,7 +318,7 @@ canvas{width:100%;display:block}
 
   <!-- Methode -->
   <div class="scard">
-    <div class="scard-title">③ Methode</div>
+    <div class="scard-title"><span class="circ">③</span> Methode</div>
     <div class="dropdown-row">
       <select id="sel-method" onchange="onMethodChange()">
         <option value="">— erst Skalenniveau wählen —</option>
@@ -372,21 +373,21 @@ canvas{width:100%;display:block}
 
   <!-- ① Global -->
   <div id="sec-global" class="result-section">
-    <div class="sec-h" style="margin-top:0">① Globale Übereinstimmung</div>
+    <div class="sec-h" style="margin-top:0"><span class="circ">①</span> Globale Übereinstimmung</div>
     <div id="global-card"></div>
     <div id="global-dim-note"></div>
   </div>
 
   <!-- ② Dimensionsweise (nur wenn D>1) -->
   <div id="sec-dims" class="result-section">
-    <div class="sec-h">② Dimensionsweise Übereinstimmung</div>
+    <div class="sec-h"><span class="circ">②</span> Dimensionsweise Übereinstimmung</div>
     <div class="cv-wrap"><canvas id="cv-dim-bars" height="240"></canvas></div>
     <div id="dim-table-wrap"></div>
   </div>
 
   <!-- ③ Pro-Reiz-Verteilung -->
   <div id="sec-stim" class="result-section">
-    <div class="sec-h">③ Pro-Reiz-Übereinstimmung</div>
+    <div class="sec-h"><span class="circ">③</span> Pro-Reiz-Übereinstimmung</div>
 
     <!-- Gesamtmaß: alle Rater -->
     <div class="subsec-h" id="stim-overall-head">Gesamtmaß — alle Rater</div>

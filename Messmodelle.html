@@ -59,6 +59,7 @@ input[type=range].acc-t::-webkit-slider-thumb{background:var(--a1)}
 
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
 .sec-h:first-child{margin-top:0}
 
 .story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
@@ -197,7 +198,7 @@ table.htab th{color:var(--accent);font-weight:500}
     <em>Reliabilität (α vs. ω)</em>.
   </div>
 
-  <div class="sec-h">① Modellklasse &amp; Reliabilität</div>
+  <div class="sec-h"><span class="circ">①</span> Modellklasse &amp; Reliabilität</div>
   <div class="metric-grid">
     <div class="metric">
       <div class="metric-lbl">McDonalds <span class="gk">ω<sub>total</sub></span> (korrekt)</div>
@@ -220,18 +221,18 @@ table.htab th{color:var(--accent);font-weight:500}
 
   <div class="two-col">
     <div class="plot-box" style="margin-bottom:0">
-      <div class="plot-title">② Messmodell — Pfaddiagramm</div>
+      <div class="plot-title"><span class="circ">②</span> Messmodell — Pfaddiagramm</div>
       <canvas id="cv-path" height="300"></canvas>
     </div>
     <div class="plot-box" style="margin-bottom:0">
-      <div class="plot-title">③ Implizierte <span id="mat-kind">Kovarianz</span>matrix</div>
+      <div class="plot-title"><span class="circ">③</span> Implizierte <span id="mat-kind">Kovarianz</span>matrix</div>
       <div class="matwrap"><table class="mat" id="mat"></table></div>
       <div class="hint" id="hint-mat"></div>
     </div>
   </div>
 
   <div class="plot-box" id="means-box" style="display:none">
-    <div class="plot-title">④ Item-Mittelwerte E[X<sub>i</sub>] = <span class="gk" style="text-transform:none">ν</span><sub>i</sub> (Intercepts)</div>
+    <div class="plot-title"><span class="circ">④</span> Item-Mittelwerte E[X<sub>i</sub>] = <span class="gk" style="text-transform:none">ν</span><sub>i</sub> (Intercepts)</div>
     <canvas id="cv-means" height="120"></canvas>
     <div class="hint">Ungleiche Intercepts erzeugen <strong>essenzielle</strong> (Tau-)Äquivalenz: Die Item-<em>Mittelwerte</em> verschieben sich, aber die Kovarianzmatrix oben und damit ω/α bleiben <strong>unverändert</strong>.</div>
   </div>

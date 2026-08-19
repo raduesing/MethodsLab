@@ -48,6 +48,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
 .legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
 
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
 .story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a5);padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
 .story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a5);margin-bottom:.45rem}
 .story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
@@ -173,7 +174,7 @@ canvas{width:100%;display:block}
     <strong>Frage vorab:</strong> Sind die Rekord-Gemeinden (höchste <em>und</em> niedrigste Quote) eher <em>große</em> oder <em>kleine</em> Gemeinden? Schau in den Funnel-Plot und die Rangliste.
   </div>
 
-  <div class="sec-h">① Kennzahlen</div>
+  <div class="sec-h"><span class="circ">①</span> Kennzahlen</div>
   <div class="metric-grid">
     <div class="metric"><div class="metric-lbl">Wahre Quote (überall)</div><div class="metric-val" id="m-p">—</div></div>
     <div class="metric"><div class="metric-lbl">Höchste gemessene Quote</div><div class="metric-val" id="m-hi" style="color:var(--a1)">—</div><div class="metric-sub" id="m-hi-n">—</div></div>
@@ -182,14 +183,14 @@ canvas{width:100%;display:block}
   </div>
   <div class="verdict" id="verdict">—</div>
 
-  <div class="sec-h">② Funnel-Plot — Quote gegen Einwohnerzahl</div>
+  <div class="sec-h"><span class="circ">②</span> Funnel-Plot — Quote gegen Einwohnerzahl</div>
   <div class="plot-box">
     <div class="plot-title">jeder Punkt = eine Gemeinde · x = Einwohner (log) · y = gemessene Quote · Trichter = ±2 SE um die wahre Quote</div>
     <canvas id="cv" height="450"></canvas>
     <div class="hint">Links (kleine Gemeinden) ist der Trichter weit — dort liegen die Extreme. Rechts (große Gemeinden) klebt alles an der wahren Quote.</div>
   </div>
 
-  <div class="sec-h">③ Rangliste — wer ragt heraus?</div>
+  <div class="sec-h"><span class="circ">③</span> Rangliste — wer ragt heraus?</div>
   <div class="rank-grid">
     <div class="rank-col"><div class="rank-h hi">🔺 Höchste Quote</div><div id="rank-hi"></div></div>
     <div class="rank-col"><div class="rank-h lo">🔻 Niedrigste Quote</div><div id="rank-lo"></div></div>

@@ -61,6 +61,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
 
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
 .story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a1);
   padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
 .story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a1);margin-bottom:.45rem}
@@ -217,7 +218,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
       Du suchst Korrelate von <strong>Lebenszufriedenheit</strong> und testest dutzende Variablen (Schokolade, Sternzeichen, Schuhgröße …) — alle in Wahrheit <em>unabhängig</em>.
       Bei genug Tests leuchten einige rot auf: „signifikant". <strong>Frage:</strong> Sind das Entdeckungen? Dreh an m und schau, was die Formel sagt.
     </div>
-    <div class="sec-h">① Bilanz der Tests</div>
+    <div class="sec-h"><span class="circ">①</span> Bilanz der Tests</div>
     <div class="metric-grid">
       <div class="metric"><div class="metric-lbl">Tests durchgeführt</div><div class="metric-val" id="m-m">—</div></div>
       <div class="metric"><div class="metric-lbl">Signifikant (p&lt;α)</div><div class="metric-val" id="m-sig" style="color:var(--a1)">—</div><div class="metric-sub">„Zufallstreffer"</div></div>
@@ -225,9 +226,9 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
       <div class="metric"><div class="metric-lbl">P(≥1 Fehlalarm)</div><div class="metric-val" id="m-pany">—</div><div class="metric-sub">1−(1−α)<sup>m</sup></div></div>
     </div>
     <div class="formula" id="formula-d">—</div>
-    <div class="sec-h">② Alle Tests (rot = „signifikant")</div>
+    <div class="sec-h"><span class="circ">②</span> Alle Tests (rot = „signifikant")</div>
     <div class="dredge-grid" id="dredge-grid"></div>
-    <div class="sec-h">③ HARKing — aus Rauschen eine Geschichte machen</div>
+    <div class="sec-h"><span class="circ">③</span> HARKing — aus Rauschen eine Geschichte machen</div>
     <button class="reset-btn" id="btn-hark" style="border-color:var(--a4);color:var(--a4);width:auto;padding:.45rem 1rem">🎣 Schlagzeilen erfinden</button>
     <div class="hark hide" id="hark-box"></div>
   </div>
@@ -239,7 +240,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
       Eine Zielgröße und k <strong>Rausch-Prädiktoren</strong> — keiner hat einen echten Effekt. Die schrittweise Auswahl behält trotzdem die, die im <em>Trainingsset</em> zufällig „signifikant" aussehen; zusammen ergeben sie ein Modell mit beeindruckendem R².
       <strong>Der Lackmustest:</strong> Wendet man dieselben Prädiktoren auf eine <strong>frische Stichprobe</strong> an — bleibt etwas übrig? <strong>Rate vorab.</strong>
     </div>
-    <div class="sec-h">① Modellgüte: Trainingsset &nbsp;vs.&nbsp; neue Daten</div>
+    <div class="sec-h"><span class="circ">①</span> Modellgüte: Trainingsset &nbsp;vs.&nbsp; neue Daten</div>
     <div class="r2-compare">
       <div class="r2-side">
         <div class="r2-cap">Trainingsset<br>(hier wurde ausgewählt)</div>
@@ -253,7 +254,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
       </div>
     </div>
     <div class="verdict v-flat" id="f-verdict">—</div>
-    <div class="sec-h">② Jeder „gewählte" Prädiktor — und was von ihm bleibt</div>
+    <div class="sec-h"><span class="circ">②</span> Jeder „gewählte" Prädiktor — und was von ihm bleibt</div>
     <div id="step-bars"></div>
     <div class="step-note" id="step-note"></div>
   </div>

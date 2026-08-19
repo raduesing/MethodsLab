@@ -180,6 +180,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 .lcard{background:var(--panel);border:1px solid var(--border);padding:1rem 1.1rem}
 .lcard:last-child{grid-column:1/-1}
 .lcard-h{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--a2);margin-bottom:.55rem}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
 .lcard-body{font-size:.875rem;color:var(--ink2);line-height:1.7}
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{font-family:'DM Mono',monospace;font-size:.82em;color:var(--a2)}
@@ -717,42 +718,42 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
   <div class="lcard-grid">
 
     <div class="lcard">
-      <div class="lcard-h">① ICC — Intraklassen-Korrelation</div>
+      <div class="lcard-h"><span class="circ">①</span> ICC — Intraklassen-Korrelation</div>
       <div class="lcard-body">
         Der ICC (Intraclass Correlation Coefficient) misst den Anteil der Gesamtvarianz, der <strong>zwischen den Gruppen</strong> liegt: <code>ICC = τ₀² / (τ₀² + σ²)</code>. ICC = 0 bedeutet Gruppen sind nicht ähnlicher als Zufallsstichproben — OLS reicht. ICC &gt; 0.10–0.20 bedeutet starke Clusterstruktur: Individuen innerhalb einer Gruppe sind einander ähnlicher. Dann führt OLS zu <strong>zu kleinen Standardfehlern</strong> und falschen Inferenzen. Faustregel: ab ICC &gt; 0.05 LMM erwägen; ab ICC &gt; 0.10 LMM zwingend.
       </div>
     </div>
 
     <div class="lcard">
-      <div class="lcard-h">② Complete · No · Partial Pooling</div>
+      <div class="lcard-h"><span class="circ">②</span> Complete · No · Partial Pooling</div>
       <div class="lcard-body">
         <strong>Complete Pooling</strong> ignoriert Gruppen — eine globale OLS-Gerade, SE unterschätzt. <strong>No Pooling</strong> modelliert als Gruppe × Prädiktor-Interaktion (2J Parameter) — stabil nur bei großen n_j und kleinem J, kein Informationsaustausch. <strong>Partial Pooling</strong> (LMM) ist der Kompromiss: Gruppen-Intercepts (Random Intercepts) oder auch Slopes (Random Slopes) werden zur Grand Mean <em>geschrumpft</em> (Empirical Bayes). Stärke des Shrinkage: λ = τ₀²/(τ₀²+σ²/n_j). Kleine Gruppen werden stärker angepasst. Ergebnis: regularisierter Schätzer mit besserer Out-of-Sample-Vorhersage und korrekten SE.
       </div>
     </div>
 
     <div class="lcard">
-      <div class="lcard-h">③ Shrinkage &amp; Empirical Bayes</div>
+      <div class="lcard-h"><span class="circ">③</span> Shrinkage &amp; Empirical Bayes</div>
       <div class="lcard-body">
         Partial Pooling ist äquivalent zu <strong>Empirical Bayes</strong>: Gruppen-Intercepts werden als zufällig aus N(0,τ₀²) gezogen betrachtet. Shrinkage-Faktor λ_j = τ₀²/(τ₀²+σ²/n_j). Bei τ₀²&nbsp;↑ oder n_j&nbsp;↑ gilt λ → 1 (wenig Shrinkage). Bei kleinen Gruppen oder kleinem τ₀² gilt λ → 0 (starkes Shrinkage). Der Caterpillar-Plot zeigt geschrumpfte Intercepts mit KI. Gruppen weit vom Grand Mean entfernt haben breitere KI und weniger Shrinkage — weil sie mehr eigene Evidenz mitbringen.
       </div>
     </div>
 
     <div class="lcard">
-      <div class="lcard-h">④ Random Slopes</div>
+      <div class="lcard-h"><span class="circ">④</span> Random Slopes</div>
       <div class="lcard-body">
         Ein <strong>Random-Intercept-Modell</strong> nimmt an, dass alle Gruppen dieselbe Steigung haben. <strong>Random-Slope-Modelle</strong> erlauben, dass dieser Effekt variiert: τ₁ = SD der Steigungsverteilung. Der Korrelationsparameter ρ zwischen u₀j und u₁j ist inhaltlich wichtig: ρ &gt; 0 (Fan-out) = hohe Gruppen profitieren mehr; ρ &lt; 0 (Kompensation) = niedrige Gruppen profitieren mehr. In lme4: <code>lmer(Y ~ X + (1 + X | Gruppe), data = df)</code>. Bei kleinem J und kleinem n_j kann ρ schlecht identifiziert sein → <code>||</code> Syntax testen.
       </div>
     </div>
 
     <div class="lcard">
-      <div class="lcard-h">⑤ Simpson-Paradoxon &amp; Within/Between</div>
+      <div class="lcard-h"><span class="circ">⑤</span> Simpson-Paradoxon &amp; Within/Between</div>
       <div class="lcard-body">
         Der aggregierte OLS-Schätzer mischt <strong>Within-Effekte</strong> (kausal interessant) mit <strong>Between-Effekten</strong> (oft konfundiert). Das <strong>Simpson-Paradoxon</strong> entsteht, wenn beide Effekte gegensätzliche Vorzeichen haben und Between-Varianz in X dominiert. LMM schätzt im Fixed Slope γ₁₀ den Within-Effekt, bereinigt von Gruppenunterschieden. Historische Beispiele: UC-Berkeley-Aufnahme (1973), Nierenstein-Behandlung. Wer nur OLS nutzt, zieht ggf. kausal falsche Schlüsse.
       </div>
     </div>
 
     <div class="lcard">
-      <div class="lcard-h">⑥ Modellformel &amp; R-Syntax</div>
+      <div class="lcard-h"><span class="circ">⑥</span> Modellformel &amp; R-Syntax</div>
       <div class="lcard-body">
         Random Intercepts: <code>lmer(Y ~ X + (1 | Gruppe), data = df)</code>.<br>
         Random Slopes: <code>lmer(Y ~ X + (1 + X | Gruppe), data = df)</code>.<br>

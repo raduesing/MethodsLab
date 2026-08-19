@@ -64,6 +64,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .pr-diff{font-size:.74rem}
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
 .sec-h:first-child{margin-top:0}
 .story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
   padding:.75rem .9rem;margin-bottom:.85rem}
@@ -187,12 +188,12 @@ canvas{width:100%;display:block}
   </div>
 
   <div class="plot-box plot-sticky">
-    <div class="plot-title">① Dichteverteilung — Empirisch (blau) vs. implizierte Normalverteilung (orange)</div>
+    <div class="plot-title"><span class="circ">①</span> Dichteverteilung — Empirisch (blau) vs. implizierte Normalverteilung (orange)</div>
     <canvas id="cv-density" height="372"></canvas>
     <div class="hint" id="hint-density">Rote Linien = lineare T-Wert-Stufen · Blaue Linien = empirische Percentile (PR 16, 50, 84, 98) · Grün (Toggle) = T_F-Stufen + NV (Median/IQR) · Modell: kontinuierlich — Bodeneffekt bei x=0 nicht abgebildet</div>
   </div>
 
-  <div class="sec-h" style="margin-top:.6rem">② Diskrepanztabelle — Vergleich beider Normierungsansätze</div>
+  <div class="sec-h" style="margin-top:.6rem"><span class="circ">②</span> Diskrepanztabelle — Vergleich beider Normierungsansätze</div>
   <div class="dtable-wrap">
     <table class="dtable" id="dtable">
       <thead>
@@ -218,7 +219,7 @@ canvas{width:100%;display:block}
     <span class="te-item"><span class="te-key" style="color:var(--a3)">Δ T</span> = T_F − T (linear): positiv = lineare Norm unterschätzt Elevation</span>
   </div>
 
-  <div class="sec-h">③ Prozentrang-Kurven im Vergleich</div>
+  <div class="sec-h"><span class="circ">③</span> Prozentrang-Kurven im Vergleich</div>
   <div class="plot-box">
     <div class="plot-title">Kumulierte Prozentränge: Empirisch (blau) vs. T-Norm-Annahme (orange)</div>
     <canvas id="cv-pr" height="300"></canvas>
