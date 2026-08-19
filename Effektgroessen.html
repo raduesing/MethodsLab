@@ -146,12 +146,13 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
     <p class="help-p">Bei n&nbsp;≥&nbsp;40 unterscheiden sich die drei kaum; bei sehr kleinem n (z.&nbsp;B. &lt;&nbsp;15) können sie spürbar auseinanderfallen — probiere es mit dem n-Regler aus.</p>
     <div class="help-h3">Cohen's U₃ und CLES</div>
     <p class="help-p">Beide übersetzen d in eine Wahrscheinlichkeit und sind oft leichter zu kommunizieren als d selbst.</p>
-    <p class="help-p"><code>U₃&nbsp;=&nbsp;Φ(d)</code> — der Anteil der Referenzgruppe, den der Mittelwert der anderen Gruppe übertrifft (bei d&nbsp;=&nbsp;0.5 also 69.1%).<br>
-    <code>CLES&nbsp;=&nbsp;Φ(d/√2)</code> — die Wahrscheinlichkeit, dass eine zufällig gezogene Person der höheren Gruppe einen höheren Wert hat als eine zufällig gezogene Person der anderen Gruppe.</p>
+    <p class="help-p"><code>U₃&nbsp;=&nbsp;Φ(d)</code> — der Anteil der Vergleichsgruppe (M₁), den der Mittelwert der anderen Gruppe (M₂) übertrifft (bei d&nbsp;=&nbsp;0.5 also 69.1%).<br>
+    <code>CLES&nbsp;=&nbsp;Φ(d/√2)</code> — die Wahrscheinlichkeit, dass eine zufällig gezogene Person aus Gruppe&nbsp;2 einen höheren Wert hat als eine zufällig gezogene Person aus Gruppe&nbsp;1.</p>
     <div class="help-h3">Weitere Umrechnungen</div>
     <p class="help-p"><code>r&nbsp;=&nbsp;d/√(d²+4)</code> — punktbiseriale Korrelation zwischen Gruppenzugehörigkeit und Messwert.<br>
     <code>r²</code> bzw. <code>η²</code> — Anteil der durch die Gruppierung aufgeklärten Varianz.<br>
     <code>OR&nbsp;=&nbsp;exp(d·π/√3)</code> — Odds Ratio unter Normalverteilungsannahme, verbreitet in Medizin und Epidemiologie.</p>
+    <p class="help-p"><strong style="color:var(--ink)">Vorzeichen:</strong> r, OR, U₃ und CLES folgen alle demselben Vorzeichen wie d. Ist d negativ (M₂&nbsp;&lt;&nbsp;M₁, hier: eine Abnahme), fallen U₃ und CLES unter 50&nbsp;%, OR unter 1, und r wird negativ — das ist kein Fehler, sondern zeigt konsistent dieselbe Richtung wie d an. Nur r² und η² sind vorzeichenunabhängig, weil sie aufgeklärte Varianz (quadrierte Größen) ausdrücken. Ob man Effektgrößen mit Vorzeichen berichtet oder den Betrag nimmt, ist selbst eine Konvention: das Vorzeichen sollte stehen bleiben, wenn die Richtung inhaltlich informativ ist (z.&nbsp;B. Zu- vs. Abnahme) — nur beim reinen Abgleich mit den klein/mittel/groß-Schwellen (die per Definition Beträge sind) wird auf den Betrag geschaut.</p>
     <div class="help-h3">Für die eigene Studie</div>
     <p class="help-p">Dieses Tutorial arbeitet mit einem festen (aber frei einstellbaren) Beispiel und zeigt keine Konfidenzintervalle. Für exakte Berechnungen mit eigenen Daten — CSV-Upload, Konfidenzintervalle nach Bonett, Rosenthal und exakter nichtzentraler t-Verteilung — siehe den <a href="Effektgroessen_Rechner.html">Effektgrößen-Rechner</a>.</p>
   </div>
@@ -340,10 +341,10 @@ function setMode(m){
   document.getElementById('mode-note').textContent=isW
     ? 'Dieselben Personen vor und nach dem Training — hier entsteht die Standardisierungsfrage: SD wovon?'
     : 'Zwei unabhängige Gruppen — der einfachere Fall: ein Nenner, eine Standardisierung.';
-  document.getElementById('lbl-m1').textContent=isW?'M₁ (Prä)':'M₁ (Gruppe 1)';
-  document.getElementById('lbl-m2').textContent=isW?'M₂ (Post)':'M₂ (Gruppe 2)';
-  document.getElementById('lbl-sd1').textContent=isW?'SD₁ (Prä)':'SD₁ (Gruppe 1)';
-  document.getElementById('lbl-sd2').textContent=isW?'SD₂ (Post)':'SD₂ (Gruppe 2)';
+  document.getElementById('lbl-m1').textContent=isW?'M₁ (Prä)':'M₁ (Kontrolle)';
+  document.getElementById('lbl-m2').textContent=isW?'M₂ (Post)':'M₂ (Training)';
+  document.getElementById('lbl-sd1').textContent=isW?'SD₁ (Prä)':'SD₁ (Kontrolle)';
+  document.getElementById('lbl-sd2').textContent=isW?'SD₂ (Post)':'SD₂ (Training)';
   document.getElementById('lbl-n').textContent=isW?'n (Paare)':'n (pro Gruppe)';
   document.getElementById('row-r').style.display=isW?'':'none';
   document.getElementById('between-est').style.display=isW?'none':'';
@@ -453,7 +454,7 @@ function buildConversionTable(d_ref, cles_mw){
   });
   thead.appendChild(hrow); tbl.appendChild(thead);
   const tbody=document.createElement('tbody');
-  const d=Math.abs(d_ref);
+  const d=d_ref;
   const r=d/Math.sqrt(d*d+4);
   const r2=r*r;
   const eta2=d*d/(d*d+4);
@@ -583,7 +584,7 @@ function drawOverlap(m1, sd1, m2, sd2, d, lbl1, lbl2, cles_mw){
   ctx.fillText('Rohwertdiff. = '+fmt(m2-m1,1)+'  →  d = '+fmt(d,3), (px1+px2)/2, arrY+18);
 
   // Stats box (U3 / CLES) — short labels; full definitions live in the Hilfe/step text below
-  const u3=stdNorm(Math.abs(d))*100;
+  const u3=stdNorm(d)*100;
   const bw=Math.min(230,plotW), bx=padL+(plotW-bw)/2, by=arrY+34, bh=48;
   ctx.fillStyle=C.paper; ctx.strokeStyle=C.grid; ctx.lineWidth=1;
   ctx.fillRect(bx,by,bw,bh); ctx.strokeRect(bx,by,bw,bh);

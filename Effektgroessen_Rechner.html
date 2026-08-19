@@ -151,7 +151,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
     <div class="help-h3">Was zeigt dieses Tool?</div>
     <p class="help-p">Dieser Rechner berechnet und übersetzt Effektgrößen für <strong style="color:var(--ink)">Within-t-Tests (Messwiederholung)</strong> und <strong style="color:var(--ink)">Between-t-Tests (unabhängige Gruppen)</strong> — mit exakten Kennwerten für die eigene Studie. Es zeigt drei Standardisierungen gleichzeitig — d<sub>z</sub>, d<sub>rm</sub>, d<sub>av</sub> — sowie drei kleine-Stichproben-Korrekturen und drei CI-Methoden. Für eine konzeptuelle Einführung mit geführtem Beispiel siehe das <a href="Effektgroessen.html" style="color:var(--a2)">Effektgrößen-Tutorial</a>.</p>
     <div class="help-h3">Das laufende Beispiel</div>
-    <p class="help-p">Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. <strong style="color:var(--ink)">Within:</strong> 40 Teilnehmende, M<sub>prä</sub>=45.8 (SD=8.4), M<sub>post</sub>=52.4 (SD=9.6), r=.65. Konvention: d = Post − Prä, d > 0 = Anstieg. <strong style="color:var(--ink)">Between:</strong> 40 Teilnehmende je Gruppe (Training vs. Warteliste-Kontrolle).</p>
+    <p class="help-p">Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. <strong style="color:var(--ink)">Within:</strong> 40 Teilnehmende, M<sub>prä</sub>=45.8 (SD=8.4), M<sub>post</sub>=52.4 (SD=9.6), r=.65. Konvention: d = Post − Prä, d > 0 = Anstieg. <strong style="color:var(--ink)">Between:</strong> 40 Teilnehmende je Gruppe (Warteliste-Kontrolle vs. Training). Konvention: d = Intervention − Kontrolle, d > 0 = Intervention höher — parallel zu Within, damit dieselben Rohdaten in beiden Modi dasselbe Vorzeichen ergeben.</p>
     <div class="help-h3">Drei Standardisierungen (Within)</div>
     <p class="help-p"><code>d<sub>z</sub></code> — Differenzen-SD als Nenner; direkt für t-Test-Power und CLES (Wuensch).<br>
     <code>d<sub>rm</sub></code> — d<sub>z</sub> · √(2(1−r)) (Becker 1988): gleich d<sub>av</sub> bei Varianzhomogenität, gleich d<sub>z</sub> bei r=.5.<br>
@@ -171,7 +171,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
     <strong style="color:var(--ink)">A) Student's t</strong> — gepoolte SD, setzt gleiche Populationsvarianzen voraus: d<sub>s</sub>, g<sub>s</sub>, mit Bonett-, Rosenthal- und NCT-KI.<br>
     <strong style="color:var(--ink)">B) Welch's t</strong> — Welch-Satterthwaite-df, keine Homogenitätsannahme (Delacre, Lakens &amp; Leys 2017 empfehlen dies als Standard): <code>d<sub>Welch</sub></code> (ungewichtetes 1:1-Mittel der Varianzen) und <code>g<sub>Welch</sub></code> (Hedges-Korrektur mit df<sub>Welch</sub>), sowie eine alternative t-zu-d-Konversion <code>d = t<sub>Welch</sub>·√(1/n₁+1/n₂)</code> (Borenstein et al. 2009) — identisch mit d<sub>Welch</sub> bei n₁=n₂, sonst abweichend. Beide erhalten ein NCT-KI durch Reskalierung von <code>conf.limits.nct(t<sub>Welch</sub>, df<sub>Welch</sub>)</code> — derselbe Trick wie bei d<sub>rm</sub> aus d<sub>z</sub>. Für Welch gibt es hier bewusst keine geschlossene Näherungs-KI (Bonett-Stil) — dafür fehlt eine verlässliche Quelle für die Varianzformel unter Heteroskedastizität.</p>
     <div class="help-h3">CSV-Upload</div>
-    <p class="help-p">Laden Sie eine CSV-Datei mit zwei numerischen Spalten hoch. Im Within-Modus: Spalte 1 = Messung 1, Spalte 2 = Messung 2. Im Between-Modus: Spalte 1 = Gruppe 1, Spalte 2 = Gruppe 2 (verschiedene Längen erlaubt). Erste Zeile wird als Header erkannt, wenn sie nicht-numerisch ist.</p>
+    <p class="help-p">Laden Sie eine CSV-Datei mit zwei numerischen Spalten hoch. Im Within-Modus: Spalte 1 = Messung 1 (Prä), Spalte 2 = Messung 2 (Post). Im Between-Modus: Spalte 1 = Kontrolle, Spalte 2 = Intervention (verschiedene Längen erlaubt). Erste Zeile wird als Header erkannt, wenn sie nicht-numerisch ist.</p>
   </div>
 </div>
 
@@ -221,7 +221,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
         <input type="number" class="field-inp" id="inp-n1" value="40" min="3" step="1" oninput="onInput()">
       </div>
       <div class="field-row" id="row-n2" style="display:none">
-        <label class="field-lbl" id="lbl-n2">n₂ <em>(Gruppe 2)</em></label>
+        <label class="field-lbl" id="lbl-n2">n₂ <em>(Intervention)</em></label>
         <input type="number" class="field-inp" id="inp-n2" value="40" min="3" step="1" oninput="onInput()">
       </div>
       <div class="field-row" id="row-r">
@@ -232,7 +232,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 
     <!-- CSV upload panel -->
     <div id="panel-csv" style="display:none">
-      <div class="csv-hint" id="csv-hint">2 Spalten: Spalte&nbsp;1&nbsp;=&nbsp;Gruppe&nbsp;1, Spalte&nbsp;2&nbsp;=&nbsp;Gruppe&nbsp;2 — unterschiedliche Länge erlaubt. Komma/Semikolon-getrennt, Header optional, Dezimalkomma wird erkannt.</div>
+      <div class="csv-hint" id="csv-hint">2 Spalten: Spalte&nbsp;1&nbsp;=&nbsp;Kontrolle, Spalte&nbsp;2&nbsp;=&nbsp;Intervention — unterschiedliche Länge erlaubt. Komma/Semikolon-getrennt, Header optional, Dezimalkomma wird erkannt.</div>
       <div class="file-drop" id="file-drop" onclick="document.getElementById('file-input').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="fileDrop(event)">
         <input type="file" id="file-input" accept=".csv,.txt" onchange="fileSelect(event)">
         CSV hier ablegen<br>oder klicken
@@ -240,11 +240,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
       <div class="file-status" id="file-status">Keine Datei geladen</div>
       <div id="col-sel-wrap" style="display:none">
         <div class="field-row">
-          <label class="field-lbl" id="csv-lbl-1">Spalte 1 (Prä / Gr.1)</label>
+          <label class="field-lbl" id="csv-lbl-1">Spalte 1 (Prä / Kontrolle)</label>
           <select class="col-sel" id="csv-col1" onchange="csvCompute()"></select>
         </div>
         <div class="field-row">
-          <label class="field-lbl" id="csv-lbl-2">Spalte 2 (Post / Gr.2)</label>
+          <label class="field-lbl" id="csv-lbl-2">Spalte 2 (Post / Intervention)</label>
           <select class="col-sel" id="csv-col2" onchange="csvCompute()"></select>
         </div>
       </div>
@@ -425,20 +425,20 @@ function setMode(m){
   document.getElementById('mode-note').textContent=isW
     ? 'Dieselben Personen vor und nach dem Training — hier entsteht die Standardisierungsfrage: SD wovon?'
     : 'Zwei unabhängige Gruppen — der einfachere Fall: ein Nenner, eine Standardisierung.';
-  document.getElementById('lbl-m1').innerHTML=isW?'M₁ <em>(Prä)</em>':'M₁ <em>(Gruppe 1)</em>';
-  document.getElementById('lbl-m2').innerHTML=isW?'M₂ <em>(Post)</em>':'M₂ <em>(Gruppe 2)</em>';
-  document.getElementById('lbl-sd1').innerHTML=isW?'SD₁ <em>(Prä)</em>':'SD₁ <em>(Gruppe 1)</em>';
-  document.getElementById('lbl-sd2').innerHTML=isW?'SD₂ <em>(Post)</em>':'SD₂ <em>(Gruppe 2)</em>';
-  document.getElementById('lbl-n1').innerHTML=isW?'n <em>(Paare)</em>':'n₁ <em>(Gruppe 1)</em>';
+  document.getElementById('lbl-m1').innerHTML=isW?'M₁ <em>(Prä)</em>':'M₁ <em>(Kontrolle)</em>';
+  document.getElementById('lbl-m2').innerHTML=isW?'M₂ <em>(Post)</em>':'M₂ <em>(Intervention)</em>';
+  document.getElementById('lbl-sd1').innerHTML=isW?'SD₁ <em>(Prä)</em>':'SD₁ <em>(Kontrolle)</em>';
+  document.getElementById('lbl-sd2').innerHTML=isW?'SD₂ <em>(Post)</em>':'SD₂ <em>(Intervention)</em>';
+  document.getElementById('lbl-n1').innerHTML=isW?'n <em>(Paare)</em>':'n₁ <em>(Kontrolle)</em>';
   document.getElementById('row-r').style.display=isW?'':'none';
   document.getElementById('row-n2').style.display=isW?'none':'';
   document.getElementById('sb-rm-row').style.display=isW?'':'none';
   document.getElementById('sb-av-row').style.display=isW?'':'none';
-  document.getElementById('csv-lbl-1').textContent=isW?'Spalte 1 (Prä)':'Spalte 1 (Gruppe 1)';
-  document.getElementById('csv-lbl-2').textContent=isW?'Spalte 2 (Post)':'Spalte 2 (Gruppe 2)';
+  document.getElementById('csv-lbl-1').textContent=isW?'Spalte 1 (Prä)':'Spalte 1 (Kontrolle)';
+  document.getElementById('csv-lbl-2').textContent=isW?'Spalte 2 (Post)':'Spalte 2 (Intervention)';
   document.getElementById('csv-hint').innerHTML = isW
     ? '2 Spalten, gleiche Zeilenzahl: Spalte&nbsp;1&nbsp;=&nbsp;Prä, Spalte&nbsp;2&nbsp;=&nbsp;Post (pro Zeile dieselbe Person). Komma/Semikolon-getrennt, Header optional, Dezimalkomma wird erkannt.'
-    : '2 Spalten: Spalte&nbsp;1&nbsp;=&nbsp;Gruppe&nbsp;1, Spalte&nbsp;2&nbsp;=&nbsp;Gruppe&nbsp;2 — unterschiedliche Länge erlaubt. Komma/Semikolon-getrennt, Header optional, Dezimalkomma wird erkannt.';
+    : '2 Spalten: Spalte&nbsp;1&nbsp;=&nbsp;Kontrolle, Spalte&nbsp;2&nbsp;=&nbsp;Intervention — unterschiedliche Länge erlaubt. Komma/Semikolon-getrennt, Header optional, Dezimalkomma wird erkannt.';
   if(state.tab==='csv'&&state.csvData) csvCompute(); else onInput();
 }
 
@@ -664,7 +664,7 @@ function computeBetween(m1,m2,sd1,sd2,n1,n2,alpha){
   const s_pool=Math.sqrt(((n1-1)*sd1*sd1+(n2-1)*sd2*sd2)/df);
   const s_pool_n=Math.sqrt((n1*sd1*sd1+n2*sd2*sd2)/(n1+n2));
   const s_av=Math.sqrt((sd1*sd1+sd2*sd2)/2);
-  const m_dif=m1-m2;
+  const m_dif=m2-m1;  // Intervention − Kontrolle: positive d = Intervention höher (parallel zu Within: Post − Prä)
 
   const se_pool=s_pool*Math.sqrt(1/n1+1/n2);
   const t_b=m_dif/se_pool;
@@ -697,7 +697,7 @@ function computeBetween(m1,m2,sd1,sd2,n1,n2,alpha){
   const ci_ds_rosenthal={lo:ds-t_a*Math.sqrt((n1+n2)/(n1*n2)+ds*ds/(2*(n1+n2))), hi:ds+t_a*Math.sqrt((n1+n2)/(n1*n2)+ds*ds/(2*(n1+n2)))};
   const ci_raw={lo:m_dif-t_a*se_pool, hi:m_dif+t_a*se_pool};
 
-  // CLES McGraw & Wong (1992): P(X1 > X2) = Phi(d_s / sqrt(2))
+  // CLES McGraw & Wong (1992): P(Intervention > Kontrolle) = Phi(d_s / sqrt(2))
   const cles_mw=stdNorm(ds/Math.sqrt(2));
 
   // ── Welch's t (unequal variances) — Delacre, Lakens & Leys (2017) recommend this
@@ -946,7 +946,7 @@ function buildConversionTable(d_ref, overrideCles){
   });
   thead.appendChild(hrow); tbl.appendChild(thead);
   const tbody=document.createElement('tbody');
-  const d=Math.abs(d_ref);
+  const d=d_ref;
   const r=d/Math.sqrt(d*d+4);
   const r2=r*r;
   const eta2=d*d/(d*d+4);
@@ -985,8 +985,8 @@ function updateResultsUI(res){
   document.getElementById('rb-df').textContent='df = '+res.df;
   document.getElementById('rb-p').textContent=fmtp(res.p);
   document.getElementById('rb-sig').textContent=res.p<res.alpha?'signifikant (α='+res.alpha+')':'n.s. (α='+res.alpha+')';
-  const d1=res.mode==='within'?'M₁ (Prä)':'M₁ (Gruppe 1)';
-  const d2=res.mode==='within'?'M₂ (Post)':'M₂ (Gruppe 2)';
+  const d1=res.mode==='within'?'M₁ (Prä)':'M₁ (Kontrolle)';
+  const d2=res.mode==='within'?'M₂ (Post)':'M₂ (Intervention)';
   document.getElementById('rb-d1lbl').textContent=d1;
   document.getElementById('rb-d2lbl').textContent=d2;
   document.getElementById('rb-m1').textContent=fmt(res.m1,2);
@@ -994,7 +994,7 @@ function updateResultsUI(res){
   document.getElementById('rb-sd1').textContent='SD = '+fmt(res.sd1,2);
   document.getElementById('rb-sd2').textContent='SD = '+fmt(res.sd2,2);
   const ciPct=Math.round((1-res.alpha)*100);
-  document.getElementById('rb-mdif-lbl').textContent=res.mode==='within'?'M_dif (Post − Prä)':'M_dif (Gr.1 − Gr.2)';
+  document.getElementById('rb-mdif-lbl').textContent=res.mode==='within'?'M_dif (Post − Prä)':'M_dif (Intervention − Kontrolle)';
   document.getElementById('rb-mdif').textContent=fmt(res.m_dif,2);
   document.getElementById('rb-mdif-sub').textContent='Rohwertsdifferenz';
   document.getElementById('rb-ci-raw-lbl').textContent=ciPct+'%-KI (Rohwert)';
@@ -1051,7 +1051,7 @@ function updateResultsUI(res){
     const otbB=document.createElement('tbody');
     [['d_pool_n', fmt(res.d_pool_n), 'n-gepoolte SD (statt n−1)'],
      ['Glass Δ', fmt(res.glass), 'Nur SD₁ (Kontrollgruppe) als Nenner'],
-     ['CLES (McGraw & Wong)', fmt(res.cles_mw*100,1)+'%', 'Φ(d_s/√2) — P(X₁ > X₂)'],
+     ['CLES (McGraw & Wong)', fmt(res.cles_mw*100,1)+'%', 'Φ(d_s/√2) — P(Intervention > Kontrolle)'],
      ['t_Welch(df_Welch)', fmt(res.welch.t)+' ('+fmt(res.welch.df,1)+')', 'p = '+fmtp(res.welch.p)+'; 95%-KI Mittelwertsdiff. '+fmtCI(res.welch.ci_raw)]
     ].forEach(row=>{
       const tr=document.createElement('tr');
@@ -1101,8 +1101,8 @@ function drawOverlap(res){
 
   const d=res.mode==='within'?res.dav:res.ds;
   const isWithin=res.mode==='within';
-  const lbl1=isWithin?'Prä':'Gruppe 1';
-  const lbl2=isWithin?'Post':'Gruppe 2';
+  const lbl1=isWithin?'Prä':'Kontrolle';
+  const lbl2=isWithin?'Post':'Intervention';
 
   const padL=64, padR=64, padT=46, padB=90;
   const plotW=W-padL-padR, plotH=H-padT-padB;
@@ -1207,7 +1207,7 @@ function drawOverlap(res){
   ctx.fillText('d = '+fmt(d,3), (px1+px2)/2, arrY+18);
 
   // Statistics legend box (bottom right)
-  const u3=stdNorm(Math.abs(d))*100;
+  const u3=stdNorm(d)*100;
   const cles_mw=res.mode==='within'?(res.cles_mw||stdNorm(d/Math.sqrt(2)))*100:res.cles_mw*100;
   const cles_w=res.mode==='within'?(res.cles_w||stdNorm(res.dz))*100:null;
 
