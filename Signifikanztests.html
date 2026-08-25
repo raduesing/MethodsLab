@@ -46,7 +46,10 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink3);margin:1.7rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
 .sec-h:first-child{margin-top:0}
-.circ{font-size:2em;font-weight:600;vertical-align:-.18em;line-height:1;display:inline-block}
+.circ{font-family:Arial,'Helvetica Neue',sans-serif;font-size:1.72rem;font-weight:600;vertical-align:-.18em;line-height:1;display:inline-block;color:var(--ink)}
+.takeaway-box{background:var(--panel);border-left:3px solid var(--a3);padding:.85rem 1rem;
+  margin-bottom:.9rem;font-size:.88rem;line-height:1.75}
+.takeaway-box strong{color:var(--a3)}
 .p-intro{font-size:.92rem;line-height:1.85;color:var(--ink2);margin-bottom:.75rem}
 .p-intro strong{color:var(--ink)}
 .example-box{background:var(--panel);border-left:3px solid var(--a2);padding:.85rem 1rem;
@@ -176,7 +179,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
     <strong>Laufendes Beispiel:</strong> Ein neues Lernprogramm soll die Merkfähigkeit verbessern. Kontrollgruppe (klassisches Lernen, n=25) vs. Interventionsgruppe (neues Programm, n=25), Testergebnis 0–150 Punkte. Beobachtet: M<sub>Kontrolle</sub>=100, M<sub>Intervention</sub>=107, SD=12 (gepoolt) → t(48)=2.06, p=.045. Knapp signifikant bei α=.05 — aber was heißt das eigentlich?
   </div>
 
-  <div class="sec-h">① Wiederholte Ziehung unter H₀: Was der p-Wert wirklich zählt</div>
+  <div class="sec-h" style="color:var(--ink)"><span class="circ">①</span> Wiederholte Ziehung unter H₀: Was der p-Wert wirklich zählt</div>
 
   <div class="step-block">
     <div class="step-body">Stell dir vor, das Lernprogramm hätte in Wahrheit <strong>keinen</strong> Effekt (H₀ trifft zu). Jeder Klick unten zieht zwei neue, fiktive Gruppen aus <em>derselben</em> Population und berechnet deren t-Wert. Beobachte, wie oft ein Ergebnis mindestens so extrem wie unser t=2.06 rein zufällig auftritt.</div>
@@ -191,16 +194,18 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
   <div class="canvas-wrap">
     <canvas id="cv1" height="450"></canvas>
   </div>
-  <div class="canvas-axis-note">x-Achse: simulierter t-Wert · Kurve = theoretische t-Verteilung unter H₀ (df=48) · rote Fläche = "mindestens so extrem wie unser t=2.06"</div>
+  <div class="canvas-axis-note">x-Achse: simulierter t-Wert · Kurve = theoretische t-Verteilung unter H₀ (df=48) · rote Fläche = "mindestens so extrem wie unser t=2.06" (das <em>ist</em> unser p-Wert) · graue Punktlinie = α=.05-Grenze (t=±2.01) zum Vergleich — hier fast deckungsgleich, aber begrifflich etwas anderes</div>
 
   <div class="live-readout" id="readout1">Noch keine Stichprobe gezogen.</div>
 
   <div class="step-block">
-    <div class="step-h"><span class="circ">①</span>&nbsp; Konvergenz gegen den p-Wert</div>
-    <div class="step-body">Mit wachsender Anzahl Ziehungen nähert sich der simulierte Anteil "mindestens so extrem" dem formal berechneten p=.045 an. Das <em>ist</em> die Definition — keine Interpretation, keine Zusatzannahme über die Nullhypothese selbst. p ist eine Eigenschaft der <strong>Daten unter H₀</strong>, nicht eine Eigenschaft von H₀.</div>
+    <div class="step-h">Konvergenz gegen den p-Wert</div>
+    <div class="step-body">Mit wachsender Anzahl Ziehungen nähert sich der simulierte Anteil "mindestens so extrem" dem formal berechneten p=.045 an. Das <em>ist</em> die Definition — keine Interpretation, keine Zusatzannahme über die Nullhypothese selbst. p ist eine Eigenschaft der <strong>Daten unter H₀</strong>, nicht eine Eigenschaft von H₀.<br><br>Wichtig für die Grafik: Die rote Fläche beginnt bei unserem <strong>eigenen</strong> beobachteten t=2.06 — nicht bei der α=.05-Grenze (graue Punktlinie, t=±2.01). Das sind zwei verschiedene Dinge, die hier nur zufällig fast zusammenfallen: t=±2.01 ist die feste Grenze, ab der <em>irgendein</em> Ergebnis als "signifikant" gilt; t=2.06 ist unser tatsächliches Ergebnis, und der Flächenanteil ab genau diesem Wert ist per Definition unser p-Wert. Wäre unser t z.&nbsp;B. 3.0 gewesen, läge die rote Fläche entsprechend weiter außen (kleinerer p-Wert) — die α-Grenze bliebe bei ±2.01.</div>
   </div>
 
-  <div class="sec-h">② Der p-Wert-Tanz: Wie stabil ist ein einzelner p-Wert?</div>
+  <div class="takeaway-box"><strong>Take-Home-Message:</strong> Generell gilt, egal wo man die "kritische" Grenze setzt — .05, .045 oder jeder andere Wert: Wenn H₀ zutrifft, hat bei wiederholter Ziehung von Stichproben genau der entsprechende Anteil aller Stichproben zufällig einen p-Wert, der so klein oder noch kleiner (extremer) ist. Siehe die Verteilung der p-Werte weiter unten (<span class="circ" style="font-size:1em;vertical-align:-.08em">③</span>&nbsp;Die Form der p-Wert-Verteilung).</div>
+
+  <div class="sec-h" style="color:var(--ink)"><span class="circ">②</span> Der p-Wert-Tanz: Wie stabil ist ein einzelner p-Wert?</div>
 
   <div class="step-block">
     <div class="step-body">Jetzt umgekehrt: Es gibt einen <strong>echten, festen</strong> Effekt — aber jede Replikation zieht neue, zufällige Stichproben. Wie sehr springt der p-Wert von Replikation zu Replikation, obwohl der wahre Effekt sich nie ändert?</div>
@@ -234,13 +239,8 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
   <div class="live-readout" id="readout2">Noch keine Replikation gezogen.</div>
 
   <div class="step-block">
-    <div class="step-h"><span class="circ">②</span>&nbsp; Ein p-Wert ist kein Replizierbarkeits-Maß</div>
-    <div class="step-body">Bei realistischer Power (z.&nbsp;B. 50–70%) ist es normal, dass eine knapp signifikante Replikation direkt gefolgt wird von einer, die es nicht ist — obwohl der wahre Effekt konstant bleibt. Ein einzelner p-Wert sagt fast nichts darüber aus, wie ein zweiter Versuch ausgehen würde. Das ist als <strong>"Dance of the p-values"</strong> bekannt (Geoff Cumming).</div>
-  </div>
-
-  <div class="step-block">
     <div class="step-h"><span class="circ">③</span>&nbsp; Die Form der p-Wert-Verteilung</div>
-    <div class="step-body">Die <strong style="color:var(--a3)">grüne Kurve</strong> im unteren Panel zeigt die theoretisch erwartete Dichte der p-Werte für den aktuell eingestellten wahren Effekt d und n — nicht simuliert, sondern exakt berechnet. Bei <strong>d=0</strong> (H₀ stimmt exakt) ist sie <strong>flach bei 1</strong>: eine Gleichverteilung, egal wie groß n ist. Das ist plausibel, sobald man sich klarmacht, was ein p-Wert per Definition ist — unter H₀ ist jeder p-Wert zwischen 0 und 1 gleich wahrscheinlich, und setzt man die Signifikanzgrenze α bei 5%, liegen deshalb per Konstruktion auch genau 5% aller p-Werte darunter (das ist die Falsch-positiv-Rate, nicht mehr und nicht weniger). Erhöhst du d, wird die Kurve zunehmend <strong>linkssteil</strong>: kleine p-Werte werden wahrscheinlicher, große seltener — und je größer d (oder n), desto steiler. Die Umkehrung ist die Grundlage der <strong>p-Curve-Analyse</strong>: Stimmt H₀ über eine Reihe von Studien hinweg <em>nicht</em>, sollten deutlich mehr als 5% der publizierten p-Werte unter .05 liegen und die Verteilung linkssteil statt flach sein — eine Methode, um echte Effekte von reinem p-Hacking zu unterscheiden (Simonsohn, Nelson &amp; Simmons, 2014). Die blauen/roten Balken sind die tatsächlich gezogenen Replikationen; klicke ein paar Mal auf "automatisch" und beobachte, wie sich das Histogramm der grünen Kurve annähert.</div>
+    <div class="step-body">Die <strong style="color:var(--a3)">grüne Kurve</strong> im unteren Panel zeigt die theoretisch erwartete Dichte der p-Werte für den aktuell eingestellten wahren Effekt d und n — nicht simuliert, sondern exakt berechnet. Bei <strong>d=0</strong> (H₀ stimmt exakt) ist sie <strong>flach, mit konstanter Dichte 1</strong> über das gesamte Intervall [0,1] — eine Gleichverteilung, egal wie groß n ist. Das ist plausibel, sobald man sich klarmacht, was ein p-Wert per Definition ist — unter H₀ ist jeder p-Wert zwischen 0 und 1 gleich wahrscheinlich, und setzt man die Signifikanzgrenze α bei 5%, liegen deshalb per Konstruktion auch genau 5% aller p-Werte darunter (das ist die Falsch-positiv-Rate, nicht mehr und nicht weniger). Erhöhst du d, wird die Kurve zunehmend <strong>linkssteil</strong>: kleine p-Werte werden wahrscheinlicher, große seltener — und je größer d (oder n), desto steiler. Die Umkehrung ist die Grundlage der <strong>p-Curve-Analyse</strong>: Stimmt H₀ über eine Reihe von Studien hinweg <em>nicht</em>, sollten deutlich mehr als 5% der publizierten p-Werte unter .05 liegen und die Verteilung linkssteil statt flach sein. Wenn H₀ nicht stimmt, sollten genau deshalb p-Werte knapp unterhalb von α kaum vorkommen, sondern deutlich kleiner sein — eine Methode, um echte Effekte von reinem p-Hacking zu unterscheiden (Simonsohn, Nelson &amp; Simmons, 2014). Die blauen/roten Balken sind die tatsächlich gezogenen Replikationen; klicke ein paar Mal auf "automatisch" und beobachte, wie sich das Histogramm der grünen Kurve annähert.</div>
   </div>
 
   <div class="sec-h">Mythen vs. Fakten</div>
@@ -265,7 +265,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 
   <div class="myth-card">
     <div class="myth-row"><span class="myth-tag">Mythos</span><span class="myth-txt myth">"1−p ist die Wahrscheinlichkeit, dass sich der Befund repliziert."</span></div>
-    <div class="myth-row"><span class="myth-tag fact">Fakt</span><span class="myth-txt fact-txt">Siehe Abschnitt ② oben — der p-Wert-Tanz zeigt direkt, wie wenig ein einzelner p-Wert über eine Replikation aussagt.</span></div>
+    <div class="myth-row"><span class="myth-tag fact">Fakt</span><span class="myth-txt fact-txt">Siehe Abschnitt ② oben — der p-Wert-Tanz zeigt direkt, wie wenig ein einzelner p-Wert über eine Replikation aussagt (siehe auch Lernkarte "Ein p-Wert ist kein Replizierbarkeits-Maß" unten).</span></div>
   </div>
 
   <div class="myth-card">
@@ -295,6 +295,10 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
       <div class="lcard">
         <div class="lcard-h"><span class="gk">α</span> ist fix, p ist zufällig</div>
         <div class="lcard-body">α wird <strong>vor</strong> der Studie als feste Fehlerrate für die Entscheidungsregel festgelegt. p wird <strong>aus</strong> den Daten berechnet und schwankt von Stichprobe zu Stichprobe (siehe Abschnitt ②). Die beiden zu verwechseln führt zu genau den Mythen oben.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Ein p-Wert ist kein Replizierbarkeits-Maß</div>
+        <div class="lcard-body">Bei realistischer Power (z.&nbsp;B. 50–70&nbsp;%) ist es normal, dass eine knapp signifikante Replikation direkt gefolgt wird von einer, die es nicht ist — obwohl der wahre Effekt konstant bleibt. Ein einzelner p-Wert sagt fast nichts darüber aus, wie ein zweiter Versuch ausgehen würde. Das ist als <strong>"Dance of the p-values"</strong> bekannt (Geoff Cumming) — direkt erlebbar in Abschnitt ② oben.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Ein- vs. zweiseitig testen</div>
@@ -469,6 +473,7 @@ function getC(){
 
 // ═══ Section ① — repeated sampling under H0 ═══════════════════════════════════
 const OBS_N=25, OBS_DF=48, OBS_T=2.062;
+const ALPHA_T=tQuantile(0.975,OBS_DF); // two-tailed critical t at alpha=.05, for comparison against our own OBS_T
 let sim1=[]; // array of simulated t-values
 const draw1=tTest2(OBS_N);
 
@@ -544,6 +549,15 @@ function drawCv1(){
 
   // baseline
   ctx.strokeStyle=C.grid; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(padL,yBase); ctx.lineTo(padL+plotW,yBase); ctx.stroke();
+
+  // alpha=.05 critical-value markers (reference only, drawn behind the observed-t markers)
+  [ALPHA_T,-ALPHA_T].forEach(t=>{
+    const px=xpx(t);
+    ctx.strokeStyle=C.ink3; ctx.lineWidth=1; ctx.setLineDash([2,3]);
+    ctx.beginPath(); ctx.moveTo(px,padT+14); ctx.lineTo(px,yBase); ctx.stroke(); ctx.setLineDash([]);
+  });
+  ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('α=.05-Grenze (t=±'+fmt(ALPHA_T,2)+')', xpx(0), padT+10);
 
   // observed t markers
   [OBS_T,-OBS_T].forEach(t=>{
