@@ -277,22 +277,22 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 
         <div class="pp-rowhead">Klassisch</div>
         <div class="pp-cell">
-          <span class="slider-val" id="v-c11">90</span>
-          <input type="range" id="sl-c11" min="60" max="140" step="1" value="90" oninput="onParam2Change()">
+          <span class="slider-val" id="v-c11">100</span>
+          <input type="range" id="sl-c11" min="60" max="140" step="1" value="100" oninput="onParam2Change()">
         </div>
         <div class="pp-cell">
-          <span class="slider-val" id="v-c12">105</span>
-          <input type="range" id="sl-c12" min="60" max="140" step="1" value="105" oninput="onParam2Change()">
+          <span class="slider-val" id="v-c12">108</span>
+          <input type="range" id="sl-c12" min="60" max="140" step="1" value="108" oninput="onParam2Change()">
         </div>
 
         <div class="pp-rowhead">Verteilt</div>
         <div class="pp-cell">
-          <span class="slider-val" id="v-c21">90</span>
-          <input type="range" id="sl-c21" min="60" max="140" step="1" value="90" oninput="onParam2Change()">
+          <span class="slider-val" id="v-c21">100</span>
+          <input type="range" id="sl-c21" min="60" max="140" step="1" value="100" oninput="onParam2Change()">
         </div>
         <div class="pp-cell">
-          <span class="slider-val" id="v-c22">105</span>
-          <input type="range" id="sl-c22" min="60" max="140" step="1" value="105" oninput="onParam2Change()">
+          <span class="slider-val" id="v-c22">108</span>
+          <input type="range" id="sl-c22" min="60" max="140" step="1" value="108" oninput="onParam2Change()">
         </div>
       </div>
       <div class="slider-row">
@@ -373,7 +373,7 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 
     <div class="step-block">
       <div class="step-h">Warum reicht der Vergleich der SAQ nicht — wozu die MQ?</div>
-      <div class="step-body">SAQ<sub style="color:var(--a3)">zwischen</sub> ist eine Summe über <strong>k−1</strong> Termen (hier: 2, einer pro Gruppe minus 1), SAQ<sub style="color:var(--a5)">innerhalb</sub> eine Summe über <strong>N−k</strong> Termen (hier: 57, einer pro Beobachtung minus Gruppenanzahl). Das sind unterschiedlich viele Summanden — und mit jedem zusätzlichen Summanden wächst eine Quadratsumme tendenziell weiter, unabhängig davon, ob überhaupt ein Effekt vorliegt. Ein direkter Vergleich der rohen Summen SAQ<sub style="color:var(--a3)">zwischen</sub> vs. SAQ<sub style="color:var(--a5)">innerhalb</sub> würde also vor allem widerspiegeln, wie viele Freiheitsgrade in jede Summe eingeflossen sind — nicht, wie stark der Gruppenunterschied wirklich ist. Erst die Division durch die jeweiligen df "normiert" beide Summen auf eine <em>durchschnittliche</em> quadrierte Abweichung pro Freiheitsgrad — eine Varianzschätzung. Diese beiden Varianzschätzungen (MQ<sub style="color:var(--a3)">zwischen</sub> und MQ<sub style="color:var(--a5)">innerhalb</sub>) sind unter H₀ (kein echter Effekt) im Erwartungswert gleich groß, und ihr Verhältnis folgt dann einer bekannten Verteilung, der F-Verteilung — das ist die Grundlage für den Signifikanztest. Ohne die Division durch df gäbe es keine Verteilung, gegen die man vergleichen könnte.</div>
+      <div class="step-body">SAQ<sub style="color:var(--a3)">zwischen</sub> ist eine Summe über <strong>k−1</strong> Termen (hier: 2, einer pro Gruppe minus 1), SAQ<sub style="color:var(--a5)">innerhalb</sub> eine Summe über <strong>N−k</strong> Termen (hier: 57, einer pro Beobachtung minus Gruppenanzahl). Das sind unterschiedlich viele Summanden — und mit jedem zusätzlichen Summanden wächst eine Quadratsumme tendenziell weiter, unabhängig davon, ob überhaupt ein Effekt vorliegt. Ein direkter Vergleich der rohen Summen SAQ<sub style="color:var(--a3)">zwischen</sub> vs. SAQ<sub style="color:var(--a5)">innerhalb</sub> würde also vor allem widerspiegeln, wie viele Freiheitsgrade in jede Summe eingeflossen sind — nicht, wie stark der Gruppenunterschied wirklich ist. Erst die Division durch die jeweiligen df "normiert" beide Summen auf eine <em>durchschnittliche</em> quadrierte Abweichung pro Freiheitsgrad — eine Varianzschätzung. Diese beiden Varianzschätzungen (MQ<sub style="color:var(--a3)">zwischen</sub> und MQ<sub style="color:var(--a5)">innerhalb</sub>) sind unter H₀ (kein echter Effekt) im Erwartungswert gleich groß, was einem F = 1 entspräche (Zähler und Nenner sind gleich groß). Ihr Verhältnis folgt dann einer bekannten Verteilung, der F-Verteilung — das ist die Grundlage für den Signifikanztest. Ohne die Division durch df gäbe es keine Verteilung, gegen die man vergleichen könnte.</div>
     </div>
 
     <div class="learn-section">
@@ -414,7 +414,7 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 
     <div class="step-block">
       <div class="step-h">Was bedeutet eine Interaktion überhaupt?</div>
-      <div class="step-body">Neben den beiden <strong>Haupteffekten</strong> (wirkt A im Mittel über beide B-Stufen? wirkt B im Mittel über beide A-Stufen?) interessiert die <strong>Interaktion</strong>: hängt die <em>Größe</em> des Feedback-Effekts davon ab, welche Lernmethode verwendet wird? Ohne Interaktion sind die Effekte <strong>additiv</strong> — der Feedback-Effekt ist für beide Methoden gleich groß, man kann ihn einfach zum Haupteffekt der Methode dazuzählen. Mit Interaktion lässt sich das nicht mehr trennen: die Wirkung von Feedback unterscheidet sich je nach Methode, und man muss die vier Zellmittelwerte einzeln betrachten, um zu verstehen, was passiert.</div>
+      <div class="step-body">Neben den beiden <strong>Haupteffekten</strong> (Wirkt A im Mittel über beide B-Stufen? Wirkt B im Mittel über beide A-Stufen?) interessiert die <strong>Interaktion</strong>: weicht die Wirkung der Kombination aus Methode und Feedback von dem ab, was die Summe der beiden Haupteffekte vorhersagen würde? Ohne Interaktion sind die Effekte <strong>additiv</strong> — der Feedback-Effekt ist für beide Methoden gleich groß, man kann ihn einfach zum Haupteffekt der Methode dazuzählen. Mit Interaktion lässt sich das nicht mehr trennen: die Wirkung von Feedback unterscheidet sich je nach Methode, und man muss die vier Zellmittelwerte einzeln betrachten, um zu verstehen, was passiert.</div>
     </div>
 
     <div class="two-col">
@@ -765,14 +765,30 @@ function captureFixedY1(){
   const pad=(dataMax-dataMin)*0.15||5;
   ST1.fixedYMin=dataMin-pad; ST1.fixedYMax=dataMax+pad;
 }
+function growFixedY1(){
+  const allVals=data1.groups.flat();
+  const dataMin=Math.min(...allVals), dataMax=Math.max(...allVals);
+  const pad=(dataMax-dataMin)*0.15||5;
+  const needMin=dataMin-pad, needMax=dataMax+pad;
+  if(ST1.fixedYMin===null){ ST1.fixedYMin=needMin; ST1.fixedYMax=needMax; }
+  else{
+    if(needMin<ST1.fixedYMin) ST1.fixedYMin=needMin;
+    if(needMax>ST1.fixedYMax) ST1.fixedYMax=needMax;
+  }
+}
+// Draws n values ~ N(mu,sd) but shifts them so their empirical mean is exactly mu —
+// individual points still scatter with the chosen SD, but the plotted group mean
+// (and thus SAQ_zwischen/the ANOVA "signal") always matches the slider value exactly,
+// so only SAQ_innerhalb varies between "Neue Stichprobe ziehen" clicks.
+function sampleExactMean(mu,sd,n){
+  const arr=[]; for(let i=0;i<n;i++) arr.push(mu+sd*randn());
+  const shift=mu-mean(arr);
+  return arr.map(v=>v+shift);
+}
 function drawSample1(){
   const p=currentParams1();
-  data1.groups=p.mu.map(m=>{
-    const arr=[];
-    for(let i=0;i<p.n;i++) arr.push(m+p.sd*randn());
-    return arr;
-  });
-  if(ST1.fixY && ST1.fixedYMin===null) captureFixedY1();
+  data1.groups=p.mu.map(m=>sampleExactMean(m,p.sd,p.n));
+  if(ST1.fixY) growFixedY1();
   updateSection1();
 }
 function anovaOneWay(groups){
@@ -836,7 +852,7 @@ function drawCv1(){
   ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
   if(!res1) return;
 
-  const padL=55,padR=30,padT=30,padB=50;
+  const padL=72,padR=30,padT=30,padB=50;
   const plotW=W-padL-padR, plotH=H-padT-padB, yBase=padT+plotH;
   let yMin,yMax;
   if(ST1.fixY && ST1.fixedYMin!==null){ yMin=ST1.fixedYMin; yMax=ST1.fixedYMax; }
@@ -913,6 +929,13 @@ function drawCv1(){
     ctx.fillText(v.toFixed(0), padL-9, py+4);
   }
   ctx.strokeStyle=C.grid; ctx.beginPath(); ctx.moveTo(padL,padT); ctx.lineTo(padL,yBase); ctx.stroke();
+
+  // y-axis title (rotated)
+  ctx.save();
+  ctx.translate(16,padT+plotH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('Gedächtnistest (Punkte)',0,0);
+  ctx.restore();
 }
 
 // ═══ SECTION ③ (data) — regression bridge for one-way ══════════════════════════
@@ -999,15 +1022,24 @@ function captureFixedY2(){
   const pad=(dataMax-dataMin)*0.15||5;
   ST2.fixedYMin=dataMin-pad; ST2.fixedYMax=dataMax+pad;
 }
+function growFixedY2(){
+  const allVals=data2.cells.flat(2);
+  const dataMin=Math.min(...allVals), dataMax=Math.max(...allVals);
+  const pad=(dataMax-dataMin)*0.15||5;
+  const needMin=dataMin-pad, needMax=dataMax+pad;
+  if(ST2.fixedYMin===null){ ST2.fixedYMin=needMin; ST2.fixedYMax=needMax; }
+  else{
+    if(needMin<ST2.fixedYMin) ST2.fixedYMin=needMin;
+    if(needMax>ST2.fixedYMax) ST2.fixedYMax=needMax;
+  }
+}
 function drawSample2(){
   const p=currentParams2();
   data2.cells=[[[],[]],[[],[]]];
   for(let i=0;i<2;i++) for(let j=0;j<2;j++){
-    const arr=[];
-    for(let t=0;t<p.n;t++) arr.push(p.mu[i][j]+p.sd*randn());
-    data2.cells[i][j]=arr;
+    data2.cells[i][j]=sampleExactMean(p.mu[i][j],p.sd,p.n);
   }
-  if(ST2.fixY && ST2.fixedYMin===null) captureFixedY2();
+  if(ST2.fixY) growFixedY2();
   updateSection3();
 }
 function anovaTwoWay(cells){
@@ -1112,7 +1144,7 @@ function drawCv2(){
   ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
   if(!res2) return;
 
-  const padL=55,padR=140,padT=35,padB=55;
+  const padL=72,padR=140,padT=35,padB=55;
   const plotW=W-padL-padR, plotH=H-padT-padB, yBase=padT+plotH;
 
   let yMin,yMax;
@@ -1142,6 +1174,13 @@ function drawCv2(){
     ctx.strokeStyle=C.grid; ctx.beginPath(); ctx.moveTo(padL-5,py); ctx.lineTo(padL,py); ctx.stroke();
     ctx.fillText(v.toFixed(0), padL-9, py+4);
   }
+
+  // y-axis title (rotated)
+  ctx.save();
+  ctx.translate(16,padT+plotH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('Gedächtnisleistung (Punkte)',0,0);
+  ctx.restore();
 
   // grand mean dashed line (reference for "between" overlay)
   if(ST2.showBetween){
