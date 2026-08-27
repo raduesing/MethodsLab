@@ -494,7 +494,7 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
   <div id="panel-tab3" class="mod-panel">
 
     <div class="mod-h">Regressions-Brücke: dieselbe Analyse, andere Codierung</div>
-    <div class="mod-sub">Genau dieselben Stichproben aus ① und ②, noch einmal als multiple Regression gerechnet.</div>
+    <div class="mod-sub">Genau dieselben Stichproben aus <span class="circ">①</span> und <span class="circ">②</span>, noch einmal als multiple Regression gerechnet.</div>
 
     <div class="p-intro">
       Eine ANOVA <strong>ist</strong> eine multiple Regression, deren kategorialer Prädiktor auf eine bestimmte Weise numerisch codiert wurde. Das lässt sich direkt nachrechnen: dieselben Rohdaten, einmal mit der klassischen ANOVA-Formel analysiert (Tabs ① und ②), einmal als Regression mit codierten Gruppenprädiktoren — und beide liefern exakt dieselben F- und p-Werte.
@@ -517,6 +517,11 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
       </div>
     </div>
 
+    <div class="two-col">
+      <div id="recon-dummy"></div>
+      <div id="recon-effect"></div>
+    </div>
+
     <div class="live-readout" id="readout2">—</div>
 
     <div class="step-block">
@@ -524,18 +529,29 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
       <div class="step-body">F, p, R² und die vorhergesagten Gruppenmittelwerte sind in beiden Codierungen identisch — nur die Bedeutung der einzelnen Koeffizienten ändert sich. R² dieser Regression ist übrigens identisch mit <span class="gk">η</span>² aus Tab ①: dieselbe Größe, zweimal berechnet.</div>
     </div>
 
-    <div class="sec-h">Zweifaktoriell: Effekt-Codierung + Produktterm (Typ-III-Quadratsummen)</div>
+    <div class="sec-h">Zweifaktoriell: Dummy- vs. Effekt-Codierung (mit Interaktion)</div>
 
     <div class="step-block">
-      <div class="step-body">Die Regression codiert A und B als ±1-Kontraste und bildet die Interaktion als Produktterm X<sub>A</sub>·X<sub>B</sub>. Bei einem balancierten 2×2-Design (gleiche Zellgröße n) stehen alle drei Kontrastspalten wechselseitig senkrecht aufeinander (unkorreliert) — deshalb liefert das Herausnehmen je einer Spalte aus dem vollen Modell (die "Typ-III-Quadratsumme") exakt dieselbe SAQ wie die klassische Formel aus Tab ②.</div>
+      <div class="step-body">Dieselben zwei Codierschemata wie oben, jetzt mit einem zweiten Faktor und einem Produktterm für die Interaktion. Dummy-Codierung setzt eine Referenzzelle (hier: Klassisch, ohne Feedback); Effekt-Codierung codiert beide Faktoren als ±1-Kontraste. Beide Modelle haben vier freie Parameter für vier Zellen — auch hier "gesättigt", beide reproduzieren die vier Zellmittelwerte aus Tab ② exakt, unabhängig von der Codierung.</div>
     </div>
 
-    <div id="coef-twoway"></div>
-    <div id="compare-twoway"></div>
-
-    <div class="step-block">
-      <div class="step-body">Bei <strong>unbalancierten</strong> Zellgrößen gilt die Orthogonalität nicht mehr — dann unterscheiden sich Typ-I-, Typ-II- und Typ-III-Quadratsummen, und die Wahl wird zu einer echten Modellierungsentscheidung (siehe Konzeptkarte unten).</div>
+    <div class="two-col">
+      <div>
+        <div class="col-h">Dummy-Codierung (Referenz: Klassisch, ohne Feedback)</div>
+        <div id="coef-twoway-dummy"></div>
+      </div>
+      <div>
+        <div class="col-h">Effekt-Codierung (±1-Kontraste)</div>
+        <div id="coef-twoway"></div>
+      </div>
     </div>
+
+    <div class="two-col">
+      <div id="recon-twoway-dummy"></div>
+      <div id="recon-twoway"></div>
+    </div>
+
+    <div class="live-readout" id="readout-twoway">—</div>
 
     <div class="step-block">
       <div class="step-h">Dieselbe Rechnung heißt woanders "Moderationsanalyse"</div>
@@ -553,6 +569,10 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
         <div class="lcard">
           <div class="lcard-h">SAQ Typ I, II, III</div>
           <div class="lcard-body"><strong>Typ I</strong> (sequenziell): jeder Term wird nur unter Kontrolle der zuvor eingegebenen Terme getestet — reihenfolgeabhängig. <strong>Typ II</strong>: jeder Haupteffekt unter Kontrolle aller anderen Haupteffekte, aber ohne Interaktionen höherer Ordnung. <strong>Typ III</strong>: jeder Term unter Kontrolle aller anderen Terme inklusive Interaktionen — das, was die Regression mit Effekt-Codierung liefert. Bei balancierten Designs sind alle drei identisch (Tab ②); bei unbalancierten weichen sie voneinander ab.</div>
+        </div>
+        <div class="lcard">
+          <div class="lcard-h">Typ-III-SAQ ≡ klassische ANOVA-Tabelle</div>
+          <div class="lcard-body">Bei einem balancierten Design wie hier liefert die Effekt-codierte Regression exakt dieselbe SAQ und F wie die klassische ANOVA-Formel aus Tab ② — für jeden Term. Grund: die drei Kontrastspalten (X<sub>A</sub>, X<sub>B</sub>, X<sub>A</sub>·X<sub>B</sub>) stehen bei gleicher Zellgröße n wechselseitig senkrecht aufeinander. Bei unbalancierten Zellgrößen gilt das nicht mehr — siehe Lernkarte "SAQ Typ I, II, III".</div>
         </div>
         <div class="lcard">
           <div class="lcard-h">ANOVA-Tabelle: Anatomie</div>
@@ -965,28 +985,37 @@ function updateSection2(){
   resEffect=olsFit(Xe,ye);
   const fD=regF(resDummy), fE=regF(resEffect);
 
-  const p=currentParams1();
-  const popGrand=(p.mu[0]+p.mu[1]+p.mu[2])/3;
-
   document.getElementById('coef-dummy').innerHTML=
-    '<table class="coef-table"><tr><th>Parameter</th><th class="r">Populationswert</th><th class="r">Geschätzt</th><th>Interpretation</th></tr>'+
-    '<tr><td>b₀ (Intercept)</td><td class="num" style="color:var(--ink3)">'+fmt(p.mu[0],2)+'</td><td class="num">'+fmt(resDummy.beta[0],2)+'</td>'+
-    '<td class="interp">Geschätzter Mittelwert der Referenzgruppe (Kontrolle)</td></tr>'+
-    '<tr><td>b₁ (D<sub>A</sub>)</td><td class="num" style="color:var(--ink3)">'+fmt(p.mu[1]-p.mu[0],2)+'</td><td class="num">'+fmt(resDummy.beta[1],2)+'</td>'+
+    '<table class="coef-table"><tr><th>Parameter</th><th class="r">Wert</th><th>Interpretation</th></tr>'+
+    '<tr><td>b₀ (Intercept)</td><td class="num">'+fmt(resDummy.beta[0],2)+'</td>'+
+    '<td class="interp">Mittelwert der Referenzgruppe (Kontrolle)</td></tr>'+
+    '<tr><td>b₁ (D<sub>A</sub>)</td><td class="num">'+fmt(resDummy.beta[1],2)+'</td>'+
     '<td class="interp">Differenz Methode A − Kontrolle</td></tr>'+
-    '<tr><td>b₂ (D<sub>B</sub>)</td><td class="num" style="color:var(--ink3)">'+fmt(p.mu[2]-p.mu[0],2)+'</td><td class="num">'+fmt(resDummy.beta[2],2)+'</td>'+
+    '<tr><td>b₂ (D<sub>B</sub>)</td><td class="num">'+fmt(resDummy.beta[2],2)+'</td>'+
     '<td class="interp">Differenz Methode B − Kontrolle</td></tr></table>';
 
   document.getElementById('coef-effect').innerHTML=
-    '<table class="coef-table"><tr><th>Parameter</th><th class="r">Populationswert</th><th class="r">Geschätzt</th><th>Interpretation</th></tr>'+
-    '<tr><td>b₀ (Intercept)</td><td class="num" style="color:var(--ink3)">'+fmt(popGrand,2)+'</td><td class="num">'+fmt(resEffect.beta[0],2)+'</td>'+
+    '<table class="coef-table"><tr><th>Parameter</th><th class="r">Wert</th><th>Interpretation</th></tr>'+
+    '<tr><td>b₀ (Intercept)</td><td class="num">'+fmt(resEffect.beta[0],2)+'</td>'+
     '<td class="interp">Gesamtmittelwert (Durchschnitt der 3 Gruppenmittelwerte)</td></tr>'+
-    '<tr><td>b₁ (E₁)</td><td class="num" style="color:var(--ink3)">'+fmt(p.mu[0]-popGrand,2)+'</td><td class="num">'+fmt(resEffect.beta[1],2)+'</td>'+
+    '<tr><td>b₁ (E₁)</td><td class="num">'+fmt(resEffect.beta[1],2)+'</td>'+
     '<td class="interp">Abweichung Kontrolle − Gesamtmittelwert</td></tr>'+
-    '<tr><td>b₂ (E₂)</td><td class="num" style="color:var(--ink3)">'+fmt(p.mu[1]-popGrand,2)+'</td><td class="num">'+fmt(resEffect.beta[2],2)+'</td>'+
+    '<tr><td>b₂ (E₂)</td><td class="num">'+fmt(resEffect.beta[2],2)+'</td>'+
     '<td class="interp">Abweichung Methode A − Gesamtmittelwert</td></tr>'+
-    '<tr><td>(implizit) −(b₁+b₂)</td><td class="num" style="color:var(--ink3)">'+fmt(p.mu[2]-popGrand,2)+'</td><td class="num">'+fmt(-(resEffect.beta[1]+resEffect.beta[2]),2)+'</td>'+
+    '<tr><td>(implizit) −(b₁+b₂)</td><td class="num">'+fmt(-(resEffect.beta[1]+resEffect.beta[2]),2)+'</td>'+
     '<td class="interp">Abweichung Methode B − Gesamtmittelwert (nicht direkt geschätzt)</td></tr></table>';
+
+  const bd=resDummy.beta, be=resEffect.beta;
+  document.getElementById('recon-dummy').innerHTML=
+    '<div class="compare-box"><strong>Rückrechnung auf Gruppenmittelwerte</strong> (Codes: D<sub>A</sub>/D<sub>B</sub> = 1 nur in der jeweiligen Gruppe, sonst 0 — M = b₀+b₁·D<sub>A</sub>+b₂·D<sub>B</sub>):<br>'+
+    'M<sub>Kontrolle</sub> (D<sub>A</sub>=0, D<sub>B</sub>=0) = '+fmt(bd[0],1)+' + '+fmt(bd[1],1)+'·0 + '+fmt(bd[2],1)+'·0 = '+fmt(bd[0],1)+'<br>'+
+    'M<sub>A</sub> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(D<sub>A</sub>=1, D<sub>B</sub>=0) = '+fmt(bd[0],1)+' + '+fmt(bd[1],1)+'·1 + '+fmt(bd[2],1)+'·0 = '+fmt(bd[0]+bd[1],1)+'<br>'+
+    'M<sub>B</sub> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(D<sub>A</sub>=0, D<sub>B</sub>=1) = '+fmt(bd[0],1)+' + '+fmt(bd[1],1)+'·0 + '+fmt(bd[2],1)+'·1 = '+fmt(bd[0]+bd[2],1)+'</div>';
+  document.getElementById('recon-effect').innerHTML=
+    '<div class="compare-box"><strong>Rückrechnung auf Gruppenmittelwerte</strong> (Codes: E₁/E₂ — Kontrolle=(1,0), A=(0,1), B=(−1,−1) — M = b₀+b₁·E₁+b₂·E₂):<br>'+
+    'M<sub>Kontrolle</sub> (E₁=1, E₂=0) = '+fmt(be[0],1)+' + '+fmt(be[1],1)+'·1 + '+fmt(be[2],1)+'·0 = '+fmt(be[0]+be[1],1)+'<br>'+
+    'M<sub>A</sub> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(E₁=0, E₂=1) = '+fmt(be[0],1)+' + '+fmt(be[1],1)+'·0 + '+fmt(be[2],1)+'·1 = '+fmt(be[0]+be[2],1)+'<br>'+
+    'M<sub>B</sub> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(E₁=−1, E₂=−1) = '+fmt(be[0],1)+' + '+fmt(be[1],1)+'·(−1) + '+fmt(be[2],1)+'·(−1) = '+fmt(be[0]-be[1]-be[2],1)+'</div>';
 
   document.getElementById('readout2').innerHTML=
     '<span class="big">F<sub>Dummy</sub>('+fD.dfr+','+fD.dfe+') = '+fmt(fD.F,2)+'</span>, p = '+fmtp(fD.p)+
@@ -1069,17 +1098,31 @@ function buildDesignTwoWay(cells){
   }
   return{X,y};
 }
-let res2=null, resTwoFull=null;
+function buildDesignTwoWayDummy(cells){
+  const X=[],y=[];
+  for(let i=0;i<2;i++) for(let j=0;j<2;j++){
+    const DA=i===0?0:1, DB=j===0?0:1, DAB=DA*DB;
+    cells[i][j].forEach(v=>{ X.push([1,DA,DB,DAB]); y.push(v); });
+  }
+  return{X,y};
+}
+let res2=null, resTwoFull=null, resTwoDummy=null;
 
 function updateSection3(){
   res2=anovaTwoWay(data2.cells);
   const {X,y}=buildDesignTwoWay(data2.cells);
   resTwoFull=olsFit(X,y);
-  const dfE=resTwoFull.n-resTwoFull.p, MSE=resTwoFull.SSE/dfE;
-  const SS_A_reg=partialSS(X,y,1,resTwoFull);
-  const SS_B_reg=partialSS(X,y,2,resTwoFull);
-  const SS_AB_reg=partialSS(X,y,3,resTwoFull);
-  const F_A_reg=SS_A_reg/MSE, F_B_reg=SS_B_reg/MSE, F_AB_reg=SS_AB_reg/MSE;
+  const {X:Xd,y:yd}=buildDesignTwoWayDummy(data2.cells);
+  resTwoDummy=olsFit(Xd,yd);
+
+  const dfwReg=resTwoFull.n-resTwoFull.p, MSEreg=resTwoFull.SSE/dfwReg;
+  const FA_reg=partialSS(X,y,1,resTwoFull)/MSEreg;
+  const FB_reg=partialSS(X,y,2,resTwoFull)/MSEreg;
+  const FAB_reg=partialSS(X,y,3,resTwoFull)/MSEreg;
+  document.getElementById('readout-twoway').innerHTML=
+    '<span class="big">F<sub>A</sub>(1,'+dfwReg+') = '+fmt(FA_reg,2)+'</span>, p='+fmtp(fPValue(FA_reg,1,dfwReg))+' ≡ Tab ② ('+fmt(res2.FA,2)+') · '+
+    '<span class="big">F<sub>B</sub>(1,'+dfwReg+') = '+fmt(FB_reg,2)+'</span>, p='+fmtp(fPValue(FB_reg,1,dfwReg))+' ≡ Tab ② ('+fmt(res2.FB,2)+') · '+
+    '<span class="big">F<sub>A×B</sub>(1,'+dfwReg+') = '+fmt(FAB_reg,2)+'</span>, p='+fmtp(fPValue(FAB_reg,1,dfwReg))+' ≡ Tab ② ('+fmt(res2.FAB,2)+')';
 
   document.getElementById('sb-FA').textContent=fmt(res2.FA,2);
   document.getElementById('sb-pA').textContent=fmtp(res2.pA);
@@ -1100,20 +1143,35 @@ function updateSection3(){
     '<span class="big">F<sub>A×B</sub>(1,'+res2.dfw+') = '+fmt(res2.FAB,2)+'</span>, p='+fmtp(res2.pAB)+' ('+sigTxt(res2.pAB)+')'+
     (res2.pAB<.05?' — signifikante Interaktion: Haupteffekte lassen sich nicht isoliert interpretieren.':' — keine signifikante Interaktion: Haupteffekte sind additiv interpretierbar.');
 
+  document.getElementById('coef-twoway-dummy').innerHTML=
+    '<table class="coef-table"><tr><th>Parameter</th><th class="r">Wert</th><th>Interpretation</th></tr>'+
+    '<tr><td>b₀ (Intercept)</td><td class="num">'+fmt(resTwoDummy.beta[0],2)+'</td><td class="interp">Referenzzelle: Klassisch, ohne Feedback</td></tr>'+
+    '<tr><td>b<sub>A</sub> (D<sub>A</sub>)</td><td class="num">'+fmt(resTwoDummy.beta[1],2)+'</td><td class="interp">Einfacheffekt A bei "ohne Feedback": M<sub>Verteilt,ohne</sub> − M<sub>Klassisch,ohne</sub></td></tr>'+
+    '<tr><td>b<sub>B</sub> (D<sub>B</sub>)</td><td class="num">'+fmt(resTwoDummy.beta[2],2)+'</td><td class="interp">Einfacheffekt B bei "Klassisch": M<sub>Klassisch,mit</sub> − M<sub>Klassisch,ohne</sub></td></tr>'+
+    '<tr><td>b<sub>AB</sub> (D<sub>A</sub>·D<sub>B</sub>)</td><td class="num">'+fmt(resTwoDummy.beta[3],2)+'</td><td class="interp">Volle Differenz-der-Differenzen: (M<sub>Verteilt,mit</sub>−M<sub>Verteilt,ohne</sub>) − (M<sub>Klassisch,mit</sub>−M<sub>Klassisch,ohne</sub>)</td></tr></table>';
+
   document.getElementById('coef-twoway').innerHTML=
-    '<div class="col-h">Koeffizienten</div>'+
-    '<table class="coef-table"><tr><th>Parameter</th><th class="r">b (Regression)</th><th>Interpretation</th></tr>'+
+    '<table class="coef-table"><tr><th>Parameter</th><th class="r">Wert</th><th>Interpretation</th></tr>'+
     '<tr><td>b₀ (Intercept)</td><td class="num">'+fmt(resTwoFull.beta[0],2)+'</td><td class="interp">Gesamtmittelwert über alle vier Zellen</td></tr>'+
     '<tr><td>b<sub>A</sub> (X<sub>A</sub>)</td><td class="num">'+fmt(resTwoFull.beta[1],2)+'</td><td class="interp">Halber Haupteffekt A: (M<sub>Verteilt</sub> − M<sub>Klassisch</sub>)/2</td></tr>'+
     '<tr><td>b<sub>B</sub> (X<sub>B</sub>)</td><td class="num">'+fmt(resTwoFull.beta[2],2)+'</td><td class="interp">Halber Haupteffekt B: (M<sub>mit</sub> − M<sub>ohne</sub>)/2</td></tr>'+
-    '<tr><td>b<sub>AB</sub> (X<sub>A</sub>·X<sub>B</sub>)</td><td class="num">'+fmt(resTwoFull.beta[3],2)+'</td><td class="interp">Halbe Interaktion: wie stark weicht die Feedback-Wirkung zwischen den Methoden voneinander ab</td></tr></table>';
+    '<tr><td>b<sub>AB</sub> (X<sub>A</sub>·X<sub>B</sub>)</td><td class="num">'+fmt(resTwoFull.beta[3],2)+'</td><td class="interp">Ein Viertel der Differenz-der-Differenzen (Faktor 4 statt 2, da <em>beide</em> Faktoren <em>und</em> ihr Produkt auf ±1 statt 0/1 skaliert sind — vgl. Dummy-Codierung links)</td></tr></table>';
 
-  document.getElementById('compare-twoway').innerHTML=
-    '<div class="compare-box"><strong>Klassische Formel vs. Typ-III-Regression (identisch bei balanciertem Design):</strong><br>'+
-    'SAQ<sub style="color:var(--a3)">A</sub> = '+fmt(res2.SSA,2)+' ≡ '+fmt(SS_A_reg,2)+' &nbsp;|&nbsp; F<sub>A</sub> = '+fmt(res2.FA,2)+' ≡ '+fmt(F_A_reg,2)+'<br>'+
-    'SAQ<sub style="color:var(--a3)">B</sub> = '+fmt(res2.SSB,2)+' ≡ '+fmt(SS_B_reg,2)+' &nbsp;|&nbsp; F<sub>B</sub> = '+fmt(res2.FB,2)+' ≡ '+fmt(F_B_reg,2)+'<br>'+
-    'SAQ<sub style="color:var(--a3)">A×B</sub> = '+fmt(res2.SSAB,2)+' ≡ '+fmt(SS_AB_reg,2)+' &nbsp;|&nbsp; F<sub>A×B</sub> = '+fmt(res2.FAB,2)+' ≡ '+fmt(F_AB_reg,2)+
-    '</div>';
+  const bd2=resTwoDummy.beta, d0=bd2[0], dA=bd2[1], dB=bd2[2], dAB=bd2[3];
+  document.getElementById('recon-twoway-dummy').innerHTML=
+    '<div class="compare-box"><strong>Rückrechnung auf alle vier Zellmittelwerte</strong> (Codes: D<sub>A</sub>/D<sub>B</sub> = 1 nur in Verteilt bzw. mit Feedback, sonst 0 — M = b₀+b<sub>A</sub>·D<sub>A</sub>+b<sub>B</sub>·D<sub>B</sub>+b<sub>AB</sub>·D<sub>A</sub>·D<sub>B</sub>):<br>'+
+    'M<sub>Klassisch,ohne</sub> (0,0) = '+fmt(d0,1)+' + '+fmt(dA,1)+'·0 + '+fmt(dB,1)+'·0 + '+fmt(dAB,1)+'·0 = '+fmt(d0,1)+'<br>'+
+    'M<sub>Klassisch,mit</sub> &nbsp;(0,1) = '+fmt(d0,1)+' + '+fmt(dA,1)+'·0 + '+fmt(dB,1)+'·1 + '+fmt(dAB,1)+'·0 = '+fmt(d0+dB,1)+'<br>'+
+    'M<sub>Verteilt,ohne</sub> &nbsp;(1,0) = '+fmt(d0,1)+' + '+fmt(dA,1)+'·1 + '+fmt(dB,1)+'·0 + '+fmt(dAB,1)+'·0 = '+fmt(d0+dA,1)+'<br>'+
+    'M<sub>Verteilt,mit</sub> &nbsp;&nbsp;(1,1) = '+fmt(d0,1)+' + '+fmt(dA,1)+'·1 + '+fmt(dB,1)+'·1 + '+fmt(dAB,1)+'·1 = '+fmt(d0+dA+dB+dAB,1)+'</div>';
+
+  const b2=resTwoFull.beta, b0=b2[0], bA=b2[1], bB=b2[2], bAB=b2[3];
+  document.getElementById('recon-twoway').innerHTML=
+    '<div class="compare-box"><strong>Rückrechnung auf alle vier Zellmittelwerte</strong> (Codes: A/B = −1/+1 für Klassisch/Verteilt bzw. ohne/mit Feedback — M = b₀+A·b<sub>A</sub>+B·b<sub>B</sub>+A·B·b<sub>AB</sub>):<br>'+
+    'M<sub>Klassisch,ohne</sub> (−1,−1) = '+fmt(b0,1)+' + (−1)·'+fmt(bA,1)+' + (−1)·'+fmt(bB,1)+' + (+1)·'+fmt(bAB,1)+' = '+fmt(b0-bA-bB+bAB,1)+'<br>'+
+    'M<sub>Klassisch,mit</sub> &nbsp;(−1,+1) = '+fmt(b0,1)+' + (−1)·'+fmt(bA,1)+' + (+1)·'+fmt(bB,1)+' + (−1)·'+fmt(bAB,1)+' = '+fmt(b0-bA+bB-bAB,1)+'<br>'+
+    'M<sub>Verteilt,ohne</sub> &nbsp;(+1,−1) = '+fmt(b0,1)+' + (+1)·'+fmt(bA,1)+' + (−1)·'+fmt(bB,1)+' + (−1)·'+fmt(bAB,1)+' = '+fmt(b0+bA-bB-bAB,1)+'<br>'+
+    'M<sub>Verteilt,mit</sub> &nbsp;&nbsp;(+1,+1) = '+fmt(b0,1)+' + (+1)·'+fmt(bA,1)+' + (+1)·'+fmt(bB,1)+' + (+1)·'+fmt(bAB,1)+' = '+fmt(b0+bA+bB+bAB,1)+'</div>';
 
   drawCv2();
 }
