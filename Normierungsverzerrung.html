@@ -442,44 +442,6 @@ function exGaussPDF(x, mu, sigma, tau) {
   return isFinite(f) ? Math.max(0, f) : 0;
 }
 
-// Distribution statistics (mean, sd, skewness)
-function distStats(type, p) {
-  let mean, variance, skewness;
-  switch (type) {
-    case 'gamma':
-      mean = p.alpha / p.beta;
-      variance = p.alpha / (p.beta**2);
-      skewness = 2 / Math.sqrt(p.alpha);
-      break;
-    case 'lognormal':
-      mean = Math.exp(p.meanlog + p.sdlog**2/2);
-      variance = (Math.exp(p.sdlog**2)-1) * Math.exp(2*p.meanlog + p.sdlog**2);
-      skewness = (Math.exp(p.sdlog**2)+2) * Math.sqrt(Math.exp(p.sdlog**2)-1);
-      break;
-    case 'exponential':
-      mean = 1/p.rate;
-      variance = 1/p.rate**2;
-      skewness = 2;
-      break;
-    case 'exgauss':
-      mean = p.mu + p.tau;
-      variance = p.sigma**2 + p.tau**2;
-      skewness = 2*p.tau**3 / (variance**1.5);
-      break;
-    case 'weibull': {
-      const g1 = Math.exp(logGamma(1 + 1/p.k));
-      const g2 = Math.exp(logGamma(1 + 2/p.k));
-      const g3 = Math.exp(logGamma(1 + 3/p.k));
-      mean = p.lambda * g1;
-      variance = p.lambda**2 * (g2 - g1**2);
-      const skv = g2 - g1**2;
-      skewness = (g3 - 3*g2*g1 + 2*g1**3) / Math.pow(skv, 1.5);
-      break;
-    }
-  }
-  return { mean, sd: Math.sqrt(variance), skewness };
-}
-
 // ══════════════════════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════════════════════
@@ -510,8 +472,6 @@ const DX = X_MAX / N_PTS;
 function computeData() {
   const type = ST.dist;
   const p = ST.params[type];
-  const stats = distStats(type, p);
-  const { mean, sd } = stats;
 
   const pdfFn =
     type === 'gamma'       ? x => gammaPDF(x, p.alpha, p.beta)
@@ -558,12 +518,30 @@ function computeData() {
     }
   }
 
+  // Mean/SD/skewness of the *displayed* (renormalized-to-[0,X_MAX]) distribution —
+  // NOT the closed-form untruncated moments. For most parameter choices the two are
+  // nearly identical, but sliders allow shapes where a large fraction of the true mass
+  // falls above X_MAX (e.g. Gamma with high shape / low rate); using the untruncated
+  // mean/SD there would put the T-Norm comparison curve wildly out of step with the
+  // actually-displayed empirical PR curve.
+  let m1 = 0, m2 = 0, m3 = 0;
+  for (let i = 0; i <= N_PTS; i++) {
+    const w = (i === 0 || i === N_PTS) ? 0.5 : 1;
+    const x = xs[i], f = pdfs[i] * w * DX;
+    m1 += x * f; m2 += x * x * f; m3 += x * x * x * f;
+  }
+  const mean = m1;
+  const variance = Math.max(0, m2 - mean * mean);
+  const sd = Math.sqrt(variance);
+  const mu3 = m3 - 3 * mean * m2 + 2 * mean ** 3;
+  const skewness = variance > 0 ? mu3 / Math.pow(variance, 1.5) : 0;
+
   D = {
     xs, pdfs, cdfs,
     prEmp:  cdfs.map(v => v * 100),
     prNorm: xs.map(x => normalCDF(x, mean, sd) * 100),
     maxPDF: Math.max(...pdfs.filter(v => isFinite(v) && !isNaN(v))),
-    ...stats
+    mean, sd, skewness
   };
 }
 
