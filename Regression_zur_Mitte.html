@@ -29,7 +29,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
-#app{display:grid;grid-template-columns:270px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
 #sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
@@ -58,9 +58,11 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .sec-h:first-child{margin-top:0}
 .eq-wrap{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem;margin-bottom:.8rem}
 .eq-main{font-family:'DM Mono',monospace;font-size:.9rem;line-height:2.1;letter-spacing:.01em}
-.example-box{background:var(--panel);border-left:3px solid var(--a2);padding:.85rem 1rem;
-  margin-bottom:.85rem;font-size:.88rem;line-height:1.75}
-.example-box strong{color:var(--a2)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
 .insight-box{background:var(--panel);border-left:3px solid var(--a1);padding:.85rem 1rem;
   margin-bottom:.85rem;font-size:.88rem;line-height:1.75}
 .insight-box strong{color:var(--a1)}
@@ -180,9 +182,9 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 </div><!-- /sidebar -->
 <div id="main">
 
-  <div class="sec-h" style="margin-top:0">Laufendes Beispiel</div>
-  <div class="example-box">
-    <strong>Blutdruckstudie</strong> — Eine Hausarztpraxis misst den systolischen Blutdruck bei
+  <div class="story-box">
+    <div class="story-lbl">📋 Beispiel — Blutdruckstudie</div>
+    Eine Hausarztpraxis misst den systolischen Blutdruck bei
     <span id="ex-n">400</span> Patienten (Erstmessung T1, μ = 130, σ = 20 mmHg). Alle Patienten mit
     Blutdruck ≥ <span id="ex-thr">160</span> mmHg werden in ein Hypertonie-Programm aufgenommen und
     vier Wochen später erneut gemessen (T2) — <em>ohne medikamentöse Intervention</em>.

@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
-#app{display:grid;grid-template-columns:272px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
 #sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
@@ -36,6 +36,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
 .scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--accent);
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink3);margin:1.1rem 0 .52rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
 .sec-h:first-child{margin-top:0}
@@ -157,15 +162,6 @@ ICCs kreuzen sich — DIF wechselt die Richtung</code>
 <!-- SIDEBAR -->
 <div id="sidebar">
 
-  <div class="scard">
-    <div class="scard-title">Laufendes Beispiel</div>
-    <span style="font-size:.84rem;line-height:1.65;font-family:'DM Mono',monospace;color:var(--ink2)">
-    <strong style="color:var(--ink)">Hochschulzulassungstest</strong> — 4 Items, zwei Gruppen:
-    <strong style="color:var(--a2)">Referenz</strong> (deutschsprachig aufgewachsen) und
-    <strong style="color:var(--a1)">Fokus</strong> (nicht-deutschsprachig). Haben alle Items nach Kontrolle der Fähigkeit θ die gleiche Schwierigkeit für beide Gruppen?
-    </span>
-  </div>
-
   <div class="sec-h" style="margin-top:0">Item auswählen</div>
   <div class="item-row" id="item-row"></div>
 
@@ -222,6 +218,9 @@ ICCs kreuzen sich — DIF wechselt die Richtung</code>
 
 <!-- MAIN -->
 <div id="main">
+
+  <div class="story-box"><div class="story-lbl">📋 Beispiel — Hochschulzulassungstest</div>
+  4 Items, zwei Gruppen: <strong>Referenz</strong> (deutschsprachig aufgewachsen) und <strong>Fokus</strong> (nicht-deutschsprachig). Haben alle Items nach Kontrolle der Fähigkeit θ die gleiche Schwierigkeit für beide Gruppen?</div>
 
   <div class="sec-h" style="margin-top:0">ICC-Vergleich — <span id="crf-item-lbl" style="text-transform:none;letter-spacing:0">Item 1</span></div>
   <canvas id="cv-icc" height="340"></canvas>

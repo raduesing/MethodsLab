@@ -49,9 +49,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .sec-h:first-child{margin-top:0}
 .p-intro{font-size:.92rem;line-height:1.85;color:var(--ink2);margin-bottom:.75rem}
 .p-intro strong{color:var(--ink)}
-.example-box{background:var(--panel);border-left:3px solid var(--a2);padding:.85rem 1rem;
-  margin-bottom:1.1rem;font-size:.88rem;line-height:1.75}
-.example-box strong{color:var(--a2)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.8rem .95rem;margin-bottom:1.1rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
 .circ{font-size:1.5em;font-weight:600;vertical-align:-.13em;line-height:1;display:inline-block}
 .slider-row{margin-bottom:.55rem}
 .slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.22rem}
@@ -206,7 +208,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
     <strong>Was ist eine Effektgröße?</strong> Ein p-Wert sagt nur, ob ein Unterschied von Null verschieden ist — nichts über seine praktische Bedeutsamkeit. Eine Effektgröße drückt aus, <em>wie groß</em> ein Unterschied ist, unabhängig von der verwendeten Skala und der Stichprobengröße. Die gebräuchlichste Effektgröße für Mittelwertsvergleiche ist <strong>Cohen's d</strong>: die Differenz zweier Mittelwerte, standardisiert an einer Streuung. d&nbsp;=&nbsp;0.5 heißt: die beiden Verteilungen liegen im Mittel eine halbe Standardabweichung auseinander — egal ob es um Testpunkte oder Körpergröße geht. Das macht Effekte über Studien und Maße hinweg vergleichbar.
   </div>
 
-  <div class="example-box" id="example-box"></div>
+  <div class="story-box" id="example-box"></div>
 
   <div class="sec-h">Visualisierung: Wie stark unterscheiden sich die Gruppen?</div>
 
@@ -353,8 +355,8 @@ function setMode(m){
   document.getElementById('step-conv-num').textContent=isW?'③':'②';
   document.getElementById('step-caveat-num').textContent=isW?'④':'③';
   document.getElementById('example-box').innerHTML = isW
-    ? '<strong>Laufendes Beispiel (Within):</strong> Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. Dieselben Teilnehmenden werden vor (Prä) und nach (Post) dem Training befragt. Verändere M<sub>prä</sub>, M<sub>post</sub>, die Streuungen, die Prä-Post-Korrelation r und n mit den Reglern.'
-    : '<strong>Laufendes Beispiel (Between):</strong> Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. Trainingsgruppe vs. Warteliste-Kontrollgruppe, je n Personen. Verändere die Mittelwerte und Streuungen beider Gruppen sowie n mit den Reglern.';
+    ? '<div class="story-lbl">📋 Beispiel — Achtsamkeitstraining (Within)</div>Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. Dieselben Teilnehmenden werden vor (Prä) und nach (Post) dem Training befragt. Verändere M<sub>prä</sub>, M<sub>post</sub>, die Streuungen, die Prä-Post-Korrelation r und n mit den Reglern.'
+    : '<div class="story-lbl">📋 Beispiel — Achtsamkeitstraining (Between)</div>Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. Trainingsgruppe vs. Warteliste-Kontrollgruppe, je n Personen. Verändere die Mittelwerte und Streuungen beider Gruppen sowie n mit den Reglern.';
   document.getElementById('axis-note').textContent = isW
     ? 'x-Achse: Wohlbefinden-Score (fiktive Skala) · Kurven = angenommene Verteilungen vor (blau) und nach (orange) dem Training'
     : 'x-Achse: Wohlbefinden-Score (fiktive Skala) · Kurven = angenommene Verteilungen der Kontroll- (blau) und Trainingsgruppe (orange)';

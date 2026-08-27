@@ -66,9 +66,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .gk{font-family:'Fraunces',Georgia,serif;font-style:italic;text-transform:none}
 .p-intro{font-size:.92rem;line-height:1.85;color:var(--ink2);margin-bottom:.75rem}
 .p-intro strong{color:var(--ink)}
-.example-box{background:var(--panel);border-left:3px solid var(--a2);padding:.85rem 1rem;
-  margin-bottom:.9rem;font-size:.88rem;line-height:1.75}
-.example-box strong{color:var(--a2)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.8rem .95rem;margin-bottom:.9rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
 .tutorial-box{background:var(--panel);border-left:3px solid var(--a4);padding:.85rem 1rem;
   margin-bottom:.9rem;font-size:.88rem;line-height:1.75}
 .tutorial-box strong{color:var(--a4)}
@@ -349,8 +351,9 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
     <div class="mod-h">Einfaktorielle ANOVA: Varianz zerlegen</div>
     <div class="mod-sub">Ein Faktor, drei Gruppen — wie viel der Gesamtstreuung erklärt die Gruppenzugehörigkeit?</div>
 
-    <div class="example-box">
-      <strong>Laufendes Beispiel:</strong> Ein Institut für Psychologie testet drei Varianten eines Lernprogramms für den Statistik-Einführungskurs. 60 Studienanfänger:innen werden per Zufallszahlengenerator zu gleichen Teilen (n&nbsp;=&nbsp;20) auf drei Gruppen verteilt, damit sich Vorwissen und Motivation im Mittel gleichmäßig verteilen und nicht systematisch mit der Gruppe zusammenhängen. <strong>Kontrollgruppe</strong> lernt wie gewohnt mit Skript und Karteikarten in einer Sitzung. <strong>Methode A</strong> verteilt dieselbe Lernzeit über mehrere kürzere Sitzungen auf zwei Wochen (verteiltes Lernen / spaced practice). <strong>Methode B</strong> mischt während des Lernens verschiedene Aufgabentypen, statt sie block­weise abzuarbeiten (Interleaving). Zwei Wochen nach Kursende schreiben alle denselben Gedächtnistest (0–150 Punkte, höher = besser erinnert). Frage: Unterscheiden sich die drei Gruppen im Mittel — und wenn ja, wie stark?
+    <div class="story-box">
+      <div class="story-lbl">📋 Beispiel — Lernprogramm-Vergleich</div>
+      Ein Institut für Psychologie testet drei Varianten eines Lernprogramms für den Statistik-Einführungskurs. 60 Studienanfänger:innen werden per Zufallszahlengenerator zu gleichen Teilen (n&nbsp;=&nbsp;20) auf drei Gruppen verteilt, damit sich Vorwissen und Motivation im Mittel gleichmäßig verteilen und nicht systematisch mit der Gruppe zusammenhängen. <strong>Kontrollgruppe</strong> lernt wie gewohnt mit Skript und Karteikarten in einer Sitzung. <strong>Methode A</strong> verteilt dieselbe Lernzeit über mehrere kürzere Sitzungen auf zwei Wochen (verteiltes Lernen / spaced practice). <strong>Methode B</strong> mischt während des Lernens verschiedene Aufgabentypen, statt sie block­weise abzuarbeiten (Interleaving). Zwei Wochen nach Kursende schreiben alle denselben Gedächtnistest (0–150 Punkte, höher = besser erinnert). Frage: Unterscheiden sich die drei Gruppen im Mittel — und wenn ja, wie stark?
     </div>
 
     <div class="step-block">
@@ -408,8 +411,9 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
     <div class="mod-h">Zweifaktorielle ANOVA mit Interaktion</div>
     <div class="mod-sub">Zwei Faktoren, vier Zellen — wirkt Faktor A, wirkt Faktor B, und hängt die Wirkung des einen vom anderen ab?</div>
 
-    <div class="example-box">
-      <strong>Eigenständiges Beispiel:</strong> Zur Illustration der Interaktion reduzieren wir hier bewusst auf <strong>zwei</strong> Lernmethoden statt der drei aus Tab ① — Klassisch und Verteiltes Lernen — und kreuzen sie mit einem zweiten Faktor: Feedback (ohne / mit unmittelbarer Rückmeldung nach jeder Lerneinheit). Vier Zellen, balanciertes Design (gleiche Zellgröße n pro Zelle). Die Populationswerte hier sind unabhängig von Tab ① gewählt — beide Tabs lassen sich unabhängig voneinander bedienen.
+    <div class="story-box">
+      <div class="story-lbl">📋 Eigenständiges Beispiel — Lernmethode × Feedback</div>
+      Zur Illustration der Interaktion reduzieren wir hier bewusst auf <strong>zwei</strong> Lernmethoden statt der drei aus Tab ① — Klassisch und Verteiltes Lernen — und kreuzen sie mit einem zweiten Faktor: Feedback (ohne / mit unmittelbarer Rückmeldung nach jeder Lerneinheit). Vier Zellen, balanciertes Design (gleiche Zellgröße n pro Zelle). Die Populationswerte hier sind unabhängig von Tab ① gewählt — beide Tabs lassen sich unabhängig voneinander bedienen.
     </div>
 
     <div class="step-block">

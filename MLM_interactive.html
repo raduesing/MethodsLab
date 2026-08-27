@@ -50,10 +50,34 @@ a:hover{text-decoration:underline}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 .tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
 #scroll{height:calc(100vh - var(--topbar-h));overflow-y:scroll;margin-top:var(--topbar-h)}
-#seed-info{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);white-space:nowrap}
-.example-box{background:var(--panel);border-left:3px solid var(--a2);padding:.85rem 1rem;
-  margin-bottom:.9rem;font-size:.88rem;line-height:1.75}
-.example-box strong{color:var(--a2)}
+/* ── Story Banner ──────────────────────────────────────────────── */
+#story{
+  background:var(--panel);border-bottom:1px solid var(--border);
+  padding:.65rem 1.4rem;
+  display:flex;align-items:center;flex-wrap:wrap;gap:.6rem 1.4rem;
+}
+.story-label{
+  font-family:'DM Mono',monospace;font-size:.7rem;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);
+}
+.story-vars{
+  display:flex;flex-wrap:wrap;gap:.5rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;
+}
+.sv{
+  padding:.12rem .5rem;border:1px solid var(--border);
+  background:var(--bg);color:var(--ink2);
+}
+.sv em{font-style:normal;color:var(--accent)}
+#seed-info{
+  font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);
+  margin-left:auto;
+}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
 
 /* ── Module Tabs ───────────────────────────────────────────────── */
 #mod-tabs{
@@ -210,13 +234,24 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
   <h1>Multilevel &amp; <em>Mixed Models</em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn" id="btn-neue-daten" onclick="neueDaten()">↻ Neue Daten</button>
-  <span id="seed-info">Seed: —</span>
   <div class="tb-sep"></div>
   <button class="tbtn tbtn-red" onclick="openModal('help-modal')">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
 </div>
 
 <div id="scroll">
+<!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
+<div id="story">
+  <span class="story-label">Beispiel</span>
+  <div class="story-vars">
+    <span class="sv">N = 50 Schüler:innen</span>
+    <span class="sv">J = 5 Klassen (n_j = 10)</span>
+    <span class="sv">X = <em>Lernzeit</em> (h/Woche)</span>
+    <span class="sv">Y = <em>Klausurleistung</em></span>
+  </div>
+  <span id="seed-info">Seed: —</span>
+</div>
+
 <!-- ══ MODULE TABS ═════════════════════════════════════════════════ -->
 <div id="mod-tabs">
   <button class="mod-tab active" data-mod="1" onclick="showMod(1)">
@@ -239,10 +274,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 <!-- ══ MODULE 1: POOLING-VERGLEICH ══════════════════════════════════ -->
 <div id="mod1" class="mod-panel active">
   <div class="mod-h">Warum Multilevel? — <em>Complete, No &amp; Partial Pooling</em></div>
-
-  <div class="example-box">
-    <strong>Laufendes Beispiel:</strong> Wir wollen prüfen, wie sich Lernzeit auf die Klausurleistung auswirkt. Dazu wurden N=50 Schüler:innen getestet, die aber aus J=5 Klassen stammen (n_j=10 Schüler:innen pro Klasse). Schon hier stellt sich eine Modellierungsfrage: Reicht eine gemeinsame Gerade über alle 50 Schüler:innen — man könnte argumentieren, es seien unabhängige Messungen — <strong>Complete Pooling</strong>? Oder muss man streng berücksichtigen, dass jede Person einer bestimmten Klasse angehört — <strong>No Pooling</strong>? Oder gibt es einen Mittelweg dazwischen — <strong>Partial Pooling</strong>?
-  </div>
+  <div class="mod-sub">Reicht eine gemeinsame Gerade über alle 50 Schüler:innen — <strong>Complete Pooling</strong>? Oder muss jede Klasse streng separat betrachtet werden — <strong>No Pooling</strong>? Oder ein Mittelweg — <strong>Partial Pooling</strong>?</div>
 
   <div class="cv-row" style="align-items:flex-start">
     <!-- Canvas -->
@@ -719,9 +751,8 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 <div id="mod5" class="mod-panel">
   <div class="mod-h">Shrinkage Extrem — <em>wann Pooling wirklich hilft</em></div>
 
-  <div class="example-box">
-    <strong>Laufendes Beispiel:</strong> 20 Schulklassen unterschiedlicher Größe — von n_j=3 bis n_j=40 Schüler:innen — schreiben denselben Test. Eine kleine Klasse mit nur 3 Schüler:innen zeigt einen auffällig hohen (oder tiefen) Mittelwert. Ist das ein echter Unterschied — oder einfach Zufall, weil bei so wenigen Beobachtungen extreme Mittelwerte viel leichter vorkommen? Genau dieses Argument (u. a. bei Gelman &amp; Hill, 2007, anhand von Baseball-Battingdurchschnitten und Krebsraten pro Landkreis illustriert) ist der Kern von Partial Pooling: kleine, extreme Schätzungen sind <em>a priori</em> unplausibler als moderate — deshalb werden sie stärker zum Gesamtmittel geschrumpft, was im Schnitt zu besseren Vorhersagen führt.
-  </div>
+  <div class="story-box"><div class="story-lbl">📋 Eigenständiges Beispiel — Shrinkage Extrem</div>
+  20 Schulklassen unterschiedlicher Größe — von n_j=3 bis n_j=40 Schüler:innen — schreiben denselben Test. Eine kleine Klasse mit nur 3 Schüler:innen zeigt einen auffällig hohen (oder tiefen) Mittelwert. Ist das ein echter Unterschied — oder einfach Zufall, weil bei so wenigen Beobachtungen extreme Mittelwerte viel leichter vorkommen? Genau dieses Argument (u. a. bei Gelman &amp; Hill, 2007, anhand von Baseball-Battingdurchschnitten und Krebsraten pro Landkreis illustriert) ist der Kern von Partial Pooling: kleine, extreme Schätzungen sind <em>a priori</em> unplausibler als moderate — deshalb werden sie stärker zum Gesamtmittel geschrumpft, was im Schnitt zu besseren Vorhersagen führt.</div>
 
   <div class="cv-row" style="align-items:flex-start">
     <!-- Canvas -->

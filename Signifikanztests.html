@@ -52,9 +52,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .takeaway-box strong{color:var(--a3)}
 .p-intro{font-size:.92rem;line-height:1.85;color:var(--ink2);margin-bottom:.75rem}
 .p-intro strong{color:var(--ink)}
-.example-box{background:var(--panel);border-left:3px solid var(--a2);padding:.85rem 1rem;
-  margin-bottom:.9rem;font-size:.88rem;line-height:1.75}
-.example-box strong{color:var(--a2)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.8rem .95rem;margin-bottom:.9rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
 .slider-panel{background:var(--panel);border:1px solid var(--grid);padding:1rem 1.1rem;margin-bottom:.85rem}
 .slider-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem 1.4rem}
 .slider-row{margin-bottom:.15rem}
@@ -175,8 +177,9 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
     <strong>Was ist eigentlich ein p-Wert?</strong> p&nbsp;=&nbsp;die Wahrscheinlichkeit, ein Ergebnis <em>mindestens so extrem</em> wie das beobachtete zu erhalten, <em>wenn die Nullhypothese H₀ (kein wahrer Unterschied) zuträfe</em>. Das ist eine sehr spezifische, bedingte Aussage über Daten — und wird trotzdem ständig mit ganz anderen Aussagen verwechselt (dazu unten mehr). Am besten versteht man sie nicht durch die Formel, sondern durch Wiederholung: was würde passieren, wenn wir dieselbe Studie unter H₀ immer wieder durchführen könnten?
   </div>
 
-  <div class="example-box">
-    <strong>Laufendes Beispiel:</strong> Ein neues Lernprogramm soll die Merkfähigkeit verbessern. Kontrollgruppe (klassisches Lernen, n=25) vs. Interventionsgruppe (neues Programm, n=25), Testergebnis 0–150 Punkte. Beobachtet: M<sub>Kontrolle</sub>=100, M<sub>Intervention</sub>=107, SD=12 (gepoolt) → t(48)=2.06, p=.045. Knapp signifikant bei α=.05 — aber was heißt das eigentlich?
+  <div class="story-box">
+    <div class="story-lbl">📋 Beispiel — Lernprogramm &amp; Merkfähigkeit</div>
+    Ein neues Lernprogramm soll die Merkfähigkeit verbessern. Kontrollgruppe (klassisches Lernen, n=25) vs. Interventionsgruppe (neues Programm, n=25), Testergebnis 0–150 Punkte. Beobachtet: M<sub>Kontrolle</sub>=100, M<sub>Intervention</sub>=107, SD=12 (gepoolt) → t(48)=2.06, p=.045. Knapp signifikant bei α=.05 — aber was heißt das eigentlich?
   </div>
 
   <div class="sec-h" style="color:var(--ink)"><span class="circ">①</span> Wiederholte Ziehung unter H₀: Was der p-Wert wirklich zählt</div>

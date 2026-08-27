@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
-#app{display:grid;grid-template-columns:272px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
 #sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
@@ -36,6 +36,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
 .scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--accent);
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
 .slider-row{margin-bottom:.52rem}
 .slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
 .slider-name{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink)}
@@ -178,13 +183,6 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <!-- SIDEBAR -->
 <div id="sidebar">
 
-  <div class="scard">
-    <div class="scard-title">Laufendes Beispiel</div>
-    <span style="font-size:.84rem;line-height:1.65;font-family:'DM Mono',monospace;color:var(--ink2)">
-    <strong style="color:var(--ink)">Max (Kl. 8)</strong> schreibt einen standardisierten <strong style="color:var(--ink)">Leseverständnistest</strong> mit 5 Items — von einfachem Faktenwissen (Item 1) bis zur komplexen Synthese (Item 5). Wie gut misst der Test seine wahre Lesekompetenz θ?
-    </span>
-  </div>
-
   <div class="sec-h" style="margin-top:0">Modell wählen</div>
   <div class="model-grid">
     <button class="mbtn" id="mbtn-rasch" onclick="selectModel('rasch')">Rasch</button>
@@ -231,6 +229,9 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
 <!-- MAIN -->
 <div id="main">
+
+  <div class="story-box"><div class="story-lbl">📋 Beispiel — Leseverständnistest</div>
+  <strong>Max (Kl. 8)</strong> schreibt einen standardisierten <strong>Leseverständnistest</strong> mit 5 Items — von einfachem Faktenwissen (Item 1) bis zur komplexen Synthese (Item 5). Wie gut misst der Test seine wahre Lesekompetenz θ?</div>
 
   <div class="sec-h" style="margin-top:0">ICC — Item Characteristic Curves</div>
   <canvas id="cv-icc" height="360"></canvas>

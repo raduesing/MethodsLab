@@ -37,7 +37,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tab-btn:hover{color:var(--ink);background:var(--grid)}
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
 /* App layout */
-#app{display:grid;grid-template-columns:310px 1fr;
+#app{display:grid;grid-template-columns:300px 1fr;
   height:calc(100vh - var(--topbar-h) - var(--nav-h));
   margin-top:calc(var(--topbar-h) + var(--nav-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:.85rem .8rem}
@@ -48,10 +48,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .scard{background:var(--bg);border:1px solid var(--grid);padding:.7rem .8rem;margin-bottom:.65rem}
 .scard-title{font-family:'DM Mono',monospace;font-size:.69rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--accent);margin-bottom:.5rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
-.scenario-box{background:var(--panel);border:2px solid var(--accent);border-radius:0;padding:.75rem .85rem;margin-bottom:.75rem}
-.scenario-title{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.45rem}
-.scenario-body{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75}
-.scenario-body strong{color:var(--ink)}
 /* Controls */
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
@@ -193,20 +189,6 @@ canvas{display:block;width:100%}
 <div id="app">
 <!-- ═══════════════ SIDEBAR ═══════════════ -->
 <div id="sidebar">
-  <!-- Persistent scenario -->
-  <div class="scenario-box">
-    <div class="scenario-title">🔬 Die Studie</div>
-    <div class="scenario-body">
-      Ein Forschungsteam untersucht, ob regelmäßiger <strong>Sport (T)</strong> die
-      <strong>Herzgesundheit (Y)</strong> verbessert.<br><br>
-      Aus Beobachtungsdaten von 300 Personen: Sporttreibende sind im Schnitt
-      <strong>~19 Punkte gesünder</strong>. Aber stimmt das wirklich?<br><br>
-      Der <strong>sozioökon. Status (SES)</strong> beeinflusst sowohl Sportgewohnheiten
-      als auch Gesundheit — ein klassisches Confounding-Problem. Wie sieht es mit
-      weiteren möglichen Variablenstrukturen aus (Mediator, Collider)?
-    </div>
-  </div>
-
   <!-- Sidebar content per module (show/hide) -->
 
   <div class="sb-mod active" id="sb-1">

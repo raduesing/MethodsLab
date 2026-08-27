@@ -107,6 +107,7 @@ a:hover{text-decoration:underline}
 .mod-tab:hover{color:var(--ink)}
 .mod-tab.active{color:var(--a2);border-bottom-color:var(--a2)}
 .tab-num{font-size:1.5rem;line-height:1;vertical-align:-.1em} /* feedback_circle_numbers — global */
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
 
 /* ── Module Panels ─────────────────────────────────────────────── */
 .mod-panel{display:none;padding:1.4rem 1.4rem 2rem}
@@ -584,7 +585,7 @@ input[type=range]::-moz-range-thumb{
         · Falsche Steigung → RSS steigt schneller als falscher Achsenabschnitt.<br>
         · Punkte am X-Rand (hohe <em>Hebelwirkung</em>) drehen b₁ stark, wenn sie weit von der Geraden abweichen.<br>
         · Probieren Sie absichtlich schlechte Geraden (steil, flach, negativ) — der RSS-Wert explodiert.<br>
-        · <strong>Gauss-Markov:</strong> Unter den 5 OLS-Annahmen (→ Modul <span class="tab-num">③</span>) ist OLS der <em>BLUE</em> — Best Linear Unbiased Estimator. Kein anderer linearer unverzerrter Schätzer hat kleinere Varianz.</p>
+        · <strong>Gauss-Markov:</strong> Unter den 5 OLS-Annahmen (→ Modul <span class="circ">③</span>) ist OLS der <em>BLUE</em> — Best Linear Unbiased Estimator. Kein anderer linearer unverzerrter Schätzer hat kleinere Varianz.</p>
       </div>
 
     </div><!-- rechtes Panel -->
@@ -701,7 +702,7 @@ input[type=range]::-moz-range-thumb{
         Das Steigungsdreieck im Canvas zeigt konkret: <strong>+3 h Lernzeit → +<span id="m2-slope-tri">—</span> Punkte</strong> (= 3 · b₁).</p>
         <p><strong>β = <span id="m2-info-beta">—</span> — standardisierter Koeffizient</strong><br>
         Pro +1 SD in X₁ steigt Y um β SD. Bivariat gilt immer β = r (Pearson-Korrelation) — prüfen Sie das in der Koeffizientenzelle! β erlaubt den Vergleich von Prädiktoren unterschiedlicher Skalen <em>innerhalb</em> einer Studie, aber <em>nicht</em> zwischen Studien (abhängig von SD(X) und SD(Y)).<br>
-        <em>Wichtig:</em> β gibt nicht direkt die Wichtigkeit oder den kausalen Einfluss eines Prädiktors an — bei korrelierten Prädiktoren kann β stark vom partiellen Effekt abweichen (→ Modul <span class="tab-num">④</span>).</p>
+        <em>Wichtig:</em> β gibt nicht direkt die Wichtigkeit oder den kausalen Einfluss eines Prädiktors an — bei korrelierten Prädiktoren kann β stark vom partiellen Effekt abweichen (→ Modul <span class="circ">④</span>).</p>
         <p><strong>b₀ = <span id="m2-info-b0">—</span> — Achsenabschnitt</strong><br>
         Erwartete Note bei X₁ = 0 h Lernzeit. Da 0 h außerhalb des beobachteten Bereichs liegt, ist das eine <em>Extrapolation</em> — inhaltlich meist nicht sinnvoll interpretierbar. b₀ ist mathematisch notwendig, hat aber selten eigenständige Bedeutung.</p>
         <p><strong>Schwerpunkt (x̄ = <span id="m2-info-mx">—</span> h | ȳ = <span id="m2-info-my">—</span> Pkt)</strong><br>
@@ -739,7 +740,7 @@ input[type=range]::-moz-range-thumb{
           Achtung: β variiert mit SD(X) und SD(Y) — Vergleiche zwischen Studien sind
           <em>nicht</em> zulässig.<br><br>
           Im bivariaten OLS gilt stets: β = r = <span id="m2-beta-acc">—</span>.
-          Im multiplen Modell (Modul <span class="tab-num">④</span>) ist β ≠ r, da partielle Kontrolle der anderen Prädiktoren.
+          Im multiplen Modell (Modul <span class="circ">④</span>) ist β ≠ r, da partielle Kontrolle der anderen Prädiktoren.
         </div>
       </div>
     </div>
@@ -853,7 +854,7 @@ input[type=range]::-moz-range-thumb{
         <div style="display:flex;flex-direction:column;gap:.6rem">
 
           <div style="display:flex;gap:.75rem;align-items:flex-start">
-            <span class="tab-num" style="color:var(--a2);flex-shrink:0">①</span>
+            <span class="circ" style="color:var(--a2);flex-shrink:0">①</span>
             <div style="font-family:'DM Mono',monospace;font-size:.79rem;
               color:var(--ink2);line-height:1.85">
               <strong style="color:var(--ink)">Linearität:</strong>
@@ -864,7 +865,7 @@ input[type=range]::-moz-range-thumb{
           </div>
 
           <div style="display:flex;gap:.75rem;align-items:flex-start">
-            <span class="tab-num" style="color:var(--a2);flex-shrink:0">②</span>
+            <span class="circ" style="color:var(--a2);flex-shrink:0">②</span>
             <div style="font-family:'DM Mono',monospace;font-size:.79rem;
               color:var(--ink2);line-height:1.85">
               <strong style="color:var(--ink)">Unabhängigkeit:</strong>
@@ -875,7 +876,7 @@ input[type=range]::-moz-range-thumb{
           </div>
 
           <div style="display:flex;gap:.75rem;align-items:flex-start">
-            <span class="tab-num" style="color:var(--a2);flex-shrink:0">③</span>
+            <span class="circ" style="color:var(--a2);flex-shrink:0">③</span>
             <div style="font-family:'DM Mono',monospace;font-size:.79rem;
               color:var(--ink2);line-height:1.85">
               <strong style="color:var(--ink)">Homoskedastizität:</strong>
@@ -890,7 +891,7 @@ input[type=range]::-moz-range-thumb{
           </div>
 
           <div style="display:flex;gap:.75rem;align-items:flex-start">
-            <span class="tab-num" style="color:var(--a2);flex-shrink:0">④</span>
+            <span class="circ" style="color:var(--a2);flex-shrink:0">④</span>
             <div style="font-family:'DM Mono',monospace;font-size:.79rem;
               color:var(--ink2);line-height:1.85">
               <strong style="color:var(--ink)">Normalverteilung der Residuen:</strong>
@@ -901,14 +902,14 @@ input[type=range]::-moz-range-thumb{
           </div>
 
           <div style="display:flex;gap:.75rem;align-items:flex-start">
-            <span class="tab-num" style="color:var(--a2);flex-shrink:0">⑤</span>
+            <span class="circ" style="color:var(--a2);flex-shrink:0">⑤</span>
             <div style="font-family:'DM Mono',monospace;font-size:.79rem;
               color:var(--ink2);line-height:1.85">
               <strong style="color:var(--ink)">Keine perfekte Multikollinearität</strong>
               (multiple Regression): Sind zwei Prädiktoren perfekt korreliert, ist
               (<strong>X</strong>ᵀ<strong>X</strong>) nicht invertierbar.
               Hohe (nicht-perfekte) Kollinearität bläht Standardfehler auf → VIF &gt; 10 kritisch.
-              Siehe Modul <span class="tab-num">④</span>.
+              Siehe Modul <span class="circ">④</span>.
             </div>
           </div>
 
@@ -927,7 +928,7 @@ input[type=range]::-moz-range-thumb{
   <div class="cv-row" style="align-items:flex-start">
     <!-- Canvas -->
     <div>
-      <div class="cv-label" id="m4-cv-label">Schritt <span class="tab-num">①</span> — Bivariates Modell: Y ~ X₁</div>
+      <div class="cv-label" id="m4-cv-label">Schritt <span class="circ">①</span> — Bivariates Modell: Y ~ X₁</div>
       <div class="cv-wrap">
         <canvas id="cv-avp" width="880" height="640"></canvas>
       </div>
@@ -942,11 +943,11 @@ input[type=range]::-moz-range-thumb{
         <!-- Schritt-Buttons -->
         <div style="font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3)">Schritt</div>
         <div class="btn-row" style="flex-wrap:wrap;gap:.4rem;margin-bottom:0">
-          <button class="btn avp-step-btn active" data-step="0" onclick="setAvpStep(0)"><span class="tab-num">①</span> Bivariat</button>
-          <button class="btn avp-step-btn" data-step="1" onclick="setAvpStep(1)"><span class="tab-num">②</span> e(Y|X₂)</button>
-          <button class="btn avp-step-btn" data-step="2" onclick="setAvpStep(2)"><span class="tab-num">③</span> e(X₁|X₂)</button>
-          <button class="btn avp-step-btn" data-step="3" onclick="setAvpStep(3)"><span class="tab-num">④</span> AVP</button>
-          <button class="btn avp-step-btn" data-step="4" onclick="setAvpStep(4)"><span class="tab-num">⑤</span> 3D-Ebene</button>
+          <button class="btn avp-step-btn active" data-step="0" onclick="setAvpStep(0)"><span class="circ">①</span> Bivariat</button>
+          <button class="btn avp-step-btn" data-step="1" onclick="setAvpStep(1)"><span class="circ">②</span> e(Y|X₂)</button>
+          <button class="btn avp-step-btn" data-step="2" onclick="setAvpStep(2)"><span class="circ">③</span> e(X₁|X₂)</button>
+          <button class="btn avp-step-btn" data-step="3" onclick="setAvpStep(3)"><span class="circ">④</span> AVP</button>
+          <button class="btn avp-step-btn" data-step="4" onclick="setAvpStep(4)"><span class="circ">⑤</span> 3D-Ebene</button>
         </div>
 
         <!-- r₁₂-Szenarien -->
@@ -1052,7 +1053,7 @@ input[type=range]::-moz-range-thumb{
   <div class="lcard-grid">
 
     <div class="lcard">
-      <div class="lcard-h"><span class="tab-num">①</span> OLS-Kriterium</div>
+      <div class="lcard-h"><span class="circ">①</span> OLS-Kriterium</div>
       <div class="lcard-body">
         OLS minimiert die <strong>Summe der quadrierten Residuen</strong>:
         <code>min Σ(yᵢ − ŷᵢ)²</code>.
@@ -1063,7 +1064,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="tab-num">②</span> Koeffizient b₁</div>
+      <div class="lcard-h"><span class="circ">②</span> Koeffizient b₁</div>
       <div class="lcard-body">
         <strong>Interpretation:</strong> „Pro +1 Einheit X steigt der erwartete
         Wert von Y um b₁ Einheiten — alle anderen Prädiktoren konstant gehalten
@@ -1074,7 +1075,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="tab-num">③</span> Intercept b₀</div>
+      <div class="lcard-h"><span class="circ">③</span> Intercept b₀</div>
       <div class="lcard-body">
         b₀ ist der erwartete Y-Wert, <strong>wenn alle Prädiktoren gleich 0 sind</strong>.
         Das ist oft inhaltlich nicht sinnvoll (z. B. 0 Lernstunden, 0 Schlaf).
@@ -1084,7 +1085,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="tab-num">④</span> R² und adj. R²</div>
+      <div class="lcard-h"><span class="circ">④</span> R² und adj. R²</div>
       <div class="lcard-body">
         <code>R² = SSM/SST ∈ [0, 1]</code> — Anteil erklärter Varianz.
         R² steigt mit jedem hinzugefügten Prädiktor, auch nutzlosen.
@@ -1095,7 +1096,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="tab-num">⑤</span> Partial Slope</div>
+      <div class="lcard-h"><span class="circ">⑤</span> Partial Slope</div>
       <div class="lcard-body">
         b₁ im multiplen Modell ist <strong>nicht</strong> derselbe wie im bivariaten Modell —
         er ist der Slope im <em>Added Variable Plot</em> (AVP):
@@ -1106,7 +1107,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="tab-num">⑥</span> Standardisierung β</div>
+      <div class="lcard-h"><span class="circ">⑥</span> Standardisierung β</div>
       <div class="lcard-body">
         <code>β = b · (SD_X / SD_Y)</code> — der standardisierte Regressionskoeffizient.
         β gibt an, um wie viele <strong>Standardabweichungen</strong> Y steigt,
@@ -2270,48 +2271,48 @@ function setAvpStep(step){
     b.classList.toggle('active',+b.dataset.step===step);
   });
   const labels=[
-    'Schritt <span class="tab-num">①</span> — Bivariates Modell: Y ~ X₁',
-    'Schritt <span class="tab-num">②</span> — X₂ aus Y herausrechnen: e(Y|X₂)',
-    'Schritt <span class="tab-num">③</span> — X₂ aus X₁ herausrechnen: e(X₁|X₂)',
-    'Schritt <span class="tab-num">④</span> — Added Variable Plot: e(X₁|X₂) vs e(Y|X₂)',
-    'Schritt <span class="tab-num">⑤</span> — Regressionsfläche: Y ~ X₁ + X₂'
+    'Schritt <span class="circ">①</span> — Bivariates Modell: Y ~ X₁',
+    'Schritt <span class="circ">②</span> — X₂ aus Y herausrechnen: e(Y|X₂)',
+    'Schritt <span class="circ">③</span> — X₂ aus X₁ herausrechnen: e(X₁|X₂)',
+    'Schritt <span class="circ">④</span> — Added Variable Plot: e(X₁|X₂) vs e(Y|X₂)',
+    'Schritt <span class="circ">⑤</span> — Regressionsfläche: Y ~ X₁ + X₂'
   ];
   const erkls=[
-    'Schritt <span class="tab-num">①</span> zeigt die <strong>bivariate</strong> Regression Y auf X₁ — wie in Modul <span class="tab-num">①</span>. Das bivariate b₁ enthält noch den <em>Einfluss von X₂</em>, wenn X₁ und X₂ korreliert sind.',
-    'In Schritt <span class="tab-num">②</span> wird X₂ aus Y herausgerechnet. Die gestrichelte Linie ist Y&#160;~&#160;X₂. Die farbigen Residuen <em>e(Y|X₂)</em> sind das Y-Signal, das <em>nicht</em> auf X₂ zurückgeht.',
-    'In Schritt <span class="tab-num">③</span> wird X₂ auch aus X₁ herausgerechnet. <em>e(X₁|X₂)</em> ist der X₁-Anteil, der <em>unabhängig</em> von X₂ ist — die X₁-Variation, die nicht auf X₂ zurückgeht.',
+    'Schritt <span class="circ">①</span> zeigt die <strong>bivariate</strong> Regression Y auf X₁ — wie in Modul <span class="circ">①</span>. Das bivariate b₁ enthält noch den <em>Einfluss von X₂</em>, wenn X₁ und X₂ korreliert sind.',
+    'In Schritt <span class="circ">②</span> wird X₂ aus Y herausgerechnet. Die gestrichelte Linie ist Y&#160;~&#160;X₂. Die farbigen Residuen <em>e(Y|X₂)</em> sind das Y-Signal, das <em>nicht</em> auf X₂ zurückgeht.',
+    'In Schritt <span class="circ">③</span> wird X₂ auch aus X₁ herausgerechnet. <em>e(X₁|X₂)</em> ist der X₁-Anteil, der <em>unabhängig</em> von X₂ ist — die X₁-Variation, die nicht auf X₂ zurückgeht.',
     'Der <strong>Added Variable Plot</strong>: e(X₁|X₂) gegen e(Y|X₂). Die Steigung der Regressionsgeraden ist exakt das <em>partielle</em> b₁ aus Y&#160;~&#160;X₁&#160;+&#160;X₂.',
     'Die <strong>3D-Regressionsfläche</strong>: statt einer Geraden in 2D beschreibt das multiple Modell eine <em>Ebene</em> im dreidimensionalen Raum X₁–X₂–Y. Die Datenpunkte schweben um diese Ebene herum.'
   ];
   const stepGuide=[
-    `<p><strong>Schritt <span class="tab-num">①</span> — Bivariate Ausgangslage</strong><br>
-    Was Sie sehen: Die bivariate OLS-Gerade Y&#160;~&#160;X₁ (Lernzeit → Note) — identisch mit Modul <span class="tab-num">①</span>.<br>
+    `<p><strong>Schritt <span class="circ">①</span> — Bivariate Ausgangslage</strong><br>
+    Was Sie sehen: Die bivariate OLS-Gerade Y&#160;~&#160;X₁ (Lernzeit → Note) — identisch mit Modul <span class="circ">①</span>.<br>
     Problem: Wenn r₁₂&#160;≠&#160;0 enthält b₁ den Einfluss von X₂ (Schlaf) als Störgröße. Der bivariate Schätzer ist verzerrt, solange X₂ sowohl mit X₁ korreliert als auch Y beeinflusst.<br>
     Tipp: Notieren Sie das bivariate b₁ (Tabelle links), wechseln Sie dann r₁₂ und vergleichen Sie.</p>`,
 
-    `<p><strong>Schritt <span class="tab-num">②</span> — Y von X₂ bereinigen: e(Y|X₂)</strong><br>
+    `<p><strong>Schritt <span class="circ">②</span> — Y von X₂ bereinigen: e(Y|X₂)</strong><br>
     Was Sie sehen: Y wurde auf X₂ regressiert (gestrichelte Hilfslinie). Die Punkte sind die Residuen — das, was X₂ in Y <em>nicht</em> erklären kann.<br>
     Y-Achse = „Klausurnote bereinigt um Schlafeinfluss": Der X₂-Anteil ist aus Y herausgerechnet. Übrig bleibt das Y-Signal, das mit X₂ nichts zu tun hat.<br>
     Warum: Um den reinen X₁-Effekt zu sehen, muss X₂'s Einfluss auf Y zuerst entfernt werden.</p>`,
 
-    `<p><strong>Schritt <span class="tab-num">③</span> — X₁ von X₂ bereinigen: e(X₁|X₂)</strong><br>
+    `<p><strong>Schritt <span class="circ">③</span> — X₁ von X₂ bereinigen: e(X₁|X₂)</strong><br>
     Was Sie sehen: Auch X₁ (Lernzeit) wurde auf X₂ regressiert. Die Punkte zeigen X₁ bereinigt um X₂.<br>
     X-Achse = „Lernzeit bereinigt um Schlaf" — der Teil von X₁, der <em>nicht</em> auf X₂ zurückgeht. Bei großem r₁₂ wird diese Streuung deutlich kleiner (X₁ wird stark durch X₂ erklärt).<br>
     Warum: Wenn X₁ und X₂ korrelieren, müssen wir X₁ ebenfalls von X₂'s Einfluss befreien.</p>`,
 
-    `<p><strong>Schritt <span class="tab-num">④</span> — Added Variable Plot (AVP)</strong><br>
+    `<p><strong>Schritt <span class="circ">④</span> — Added Variable Plot (AVP)</strong><br>
     Was Sie sehen: e(Y|X₂) aufgetragen gegen e(X₁|X₂) — der bereinigte Zusammenhang nach Entfernen des X₂-Einflusses aus beiden Variablen.<br>
     Die Steigung dieser Geraden = partielles b₁ = b₁ aus Y&#160;~&#160;X₁&#160;+&#160;X₂ (→ Tabelle links, Zeile „Partiell").<br>
     Kernerkenntnis: „Unter Kontrolle von X₂" bedeutet genau das: beide Variablen von X₂ bereinigt, dann Zusammenhang berechnet. Der AVP-Slope stimmt stets exakt mit dem multiplen Modell überein.</p>`,
 
-    `<p><strong>Schritt <span class="tab-num">⑤</span> — Regressionsfläche</strong><br>
+    `<p><strong>Schritt <span class="circ">⑤</span> — Regressionsfläche</strong><br>
     Was Sie sehen: Die beiden Prädiktoren X₁ (Lernzeit) und X₂ (Schlaf) bilden den <em>Boden</em> des 3D-Raums. Y (Note) ist die vertikale Achse. Das multiple Modell Y&#160;=&#160;b₀&#160;+&#160;b₁·X₁&#160;+&#160;b₂·X₂ ist keine Linie mehr — es ist eine <strong>Ebene</strong> (die blaue Fläche).</p>
     <p><strong>Wie liest man die Fläche?</strong><br>
     · Die Neigung der Ebene in X₁-Richtung = b₁ (partieller Slope X₁)<br>
     · Die Neigung in X₂-Richtung = b₂ (partieller Slope X₂)<br>
     · Grüne Punkte liegen <em>über</em> der Fläche (positive Residuen), rote <em>unter</em> ihr (negative Residuen).</p>
     <p><strong>Warum eine Ebene?</strong><br>
-    Im bivariaten Fall (Schritt <span class="tab-num">①</span>) war es eine Gerade in 2D — OLS minimiert die <em>Strecken</em> der Residuen auf dieser Linie. Bei zwei Prädiktoren minimiert OLS die <em>vertikalen Abstände</em> der Datenpunkte von der Ebene — dasselbe Prinzip, eine Dimension höher.</p>
+    Im bivariaten Fall (Schritt <span class="circ">①</span>) war es eine Gerade in 2D — OLS minimiert die <em>Strecken</em> der Residuen auf dieser Linie. Bei zwei Prädiktoren minimiert OLS die <em>vertikalen Abstände</em> der Datenpunkte von der Ebene — dasselbe Prinzip, eine Dimension höher.</p>
     <p>Ziehen zum Drehen — Doppelklick zum Zurücksetzen.</p>`
   ];
   const lbl=document.getElementById('m4-cv-label');
