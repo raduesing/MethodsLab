@@ -383,7 +383,7 @@ function computeStats(){
   const ppv =tp/(tp+fp)||0;
   const npv =tn/(tn+fn)||0;
   const lrp =spec<1?sens/(1-spec):Infinity;
-  const lrm =sens<1?spec/(1-sens):Infinity;
+  const lrm =spec>0?(1-sens)/spec:Infinity;
   const acc =(tp+tn)/ST.N;
   const j   =sens+spec-1;
   const dor =(fp>0&&fn>0)?(tp*tn)/(fp*fn):Infinity;
@@ -412,7 +412,7 @@ function updateStats(){
     {n:'PPV',          f:'TP/(TP+FP)',        c:`${r.tp}/(${r.tp+r.fp})`,                           v:fmtp(r.ppv)},
     {n:'NPV',          f:'TN/(TN+FN)',        c:`${r.tn}/(${r.tn+r.fn})`,                           v:fmtp(r.npv)},
     {n:'LR+',          f:'Sens/(1−Spez)',     c:`${r.sens.toFixed(3)}/${(1-r.spec).toFixed(3)}`,    v:fmt(r.lrp)},
-    {n:'LR−',          f:'Spez/(1−Sens)',     c:`${r.spec.toFixed(3)}/${(1-r.sens).toFixed(3)}`,    v:fmt(r.lrm)},
+    {n:'LR−',          f:'(1−Sens)/Spez',     c:`${(1-r.sens).toFixed(3)}/${r.spec.toFixed(3)}`,    v:fmt(r.lrm)},
     {n:'Accuracy',     f:'(TP+TN)/N',         c:`${r.tp+r.tn}/${ST.N}`,                             v:fmtp(r.acc)},
     {n:'Youden J',     f:'Sens+Spez−1',       c:`${r.sens.toFixed(3)}+${r.spec.toFixed(3)}−1`,      v:fmt(r.j)},
     {n:'Diagn. OR',    f:'(TP·TN)/(FP·FN)',  c:`(${r.tp}·${r.tn})/(${r.fp}·${r.fn})`,             v:fmt(r.dor)},
