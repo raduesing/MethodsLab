@@ -6,12 +6,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Static Badge](https://img.shields.io/badge/Status-Academic_Project-blue)]()
 [![Static Badge](https://img.shields.io/badge/Tech-Vanilla_JS-orange)]()
-[![Static Badge](https://img.shields.io/badge/Tools-36_interactive-green)]()
+[![Static Badge](https://img.shields.io/badge/Tools-46_interactive-green)]()
 [![Static Badge](https://img.shields.io/badge/Version-0.7_beta-lightgrey)]()
 
 ### 🌐 [www.methodslab.uni-osnabrueck.de](https://www.methodslab.uni-osnabrueck.de/)
 
-**A suite of 36 interactive tools that build statistical intuition from the ground up — from OLS regression and effect sizes, through the counter-intuitive paradoxes that trip up even seasoned researchers, into modern causal inference, psychometrics (classical test theory, measurement models, reliability, IRT), and clinical diagnostics. Everything runs entirely in the browser. No code, no server, no data ever leaves your machine.**
+**A suite of 46 interactive tools that build statistical intuition from the ground up — from OLS regression, ANOVA and multilevel models, through the counter-intuitive paradoxes that trip up even seasoned researchers, into modern causal inference, psychometrics (classical test theory, measurement models, reliability, IRT), and clinical diagnostics. Everything runs entirely in the browser. No code, no server, no data ever leaves your machine.**
 
 [ [Learning Path](#-the-learning-path) ] • [ [Ecosystem](#-the-ecosystem) ] • [ [Philosophy](#-scientific-philosophy) ] • [ [Usage](#-getting-started) ] • [ [Sister Project](#-sister-project--bayes-thinking-lab) ]
 
@@ -40,9 +40,9 @@ The lab is organized into six sections that build on one another. Work through t
 
 | Section | What you will learn | Key Tools |
 | :--- | :--- | :--- |
-| **1 · Regression & Relationships** | How linear relationships are estimated and decomposed — the foundation for everything else | OLS Regression · Partial Correlation · Mediation · Moderation · Multilevel Models |
-| **2 · Inference & Planning** | How big a sample needs to be, what counts as a meaningful effect, and what missing data does | Effect Sizes · Power & Sample Size · Missing Data |
-| **3 · Statistical Paradoxes** | Why counter-intuitive results are, in fact, plain regression logic | Regression to the Mean · Attenuation · Berkson · Lord |
+| **1 · Regression & Relationships** | How linear relationships are estimated and decomposed — the foundation for everything else | OLS Regression · Partial Correlation · Mediation · Moderation · ANOVA · Multilevel Models |
+| **2 · Inference & Planning** | What a p-value actually claims, how big a sample needs to be, what counts as a meaningful effect, and what missing data does | Significance Tests · Effect Sizes · Power & Sample Size · Missing Data |
+| **3 · Statistical Paradoxes** | Why counter-intuitive results are, in fact, plain regression or sampling logic | Regression to the Mean · Attenuation · Berkson · Lord · Simpson · Law of Small Numbers |
 | **4 · Causal Inference** | When association may be read as causation — and the toolkit of modern causal analysis | Causal Foundations · RDD · Difference-in-Differences · Propensity Score Matching |
 | **5 · Test Theory & Measurement** | How psychological constructs are measured and how well | Classical Test Theory · Measurement Models (CFA) · Factor Analysis · Reliability (α vs. ω) · IRT · DIF |
 | **6 · Diagnostics & Test Quality** | How accurately an instrument detects what it should — at the level of the individual | Sensitivity/Specificity · Diagnostic Validity · Taylor-Russell · ICC · Diagnostic Intervals · Norm-Score Distortion · Jacobson-Truax |
@@ -51,7 +51,7 @@ The lab is organized into six sections that build on one another. Work through t
 
 ## 🛠 The Ecosystem
 
-Legend: **✓** finished · **⟳** in revision · **◷** planned
+Legend: **✓** finished · **◷** planned
 
 ### 1 · Regression & Relationships
 *The foundation: how to estimate linear relationships, what "controlling for" means, and how effects split into direct and indirect paths.*
@@ -60,12 +60,15 @@ Legend: **✓** finished · **⟳** in revision · **◷** planned
 * **✓ Partial Correlation** — The correlation of two variables purged of a third. Suppressor effects, semi-partial correlation, path coefficients.
 * **✓ Mediation Analysis** — Hayes/PROCESS Model 4: DAG visualization, direct and indirect effect, Sobel/Aroian live, bootstrap on demand.
 * **✓ Moderation Analysis** — Hayes/PROCESS Model 1: simple slopes, Johnson-Neyman technique, floodlight plot. When does W moderate the effect of X on Y?
-* **✓ Multilevel Models** — Complete / no / partial pooling compared, shrinkage caterpillar plot, ICC slider, random slopes (τ₁, ρ), Simpson's paradox experienced live.
+* **✓ ANOVA** — One-way and two-way analysis of variance with interaction — the same dataset recomputed as a regression with dummy vs. effect coding. Same F, same p, different parametrization.
+* **✓ Multilevel Models** — Complete / no / partial pooling compared, shrinkage caterpillar plot, ICC slider, random slopes (τ₁, ρ), Simpson's paradox experienced live, plus a dedicated "Shrinkage Extreme" module showing when and why partial pooling improves out-of-sample prediction for small/unbalanced groups.
 
 ### 2 · Inference & Planning
 *How large must a sample be? What is a meaningful effect? And what happens when data are missing?*
 
-* **⟳ Effect Sizes** — Cohen's d, r, η², f, OR/RR: conversions, visualizations, confidence intervals. *(NCT confidence-interval computation is currently being reworked.)*
+* **✓ Significance Tests** — What a p-value actually claims: repeated draws under H₀ make the definition tangible, the "dance of the p-values" shows its instability. Five classic misinterpretations corrected.
+* **✓ Effect Sizes** — Cohen's d, r, η², f, OR/RR: conversions, visualizations, confidence intervals.
+* **✓ Effect Size Calculator** — Exact computation on your own data: CSV upload, d_z/d_rm/d_av, Student's t vs. Welch's t side by side, Hedges/Nakagawa/Bonett corrections, confidence intervals via Bonett, Rosenthal, and the noncentral t-distribution.
 * **✓ Power & Sample Size** — Four-curve family, H₀/H₁ distributions, n×d heatmap, sensitivity curve, MDES, SESOI. α, β, d, n fully interactive.
 * **✓ Missing Data** — MCAR, MAR, MNAR: understand the mechanisms, compare four imputation strategies, traffic-light grid for bias and efficiency.
 
@@ -79,9 +82,12 @@ Legend: **✓** finished · **⟳** in revision · **◷** planned
 * **✓ Simpson's Paradox** — An aggregate (pooled) trend reverses on disaggregation: within- vs. pooled regression, confounding slider, reversal & amplification scenarios. Cross-link to the multilevel tool.
 * **✓ Range Restriction** — How selection on the predictor X attenuates the correlation (variance restriction). Scatter full vs. restricted, dispersion bars, the Thorndike r(u) relationship, Case-II correction. The slope stays, r shrinks. Cross-linked with Berkson and Taylor-Russell.
 * **✓ Lindley's Paradox** — p < .05 yet the Bayes factor supports H₀: the frequentist–Bayes conflict. Lindley mode, z-distribution H₀ vs. H₁, divergence over n. Synergy with the Bayes Thinking Lab.
-* **◷ Will Rogers Phenomenon** — Reclassification raises the mean of both groups at once (stage migration). Crucial for longitudinal and staging data.
-* **◷ Freedman's Paradox** — Stepwise regression on random predictors: spuriously significant variables, R² inflation. A warning to applied statisticians.
-* **◷ Inspection Paradox** — You land by chance in above-average-length intervals (buses, clinical cohorts, survival data). Length-biased sampling.
+* **✓ Will Rogers Phenomenon** — When the Okies left Oklahoma for California, the average IQ of both states rose. Reclassification raises the mean of both groups at once, while the overall mean stays put — animated. Also: stage migration.
+* **✓ Data Dredging & the Streetlight Paradox** — Search a large dataset for significance and you will find spurious hits by chance. Multiple comparisons, P(≥1)=1−(1−α)ᵐ, Bonferroni, HARKing headlines, plus stepwise regression (Freedman) — spuriously significant predictors, R² inflation.
+* **✓ Inspection Paradox** — You land by chance in above-average-length intervals (buses, clinical cohorts, survival data). Length-biased sampling: the experienced gap = E[L²]/E[L] ≥ E[L].
+* **✓ Survivorship Bias** — Wald's bombers: where to add armor? Mark the damaged zones, then reveal — the missing (shot-down) planes show where it actually matters. Selecting on the outcome distorts every conclusion drawn from survivors alone.
+* **✓ Law of Small Numbers** — The "record" municipalities (highest and lowest rates) are systematically the smallest — pure sampling variance, not a real effect. Funnel plot, ranked list, SE ∝ 1/√n. Related to Regression to the Mean.
+* **✓ Friendship Paradox** — Your friends have more friends than you do, on average — size-biased sampling over edges. Click people, make a prediction, reveal. Related to the Inspection Paradox.
 
 ### 4 · Causal Inference
 *Under what conditions may association be read as causation? The potential-outcomes framework, natural experiments, and matching.*
@@ -101,7 +107,7 @@ Legend: **✓** finished · **⟳** in revision · **◷** planned
 * **✓ IRT — Dichotomous Models** — 1PL/2PL/3PL/4PL + Rasch: ICC, TIF, Wright map, MLE person estimation. The Rasch-vs-1PL distinction made explicit.
 * **✓ IRT — Ordinal Models** — PCM, GPCM, GRM: CRF, ESC, item information for every item. Disordered-threshold warning, factor-analysis link in the help.
 * **✓ Differential Item Functioning (DIF)** — 2PL model, four items, Δb/Δa sliders, ICC comparison, difference curve, group distributions, Raju SA/UA, ETS A/B/C.
-* **◷ Measurement Invariance** — Configural / metric / scalar: the CFA twin of DIF. When are group comparisons of means even admissible?
+* **✓ Measurement Invariance** — Configural / metric / scalar: the CFA twin of DIF. Set a true difference and a degree of non-invariance and see how much of a group difference is real vs. a measurement artifact.
 * **◷ Generalizability Theory** — G-theory as the multi-facet extension of CTT: variance components across raters, items, occasions; G- and D-studies.
 
 ### 6 · Diagnostics & Test Quality
