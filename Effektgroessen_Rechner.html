@@ -268,7 +268,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
       <div>t = <span id="sb-t" style="color:var(--ink);font-weight:600">—</span></div>
       <div>p = <span id="sb-p" style="color:var(--ink);font-weight:600">—</span></div>
       <div style="border-top:1px solid var(--grid);margin:.3rem 0;padding-top:.3rem">
-        d<sub>z</sub> = <span id="sb-dz" style="color:var(--a2);font-weight:600">—</span>
+        <span id="sb-dz-lbl">d<sub>z</sub></span> = <span id="sb-dz" style="color:var(--a2);font-weight:600">—</span>
       </div>
       <div id="sb-rm-row">d<sub>rm</sub> = <span id="sb-drm" style="color:var(--a6);font-weight:600">—</span></div>
       <div id="sb-av-row">d<sub>av</sub> = <span id="sb-dav" style="color:var(--a4);font-weight:600">—</span></div>
@@ -1009,6 +1009,7 @@ function updateResultsUI(res){
   if(res.mode==='within'){
     document.getElementById('within-results').style.display='';
     document.getElementById('between-results').style.display='none';
+    document.getElementById('sb-dz-lbl').innerHTML='d<sub>z</sub>';
     document.getElementById('sb-dz').textContent=fmt(res.dz,3);
     document.getElementById('sb-drm').textContent=fmt(res.drm,3);
     document.getElementById('sb-dav').textContent=fmt(res.dav,3);
@@ -1040,6 +1041,7 @@ function updateResultsUI(res){
   } else {
     document.getElementById('within-results').style.display='none';
     document.getElementById('between-results').style.display='';
+    document.getElementById('sb-dz-lbl').innerHTML='d<sub>s</sub>';
     document.getElementById('sb-dz').textContent=fmt(res.ds,3);
     document.getElementById('sb-rm-row').style.display='none';
     document.getElementById('sb-av-row').style.display='none';
