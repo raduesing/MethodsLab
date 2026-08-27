@@ -151,35 +151,9 @@ No setup required.
 
 ---
 
-## 🎓 Target Audience
-
-| Level | Recommended Entry Point | Tools to Explore |
-| :--- | :--- | :--- |
-| **BSc Students** | Section 1 — Foundations | OLS Regression · Partial Correlation · Effect Sizes · Power & Sample Size · Classical Test Theory · Sensitivity/Specificity |
-| **MSc Students** | Sections 2–3, 5 | Missing Data · Regression to the Mean · Berkson · Lord · Simpson · Measurement Models · Reliability (α vs. ω) · IRT |
-| **PhD / Researchers** | Sections 4–6 | Causal Foundations · RDD · DiD · PSM · DIF · Factor Analysis · Jacobson-Truax · Norm-Score Distortion |
-
----
-
 ## 🛠 Built With
 
 Vanilla JS · HTML5 Canvas · No framework · No build step · Runs entirely in the browser.
-
----
-
-## 📚 Methodological Grounding
-
-The tools build on foundational work across applied statistics, psychometrics, and causal inference, including:
-
-| Area | Key References |
-| :--- | :--- |
-| **Causal inference** | Pearl (DAGs, d-separation) · Rubin (potential outcomes) · Imbens & Lehner (RDD) |
-| **Clinical change** | Jacobson & Truax (1991, RCI & clinical significance) · Lienert & Raatz (area transformation) |
-| **Effect sizes & power** | Cohen (1988) · Lakens (2022, sample-size justification, SESOI) |
-| **Psychometrics** | Lord & Novick (test theory) · McDonald, Revelle & Zinbarg (ω) · Samejima, Masters, Muraki (IRT) · Shrout & Fleiss (ICC) |
-| **Paradoxes** | Galton (regression to the mean) · Berkson · Lord · Simpson |
-
-> All external references and conceptual frameworks belong to their respective authors. This project is released under the MIT License.
 
 ---
 
