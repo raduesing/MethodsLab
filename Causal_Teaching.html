@@ -1158,8 +1158,10 @@ function drawWorld(D,t,refPop){
   const yMin=38,yMax=105;
   const sy=y=>pad.t+cH-((y-yMin)/(yMax-yMin))*cH;
   const col=t?css('--a3'):css('--a1');
-  const s0=D.filter(u=>u.ses===0),s1=D.filter(u=>u.ses===1);
-  const m0=mean(s0,u=>t?u.y1:u.y0),m1=mean(s1,u=>t?u.y1:u.y0);
+  // Outcome-model predictions (observed-data group means), same as revealGC() —
+  // NOT the oracle potential outcomes, which real G-computation never has access to.
+  const gm=gcGroupMeans(D);
+  const m0=gm[`${t}0`]??0,m1=gm[`${t}1`]??0;
   // SES distribution from reference population
   const rp1=refPop.filter(u=>u.ses===1).length,rp0=refPop.filter(u=>u.ses===0).length;
   const pSes1=rp1/refPop.length;
