@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multilevel &amp; Mixed Models — Methods Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Design Tokens ─────────────────────────────────────────────── */
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);
+  --topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+
+/* ── Reset & Base ──────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:18px}
+body{
+  font-family:'Fraunces',Georgia,serif;
+  background:var(--bg);color:var(--ink);
+  font-size:1rem;line-height:1.65;
+  height:100vh;overflow:hidden;
+}
+a{color:var(--a2);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Topbar ────────────────────────────────────────────────────── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  height:var(--topbar-h);
+  background:var(--paper);border-bottom:1px solid var(--grid);
+  display:flex;align-items:center;padding:0 1.2rem;gap:.8rem;
+}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+.tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
+#scroll{height:calc(100vh - var(--topbar-h));overflow-y:scroll;margin-top:var(--topbar-h)}
+/* ── Story Banner ──────────────────────────────────────────────── */
+#story{
+  background:var(--panel);border-bottom:1px solid var(--border);
+  padding:.65rem 1.4rem;
+  display:flex;align-items:center;flex-wrap:wrap;gap:.6rem 1.4rem;
+}
+.story-label{
+  font-family:'DM Mono',monospace;font-size:.7rem;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);
+}
+.story-vars{
+  display:flex;flex-wrap:wrap;gap:.5rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;
+}
+.sv{
+  padding:.12rem .5rem;border:1px solid var(--border);
+  background:var(--bg);color:var(--ink2);
+}
+.sv em{font-style:normal;color:var(--accent)}
+#seed-info{
+  font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);
+  margin-left:auto;
+}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+
+/* ── Module Tabs ───────────────────────────────────────────────── */
+#mod-tabs{
+  display:flex;border-bottom:1px solid var(--border);
+  background:var(--paper);position:sticky;top:0;z-index:100;
+  overflow-x:auto;
+}
+.mod-tab{
+  background:none;border:none;border-bottom:2px solid transparent;
+  font-family:'DM Mono',monospace;font-size:.78rem;
+  color:var(--ink3);padding:.7rem 1.2rem;
+  cursor:pointer;white-space:nowrap;
+  transition:color .15s,border-color .15s;
+  display:flex;align-items:center;gap:.4rem;
+}
+.mod-tab:hover{color:var(--ink)}
+.mod-tab.active{color:var(--a2);border-bottom-color:var(--a2)}
+.tab-num{font-size:1.5rem;line-height:1;vertical-align:-.1em}
+
+/* ── Module Panels ─────────────────────────────────────────────── */
+.mod-panel{display:none;padding:1.4rem 1.4rem 2rem}
+.mod-panel.active{display:block}
+.mod-h{font-size:1.25rem;font-weight:600;color:var(--ink);letter-spacing:-.01em;margin-bottom:.3rem}
+.mod-h em{font-style:italic;color:var(--a2)}
+.mod-sub{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink3);margin-bottom:1.2rem;min-height:1.55rem}
+
+/* ── Canvas ────────────────────────────────────────────────────── */
+.cv-wrap{background:var(--paper);border:1px solid var(--border);display:inline-block;position:relative}
+.cv-wrap canvas{display:block}
+.cv-row{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem}
+.cv-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.08em}
+
+/* ── Controls ──────────────────────────────────────────────────── */
+.ctrl-block{background:var(--panel);border:1px solid var(--border);padding:.85rem 1rem;margin-bottom:.85rem}
+.ctrl-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.55rem;flex-wrap:wrap}
+.ctrl-row:last-child{margin-bottom:0}
+.ctrl-label{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2);min-width:130px}
+.ctrl-val{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);min-width:52px}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;background:var(--border);outline:none;flex:1;min-width:100px;max-width:220px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--a2);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);border:none;cursor:pointer}
+.btn{background:none;border:1px solid var(--border);color:var(--ink2);font-family:'DM Mono',monospace;font-size:.75rem;padding:.3rem .75rem;cursor:pointer;transition:border-color .15s,color .15s,background .15s}
+.btn:hover{border-color:var(--a2);color:var(--a2)}
+.btn.primary{border-color:var(--a2);color:var(--a2)}
+.btn.primary:hover{background:color-mix(in srgb,var(--a2) 12%,transparent)}
+.btn-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.85rem}
+
+/* ── Scenario Buttons ──────────────────────────────────────────── */
+.scen-btns{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.85rem}
+.scen-btn{font-family:'DM Mono',monospace;font-size:.73rem;padding:.28rem .65rem;cursor:pointer;border:1px solid var(--border);color:var(--ink3);background:none;transition:all .15s}
+.scen-btn:hover,.scen-btn.active{border-color:var(--a2);color:var(--a2);background:color-mix(in srgb,var(--a2) 8%,transparent)}
+.scen-btn.warn{border-color:var(--a5);color:var(--a5)}
+.scen-btn.warn:hover,.scen-btn.warn.active{background:color-mix(in srgb,var(--a5) 8%,transparent);border-color:var(--a5)}
+
+/* ── ICC Bar ───────────────────────────────────────────────────── */
+.icc-wrap{margin-bottom:.85rem}
+.icc-bar-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);margin-bottom:.3rem}
+.icc-bar{height:20px;display:flex;border:1px solid var(--border);overflow:hidden}
+.icc-seg-btw{background:color-mix(in srgb,var(--a2) 45%,transparent);transition:width .3s;display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden}
+.icc-seg-wit{background:color-mix(in srgb,var(--grid) 60%,transparent);flex:1}
+.icc-bar-txt{font-family:'DM Mono',monospace;font-size:.6rem;padding:0 .3rem;white-space:nowrap}
+.icc-bar-vals{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.62rem;color:var(--ink3);margin-top:.16rem}
+
+/* ── Coef Grid ─────────────────────────────────────────────────── */
+.coef-grid{display:grid;gap:.35rem;margin-bottom:.85rem}
+.coef-grid.g2{grid-template-columns:repeat(2,1fr)}
+.coef-grid.g3{grid-template-columns:repeat(3,1fr)}
+.coef-cell{background:var(--panel);border:1px solid var(--border);padding:.6rem .85rem}
+.coef-cell-lbl{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.15rem}
+.coef-cell-val{font-family:'DM Mono',monospace;font-size:1.05rem;color:var(--a2);font-weight:500}
+.coef-cell-val.c1{color:var(--a1)}
+.coef-cell-val.c3{color:var(--a3)}
+.coef-cell-val.c5{color:var(--a5)}
+
+/* ── Formula Card ──────────────────────────────────────────────── */
+.formula-card{background:color-mix(in srgb,var(--a2) 5%,var(--panel));border:1px solid var(--border);border-left:3px solid var(--a2);padding:.8rem 1rem;margin-bottom:.85rem;font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2);line-height:2.1}
+.formula-card .fc-level{font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;color:var(--a2);margin-bottom:.22rem;border-bottom:1px solid var(--border);padding-bottom:.22rem}
+.fxd{color:var(--a1);font-weight:600}
+.rnd{color:var(--a2);font-weight:600}
+.eps{color:var(--ink3)}
+
+/* ── Erkläer Box ───────────────────────────────────────────────── */
+.erklaer{background:var(--panel);border-left:3px solid var(--accent);padding:.8rem 1rem;margin-bottom:.85rem;max-width:1100px;font-family:'DM Mono',monospace;font-size:.80rem;color:var(--ink2);line-height:1.95}
+.erklaer strong{color:var(--ink)}
+
+/* ── Info Box ──────────────────────────────────────────────────── */
+.info-box{background:color-mix(in srgb,var(--a2) 5%,var(--panel));border:1px solid var(--border);border-left:3px solid var(--a2);padding:.85rem 1rem;font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2);line-height:1.9}
+.info-box-h{font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:var(--a2);margin-bottom:.6rem;padding-bottom:.38rem;border-bottom:1px solid var(--border)}
+.info-box p{margin-bottom:.5rem}
+.info-box p:last-child{margin-bottom:0}
+.info-box strong{color:var(--ink)}
+.info-box em{font-style:italic;color:var(--a2)}
+.info-box code{font-family:'DM Mono',monospace;font-size:.88em;color:var(--a2)}
+
+/* ── Accordion ─────────────────────────────────────────────────── */
+.acc-wrap{margin-bottom:.85rem;max-width:1100px}
+.acc-item{border:1px solid var(--border);margin-bottom:.4rem}
+.acc-trigger{width:100%;text-align:left;background:var(--panel);border:none;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);padding:.65rem 1rem;cursor:pointer;display:flex;align-items:center;gap:.6rem;transition:color .15s}
+.acc-trigger:hover{color:var(--ink)}
+.acc-trigger.open{color:var(--a2)}
+.acc-arrow{font-size:.7rem;color:var(--ink3);transition:transform .2s;flex-shrink:0;margin-left:auto}
+.acc-trigger.open .acc-arrow{transform:rotate(90deg)}
+.acc-body{display:none;padding:.8rem 1rem;border-top:1px solid var(--border)}
+.acc-body.open{display:block}
+
+/* ── Lernkarten ────────────────────────────────────────────────── */
+#lernkarten{padding:1.4rem 1.4rem 2.5rem;border-top:1px solid var(--border);background:var(--bg)}
+.lk-head{font-family:'DM Mono',monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--ink3);margin-bottom:1rem}
+.lcard-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.85rem}
+.lcard{background:var(--panel);border:1px solid var(--border);padding:1rem 1.1rem}
+.lcard:last-child{grid-column:1/-1}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--a2);margin-bottom:.55rem}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.lcard-body{font-size:.875rem;color:var(--ink2);line-height:1.7}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.82em;color:var(--a2)}
+
+/* ── Help Modal ────────────────────────────────────────────────── */
+.ml-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.58);align-items:flex-start;justify-content:center;padding-top:60px;overflow-y:auto}
+.ml-modal.open{display:flex}
+.ml-modal-box{background:var(--paper);border:1px solid var(--border);padding:2rem 2.4rem;max-width:640px;width:90%;margin-bottom:2rem;font-family:'DM Mono',monospace;position:relative}
+.ml-modal-close{position:absolute;top:.75rem;right:.75rem;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--ink2);line-height:1}
+.ml-modal-close:hover{color:var(--ink)}
+.ml-modal-eyebrow{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a1);margin-bottom:1rem}
+.ml-modal-body h3{font-family:'Fraunces',serif;font-size:1rem;color:var(--ink);margin:1.2rem 0 .4rem}
+.ml-modal-body p,.ml-modal-body li{font-size:.8rem;color:var(--ink2);line-height:1.9}
+.ml-modal-body ul{padding-left:1.2rem;margin:.3rem 0 .6rem}
+.ml-modal-body code{font-family:'DM Mono',monospace;font-size:.9em;color:var(--a2)}
+.ml-modal-body a{color:var(--a2)}
+.details-box{border:1px solid var(--border);margin:.6rem 0}
+.details-box summary{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);padding:.5rem .8rem;cursor:pointer;list-style:none}
+.details-box summary::-webkit-details-marker{display:none}
+.details-box[open] summary{color:var(--a2);border-bottom:1px solid var(--border)}
+.details-box .details-inner{padding:.7rem .8rem}
+
+/* ── Scrollbar ─────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border)}
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media(max-width:600px){
+  .lcard-grid{grid-template-columns:1fr}
+  .lcard:last-child{grid-column:auto}
+  .coef-grid.g3{grid-template-columns:repeat(2,1fr)}
+  #mod-tabs{font-size:.7rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ══════════════════════════════════════════════════════ -->
+<div id="topbar">
+  <h1>Multilevel &amp; <em>Mixed Models</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
+  <button class="tbtn" id="btn-neue-daten" onclick="neueDaten()">↻ New Data</button>
+  <div class="tb-sep"></div>
+  <button class="tbtn tbtn-red" onclick="openModal('help-modal')">? Help</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="scroll">
+<!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
+<div id="story">
+  <span class="story-label">Example</span>
+  <div class="story-vars">
+    <span class="sv">N = 50 students</span>
+    <span class="sv">J = 5 classes (n_j = 10)</span>
+    <span class="sv">X = <em>study time</em> (h/week)</span>
+    <span class="sv">Y = <em>exam performance</em></span>
+  </div>
+  <span id="seed-info">Seed: —</span>
+</div>
+
+<!-- ══ MODULE TABS ═════════════════════════════════════════════════ -->
+<div id="mod-tabs">
+  <button class="mod-tab active" data-mod="1" onclick="showMod(1)">
+    <span class="tab-num">①</span> Pooling Comparison
+  </button>
+  <button class="mod-tab" data-mod="2" onclick="showMod(2)">
+    <span class="tab-num">②</span> Shrinkage &amp; ICC
+  </button>
+  <button class="mod-tab" data-mod="3" onclick="showMod(3)">
+    <span class="tab-num">③</span> Random Slopes
+  </button>
+  <button class="mod-tab" data-mod="4" onclick="showMod(4)">
+    <span class="tab-num">④</span> Simpson's Paradox
+  </button>
+  <button class="mod-tab" data-mod="5" onclick="showMod(5)">
+    <span class="tab-num">⑤</span> Extreme Shrinkage
+  </button>
+</div>
+
+<!-- ══ MODULE 1: POOLING-VERGLEICH ══════════════════════════════════ -->
+<div id="mod1" class="mod-panel active">
+  <div class="mod-h">Why Multilevel? — <em>Complete, No &amp; Partial Pooling</em></div>
+  <div class="mod-sub">Does one shared line across all 50 students suffice — <strong>Complete Pooling</strong>? Or must each class be treated strictly separately — <strong>No Pooling</strong>? Or a middle ground — <strong>Partial Pooling</strong>?</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <!-- Canvas -->
+    <div>
+      <div class="cv-label">Data by class &amp; regression lines</div>
+      <div class="cv-wrap"><canvas id="cv1" width="740" height="560"></canvas></div>
+
+      <!-- Szenario-Buttons unterhalb Canvas -->
+      <div style="margin-top:.7rem">
+        <div class="cv-label">Scenarios</div>
+        <div class="scen-btns">
+          <button class="scen-btn active" id="scen-standard" onclick="setScenario('standard')">Standard</button>
+          <button class="scen-btn" id="scen-hohe-icc" onclick="setScenario('hohe-icc')">High ICC</button>
+          <button class="scen-btn warn" id="scen-simpson" onclick="setScenario('simpson')">→ Simpson's Paradox</button>
+          <button class="scen-btn warn" id="scen-shrinkextreme" onclick="setScenario('shrinkextreme')">→ Extreme Shrinkage</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rechtes Panel: Steuerung | Info nebeneinander -->
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+
+      <!-- Steuerungsspalte -->
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+
+        <!-- Pooling-Modus -->
+        <div>
+          <div class="cv-label" style="margin-bottom:.4rem">Pooling mode (toggle)</div>
+          <div style="font-size:.66rem;color:var(--ink3);margin-bottom:.3rem">Two extremes without shrinkage:</div>
+          <div class="btn-row" style="flex-direction:column;gap:.35rem;margin-bottom:0">
+            <button class="btn primary" id="pool-cp-btn" onclick="togglePool('cp')" style="width:100%;text-align:left;opacity:0.35">
+              ● Complete Pooling
+            </button>
+            <button class="btn primary" id="pool-np-btn" onclick="togglePool('np')" style="width:100%;text-align:left;opacity:0.35">
+              ● No Pooling
+            </button>
+          </div>
+          <div style="font-size:.66rem;color:var(--ink3);margin:.6rem 0 .3rem;padding-top:.5rem;border-top:1px solid var(--grid)">Partial Pooling (LMM) — the same shrinkage, two variants depending on <em>what</em> gets shrunk:</div>
+          <div class="btn-row" style="flex-direction:column;gap:.35rem;margin-bottom:0">
+            <button class="btn primary" id="pool-pp-btn" onclick="togglePool('pp')" style="width:100%;text-align:left;opacity:0.35">
+              ● … intercept only (Random Intercepts)
+            </button>
+            <button class="btn primary" id="pool-rs-btn" onclick="togglePool('rs')" style="width:100%;text-align:left;opacity:0.35">
+              ● … intercept + slope (Random Slopes)
+            </button>
+          </div>
+        </div>
+
+        <!-- ICC-Balken -->
+        <div class="icc-wrap">
+          <div class="icc-bar-label">Variance decomposition</div>
+          <div class="icc-bar">
+            <div class="icc-seg-btw" id="icc1-btw" style="width:30%">
+              <span class="icc-bar-txt" id="icc1-btw-txt">Between 30%</span>
+            </div>
+            <div class="icc-seg-wit">
+              <span class="icc-bar-txt" id="icc1-wit-txt" style="color:var(--ink3)">Within 70%</span>
+            </div>
+          </div>
+          <div class="icc-bar-vals">
+            <span>ICC = <strong id="icc1-val">—</strong></span>
+            <span>τ₀ = <span id="tau0-disp">—</span> · σ = <span id="sig-disp">—</span></span>
+          </div>
+        </div>
+
+        <!-- Koeffizienten -->
+        <div class="coef-grid g2">
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">γ₀₀</div>
+            <div class="coef-cell-val" id="c1-g00">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">γ₁₀ (Fixed Slope)</div>
+            <div class="coef-cell-val" id="c1-g10">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">τ₀² (Between)</div>
+            <div class="coef-cell-val c1" id="c1-tau0sq">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">σ² (Within)</div>
+            <div class="coef-cell-val c3" id="c1-sigsq">—</div>
+          </div>
+        </div>
+
+        <!-- Formel -->
+        <div class="formula-card">
+          <div class="fc-level" id="c1-fc-level">LMM — Random Intercepts</div>
+          <div style="margin-bottom:.18rem" id="c1-fc-formula">Y<sub>ij</sub> = <span class="fxd">γ₀₀</span> + <span class="fxd">γ₁₀</span>·X<sub>ij</sub> + <span class="rnd">u<sub>0j</sub></span> + <span class="eps">ε<sub>ij</sub></span></div>
+          <div style="font-size:.66rem;color:var(--ink3)" id="c1-fc-dist"><span class="rnd">u<sub>0j</sub></span> ~ N(0,τ₀²) &nbsp;·&nbsp; <span class="eps">ε<sub>ij</sub></span> ~ N(0,σ²)</div>
+        </div>
+        <div id="c1-rs-warn" style="display:none;font-size:.7rem;color:var(--a5);background:var(--panel);border:1px solid var(--a5);padding:.45rem .6rem;line-height:1.5"></div>
+
+      </div><!-- /Steuerungsspalte -->
+
+      <!-- Info-Spalte -->
+      <div class="info-box" style="flex:1">
+        <div class="info-box-h">Tutorial — Why Multilevel?</div>
+        <p><strong>Task — click through</strong><br>
+        J=5 school classes (colors), n_j=10 students, X = study time, Y = exam points. The regression lines are initially <em>hidden</em>. <strong>Activate the pooling modes individually</strong> (buttons on the left) to show the lines — first one alone, then compared. What stands out?</p>
+        <p><strong>Complete Pooling (red, dashed) → activate</strong><br>
+        A single global OLS line through all N=50 data points. Group structure is completely ignored. Advantage: simple. Problem: standard errors are underestimated, because observations within a class aren't independent.</p>
+        <p><strong>No Pooling (group colors, dotted) → activate</strong><br>
+        Each class gets its own regression line. In practice: a model with a group × predictor interaction — for J groups this yields 2J parameters (J intercepts + J slopes). This quickly becomes unwieldy for large J; no information sharing between groups. At n_j=4, estimates become unstable.</p>
+        <p><strong>Partial Pooling happens twice — remember the principle, not two methods</strong><br>
+        Both of the following modes are Partial Pooling: an estimate is <em>shrunk</em> toward its grand mean, weighted by how much of its own evidence the group has (see accordion below). The only difference is <em>which</em> estimate gets shrunk — just the intercept, or intercept and slope together. No Pooling provides the unshrunk starting point in both cases.</p>
+        <p><strong>… intercept only (group colors, solid) → activate</strong><br>
+        The group intercepts are shrunk toward the grand mean, but all groups share the same slope γ₁₀ (Random Intercepts) — the lines are therefore <em>parallel</em>. The blue dashed line shows the fixed effect (γ₀₀ + γ₁₀·X). Correct standard errors, information sharing between groups.</p>
+        <p><strong>… intercept + slope (group colors, dashed) → activate</strong><br>
+        In addition to the intercept, the slope per group is now also shrunk (Random Slopes) — the lines are no longer parallel. Closer to No Pooling ↑ when τ₁ is large, closer to the parallel RI lines ↑ when τ₁ is small. Activate both modes at once: the same starting points (intercepts), but tilted differently.</p>
+        <p><strong>What to observe</strong><br>
+        · <em>High ICC:</em> CP and NP lines lie far apart. PP/RS lie in between.<br>
+        · <em>Small groups:</em> NP lines fluctuate strongly, PP/RS lines stay stable.<br>
+        · <em>Simpson:</em> the CP line shows a negative trend, NP/PP show a positive within effect. Module&nbsp;④ explains why.</p>
+      </div>
+
+    </div><!-- /rechtes Panel -->
+  </div><!-- /cv-row -->
+
+  <!-- Akkordeon: Konzept-Details -->
+  <div class="acc-wrap" style="margin-top:.9rem">
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        📐 Empirical Bayes shrinkage — the math behind it
+        <span class="acc-arrow">▶</span>
+      </button>
+      <div class="acc-body">
+        <div class="erklaer" style="margin-bottom:0">
+          The partial-pooling intercept of group j is a weighted average of the no-pooling estimate and the grand mean:<br>
+          <strong>α̂_j<sup>PP</sup> = λ_j · α̂_j<sup>NP</sup> + (1–λ_j) · γ̂₀₀</strong><br>
+          where the shrinkage factor <strong>λ_j = τ₀² / (τ₀² + σ²/n_j)</strong>.<br><br>
+          λ → 1 (no shrinkage): large groups (n_j↑) or large between-variance (τ₀²↑) — the group has enough of its own evidence.<br>
+          λ → 0 (strong shrinkage): small groups or dominant within-variance — the prior (grand mean) dominates.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODULE 2: SHRINKAGE & ICC ═════════════════════════════════════ -->
+<div id="mod2" class="mod-panel">
+  <div class="mod-h">Shrinkage &amp; <em>ICC</em></div>
+  <div class="mod-sub">How strongly are group intercepts pulled toward the grand mean? Slide τ₀ and σ and watch the effect live.</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <!-- Linke Seite: zwei Canvas übereinander -->
+    <div>
+      <div class="cv-label">Caterpillar plot — group intercepts (95% CI)</div>
+      <div class="cv-wrap"><canvas id="cv2cat" width="560" height="320"></canvas></div>
+      <div class="cv-label" style="margin-top:.7rem">Shrinkage: No Pooling → Partial Pooling</div>
+      <div class="cv-wrap"><canvas id="cv2shr" width="560" height="220"></canvas></div>
+    </div>
+
+    <!-- Rechtes Panel -->
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+
+      <!-- Steuerungsspalte -->
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+
+        <div class="ctrl-block">
+          <div class="ctrl-row">
+            <span class="ctrl-label">Between-SD τ₀</span>
+            <input type="range" id="sl-tau0" min="1" max="20" step=".5" value="8" oninput="updTau0(this.value)">
+            <span class="ctrl-val" id="val-tau0">8.0</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">Within-SD σ</span>
+            <input type="range" id="sl-sig" min="2" max="20" step=".5" value="8" oninput="updSig(this.value)">
+            <span class="ctrl-val" id="val-sig">8.0</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">Group size n_j</span>
+            <input type="range" id="sl-nj" min="3" max="30" step="1" value="10" oninput="updNj(this.value)">
+            <span class="ctrl-val" id="val-nj">10</span>
+          </div>
+        </div>
+
+        <!-- ICC Balken -->
+        <div class="icc-wrap">
+          <div class="icc-bar-label">ICC = τ₀² / (τ₀² + σ²)</div>
+          <div class="icc-bar">
+            <div class="icc-seg-btw" id="icc2-btw" style="width:50%">
+              <span class="icc-bar-txt" id="icc2-btw-txt">Between 50%</span>
+            </div>
+            <div class="icc-seg-wit">
+              <span class="icc-bar-txt" style="color:var(--ink3)" id="icc2-wit-txt">Within 50%</span>
+            </div>
+          </div>
+          <div class="icc-bar-vals">
+            <span>ICC = <strong id="icc2-val">—</strong></span>
+            <span>λ̄ = <strong id="lambda-val">—</strong></span>
+          </div>
+        </div>
+
+        <!-- Kennwerte -->
+        <div class="coef-grid g2">
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">ICC</div>
+            <div class="coef-cell-val" id="c2-icc">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">λ (shrinkage factor)</div>
+            <div class="coef-cell-val" id="c2-lambda">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">Max. shrinkage</div>
+            <div class="coef-cell-val c1" id="c2-maxshr">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">Avg. |NP – PP|</div>
+            <div class="coef-cell-val c3" id="c2-meandiff">—</div>
+          </div>
+        </div>
+
+        <!-- Formel -->
+        <div class="formula-card">
+          <div class="fc-level">Shrinkage formula</div>
+          <div style="margin-bottom:.18rem">λ_j = <span class="rnd">τ₀²</span> / (<span class="rnd">τ₀²</span> + <span class="eps">σ²</span>/n_j)</div>
+          <div>α̂_j<sup>PP</sup> = λ_j·α̂_j<sup>NP</sup> + (1–λ_j)·<span class="fxd">γ̂₀₀</span></div>
+        </div>
+
+      </div><!-- /Steuerungsspalte -->
+
+      <!-- Info-Spalte -->
+      <div class="info-box" style="flex:1">
+        <div class="info-box-h">Tutorial — Understanding Shrinkage &amp; ICC</div>
+        <p><strong>Caterpillar plot (top)</strong><br>
+        Each class has a point (◆ = Partial Pooling, ○ = No Pooling) and a 95% CI. The dashed line is γ̂₀₀ (grand mean). Observe: PP points always lie <em>closer</em> to the dashed line than NP points — that's shrinkage.</p>
+        <p><strong>Shrinkage diagram (bottom)</strong><br>
+        Arrows show the shift NP → PP. The factor λ is shown at the arrow: λ = 1.0 means no shrinkage (the class has enough of its own evidence), λ = 0.2 means strong shrinkage (grand mean dominates). <strong>Note:</strong> λ is identical for all classes of equal size — yet the arrows look different lengths. That's because λ only sets the <em>proportion</em> of shrinkage (aPP = λ·aNP + (1−λ)·γ̂₀₀); the <em>absolute</em> arrow length additionally depends on how far the raw NP value was from γ̂₀₀ in the first place. A class with an extreme NP value (like K3) is pulled by the same proportion, but by considerably more in absolute points, than a class near the mean.</p>
+        <p><strong>Slider τ₀ (between-SD)</strong><br>
+        Increase τ₀: classes differ more strongly → ICC rises → λ rises → less shrinkage. Estimates "trust" the group structure.</p>
+        <p><strong>Slider σ (within-SD)</strong><br>
+        Increase σ: more noise within classes → ICC falls → λ falls → more shrinkage. The class-specific information is less reliable.</p>
+        <p><strong>Slider n_j</strong><br>
+        Large groups (n_j = 30): λ ≈ 1, no shrinkage needed. Small groups (n_j = 3): λ small, strong shrinkage. A core advantage of LMM: it automatically adapts to the amount of data available per group.</p>
+        <p><strong>ICC rules of thumb</strong><br>
+        ICC &lt; 0.05: group structure negligible. · ICC 0.05–0.20: moderate cluster effects, LMM recommended. · ICC &gt; 0.20: strong effects, LMM essential. Education context: typically ICC ≈ 0.10–0.20.</p>
+      </div>
+
+    </div><!-- /rechtes Panel -->
+  </div><!-- /cv-row -->
+</div>
+
+<!-- ══ MODULE 3: RANDOM SLOPES ═══════════════════════════════════════ -->
+<div id="mod3" class="mod-panel">
+  <div class="mod-h">Random Slopes — <em>Effect Heterogeneity Between Classes</em></div>
+  <div class="mod-sub">Does study time have the same effect in every class? τ₁ lets slopes vary, ρ controls the intercept-slope correlation.</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <!-- Canvas -->
+    <div>
+      <div class="cv-label">Class-specific slopes (colored = NP, gray = estimated fixed slope across all points)</div>
+      <div class="cv-wrap"><canvas id="cv3" width="740" height="560"></canvas></div>
+    </div>
+
+    <!-- Rechtes Panel -->
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+
+      <!-- Steuerungsspalte -->
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+
+        <div class="ctrl-block">
+          <div class="ctrl-row">
+            <span class="ctrl-label">Slope var. τ₁</span>
+            <input type="range" id="sl-tau1" min="0" max="6" step=".1" value="1.5" oninput="updTau1(this.value)">
+            <span class="ctrl-val" id="val-tau1">1.5</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">Correlation ρ</span>
+            <input type="range" id="sl-rho" min="-0.9" max="0.9" step=".05" value="0" oninput="updRho(this.value)">
+            <span class="ctrl-val" id="val-rho">0.00</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">Fixed Slope γ₁₀</span>
+            <input type="range" id="sl-g10m3" min="0" max="8" step=".2" value="3" oninput="updG10m3(this.value)">
+            <span class="ctrl-val" id="val-g10m3">3.0</span>
+          </div>
+        </div>
+
+        <!-- Kennwerte -->
+        <div class="coef-grid g2">
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">γ₁₀ (avg. slope)</div>
+            <div class="coef-cell-val" id="c3-g10">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">τ₁ (slope SD)</div>
+            <div class="coef-cell-val c1" id="c3-tau1">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">ρ(u₀,u₁)</div>
+            <div class="coef-cell-val" id="c3-rho">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">Slope range</div>
+            <div class="coef-cell-val c3" id="c3-range">—</div>
+          </div>
+        </div>
+
+        <!-- Formel -->
+        <div class="formula-card">
+          <div class="fc-level">Random Intercepts + Slopes</div>
+          <div style="margin-bottom:.18rem">Y<sub>ij</sub> = (<span class="fxd">γ₀₀</span>+<span class="rnd">u<sub>0j</sub></span>) + (<span class="fxd">γ₁₀</span>+<span class="rnd">u<sub>1j</sub></span>)·X + <span class="eps">ε</span></div>
+          <div style="font-size:.66rem;color:var(--ink3)">Σ = [[τ₀²,ρτ₀τ₁],[ρτ₀τ₁,τ₁²]]</div>
+        </div>
+
+      </div><!-- /Steuerungsspalte -->
+
+      <!-- Info-Spalte -->
+      <div class="info-box" style="flex:1">
+        <div class="info-box-h">Tutorial — Understanding Random Slopes</div>
+        <p><strong>What you're seeing</strong><br>
+        Colored lines = class-specific NP lines (one per class, estimated only from the n_j observations of that class). Gray dashed line = the estimated fixed slope (OLS across all points, N=J·n_j) — a good approximation of the true value γ₁₀, because it uses far more observations than any single colored line. At τ₁=0, the <em>true</em> slopes of all classes are identical — the colored NP lines can still look slightly different, because each one is estimated from only n_j=10 noisy observations (pure sampling noise, not real heterogeneity). That's exactly one reason for random-slope shrinkage: it pulls these randomly noisy NP slopes back toward γ₁₀ instead of taking them at face value.</p>
+        <p><strong>Slider τ₁ (slope variance)</strong><br>
+        τ₁=0: all classes benefit equally from study time — Random Intercepts suffices.<br>
+        τ₁&gt;0: the slopes fan out (or in). Substantive question: is the study-time effect stronger in some classes than in others?</p>
+        <p><strong>Slider ρ (intercept-slope correlation)</strong><br>
+        ρ&gt;0 (<em>fan-out</em>): classes with a high starting level also show a stronger study-time effect. Richer classes get richer — Matthew principle.<br>
+        ρ&lt;0 (<em>compensation</em>): classes with a low starting level benefit more from study time — instruction evens things out.<br>
+        ρ=0: slope and intercept vary independently.</p>
+        <p><strong>When do I need Random Slopes?</strong><br>
+        Theoretically: when the predictor effect shouldn't be the same for all groups.<br>
+        Statistically: model comparison via LRT or LOOIC. But: random-slope models need more data (especially large n_j) and can be numerically unstable. When in doubt: Random Intercepts as default.</p>
+        <p><strong>Tip: uncorrelated RE (<code>||</code>)</strong><br>
+        If ρ is hard to identify (small J), you can decouple the intercept and slope random effects. In lme4: <code>(1 + X || Class)</code>. In brms: <code>(1 | Class) + (0 + X | Class)</code>. This reduces parameters and improves convergence.</p>
+      </div>
+
+    </div><!-- /rechtes Panel -->
+  </div><!-- /cv-row -->
+
+  <!-- Akkordeon: R-Code -->
+  <div class="acc-wrap" style="margin-top:.9rem">
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        📦 R code (lme4 / brms)
+        <span class="acc-arrow">▶</span>
+      </button>
+      <div class="acc-body">
+        <div class="erklaer" style="margin-bottom:0">
+          Random Intercepts:<br>
+          <code>lmer(Y ~ X + (1 | Class), data=df)</code><br><br>
+          Random Slopes (correlated):<br>
+          <code>lmer(Y ~ X + (1 + X | Class), data=df)</code><br><br>
+          Uncorrelated (<code>||</code>):<br>
+          <code>lmer(Y ~ X + (1 + X || Class), data=df)</code><br><br>
+          Bayesian:<br>
+          <code>brm(Y ~ X + (1 + X | Class), family=gaussian(), data=df)</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODULE 4: SIMPSON-PARADOXON ═══════════════════════════════════ -->
+<div id="mod4" class="mod-panel">
+  <div class="mod-h">Simpson's Paradox — <em>the Aggregation Error</em></div>
+  <div class="mod-sub">The overall OLS trend can contradict the within-group trend — a classic case of confounded group structure.</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <!-- Canvas -->
+    <div>
+      <div class="cv-label">Within effect (dotted) vs. OLS overall = Complete Pooling (dashed)</div>
+      <div class="cv-wrap"><canvas id="cv4" width="740" height="560"></canvas></div>
+
+      <!-- Szenarien -->
+      <div style="margin-top:.7rem">
+        <div class="cv-label">Scenarios</div>
+        <div class="scen-btns">
+          <button class="scen-btn" id="simp-mild" onclick="setSimpsonScen('mild')">Mild (ρ=−0.5)</button>
+          <button class="scen-btn active" id="simp-stark" onclick="setSimpsonScen('stark')">Strong (ρ=−1.0)</button>
+          <button class="scen-btn" id="simp-pos" onclick="setSimpsonScen('pos')">Positive (no paradox)</button>
+        </div>
+      </div>
+
+      <div style="margin-top:.7rem">
+        <div class="cv-label">Reference line (toggle)</div>
+        <button class="btn primary" id="simp-fixed-btn" onclick="toggleSimpFixed()" style="width:100%;text-align:left;opacity:0.35">
+          ● Fixed Effect / Grand Mean (contrast to Complete Pooling)
+        </button>
+      </div>
+    </div>
+
+    <!-- Rechtes Panel -->
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+
+      <!-- Steuerungsspalte -->
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+
+        <div class="ctrl-block">
+          <div class="ctrl-row">
+            <span class="ctrl-label">Within effect β_W</span>
+            <input type="range" id="sl-bw" min="-6" max="8" step=".2" value="3" oninput="updBw(this.value)">
+            <span class="ctrl-val" id="val-bw">3.0</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">Between offset β_B</span>
+            <input type="range" id="sl-bb" min="-8" max="0" step=".2" value="-6" oninput="updBb(this.value)">
+            <span class="ctrl-val" id="val-bb">−6.0</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">Group spacing</span>
+            <input type="range" id="sl-xoff" min="2" max="14" step=".5" value="7" oninput="updXoff(this.value)">
+            <span class="ctrl-val" id="val-xoff">7.0</span>
+          </div>
+        </div>
+
+        <!-- Kennwerte -->
+        <div class="coef-grid g2">
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">β OLS overall (= Complete Pooling)</div>
+            <div class="coef-cell-val c1" id="c4-ols">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">β within (avg.)</div>
+            <div class="coef-cell-val c3" id="c4-bw">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">Sign flip</div>
+            <div class="coef-cell-val c5" id="c4-flip">—</div>
+          </div>
+        </div>
+
+        <!-- Formel -->
+        <div class="formula-card">
+          <div class="fc-level">Decomposition of the OLS coefficient</div>
+          <div style="margin-bottom:.18rem"><span class="fxd">β_OLS</span> = β_W·w_W + β_B·w_B</div>
+          <div style="font-size:.66rem;color:var(--ink3)">w_W = share of within-variance in X</div>
+          <div style="font-size:.66rem;color:var(--ink3)">β_OLS = −: even though β_W &gt; 0 !</div>
+        </div>
+
+      </div><!-- /Steuerungsspalte -->
+
+      <!-- Info-Spalte -->
+      <div class="info-box" style="flex:1">
+        <div class="info-box-h">Tutorial — Simpson's Paradox &amp; the LMM Solution</div>
+        <p><strong>What you're seeing</strong><br>
+        5 classes (colors). Within each class: positive trend (β_W &gt; 0) — more studying, better grade. Between classes: negative trend (β_B &lt; 0) — classes with generally more study time have worse baseline grades. The dashed OLS line sees the negative between trend and estimates β &lt; 0.</p>
+        <p><strong>How does the paradox arise?</strong><br>
+        OLS mixes two different effects: the within-group effect (interesting!) and the between-group effect (confounded!). If the between effect dominates the sign <em>and</em> the between-variance in X is large, the sign reverses.</p>
+        <p><strong>How does LMM solve the problem?</strong><br>
+        The fixed slope γ₁₀ in the LMM estimates the <em>within</em> effect — controlled for the group intercepts. That's exactly the causally relevant effect: "if a student in the same class studies one more hour, what changes?"</p>
+        <p><strong>Explore the sliders</strong><br>
+        · β_B → 0: no between confounding, OLS and within agree.<br>
+        · Group spacing ↓: classes overlap in X, between-variance drops → less Simpson effect.<br>
+        · β_W → negative: the within effect is negative too — no longer a paradox, just a genuinely poor study-time effect.</p>
+        <p><strong>Connection to fixed effects</strong><br>
+        In econometrics: the fixed-effects model (within-group demeaning) likewise estimates only within effects. LMM (partial pooling) sits in between: it accounts for within effects but also allows level-2 predictors (modeling between effects explicitly).</p>
+        <p><strong>Reference line "Fixed Effect / Grand Mean"</strong><br>
+        Activate the line below the scenarios to see the correctly specified within effect (slope β_W, anchored at the grand mean) directly alongside the misleading OLS-overall line — the contrast this module is really about: <strong>OLS overall</strong> in this plot <em>is</em> Complete Pooling (the same global line, ignoring the group structure entirely), just under a different name.</p>
+      </div>
+
+    </div><!-- /rechtes Panel -->
+  </div><!-- /cv-row -->
+
+  <!-- Akkordeon: Historische Beispiele -->
+  <div class="acc-wrap" style="margin-top:.9rem">
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        🔬 Historical Examples
+        <span class="acc-arrow">▶</span>
+      </button>
+      <div class="acc-body">
+        <div class="erklaer" style="margin-bottom:0">
+          <strong>UC Berkeley (1973):</strong> women had lower admission rates in aggregate. Stratified by department: equal or better in most departments. Women applied more often to competitive departments.<br><br>
+          <strong>Kidney stone treatment:</strong> treatment A looks worse than B. Stratified by stone size: A is better in both groups. B was preferred for easier cases — confounding by indication.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODULE 5: SHRINKAGE EXTREM ═════════════════════════════════════ -->
+<div id="mod5" class="mod-panel">
+  <div class="mod-h">Extreme Shrinkage — <em>When Pooling Really Helps</em></div>
+
+  <div class="story-box"><div class="story-lbl">📋 Standalone Example — Extreme Shrinkage</div>
+  20 school classes of varying size — from n_j=3 to n_j=40 students — take the same test. A small class of just 3 students shows a strikingly high (or low) mean. Is this a genuine difference — or just chance, because extreme means occur much more easily with so few observations? Exactly this argument (illustrated, among others, by Gelman &amp; Hill, 2007, using baseball batting averages and cancer rates per county) is the core of Partial Pooling: small, extreme estimates are <em>a priori</em> less plausible than moderate ones — so they're shrunk more strongly toward the grand mean, which on average leads to better predictions.</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <!-- Canvas -->
+    <div>
+      <div class="cv-label">Estimate by group size (funnel plot)</div>
+      <div class="cv-wrap"><canvas id="cv5" width="740" height="560"></canvas></div>
+
+      <div class="btn-row" style="margin-top:.7rem">
+        <button class="btn primary" onclick="newSE()">🎲 New Simulation</button>
+        <button class="btn primary" onclick="runManySE(500)">⏩ 500 Simulations (avg. error)</button>
+      </div>
+      <div class="ctrl-block" id="se-many-result" style="font-family:'DM Mono',monospace;font-size:.78rem;line-height:1.7">No repetitions run yet.</div>
+    </div>
+
+    <!-- Rechtes Panel -->
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+
+      <!-- Steuerungsspalte -->
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+
+        <div class="ctrl-block">
+          <div class="ctrl-row">
+            <span class="ctrl-label">True SD τ</span>
+            <input type="range" id="sl-se-tau" min="0" max="20" step=".5" value="8" oninput="updSEtau(this.value)">
+            <span class="ctrl-val" id="val-se-tau">8.0</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">Noise σ</span>
+            <input type="range" id="sl-se-sig" min="5" max="25" step=".5" value="15" oninput="updSEsig(this.value)">
+            <span class="ctrl-val" id="val-se-sig">15.0</span>
+          </div>
+        </div>
+
+        <!-- Fehlervergleich -->
+        <div class="coef-grid g2">
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">Avg. error No Pooling</div>
+            <div class="coef-cell-val c5" id="se-err-np">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">Avg. error Partial Pooling</div>
+            <div class="coef-cell-val" id="se-err-pp">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">…at n≤6: No Pooling</div>
+            <div class="coef-cell-val c5" id="se-err-np-small">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">…at n≤6: Partial Pooling</div>
+            <div class="coef-cell-val" id="se-err-pp-small">—</div>
+          </div>
+        </div>
+        <div class="coef-grid g2">
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">τ̂² (estimated)</div>
+            <div class="coef-cell-val" id="se-tausq">—</div>
+          </div>
+        </div>
+
+        <!-- Formel -->
+        <div class="formula-card">
+          <div class="fc-level">Empirical Bayes estimate of the group mean</div>
+          <div style="margin-bottom:.18rem">ŷ_j = λ_j·ȳ_j + (1−λ_j)·γ̂</div>
+          <div style="font-size:.66rem;color:var(--ink3)">λ_j = τ̂² / (τ̂² + σ²/n_j) — the same formula as in Module ②, here without a slope, just for group means</div>
+        </div>
+
+      </div><!-- /Steuerungsspalte -->
+
+      <!-- Info-Spalte -->
+      <div class="info-box" style="flex:1">
+        <div class="info-box-h">Tutorial — Why Shrinkage Helps Most for Small Groups</div>
+        <p><strong>What you're seeing</strong><br>
+        20 classes, sorted by group size (x-axis). Gray circle = true mean (known only here, because simulated). Orange circle = No Pooling (raw class mean). Blue dot = Partial Pooling (shrunk). The dotted line connects No Pooling and Partial Pooling for the same class.</p>
+        <p><strong>The funnel</strong><br>
+        On the left (small n), the orange No-Pooling points scatter much further around γ̂ than on the right (large n) — a classic "funnel" shape. This is due purely to sample size: the same true difference τ produces much greater estimation uncertainty at small n_j (SE = σ/√n_j).</p>
+        <p><strong>The punchline</strong><br>
+        The blue Partial-Pooling points lie, on average, <em>closer</em> to the gray true value than the orange No-Pooling points — especially on the left, at small n. This isn't a claim, it's directly verifiable: see "avg. error" at the bottom left, or click "500 Simulations" for proof across many repetitions.</p>
+        <p><strong>Sliders</strong><br>
+        · τ (true SD) ↓: classes barely differ in truth → every deviation is more likely noise → more shrinkage pays off.<br>
+        · σ (noise) ↑: individual measurements become less reliable → shrinkage increases for all groups, most for small ones.</p>
+      </div>
+
+    </div><!-- /rechtes Panel -->
+  </div><!-- /cv-row -->
+
+  <!-- Akkordeon: Gelmans Argument -->
+  <div class="acc-wrap" style="margin-top:.9rem">
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        📚 Gelman's Argument
+        <span class="acc-arrow">▶</span>
+      </button>
+      <div class="acc-body">
+        <div class="erklaer" style="margin-bottom:0">
+          Andrew Gelman uses this pattern, among others, with the example of kidney cancer rates per US county: counties with the <em>highest</em> rates are almost always sparsely populated — but so are the counties with the <em>lowest</em> rates. This isn't a substantive contradiction but pure sampling noise: small counties (small n) simply have the largest estimation variance and therefore produce <em>both</em> extremes disproportionately often. The same logic applies to small school classes, small branches, short baseball seasons, and so on. Partial Pooling actively exploits this insight: extreme estimates from small groups are pulled more strongly toward the grand mean, because they're the least plausible a priori. Reference: Gelman &amp; Hill (2007), <em>Data Analysis Using Regression and Multilevel/Hierarchical Models</em>, Ch. 12.<br><br>
+          This exact "record-holding communities are tiny" pattern — independent of Partial Pooling, purely as a probability phenomenon — is explored in depth in a dedicated tool: <a href="../Gesetz_kleine_Zahlen.html">→ Law of Small Numbers</a>.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LERNKARTEN ════════════════════════════════════════════════════ -->
+<section id="lernkarten">
+  <div class="lk-head">Flashcards — Multilevel &amp; Mixed Models</div>
+  <div class="lcard-grid">
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">①</span> ICC — Intraclass Correlation</div>
+      <div class="lcard-body">
+        The ICC (Intraclass Correlation Coefficient) measures the share of the total variance that lies <strong>between groups</strong>: <code>ICC = τ₀² / (τ₀² + σ²)</code>. ICC = 0 means groups aren't any more similar than random samples — OLS suffices. ICC &gt; 0.10–0.20 means a strong cluster structure: individuals within a group are more similar to each other. Then OLS leads to <strong>standard errors that are too small</strong> and incorrect inference. Rule of thumb: consider LMM above ICC &gt; 0.05; LMM is essential above ICC &gt; 0.10.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">②</span> Complete · No · Partial Pooling</div>
+      <div class="lcard-body">
+        <strong>Complete Pooling</strong> ignores groups — one global OLS line, SE underestimated. <strong>No Pooling</strong> is modeled as a group × predictor interaction (2J parameters) — stable only with large n_j and small J, no information sharing. <strong>Partial Pooling</strong> (LMM) is the compromise: group intercepts (Random Intercepts) or also slopes (Random Slopes) are <em>shrunk</em> toward the grand mean (Empirical Bayes). Strength of shrinkage: λ = τ₀²/(τ₀²+σ²/n_j). Small groups get adjusted more strongly. Result: a regularized estimator with better out-of-sample prediction and correct SE.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">③</span> Shrinkage &amp; Empirical Bayes</div>
+      <div class="lcard-body">
+        Partial Pooling is equivalent to <strong>Empirical Bayes</strong>: group intercepts are treated as randomly drawn from N(0,τ₀²). Shrinkage factor λ_j = τ₀²/(τ₀²+σ²/n_j). At τ₀²&nbsp;↑ or n_j&nbsp;↑, λ → 1 (little shrinkage). For small groups or small τ₀², λ → 0 (strong shrinkage). The caterpillar plot shows shrunk intercepts with CI. Groups far from the grand mean have wider CIs and less shrinkage — because they bring more of their own evidence.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">④</span> Random Slopes</div>
+      <div class="lcard-body">
+        A <strong>random-intercept model</strong> assumes all groups have the same slope. <strong>Random-slope models</strong> allow this effect to vary: τ₁ = SD of the slope distribution. The correlation parameter ρ between u₀j and u₁j matters substantively: ρ &gt; 0 (fan-out) = high groups benefit more; ρ &lt; 0 (compensation) = low groups benefit more. In lme4: <code>lmer(Y ~ X + (1 + X | Group), data = df)</code>. With small J and small n_j, ρ may be poorly identified → try the <code>||</code> syntax.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">⑤</span> Simpson's Paradox &amp; Within/Between</div>
+      <div class="lcard-body">
+        The aggregated OLS estimator mixes <strong>within effects</strong> (causally interesting) with <strong>between effects</strong> (often confounded). <strong>Simpson's paradox</strong> arises when the two effects have opposite signs and between-variance in X dominates. LMM's fixed slope γ₁₀ estimates the within effect, adjusted for group differences. Historical examples: UC Berkeley admissions (1973), kidney stone treatment. Anyone relying on OLS alone may draw causally wrong conclusions.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">⑥</span> Model Formula &amp; R Syntax</div>
+      <div class="lcard-body">
+        Random Intercepts: <code>lmer(Y ~ X + (1 | Group), data = df)</code>.<br>
+        Random Slopes: <code>lmer(Y ~ X + (1 + X | Group), data = df)</code>.<br>
+        Bayesian (brms): <code>brm(Y ~ X + (1 | Group), family = gaussian(), data = df)</code>.<br>
+        <code>summary()</code> shows fixed effects (γ₀₀, γ₁₀) and random effects (τ₀, σ). ICC via <code>performance::icc(model)</code>. Model comparison: <code>anova(m_ri, m_rs)</code> or <code>loo_compare()</code>. Conditional R²: <code>r2_nakagawa()</code> from the <strong>performance</strong> package.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">⑦</span> Shrinkage as a Prediction Improvement</div>
+      <div class="lcard-body">
+        The real benefit of Partial Pooling isn't an aesthetic preference but measurably better <strong>out-of-sample prediction</strong>: because small groups are highly likely to produce extreme estimates purely through sampling noise, an estimator shrunk toward the grand mean is, on average, closer to the true value (lower expected squared error) than the unshrunk No-Pooling estimator — a classic result from decision theory (related to the <strong>James-Stein estimator</strong>). Gelman &amp; Hill (2007) illustrate this with, among other things, baseball batting averages and cancer rates per county. See Module ⑤.
+      </div>
+    </div>
+
+  </div>
+</section>
+</div><!-- #scroll -->
+
+<!-- ══ HILFE-MODAL ════════════════════════════════════════════════════ -->
+<div id="help-modal" class="ml-modal" onclick="if(event.target===this)closeModal('help-modal')">
+  <div class="ml-modal-box">
+    <button class="ml-modal-close" onclick="closeModal('help-modal')">✕</button>
+    <div class="ml-modal-eyebrow">? Help — Multilevel &amp; Mixed Models</div>
+    <div class="ml-modal-body">
+      <h3>What does this tool show?</h3>
+      <p>The <strong>multilevel model tool</strong> explains Linear Mixed Models (LMM) for hierarchically structured data. Example: J=5 school classes with n_j=10 students each, X=study time, Y=exam points. Five interactive modules lead from the pooling question through shrinkage and random slopes to Simpson's paradox and the question of when shrinkage actually improves prediction.</p>
+
+      <h3>The five modules</h3>
+      <ul>
+        <li><strong>① Pooling Comparison</strong> — compare Complete, No and Partial Pooling live. ICC bar shows variance decomposition. Scenarios at the click of a button.</li>
+        <li><strong>② Shrinkage &amp; ICC</strong> — caterpillar plot + shrinkage arrow diagram. Sliders for τ₀, σ, n_j show how λ controls shrinkage.</li>
+        <li><strong>③ Random Slopes</strong> — τ₁ and ρ control slope variability and intercept-slope correlation. Fan-out / compensation live.</li>
+        <li><strong>④ Simpson's Paradox</strong> — set within and between effects. Experience the sign flip of the OLS coefficient live.</li>
+        <li><strong>⑤ Extreme Shrinkage</strong> — 20 groups of varying size, with the true value visible. Shows directly that Partial Pooling is, on average, closer to the truth than No Pooling — especially for small groups.</li>
+      </ul>
+
+      <h3>Terms</h3>
+      <ul>
+        <li><strong>ICC</strong>: τ₀² / (τ₀² + σ²) — share of between-variance in total variance.</li>
+        <li><strong>γ₀₀</strong>: grand intercept (fixed effect) — overall mean across all groups.</li>
+        <li><strong>γ₁₀</strong>: fixed slope — shared within-group effect of X on Y.</li>
+        <li><strong>u₀j</strong>: random intercept of group j — deviation from the grand mean.</li>
+        <li><strong>u₁j</strong>: random slope of group j — deviation from the fixed slope.</li>
+        <li><strong>τ₀ / τ₁</strong>: SD of the random-intercept / -slope distribution between groups.</li>
+        <li><strong>σ</strong>: residual SD (within-group error).</li>
+        <li><strong>λ</strong>: shrinkage factor = τ₀² / (τ₀² + σ²/n_j).</li>
+      </ul>
+
+      <details class="details-box">
+        <summary>▸ Method-of-moments estimator (for the curious)</summary>
+        <div class="details-inner" style="font-size:.78rem;color:var(--ink2);line-height:1.9">
+          <p>This tool uses simple moment estimators (not REML / ML). The within-slope γ₁₀ is the Sxx-weighted average of the group-specific OLS slopes. The residual variance σ² is computed from the residuals to the shared slope. τ₀² = max(0, Var(NP intercepts) − σ²/n_j). These estimators are consistent but less efficient than REML — sufficient for teaching purposes.</p>
+        </div>
+      </details>
+
+      <h3>Further reading</h3>
+      <ul>
+        <li><a href="../OLS_Regression.html">OLS Regression</a> — the basic linear model as a starting point</li>
+        <li><a href="../Causal_Teaching.html">Causal Teaching</a> — DAGs, confounding, IPW, G-computation</li>
+        <li><a href="../Mediationsanalyse.html">Mediation Analysis</a> — direct/indirect effect in multilevel models</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ── Seeded RNG ──────────────────────────────────────────── */
+function mulberry32(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function randn(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+/* ── Group colours ───────────────────────────────────────── */
+const GC=['#e05a3a','#2a7fd8','#3aad7a','#d08030','#9b59d0'];
+
+/* ── State ───────────────────────────────────────────────── */
+const ST={
+  seed:4, g00:50, g10:3, tau0:8, sig:8, J:5, nj:10,
+  tau0_m2:8, sig_m2:8, nj_m2:10,
+  tau1:1.5, rho:0, g10_m3:3,
+  bw:3, bb:-6, xoff:7, simpShowFixed:false,
+  se_seed:11, se_grand:50, se_tau:8, se_sig:15,
+  activeModule:1,
+  poolCP:false, poolNP:false, poolPP:false, poolRS:false,
+  data:null, cpFit:null, npFit:null, ppFit:null, rsFit:null
+};
+
+/* ── Data generation ─────────────────────────────────────── */
+function genData(seed,g00,g10,tau0,sig,J,nj,tau1,rho){
+  const r=mulberry32(seed); tau1=tau1||0; rho=rho||0;
+  return Array.from({length:J},(_,j)=>{
+    const z0=randn(r),z1=randn(r);
+    const u0=tau0*z0;
+    const u1=tau1*(rho*z0+Math.sqrt(Math.max(0,1-rho*rho))*z1);
+    const pts=Array.from({length:nj},()=>{
+      const x=r()*12+2,e=randn(r)*sig;
+      return{x,y:g00+u0+(g10+u1)*x+e};
+    });
+    return{j,u0,u1,pts};
+  });
+}
+
+/* ── OLS ─────────────────────────────────────────────────── */
+function ols(pts){
+  let sx=0,sy=0,sxx=0,sxy=0,n=pts.length;
+  pts.forEach(p=>{sx+=p.x;sy+=p.y;sxx+=p.x*p.x;sxy+=p.x*p.y;});
+  const xm=sx/n,ym=sy/n,d=sxx-n*xm*xm;
+  const b=d?(sxy-n*xm*ym)/d:0;
+  return{b,a:ym-b*xm,xm,ym,n};
+}
+function fitCP(g){const all=[];g.forEach(g=>g.pts.forEach(p=>all.push(p)));return ols(all);}
+function fitNP(g){return g.map(grp=>({j:grp.j,...ols(grp.pts)}));}
+function fitPP(groups,np){
+  let ng=0,dg=0;
+  groups.forEach((g,j)=>{const sx2=g.pts.reduce((s,p)=>s+(p.x-np[j].xm)**2,0);ng+=np[j].b*sx2;dg+=sx2;});
+  const g10=dg?ng/dg:np.reduce((s,g)=>s+g.b,0)/np.length;
+  const aNP=np.map(g=>g.ym-g10*g.xm);
+  const g00=aNP.reduce((s,a)=>s+a,0)/aNP.length;
+  let ssR=0,nT=0;
+  groups.forEach((g,j)=>{g.pts.forEach(p=>{ssR+=(p.y-(aNP[j]+g10*p.x))**2;nT++;});});
+  const sigSq=ssR/Math.max(1,nT-aNP.length-1);
+  const vB=aNP.reduce((s,a)=>{const d=a-g00;return s+d*d;},0)/(aNP.length-1);
+  const tau0Sq=Math.max(0,vB-sigSq/np[0].n);
+  const sig=Math.sqrt(Math.max(0,sigSq));
+  const tau0=Math.sqrt(tau0Sq);
+  const icc=tau0Sq/(tau0Sq+sigSq+1e-10);
+  const pp=aNP.map((aNPj,j)=>{
+    const lam=tau0Sq/(tau0Sq+sigSq/np[j].n+1e-10);
+    return{j,aPP:lam*aNPj+(1-lam)*g00,aNP:aNPj,lam};
+  });
+  return{g00,g10,tau0,tau0Sq,sig,sigSq,icc,pp};
+}
+
+function fitPP_RS(groups,np,ppRI){
+  const g10=ppRI.g10,sigSq=ppRI.sigSq;
+  const Sxx=groups.map((g,j)=>Math.max(0.01,g.pts.reduce((s,p)=>s+(p.x-np[j].xm)**2,0)));
+  const bNP=np.map(g=>g.b);
+  const bVar=bNP.reduce((s,b)=>s+(b-g10)**2,0)/Math.max(1,bNP.length-1);
+  const tau1Sq=Math.max(0,bVar-sigSq*Sxx.reduce((s,v)=>s+1/v,0)/Sxx.length);
+  const ppSlopes=np.map((g,j)=>{
+    const lam1=tau1Sq/(tau1Sq+sigSq/Sxx[j]+1e-10);
+    return{j,aPP:ppRI.pp[j].aPP,bPP:lam1*g.b+(1-lam1)*g10,lam1};
+  });
+  return{g10,ppSlopes,tau1Sq};
+}
+
+/* ── Canvas helpers ──────────────────────────────────────── */
+function cvar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function mkSc(xmn,xmx,ymn,ymx,w,h){
+  const p={l:52,r:16,t:20,b:44};
+  const pw=w-p.l-p.r,ph=h-p.t-p.b;
+  return{tx:x=>p.l+(x-xmn)/(xmx-xmn)*pw,ty:y=>p.t+(ymx-y)/(ymx-ymn)*ph,
+    xmn,xmx,ymn,ymx,p,pw,ph,w,h};
+}
+function dRange(groups){
+  let xmn=Infinity,xmx=-Infinity,ymn=Infinity,ymx=-Infinity;
+  groups.forEach(g=>g.pts.forEach(p=>{xmn=Math.min(xmn,p.x);xmx=Math.max(xmx,p.x);ymn=Math.min(ymn,p.y);ymx=Math.max(ymx,p.y);}));
+  const xd=(xmx-xmn)*.08+.5,yd=(ymx-ymn)*.12;
+  return{xmn:xmn-xd,xmx:xmx+xd,ymn:ymn-yd,ymx:ymx+yd};
+}
+function drawGrid(ctx,sc){
+  ctx.save();ctx.strokeStyle=cvar('--grid');ctx.lineWidth=.8;
+  for(let i=0;i<=6;i++){const x=sc.xmn+i*(sc.xmx-sc.xmn)/6;ctx.beginPath();ctx.moveTo(sc.tx(x),sc.ty(sc.ymn));ctx.lineTo(sc.tx(x),sc.ty(sc.ymx));ctx.stroke();}
+  for(let i=0;i<=5;i++){const y=sc.ymn+i*(sc.ymx-sc.ymn)/5;ctx.beginPath();ctx.moveTo(sc.tx(sc.xmn),sc.ty(y));ctx.lineTo(sc.tx(sc.xmx),sc.ty(y));ctx.stroke();}
+  ctx.restore();
+}
+function drawAxes(ctx,sc,xl,yl){
+  ctx.save();ctx.strokeStyle=cvar('--border');ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(sc.p.l,sc.p.t);ctx.lineTo(sc.p.l,sc.h-sc.p.b);ctx.lineTo(sc.w-sc.p.r,sc.h-sc.p.b);ctx.stroke();
+  ctx.fillStyle=cvar('--ink3');ctx.font='11px "DM Mono",monospace';
+  for(let i=0;i<=5;i++){
+    const xv=sc.xmn+i*(sc.xmx-sc.xmn)/5;ctx.textAlign='center';ctx.fillText(xv.toFixed(0),sc.tx(xv),sc.h-sc.p.b+16);
+    const yv=sc.ymn+i*(sc.ymx-sc.ymn)/5;ctx.textAlign='right';ctx.fillText(yv.toFixed(0),sc.p.l-6,sc.ty(yv)+4);
+  }
+  if(xl){ctx.textAlign='center';ctx.fillText(xl,sc.p.l+sc.pw/2,sc.h-6);}
+  if(yl){ctx.save();ctx.translate(13,sc.p.t+sc.ph/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillText(yl,0,0);ctx.restore();}
+  ctx.restore();
+}
+function drawLine(ctx,sc,a,b,col,lw,dash){
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=lw||2;if(dash)ctx.setLineDash(dash);
+  ctx.beginPath();ctx.moveTo(sc.tx(sc.xmn),sc.ty(a+b*sc.xmn));ctx.lineTo(sc.tx(sc.xmx),sc.ty(a+b*sc.xmx));ctx.stroke();ctx.restore();
+}
+// like drawLine but clipped to [x0,x1] (plus a small margin) — for groups that occupy only
+// a local slice of the shared x-axis (e.g. Simpson's-paradox clusters), so the fitted line
+// doesn't extrapolate across the whole canvas and tangle with unrelated groups' lines
+function drawLineSeg(ctx,sc,a,b,x0,x1,col,lw,dash){
+  const pad=(x1-x0)*0.18||0.5, xa=x0-pad, xb=x1+pad;
+  ctx.save();ctx.strokeStyle=col;ctx.lineWidth=lw||2;if(dash)ctx.setLineDash(dash);
+  ctx.beginPath();ctx.moveTo(sc.tx(xa),sc.ty(a+b*xa));ctx.lineTo(sc.tx(xb),sc.ty(a+b*xb));ctx.stroke();ctx.restore();
+}
+function drawDot(ctx,sc,x,y,col,r){ctx.save();ctx.fillStyle=col;ctx.beginPath();ctx.arc(sc.tx(x),sc.ty(y),r||4,0,2*Math.PI);ctx.fill();ctx.restore();}
+
+/* ── Legend helper ───────────────────────────────────────── */
+function drawLegend(ctx,sc,items){
+  let lx=sc.p.l+8,ly=sc.p.t+16;
+  const maxX=sc.p.l+sc.pw-8;
+  ctx.font='11px "DM Mono",monospace';
+  items.forEach(([c,lbl,d])=>{
+    const w=28+ctx.measureText(lbl).width+16;
+    if(lx+w>maxX && lx>sc.p.l+8){lx=sc.p.l+8;ly+=16;}
+    ctx.save();ctx.strokeStyle=c;ctx.lineWidth=2;if(d)ctx.setLineDash(d);
+    ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx+24,ly);ctx.stroke();
+    ctx.fillStyle=cvar('--ink2');ctx.font='11px "DM Mono",monospace';ctx.textAlign='left';ctx.setLineDash([]);
+    ctx.fillText(lbl,lx+28,ly+4);ctx.restore();
+    lx+=w;
+  });
+}
+
+/* ── MODULE 1 ────────────────────────────────────────────── */
+function drawMod1(){
+  if(!ST.data)return;
+  const el=document.getElementById('cv1');if(!el)return;
+  const ctx=el.getContext('2d');ctx.clearRect(0,0,el.width,el.height);
+  const r=dRange(ST.data);
+  const sc=mkSc(r.xmn,r.xmx,r.ymn,r.ymx,el.width,el.height);
+  drawGrid(ctx,sc);drawAxes(ctx,sc,'Study time (h/week)','Exam points');
+  ST.data.forEach((g,j)=>g.pts.forEach(p=>drawDot(ctx,sc,p.x,p.y,GC[j%5])));
+  const leg=[];
+  if(ST.poolCP&&ST.cpFit){drawLine(ctx,sc,ST.cpFit.a,ST.cpFit.b,cvar('--a1'),2.5,[8,4]);leg.push([cvar('--a1'),'Complete Pooling',[8,4]]);}
+  if(ST.poolNP&&ST.npFit){ST.npFit.forEach((g,j)=>drawLine(ctx,sc,g.a,g.b,GC[j%5]+'bb',2,[3,3]));leg.push([GC[0]+'bb','No Pooling',[3,3]]);}
+  if(ST.poolRS&&ST.rsFit){
+    ST.rsFit.ppSlopes.forEach((g,j)=>drawLine(ctx,sc,g.aPP,g.bPP,GC[j%5],2,[6,3]));
+    leg.push([GC[0],'Rand. Slopes',[6,3]]);
+  }
+  if(ST.poolPP&&ST.ppFit){
+    ST.ppFit.pp.forEach((g,j)=>drawLine(ctx,sc,g.aPP,ST.ppFit.g10,GC[j%5],2));
+    leg.push([GC[0],'PP groups',null]);
+  }
+  if((ST.poolPP||ST.poolRS)&&ST.ppFit){
+    drawLine(ctx,sc,ST.ppFit.g00,ST.ppFit.g10,cvar('--a2'),3,[7,3]);
+    leg.push([cvar('--a2'),'Fixed Effect',[7,3]]);
+  }
+  drawLegend(ctx,sc,leg);
+}
+function updMod1UI(){
+  if(!ST.ppFit)return;
+  const p=ST.ppFit,icc=p.icc;
+  document.getElementById('c1-g00').textContent=p.g00.toFixed(2);
+  document.getElementById('c1-g10').textContent=p.g10.toFixed(3);
+  document.getElementById('c1-tau0sq').textContent=p.tau0Sq.toFixed(2);
+  document.getElementById('c1-sigsq').textContent=p.sigSq.toFixed(2);
+  document.getElementById('tau0-disp').textContent=p.tau0.toFixed(2);
+  document.getElementById('sig-disp').textContent=p.sig.toFixed(2);
+  document.getElementById('icc1-val').textContent=icc.toFixed(3);
+  document.getElementById('icc1-btw').style.width=(icc*100).toFixed(1)+'%';
+  document.getElementById('icc1-btw-txt').textContent='Between '+(icc*100).toFixed(0)+'%';
+  document.getElementById('icc1-wit-txt').textContent='Within '+((1-icc)*100).toFixed(0)+'%';
+}
+function updMod1Formula(){
+  const lvl=document.getElementById('c1-fc-level'),f=document.getElementById('c1-fc-formula'),d=document.getElementById('c1-fc-dist');
+  const warn=document.getElementById('c1-rs-warn');
+  if(!lvl)return;
+  if(ST.poolRS){
+    lvl.textContent='LMM — Random Intercepts + Slopes';
+    f.innerHTML='Y<sub>ij</sub> = <span class="fxd">γ₀₀</span> + <span class="fxd">γ₁₀</span>·X<sub>ij</sub> + <span class="rnd">u<sub>0j</sub></span> + <span class="rnd">u<sub>1j</sub></span>·X<sub>ij</sub> + <span class="eps">ε<sub>ij</sub></span>';
+    const t1sq=ST.rsFit?ST.rsFit.tau1Sq:0;
+    d.innerHTML='<span class="rnd">u<sub>0j</sub></span> ~ N(0,τ₀²) &nbsp;·&nbsp; <span class="rnd">u<sub>1j</sub></span> ~ N(0,τ₁²='+t1sq.toFixed(2)+') &nbsp;·&nbsp; <span class="eps">ε<sub>ij</sub></span> ~ N(0,σ²) &nbsp;— <em>adds the u<sub>1j</sub> term, otherwise identical to above</em>';
+    if(warn){
+      if(t1sq<0.05){
+        warn.style.display='block';
+        warn.innerHTML='⚠ τ₁² is estimated here at ≈0 ("boundary fit") — the lines therefore look parallel even though the true value is τ₁='+ST.tau1.toFixed(1)+'. With only J=5 groups and relatively high residual noise, genuine slope variability can sometimes not be distinguished from sampling noise — the same phenomenon also occurs in real lme4 fits. Click "↻ New Data" in the top right for a different sample.';
+      }else{
+        warn.style.display='none';
+      }
+    }
+  }else{
+    lvl.textContent='LMM — Random Intercepts';
+    f.innerHTML='Y<sub>ij</sub> = <span class="fxd">γ₀₀</span> + <span class="fxd">γ₁₀</span>·X<sub>ij</sub> + <span class="rnd">u<sub>0j</sub></span> + <span class="eps">ε<sub>ij</sub></span>';
+    d.innerHTML='<span class="rnd">u<sub>0j</sub></span> ~ N(0,τ₀²) &nbsp;·&nbsp; <span class="eps">ε<sub>ij</sub></span> ~ N(0,σ²)';
+    if(warn)warn.style.display='none';
+  }
+}
+function togglePool(m){
+  const k='pool'+m.toUpperCase();ST[k]=!ST[k];
+  const btn=document.getElementById('pool-'+m+'-btn');
+  if(btn)btn.style.opacity=ST[k]?'1':'0.38';
+  updMod1Formula();
+  drawMod1();
+}
+
+/* ── MODULE 2 ────────────────────────────────────────────── */
+function drawMod2(){
+  const g2=genData(ST.seed,ST.g00,ST.g10,ST.tau0_m2,ST.sig_m2,ST.J,ST.nj_m2,0,0);
+  const np2=fitNP(g2),pp2=fitPP(g2,np2);
+  _drawCat(pp2,pp2.sig,ST.nj_m2);
+  _drawShr(pp2);
+  const icc=pp2.icc,lam=pp2.pp[0].lam;
+  const shr=pp2.pp.map(g=>Math.abs(g.aPP-g.aNP));
+  document.getElementById('icc2-val').textContent=icc.toFixed(3);
+  document.getElementById('lambda-val').textContent=lam.toFixed(3);
+  document.getElementById('c2-icc').textContent=icc.toFixed(3);
+  document.getElementById('c2-lambda').textContent=lam.toFixed(3);
+  document.getElementById('c2-maxshr').textContent=Math.max(...shr).toFixed(2);
+  document.getElementById('c2-meandiff').textContent=(shr.reduce((s,v)=>s+v,0)/shr.length).toFixed(2);
+  document.getElementById('icc2-btw').style.width=(icc*100).toFixed(1)+'%';
+  document.getElementById('icc2-btw-txt').textContent='Between '+(icc*100).toFixed(0)+'%';
+  document.getElementById('icc2-wit-txt').textContent='Within '+((1-icc)*100).toFixed(0)+'%';
+}
+function _drawCat(pp2,sig,nj){
+  const el=document.getElementById('cv2cat');if(!el)return;
+  const ctx=el.getContext('2d');const w=el.width,h=el.height;ctx.clearRect(0,0,w,h);
+  const allA=[...pp2.pp.map(g=>g.aPP),...pp2.pp.map(g=>g.aNP)];
+  const amn=Math.min(...allA)-10,amx=Math.max(...allA)+10;
+  const pd={l:56,r:20,t:28,b:42};
+  const pw=w-pd.l-pd.r,rowH=(h-pd.t-pd.b)/(pp2.pp.length+.5);
+  const tx=a=>pd.l+(a-amn)/(amx-amn)*pw,ty=j=>pd.t+(j+.5)*rowH;
+  ctx.save();ctx.strokeStyle=cvar('--grid');ctx.lineWidth=.8;
+  for(let i=0;i<=6;i++){const a=amn+i*(amx-amn)/6;ctx.beginPath();ctx.moveTo(tx(a),pd.t);ctx.lineTo(tx(a),h-pd.b);ctx.stroke();
+    ctx.fillStyle=cvar('--ink3');ctx.font='11px "DM Mono",monospace';ctx.textAlign='center';ctx.fillText(a.toFixed(1),tx(a),h-pd.b+16);}
+  ctx.fillStyle=cvar('--ink2');ctx.font='11px "DM Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('Intercept estimate (exam points)',pd.l+pw/2,h-8);
+  ctx.restore();
+  ctx.save();ctx.strokeStyle=cvar('--a2');ctx.lineWidth=1.2;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(tx(pp2.g00),pd.t-4);ctx.lineTo(tx(pp2.g00),h-pd.b);ctx.stroke();
+  ctx.fillStyle=cvar('--a2');ctx.font='11px "DM Mono",monospace';ctx.textAlign='center';ctx.fillText('γ̂₀₀',tx(pp2.g00),pd.t-7);ctx.restore();
+  const npCI=1.96*sig/Math.sqrt(nj);
+  pp2.pp.forEach((g,j)=>{
+    const aNP=g.aNP,aPP=g.aPP,yj=ty(j),col=GC[j%5];
+    ctx.save();
+    ctx.strokeStyle=col+'55';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(tx(aNP-npCI),yj);ctx.lineTo(tx(aNP+npCI),yj);ctx.stroke();
+    ctx.strokeStyle=col;ctx.fillStyle=cvar('--paper');ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(tx(aNP),yj,4.5,0,2*Math.PI);ctx.stroke();ctx.fill();
+    ctx.fillStyle=col;ctx.beginPath();ctx.arc(tx(aPP),yj,5.5,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle=col+'99';ctx.lineWidth=1;ctx.setLineDash([2,2]);ctx.beginPath();ctx.moveTo(tx(aNP),yj);ctx.lineTo(tx(aPP),yj);ctx.stroke();
+    ctx.setLineDash([]);ctx.fillStyle=cvar('--ink2');ctx.font='12px "DM Mono",monospace';ctx.textAlign='right';ctx.fillText('K'+(j+1),pd.l-7,yj+4);
+    ctx.restore();
+  });
+  ctx.fillStyle=cvar('--ink3');ctx.font='11px "DM Mono",monospace';ctx.textAlign='left';ctx.fillText('◆ PP  ○ NP  ──── 95% CI (NP)',pd.l,14);
+}
+function _drawShr(pp2){
+  const el=document.getElementById('cv2shr');if(!el)return;
+  const ctx=el.getContext('2d');const w=el.width,h=el.height;ctx.clearRect(0,0,w,h);
+  const allA=[...pp2.pp.map(g=>g.aPP),...pp2.pp.map(g=>g.aNP),pp2.g00];
+  const amn=Math.min(...allA)-5,amx=Math.max(...allA)+5;
+  const pd={l:56,r:20,t:40,b:36};
+  const pw=w-pd.l-pd.r,rowH=(h-pd.t-pd.b)/(pp2.pp.length+.5);
+  const tx=a=>pd.l+(a-amn)/(amx-amn)*pw,ty=j=>pd.t+(j+.5)*rowH;
+  ctx.save();ctx.strokeStyle=cvar('--a2');ctx.lineWidth=1.2;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(tx(pp2.g00),pd.t-8);ctx.lineTo(tx(pp2.g00),h-pd.b);ctx.stroke();
+  ctx.fillStyle=cvar('--a2');ctx.font='11px "DM Mono",monospace';ctx.textAlign='center';ctx.fillText('γ̂₀₀='+pp2.g00.toFixed(1),tx(pp2.g00),pd.t-11);ctx.restore();
+  pp2.pp.forEach((g,j)=>{
+    const aNP=g.aNP,aPP=g.aPP,yj=ty(j),col=GC[j%5];
+    const x0=tx(aNP),x1=tx(aPP),dr=x1>x0?1:-1;
+    ctx.save();
+    ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x0,yj);ctx.lineTo(x1,yj);ctx.stroke();
+    ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x1,yj);ctx.lineTo(x1-dr*8,yj-4);ctx.lineTo(x1-dr*8,yj+4);ctx.fill();
+    ctx.fillStyle=col+'44';ctx.beginPath();ctx.arc(x0,yj,5,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x0,yj,5,0,2*Math.PI);ctx.stroke();
+    ctx.fillStyle=col;ctx.beginPath();ctx.arc(x1,yj,5,0,2*Math.PI);ctx.fill();
+    ctx.fillStyle=cvar('--ink2');ctx.font='12px "DM Mono",monospace';ctx.textAlign='right';ctx.fillText('K'+(j+1),pd.l-7,yj+4);
+    ctx.fillStyle=col;ctx.font='10.5px "DM Mono",monospace';ctx.textAlign='center';ctx.fillText('λ='+g.lam.toFixed(2),tx((aNP+aPP)/2),yj-8);
+    ctx.restore();
+  });
+  ctx.save();ctx.fillStyle=cvar('--ink2');ctx.font='11px "DM Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('Intercept estimate (exam points)',pd.l+pw/2,h-8);ctx.restore();
+  ctx.fillStyle=cvar('--ink3');ctx.font='11px "DM Mono",monospace';ctx.textAlign='left';ctx.fillText('Arrow: NP → PP (shrinkage direction & strength)',pd.l,16);
+}
+
+/* ── MODULE 3 ────────────────────────────────────────────── */
+function drawMod3(){
+  const g=genData(ST.seed,ST.g00,ST.g10_m3,ST.tau0,ST.sig,ST.J,ST.nj,ST.tau1,ST.rho);
+  const el=document.getElementById('cv3');if(!el)return;
+  const ctx=el.getContext('2d');ctx.clearRect(0,0,el.width,el.height);
+  const r=dRange(g);const sc=mkSc(r.xmn,r.xmx,r.ymn,r.ymx,el.width,el.height);
+  drawGrid(ctx,sc);drawAxes(ctx,sc,'Study time (h/week)','Exam points');
+  g.forEach((grp,j)=>grp.pts.forEach(p=>drawDot(ctx,sc,p.x,p.y,GC[j%5])));
+  const np=fitNP(g),cp=fitCP(g);
+  np.forEach((grp,j)=>drawLine(ctx,sc,grp.a,grp.b,GC[j%5],2.5));
+  drawLine(ctx,sc,cp.a,cp.b,cvar('--ink3'),1.5,[6,4]);
+  const slp=np.map(gr=>gr.b);
+  document.getElementById('c3-g10').textContent=ST.g10_m3.toFixed(2);
+  document.getElementById('c3-tau1').textContent=ST.tau1.toFixed(2);
+  document.getElementById('c3-rho').textContent=ST.rho.toFixed(2);
+  document.getElementById('c3-range').textContent=(Math.max(...slp)-Math.min(...slp)).toFixed(2);
+}
+
+/* ── MODULE 4 ────────────────────────────────────────────── */
+function drawMod4(){
+  const rng=mulberry32(ST.seed+77),J=ST.J,nj=ST.nj;
+  const bw=ST.bw,bb=ST.bb,xoff=ST.xoff,sig=ST.sig;
+  const groups=Array.from({length:J},(_,j)=>{
+    const xc=(j-(J-1)/2)*xoff;
+    const u0=bb*(xc/xoff);
+    const pts=Array.from({length:nj},()=>{
+      const x=xc+randn(rng)*2.2,e=randn(rng)*sig;
+      return{x,y:50+u0+bw*(x-xc)+e};
+    });
+    return{j,u0,pts};
+  });
+  const el=document.getElementById('cv4');if(!el)return;
+  const ctx=el.getContext('2d');ctx.clearRect(0,0,el.width,el.height);
+  const r=dRange(groups);const sc=mkSc(r.xmn,r.xmx,r.ymn,r.ymx,el.width,el.height);
+  drawGrid(ctx,sc);drawAxes(ctx,sc,'Study time (h/week)','Exam points');
+  groups.forEach((g,j)=>g.pts.forEach(p=>drawDot(ctx,sc,p.x,p.y,GC[j%5])));
+  const np=fitNP(groups),cp=fitCP(groups);
+  // pooled within-slope, weighted by each group's own Sxx — same method fitPP() uses for g10,
+  // so "Fixed Effect" here is computed consistently with the rest of the tool (matters when
+  // group Sxx differ, e.g. by chance or if n_j/spread ever varies by group)
+  let ngW=0,dgW=0;
+  groups.forEach((g,j)=>{const sx2=g.pts.reduce((s,p)=>s+(p.x-np[j].xm)**2,0);ngW+=np[j].b*sx2;dgW+=sx2;});
+  const mw=dgW?ngW/dgW:np.reduce((s,g)=>s+g.b,0)/np.length,flip=cp.b*mw<0;
+  np.forEach((g,j)=>{
+    const gxs=groups[j].pts.map(p=>p.x);
+    drawLineSeg(ctx,sc,g.a,g.b,Math.min(...gxs),Math.max(...gxs),GC[j%5],2.5,[4,3]);
+  });
+  drawLine(ctx,sc,cp.a,cp.b,cvar('--a1'),3,[8,4]);
+  const leg=[[cvar('--a1'),'OLS overall (= Complete Pooling)',[8,4]],[GC[0],'Within (NP)',[4,3]]];
+  if(ST.simpShowFixed){
+    const allPts=groups.flatMap(g=>g.pts);
+    const gxm=allPts.reduce((s,p)=>s+p.x,0)/allPts.length;
+    const gym=allPts.reduce((s,p)=>s+p.y,0)/allPts.length;
+    const fixedA=gym-mw*gxm;
+    drawLine(ctx,sc,fixedA,mw,cvar('--a2'),3,[2,3]);
+    leg.push([cvar('--a2'),'Fixed Effect (within, γ₁₀ across grand mean)',[2,3]]);
+  }
+  drawLegend(ctx,sc,leg);
+  document.getElementById('c4-ols').textContent=cp.b.toFixed(3);
+  document.getElementById('c4-bw').textContent=mw.toFixed(3);
+  document.getElementById('c4-flip').textContent=flip?'⚠ YES':'No';
+  document.getElementById('c4-flip').style.color=flip?cvar('--a5'):'';
+}
+
+/* ── MODULE 5: SHRINKAGE EXTREM ──────────────────────────────
+   J=20 Gruppen mit stark unterschiedlicher Größe (n_j fest kuratiert,
+   damit die Illustration zuverlässig funktioniert statt vom Zufall abzuhängen).
+   Jede Gruppe hat einen simulierten "wahren" Mittelwert (~N(grand,tau²)) — in der
+   Realität unbekannt, hier aber sichtbar, um zu zeigen, wie nah No Pooling und
+   Partial Pooling jeweils an der Wahrheit liegen. ─────────────────────────── */
+const SE_NJ=[3,3,4,5,6,6,8,10,10,12,15,15,18,20,22,25,28,30,35,40];
+function genShrinkExtreme(seed,grand,tau,sigma){
+  const rng=mulberry32(seed);
+  return SE_NJ.map((n,j)=>{
+    const trueMean=grand+tau*randn(rng);
+    const obsMean=trueMean+(sigma/Math.sqrt(n))*randn(rng);
+    return{j,n,trueMean,obsMean};
+  });
+}
+function fitGroupMeansPP(groups,sigma){
+  const grand=groups.reduce((s,g)=>s+g.obsMean,0)/groups.length;
+  let vB=0;groups.forEach(g=>{const d=g.obsMean-grand;vB+=d*d;});vB/=Math.max(1,groups.length-1);
+  const avgSampVar=groups.reduce((s,g)=>s+(sigma*sigma)/g.n,0)/groups.length;
+  const tauSq=Math.max(0,vB-avgSampVar);
+  return{grand,tauSq,groups:groups.map(g=>{
+    const lam=tauSq/(tauSq+(sigma*sigma)/g.n+1e-10);
+    return{...g,lam,pp:lam*g.obsMean+(1-lam)*grand};
+  })};
+}
+function hashJitter(i){const x=Math.sin(i*12.9898+4.1414)*43758.5453;return(x-Math.floor(x))-0.5;}
+let se_data=null,se_fit=null;
+function runSE(){
+  se_data=genShrinkExtreme(ST.se_seed,ST.se_grand,ST.se_tau,ST.se_sig);
+  se_fit=fitGroupMeansPP(se_data,ST.se_sig);
+  document.getElementById('se-many-result').innerHTML='No repetitions run yet.';
+  drawMod5();
+}
+function newSE(){ST.se_seed=Math.floor(Math.random()*99999)+1;runSE();}
+function updSEtau(v){ST.se_tau=+v;document.getElementById('val-se-tau').textContent=(+v).toFixed(1);runSE();}
+function updSEsig(v){ST.se_sig=+v;document.getElementById('val-se-sig').textContent=(+v).toFixed(1);runSE();}
+function drawMod5(){
+  const el=document.getElementById('cv5');if(!el||!se_fit)return;
+  const ctx=el.getContext('2d');ctx.clearRect(0,0,el.width,el.height);
+  const allY=[...se_data.map(g=>g.trueMean),...se_data.map(g=>g.obsMean),...se_fit.groups.map(g=>g.pp)];
+  const ymn=Math.min(...allY)-6,ymx=Math.max(...allY)+6;
+  const xmn=0,xmx=Math.max(...SE_NJ)+5;
+  const sc=mkSc(xmn,xmx,ymn,ymx,el.width,el.height);
+  drawGrid(ctx,sc);drawAxes(ctx,sc,'Group size n_j','Exam points');
+  ctx.save();ctx.strokeStyle=cvar('--a2');ctx.lineWidth=1.2;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(sc.tx(xmn),sc.ty(se_fit.grand));ctx.lineTo(sc.tx(xmx),sc.ty(se_fit.grand));ctx.stroke();
+  ctx.fillStyle=cvar('--a2');ctx.font='11px "DM Mono",monospace';ctx.textAlign='left';
+  ctx.fillText('γ̂ = '+se_fit.grand.toFixed(1),sc.p.l+4,sc.ty(se_fit.grand)-6);ctx.restore();
+  se_fit.groups.forEach((g,j)=>{
+    const x=g.n+hashJitter(j)*1.4;
+    const xt=sc.tx(x),yTrue=sc.ty(g.trueMean),yNP=sc.ty(g.obsMean),yPP=sc.ty(g.pp);
+    ctx.save();ctx.strokeStyle=cvar('--ink3');ctx.lineWidth=1.3;ctx.setLineDash([2,2]);
+    ctx.beginPath();ctx.moveTo(xt,yNP);ctx.lineTo(xt,yPP);ctx.stroke();ctx.restore();
+    ctx.save();ctx.strokeStyle=cvar('--ink3');ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.arc(xt,yTrue,3.5,0,2*Math.PI);ctx.stroke();ctx.restore();
+    ctx.save();ctx.strokeStyle=cvar('--a5');ctx.fillStyle=cvar('--paper');ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.arc(xt,yNP,4.5,0,2*Math.PI);ctx.fill();ctx.stroke();ctx.restore();
+    ctx.save();ctx.fillStyle=cvar('--a2');
+    ctx.beginPath();ctx.arc(xt,yPP,4.5,0,2*Math.PI);ctx.fill();ctx.restore();
+  });
+  ctx.fillStyle=cvar('--ink3');ctx.font='11px "DM Mono",monospace';ctx.textAlign='left';
+  ctx.fillText('○ gray = true value (known only in the simulation) · ○ orange = No Pooling · ● blue = Partial Pooling',sc.p.l,16);
+  const errNP=se_data.reduce((s,g)=>s+Math.abs(g.obsMean-g.trueMean),0)/se_data.length;
+  const errPP=se_fit.groups.reduce((s,g)=>s+Math.abs(g.pp-g.trueMean),0)/se_fit.groups.length;
+  const small=se_fit.groups.filter(g=>g.n<=6);
+  const errNPs=small.reduce((s,g)=>s+Math.abs(g.obsMean-g.trueMean),0)/small.length;
+  const errPPs=small.reduce((s,g)=>s+Math.abs(g.pp-g.trueMean),0)/small.length;
+  document.getElementById('se-err-np').textContent=errNP.toFixed(2);
+  document.getElementById('se-err-pp').textContent=errPP.toFixed(2);
+  document.getElementById('se-err-np-small').textContent=errNPs.toFixed(2);
+  document.getElementById('se-err-pp-small').textContent=errPPs.toFixed(2);
+  document.getElementById('se-tausq').textContent=se_fit.tauSq.toFixed(2);
+}
+function runManySE(reps){
+  const rng=mulberry32(Math.floor(Math.random()*1e9));
+  let sumNP=0,sumPP=0,sumNPs=0,sumPPs=0,cnt=0,cntS=0;
+  for(let r=0;r<reps;r++){
+    const seed=Math.floor(rng()*1e9);
+    const data=genShrinkExtreme(seed,ST.se_grand,ST.se_tau,ST.se_sig);
+    const fit=fitGroupMeansPP(data,ST.se_sig);
+    fit.groups.forEach(g=>{
+      sumNP+=Math.abs(g.obsMean-g.trueMean);sumPP+=Math.abs(g.pp-g.trueMean);cnt++;
+      if(g.n<=6){sumNPs+=Math.abs(g.obsMean-g.trueMean);sumPPs+=Math.abs(g.pp-g.trueMean);cntS++;}
+    });
+  }
+  document.getElementById('se-many-result').innerHTML=
+    'Across <b>'+reps+'</b> simulations (= '+cnt+' group estimates):<br>'+
+    'Avg. error <span style="color:'+cvar('--a5')+'">No Pooling</span> = <b>'+(sumNP/cnt).toFixed(2)+'</b> &nbsp;vs.&nbsp; <span style="color:'+cvar('--a2')+'">Partial Pooling</span> = <b>'+(sumPP/cnt).toFixed(2)+'</b><br>'+
+    'Small groups only (n≤6): No Pooling = <b>'+(sumNPs/cntS).toFixed(2)+'</b> &nbsp;vs.&nbsp; Partial Pooling = <b>'+(sumPPs/cntS).toFixed(2)+'</b>';
+}
+
+/* ── Sim / Redraw ────────────────────────────────────────── */
+function runSim(){
+  ST.data=genData(ST.seed,ST.g00,ST.g10,ST.tau0,ST.sig,ST.J,ST.nj,ST.tau1,ST.rho);
+  ST.cpFit=fitCP(ST.data);ST.npFit=fitNP(ST.data);ST.ppFit=fitPP(ST.data,ST.npFit);
+  ST.rsFit=fitPP_RS(ST.data,ST.npFit,ST.ppFit);
+  document.getElementById('seed-info').textContent='Seed: '+ST.seed;
+  updMod1UI();updMod1Formula();redrawActive();
+}
+function redrawActive(){
+  const m=ST.activeModule;
+  if(m===1)drawMod1();else if(m===2)drawMod2();else if(m===3)drawMod3();else if(m===4)drawMod4();else drawMod5();
+}
+
+/* ── Tabs ────────────────────────────────────────────────── */
+function showMod(n){
+  document.querySelectorAll('.mod-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.mod-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('mod'+n).classList.add('active');
+  document.querySelector(`[data-mod="${n}"]`).classList.add('active');
+  ST.activeModule=n;
+  const scrollEl=document.getElementById('scroll');if(scrollEl)scrollEl.scrollTop=0;
+  redrawActive();
+}
+
+/* ── Scenarios ───────────────────────────────────────────── */
+function setScenario(n){
+  document.querySelectorAll('.scen-btn[id^="scen-"]').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('scen-'+n);if(el)el.classList.add('active');
+  if(n==='standard'){ST.g00=50;ST.g10=3;ST.tau0=8;ST.sig=8;ST.nj=10;}
+  else if(n==='hohe-icc'){ST.tau0=18;ST.sig=4;ST.nj=10;}
+  else if(n==='simpson'){showMod(4);setSimpsonScen('stark');return;}
+  else if(n==='shrinkextreme'){showMod(5);return;}
+  runSim();
+}
+function setSimpsonScen(n){
+  document.querySelectorAll('[id^="simp-"]').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('simp-'+n);if(el)el.classList.add('active');
+  if(n==='mild'){ST.bw=3;ST.bb=-3;ST.xoff=5;}
+  else if(n==='stark'){ST.bw=3;ST.bb=-6;ST.xoff=7;}
+  else if(n==='pos'){ST.bw=3;ST.bb=2;ST.xoff=5;}
+  const sliders={bw:ST.bw,bb:ST.bb,xoff:ST.xoff};
+  Object.entries(sliders).forEach(([k,v])=>{
+    const s=document.getElementById('sl-'+k);if(s)s.value=v;
+    const d=document.getElementById('val-'+k);if(d)d.textContent=v.toFixed(1);
+  });
+  drawMod4();
+}
+
+/* ── Sliders ─────────────────────────────────────────────── */
+function updTau0(v){ST.tau0_m2=+v;document.getElementById('val-tau0').textContent=(+v).toFixed(1);drawMod2();}
+function updSig(v){ST.sig_m2=+v;document.getElementById('val-sig').textContent=(+v).toFixed(1);drawMod2();}
+function updNj(v){ST.nj_m2=+v;document.getElementById('val-nj').textContent=v;drawMod2();}
+function updTau1(v){ST.tau1=+v;document.getElementById('val-tau1').textContent=(+v).toFixed(1);drawMod3();}
+function updRho(v){ST.rho=+v;document.getElementById('val-rho').textContent=(+v).toFixed(2);drawMod3();}
+function updG10m3(v){ST.g10_m3=+v;document.getElementById('val-g10m3').textContent=(+v).toFixed(1);drawMod3();}
+function updBw(v){ST.bw=+v;document.getElementById('val-bw').textContent=(+v).toFixed(1);drawMod4();}
+function updBb(v){ST.bb=+v;document.getElementById('val-bb').textContent=(+v).toFixed(1);drawMod4();}
+function updXoff(v){ST.xoff=+v;document.getElementById('val-xoff').textContent=(+v).toFixed(1);drawMod4();}
+function toggleSimpFixed(){
+  ST.simpShowFixed=!ST.simpShowFixed;
+  const btn=document.getElementById('simp-fixed-btn');
+  if(btn)btn.style.opacity=ST.simpShowFixed?'1':'0.38';
+  drawMod4();
+}
+
+/* ── Utils ───────────────────────────────────────────────── */
+function neueDaten(){
+  ST.seed=Math.floor(Math.random()*99999)+1;
+  ST.se_seed=Math.floor(Math.random()*99999)+1;
+  runSE();
+  runSim();
+}
+function toggleAcc(btn){const b=btn.nextElementSibling;const o=b.classList.toggle('open');btn.classList.toggle('open',o);}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.ml-modal.open').forEach(m=>m.classList.remove('open'));});
+function toggleTheme(){
+  const ct=document.documentElement.getAttribute('data-theme')||'dark';
+  const nt=ct==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',nt);
+  localStorage.setItem('ml-theme',nt);
+  document.getElementById('btn-theme').textContent=nt==='dark'?'☀ Light':'🌙 Dark';
+  redrawActive();
+}
+
+/* ── Init ────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded',function(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.getElementById('btn-theme').textContent=isDark?'☀ Light':'🌙 Dark';
+  ST.tau0_m2=ST.tau0;ST.sig_m2=ST.sig;ST.nj_m2=ST.nj;ST.g10_m3=ST.g10;
+  runSim();
+  runSE();
+});
+</script>
+</body>
+</html>

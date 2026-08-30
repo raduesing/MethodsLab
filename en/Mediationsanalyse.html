@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mediation Analysis — Diagnostics</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a4);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.preset-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.3rem .65rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .15s;letter-spacing:.03em;white-space:normal;width:100%;text-align:left;
+  display:block;margin-bottom:.3rem}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.preset-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.seed-btn{font-family:'DM Mono',monospace;font-size:.76rem;padding:.28rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .12s;width:100%;text-align:left;margin-top:.3rem}
+.seed-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.eq-wrap{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem;margin-bottom:.8rem}
+.eq-main{font-family:'DM Mono',monospace;font-size:.9rem;line-height:2.1;letter-spacing:.01em}
+.coef-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.8rem;margin-bottom:.5rem}
+.coef-table th{font-size:.7rem;letter-spacing:.07em;color:var(--ink3);padding:.28rem .5rem;
+  border-bottom:2px solid var(--grid);text-align:left}
+.coef-table th.r{text-align:right}
+.coef-table td{padding:.32rem .5rem;border-bottom:1px solid var(--grid);vertical-align:middle}
+.coef-table td.num{text-align:right;font-weight:600}
+.coef-table td.interp{color:var(--ink2);font-size:.73rem;line-height:1.4}
+.sig1{color:var(--a5)} .sig01{color:var(--a1)} .signs{color:var(--ink3)}
+.kw-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-bottom:.85rem}
+.kw-box{background:var(--panel);border:1px solid var(--grid);padding:.55rem .7rem}
+.kw-label{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink3);margin-bottom:.25rem}
+.kw-val{font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;color:var(--ink)}
+.kw-sub{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.erklaer-h{font-family:'DM Mono',monospace;font-size:.71rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.dag-wrap{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem 1rem;margin-bottom:.85rem}
+.dag-svg{width:100%;overflow:visible;display:block}
+.ibox{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a4);
+  padding:.85rem 1rem;margin-bottom:.8rem}
+.bs-btn{font-family:'DM Mono',monospace;font-size:.8rem;padding:.38rem 1rem;
+  border:1.5px solid var(--a4);background:transparent;cursor:pointer;color:var(--a4);
+  transition:all .15s;margin-top:.5rem;display:inline-block}
+.bs-btn:hover{background:var(--a4);color:var(--bg)}
+.bs-btn:disabled{opacity:.5;cursor:default}
+.learn-section{margin-top:2.5rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a4);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.7;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.lcard-body a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+.lcard-body a:hover{border-bottom-color:var(--accent)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a4);
+  padding:.7rem 1rem;margin-bottom:1.1rem;font-family:'DM Mono',monospace;font-size:.8rem}
+.story-lbl{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a4);margin-bottom:.35rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.12rem .8rem;line-height:1.65}
+.story-vars .sv{color:var(--ink);font-weight:600}
+.story-vars .sd{color:var(--ink2)}
+.story-q{margin-top:.45rem;color:var(--ink3);font-size:.76rem;line-height:1.55}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto;padding:2rem 1rem}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:680px;margin:0 auto;padding:1.6rem 2rem}
+.help-box-h{font-size:1rem;font-weight:300;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid);display:flex;justify-content:space-between;align-items:center}
+.help-box-h em{color:var(--a1);font-style:italic}
+.help-close{font-family:'DM Mono',monospace;font-size:.72rem;padding:.25rem .65rem;border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
+.help-close:hover{background:var(--a1);color:var(--bg)}
+.help-p{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75;margin-bottom:.55rem}
+.help-p strong{color:var(--ink)}
+.help-formula{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--grid);padding:.35rem .7rem;margin:.3rem 0 .55rem;color:var(--a2)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a1);margin:.9rem 0 .3rem;padding-bottom:.2rem;border-bottom:1px solid var(--grid)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Mediation <em>Analysis</em> — Hayes/PROCESS Model 4</h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+  <button class="tbtn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Help</button>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Scenarios</div>
+    <button class="preset-btn active" id="pre-A" onclick="setPreset('A')">A — No Mediation</button>
+    <button class="preset-btn" id="pre-B" onclick="setPreset('B')">B — Full Mediation</button>
+    <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — Partial Mediation</button>
+    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — Suppression</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Simulation</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n</span><span class="slider-val" id="val-n">200</span></div>
+      <input type="range" id="sl-n" min="40" max="500" step="10" value="200" oninput="onSl('n',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">σ_M (Residual M)</span><span class="slider-val" id="val-sm">1.00</span></div>
+      <input type="range" id="sl-sm" min="0.1" max="4" step="0.1" value="1" oninput="onSl('sm',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">σ_Y (Residual Y)</span><span class="slider-val" id="val-sy">1.00</span></div>
+      <input type="range" id="sl-sy" min="0.1" max="4" step="0.1" value="1" oninput="onSl('sy',this)">
+    </div>
+    <button class="seed-btn" onclick="newSeed()">⟳ New Sample</button>
+    <button class="seed-btn" onclick="downloadCSV()" style="margin-top:.25rem">↓ Data as CSV</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Population Parameters</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" style="color:var(--a2)">a (X→M)</span><span class="slider-val" id="val-a">0.50</span></div>
+      <input type="range" id="sl-a" min="-1.5" max="1.5" step="0.05" value="0.5" oninput="onSl('a',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" style="color:var(--a3)">b (M→Y)</span><span class="slider-val" id="val-b">0.50</span></div>
+      <input type="range" id="sl-b" min="-1.5" max="1.5" step="0.05" value="0.5" oninput="onSl('b',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" style="color:var(--a5)">c′ (X→Y direct)</span><span class="slider-val" id="val-cp">0.20</span></div>
+      <input type="range" id="sl-cp" min="-1.5" max="1.5" step="0.05" value="0.2" oninput="onSl('cp',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" style="color:var(--ink3)">i₁ (Intercept M)</span><span class="slider-val" id="val-i1">0.00</span></div>
+      <input type="range" id="sl-i1" min="-2" max="2" step="0.1" value="0" oninput="onSl('i1',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" style="color:var(--ink3)">i₂ (Intercept Y)</span><span class="slider-val" id="val-i2">0.00</span></div>
+      <input type="range" id="sl-i2" min="-2" max="2" step="0.1" value="0" oninput="onSl('i2',this)">
+    </div>
+  </div>
+
+</div><!-- /sidebar -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Example</div>
+    <div class="story-vars">
+      <span class="sv">X</span><span class="sd">Self-regulation ability (SRQ score, standardized)</span>
+      <span class="sv">M</span><span class="sd">Weekly study time (hours/week) — mediator</span>
+      <span class="sv">Y</span><span class="sd">Exam performance (points, 0–100)</span>
+    </div>
+    <div class="story-q">Does self-regulation affect performance <em>because</em> it increases study time (indirect path a·b)? Or is there also a direct effect c′ — e.g. through more efficient studying?</div>
+  </div>
+
+  <div class="sec-h" style="margin-top:0">Model equations — Hayes/PROCESS Model 4</div>
+  <div class="eq-wrap">
+    <div class="eq-main">
+      <span style="color:var(--a4)">M</span><span style="color:var(--ink3)"> = i₁ + </span><span style="color:var(--a2)">a</span><span style="color:var(--ink3)">·X + ε₁</span>
+      <span style="color:var(--ink3);font-size:.78rem;margin-left:1.2rem">(Model 1: mediator)</span>
+    </div>
+    <div class="eq-main">
+      <span style="color:var(--a3)">Y</span><span style="color:var(--ink3)"> = i₂ + </span><span style="color:var(--a5)">c′</span><span style="color:var(--ink3)">·X + </span><span style="color:var(--a3)">b</span><span style="color:var(--ink3)">·</span><span style="color:var(--a4)">M</span><span style="color:var(--ink3)"> + ε₂</span>
+      <span style="color:var(--ink3);font-size:.78rem;margin-left:1.2rem">(Model 2: direct effect)</span>
+    </div>
+    <div class="eq-main" style="margin-top:.35rem;padding-top:.35rem;border-top:1px solid var(--grid)">
+      <span style="color:var(--a3)">Y</span><span style="color:var(--ink3)"> = i₃ + </span><span style="color:var(--a1)">c</span><span style="color:var(--ink3)">·X + ε₃</span>
+      <span style="color:var(--ink3);font-size:.78rem;margin-left:1.2rem">(Model 3: total effect — without M)</span>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink3);margin-top:.5rem;padding-top:.45rem;border-top:1px solid var(--grid)">
+      Total effect: <strong style="color:var(--a1)">c = c′ + a·b</strong>
+      &nbsp;·&nbsp;
+      Indirect effect: <strong style="color:var(--a4)">a·b</strong>
+    </div>
+  </div>
+
+  <div class="sec-h">Path Diagram</div>
+  <div class="dag-wrap">
+    <svg class="dag-svg" viewBox="0 0 620 172" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" fill="context-stroke"/>
+        </marker>
+      </defs>
+      <g transform="translate(310,86) scale(0.65) translate(-310,-105)">
+      <!-- X→M (a): gerade Linie von X-Kante zu M-Kante -->
+      <line id="path-a" x1="106" y1="103" x2="284" y2="50" stroke-width="2" marker-end="url(#arr)"/>
+      <!-- M→Y (b): gerade Linie von M-Kante zu Y-Kante -->
+      <line id="path-b" x1="336" y1="50" x2="514" y2="103" stroke-width="2" marker-end="url(#arr)"/>
+      <!-- X→Y (c′, direkt): gerade Linie am unteren Kreisrand -->
+      <line id="path-cp" x1="80" y1="138" x2="540" y2="138" stroke-width="2" marker-end="url(#arr)"/>
+      <!-- X→Y (c, total): gerade Linie darunter -->
+      <line id="path-c" x1="80" y1="172" x2="540" y2="172" stroke-width="2" marker-end="url(#arr)"/>
+      <!-- Koeffizienten-Labels -->
+      <text id="lbl-a"  x="192" y="63" text-anchor="middle" font-family="DM Mono,monospace" font-size="13" font-weight="500">a = —</text>
+      <text id="lbl-b"  x="428" y="63" text-anchor="middle" font-family="DM Mono,monospace" font-size="13" font-weight="500">b = —</text>
+      <text id="lbl-cp" x="310" y="153" text-anchor="middle" font-family="DM Mono,monospace" font-size="13" font-weight="500">c′ = —</text>
+      <text id="lbl-c"  x="310" y="191" text-anchor="middle" font-family="DM Mono,monospace" font-size="13" font-weight="500">c (total) = —</text>
+      <!-- Nodes (über Pfeilen gezeichnet) -->
+      <circle cx="80" cy="111" r="27" fill="var(--paper)" stroke="var(--a2)" stroke-width="2"/>
+      <text x="80" y="111" text-anchor="middle" dominant-baseline="middle" font-family="DM Mono,monospace" font-size="16" fill="var(--a2)" font-weight="600">X</text>
+      <circle cx="310" cy="42" r="27" fill="var(--paper)" stroke="var(--a4)" stroke-width="2"/>
+      <text x="310" y="42" text-anchor="middle" dominant-baseline="middle" font-family="DM Mono,monospace" font-size="16" fill="var(--a4)" font-weight="600">M</text>
+      <circle cx="540" cy="111" r="27" fill="var(--paper)" stroke="var(--a3)" stroke-width="2"/>
+      <text x="540" y="111" text-anchor="middle" dominant-baseline="middle" font-family="DM Mono,monospace" font-size="16" fill="var(--a3)" font-weight="600">Y</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="kw-grid">
+    <div class="kw-box">
+      <div class="kw-label">a·b — Indirect Effect</div>
+      <div class="kw-val" id="kw-ab">—</div>
+      <div class="kw-sub" id="kw-ab-pop">Pop: —</div>
+    </div>
+    <div class="kw-box">
+      <div class="kw-label">c′ — Direct Effect</div>
+      <div class="kw-val" id="kw-cp">—</div>
+      <div class="kw-sub" id="kw-cp-pop">Pop: —</div>
+    </div>
+    <div class="kw-box">
+      <div class="kw-label">c — Total Effect</div>
+      <div class="kw-val" id="kw-c">—</div>
+      <div class="kw-sub" id="kw-c-pop">Pop: —</div>
+    </div>
+  </div>
+
+  <div class="sec-h">Regression Output — Outcome: M</div>
+  <table class="coef-table">
+    <thead>
+      <tr>
+        <th>Par.</th><th class="r">Population</th><th class="r">Estimated</th>
+        <th class="r">SE</th><th class="r">t</th><th class="r">p</th>
+        <th class="r">95% CI</th><th>Interpretation</th>
+      </tr>
+    </thead>
+    <tbody id="tbl-m-body"></tbody>
+  </table>
+  <div style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink3);margin-bottom:1.2rem">
+    R²(M) = <strong id="r2m">—</strong>
+    <span style="margin-left:1.2rem">Citation: Hayes, A. F. (2022). <em>Introduction to mediation, moderation, and conditional process analysis</em> (3rd ed.). Guilford.</span>
+  </div>
+
+  <div class="sec-h">Regression Output — Outcome: Y</div>
+  <table class="coef-table">
+    <thead>
+      <tr>
+        <th>Par.</th><th class="r">Population</th><th class="r">Estimated</th>
+        <th class="r">SE</th><th class="r">t</th><th class="r">p</th>
+        <th class="r">95% CI</th><th>Interpretation</th>
+      </tr>
+    </thead>
+    <tbody id="tbl-y-body"></tbody>
+  </table>
+  <div style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink3);margin-bottom:1.2rem">
+    R²(Y) = <strong id="r2y">—</strong>
+  </div>
+
+  <div class="sec-h" style="border-left:3px solid var(--a1);padding-left:.5rem">Regression Output — Total Effect: Y ~ X (without mediator)</div>
+  <table class="coef-table">
+    <thead>
+      <tr>
+        <th>Par.</th><th class="r">Population</th><th class="r">Estimated</th>
+        <th class="r">SE</th><th class="r">t</th><th class="r">p</th>
+        <th class="r">95% CI</th><th>Interpretation</th>
+      </tr>
+    </thead>
+    <tbody id="tbl-c-body"></tbody>
+  </table>
+  <div style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink3);margin-bottom:1.2rem">
+    R²(c-model) = <strong id="r2c">—</strong>
+    <span style="margin-left:1.2rem;color:var(--a1)">Model 3: bivariate regression Y ~ X, without M — estimates c = c′ + a·b directly</span>
+  </div>
+
+  <div class="sec-h">Indirect Effect a·b</div>
+  <div class="ibox">
+    <div class="erklaer-h">Analytical Tests</div>
+    <table class="coef-table" style="margin-bottom:.7rem">
+      <thead>
+        <tr>
+          <th>Test</th>
+          <th class="r">Population a·b</th>
+          <th class="r">Estimated a·b</th>
+          <th class="r">SE(a·b)</th>
+          <th class="r">z</th>
+          <th class="r">p (2-tailed)</th>
+        </tr>
+      </thead>
+      <tbody id="tbl-indirect-body"></tbody>
+    </table>
+    <div style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);margin-bottom:.8rem">
+      Sobel: SE = √(b²·SE_a² + a²·SE_b²) &nbsp;·&nbsp; Aroian: SE = √(b²·SE_a² + a²·SE_b² + SE_a²·SE_b²)
+    </div>
+    <div class="erklaer-h">Bootstrap Confidence Interval</div>
+    <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);margin-bottom:.4rem">
+      Percentile method · 5000 iterations · on request only (Hayes, 2022, 3rd ed., Ch. 4)
+    </div>
+    <button class="bs-btn" id="bs-btn" onclick="runBootstrap()">Compute Bootstrap CI</button>
+    <div id="bs-result" style="font-family:'DM Mono',monospace;font-size:.82rem;margin-top:.65rem;color:var(--ink2)"></div>
+  </div>
+
+  <div class="learn-section">
+    <div class="sec-h">Concepts</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">What is mediation?</div>
+        <div class="lcard-body">A mediator M explains the <strong>mechanism</strong> through which X affects Y. X influences M (path a), M influences Y (path b). The indirect effect <strong>a·b</strong> quantifies this process. Hayes (2022) calls this the simplest mediation model — PROCESS Model 4.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Direct vs. indirect effect</div>
+        <div class="lcard-body">The <strong>direct effect c′</strong> is the X→Y influence with M held constant. The <strong>indirect effect a·b</strong> runs through M. Together they give the <strong>total effect c = c′ + a·b</strong> — identical to the simple bivariate coefficient of X on Y with M omitted from the model.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Mediation, confounding &amp; suppression</div>
+        <div class="lcard-body">MacKinnon, Krull &amp; Lockwood (2000, <em>Prevention Science</em>) show: <strong>mediation, confounding and suppression are mathematically equivalent</strong> — the same equations, different causal interpretations. Under <strong>suppression</strong>, a and b have opposite signs: a·b is negative, so |c′| &gt; |c| — the direct effect overestimates the total effect. This is visible in Scenario D: X and Y correlate more weakly than X's direct effect on Y, because M suppresses part of the X effect. Whether M is a mediator, confounder or suppressor is decided by <em>causal theory</em>, not by the data.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Sobel test &amp; limitation</div>
+        <div class="lcard-body">The <strong>Sobel test</strong> (1982) tests H₀: a·b = 0 via <code>z = ab/SE</code> with <code>SE = √(b²SE_a² + a²SE_b²)</code>. The product of two normally distributed random variables is <em>not</em> normally distributed — it follows a product distribution that is typically <strong>skewed and leptokurtic</strong>. The Sobel test therefore often underestimates significance at small n (too conservative) and can fail to correctly control the α error for certain parameter combinations. The <strong>Aroian test</strong> adds the term SE_a²·SE_b² and is somewhat more accurate, but suffers from the same underlying problem.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Why bootstrap is better</div>
+        <div class="lcard-body">The bootstrap CI makes <strong>no distributional assumption</strong> for a·b. Instead, it approximates the sampling distribution empirically: B=5000 resamples deliver the actual shape of the a·b distribution — including skew and kurtosis. At small n, or when a and b are similar in size, the distribution of a·b is strongly asymmetric; the Sobel CI is then too narrow or off-center on the wrong side. Preacher &amp; Hayes (2004, 2008) show in simulations: bootstrap has better power <em>and</em> more correct α control. The percentile CI [2.5%, 97.5%] is the minimum; the BCa CI (bias-corrected, accelerated) would be even more robust, but at n ≥ 100 is usually identical.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Causal mediation analysis</div>
+        <div class="lcard-body">Regression mediation describes a pattern but does not prove causation. A finding of a·b ≠ 0 can arise because M truly mediates — or because a third variable jointly influences M and Y (confounding). Causal claims require two conditions: <strong>(1)</strong> all confounders between X and Y are controlled (ideally: X is randomized). <strong>(2)</strong> all confounders between M and Y are measured — this is the harder condition and often unattainable in practice. <strong>DAGs</strong> make visible which variables could even qualify as confounders. The <strong>potential-outcomes framework</strong> (PO) precisely defines what "causal indirect effect" means: how does Y change if the path through M is interrupted? <strong>IPW</strong> estimates this effect, provided the assumptions hold (Imai et al., 2010; VanderWeele, 2015). Whether the assumptions hold is a theoretical decision — not an empirical one.<br><br><strong>Related tools:</strong> <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Golem_Builder.html" target="_blank" rel="noopener">DAGs (Golem Builder)</a> and <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/GComp_Builder.html" target="_blank" rel="noopener">G-Computation (GComp Builder)</a> in the Bayes Thinking Lab, as well as <a href="../Causal_Teaching.html" target="_blank" rel="noopener">Causal Inference — Foundations</a> and <a href="../PSM.html" target="_blank" rel="noopener">Propensity Score Matching / Weighting</a> here in Methods Lab.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">
+      <span>Mediation <em>Analysis</em> — Help</span>
+      <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    </div>
+
+    <div class="help-sh">Example</div>
+    <p class="help-p">The tool shows an example from learning psychology: <strong>self-regulation (X) → study time (M) → exam performance (Y)</strong>. The parameter sliders control the true population effects; the tool simulates a sample from these and estimates the coefficients.</p>
+
+    <div class="help-sh">Model structure (Hayes Model 4)</div>
+    <p class="help-p">A mediation analysis decomposes the total effect of X on Y into two paths:</p>
+    <div class="help-formula">Indirect effect: a·b &nbsp;(X→M→Y)</div>
+    <div class="help-formula">Direct effect: c′ &nbsp;(X→Y, with M held constant)</div>
+    <div class="help-formula">Total effect: c = c′ + a·b</div>
+    <p class="help-p">c corresponds exactly to the bivariate regression coefficient from the simple regression Y ~ X (with M omitted from the model).</p>
+
+    <div class="help-sh">Four scenarios</div>
+    <p class="help-p"><strong>A — No mediation:</strong> a·b ≈ 0, because a or b is zero. X affects Y directly, but not through M.<br>
+    <strong>B — Full mediation:</strong> c′ ≈ 0, the entire effect runs through M. Without M in the model, c ≠ 0 — but once M is controlled for, it vanishes.<br>
+    <strong>C — Partial mediation:</strong> both a·b and c′ are nonzero. The most common case in practice.<br>
+    <strong>D — Suppression:</strong> a and b have opposite signs, so a·b is negative. Since c = c′ + a·b, the total effect turns out smaller than the direct one: |c| &lt; |c′|. Under strong suppression, c can be near zero even though c′ is substantial.</p>
+
+    <div class="help-sh">Sobel test vs. bootstrap</div>
+    <p class="help-p">The <strong>Sobel test</strong> assumes that a·b is approximately normally distributed. That only holds at large n — at small sample sizes, the product distribution is skewed and leptokurtic, which makes the test too conservative.</p>
+    <p class="help-p">The <strong>bootstrap CI</strong> (Preacher & Hayes, 2008) makes no distributional assumption: 5000 resamples approximate the actual shape of the a·b distribution. In simulations it has better power <em>and</em> more correct α control — especially at n &lt; 100 or with asymmetric effects.</p>
+
+    <div class="help-sh">Causality</div>
+    <p class="help-p">A significant a·b does not prove causation. Causal claims require <strong>(1)</strong> all confounders between X and Y and <strong>(2)</strong> all confounders between M and Y to be controlled. Condition 2 is rarely attainable in observational studies. DAGs help identify the necessary control variables.</p>
+  </div>
+</div>
+
+<script>
+// ─── State ────────────────────────────────────────────────────────────────────
+const ST={
+  n:200, sm:1.0, sy:1.0,
+  a:0.5, b:0.5, cp:0.2, i1:0, i2:0,
+  seed:42, data:null, fitM:null, fitY:null, fitC:null
+};
+
+// ─── PRNG ─────────────────────────────────────────────────────────────────────
+function mulberry32(a){
+  return function(){
+    a|=0;a=a+0x6D2B79F5|0;
+    var t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return((t^t>>>14)>>>0)/4294967296;
+  };
+}
+function makeGauss(rand){
+  let sp=null;
+  return ()=>{
+    if(sp!==null){const s=sp;sp=null;return s;}
+    const u1=Math.max(rand(),1e-15),u2=rand();
+    const m=Math.sqrt(-2*Math.log(u1));
+    sp=m*Math.sin(2*Math.PI*u2);
+    return m*Math.cos(2*Math.PI*u2);
+  };
+}
+
+// ─── Matrix ops ───────────────────────────────────────────────────────────────
+function matSolve(A,bv){
+  const n=bv.length,M=A.map((r,i)=>[...r,bv[i]]);
+  for(let c=0;c<n;c++){
+    let mr=c;
+    for(let r=c+1;r<n;r++) if(Math.abs(M[r][c])>Math.abs(M[mr][c])) mr=r;
+    [M[c],M[mr]]=[M[mr],M[c]];
+    for(let r=c+1;r<n;r++){
+      const f=M[c][c]===0?0:M[r][c]/M[c][c];
+      for(let k=c;k<=n;k++) M[r][k]-=f*M[c][k];
+    }
+  }
+  const x=new Array(n).fill(0);
+  for(let i=n-1;i>=0;i--){
+    x[i]=M[i][n];
+    for(let k=i+1;k<n;k++) x[i]-=M[i][k]*x[k];
+    x[i]/=M[i][i]||1e-30;
+  }
+  return x;
+}
+function invertMat(A){
+  const n=A.length;
+  const M=A.map((r,i)=>{const a=[...r];for(let j=0;j<n;j++) a.push(i===j?1:0);return a;});
+  for(let c=0;c<n;c++){
+    let mr=c;
+    for(let r=c+1;r<n;r++) if(Math.abs(M[r][c])>Math.abs(M[mr][c])) mr=r;
+    [M[c],M[mr]]=[M[mr],M[c]];
+    const pv=M[c][c];if(Math.abs(pv)<1e-15)continue;
+    for(let k=c;k<2*n;k++) M[c][k]/=pv;
+    for(let r=0;r<n;r++){
+      if(r!==c){const f=M[r][c];for(let k=c;k<2*n;k++) M[r][k]-=f*M[c][k];}
+    }
+  }
+  return M.map(r=>r.slice(n));
+}
+
+// ─── OLS ──────────────────────────────────────────────────────────────────────
+function ols(pts,getX,getY){
+  const n=pts.length,X=pts.map(getX),p=X[0].length;
+  const XtX=Array.from({length:p},()=>new Array(p).fill(0));
+  const Xty=new Array(p).fill(0);
+  for(let i=0;i<n;i++){
+    const yi=getY(pts[i]);
+    for(let j=0;j<p;j++){
+      Xty[j]+=X[i][j]*yi;
+      for(let k=0;k<p;k++) XtX[j][k]+=X[i][j]*X[i][k];
+    }
+  }
+  const beta=matSolve(XtX,Xty);
+  const ybar=pts.reduce((s,pt)=>s+getY(pt),0)/n;
+  let sse=0,sst=0;
+  for(let i=0;i<n;i++){
+    const yhat=X[i].reduce((s,v,j)=>s+v*beta[j],0);
+    const yi=getY(pts[i]);
+    sse+=(yi-yhat)**2; sst+=(yi-ybar)**2;
+  }
+  const s2=sse/(n-p),r2=sst===0?0:1-sse/sst;
+  try{
+    const inv=invertMat(XtX);
+    const se=beta.map((_,j)=>Math.sqrt(Math.max(0,s2*inv[j][j])));
+    return{beta,r2,se,s2,n,p};
+  }catch{return{beta,r2:0,se:beta.map(()=>NaN),s2,n,p};}
+}
+
+// ─── Statistics ───────────────────────────────────────────────────────────────
+function lgamma(z){
+  const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,
+    771.32342877765313,-176.61502916214059,12.507343278686905,
+    -0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(z<0.5)return Math.log(Math.PI)-Math.log(Math.sin(Math.PI*z))-lgamma(1-z);
+  z--;let x=c[0];
+  for(let i=1;i<9;i++) x+=c[i]/(z+i);
+  const t=z+7.5;
+  return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x);
+}
+function betainc(x,a,b){
+  if(x<=0)return 0;if(x>=1)return 1;
+  const lb=lgamma(a)+lgamma(b)-lgamma(a+b);
+  const fr=Math.exp(Math.log(x)*a+Math.log(1-x)*b-lb)/a;
+  let f=1,c=1,d=1-(a+b)*x/(a+1);
+  if(Math.abs(d)<1e-30)d=1e-30;d=1/d;f=d;
+  for(let m=1;m<=200;m++){
+    let aa=m*(b-m)*x/((a+2*m-1)*(a+2*m));
+    d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;
+    d=1/d;f*=c*d;
+    aa=-(a+m)*(a+b+m)*x/((a+2*m)*(a+2*m+1));
+    d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;
+    d=1/d;const del=c*d;f*=del;if(Math.abs(del-1)<1e-10)break;
+  }
+  if(x<(a+1)/(a+b+2))return fr*f;
+  return 1-betainc(1-x,b,a);
+}
+function tPVal(t,df){return betainc(df/(df+t*t),df/2,.5);}
+function tCrit(df){
+  let lo=0,hi=20;
+  for(let i=0;i<80;i++){const mid=(lo+hi)/2;if(tPVal(mid,df)>0.05)lo=mid;else hi=mid;}
+  return(lo+hi)/2;
+}
+function erf(x){
+  const t=1/(1+0.3275911*Math.abs(x));
+  const p=t*(0.254829592+t*(-0.284496736+t*(1.421413741+t*(-1.453152027+t*1.061405429))));
+  const r=1-p*Math.exp(-x*x);
+  return x>=0?r:-r;
+}
+function normalPVal(z){return 2*(1-0.5*(1+erf(Math.abs(z)/Math.SQRT2)));}
+
+// ─── Formatting ───────────────────────────────────────────────────────────────
+function f3(v){return isFinite(v)?v.toFixed(3):'—';}
+function pStr(p){
+  if(!isFinite(p))return'—';
+  if(p<.001)return'< .001';
+  return p.toFixed(3).replace('0.','.');
+}
+function sigClass(p){return p<.01?'sig01':p<.05?'sig1':'signs';}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+
+// ─── Data generation ──────────────────────────────────────────────────────────
+function genData(){
+  const rand=mulberry32(ST.seed),gauss=makeGauss(rand);
+  const pts=[];
+  for(let i=0;i<ST.n;i++){
+    const x=gauss();
+    const m=ST.i1+ST.a*x+ST.sm*gauss();
+    const y=ST.i2+ST.cp*x+ST.b*m+ST.sy*gauss();
+    pts.push({x,m,y});
+  }
+  return pts;
+}
+
+// ─── DAG update ───────────────────────────────────────────────────────────────
+function updateDAG(fM,fY,fC){
+  const a=fM.beta[1],sea=fM.se[1];
+  const b=fY.beta[2],seb=fY.se[2];
+  const cp=fY.beta[1],secp=fY.se[1];
+  const dfM=fM.n-fM.p,dfY=fY.n-fY.p;
+  const pa=tPVal(Math.abs(a/sea),dfM);
+  const pb=tPVal(Math.abs(b/seb),dfY);
+  const pcp=tPVal(Math.abs(cp/secp),dfY);
+
+  const c=fC.beta[1],sec=fC.se[1],dfC=fC.n-fC.p;
+  const pc=tPVal(Math.abs(c/sec),dfC);
+
+  const colA=pa<0.05?css('--a2'):css('--ink3');
+  const colB=pb<0.05?css('--a3'):css('--ink3');
+  const colCP=pcp<0.05?css('--a5'):css('--ink3');
+  const colC=pc<0.05?css('--a1'):css('--ink3');
+
+  const pathA=document.getElementById('path-a');
+  const pathB=document.getElementById('path-b');
+  const pathCP=document.getElementById('path-cp');
+  const pathC=document.getElementById('path-c');
+  pathA.setAttribute('stroke',colA);
+  pathA.setAttribute('stroke-dasharray',pa<0.05?'none':'7,5');
+  pathB.setAttribute('stroke',colB);
+  pathB.setAttribute('stroke-dasharray',pb<0.05?'none':'7,5');
+  pathCP.setAttribute('stroke',colCP);
+  pathCP.setAttribute('stroke-dasharray',pcp<0.05?'none':'7,5');
+  pathC.setAttribute('stroke',colC);
+  pathC.setAttribute('stroke-dasharray',pc<0.05?'none':'7,5');
+
+  const lblA=document.getElementById('lbl-a');
+  lblA.setAttribute('fill',colA);
+  lblA.textContent='a = '+f3(a)+(pa<0.05?'*':'');
+  const lblB=document.getElementById('lbl-b');
+  lblB.setAttribute('fill',colB);
+  lblB.textContent='b = '+f3(b)+(pb<0.05?'*':'');
+  const lblCP=document.getElementById('lbl-cp');
+  lblCP.setAttribute('fill',colCP);
+  lblCP.textContent='c′ = '+f3(cp)+(pcp<0.05?'*':'');
+  const lblC=document.getElementById('lbl-c');
+  lblC.setAttribute('fill',colC);
+  lblC.textContent='c = '+f3(c)+(pc<0.05?'*':'');
+}
+
+// ─── KW boxes ─────────────────────────────────────────────────────────────────
+function updateKW(fM,fY){
+  const a=fM.beta[1],b=fY.beta[2],cp=fY.beta[1];
+  document.getElementById('kw-ab').textContent=f3(a*b);
+  document.getElementById('kw-ab-pop').textContent='Pop: '+f3(ST.a*ST.b);
+  document.getElementById('kw-cp').textContent=f3(cp);
+  document.getElementById('kw-cp-pop').textContent='Pop: '+f3(ST.cp);
+  document.getElementById('kw-c').textContent=f3(cp+a*b);
+  document.getElementById('kw-c-pop').textContent='Pop: '+f3(ST.cp+ST.a*ST.b);
+}
+
+// ─── Coefficient tables ───────────────────────────────────────────────────────
+function makeRow(nm,pop,est,se,df,interp,col){
+  const tv=isFinite(se)&&se>0?est/se:NaN;
+  const pv=isFinite(tv)?tPVal(Math.abs(tv),df):NaN;
+  const tc=isFinite(df)?tCrit(df):1.96;
+  const kiLo=isFinite(se)?est-tc*se:NaN;
+  const kiHi=isFinite(se)?est+tc*se:NaN;
+  const sc=isFinite(pv)?sigClass(pv):'signs';
+  const nmCol=col||'var(--ink)';
+  const estStyle=col?`color:${col};font-weight:600`:'';
+  return`<tr>
+    <td style="font-weight:600;color:${nmCol}">${nm}</td>
+    <td class="num" style="color:var(--ink3)">${f3(pop)}</td>
+    <td class="num" style="${estStyle}">${f3(est)}</td>
+    <td class="num">${f3(se)}</td>
+    <td class="num ${sc}">${isFinite(tv)?tv.toFixed(3):'—'}</td>
+    <td class="num ${sc}">${pStr(pv)}</td>
+    <td class="num" style="color:var(--ink2)">[${f3(kiLo)}, ${f3(kiHi)}]</td>
+    <td class="interp">${interp}</td>
+  </tr>`;
+}
+
+function updateTables(fM,fY,fC){
+  const dfM=fM.n-fM.p,dfY=fY.n-fY.p,dfC=fC.n-fC.p;
+  document.getElementById('tbl-m-body').innerHTML=
+    makeRow('i₁',ST.i1,fM.beta[0],fM.se[0],dfM,'Expected M when X = 0')+
+    makeRow('a',ST.a,fM.beta[1],fM.se[1],dfM,'Effect X→M (path a)','var(--a2)');
+  document.getElementById('r2m').textContent=fM.r2.toFixed(3);
+  document.getElementById('tbl-y-body').innerHTML=
+    makeRow('i₂',ST.i2,fY.beta[0],fY.se[0],dfY,'Expected Y when X = 0, M = 0')+
+    makeRow('c′',ST.cp,fY.beta[1],fY.se[1],dfY,'Direct effect X→Y (controlling for M)','var(--a5)')+
+    makeRow('b',ST.b,fY.beta[2],fY.se[2],dfY,'Effect M→Y (path b)','var(--a3)');
+  document.getElementById('r2y').textContent=fY.r2.toFixed(3);
+  const cPop=ST.cp+ST.a*ST.b;
+  const i3Pop=ST.i2+ST.b*ST.i1;
+  document.getElementById('tbl-c-body').innerHTML=
+    makeRow('i₃',i3Pop,fC.beta[0],fC.se[0],dfC,'Expected Y when X = 0 (bivariate regression)')+
+    makeRow('c',cPop,fC.beta[1],fC.se[1],dfC,'Total effect X→Y (without M in the model)','var(--a1)');
+  document.getElementById('r2c').textContent=fC.r2.toFixed(3);
+}
+
+// ─── Indirect effect tests ────────────────────────────────────────────────────
+function updateIndirect(fM,fY){
+  const a=fM.beta[1],sea=fM.se[1];
+  const b=fY.beta[2],seb=fY.se[2];
+  const ab=a*b,abPop=ST.a*ST.b;
+  const seSob=Math.sqrt(b*b*sea*sea+a*a*seb*seb);
+  const seAro=Math.sqrt(b*b*sea*sea+a*a*seb*seb+sea*sea*seb*seb);
+  const zSob=seSob>0?ab/seSob:NaN;
+  const zAro=seAro>0?ab/seAro:NaN;
+  const pSob=isFinite(zSob)?normalPVal(zSob):NaN;
+  const pAro=isFinite(zAro)?normalPVal(zAro):NaN;
+  const row=(label,se,z,p)=>{
+    const sc=isFinite(p)?sigClass(p):'signs';
+    return`<tr>
+      <td style="font-weight:600">${label}</td>
+      <td class="num" style="color:var(--ink3)">${f3(abPop)}</td>
+      <td class="num">${f3(ab)}</td>
+      <td class="num">${f3(se)}</td>
+      <td class="num ${sc}">${f3(z)}</td>
+      <td class="num ${sc}">${pStr(p)}</td>
+    </tr>`;
+  };
+  document.getElementById('tbl-indirect-body').innerHTML=
+    row('Sobel',seSob,zSob,pSob)+row('Aroian',seAro,zAro,pAro);
+}
+
+// ─── Bootstrap ────────────────────────────────────────────────────────────────
+function runBootstrap(){
+  const btn=document.getElementById('bs-btn');
+  const res=document.getElementById('bs-result');
+  if(!ST.data){res.textContent='No data.';return;}
+  btn.textContent='Computing…';btn.disabled=true;
+  setTimeout(()=>{
+    const pts=ST.data,n=pts.length,B=5000;
+    const indirect=new Float64Array(B);
+    for(let i=0;i<B;i++){
+      const s=Array.from({length:n},()=>pts[Math.floor(Math.random()*n)]);
+      const fm=ols(s,p=>[1,p.x],p=>p.m);
+      const fy=ols(s,p=>[1,p.x,p.m],p=>p.y);
+      indirect[i]=fm.beta[1]*fy.beta[2];
+    }
+    indirect.sort();
+    const lo=indirect[Math.floor(0.025*B)];
+    const hi=indirect[Math.floor(0.975*B)];
+    const ab=ST.fitM.beta[1]*ST.fitY.beta[2];
+    const sig=lo>0||hi<0;
+    res.innerHTML=`<span style="color:var(--ink)">Percentile 95% CI: <strong>[${f3(lo)}, ${f3(hi)}]</strong></span>`+
+      `&nbsp;·&nbsp; Point estimate: <strong>${f3(ab)}</strong>`+
+      `&nbsp;·&nbsp; <span class="${sig?'sig01':'signs'}">${sig?'significant (CI ∌ 0)':'n.s. (CI ∋ 0)'}</span>`+
+      `<br><span style="color:var(--ink3);font-size:.75rem">Method: percentile · B = 5000 · n = ${n}</span>`;
+    btn.textContent='Recompute Bootstrap CI';btn.disabled=false;
+  },30);
+}
+
+// ─── CSV ──────────────────────────────────────────────────────────────────────
+function downloadCSV(){
+  if(!ST.data)return;
+  const csv=['x,m,y',...ST.data.map(p=>`${p.x.toFixed(6)},${p.m.toFixed(6)},${p.y.toFixed(6)}`)].join('\n');
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  const a=document.createElement('a');a.href=url;a.download='mediation_data.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── Recompute ────────────────────────────────────────────────────────────────
+function recompute(){
+  const pts=genData();
+  ST.data=pts;
+  const fM=ols(pts,p=>[1,p.x],p=>p.m);
+  const fY=ols(pts,p=>[1,p.x,p.m],p=>p.y);
+  const fC=ols(pts,p=>[1,p.x],p=>p.y);
+  ST.fitM=fM;ST.fitY=fY;ST.fitC=fC;
+  updateDAG(fM,fY,fC);
+  updateKW(fM,fY);
+  updateTables(fM,fY,fC);
+  updateIndirect(fM,fY);
+  document.getElementById('bs-result').innerHTML='';
+  const btn=document.getElementById('bs-btn');
+  btn.textContent='Compute Bootstrap CI';btn.disabled=false;
+}
+
+// ─── Controls ────────────────────────────────────────────────────────────────
+function onSl(key,el){
+  ST[key]=parseFloat(el.value);
+  const d=document.getElementById('val-'+key);
+  if(d) d.textContent=key==='n'?ST[key]:ST[key].toFixed(2);
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  recompute();
+}
+
+const PRESETS={
+  A:{a:0.5, b:0, cp:0.5, i1:0, i2:0, sm:1, sy:1, n:200},
+  B:{a:0.5, b:0.5, cp:0, i1:0, i2:0, sm:1, sy:1, n:200},
+  C:{a:0.4, b:0.4, cp:0.2, i1:0, i2:0, sm:1, sy:1, n:200},
+  D:{a:0.5, b:-0.4, cp:0.7, i1:0, i2:0, sm:1, sy:1, n:200},
+};
+
+function setPreset(k){
+  const p=PRESETS[k];if(!p)return;
+  Object.assign(ST,p);
+  ['a','b','cp','i1','i2','sm','sy'].forEach(key=>{
+    const sl=document.getElementById('sl-'+key);
+    if(sl){sl.value=ST[key];const d=document.getElementById('val-'+key);if(d)d.textContent=ST[key].toFixed(2);}
+  });
+  const nsl=document.getElementById('sl-n');
+  if(nsl){nsl.value=ST.n;document.getElementById('val-n').textContent=ST.n;}
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pre-'+k).classList.add('active');
+  recompute();
+}
+
+function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
+
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  if(ST.fitM&&ST.fitY&&ST.fitC)updateDAG(ST.fitM,ST.fitY,ST.fitC);
+}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+setPreset('A');
+</script>
+</body>
+</html>

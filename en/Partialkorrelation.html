@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Partial & Semipartial Correlation — Diagnostics</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a6);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.preset-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.3rem .65rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .15s;white-space:normal;width:100%;text-align:left;display:block;margin-bottom:.3rem}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.preset-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.seed-btn{font-family:'DM Mono',monospace;font-size:.76rem;padding:.28rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .12s;width:100%;text-align:left;margin-top:.3rem}
+.seed-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.eq-wrap{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem;margin-bottom:.8rem;
+  font-family:'DM Mono',monospace;font-size:.85rem;line-height:2;letter-spacing:.01em}
+.coef-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.8rem;margin-bottom:.8rem}
+.coef-table th{font-size:.7rem;letter-spacing:.07em;color:var(--ink3);padding:.28rem .5rem;
+  border-bottom:2px solid var(--grid);text-align:left}
+.coef-table th.r{text-align:right}
+.coef-table td{padding:.32rem .5rem;border-bottom:1px solid var(--grid);vertical-align:middle}
+.coef-table td.num{text-align:right;font-weight:600}
+.coef-table td.interp{color:var(--ink2);font-size:.75rem;line-height:1.4}
+.sig1{color:var(--a5)}.sig01{color:var(--a1)}.signs{color:var(--ink3)}
+.supp{color:var(--a1);font-size:.75rem;font-family:'DM Mono',monospace}
+.cv-panel{background:var(--panel);border:1px solid var(--grid);padding:.5rem .6rem;margin-bottom:.4rem}
+.cv-lbl{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.3rem;
+  letter-spacing:.05em;text-transform:uppercase}
+canvas{display:block;width:100%}
+.warn-box{background:var(--panel);border:1px solid var(--a1);border-left:3px solid var(--a1);
+  padding:.45rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a1);
+  margin-bottom:.5rem;display:none}
+.learn-section{margin-top:2.5rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a6);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.7;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Partial &amp; <em>Semipartial Correlation</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Scenarios</div>
+    <button class="preset-btn active" id="pre-A" onclick="setPreset('A')">A — Independent Predictors</button>
+    <button class="preset-btn" id="pre-B" onclick="setPreset('B')">B — Redundancy (Collinearity)</button>
+    <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — Classical Suppression</button>
+    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — Reciprocal Suppression</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Simulation</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n</span><span class="slider-val" id="val-n">200</span></div>
+      <input type="range" id="sl-n" min="30" max="500" step="10" value="200" oninput="onSl('n',this)">
+    </div>
+    <button class="seed-btn" onclick="newSeed()">⟳ New Sample</button>
+    <button class="seed-btn" onclick="downloadCSV()" style="margin-top:.25rem">↓ Data as CSV</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Population Correlations</div>
+    <div id="pd-warn" class="warn-box">⚠ Correlation matrix not positive-definite — please adjust the values.</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" style="color:var(--a2)">ρ(X₁, Y)</span><span class="slider-val" id="val-r1y">0.50</span></div>
+      <input type="range" id="sl-r1y" min="-0.95" max="0.95" step="0.05" value="0.5" oninput="onSl('r1y',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" style="color:var(--a3)">ρ(X₂, Y)</span><span class="slider-val" id="val-r2y">0.40</span></div>
+      <input type="range" id="sl-r2y" min="-0.95" max="0.95" step="0.05" value="0.4" oninput="onSl('r2y',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" style="color:var(--a5)">ρ(X₁, X₂)</span><span class="slider-val" id="val-r12">0.00</span></div>
+      <input type="range" id="sl-r12" min="-0.95" max="0.95" step="0.05" value="0.0" oninput="onSl('r12',this)">
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink3);margin-top:.4rem">
+      Points colored by X₂ rank (blue→red)
+    </div>
+  </div>
+
+</div><!-- /sidebar -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Example</div>
+    <div class="story-vars">
+      <span class="sv">X₁</span><span class="sd">Weekly study time (hours/week) — predictor of interest</span>
+      <span class="sv">X₂</span><span class="sd">Intelligence (IQ score, standardized) — control variable</span>
+      <span class="sv">Y</span><span class="sd">Exam performance (points, 0–100)</span>
+    </div>
+    <div class="story-q">How strongly does study time correlate with exam performance once differences in intelligence are partialled out? Does the effect reflect genuine willingness to study — or is it just an artifact of smarter people happening to study more too? (Scenario D — Reciprocal Suppression — switches to a different example: dominance &amp; empathy as predictors of leadership success.)</div>
+  </div>
+
+  <div class="sec-h" style="margin-top:0">Concept</div>
+  <div class="eq-wrap">
+    <span style="color:var(--a2)">r<sub>Y·X₁</sub></span><span style="color:var(--ink3)"> = bivariate &nbsp;(Pearson)</span><br>
+    <span style="color:var(--a6)">r<sub>semi</sub></span><span style="color:var(--ink3)"> = Semipartial: e(X₁|X₂) ~ Y &nbsp;→ X₂ partialled out of </span><span style="color:var(--a5)">X₁</span><span style="color:var(--ink3)"> only</span><br>
+    <span style="color:var(--a4)">r<sub>partial</sub></span><span style="color:var(--ink3)"> = Partial: e(X₁|X₂) ~ e(Y|X₂) &nbsp;→ X₂ partialled out of </span><span style="color:var(--a5)">X₁ and Y</span><span style="color:var(--ink3)"> both</span><br>
+    <span style="font-size:.78rem;color:var(--ink3)">r<sub>semi</sub>² = ΔR² (unique variance share of X₁) &nbsp;·&nbsp; r<sub>partial</sub>² = share of explained residual variance</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:.8rem;align-items:start">
+    <div>
+      <div class="sec-h">Scatterplots — residualized step by step</div>
+      <div style="display:flex;flex-direction:column;gap:.6rem">
+        <div class="cv-panel">
+          <div class="cv-lbl">1 · X₁ vs Y &nbsp;<span style="color:var(--a2)" id="lbl-r1">ρ=—&nbsp;r̂=—</span></div>
+          <canvas id="cv1" height="240"></canvas>
+        </div>
+        <div class="cv-panel">
+          <div class="cv-lbl">2 · e(X₁|X₂) vs Y &nbsp;<span style="color:var(--a6)" id="lbl-rsemi">semi=—</span></div>
+          <canvas id="cv2" height="240"></canvas>
+        </div>
+        <div class="cv-panel">
+          <div class="cv-lbl">3 · e(X₁|X₂) vs e(Y|X₂) &nbsp;<span style="color:var(--a4)" id="lbl-rpart">part=—</span></div>
+          <canvas id="cv3" height="240"></canvas>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sec-h">Ballantine diagram — variance decomposition</div>
+      <div class="cv-panel" style="padding:.75rem 1rem 1rem">
+        <canvas id="cv-venn" height="770"></canvas>
+      </div>
+      <div id="supp-note" class="supp" style="margin-top:.4rem;display:none"></div>
+    </div>
+  </div>
+
+  <div class="sec-h">Statistics — Population vs. Sample</div>
+  <table class="coef-table">
+    <thead>
+      <tr>
+        <th>Statistic</th>
+        <th class="r">Population</th>
+        <th class="r">Sample</th>
+        <th class="r">t</th>
+        <th class="r">p</th>
+        <th>Note</th>
+      </tr>
+    </thead>
+    <tbody id="stats-body"></tbody>
+  </table>
+
+  <div class="sec-h">Multiple Regression — X₁ + X₂ → Y</div>
+  <div id="mreg-wrap"></div>
+
+  <div class="learn-section">
+    <div class="sec-h">Concepts</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">Bivariate, semi- &amp; partial correlation</div>
+        <div class="lcard-body">Three levels of control: the <strong>bivariate r</strong> measures the relationship between X₁ and Y with no control at all. The <strong>semipartial correlation</strong> removes X₂'s influence only from X₁ — Y stays raw. It is the square root of ΔR² and measures the <em>unique contribution</em> of X₁ to the Y variance. The <strong>partial correlation</strong> removes X₂ from both: it measures the strength of the X₁–Y relationship <em>within</em> the plane that X₂ does not explain.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Residualization — what happens geometrically?</div>
+        <div class="lcard-body">"Partialling out" means: removing the prediction from X₂. You regress X₁ on X₂ and take the residuals e(X₁|X₂) — the part of X₁ that X₂ does <em>not</em> explain. In the scatterplot triptych you can see how the point cloud gets "cleaned up" on the X-axis (plot 2), and in plot 3 on the Y-axis too. The point coloring by X₂ shows: after residualization, there is no more X₂ pattern in the X-axis spread.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">The Ballantine diagram</div>
+        <div class="lcard-body">Three overlapping circles (X₁, X₂, Y) visualize the R² decomposition. The <strong>blue zone b</strong> = ΔR²(X₁) = semipartial² — the unique X₁ share. The <strong>green zone d</strong> = ΔR²(X₂). The <strong>purple zone c</strong> = shared variance that could be attributed to either predictor. <strong>c can become negative</strong> (suppression) — then the Venn diagram breaks down geometrically, but the values remain valid. The gray area a = unexplained Y variance (1−R²).</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Suppression — three variants</div>
+        <div class="lcard-body">All three variants share β₁_multiple &gt; β₁_simple (and c &lt; 0 in the Ballantine). <strong>Case 1 — classical (McNemar 1945):</strong> ρ(X₂,Y) ≈ 0, ρ(X₁,X₂) &gt; 0 → Scenario C. X₂ contains confounding variance in X₁ that is irrelevant to Y. <strong>Case 2 — negative/net:</strong> all correlations positive, but ρ(X₂,Y) &lt; ρ(X₁,X₂)·ρ(X₁,Y). A gradual transition to case 1. <strong>Case 3 — reciprocal suppression/complementarity (Conger 1974):</strong> X₁ and X₂ both positive with Y, but negative with each other → Scenario D. Both predictors suppress each other (Velicer, 1978; Darlington &amp; Hayes, 2017).</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Reciprocal suppression / complementarity</div>
+        <div class="lcard-body">Signature: ρ(X₁,Y) &gt; 0, ρ(X₂,Y) &gt; 0, but ρ(X₁,X₂) &lt; 0. Both predictors correlate positively with Y but are negatively correlated with each other — each contains confounding variance from the other. Consequence: β₁_multiple &gt; β₁_simple <em>and</em> β₂_multiple &gt; β₂_simple. Example (Scenario D): dominance (X₁, r=.30) and empathy (X₂, r=.25) both correlate positively with leadership success, but negatively with each other (r=−.30). Controlling for the other variable in each case, both β weights increase — the mutual suppression is lifted.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Collinearity &amp; ΔR²</div>
+        <div class="lcard-body">High collinearity (large ρ(X₁,X₂)) leads to small ΔR² values for both predictors, even when both correlate strongly with Y bivariately. The predictors "compete" for the same share of Y variance. In multiple regression: large SE, unstable β coefficients, VIF → 1/(1−R²_j) rises. Scenario B shows: bivariate r=0.6, but ΔR²(X₁)≈0.04. <strong>Squared semipartial correlation</strong> gives the unique contribution directly — the most honest effect size in multiple regression.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    <div class="help-box-h">Partial &amp; Semipartial Correlation — Help</div>
+
+    <div class="help-sh">Example</div>
+    <p class="help-p">
+      <strong>X₁</strong> = study time (h/week), <strong>X₂</strong> = intelligence (IQ, std.),
+      <strong>Y</strong> = exam performance (0–100).<br>
+      Question: how much of the X₁–Y relationship is genuine (willingness to study), and how much
+      disappears once you control for differences in intelligence?
+    </p>
+
+    <div class="help-sh">Bivariate, semipartial and partial correlation</div>
+    <p class="help-p">
+      Three levels of control over X₂:
+    </p>
+    <span class="help-formula">r_bivariate = Corr(X₁, Y) — with no control at all</span>
+    <span class="help-formula">r_semi = Corr(e(X₁|X₂), Y) — X₂ partialled out of X₁ only</span>
+    <span class="help-formula">r_partial = Corr(e(X₁|X₂), e(Y|X₂)) — X₂ partialled out of both</span>
+    <p class="help-p">
+      <strong>r_semi²</strong> = ΔR² = the unique share X₁ contributes to the Y variance,
+      beyond X₂.<br>
+      <strong>r_partial²</strong> = the share of the <em>residual variance</em> in Y (after removing X₂)
+      that X₁ explains — measures the strength of the relationship <em>within</em> the X₂-controlled plane.
+    </p>
+    <p class="help-p">
+      <em>In the example (Scenario A):</em> study time and IQ are uncorrelated (ρ₁₂ = 0).
+      Then r_semi = r_partial = r_bivariate — controlling for IQ changes nothing, because study time
+      and IQ share no common variance. Each predictor contributes uniquely.
+    </p>
+
+    <div class="help-sh">Residualization — what happens geometrically?</div>
+    <p class="help-p">
+      "Partialling out" means: regress study time on IQ and take the residuals —
+      e(X₁|X₂) is the part of study time that IQ does <em>not</em> predict.
+      The three scatterplots show the step-by-step cleanup:
+    </p>
+    <p class="help-p">
+      Plot 1: raw X₁–Y relationship (study time vs. performance, colored by IQ rank).<br>
+      Plot 2: e(X₁|X₂) vs. Y — IQ gradient removed from X₁; remaining correlation = r_semi.<br>
+      Plot 3: e(X₁|X₂) vs. e(Y|X₂) — IQ removed from both; remaining correlation = r_partial.
+    </p>
+    <p class="help-p">
+      <em>In the example (Scenario B, collinearity):</em> smarter people also study more (ρ₁₂ = 0.80).
+      The point coloring by IQ rank shows a strong IQ gradient along the X-axis in plot 1.
+      After residualization (plot 2/3) this gradient has vanished — what remains is the pure
+      study-time effect independent of IQ. It's noticeably smaller than the bivariate r.
+    </p>
+
+    <div class="help-sh">Ballantine diagram — variance decomposition</div>
+    <p class="help-p">
+      Three overlapping circles (X₁, X₂, Y) show how R² splits up:
+    </p>
+    <span class="help-formula">b = ΔR²(X₁) = r²_semi — unique X₁ share (blue)</span>
+    <span class="help-formula">d = ΔR²(X₂) = r²_semi(X₂) — unique X₂ share (green)</span>
+    <span class="help-formula">c = R² − b − d — shared variance (purple)</span>
+    <span class="help-formula">a = 1 − R² — unexplained Y variance (gray)</span>
+    <p class="help-p">
+      <em>In the example (Scenario B):</em> study time and IQ share a lot of variance in Y (c large, b and d small).
+      Bivariately, both seem strong — but ΔR²(study time) ≈ 0.04: study time explains only a small
+      unique share once IQ is already in the model.
+    </p>
+
+    <div class="help-sh">Suppression (Scenario C)</div>
+    <p class="help-p">
+      Formally: c &lt; 0 (shared variance negative) — not representable geometrically as an intersection,
+      but numerically valid. Tell-tale signs:
+    </p>
+    <span class="help-formula">|β₁_multiple| > |β₁_simple| and r_partial > r_bivariate</span>
+    <p class="help-p">
+      X₂ contains confounding variance in X₁ that has nothing to do with Y. Controlling for X₂
+      removes this noise from X₁ and the "true" X₁–Y effect emerges.
+    </p>
+    <p class="help-p">
+      <em>In the example (Scenario C, ρ(X₂,Y) ≈ 0, ρ(X₁,X₂) = 0.5):</em>
+      IQ barely correlates with exam performance — but is closely tied to study time.
+      Part of the measured study time is really IQ-driven study behavior with no added value.
+      Partialling out IQ increases the genuine study-time–performance correlation: r_partial &gt; r_bivariate.
+    </p>
+
+    <div class="help-sh">Suppression — three variants (after Velicer 1978; Conger 1974)</div>
+    <p class="help-p">
+      Common to all three variants: β₁_multiple &gt; β₁_simple and c &lt; 0 in the Ballantine diagram.
+    </p>
+    <p class="help-p">
+      <strong>Case 1 — classical suppression (McNemar 1945) — Scenario C:</strong><br>
+      ρ(X₁,Y) &gt; 0, ρ(X₂,Y) ≈ 0, ρ(X₁,X₂) &gt; 0. X₂ barely correlates with Y, but does with X₁ —
+      there's confounding variance in X₁ that is irrelevant to Y. Controlling for X₂ removes this
+      noise component and exposes the genuine X₁–Y effect.
+    </p>
+    <p class="help-p">
+      <em>In the example (Scenario C):</em> IQ (X₂) barely correlates with performance (ρ₂y = 0),
+      but strongly with study time (ρ₁₂ = 0.50). Part of the measured study time is IQ-driven
+      and irrelevant to performance. Controlling for IQ, r_partial &gt; r_bivariate rises.
+    </p>
+    <p class="help-p">
+      <strong>Case 2 — negative/net suppression:</strong><br>
+      All correlations positive, but ρ(X₂,Y) &lt; ρ(X₁,X₂) · ρ(X₁,Y). A gradual transition
+      to case 1 — X₂ has a small positive effect on Y, but explains more variance in X₁
+      than in Y. No dedicated scenario in the tool; occurs if you nudge ρ₂y slightly
+      away from 0 in Scenario C.
+    </p>
+    <p class="help-p">
+      <strong>Case 3 — reciprocal suppression / complementarity (Conger 1974) — Scenario D:</strong><br>
+      ρ(X₁,Y) &gt; 0, ρ(X₂,Y) &gt; 0, but ρ(X₁,X₂) &lt; 0. Both predictors correlate
+      positively with Y but are negatively correlated with each other. Each predictor contains
+      confounding variance from the other — both suppress each other. Consequence: β₁_multiple &gt; β₁_simple
+      <em>and</em> β₂_multiple &gt; β₂_simple.
+    </p>
+    <span class="help-formula">β₁_multiple = (ρ₁y − ρ₂y · ρ₁₂) / (1 − ρ₁₂²)</span>
+    <p class="help-p">
+      With ρ₁₂ &lt; 0, the numerator grows larger (−ρ₂y·ρ₁₂ becomes positive) and the denominator
+      shrinks → a double amplification effect on β₁.
+    </p>
+    <p class="help-p">
+      <em>In the example (Scenario D) — personality &amp; leadership success:</em><br>
+      X₁ = dominance (r = .30 with leadership success), X₂ = empathy (r = .25), ρ(X₁,X₂) = −.30.<br>
+      Dominant people tend to be less empathic — the negative intercorrelation arises because
+      these traits are conceptually antagonistic.
+      Bivariately, dominance explains only 9% of the variance in leadership success (r² = .09).
+      Controlling for empathy, β₁_multiple rises to ≈ .41 &gt; .30 — because the
+      "empathy-suppressed" portion of dominance, which previously dampened the effect, is
+      partialled out. Symmetrically, the same holds for empathy: β₂_multiple ≈ .34 &gt; .25.
+    </p>
+
+    <div class="help-sh">Collinearity &amp; choice of metric</div>
+    <p class="help-p">
+      High collinearity (large ρ(X₁,X₂)) → small ΔR² values, large SE, unstable β.
+      VIF = 1/(1 − R²_j) quantifies the inflation of standard errors.
+      Scenario B shows: bivariate r = 0.60, but ΔR²(X₁) ≈ 0.04 — a collinear predictor
+      explains a lot bivariately, but contributes barely anything uniquely.
+    </p>
+    <div class="help-sh" style="margin-top:.7rem">Semipartial vs. partial correlation — which one, when?</div>
+    <p class="help-p">
+      The crucial difference lies in the <strong>reference quantity</strong>:
+    </p>
+    <span class="help-formula">r_semi² = ΔR² = share of the <em>total</em> Y variance that X₁ uniquely explains</span>
+    <span class="help-formula">r_partial² = share of the <em>residual</em> Y variance (after X₂) that X₁ explains</span>
+    <p class="help-p">
+      With r_partial, X₂ is also partialled out of Y — which changes the denominator.
+      r_partial² can no longer be interpreted as a share of the total Y variance and isn't directly
+      comparable to r_bivariate. If X₂ explains a lot of Y (e.g. 64%), the remaining spread
+      in Y shrinks to 36%. An r_partial = .50 sounds large but corresponds to only
+      r_partial² × (1 − R²_X₂) = .25 × .36 = 9% of the total variance.
+    </p>
+    <p class="help-p">
+      <strong>Recommendation for most research questions:</strong>
+      r_semi (i.e. ΔR² = r_semi²) — it keeps Y as the reference quantity unchanged, is directly
+      comparable to r_bivariate, and states the unique contribution in a unit third parties
+      can follow.
+    </p>
+    <p class="help-p">
+      <strong>When r_partial is nonetheless useful:</strong>
+      when X₂ counts as a hard baseline covariate whose Y variance is conceptually "not of interest" —
+      e.g. a T1 score as a baseline in a longitudinal design. Then the question is: "how strongly are
+      X₁ and Y related <em>within</em> the X₂-adjusted plane?" — and r_partial answers exactly that.
+      For pure significance testing, r_partial also has slightly more power, because the denominator
+      gets smaller (|r_partial| ≥ |r_semi| always holds).
+    </p>
+    <p class="help-p">
+      <em>In the example (Scenario A):</em> IQ explains little of performance (ρ₂y = 0.40, R² ≈ 0.25).
+      Here r_semi and r_partial are similar in size — the difference only grows once X₂ explains a
+      large share of Y (Scenario B with high collinearity).
+    </p>
+  </div>
+</div>
+
+<script>
+// ─── State ────────────────────────────────────────────────────────────────────
+const ST={n:200,r1y:0.5,r2y:0.4,r12:0.0,seed:42,data:null};
+
+// ─── PRNG ─────────────────────────────────────────────────────────────────────
+function mulberry32(a){
+  return function(){
+    a|=0;a=a+0x6D2B79F5|0;
+    var t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return((t^t>>>14)>>>0)/4294967296;
+  };
+}
+function makeGauss(rand){
+  let sp=null;
+  return ()=>{
+    if(sp!==null){const s=sp;sp=null;return s;}
+    const u1=Math.max(rand(),1e-15),u2=rand();
+    const m=Math.sqrt(-2*Math.log(u1));
+    sp=m*Math.sin(2*Math.PI*u2);
+    return m*Math.cos(2*Math.PI*u2);
+  };
+}
+
+// ─── Statistics helpers ───────────────────────────────────────────────────────
+function lgamma(z){
+  const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,
+    771.32342877765313,-176.61502916214059,12.507343278686905,
+    -0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(z<0.5)return Math.log(Math.PI)-Math.log(Math.sin(Math.PI*z))-lgamma(1-z);
+  z--;let x=c[0];for(let i=1;i<9;i++)x+=c[i]/(z+i);
+  const t=z+7.5;return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x);
+}
+function betainc(x,a,b){
+  if(x<=0)return 0;if(x>=1)return 1;
+  const lb=lgamma(a)+lgamma(b)-lgamma(a+b);
+  const fr=Math.exp(Math.log(x)*a+Math.log(1-x)*b-lb)/a;
+  let f=1,c=1,d=1-(a+b)*x/(a+1);
+  if(Math.abs(d)<1e-30)d=1e-30;d=1/d;f=d;
+  for(let m=1;m<=200;m++){
+    let aa=m*(b-m)*x/((a+2*m-1)*(a+2*m));
+    d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;
+    d=1/d;f*=c*d;
+    aa=-(a+m)*(a+b+m)*x/((a+2*m)*(a+2*m+1));
+    d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;
+    d=1/d;const del=c*d;f*=del;if(Math.abs(del-1)<1e-10)break;
+  }
+  if(x<(a+1)/(a+b+2))return fr*f;
+  return 1-betainc(1-x,b,a);
+}
+function tPVal(t,df){return betainc(df/(df+t*t),df/2,.5);}
+function sigClass(p){return p<.01?'sig01':p<.05?'sig1':'signs';}
+function pStr(p){if(!isFinite(p))return'—';if(p<.001)return'< .001';return p.toFixed(3).replace('0.','.');}
+function f3(v){return isFinite(v)?v.toFixed(3):'—';}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function tCrit95(df){
+  let lo=0,hi=10;
+  for(let i=0;i<60;i++){const m=(lo+hi)/2;tPVal(m,df)>0.05?lo=m:hi=m;}
+  return(lo+hi)/2;
+}
+
+// ─── Data generation (Cholesky trivariate normal) ─────────────────────────────
+function genData(){
+  const {r1y,r2y,r12,n}=ST;
+  const rand=mulberry32(ST.seed),gauss=makeGauss(rand);
+  // Cholesky of [[1,r12,r1y],[r12,1,r2y],[r1y,r2y,1]]
+  // Variables: [x1, x2, y] — x1=index 0, x2=index 1, y=index 2
+  const L00=1;
+  const L10=r12,L11=Math.sqrt(Math.max(0,1-r12*r12));
+  const L20=r1y,L21=(L11>0?(r2y-r12*r1y)/L11:0);
+  const L22=Math.sqrt(Math.max(0,1-L20*L20-L21*L21));
+  const pts=[];
+  for(let i=0;i<n;i++){
+    const z0=gauss(),z1=gauss(),z2=gauss();
+    const x1=L00*z0;
+    const x2=L10*z0+L11*z1;
+    const y =L20*z0+L21*z1+L22*z2;
+    pts.push({x1,x2,y});
+  }
+  return pts;
+}
+
+// ─── Sample statistics ────────────────────────────────────────────────────────
+function mean(a){return a.reduce((s,v)=>s+v,0)/a.length;}
+function sampleCorr(a,b){
+  const ma=mean(a),mb=mean(b);
+  const sab=a.reduce((s,v,i)=>s+(v-ma)*(b[i]-mb),0);
+  const saa=a.reduce((s,v)=>s+(v-ma)**2,0);
+  const sbb=b.reduce((s,v)=>s+(v-mb)**2,0);
+  if(saa===0||sbb===0)return 0;
+  return sab/Math.sqrt(saa*sbb);
+}
+function simpleReg(xs,ys){
+  const mx=mean(xs),my=mean(ys);
+  const sxy=xs.reduce((s,v,i)=>s+(v-mx)*(ys[i]-my),0);
+  const sxx=xs.reduce((s,v)=>s+(v-mx)**2,0);
+  const b=sxx>0?sxy/sxx:0;
+  return{b,a:my-b*mx};
+}
+function residuals(pts,getX,getY){
+  const xs=pts.map(getX),ys=pts.map(getY);
+  const {a,b}=simpleReg(xs,ys);
+  return pts.map((p,i)=>ys[i]-(a+b*xs[i]));
+}
+
+// ─── Analytical stats ─────────────────────────────────────────────────────────
+function isPD(r1y,r2y,r12){
+  return 1-r1y*r1y-r2y*r2y-r12*r12+2*r1y*r2y*r12>1e-6;
+}
+function analyticalStats(r1y,r2y,r12){
+  const d=1-r12*r12;
+  const num1=r1y-r12*r2y;
+  const num2=r2y-r12*r1y;
+  const r_semi1= d>0?num1/Math.sqrt(d):NaN;
+  const r_semi2= d>0?num2/Math.sqrt(d):NaN;
+  const r_part1= d>0?num1/Math.sqrt(d*(1-r2y*r2y)):NaN;
+  const r_part2= d>0?num2/Math.sqrt(d*(1-r1y*r1y)):NaN;
+  const beta1  = d>0?num1/d:NaN;
+  const beta2  = d>0?num2/d:NaN;
+  const R2     = isFinite(beta1)?beta1*r1y+beta2*r2y:NaN;
+  const dR2_1  = isFinite(r_semi1)?r_semi1*r_semi1:NaN;
+  const dR2_2  = isFinite(r_semi2)?r_semi2*r_semi2:NaN;
+  const c_shared=isFinite(R2)?R2-dR2_1-dR2_2:NaN;
+  return{r_semi1,r_semi2,r_part1,r_part2,beta1,beta2,R2,dR2_1,dR2_2,c_shared};
+}
+
+// ─── Color helpers ────────────────────────────────────────────────────────────
+function lerpRGB(c1,c2,t){
+  return[Math.round(c1[0]+(c2[0]-c1[0])*t),
+         Math.round(c1[1]+(c2[1]-c1[1])*t),
+         Math.round(c1[2]+(c2[2]-c1[2])*t)];
+}
+function x2Colors(pts){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const lo_col=dark?[74,176,216]:[42,110,138];
+  const hi_col=dark?[232,97,74]:[201,74,42];
+  const mid_col=dark?[232,212,77]:[184,150,10];
+  const x2s=pts.map(p=>p.x2);
+  const lo=Math.min(...x2s),hi=Math.max(...x2s),rng=hi-lo||1;
+  return pts.map(p=>{
+    const t=(p.x2-lo)/rng;
+    const [r,g,b]=t<0.5?lerpRGB(lo_col,mid_col,t*2):lerpRGB(mid_col,hi_col,(t-0.5)*2);
+    return`rgba(${r},${g},${b},0.65)`;
+  });
+}
+
+// ─── Scatter drawing ──────────────────────────────────────────────────────────
+function drawScatter(cvId,xs,ys,r_pop,r_hat){
+  const cv=document.getElementById(cvId);
+  const W=cv.offsetWidth;if(!W)return;
+  cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const pad={l:30,r:10,t:10,b:28};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+
+  ctx.fillStyle=css('--bg');ctx.fillRect(0,0,W,H);
+
+  const allV=[...xs,...ys];
+  const ext=Math.max(Math.max(...allV.map(Math.abs))*1.15,1.5);
+  function sx(v){return pad.l+(v+ext)/(2*ext)*cW;}
+  function sy(v){return pad.t+cH-(v+ext)/(2*ext)*cH;}
+
+  // Grid lines
+  ctx.strokeStyle=css('--grid');ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(sx(0),pad.t);ctx.lineTo(sx(0),pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,sy(0));ctx.lineTo(pad.l+cW,sy(0));ctx.stroke();
+
+  // Regression line
+  const {a:ra,b:rb}=simpleReg(xs,ys);
+  ctx.strokeStyle=r_hat>=0?css('--a2'):css('--a1');
+  ctx.lineWidth=1.8;
+  ctx.beginPath();ctx.moveTo(sx(-ext),sy(ra+rb*(-ext)));ctx.lineTo(sx(ext),sy(ra+rb*ext));ctx.stroke();
+
+  // Dots colored by X2
+  const cols=ST.data?x2Colors(ST.data):null;
+  for(let i=0;i<xs.length;i++){
+    ctx.beginPath();ctx.arc(sx(xs[i]),sy(ys[i]),2.2,0,2*Math.PI);
+    ctx.fillStyle=cols?cols[i]:(dark?'rgba(74,176,216,0.6)':'rgba(42,110,138,0.6)');
+    ctx.fill();
+  }
+
+  // Correlation labels in header
+  ctx.font='11px DM Mono, monospace';
+  ctx.fillStyle=dark?'#ece6d8':'#18130e';
+  ctx.textAlign='right';
+  ctx.fillText(`ρ=${f3(r_pop)}  r̂=${f3(r_hat)}`,W-pad.r,pad.t+12);
+}
+
+// ─── Venn diagram ─────────────────────────────────────────────────────────────
+function lensArea(R,d){
+  if(d>=2*R)return 0;if(d<=0)return Math.PI*R*R;
+  return 2*R*R*Math.acos(d/(2*R))-(d/2)*Math.sqrt(4*R*R-d*d);
+}
+function distForR2(R,r2){
+  r2=Math.max(0.005,Math.min(0.92,r2));
+  const target=r2*Math.PI*R*R;
+  let lo=0,hi=2*R;
+  for(let i=0;i<60;i++){const mid=(lo+hi)/2;if(lensArea(R,mid)>target)lo=mid;else hi=mid;}
+  return(lo+hi)/2;
+}
+function vennPositions(W,H,r1y,r2y,r12){
+  // Unit-scale distances (R=1), so geometry is independent of canvas size
+  const d1n=distForR2(1,r1y*r1y);
+  const d2n=distForR2(1,r2y*r2y);
+  const d12n=distForR2(1,r12*r12);
+
+  // Place Y at origin; X1/X2 above Y using law of cosines
+  const cosT=Math.max(-1,Math.min(1,(d1n*d1n+d2n*d2n-d12n*d12n)/(2*d1n*d2n)));
+  const theta=Math.acos(cosT);
+  const a1=Math.PI/2+theta/2,a2=Math.PI/2-theta/2;
+  const Yn={x:0,y:0};
+  const X1n={x:d1n*Math.cos(a1),y:-d1n*Math.sin(a1)};
+  const X2n={x:d2n*Math.cos(a2),y:-d2n*Math.sin(a2)};
+
+  // Bounding box of all three unit circles (center ± 1)
+  const nodes=[Yn,X1n,X2n];
+  const bxMin=Math.min(...nodes.map(p=>p.x-1));
+  const bxMax=Math.max(...nodes.map(p=>p.x+1));
+  const byMin=Math.min(...nodes.map(p=>p.y-1));
+  const byMax=Math.max(...nodes.map(p=>p.y+1));
+
+  // Scale so the bounding box fits inside the canvas with padding; cap max R
+  const pad=32;
+  const R=Math.min(
+    (W-2*pad)/(bxMax-bxMin),
+    (H-2*pad)/(byMax-byMin),
+    Math.min(W,H)*0.30
+  );
+
+  // Translate so bbox is centred in canvas
+  const bboxCx=(bxMin+bxMax)/2,bboxCy=(byMin+byMax)/2;
+  function tr(p){return{x:W/2+(p.x-bboxCx)*R,y:H/2+(p.y-bboxCy)*R};}
+
+  return{R,Yc:tr(Yn),X1c:tr(X1n),X2c:tr(X2n)};
+}
+
+function drawVenn(){
+  const cv=document.getElementById('cv-venn');
+  const W=cv.offsetWidth;if(!W)return;
+  cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const {r1y,r2y,r12}=ST;
+  const pos=vennPositions(W,H,r1y,r2y,r12);
+  const {R,Yc,X1c,X2c}=pos;
+  const stats=analyticalStats(r1y,r2y,r12);
+
+  // Background
+  ctx.fillStyle=css('--bg');ctx.fillRect(0,0,W,H);
+
+  // Pixel-color the regions
+  const img=ctx.createImageData(W,H);
+  const d=img.data;
+  // Region colors [r,g,b,a]
+  const COL=dark?{
+    X1only:[74,176,216,65], X2only:[128,203,82,65], Yonly:[90,80,70,80],
+    X1Y:[74,176,216,155],   X2Y:[128,203,82,155],
+    X1X2:[200,170,110,100], X1X2Y:[43,199,196,170]
+  }:{
+    X1only:[42,110,138,65], X2only:[90,138,42,65], Yonly:[160,148,130,80],
+    X1Y:[42,110,138,155],   X2Y:[90,138,42,155],
+    X1X2:[190,160,90,100],  X1X2Y:[14,124,123,170]
+  };
+  const R2=R*R;
+  for(let py=0;py<H;py++){
+    for(let px=0;px<W;px++){
+      const inX1=(px-X1c.x)**2+(py-X1c.y)**2<=R2;
+      const inX2=(px-X2c.x)**2+(py-X2c.y)**2<=R2;
+      const inY =(px-Yc.x )**2+(py-Yc.y )**2<=R2;
+      let col=null;
+      if(inX1&&inX2&&inY) col=COL.X1X2Y;
+      else if(inX1&&inY)   col=COL.X1Y;
+      else if(inX2&&inY)   col=COL.X2Y;
+      else if(inY)         col=COL.Yonly;
+      else if(inX1&&inX2)  col=COL.X1X2;
+      else if(inX1)        col=COL.X1only;
+      else if(inX2)        col=COL.X2only;
+      if(col){const i=(py*W+px)*4;d[i]=col[0];d[i+1]=col[1];d[i+2]=col[2];d[i+3]=col[3];}
+    }
+  }
+  ctx.putImageData(img,0,0);
+
+  // Circle outlines
+  const ink=css('--ink');
+  ctx.strokeStyle=ink;ctx.lineWidth=1.5;ctx.setLineDash([]);
+  [X1c,X2c,Yc].forEach(c=>{ctx.beginPath();ctx.arc(c.x,c.y,R,0,2*Math.PI);ctx.stroke();});
+
+  // Node labels
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 17px DM Mono,monospace';
+  ctx.fillStyle=css('--a2');ctx.fillText('X₁',X1c.x-(X1c.x>W/2?1:-1)*R*0.55,X1c.y+(X1c.y<Yc.y?-1:1)*R*0.15);
+  ctx.fillStyle=css('--a3');ctx.fillText('X₂',X2c.x+(X2c.x>W/2?1:-1)*R*0.55,X2c.y+(X2c.y<Yc.y?-1:1)*R*0.15);
+  ctx.fillStyle=css('--ink');ctx.fillText('Y',Yc.x,Yc.y+R*0.55);
+
+  // Value labels for regions
+  ctx.font='14px DM Mono,monospace';ctx.fillStyle=ink;
+
+  // Helper: point between two centers at fraction t, slightly offset perp
+  function mid(a,b,ta,perp=0){
+    const mx=a.x*ta+b.x*(1-ta),my=a.y*ta+b.y*(1-ta);
+    const dx=b.x-a.x,dy=b.y-a.y,len=Math.sqrt(dx*dx+dy*dy)||1;
+    return{x:mx+perp*(-dy/len),y:my+perp*(dx/len)};
+  }
+  const mX1Y=mid(X1c,Yc,0.45,18);
+  const mX2Y=mid(X2c,Yc,0.45,-18);
+  const mTri={x:(X1c.x+X2c.x+Yc.x)/3,y:(X1c.y+X2c.y+Yc.y)/3};
+  const mYonly={x:Yc.x,y:Yc.y+R*0.35};
+
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle=dark?'#4ab0d8':'#2a6e8a';
+  ctx.fillText('b='+f3(stats.dR2_1),mX1Y.x,mX1Y.y);
+  ctx.fillStyle=dark?'#80cb52':'#5a8a2a';
+  ctx.fillText('d='+f3(stats.dR2_2),mX2Y.x,mX2Y.y);
+
+  // Triple region label (c) — red if negative
+  const cNeg=stats.c_shared<-0.001;
+  ctx.fillStyle=cNeg?(dark?'#e8614a':'#c94a2a'):(dark?'#2bc7c4':'#0e7c7b');
+  ctx.fillText('c='+f3(stats.c_shared),mTri.x,mTri.y);
+
+  ctx.fillStyle=dark?'#857c68':'#8a7f72';
+  ctx.fillText('a='+f3(1-Math.max(0,stats.R2)),mYonly.x,mYonly.y);
+
+  // Legend
+  ctx.font='13px DM Mono,monospace';ctx.textAlign='left';ctx.fillStyle=dark?'#857c68':'#8a7f72';
+  ctx.fillText('b=ΔR²(X₁)  d=ΔR²(X₂)  c=shared var.  a=1−R²',8,H-22);
+  ctx.fillText('R²='+f3(Math.max(0,stats.R2))+'  b+c+d=R²',8,H-8);
+
+  // Suppression note
+  const note=document.getElementById('supp-note');
+  if(cNeg){
+    note.style.display='block';
+    note.textContent='⚠ c < 0 ('+f3(stats.c_shared)+'): suppression — the shared variance is negative, not representable geometrically as an area. β₁ (multiple) > β₁ (simple).';
+  } else {note.style.display='none';}
+}
+
+// ─── Stats table ──────────────────────────────────────────────────────────────
+function updateStatsTable(pts,stats){
+  const n=pts.length;
+  const x1s=pts.map(p=>p.x1),x2s=pts.map(p=>p.x2),ys=pts.map(p=>p.y);
+  const ex1=residuals(pts,p=>p.x2,p=>p.x1);
+  const ey =residuals(pts,p=>p.x2,p=>p.y);
+
+  const r1y_h =sampleCorr(x1s,ys);
+  const rsemi_h=sampleCorr(ex1,ys);
+  const rpart_h=sampleCorr(ex1,ey);
+
+  // Standardized β from multiple regression
+  const sdX1=Math.sqrt(x1s.reduce((s,v)=>s+(v-mean(x1s))**2,0)/(n-1));
+  const sdX2=Math.sqrt(x2s.reduce((s,v)=>s+(v-mean(x2s))**2,0)/(n-1));
+  const sdY =Math.sqrt(ys.reduce((s,v)=>s+(v-mean(ys))**2,0)/(n-1));
+  const r1y_rw=sampleCorr(x1s,ys),r2y_rw=sampleCorr(x2s,ys),r12_rw=sampleCorr(x1s,x2s);
+  const d12_h=1-r12_rw*r12_rw;
+  const beta1_s_h=r1y_rw;
+  const beta2_s_h=r2y_rw;
+  const beta1_m_h=d12_h>0?(r1y_rw-r12_rw*r2y_rw)/d12_h:NaN;
+  const beta2_m_h=d12_h>0?(r2y_rw-r12_rw*r1y_rw)/d12_h:NaN;
+  const dR2_h=rsemi_h*rsemi_h;
+  const R2_h  =Math.max(0,analyticalStats(r1y_rw,r2y_rw,r12_rw).R2);
+  const se_m=Math.sqrt(Math.max(1e-9,(1-R2_h)/Math.max(1,n-3)/Math.max(1e-9,d12_h)));
+
+  function tRow(lbl,r_pop,r_hat,df,note,R2full){
+    const denom=R2full!==undefined?Math.sqrt(Math.max(1e-9,1-R2full)):Math.sqrt(Math.max(1e-9,1-r_hat*r_hat));
+    const tv=r_hat*Math.sqrt(df)/denom;
+    const pv=tPVal(Math.abs(tv),df);
+    const sc=sigClass(pv);
+    return`<tr>
+      <td style="color:var(--ink)">${lbl}</td>
+      <td class="num" style="color:var(--ink3)">${f3(r_pop)}</td>
+      <td class="num">${f3(r_hat)}</td>
+      <td class="num ${sc}">${isFinite(tv)?tv.toFixed(2):'—'}</td>
+      <td class="num ${sc}">${pStr(pv)}</td>
+      <td class="interp">${note}</td>
+    </tr>`;
+  }
+  function plainRow(lbl,pop,hat,note){
+    return`<tr>
+      <td style="color:var(--ink)">${lbl}</td>
+      <td class="num" style="color:var(--ink3)">${f3(pop)}</td>
+      <td class="num">${f3(hat)}</td>
+      <td class="num">—</td><td class="num">—</td>
+      <td class="interp">${note}</td>
+    </tr>`;
+  }
+
+  const dfN=n-2,dfM=n-3;
+  const suppressor=isFinite(stats.beta1)&&isFinite(stats.r1y)&&Math.abs(stats.beta1)>Math.abs(ST.r1y)+0.01;
+
+  document.getElementById('stats-body').innerHTML=
+    tRow('r(X₁,Y) bivariate',ST.r1y,r1y_h,dfN,'Pearson r without control')+
+    tRow('r(X₂,Y) bivariate',ST.r2y,r2y_rw,dfN,'Pearson r without control')+
+    tRow('r<sub>semi</sub> e(X₁|X₂) ~ Y',stats.r_semi1,rsemi_h,dfM,'Semipartial; df=n−3',R2_h)+
+    tRow('r<sub>partial</sub> e(X₁|X₂) ~ e(Y|X₂)',stats.r_part1,rpart_h,dfM,'Partial; df=n−3')+
+    plainRow('β₁ simple (std.)',ST.r1y,beta1_s_h,'= r bivariate for std. var.')+
+    plainRow('β₁ multiple (std.)',stats.beta1,beta1_m_h,
+      suppressor?'<span style="color:var(--a1)">⬆ Suppression: |β_multi| > |β_simple|</span>':'Weight in mult. regression')+
+    plainRow('ΔR²(X₁) = r²<sub>semi</sub>',stats.dR2_1,dR2_h,'Unique variance share of X₁')+
+    plainRow('R² (X₁+X₂)',Math.max(0,stats.R2),R2_h,'Total explained variance');
+
+  // Multiple regression table
+  const tc=tCrit95(dfM);
+  const d12_pop=1-ST.r12*ST.r12;
+  const beta1_pop_m=d12_pop>1e-9?(ST.r1y-ST.r12*ST.r2y)/d12_pop:NaN;
+  const beta2_pop_m=d12_pop>1e-9?(ST.r2y-ST.r12*ST.r1y)/d12_pop:NaN;
+  function mregRow(lbl,col,r_pop,r_hat,beta_pop_m,beta_m,se,df){
+    const tv=isFinite(beta_m)&&se>0?beta_m/se:NaN;
+    const pv=isFinite(tv)?tPVal(Math.abs(tv),df):NaN;
+    const sc=sigClass(pv);
+    const ki=isFinite(beta_m)?`[${(beta_m-tc*se).toFixed(3)}, ${(beta_m+tc*se).toFixed(3)}]`:'—';
+    const signFlip=isFinite(beta_m)&&isFinite(r_hat)&&r_hat*beta_m<-0.001;
+    const magUp=isFinite(beta_m)&&isFinite(r_hat)&&Math.abs(beta_m)>Math.abs(r_hat)+0.05;
+    const note=signFlip
+      ?`<span style="color:var(--a1)">⚠ Sign flip r→β</span>`
+      :magUp?`<span style="color:var(--a5)">↑ |β_mult| &gt; |r_biv|</span>`:'—';
+    return`<tr>
+      <td style="color:${col};font-weight:600">${lbl}</td>
+      <td class="num" style="color:var(--ink3)">${f3(r_pop)}</td>
+      <td class="num" style="color:${col}">${f3(r_hat)}</td>
+      <td class="num" style="color:var(--ink3)">${f3(beta_pop_m)}</td>
+      <td class="num" style="color:${col}">${f3(beta_m)}</td>
+      <td class="num">${isFinite(se)?se.toFixed(3):'—'}</td>
+      <td class="num ${sc}">${isFinite(tv)?tv.toFixed(2):'—'}</td>
+      <td class="num ${sc}">${pStr(pv)}</td>
+      <td class="num" style="font-size:.73rem">${ki}</td>
+      <td class="interp">${note}</td>
+    </tr>`;
+  }
+  document.getElementById('mreg-wrap').innerHTML=`
+    <table class="coef-table">
+      <thead><tr>
+        <th>Predictor</th>
+        <th class="r">ρ_biv</th><th class="r">r_biv</th>
+        <th class="r">β_mult (pop.)</th><th class="r">β_mult (sample)</th>
+        <th class="r">SE</th><th class="r">t</th><th class="r">p</th>
+        <th class="r">95% CI</th><th>Note</th>
+      </tr></thead>
+      <tbody>
+        ${mregRow('X₁','var(--a2)',ST.r1y,r1y_rw,beta1_pop_m,beta1_m_h,se_m,dfM)}
+        ${mregRow('X₂','var(--a3)',ST.r2y,r2y_rw,beta2_pop_m,beta2_m_h,se_m,dfM)}
+      </tbody>
+    </table>
+    <div style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);margin-top:.3rem">
+      ⚠ Sign flip r→β: suppression. &nbsp;↑ |β_mult| &gt; |r_biv|: suppression without a sign flip.
+      &nbsp;|β_mult| = |β_simple| when ρ(X₁,X₂)=0.
+    </div>`;
+
+  // Update canvas header labels
+  document.getElementById('lbl-r1').textContent=`ρ=${f3(ST.r1y)}  r̂=${f3(r1y_h)}`;
+  document.getElementById('lbl-rsemi').textContent=`semi=${f3(rsemi_h)}`;
+  document.getElementById('lbl-rpart').textContent=`part=${f3(rpart_h)}`;
+}
+
+// ─── Main recompute ───────────────────────────────────────────────────────────
+function recompute(){
+  const {r1y,r2y,r12}=ST;
+  const warn=document.getElementById('pd-warn');
+  if(!isPD(r1y,r2y,r12)){warn.style.display='block';return;}
+  warn.style.display='none';
+
+  const pts=genData();
+  ST.data=pts;
+  const stats=analyticalStats(r1y,r2y,r12);
+
+  const ex1=residuals(pts,p=>p.x2,p=>p.x1);
+  const ey =residuals(pts,p=>p.x2,p=>p.y);
+  const x1s=pts.map(p=>p.x1),ys=pts.map(p=>p.y);
+
+  drawScatter('cv1',x1s,ys,r1y,sampleCorr(x1s,ys));
+  drawScatter('cv2',ex1,ys,stats.r_semi1,sampleCorr(ex1,ys));
+  drawScatter('cv3',ex1,ey,stats.r_part1,sampleCorr(ex1,ey));
+  drawVenn();
+  updateStatsTable(pts,stats);
+}
+
+// ─── Controls ────────────────────────────────────────────────────────────────
+function onSl(key,el){
+  ST[key]=parseFloat(el.value);
+  const d=document.getElementById('val-'+key);
+  if(d)d.textContent=key==='n'?ST[key]:ST[key].toFixed(2);
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  recompute();
+}
+
+const PRESETS={
+  A:{r1y:0.50,r2y:0.40,r12:0.00},
+  B:{r1y:0.60,r2y:0.60,r12:0.80},
+  C:{r1y:0.40,r2y:0.00,r12:0.50},
+  D:{r1y:0.30,r2y:0.25,r12:-0.30},
+};
+
+function setPreset(k){
+  const p=PRESETS[k];if(!p)return;
+  Object.assign(ST,p);
+  Object.keys(p).forEach(key=>{
+    const sl=document.getElementById('sl-'+key);
+    if(sl){sl.value=ST[key];const d=document.getElementById('val-'+key);if(d)d.textContent=ST[key].toFixed(2);}
+  });
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pre-'+k).classList.add('active');
+  recompute();
+}
+
+function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
+
+function downloadCSV(){
+  if(!ST.data)return;
+  const csv=['x1,x2,y',...ST.data.map(p=>`${p.x1.toFixed(6)},${p.x2.toFixed(6)},${p.y.toFixed(6)}`)].join('\n');
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  const a=document.createElement('a');a.href=url;a.download='partial_corr_data.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
+}
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  recompute();
+}
+
+window.addEventListener('resize',recompute);
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+setPreset('A');
+</script>
+</body>
+</html>

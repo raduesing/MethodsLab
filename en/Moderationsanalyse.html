@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moderation Analysis — Diagnostics</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.vtbtn{font-family:'DM Mono',monospace;font-size:.62rem;padding:.1rem .48rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink3);letter-spacing:.04em;border-radius:2px;line-height:1.5}
+.vtbtn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.toggle-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.toggle-row label{font-family:'DM Mono',monospace;font-size:.84rem;color:var(--ink2);cursor:pointer}
+input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--accent)}
+input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accent)}
+.preset-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.3rem .65rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .15s;letter-spacing:.03em;white-space:normal;width:100%;text-align:left;
+  display:block;margin-bottom:.3rem}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.preset-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.seed-btn{font-family:'DM Mono',monospace;font-size:.76rem;padding:.28rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .12s;width:100%;text-align:left;margin-top:.3rem}
+.seed-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.sec-h:first-child{margin-top:0}
+#cv-mod{width:100%;display:block}
+#cv-jn{width:100%;display:block}
+.cv-sticky{position:sticky;top:0;z-index:20;background:var(--bg);
+  border-bottom:1px solid var(--grid);padding-bottom:4px;margin-bottom:.6rem}
+.cv-sticky.unpinned{position:static}
+.eq-wrap{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem;margin-bottom:.8rem}
+.eq-main{font-family:'DM Mono',monospace;font-size:.9rem;line-height:2;letter-spacing:.01em;
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:.15rem}
+.eq-labels{display:grid;margin-top:.4rem;font-family:'DM Mono',monospace;font-size:.72rem;gap:0 .5rem}
+.eq-lbl{padding:.25rem .4rem;border-top:2px solid var(--grid)}
+.eq-lbl-name{font-weight:600;margin-bottom:.1rem}
+.eq-lbl-desc{color:var(--ink3);line-height:1.45}
+.coef-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.8rem;margin-bottom:.8rem}
+.coef-table th{font-size:.7rem;letter-spacing:.07em;color:var(--ink3);padding:.28rem .5rem;
+  border-bottom:2px solid var(--grid);text-align:left}
+.coef-table td{padding:.32rem .5rem;border-bottom:1px solid var(--grid);vertical-align:middle}
+.coef-table td.num{text-align:right;font-weight:600}
+.coef-table td.interp{color:var(--ink2);font-size:.73rem;line-height:1.4}
+.coef-table th.r{text-align:right}
+.sig1{color:var(--a5)} .sig01{color:var(--a1)} .signs{color:var(--ink3)}
+.mod-header{font-family:'DM Mono',monospace;font-size:.82rem;padding:.65rem .85rem;
+  background:var(--panel);border:1px solid var(--grid);cursor:pointer;
+  display:flex;align-items:center;gap:.65rem;margin-top:.7rem;user-select:none;
+  letter-spacing:.03em;transition:background .12s}
+.mod-header:hover{background:var(--grid)}
+.mod-header.open{border-bottom:none}
+.mod-icon{font-size:.68rem;color:var(--accent);width:12px;display:inline-block;flex-shrink:0}
+.mod-body{border:1px solid var(--grid);border-top:none;padding:.9rem 1rem 1rem;
+  background:var(--bg);display:none}
+.mod-body.open{display:block}
+.erklaer{background:var(--panel);border-left:3px solid var(--accent);
+  padding:.7rem .9rem;margin-bottom:.85rem;font-family:'DM Mono',monospace;
+  font-size:.78rem;color:var(--ink2);line-height:1.85}
+.erklaer strong{color:var(--ink)}
+.erklaer-h{font-family:'DM Mono',monospace;font-size:.71rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.formula-line{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+.kw-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-bottom:.75rem}
+.kw-box{background:var(--panel);border:1px solid var(--grid);padding:.55rem .7rem}
+.kw-label{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink3);margin-bottom:.25rem}
+.kw-val{font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;color:var(--ink)}
+.kw-sub{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.w-select{font-family:'DM Mono',monospace;font-size:.8rem;width:100%;padding:.3rem .5rem;
+  border:1.5px solid var(--border);background:var(--bg);color:var(--ink);cursor:pointer;
+  margin-bottom:.55rem}
+.radio-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem}
+.radio-row label{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink2);cursor:pointer}
+.hayes-box{background:var(--panel);border:1px solid var(--grid);padding:.55rem .85rem;
+  margin-bottom:.65rem;border-left:3px solid var(--a1);font-family:'DM Mono',monospace;
+  font-size:.78rem;color:var(--ink2);line-height:1.7}
+.hayes-box strong{color:var(--ink)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+/* Learn cards */
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+@media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Moderation <em>Analysis</em> — Hayes/PROCESS Model 1</h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
+  <button class="tbtn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Scenarios</div>
+    <button class="preset-btn" id="pre-A" onclick="setPreset('A')">A — No Moderation</button>
+    <button class="preset-btn" id="pre-B" onclick="setPreset('B')">B — Ordinal</button>
+    <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — Disordinal (Crossing)</button>
+    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — Dichotomous</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Simulation</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n</span><span class="slider-val" id="val-n">200</span></div>
+      <input type="range" id="sl-n" min="40" max="500" step="10" value="200" oninput="onSl('n',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">σ (Residual)</span><span class="slider-val" id="val-sigma">1.0</span></div>
+      <input type="range" id="sl-sigma" min="0.1" max="4" step="0.1" value="1" oninput="onSl('sigma',this)">
+    </div>
+    <button class="seed-btn" onclick="newSeed()">⟳ New Sample</button>
+    <button class="seed-btn" onclick="downloadCSV()" style="margin-top:.25rem">↓ Data as CSV</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Population Parameters</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" style="color:var(--ink)">b₀</span><span class="slider-val" id="val-b0">0.0</span></div>
+      <input type="range" id="sl-b0" min="-3" max="3" step="0.1" value="0" oninput="onSl('b0',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" style="color:var(--a2)">b₁ (X effect)</span><span class="slider-val" id="val-b1">0.50</span></div>
+      <input type="range" id="sl-b1" min="-1.5" max="1.5" step="0.05" value="0.5" oninput="onSl('b1',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" style="color:var(--a3)">b₂ (W effect)</span><span class="slider-val" id="val-b2">0.00</span></div>
+      <input type="range" id="sl-b2" min="-1.5" max="1.5" step="0.05" value="0" oninput="onSl('b2',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" style="color:var(--a1)">b₃ (X·W interaction)</span><span class="slider-val" id="val-b3">0.40</span></div>
+      <input type="range" id="sl-b3" min="-1.5" max="1.5" step="0.05" value="0.4" oninput="onSl('b3',this)">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Moderator W</div>
+    <select class="w-select" id="sel-wtype" onchange="onWType()">
+      <option value="normal">Continuous — Normal</option>
+      <option value="uniform">Continuous — Uniform</option>
+      <option value="binary">Dichotomous (0 / 1)</option>
+    </select>
+    <div id="w-normal-params">
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">μ_W</span><span class="slider-val" id="val-wmu">0.0</span></div>
+        <input type="range" id="sl-wmu" min="-3" max="3" step="0.1" value="0" oninput="onWSl('wmu',this)">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">σ_W</span><span class="slider-val" id="val-wsd">1.0</span></div>
+        <input type="range" id="sl-wsd" min="0.2" max="3" step="0.1" value="1" oninput="onWSl('wsd',this)">
+      </div>
+    </div>
+    <div id="w-uniform-params" style="display:none">
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">W_min</span><span class="slider-val" id="val-wmin">-2.0</span></div>
+        <input type="range" id="sl-wmin" min="-5" max="0" step="0.5" value="-2" oninput="onWSl('wmin',this)">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">W_max</span><span class="slider-val" id="val-wmax">2.0</span></div>
+        <input type="range" id="sl-wmax" min="0" max="5" step="0.5" value="2" oninput="onWSl('wmax',this)">
+      </div>
+    </div>
+    <div id="w-binary-params" style="display:none">
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">P(W = 1)</span><span class="slider-val" id="val-wp1">0.50</span></div>
+        <input type="range" id="sl-wp1" min="0.1" max="0.9" step="0.05" value="0.5" oninput="onWSl('wp1',this)">
+      </div>
+    </div>
+  </div>
+
+  <div class="scard" id="scard-spotlight">
+    <div class="scard-title">Spotlight Values</div>
+    <div class="radio-row">
+      <input type="radio" name="spotlight" id="sp-pct" value="pct" checked onchange="onSpotlight()">
+      <label for="sp-pct">P16 / P50 / P84 (±1 SD)</label>
+    </div>
+    <div class="radio-row">
+      <input type="radio" name="spotlight" id="sp-msd" value="msd" onchange="onSpotlight()">
+      <label for="sp-msd">M ± 1 SD (sample)</label>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Display</div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tog-true" checked onchange="onToggle('showTrue',this)">
+      <label for="tog-true">Show true lines</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tog-slopes" checked onchange="onToggle('showSlopes',this)">
+      <label for="tog-slopes">Show simple slopes</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tog-yafix" onchange="onToggleYFix()">
+      <label for="tog-yafix">Fix Y-axis</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tog-pin" checked onchange="onTogglePin(this)">
+      <label for="tog-pin">Plot pinned (instead of scrolling with page)</label>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.3rem;line-height:1.5">
+      On small screens: disable this to leave more room for the text.
+    </div>
+  </div>
+
+</div><!-- /sidebar -->
+
+<div id="main">
+  <div class="story-box">
+    <div class="story-lbl">Example</div>
+    <div class="story-vars">
+      <span class="sv">X</span><span class="sd">Stress level (PSS score, standardized) — predictor</span>
+      <span class="sv">W</span><span class="sd">Social support (BSSS score) — moderator</span>
+      <span class="sv">Y</span><span class="sd">Depressive symptoms (PHQ-9 score)</span>
+    </div>
+    <div class="story-q">Does social support (W) buffer the effect of stress (X) on depression (Y)? A negative interaction coefficient b₃ would mean: the higher the social support, the weaker the impact of stress on depressive symptoms.</div>
+  </div>
+
+  <div class="cv-sticky">
+    <div class="sec-h" style="margin-top:0;padding-top:.35rem;display:flex;align-items:center;gap:.5rem">
+      <span id="canvas-title"><span class="circ">①</span> Scatterplot</span>
+      <span style="flex:1"></span>
+      <button id="btn-2d" class="vtbtn active" onclick="toggleView3D(false)">2D</button>
+      <button id="btn-3d" class="vtbtn" onclick="toggleView3D(true)">3D</button>
+    </div>
+    <canvas id="cv-mod" height="510"></canvas>
+  </div>
+
+  <div class="sec-h" style="margin-top:.4rem"><span class="circ">②</span> Regression Equation</div>
+  <div class="eq-wrap" id="eq-wrap"></div>
+
+  <div class="sec-h"><span class="circ">③</span> Coefficients</div>
+  <div id="coef-wrap"></div>
+
+  <div class="sec-h"><span class="circ">④</span> Simple Slopes / Spotlight Analysis</div>
+  <div id="slopes-wrap"></div>
+
+  <div class="mod-header" id="hd-jn" onclick="toggleMod('jn')">
+    <span class="mod-icon" id="ic-jn">▶</span>
+    Extension — Johnson-Neyman Technique (Floodlight Plot)
+  </div>
+  <div class="mod-body" id="bd-jn">
+    <div class="erklaer">
+      <div class="erklaer-h">Johnson-Neyman Technique</div>
+      The spotlight analysis shows simple slopes only at <em>selected</em> W values.
+      The <strong>Johnson-Neyman technique</strong> analytically determines at which W values
+      the effect of X on Y crosses the significance boundary:<br><br>
+      <span class="formula-line">θ(X→Y|W) = b̂₁ + b̂₃·W</span>
+      <span class="formula-line">SE(θ) = √[ s²·(v₁₁ + W²·v₃₃ + 2W·v₁₃) ]</span>
+      <span class="formula-line">W* from: (b̂₃² − t²·s²·v₃₃)·W² + 2(b̂₁b̂₃ − t²·s²·v₁₃)·W + (b̂₁² − t²·s²·v₁₁) = 0</span>
+      The <strong>floodlight plot</strong> shows θ(W) with a 95% CI across the entire W range.
+      The red shading marks the non-significant region (CI contains 0).
+    </div>
+    <div id="jn-result"></div>
+    <canvas id="cv-jn" height="360" style="width:100%;display:block;margin-top:.6rem"></canvas>
+  </div>
+
+  <div class="learn-section">
+    <div class="sec-h">Concepts</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">What is moderation?</div>
+        <div class="lcard-body">Moderation occurs when a third variable W changes the <strong>strength or direction</strong> of the effect of X on Y. This is modeled via an <strong>interaction term</strong>: <code>Y = b₀ + b₁X + b₂W + b₃(X·W)</code>. The decisive coefficient is <strong>b₃</strong>: if it is ≠ 0, the X effect depends on the value of W. (Hayes/PROCESS Model 1.) Special case: if X and W are both <strong>binary</strong> (group × time), this exact model is the econometrics' <strong>difference-in-differences</strong> analysis — the same interaction term, just framed differently. <a class="xlink" href="../DiD.html" target="_blank" rel="noopener">→ Difference-in-Differences</a></div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Simple slopes / spotlight</div>
+        <div class="lcard-body">The effect of X on Y at a <em>fixed</em> W value is called the <strong>simple slope</strong>: <code>θ(X→Y|W) = b₁ + b₃·W</code>. The <strong>spotlight analysis</strong> examines it at selected W values — classically M−1SD, M, M+1SD, or more robustly the <strong>percentile ranks 16, 50, 84</strong>. For a normally distributed moderator (not a requirement of moderation!) both give the same result; for <em>skewed</em> distributions, the percentile-rank approach guarantees that the chosen values always lie within the moderator's actual range. Each simple slope is a point estimate with a confidence interval and t-test — showing at which support level stress significantly affects depression.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Johnson-Neyman / floodlight</div>
+        <div class="lcard-body">Instead of individual W values, the <strong>Johnson-Neyman technique</strong> answers the question across the <em>entire</em> W range: at what <strong>W*</strong> does the X effect switch from significant to non-significant? The <strong>floodlight plot</strong> shows θ(W) with a 95% CI; wherever the band includes zero, the effect is not meaningful. This avoids the arbitrariness of fixed spotlight points.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Centering</div>
+        <div class="lcard-body">X and W should be <strong>centered</strong> (or z-standardized) before the analysis. Then b₁ and b₂ are the effects <em>at the mean</em> of the respective other variable — instead of at an often meaningless value of 0. The interaction coefficient <strong>b₃ is unaffected by this</strong>. Centering also reduces the (numerically harmless but confusing) collinearity of the product term X·W. This can increase power for the <strong>conditional effects b₁ and b₂</strong> (the effect of X or W at the value 0 of the respective other, not main effects!) because their standard errors usually get smaller — it has no effect, however, on the power of the <strong>interaction term b₃</strong>.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Ordinal vs. disordinal interaction</div>
+        <div class="lcard-body"><strong>Ordinal:</strong> the rank order of the simple-slope lines stays the same across the X range — W only dampens or amplifies the effect. <strong>Disordinal:</strong> the lines <em>cross</em> within the data range, the X effect reverses its sign. In the example, a strongly negative b₃ produces a disordinal interaction — at high social support, stress can act in the opposite direction.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Moderation vs. mediation</div>
+        <div class="lcard-body">Easy to confuse, but fundamentally different: <strong>moderation</strong> asks <em>when / for whom</em> an effect occurs (W changes the X→Y effect, interaction b₃). <strong>Mediation</strong> asks <em>why / through what path</em> (a mediator M transmits the effect, indirect path a·b). Moderation = Hayes Model 1, mediation = Model 4. <a class="xlink" href="../Mediationsanalyse.html" target="_blank" rel="noopener">→ Mediation Analysis</a></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    <div class="help-box-h">Moderation Analysis — Help</div>
+
+    <div class="help-sh">Example</div>
+    <p class="help-p">
+      <strong>X</strong> = stress level (PSS, standardized),
+      <strong>W</strong> = social support (BSSS score),
+      <strong>Y</strong> = depressive symptoms (PHQ-9).<br>
+      Question: does social support dampen the effect of stress on depression?
+      A negative b₃ would suggest a buffering effect.
+    </p>
+
+    <div class="help-sh">Model structure — Hayes/PROCESS Model 1</div>
+    <p class="help-p">
+      The moderation model (Model 1 by Hayes) extends simple regression with an
+      interaction term X·W:
+    </p>
+    <span class="help-formula">Y = b₀ + b₁·X + b₂·W + b₃·(X·W) + ε</span>
+    <p class="help-p">
+      <strong>b₁</strong> is the effect of X when W = 0 (conditional main effect).<br>
+      <strong>b₂</strong> is the effect of W when X = 0.<br>
+      <strong>b₃</strong> is the interaction coefficient: it indicates how much the effect
+      of X on Y changes when W increases by one unit. If b₃ ≠ 0, moderation is present.
+    </p>
+    <p class="help-p">
+      <em>In the example (Scenario C):</em>
+      PHQ-9 = b₀ + 0.5·stress − 0.5·support − 0.5·(stress·support) + ε.<br>
+      b₁ = 0.5: at average support (W = 0), one SD more stress raises the PHQ-9 by 0.5 points.<br>
+      b₂ = −0.5: social support directly lowers depression (at average stress).<br>
+      b₃ = −0.5: per SD more support, the stress effect drops by 0.5 — the buffering effect.
+    </p>
+
+    <div class="help-sh">Interaction term b₃ — interpretation</div>
+    <p class="help-p">
+      <strong>b₃ > 0</strong>: the X effect gets stronger the larger W is —
+      <em>amplifying moderation</em>.<br>
+      <strong>b₃ &lt; 0</strong>: the X effect gets weaker the larger W is —
+      <em>dampening moderation (buffering effect)</em>.<br>
+      <strong>Ordinal interaction</strong>: the simple-slope lines run parallel, offset from each other
+      (no crossing point within the data range).<br>
+      <strong>Disordinal interaction</strong>: the lines cross within the data range —
+      the direction of the X effect reverses for different W values.
+    </p>
+    <p class="help-p">
+      <em>In the example:</em> b₃ = −0.5 produces a disordinal interaction. The simple slope of
+      stress is computed as θ = 0.5 + (−0.5)·W:<br>
+      W = −1 (little support): θ = 1.0 — strong positive stress effect.<br>
+      W = 0 (average support): θ = 0.5 — moderate effect.<br>
+      W = +1 (high support): θ = 0 — stress has no effect anymore.<br>
+      W > +1: θ &lt; 0 — stress lowers depression (crossing point, disordinal).
+    </p>
+    <p class="help-p">
+      Important: <em>b₁</em> and <em>b₂</em> are conditional effects (when the respective
+      other variable = 0), not marginal main effects as in an ANOVA.
+      Standardizing X and W before the analysis makes interpretation considerably easier.
+    </p>
+
+    <div class="help-sh">Simple slopes / spotlight analysis</div>
+    <p class="help-p">
+      The <strong>spotlight analysis</strong> computes the effect of X on Y for selected
+      W values (typically: M−SD, M, M+SD, or P16, P50, P84):
+    </p>
+    <span class="help-formula">θ(X→Y | W = w) = b̂₁ + b̂₃·w</span>
+    <p class="help-p">
+      Each simple slope is a point estimate with a CI and t-test. The t-test checks whether the
+      X effect is significantly different from zero for this specific W value. The three
+      regression lines in the scatterplot visualize these conditional effects.
+    </p>
+    <p class="help-p">
+      <em>In the example:</em> the three spotlight lines show the stress→depression effect for
+      people with low (P16 ≈ W = −1), average (P50 ≈ W = 0), and high social support
+      (P84 ≈ W = +1). The crossing of the lines makes the disordinal nature visible:
+      at high support, the line flattens or even tips over.
+    </p>
+
+    <div class="help-sh">Johnson-Neyman technique (floodlight plot)</div>
+    <p class="help-p">
+      The spotlight analysis fixes W values arbitrarily. The
+      <strong>Johnson-Neyman technique</strong> analytically determines at which W value W*
+      the simple slope crosses the significance boundary (α = .05):
+    </p>
+    <span class="help-formula">W* from: (b̂₃² − t²·Var(b̂₃))·W² + 2(b̂₁·b̂₃ − t²·Cov(b̂₁,b̂₃))·W + (b̂₁² − t²·Var(b̂₁)) = 0</span>
+    <p class="help-p">
+      The <strong>floodlight plot</strong> shows the conditional effect θ(W) with a 95% CI
+      across the entire W range. The red-shaded area marks where the effect is
+      statistically not significant (CI contains 0). There can be 0, 1, or 2 transition points
+      W*.
+    </p>
+    <p class="help-p">
+      <em>In the example:</em> the floodlight plot shows two transition points W*. In the red (non-
+      significant) region between them, the stress effect cannot be statistically distinguished
+      from zero — a classic buffer. Above the second W*, θ becomes significantly
+      <em>negative</em>: at very high social support, higher stress is associated with
+      <em>lower</em> depression scores. This is the disordinal consequence —
+      social support doesn't just buffer, but past a threshold acts as an
+      active protective factor that reverses the stress response into a positive one.
+    </p>
+
+    <div class="help-sh">Scenarios A–D</div>
+    <p class="help-p">
+      <strong>A — No moderation</strong>: b₃ = 0; parallel regression lines, no
+      interaction term needed. Social support may have a main effect, but it doesn't
+      buffer.<br>
+      <strong>B — Ordinal interaction</strong>: b₃ ≠ 0, no crossing point within the data range;
+      stress always affects depression positively, just to varying degrees depending on support.<br>
+      <strong>C — Disordinal interaction (example)</strong>: b₁ = 0.5, b₂ = −0.5, b₃ = −0.5;
+      the slopes cross — at very high support the stress effect reverses.<br>
+      <strong>D — Dichotomous moderator</strong>: W ∈ {0, 1}; e.g. support present vs.
+      absent; equivalent to two separate regressions with a test for the difference between slopes.
+    </p>
+
+    <div class="help-sh">Causality &amp; limitations</div>
+    <p class="help-p">
+      A significant interaction term b₃ statistically demonstrates that the relationship between X and Y
+      depends on W — not that W causally moderates the X effect. That would require an experimental
+      manipulation of W. With observational data, confounding remains possible:
+      third variables could influence both W and Y and produce an apparent moderation.
+      Furthermore, statistical power for interaction terms is markedly lower than for main effects —
+      even in larger samples, b₃ is hard to estimate.
+    </p>
+  </div>
+</div>
+
+<script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
+// ─── State ─────────────────────────────────────────────────────────────────
+const ST = {
+  n:200, sigma:1, seed:42,
+  b0:0, b1:0.5, b2:0, b3:0.4,
+  wtype:'normal', wmu:0, wsd:1, wmin:-2, wmax:2, wp1:0.5,
+  spotlight:'pct',
+  showTrue:true, showSlopes:true,
+  modJn:false, view3d:false, rot3d:{az:0.55,el:0.38,dragging:false,lastX:0,lastY:0},
+  fixY:false, fixedYB:null, fixedYT:null,
+  data:null, fitResult:null, spotW:null
+};
+
+// ─── PRNG ──────────────────────────────────────────────────────────────────
+function mulberry32(a){
+  return function(){
+    a|=0;a=a+0x6D2B79F5|0;
+    var t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return((t^t>>>14)>>>0)/4294967296;
+  };
+}
+function makeGauss(rand){
+  let sp=null;
+  return ()=>{
+    if(sp!==null){const s=sp;sp=null;return s;}
+    const u1=Math.max(rand(),1e-15),u2=rand();
+    const m=Math.sqrt(-2*Math.log(u1));
+    sp=m*Math.sin(2*Math.PI*u2);
+    return m*Math.cos(2*Math.PI*u2);
+  };
+}
+
+// ─── Data ──────────────────────────────────────────────────────────────────
+function genData(){
+  const rand=mulberry32(ST.seed),gauss=makeGauss(rand);
+  const pts=[];
+  for(let i=0;i<ST.n;i++){
+    const x=gauss();
+    let w;
+    if(ST.wtype==='binary') w=rand()<ST.wp1?1:0;
+    else if(ST.wtype==='normal') w=ST.wmu+ST.wsd*gauss();
+    else w=ST.wmin+(ST.wmax-ST.wmin)*rand();
+    const y=ST.b0+ST.b1*x+ST.b2*w+ST.b3*x*w+ST.sigma*gauss();
+    pts.push({x,w,y});
+  }
+  return pts;
+}
+
+// ─── Matrix ops ────────────────────────────────────────────────────────────
+function matSolve(A,bv){
+  const n=bv.length,M=A.map((r,i)=>[...r,bv[i]]);
+  for(let c=0;c<n;c++){
+    let mr=c;
+    for(let r=c+1;r<n;r++) if(Math.abs(M[r][c])>Math.abs(M[mr][c])) mr=r;
+    [M[c],M[mr]]=[M[mr],M[c]];
+    for(let r=c+1;r<n;r++){
+      const f=M[c][c]===0?0:M[r][c]/M[c][c];
+      for(let k=c;k<=n;k++) M[r][k]-=f*M[c][k];
+    }
+  }
+  const x=new Array(n).fill(0);
+  for(let i=n-1;i>=0;i--){
+    x[i]=M[i][n];
+    for(let k=i+1;k<n;k++) x[i]-=M[i][k]*x[k];
+    x[i]/=M[i][i]||1e-30;
+  }
+  return x;
+}
+function invertMat(A){
+  const n=A.length;
+  const M=A.map((r,i)=>{const a=[...r];for(let j=0;j<n;j++) a.push(i===j?1:0);return a;});
+  for(let c=0;c<n;c++){
+    let mr=c;
+    for(let r=c+1;r<n;r++) if(Math.abs(M[r][c])>Math.abs(M[mr][c])) mr=r;
+    [M[c],M[mr]]=[M[mr],M[c]];
+    const pv=M[c][c];if(Math.abs(pv)<1e-15)continue;
+    for(let k=c;k<2*n;k++) M[c][k]/=pv;
+    for(let r=0;r<n;r++){
+      if(r!==c){const f=M[r][c];for(let k=c;k<2*n;k++) M[r][k]-=f*M[c][k];}
+    }
+  }
+  return M.map(r=>r.slice(n));
+}
+function mlr(pts,getX){
+  const n=pts.length,X=pts.map(getX),p=X[0].length;
+  const XtX=Array.from({length:p},()=>new Array(p).fill(0));
+  const Xty=new Array(p).fill(0);
+  for(let i=0;i<n;i++){
+    for(let j=0;j<p;j++){
+      Xty[j]+=X[i][j]*pts[i].y;
+      for(let k=0;k<p;k++) XtX[j][k]+=X[i][j]*X[i][k];
+    }
+  }
+  const beta=matSolve(XtX,Xty);
+  const yhat=pts.map((_,i)=>X[i].reduce((s,v,j)=>s+v*beta[j],0));
+  const ybar=pts.reduce((s,p)=>s+p.y,0)/n;
+  const sse=pts.reduce((s,p,i)=>s+(p.y-yhat[i])**2,0);
+  const sst=pts.reduce((s,p)=>s+(p.y-ybar)**2,0);
+  const s2=sse/(n-p);
+  try{
+    const inv=invertMat(XtX);
+    const se=beta.map((_,j)=>Math.sqrt(Math.max(0,s2*inv[j][j])));
+    return{beta,r2:sst===0?0:1-sse/sst,se,s2,n,p,inv};
+  }catch{
+    return{beta,r2:0,se:beta.map(()=>NaN),s2,n,p,inv:null};
+  }
+}
+
+// ─── Statistics ────────────────────────────────────────────────────────────
+function lgamma(z){
+  const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,
+    771.32342877765313,-176.61502916214059,12.507343278686905,
+    -0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(z<0.5)return Math.log(Math.PI)-Math.log(Math.sin(Math.PI*z))-lgamma(1-z);
+  z--;let x=c[0];
+  for(let i=1;i<9;i++) x+=c[i]/(z+i);
+  const t=z+7.5;
+  return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x);
+}
+function betainc(x,a,b){
+  if(x<=0)return 0;if(x>=1)return 1;
+  const lb=lgamma(a)+lgamma(b)-lgamma(a+b);
+  const fr=Math.exp(Math.log(x)*a+Math.log(1-x)*b-lb)/a;
+  let f=1,c=1,d=1-(a+b)*x/(a+1);
+  if(Math.abs(d)<1e-30)d=1e-30;d=1/d;f=d;
+  for(let m=1;m<=200;m++){
+    let aa=m*(b-m)*x/((a+2*m-1)*(a+2*m));
+    d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;
+    d=1/d;f*=c*d;
+    aa=-(a+m)*(a+b+m)*x/((a+2*m)*(a+2*m+1));
+    d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;
+    d=1/d;const del=c*d;f*=del;if(Math.abs(del-1)<1e-10)break;
+  }
+  if(x<(a+1)/(a+b+2))return fr*f;
+  return 1-betainc(1-x,b,a);
+}
+function tPVal(t,df){return betainc(df/(df+t*t),df/2,.5);}
+function tCrit(df){
+  let lo=0,hi=20;
+  for(let i=0;i<80;i++){
+    const mid=(lo+hi)/2;
+    if(tPVal(mid,df)>0.05)lo=mid;else hi=mid;
+  }
+  return(lo+hi)/2;
+}
+
+// ─── Spotlight values ──────────────────────────────────────────────────────
+function f2(v){return isFinite(v)?v.toFixed(2):'?';}
+
+function getSpotlightW(pts){
+  if(ST.wtype==='binary')
+    return [{w:0,lbl:'W = 0',col:'--a4'},{w:1,lbl:'W = 1',col:'--a6'}];
+  if(ST.spotlight==='pct'){
+    if(ST.wtype==='normal'){
+      return [
+        {w:ST.wmu-ST.wsd, lbl:'P16  (μ−σ = '+f2(ST.wmu-ST.wsd)+')', col:'--a4'},
+        {w:ST.wmu,         lbl:'P50  (μ = '+f2(ST.wmu)+')',            col:'--a5'},
+        {w:ST.wmu+ST.wsd,  lbl:'P84  (μ+σ = '+f2(ST.wmu+ST.wsd)+')',  col:'--a6'},
+      ];
+    } else {
+      const lo=ST.wmin,r=ST.wmax-ST.wmin;
+      return [
+        {w:lo+r*0.16,lbl:'P16 = '+f2(lo+r*0.16),col:'--a4'},
+        {w:lo+r*0.5, lbl:'P50 = '+f2(lo+r*0.5), col:'--a5'},
+        {w:lo+r*0.84,lbl:'P84 = '+f2(lo+r*0.84),col:'--a6'},
+      ];
+    }
+  } else {
+    const wv=pts.map(p=>p.w);
+    const mw=wv.reduce((s,v)=>s+v,0)/wv.length;
+    const sw=Math.sqrt(wv.reduce((s,v)=>s+(v-mw)**2,0)/(wv.length-1));
+    return [
+      {w:mw-sw,lbl:'M−1SD ('+f2(mw-sw)+')',col:'--a4'},
+      {w:mw,   lbl:'M  ('+f2(mw)+')',       col:'--a5'},
+      {w:mw+sw,lbl:'M+1SD ('+f2(mw+sw)+')',col:'--a6'},
+    ];
+  }
+}
+
+// ─── Axis helpers ──────────────────────────────────────────────────────────
+function niceTicks(lo,hi,maxN){
+  const range=hi-lo;if(range===0)return[lo];
+  const rough=range/maxN;
+  const mag=Math.pow(10,Math.floor(Math.log10(rough)));
+  const step=[1,2,2.5,5,10].map(f=>f*mag).find(s=>range/s<=maxN)||mag*10;
+  const start=Math.ceil(lo/step)*step;
+  const ticks=[];
+  for(let t=start;t<=hi+step*1e-9;t=Math.round((t+step)*1e10)/1e10) ticks.push(t);
+  return ticks;
+}
+
+function downloadCSV(){
+  if(!ST.data)return;
+  const rows=ST.data.map(p=>`${p.x.toFixed(6)},${p.w.toFixed(6)},${p.y.toFixed(6)}`);
+  const csv=['x,w,y',...rows].join('\n');
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  const a=document.createElement('a');
+  a.href=url;a.download='moderation_data.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── Color helpers ─────────────────────────────────────────────────────────
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function parseHex(h){
+  h=h.trim().replace('#','');
+  return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+}
+function lerpRGB(c1,c2,t){
+  return[Math.round(c1[0]+(c2[0]-c1[0])*t),
+         Math.round(c1[1]+(c2[1]-c1[1])*t),
+         Math.round(c1[2]+(c2[2]-c1[2])*t)];
+}
+function wToColor(t,rlo,rmid,rhi){
+  const rgb=t<0.5?lerpRGB(rlo,rmid,t*2):lerpRGB(rmid,rhi,(t-0.5)*2);
+  return`rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+}
+
+// ─── 2D Scatter Canvas ──────────────────────────────────────────────────────
+function drawCanvas(pts,res,spotW){
+  const cv=document.getElementById('cv-mod');
+  const W=cv.offsetWidth;if(!W)return;
+  cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const pad={l:54,r:20,t:24,b:48};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const xL=-3.3,xR=3.3;
+  let yB,yT;
+  if(ST.fixY&&ST.fixedYB!==null){yB=ST.fixedYB;yT=ST.fixedYT;}
+  else{
+    const yVals=pts.map(p=>p.y);
+    const yMin=Math.min(...yVals),yMax=Math.max(...yVals);
+    const yPad=(yMax-yMin)*.1||1;
+    yB=yMin-yPad;yT=yMax+yPad;
+  }
+  const sx=x=>pad.l+(x-xL)/(xR-xL)*cW;
+  const sy=y=>pad.t+(1-(y-yB)/(yT-yB))*cH;
+  const ink2=css('--ink2'),ink3=css('--ink3');
+  const grid=css('--grid'),bg=css('--bg');
+  const a1=css('--a1'),a2=css('--a2'),a3=css('--a3');
+  const a4=css('--a4'),a5=css('--a5'),a6=css('--a6');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle=grid;ctx.lineWidth=1;
+  const xTicks=[-3,-2,-1,0,1,2,3];
+  xTicks.forEach(x=>{
+    if(x<xL||x>xR)return;
+    ctx.beginPath();ctx.moveTo(sx(x),pad.t);ctx.lineTo(sx(x),pad.t+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='10.5px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(x.toFixed(0),sx(x),pad.t+cH+14);
+  });
+  const yTicks=niceTicks(yB,yT,5);
+  yTicks.forEach(y=>{
+    ctx.beginPath();ctx.moveTo(pad.l,sy(y));ctx.lineTo(pad.l+cW,sy(y));ctx.stroke();
+    ctx.fillStyle=ink3;ctx.textAlign='right';
+    ctx.fillText(Number.isInteger(y)?y.toFixed(0):y.toFixed(1),pad.l-5,sy(y)+4);
+  });
+  ctx.fillStyle=ink2;ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Predictor X (standardized)',pad.l+cW/2,H-6);
+  ctx.save();ctx.translate(13,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Outcome Y',0,0);ctx.restore();
+  if(yB<0&&yT>0){
+    ctx.beginPath();ctx.moveTo(pad.l,sy(0));ctx.lineTo(pad.l+cW,sy(0));
+    ctx.strokeStyle=ink3;ctx.lineWidth=0.8;ctx.setLineDash([3,4]);ctx.stroke();ctx.setLineDash([]);
+  }
+  if(ST.wtype==='binary'){
+    ctx.globalAlpha=0.45;
+    for(const p of pts){
+      ctx.fillStyle=p.w===0?a4:a6;
+      ctx.beginPath();ctx.arc(sx(p.x),sy(p.y),2.8,0,2*Math.PI);ctx.fill();
+    }
+  } else {
+    const wVals=pts.map(p=>p.w);
+    const wMin=Math.min(...wVals),wMax=Math.max(...wVals),wRng=wMax-wMin||1;
+    const ra4=parseHex(a4),ra5=parseHex(a5),ra6=parseHex(a6);
+    ctx.globalAlpha=0.5;
+    for(const p of pts){
+      ctx.fillStyle=wToColor((p.w-wMin)/wRng,ra4,ra5,ra6);
+      ctx.beginPath();ctx.arc(sx(p.x),sy(p.y),2.6,0,2*Math.PI);ctx.fill();
+    }
+  }
+  ctx.globalAlpha=1;
+  const drawLine=(wVal,b,color,dash,lw,alpha)=>{
+    ctx.beginPath();
+    for(let i=0;i<=80;i++){
+      const x=xL+(xR-xL)*i/80;
+      const y=b[0]+b[1]*x+b[2]*wVal+b[3]*x*wVal;
+      i===0?ctx.moveTo(sx(x),sy(y)):ctx.lineTo(sx(x),sy(y));
+    }
+    ctx.strokeStyle=color;ctx.lineWidth=lw||2.5;
+    ctx.setLineDash(dash||[]);ctx.globalAlpha=alpha||1;ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;
+  };
+  if(ST.showTrue){
+    const trueBeta=[ST.b0,ST.b1,ST.b2,ST.b3];
+    spotW.forEach(sw=>{
+      const col=css(sw.col);
+      drawLine(sw.w,trueBeta,col,[4,3],1.5,0.3);
+    });
+  }
+  if(ST.showSlopes&&res){
+    spotW.forEach(sw=>{
+      const col=css(sw.col);
+      drawLine(sw.w,res.beta,col,[],2.5,1);
+    });
+  }
+  const lx=pad.l+8,ly=pad.t+18;
+  ctx.font='10.5px DM Mono,monospace';
+  spotW.forEach((sw,i)=>{
+    const col=css(sw.col);
+    ctx.strokeStyle=col;ctx.lineWidth=2.5;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(lx,ly+i*17);ctx.lineTo(lx+22,ly+i*17);ctx.stroke();
+    ctx.fillStyle=col;ctx.textAlign='left';
+    ctx.fillText(sw.lbl,lx+27,ly+i*17+4);
+  });
+  if(ST.showTrue){
+    const oy=ly+spotW.length*17+10;
+    ctx.strokeStyle=ink2;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.globalAlpha=0.55;
+    ctx.beginPath();ctx.moveTo(lx,oy);ctx.lineTo(lx+22,oy);ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;
+    ctx.fillStyle=ink2;ctx.textAlign='left';
+    ctx.fillText('Population',lx+27,oy+4);
+    if(ST.showSlopes&&res){
+      ctx.strokeStyle=ink2;ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(lx,oy+17);ctx.lineTo(lx+22,oy+17);ctx.stroke();
+      ctx.fillText('Estimate',lx+27,oy+21);
+    }
+  }
+}
+
+// ─── 3D Surface (oblique / cabinet projection) ───────────────────────────────
+function draw3DSurface(pts, res, spotW){
+  const cv = document.getElementById('cv-mod');
+  if(!cv) return;
+  const W = cv.offsetWidth; if(!W) return;
+  cv.width = W;
+  const H = cv.height;
+  const ctx = cv.getContext('2d');
+
+  const beta = res ? res.beta : [ST.b0,ST.b1,ST.b2,ST.b3];
+  const xL=-3.3, xR=3.3;
+
+  const wArr = pts.map(p=>p.w);
+  let wLo, wHi;
+  if(ST.wtype==='binary'){ wLo=0; wHi=1; }
+  else{
+    wLo=Math.min(...wArr); wHi=Math.max(...wArr);
+    const wd=(wHi-wLo)*0.05||0.1; wLo-=wd; wHi+=wd;
+  }
+
+  const NX=18, NW=18;
+  let yMin=Infinity, yMax=-Infinity;
+  for(let i=0;i<=NX;i++) for(let j=0;j<=NW;j++){
+    const x=xL+(xR-xL)*i/NX, w=wLo+(wHi-wLo)*j/NW;
+    const y=beta[0]+beta[1]*x+beta[2]*w+beta[3]*x*w;
+    if(y<yMin)yMin=y; if(y>yMax)yMax=y;
+  }
+  for(const p of pts){ if(p.y<yMin)yMin=p.y; if(p.y>yMax)yMax=p.y; }
+  let yB, yT;
+  if(ST.fixY&&ST.fixedYB!==null){ yB=ST.fixedYB; yT=ST.fixedYT; }
+  else{ const yp=(yMax-yMin)*0.08||0.5; yB=yMin-yp; yT=yMax+yp; }
+
+  // Normalize [-0.5, 0.5]
+  const nx = x => (x-xL)/(xR-xL)-0.5;
+  const nw = w => (w-wLo)/(wHi-wLo)-0.5;
+  const ny = y => (y-yB)/(yT-yB)-0.5;
+
+  // Orthographic projection with azimuth + elevation (same as OLS)
+  const {az,el}=ST.rot3d;
+  const ca=Math.cos(az),sa=Math.sin(az),ce=Math.cos(el),se=Math.sin(el);
+  const cx=W*0.5, cy=H*0.51, sc=Math.min(W,H)*0.68;
+  function proj(wx,wy,wz){
+    const rx=ca*wx+sa*wz, rz=-sa*wx+ca*wz;
+    const ry2=ce*wy-se*rz, rz2=se*wy+ce*rz;
+    return{px:cx+rx*sc, py:cy-ry2*sc, depth:rz2};
+  }
+
+  const ink2=css('--ink2'), ink3=css('--ink3');
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const pfill  =isDark?'rgba(74,160,210,0.18)':'rgba(28,115,148,0.14)';
+  const pstroke=isDark?'rgba(74,160,210,0.52)':'rgba(28,115,148,0.44)';
+
+  ctx.fillStyle=css('--bg'); ctx.fillRect(0,0,W,H);
+
+  // Floor at Y=yB
+  const fc=[proj(-0.5,-0.5,-0.5),proj(0.5,-0.5,-0.5),proj(0.5,-0.5,0.5),proj(-0.5,-0.5,0.5)];
+  ctx.beginPath();
+  fc.forEach((p,i)=>i?ctx.lineTo(p.px,p.py):ctx.moveTo(p.px,p.py));
+  ctx.closePath();
+  ctx.fillStyle=isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.04)'; ctx.fill();
+  ctx.strokeStyle=ink3; ctx.lineWidth=1; ctx.globalAlpha=0.4; ctx.stroke();
+  ctx.globalAlpha=1;
+
+  // Floor grid 5x5
+  ctx.setLineDash([2,4]); ctx.strokeStyle=ink3; ctx.lineWidth=0.5; ctx.globalAlpha=0.25;
+  for(let k=1;k<=4;k++){
+    const t=k/5-0.5;
+    let a=proj(t,-0.5,-0.5),b=proj(t,-0.5,0.5);
+    ctx.beginPath();ctx.moveTo(a.px,a.py);ctx.lineTo(b.px,b.py);ctx.stroke();
+    a=proj(-0.5,-0.5,t);b=proj(0.5,-0.5,t);
+    ctx.beginPath();ctx.moveTo(a.px,a.py);ctx.lineTo(b.px,b.py);ctx.stroke();
+  }
+  ctx.setLineDash([]); ctx.globalAlpha=1;
+
+  // Regression surface: depth-sorted quads
+  const quads=[];
+  for(let i=0;i<NX;i++){
+    for(let j=0;j<NW;j++){
+      const xA=xL+(i/NX)*(xR-xL), xB=xL+((i+1)/NX)*(xR-xL);
+      const wA=wLo+(j/NW)*(wHi-wLo), wB=wLo+((j+1)/NW)*(wHi-wLo);
+      const yAA=beta[0]+beta[1]*xA+beta[2]*wA+beta[3]*xA*wA;
+      const yBA=beta[0]+beta[1]*xB+beta[2]*wA+beta[3]*xB*wA;
+      const yBB=beta[0]+beta[1]*xB+beta[2]*wB+beta[3]*xB*wB;
+      const yAB=beta[0]+beta[1]*xA+beta[2]*wB+beta[3]*xA*wB;
+      const pA=proj(nw(wA),ny(yAA),nx(xA));
+      const pB=proj(nw(wA),ny(yBA),nx(xB));
+      const pC=proj(nw(wB),ny(yBB),nx(xB));
+      const pD=proj(nw(wB),ny(yAB),nx(xA));
+      quads.push({pA,pB,pC,pD,d:(pA.depth+pB.depth+pC.depth+pD.depth)/4});
+    }
+  }
+  quads.sort((a,b)=>b.d-a.d);
+  quads.forEach(({pA,pB,pC,pD})=>{
+    ctx.beginPath();
+    ctx.moveTo(pA.px,pA.py);ctx.lineTo(pB.px,pB.py);
+    ctx.lineTo(pC.px,pC.py);ctx.lineTo(pD.px,pD.py);
+    ctx.closePath();
+    ctx.fillStyle=pfill; ctx.fill();
+    ctx.strokeStyle=pstroke; ctx.lineWidth=0.65; ctx.stroke();
+  });
+
+  // Data points (depth-sorted)
+  const ra4=parseHex(css('--a4')),ra5=parseHex(css('--a5')),ra6=parseHex(css('--a6'));
+  const wMin2=Math.min(...wArr),wMax2=Math.max(...wArr),wRng2=wMax2-wMin2||1;
+  const ptsP=pts.map(p=>{
+    const pp=proj(nw(p.w),ny(p.y),nx(p.x));
+    const col=ST.wtype==='binary'
+      ?(p.w===0?css('--a4'):css('--a6'))
+      :wToColor((p.w-wMin2)/wRng2,ra4,ra5,ra6);
+    return{pp,col};
+  });
+  ptsP.sort((a,b)=>b.pp.depth-a.pp.depth);
+  ptsP.forEach(({pp,col})=>{
+    ctx.beginPath(); ctx.arc(pp.px,pp.py,3.4,0,2*Math.PI);
+    ctx.fillStyle=col; ctx.globalAlpha=0.55; ctx.fill(); ctx.globalAlpha=1;
+  });
+
+  // Spotlight lines (far first)
+  const drawLine3D=(wVal,b_,col,dash,lw,alpha)=>{
+    ctx.beginPath();
+    for(let i=0;i<=60;i++){
+      const x=xL+(xR-xL)*i/60;
+      const y=b_[0]+b_[1]*x+b_[2]*wVal+b_[3]*x*wVal;
+      const p=proj(nw(wVal),ny(y),nx(x));
+      i===0?ctx.moveTo(p.px,p.py):ctx.lineTo(p.px,p.py);
+    }
+    ctx.strokeStyle=col; ctx.lineWidth=lw;
+    ctx.setLineDash(dash||[]); ctx.globalAlpha=alpha; ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha=1;
+  };
+  const spotWsorted=[...spotW].sort((a,b)=>
+    proj(nw(b.w),0,0).depth-proj(nw(a.w),0,0).depth
+  );
+  if(ST.showTrue){
+    const tb=[ST.b0,ST.b1,ST.b2,ST.b3];
+    spotWsorted.forEach(sw=>drawLine3D(sw.w,tb,css(sw.col),[4,3],1.5,0.3));
+  }
+  if(ST.showSlopes&&res){
+    spotWsorted.forEach(sw=>{
+      drawLine3D(sw.w,beta,'rgba(0,0,0,0.4)',[],4.5,1);
+      drawLine3D(sw.w,beta,css(sw.col),[],2.5,1);
+    });
+  }
+
+  // Axis arrows
+  const orig=proj(-0.5,-0.5,-0.5);
+  const axXe=proj(-0.5,-0.5,0.52);
+  const axWe=proj(0.52,-0.5,-0.5);
+  const axYe=proj(-0.5,0.52,-0.5);
+  function drawArrow(a,b,color){
+    ctx.beginPath();ctx.moveTo(a.px,a.py);ctx.lineTo(b.px,b.py);
+    ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.stroke();
+    const dx=b.px-a.px,dy=b.py-a.py,len=Math.sqrt(dx*dx+dy*dy);
+    if(len<1)return;
+    const ux=dx/len,uy=dy/len;
+    ctx.beginPath();
+    ctx.moveTo(b.px,b.py);
+    ctx.lineTo(b.px-11*ux+5*uy,b.py-11*uy-5*ux);
+    ctx.lineTo(b.px-11*ux-5*uy,b.py-11*uy+5*ux);
+    ctx.closePath();ctx.fillStyle=color;ctx.fill();
+  }
+  drawArrow(orig,axXe,ink2);
+  drawArrow(orig,axWe,ink2);
+  drawArrow(orig,axYe,ink2);
+
+  // Axis labels
+  ctx.font='bold 16px DM Mono,monospace'; ctx.fillStyle=ink2;
+  ctx.textAlign='left';   ctx.fillText('X (Predictor)', axXe.px+10,axXe.py+4);
+  ctx.textAlign='left';   ctx.fillText('W (Moderator)', axWe.px+10,axWe.py+4);
+  ctx.textAlign='center'; ctx.fillText('Y (Outcome)',   axYe.px,   axYe.py+18);
+
+  // Tick labels
+  ctx.font='14px DM Mono,monospace'; ctx.fillStyle=ink3;
+  [-3,-2,-1,0,1,2,3].forEach(xv=>{
+    if(xv<xL||xv>xR)return;
+    const p=proj(-0.5,-0.5,nx(xv));
+    ctx.textAlign='right'; ctx.fillText(xv.toFixed(0),p.px-8,p.py+5);
+  });
+  const wTkVals=ST.wtype==='binary'?[0,1]:niceTicks(wLo,wHi,4);
+  wTkVals.forEach(wv=>{
+    if(wv<wLo||wv>wHi)return;
+    const p=proj(nw(wv),-0.5,-0.5);
+    ctx.textAlign='center'; ctx.fillText(wv.toFixed(ST.wtype==='binary'?0:1),p.px,p.py+16);
+  });
+  niceTicks(yB,yT,5).forEach(yv=>{
+    const p=proj(-0.5,ny(yv),-0.5);
+    ctx.textAlign='right'; ctx.fillText(Number.isInteger(yv)?yv.toFixed(0):yv.toFixed(1),p.px-8,p.py+5);
+  });
+
+  // Legend
+  if(ST.showSlopes&&res){
+    const lx=12, ly=14;
+    ctx.font='14px DM Mono,monospace';
+    spotW.forEach((sw,i)=>{
+      const col=css(sw.col);
+      ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(lx,ly+i*22); ctx.lineTo(lx+28,ly+i*22); ctx.stroke();
+      ctx.fillStyle=col; ctx.textAlign='left';
+      ctx.fillText(sw.lbl,lx+33,ly+i*22+5);
+    });
+    if(ST.showTrue){
+      const oy=14+spotW.length*22+10;
+      ctx.font='12px DM Mono,monospace';
+      ctx.strokeStyle=ink2;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.globalAlpha=0.55;
+      ctx.beginPath();ctx.moveTo(12,oy);ctx.lineTo(40,oy);ctx.stroke();
+      ctx.setLineDash([]);ctx.globalAlpha=1;
+      ctx.fillStyle=ink2;ctx.textAlign='left';
+      ctx.fillText('Population',45,oy+4);
+      ctx.strokeStyle=ink2;ctx.lineWidth=2.5;
+      ctx.beginPath();ctx.moveTo(12,oy+18);ctx.lineTo(40,oy+18);ctx.stroke();
+      ctx.fillText('Estimate',45,oy+22);
+    }
+  } else if(ST.showTrue){
+    ctx.font='12px DM Mono,monospace';
+    ctx.strokeStyle=ink2;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.globalAlpha=0.55;
+    ctx.beginPath();ctx.moveTo(12,14);ctx.lineTo(40,14);ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;
+    ctx.fillStyle=ink2;ctx.textAlign='left';
+    ctx.fillText('Population',45,18);
+  }
+
+  // Drag hint
+  ctx.font='13px DM Mono,monospace'; ctx.fillStyle=ink3; ctx.textAlign='right';
+  ctx.fillText('Drag: rotate  ·  Double-click: reset',W-8,H-8);
+}
+
+// ─── 3D drag-to-rotate ───────────────────────────────────────────────────────
+function setup3DDrag(){
+  const cv=document.getElementById('cv-mod');
+  if(!cv)return;
+  function startDrag(clientX,clientY){
+    if(!ST.view3d)return false;
+    ST.rot3d.dragging=true;
+    ST.rot3d.lastX=clientX; ST.rot3d.lastY=clientY;
+    cv.style.cursor='grabbing';
+    return true;
+  }
+  function moveDrag(clientX,clientY){
+    if(!ST.rot3d.dragging)return;
+    const dx=clientX-ST.rot3d.lastX, dy=clientY-ST.rot3d.lastY;
+    ST.rot3d.az-=dx*0.007;
+    ST.rot3d.el=Math.max(-1.45,Math.min(1.45,ST.rot3d.el+dy*0.007));
+    ST.rot3d.lastX=clientX; ST.rot3d.lastY=clientY;
+    if(ST.data&&ST.fitResult) renderView(ST.data,ST.fitResult,ST.spotW);
+  }
+  function endDrag(){
+    if(!ST.rot3d.dragging)return;
+    ST.rot3d.dragging=false;
+    cv.style.cursor=ST.view3d?'grab':'default';
+  }
+  cv.addEventListener('mousedown',e=>{if(startDrag(e.clientX,e.clientY))e.preventDefault();});
+  window.addEventListener('mousemove',e=>moveDrag(e.clientX,e.clientY));
+  window.addEventListener('mouseup',endDrag);
+  cv.addEventListener('touchstart',e=>{
+    if(e.touches.length===1&&startDrag(e.touches[0].clientX,e.touches[0].clientY))e.preventDefault();
+  },{passive:false});
+  window.addEventListener('touchmove',e=>{
+    if(ST.rot3d.dragging&&e.touches.length===1){
+      moveDrag(e.touches[0].clientX,e.touches[0].clientY);
+      e.preventDefault();
+    }
+  },{passive:false});
+  window.addEventListener('touchend',endDrag);
+  cv.addEventListener('dblclick',()=>{
+    if(!ST.view3d)return;
+    ST.rot3d.az=0.55; ST.rot3d.el=0.38;
+    if(ST.data&&ST.fitResult) renderView(ST.data,ST.fitResult,ST.spotW);
+  });
+}
+
+// ─── Equation Display ──────────────────────────────────────────────────────
+function updateEq(beta){
+  const b=beta||[ST.b0,ST.b1,ST.b2,ST.b3];
+  const f=(v,d)=>isFinite(v)?v.toFixed(d??2):'?';
+  const termColor=['--ink','--a2','--a3','--a1'];
+  const terms=[
+    {val:f(b[0],2),tex:''},
+    {val:f(b[1],3),tex:'·X'},
+    {val:f(b[2],3),tex:'·W'},
+    {val:f(b[3],3),tex:'·X·W'},
+  ];
+  const eqParts=terms.map((t,i)=>{
+    const sign=i===0?'':(parseFloat(t.val)<0?' − ':' + ');
+    const absVal=Math.abs(parseFloat(t.val)).toFixed(i===0?2:3);
+    return`<span style="color:var(${termColor[i]})">${sign}<strong>${absVal}</strong>${t.tex}</span>`;
+  }).join('');
+  const lbls=[
+    {c:'--ink', n:'b̂₀',d:'Intercept<br>(Y when X=0, W=0)'},
+    {c:'--a2',  n:'b̂₁',d:'X effect (at W=0)<br>Simple slope when W=0<br>θ(X→Y|W=0)'},
+    {c:'--a3',  n:'b̂₂',d:'W effect (at X=0)<br>Δ Y per W unit<br>when X=0'},
+    {c:'--a1',  n:'b̂₃',d:'Interaction X·W<br>(change in θ<br>per W unit)'},
+  ];
+  const lblHTML=lbls.map(l=>`
+    <div class="eq-lbl" style="border-top-color:var(${l.c})">
+      <div class="eq-lbl-name" style="color:var(${l.c})">${l.n}</div>
+      <div class="eq-lbl-desc">${l.d}</div>
+    </div>`).join('');
+  document.getElementById('eq-wrap').innerHTML=fixDiacritics(`
+    <div class="eq-main">
+      <span style="font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink2)">ŷᵢ =</span>
+      ${eqParts}
+    </div>
+    <div class="eq-labels" style="grid-template-columns:repeat(4,1fr)">${lblHTML}</div>`);
+}
+
+// ─── Coefficient Table ─────────────────────────────────────────────────────
+function updateCoefTable(res,resR){
+  const{beta,se,s2,n,p}=res;
+  const df=n-p;
+  const rows=[
+    {nm:'b₀',pop:ST.b0,col:'var(--ink)', d:'Intercept — Y when X=0 and W=0'},
+    {nm:'b₁',pop:ST.b1,col:'var(--a2)',  d:'X effect: θ(X→Y|W=0) = simple slope when W=0'},
+    {nm:'b₂',pop:ST.b2,col:'var(--a3)',  d:'W effect: Δ Y per W unit when X=0'},
+    {nm:'b₃',pop:ST.b3,col:'var(--a1)',  d:'X·W interaction: change in the simple slope per W unit'},
+  ];
+  const sig=pv=>{
+    if(!isFinite(pv))return'—';
+    const s=pv<.001?'***':pv<.01?'**':pv<.05?'*':'n.s.';
+    const cl=pv<.01?'sig01':pv<.05?'sig1':'signs';
+    return`<span class="${cl}">${s}</span>`;
+  };
+  const fp=pv=>{if(!isFinite(pv))return'—';if(pv<.001)return'&lt;.001';return pv.toFixed(3);};
+  const tc=tCrit(df);
+  const rowsHTML=rows.map((r,i)=>{
+    const est=beta[i],seV=se[i];
+    const t=isFinite(seV)&&seV>0?est/seV:NaN;
+    const pv=isFinite(t)?tPVal(t,df):NaN;
+    const ci1=est-tc*seV,ci2=est+tc*seV;
+    return`<tr>
+      <td style="color:${r.col};font-weight:600">${r.nm}</td>
+      <td class="num r" style="color:var(--ink3)">${r.pop.toFixed(3)}</td>
+      <td class="num" style="color:${r.col}">${est.toFixed(3)}</td>
+      <td class="num">${isFinite(seV)?seV.toFixed(3):'—'}</td>
+      <td class="num">${isFinite(t)?t.toFixed(2):'—'}</td>
+      <td class="num">${fp(pv)}&nbsp;${sig(pv)}</td>
+      <td class="num" style="font-size:.75rem">[${ci1.toFixed(3)},&nbsp;${ci2.toFixed(3)}]</td>
+      <td class="interp">${r.d}</td>
+    </tr>`;
+  }).join('');
+
+  // Model comparison stats
+  const sse_f=s2*(n-p);
+  const sse_r=resR?resR.s2*(resR.n-resR.p):null;
+  const dR2=resR?Math.max(0,res.r2-resR.r2):null;
+  const calcAIC=(sse,k)=>n*Math.log(sse/n)+2*k;
+  const calcBIC=(sse,k)=>n*Math.log(sse/n)+Math.log(n)*k;
+  const aic_f=calcAIC(sse_f,p+1).toFixed(2);
+  const bic_f=calcBIC(sse_f,p+1).toFixed(2);
+  const aic_r=resR?calcAIC(sse_r,resR.p+1).toFixed(2):'—';
+  const bic_r=resR?calcBIC(sse_r,resR.p+1).toFixed(2):'—';
+  const t_b3=beta[3]/se[3], p_b3=tPVal(t_b3,df);
+
+  document.getElementById('coef-wrap').innerHTML=fixDiacritics(`
+    <table class="coef-table">
+      <tr>
+        <th>Par.</th>
+        <th class="r">Population</th>
+        <th class="r">Estimated</th>
+        <th class="r">SE</th>
+        <th class="r">t</th>
+        <th class="r">p</th>
+        <th class="r">95% CI</th>
+        <th>Interpretation</th>
+      </tr>
+      ${rowsHTML}
+    </table>
+    <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.4rem">
+      *** p&lt;.001&nbsp;&nbsp;** p&lt;.01&nbsp;&nbsp;* p&lt;.05&nbsp;&nbsp;n.s. = not significant &nbsp;|&nbsp;
+      R² = ${res.r2.toFixed(3)} &nbsp;|&nbsp; σ̂ = ${Math.sqrt(s2).toFixed(3)} &nbsp;|&nbsp; n = ${n}
+    </div>
+    ${resR?`<div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);
+      background:var(--panel);border:1px solid var(--grid);padding:.45rem .75rem;line-height:2">
+      <strong style="color:var(--ink)">Model comparison (with vs. without X·W):</strong>&nbsp;&nbsp;
+      ΔR² = ${dR2.toFixed(3)} &nbsp;|&nbsp;
+      F(1,${df}) = ${(t_b3*t_b3).toFixed(2)}, p = ${fp(p_b3)} &nbsp;|&nbsp;
+      X ~ N(0,1): b₁, b₂ are the conditional effect at W=0 and X=0 respectively<br>
+      AIC: full = ${aic_f}, reduced = ${aic_r} (ΔAIC = ${(parseFloat(aic_f)-parseFloat(aic_r)).toFixed(2)}) &nbsp;|&nbsp;
+      BIC: full = ${bic_f}, reduced = ${bic_r} (ΔBIC = ${(parseFloat(bic_f)-parseFloat(bic_r)).toFixed(2)})
+    </div>`:''}` + ``);
+}
+
+// ─── Simple Slopes Table ───────────────────────────────────────────────────
+function updateSlopesTable(res,spotW){
+  const{beta,s2,inv,n,p}=res;
+  const df=n-p;
+  const b1=beta[1],b3=beta[3];
+  if(!inv){
+    document.getElementById('slopes-wrap').innerHTML=
+      '<p style="font-family:\'DM Mono\',monospace;font-size:.8rem;color:var(--ink3)">Covariance matrix not available.</p>';
+    return;
+  }
+  const sig=pv=>{
+    if(!isFinite(pv))return'—';
+    const s=pv<.001?'***':pv<.01?'**':pv<.05?'*':'n.s.';
+    const cl=pv<.01?'sig01':pv<.05?'sig1':'signs';
+    return`<span class="${cl}">${s}</span>`;
+  };
+  const fp=pv=>{if(!isFinite(pv))return'—';if(pv<.001)return'&lt;.001';return pv.toFixed(3);};
+  const tc=tCrit(df);
+  const rowsHTML=spotW.map(sw=>{
+    const w=sw.w;
+    const thetaPop=ST.b1+ST.b3*w;
+    const theta=b1+b3*w;
+    const varTh=s2*(inv[1][1]+w*w*inv[3][3]+2*w*inv[1][3]);
+    const se=Math.sqrt(Math.max(0,varTh));
+    const t=se>0?theta/se:NaN;
+    const pv=isFinite(t)?tPVal(t,df):NaN;
+    const ci1=theta-tc*se,ci2=theta+tc*se;
+    const col=css(sw.col);
+    return`<tr>
+      <td style="color:${col};font-weight:600">${sw.lbl}</td>
+      <td class="num" style="color:var(--ink3)">${thetaPop.toFixed(3)}</td>
+      <td class="num" style="color:${col}">${theta.toFixed(3)}</td>
+      <td class="num">${se.toFixed(3)}</td>
+      <td class="num">${isFinite(t)?t.toFixed(2):'—'}</td>
+      <td class="num">${fp(pv)}&nbsp;${sig(pv)}</td>
+      <td class="num" style="font-size:.75rem">[${ci1.toFixed(3)},&nbsp;${ci2.toFixed(3)}]</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('slopes-wrap').innerHTML=fixDiacritics(`
+    <div class="hayes-box">
+      <strong>Hayes notation:</strong>&nbsp; θ(X→Y|W=w) = b̂₁ + b̂₃·w = ${b1.toFixed(3)} + (${b3.toFixed(3)})·w<br>
+      SE(θ) = √[ s²·(v₁₁ + w²·v₃₃ + 2w·v₁₃) ] &nbsp;|&nbsp; s² = ${s2.toFixed(4)} &nbsp;|&nbsp; df = ${df}
+    </div>
+    <table class="coef-table">
+      <tr>
+        <th>Spotlight W</th>
+        <th class="r">Population θ</th>
+        <th class="r">Estimated θ</th>
+        <th class="r">SE(θ)</th>
+        <th class="r">t</th>
+        <th class="r">p</th>
+        <th class="r">95% CI</th>
+      </tr>
+      ${rowsHTML}
+    </table>
+    <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3)">
+      t-crit. (α=.05, df=${df}) = ${tc.toFixed(3)} &nbsp;|&nbsp; Hayes (2022, 3rd ed.) Introduction to Mediation, Moderation, and Conditional Process Analysis
+    </div>`);
+}
+
+// ─── Johnson-Neyman ────────────────────────────────────────────────────────
+function computeJN(res){
+  const{beta,s2,inv,n,p}=res;
+  if(!inv)return null;
+  const df=n-p;
+  const b1=beta[1],b3=beta[3];
+  const tc=tCrit(df);
+  const t2=tc*tc;
+  const v11=s2*inv[1][1],v33=s2*inv[3][3],v13=s2*inv[1][3];
+  const A=b3*b3-t2*v33;
+  const B=2*(b1*b3-t2*v13);
+  const C=b1*b1-t2*v11;
+  const disc=B*B-4*A*C;
+  if(Math.abs(A)<1e-12||disc<0)return{roots:[],tc,v11,v33,v13};
+  const sqD=Math.sqrt(disc);
+  const r1=(-B-sqD)/(2*A),r2=(-B+sqD)/(2*A);
+  return{roots:[r1,r2].sort((a,b)=>a-b),tc,v11,v33,v13};
+}
+
+function getWRange(pts){
+  if(ST.wtype==='binary')return[-0.3,1.3];
+  const wv=pts.map(p=>p.w);
+  const wMin=Math.min(...wv),wMax=Math.max(...wv),wp=(wMax-wMin)*.12||0.5;
+  return[wMin-wp,wMax+wp];
+}
+
+function updateJNResult(res,pts){
+  if(!document.getElementById('bd-jn').classList.contains('open'))return;
+  const jn=computeJN(res);
+  const el=document.getElementById('jn-result');
+  if(!jn){el.innerHTML='<p style="font-family:\'DM Mono\',monospace;font-size:.8rem;color:var(--ink3)">JN cannot be computed.</p>';return;}
+  const{roots,tc}=jn;
+  const df=res.n-res.p;
+  const wRange=getWRange(pts);
+
+  let rootsHTML='';
+  if(roots.length===0){
+    rootsHTML=`<span style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink3)">
+      No real transition point — θ is significant everywhere or nowhere (b̂₃ near 0).
+    </span>`;
+  } else {
+    rootsHTML=roots.map(w=>{
+      const inR=w>=wRange[0]&&w<=wRange[1];
+      return`<div style="font-family:'DM Mono',monospace;font-size:.82rem;margin-bottom:.3rem">
+        <span style="color:${inR?'var(--a1)':'var(--ink3)'};font-weight:${inR?700:400}">
+          W* = ${w.toFixed(4)}&nbsp;&nbsp;
+        </span>
+        <span style="color:${inR?'var(--a3)':'var(--ink3)'}">
+          ${inR?'[within the data range — relevant JN boundary]':'[outside the data range]'}
+        </span>
+      </div>`;
+    }).join('');
+  }
+
+  el.innerHTML=fixDiacritics(`
+    <div class="kw-grid">
+      <div class="kw-box">
+        <div class="kw-label">t-crit. (α=.05)</div>
+        <div class="kw-val">${tc.toFixed(3)}</div>
+        <div class="kw-sub">df = ${df}</div>
+      </div>
+      <div class="kw-box">
+        <div class="kw-label">b̂₁ / b̂₃</div>
+        <div class="kw-val" style="font-size:.85rem">${res.beta[1].toFixed(3)} / ${res.beta[3].toFixed(3)}</div>
+        <div class="kw-sub">s² = ${res.s2.toFixed(4)}</div>
+      </div>
+      <div class="kw-box">
+        <div class="kw-label">JN boundaries W*</div>
+        <div class="kw-val" style="font-size:.85rem">${roots.length?roots.map(w=>w.toFixed(3)).join(', '):'—'}</div>
+        <div class="kw-sub">${roots.length===0?'no boundary':roots.length===1?'1 boundary':'2 boundaries'}</div>
+      </div>
+    </div>
+    ${rootsHTML}`);
+  drawJNCanvas(res,pts,jn);
+}
+
+function drawJNCanvas(res,pts,jn){
+  const cv=document.getElementById('cv-jn');
+  const W=cv.offsetWidth;if(!W)return;
+  cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const pad={l:58,r:20,t:24,b:48};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+
+  const{beta,s2,inv,n,p}=res;
+  const df=n-p;
+  const b1=beta[1],b3=beta[3];
+  const{tc}=jn;
+
+  const wRange=getWRange(pts);
+  const wL=wRange[0],wR=wRange[1];
+  const N=160;
+  const wArr=Array.from({length:N+1},(_,i)=>wL+(wR-wL)*i/N);
+  const theta=wArr.map(w=>b1+b3*w);
+  const seArr=wArr.map(w=>Math.sqrt(Math.max(0,s2*(inv[1][1]+w*w*inv[3][3]+2*w*inv[1][3]))));
+  const ciLo=theta.map((th,i)=>th-tc*seArr[i]);
+  const ciHi=theta.map((th,i)=>th+tc*seArr[i]);
+
+  const allY=[...theta,...ciLo,...ciHi,0];
+  const yMin=Math.min(...allY),yMax=Math.max(...allY);
+  const yPad=(yMax-yMin)*.12||0.3;
+  const yB=yMin-yPad,yT=yMax+yPad;
+
+  const sx=x=>pad.l+(x-wL)/(wR-wL)*cW;
+  const sy=y=>pad.t+(1-(y-yB)/(yT-yB))*cH;
+
+  const ink2=css('--ink2'),ink3=css('--ink3');
+  const grid=css('--grid'),bg=css('--bg');
+  const a1=css('--a1'),a2=css('--a2');
+
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  // Grid — nice ticks for W axis
+  ctx.strokeStyle=grid;ctx.lineWidth=1;
+  const jnXTicks=niceTicks(wL,wR,6);
+  jnXTicks.forEach(x=>{
+    ctx.beginPath();ctx.moveTo(sx(x),pad.t);ctx.lineTo(sx(x),pad.t+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='10px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(Number.isInteger(x)?x.toFixed(0):x.toFixed(2),sx(x),pad.t+cH+14);
+  });
+  const jnYTicks=niceTicks(yB,yT,4);
+  jnYTicks.forEach(y=>{
+    ctx.beginPath();ctx.moveTo(pad.l,sy(y));ctx.lineTo(pad.l+cW,sy(y));ctx.stroke();
+    ctx.fillStyle=ink3;ctx.textAlign='right';
+    ctx.fillText(Number.isInteger(y)?y.toFixed(0):y.toFixed(2),pad.l-5,sy(y)+4);
+  });
+  ctx.fillStyle=ink2;ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Moderator W',pad.l+cW/2,H-6);
+  ctx.save();ctx.translate(14,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('θ(X→Y|W)',0,0);ctx.restore();
+
+  // Non-significant shading (where CI contains 0)
+  ctx.fillStyle=a1+'18';
+  let inNS=false,segX=null;
+  for(let i=0;i<=N;i++){
+    const ns=ciLo[i]<=0&&ciHi[i]>=0;
+    if(ns&&!inNS){segX=wArr[i];inNS=true;}
+    else if(!ns&&inNS){
+      ctx.fillRect(sx(segX),pad.t,sx(wArr[i])-sx(segX),cH);
+      inNS=false;
+    }
+  }
+  if(inNS) ctx.fillRect(sx(segX),pad.t,sx(wArr[N])-sx(segX),cH);
+
+  // CI band
+  ctx.globalAlpha=0.18;ctx.fillStyle=a2;
+  ctx.beginPath();
+  wArr.forEach((w,i)=>i===0?ctx.moveTo(sx(w),sy(ciHi[i])):ctx.lineTo(sx(w),sy(ciHi[i])));
+  for(let i=N;i>=0;i--) ctx.lineTo(sx(wArr[i]),sy(ciLo[i]));
+  ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+
+  // y=0 reference
+  if(yB<0&&yT>0){
+    ctx.beginPath();ctx.moveTo(pad.l,sy(0));ctx.lineTo(pad.l+cW,sy(0));
+    ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([3,4]);ctx.stroke();ctx.setLineDash([]);
+  }
+
+  // CI dashed lines
+  ctx.strokeStyle=a2;ctx.lineWidth=1.2;ctx.setLineDash([4,3]);ctx.globalAlpha=0.6;
+  [[ciLo],[ciHi]].forEach(([arr])=>{
+    ctx.beginPath();
+    wArr.forEach((w,i)=>i===0?ctx.moveTo(sx(w),sy(arr[i])):ctx.lineTo(sx(w),sy(arr[i])));
+    ctx.stroke();
+  });
+  ctx.setLineDash([]);ctx.globalAlpha=1;
+
+  // θ line
+  ctx.strokeStyle=a2;ctx.lineWidth=2.5;
+  ctx.beginPath();
+  wArr.forEach((w,i)=>i===0?ctx.moveTo(sx(w),sy(theta[i])):ctx.lineTo(sx(w),sy(theta[i])));
+  ctx.stroke();
+
+  // JN boundary lines
+  jn.roots.forEach(w=>{
+    if(w<wL||w>wR)return;
+    ctx.strokeStyle=a1;ctx.lineWidth=2;ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(sx(w),pad.t);ctx.lineTo(sx(w),pad.t+cH);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=a1;ctx.font='bold 10.5px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('W*='+w.toFixed(3),sx(w),pad.t+11);
+  });
+
+  // Legend
+  const lx=pad.l+8,ly=pad.t+cH-8;
+  ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+  ctx.strokeStyle=a2;ctx.lineWidth=2.5;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(lx+18,ly);ctx.stroke();
+  ctx.fillStyle=a2;ctx.fillText('θ(X→Y|W)',lx+22,ly+4);
+  ctx.strokeStyle=a2;ctx.lineWidth=1.2;ctx.setLineDash([4,3]);ctx.globalAlpha=0.6;
+  ctx.beginPath();ctx.moveTo(lx+100,ly);ctx.lineTo(lx+118,ly);ctx.stroke();
+  ctx.setLineDash([]);ctx.globalAlpha=1;
+  ctx.fillStyle=a2;ctx.fillText('95% CI',lx+122,ly+4);
+  ctx.fillStyle=a1+'aa';
+  ctx.fillRect(lx+185,ly-6,12,10);
+  ctx.fillStyle=a1;ctx.fillText('n.s. zone',lx+200,ly+4);
+}
+
+// ─── Presets ───────────────────────────────────────────────────────────────
+const PRESETS={
+  A:{b0:0,b1:0.5,b2:0,   b3:0,   wtype:'normal',wmu:0,wsd:1,wp1:0.5},
+  B:{b0:0,b1:0.5,b2:0,   b3:0.5, wtype:'normal',wmu:0,wsd:1,wp1:0.5},
+  C:{b0:0,b1:0.5,b2:-0.5,b3:-0.5,wtype:'normal',wmu:0,wsd:1,wp1:0.5},
+  D:{b0:0,b1:0.4,b2:0.6, b3:0.5, wtype:'binary',wmu:0,wsd:1,wp1:0.5},
+};
+
+function setPreset(name){
+  const pr=PRESETS[name];if(!pr)return;
+  Object.assign(ST,pr);
+  ['b0','b1','b2','b3'].forEach(k=>{
+    const sl=document.getElementById('sl-'+k);
+    if(sl){sl.value=ST[k];fmtLabel(k);}
+  });
+  document.getElementById('sel-wtype').value=ST.wtype;
+  onWTypeUI();
+  document.getElementById('sl-wmu').value=ST.wmu;fmtLabel('wmu');
+  document.getElementById('sl-wsd').value=ST.wsd;fmtLabel('wsd');
+  document.getElementById('sl-wp1').value=ST.wp1;fmtLabel('wp1');
+  ['A','B','C','D'].forEach(id=>document.getElementById('pre-'+id).classList.toggle('active',id===name));
+  recompute();
+}
+
+// ─── UI handlers ───────────────────────────────────────────────────────────
+function onSl(key,el){
+  ST[key]=parseFloat(el.value);
+  fmtLabel(key);
+  ['A','B','C','D'].forEach(id=>document.getElementById('pre-'+id).classList.remove('active'));
+  recompute();
+}
+function onWSl(key,el){
+  ST[key]=parseFloat(el.value);
+  fmtLabel(key);
+  recompute();
+}
+function fmtLabel(key){
+  const el=document.getElementById('val-'+key);if(!el)return;
+  const v=ST[key];
+  if(['b1','b2','b3'].includes(key)) el.textContent=v.toFixed(2);
+  else if(key==='b0') el.textContent=v.toFixed(1);
+  else if(key==='sigma') el.textContent=v.toFixed(1);
+  else if(key==='n') el.textContent=v;
+  else if(key==='wmu') el.textContent=v.toFixed(1);
+  else if(key==='wsd') el.textContent=v.toFixed(1);
+  else if(key==='wmin'||key==='wmax') el.textContent=v.toFixed(1);
+  else if(key==='wp1') el.textContent=v.toFixed(2);
+  else el.textContent=Number.isInteger(v)?v:v.toFixed(2);
+}
+function onToggle(key,el){ST[key]=el.checked;recompute();}
+function onToggleYFix(){
+  ST.fixY=document.getElementById('tog-yafix').checked;
+  if(ST.fixY&&ST.data){
+    const yv=ST.data.map(p=>p.y);
+    const yMin=Math.min(...yv),yMax=Math.max(...yv),yPad=(yMax-yMin)*.1||1;
+    ST.fixedYB=yMin-yPad;ST.fixedYT=yMax+yPad;
+  }
+  if(ST.data&&ST.fitResult) renderView(ST.data,ST.fitResult,ST.spotW);
+}
+function onTogglePin(el){
+  const sticky=document.querySelector('.cv-sticky');
+  if(sticky)sticky.classList.toggle('unpinned',!el.checked);
+  localStorage.setItem('ml-cv-pin',el.checked?'1':'0');
+}
+function onSpotlight(){
+  ST.spotlight=document.querySelector('input[name=spotlight]:checked').value;
+  recompute();
+}
+function onWType(){
+  ST.wtype=document.getElementById('sel-wtype').value;
+  onWTypeUI();
+  ['A','B','C','D'].forEach(id=>document.getElementById('pre-'+id).classList.remove('active'));
+  recompute();
+}
+function onWTypeUI(){
+  const t=ST.wtype;
+  document.getElementById('w-normal-params').style.display=t==='normal'?'block':'none';
+  document.getElementById('w-uniform-params').style.display=t==='uniform'?'block':'none';
+  document.getElementById('w-binary-params').style.display=t==='binary'?'block':'none';
+  document.getElementById('scard-spotlight').style.display=t==='binary'?'none':'block';
+}
+function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
+function renderView(pts,res,spotW){
+  if(ST.view3d) draw3DSurface(pts,res,spotW);
+  else drawCanvas(pts,res,spotW);
+}
+function toggleView3D(is3d){
+  ST.view3d=is3d;
+  document.getElementById('btn-2d').classList.toggle('active',!is3d);
+  document.getElementById('btn-3d').classList.toggle('active',is3d);
+  document.getElementById('canvas-title').innerHTML=
+    is3d?'<span class="circ">①</span> 3D Regression Surface':'<span class="circ">①</span> Scatterplot';
+  const cv=document.getElementById('cv-mod');
+  cv.height = is3d ? 680 : 510;
+  cv.style.cursor = is3d ? 'grab' : 'default';
+  if(ST.data&&ST.fitResult) renderView(ST.data,ST.fitResult,ST.spotW);
+}
+function toggleMod(name){
+  const key='mod'+name.charAt(0).toUpperCase()+name.slice(1);
+  ST[key]=!ST[key];
+  document.getElementById('bd-'+name).classList.toggle('open',ST[key]);
+  document.getElementById('hd-'+name).classList.toggle('open',ST[key]);
+  document.getElementById('ic-'+name).textContent=ST[key]?'▼':'▶';
+  if(ST[key]&&ST.data&&ST.fitResult) updateJNResult(ST.fitResult,ST.data);
+}
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
+}
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  if(ST.data&&ST.fitResult){
+    renderView(ST.data,ST.fitResult,ST.spotW);
+    updateJNResult(ST.fitResult,ST.data);
+  }
+}
+
+// ─── Main recompute ────────────────────────────────────────────────────────
+function recompute(){
+  const pts=genData();
+  ST.data=pts;
+  const res=mlr(pts,p=>[1,p.x,p.w,p.x*p.w]);
+  const resR=mlr(pts,p=>[1,p.x,p.w]);
+  ST.fitResult=res;
+  const spotW=getSpotlightW(pts);
+  ST.spotW=spotW;
+  renderView(pts,res,spotW);
+  updateEq(res.beta);
+  updateCoefTable(res,resR);
+  updateSlopesTable(res,spotW);
+  updateJNResult(res,pts);
+}
+
+window.addEventListener('resize',()=>{
+  if(ST.data&&ST.fitResult){
+    renderView(ST.data,ST.fitResult,ST.spotW);
+    updateJNResult(ST.fitResult,ST.data);
+  }
+});
+
+setup3DDrag();
+if(localStorage.getItem('ml-cv-pin')==='0'){
+  const cb=document.getElementById('tog-pin');if(cb)cb.checked=false;
+  const sticky=document.querySelector('.cv-sticky');if(sticky)sticky.classList.add('unpinned');
+}
+setPreset('C');
+document.querySelectorAll('.formula-line,.help-formula,.help-p').forEach(el=>{el.innerHTML=fixDiacritics(el.innerHTML);});
+</script>
+</body>
+</html>
