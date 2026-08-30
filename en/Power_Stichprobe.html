@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power &amp; Sample Size — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+
+/* ── Topbar ── */
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+
+/* ── App-Layout ── */
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.52rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+
+.btn-row{display:flex;gap:.4rem;flex-wrap:wrap}
+
+/* ── Main Content ── */
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.3rem 0 .55rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.sec-h:first-child{margin-top:0}
+
+/* ── Hut/Strich-Notation ── */
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+
+/* ── Story-Box ── */
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+
+/* ── Plots ── */
+.plot-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block}
+
+.hint{font-family:'DM Mono',monospace;font-size:.70rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.35rem;margin-bottom:.8rem}
+
+/* ── Erklärungs-Box ── */
+.erklaer{background:var(--panel);border-left:3px solid var(--accent);
+  padding:.8rem 1rem;margin-bottom:.85rem;font-family:'DM Mono',monospace;
+  font-size:.80rem;color:var(--ink2);line-height:1.95}
+.erklaer strong{color:var(--ink)}
+.erklaer .ek-lbl{font-size:.67rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);display:block;margin-bottom:.3rem}
+.erklaer-row{display:grid;grid-template-columns:auto 1fr;gap:.18rem .7rem;
+  margin:.45rem 0 .2rem;align-items:baseline}
+.erklaer-key{font-family:'DM Mono',monospace;font-size:.80rem;font-weight:600;color:var(--ink)}
+.erklaer-val{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2)}
+
+/* ── Lernkarten ── */
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+
+/* ── Ampel-Badge ── */
+.power-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:.78rem;
+  padding:.22rem .65rem;letter-spacing:.04em;margin:.25rem 0}
+.badge-ok{background:rgba(90,138,42,.12);border:1px solid var(--a3);color:var(--a3)}
+.badge-warn{background:rgba(184,92,0,.12);border:1px solid var(--a5);color:var(--a5)}
+.badge-bad{background:rgba(201,74,42,.12);border:1px solid var(--a1);color:var(--a1)}
+
+/* ── Hilfe-Modal ── */
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:660px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);
+  padding:.3rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Power &amp; Sample Size — <em>why power is a curve</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
+  <button class="tbtn" id="btn-cohen" onclick="toggleCohen()">Cohen conventions</button>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Significance level α</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">α</span><span class="slider-val" id="v-alpha">0.05</span></div>
+      <input type="range" id="s-alpha" min="1" max="3" step="1" value="2">
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);display:flex;justify-content:space-between">
+      <span>0.01</span><span>0.05</span><span>0.10</span>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Test direction</div>
+    <div class="btn-row">
+      <button class="tbtn active" id="btn-two" onclick="setTails(2)">two-tailed</button>
+      <button class="tbtn" id="btn-one" onclick="setTails(1)">one-tailed</button>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Design</div>
+    <div class="btn-row">
+      <button class="tbtn active" id="btn-two-samp" onclick="setDesign(2)">2 groups</button>
+      <button class="tbtn" id="btn-one-samp" onclick="setDesign(1)">1 group</button>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Sample size</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">n <span id="lbl-n-design" style="color:var(--ink3)">(per group)</span></span>
+        <span class="slider-val" id="v-n">64</span>
+      </div>
+      <input type="range" id="s-n" min="1" max="100" step="1" value="40">
+    </div>
+    <div class="hint" id="n-total-note" style="border-top:none;padding-top:0;margin-bottom:0">Total N: 128</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Planned effect size</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Cohen's d</span><span class="slider-val" id="v-d">0.50</span></div>
+      <input type="range" id="s-d" min="0" max="120" step="1" value="50">
+    </div>
+    <div class="hint" style="border-top:none;padding-top:0;margin-bottom:0">Power: <strong id="power-display" style="font-family:'DM Mono',monospace;font-size:.85rem;color:var(--ink)">—</strong></div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Target power</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">1−β</span><span class="slider-val" id="v-pow">0.80</span></div>
+      <input type="range" id="s-pow" min="50" max="99" step="1" value="80">
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <!-- Story-Box -->
+  <div class="story-box">
+    <span class="story-lbl">📋 Example — clinical antidepressant trial</span>
+    A researcher is planning a study: expects <span class="sv" id="sb-d">d = 0.50</span> (from the literature),
+    <span class="sv" id="sb-n">n = 64</span> per group → planned power:
+    <span class="sv" id="sb-power">80%</span>.
+    A pilot study points to d ≈ 0.30 —
+    Section 3 shows what that means.
+  </div>
+
+  <!-- Section 1 -->
+  <div class="sec-h"><span class="circ">①</span> Power is a curve — not a single value</div>
+  <div class="plot-wrap">
+    <div class="plot-box" style="margin-bottom:0">
+      <div class="plot-title">Power(d) — curve &amp; curve family</div>
+      <canvas id="cv-power" height="300"></canvas>
+      <div class="hint" id="hint-power"></div>
+    </div>
+    <div class="plot-box" style="margin-bottom:0">
+      <div class="plot-title">H₀ and H₁ distribution</div>
+      <canvas id="cv-dist" height="300"></canvas>
+      <div class="hint" id="hint-dist"></div>
+    </div>
+  </div>
+  <div id="power-badge-wrap" style="margin-bottom:.85rem"></div>
+
+  <!-- Section 2 -->
+  <div class="sec-h"><span class="circ">②</span> The power landscape — n × d × power</div>
+  <div class="plot-box">
+    <div class="plot-title">Heatmap: power as a function of n and Cohen's d</div>
+    <canvas id="cv-heat" height="406"></canvas>
+    <div class="hint" id="hint-heat"></div>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="sec-h"><span class="circ">③</span> What if the true δ is smaller than assumed?</div>
+  <div class="plot-box">
+    <div class="plot-title">Sensitivity analysis — power at n = <span id="lbl-n-sens">64</span> for every possible true d</div>
+    <canvas id="cv-sens" height="406"></canvas>
+    <div class="hint" id="hint-sens" style="font-size:.80rem;line-height:1.85"></div>
+  </div>
+  <div class="erklaer" id="sens-erklaer">
+    <span class="ek-lbl">What this plot shows</span>
+    Loading…
+  </div>
+
+  <!-- Flashcards -->
+  <div class="sec-h">Flashcards</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">Power is a function</div>
+      <div class="lcard-body">Every conceivable true δ has a different power. The often-cited "80% power" applies only for exactly one assumed δ — and you never know that value for certain before the study.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">α and power move in opposite directions</div>
+      <div class="lcard-body">A stricter α (e.g. 0.01 instead of 0.05) lowers power for the same n and δ — you make it harder to reject H₀, and thereby also miss more real effects.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Cohen: rules of thumb, not laws</div>
+      <div class="lcard-body">Cohen (1988) derived d = 0.2/0.5/0.8 from the behavioral-science studies of his time — as a <strong>stopgap for when no domain knowledge is available</strong>. In medicine, d = 0.1 can be clinically meaningful; in basic research, d = 0.8 can be trivial. <em>The relevant ES is always context-specific.</em></div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">MDES from substantive context</div>
+      <div class="lcard-body">The MDES (Minimum Detectable Effect Size) should come from clinical/practical relevance, not from statistical conventions. Ask: <em>"What effect would be small enough to ignore?"</em></div>
+    </div>
+    <div class="lcard" style="grid-column:1/-1">
+      <div class="lcard-h">Post-hoc power is misleading</div>
+      <div class="lcard-body">Computing power after a non-significant study using the observed d is circular: it just reflects the p-value back at you and says nothing about the original planning. <strong>Use only a-priori power (before the study).</strong></div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- ══ HILFE-OVERLAY ═════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Power &amp; Sample Size — Help
+      <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    </div>
+
+    <div class="help-sh">Example</div>
+    <p class="help-p">A clinician is planning an RCT for an antidepressant. From the literature they expect <strong>Cohen's d = 0.50</strong> on the HAM-D scale. With n = 64 per group and α = 0.05 (two-tailed), the planned power comes out to about 80%. A pilot study, however, points to d ≈ 0.30 — <em>Section 3</em> shows what that means for the actual power.</p>
+
+    <div class="help-sh">What is statistical power?</div>
+    <p class="help-p">Power (1−β) is the probability of detecting a true effect — that is, correctly rejecting H₀ when H₁ holds. Power depends on four quantities: effect size δ, sample size n, significance level α, and test direction.</p>
+    <span class="help-formula">Power = P(reject H₀ | H₁ true) = 1 − β</span>
+
+    <div class="help-sh">Why is power a curve?</div>
+    <p class="help-p">Every possible true δ yields a different power. At δ = 0, power equals the α level (false positive). As δ grows, power rises toward 1. Section 1 shows this curve — and how it shifts with n. The often-cited "80% power" always applies only for <em>one</em> specific δ.</p>
+
+    <div class="help-sh">Normal approximation of power</div>
+    <span class="help-formula">Power ≈ Φ(|d| · √(n/2) − z_{α/2})   [two-tailed, 2 groups]
+Power ≈ Φ(|d| · √n    − z_{α/2})   [two-tailed, 1 group]</span>
+    <p class="help-p">Φ = standard normal distribution (cumulative), z_{α/2} = quantile for α/2. The approximation is very accurate for n ≥ 20.</p>
+
+    <div class="help-sh">Cohen's d and its limits</div>
+    <p class="help-p">Standardized effect size: d = (μ₁ − μ₂) / σ. The <strong>small/medium/large (0.2/0.5/0.8)</strong> conventions are historical rules of thumb from 1960s–70s behavioral research — not universal standards. Cohen himself warned against adopting them uncritically. In medicine, d = 0.1 can be clinically meaningful (blood-pressure reduction × millions of patients); in basic research, d = 0.8 can be trivial.</p>
+
+    <div class="help-sh">SESOI — how do you determine the relevant effect size?</div>
+    <p class="help-p">The core problem of sample-size planning isn't the computation — it's the substantive question: <strong>What effect do I want to reliably detect?</strong> Lakens (2022) suggests anchoring planning on the <strong>SESOI</strong> — the <em>Smallest Effect Size of Interest</em>: the smallest effect that would still be practically or clinically meaningful.</p>
+    <p class="help-p">The SESOI is fundamentally different from the question "what did earlier studies find?" — because published effect sizes are systematically overestimated by selection bias and publication bias (the winner's curse). Anyone who bases their planning on the mean published d risks an inflated effect expectation and therefore chronic underpowering.</p>
+    <p class="help-p"><strong>Four ways to determine the SESOI:</strong></p>
+    <p class="help-p"><strong>1. Clinical/practical anchor (recommended):</strong> Which effect would change a decision — e.g. treatment guidelines, approval, reimbursement? In medicine, many scales already have empirically determined minimum thresholds (MCID, Minimal Clinically Important Difference). Example: on the HAM-D, a reduction of ≥ 3 points is considered clinically meaningful — which corresponds to a specific d.</p>
+    <p class="help-p"><strong>2. Resource-based justification:</strong> Work backward: what n is realistically achievable? What MDES does that give you at 80% power? Is that MDES still substantively relevant — or so large that only large, implausible effects would be detected?</p>
+    <p class="help-p"><strong>3. Lower bound from theory:</strong> What does theory say about the minimum size of the effect? If a mechanism is postulated, you can often argue below which threshold it practically doesn't exist.</p>
+    <p class="help-p"><strong>4. Prior literature — with caution:</strong> Meta-analytic estimates from pre-selected samples overestimate the true effect. Better: uncorrected raw data from registry studies or preregistered replications. If only published effects are available, set the planning value noticeably more conservatively (e.g. 50–70% of the published d).</p>
+    <p class="help-p"><strong>Connecting SESOI and MDES:</strong> Once the SESOI has been substantively determined, Section 3 of this tool provides the answer: is my planned n large enough to reliably detect the SESOI (MDES ≤ SESOI)? If not, n must be increased or the design changed.</p>
+    <p class="help-p" style="border-top:1px solid var(--grid);padding-top:.55rem;margin-top:.3rem;color:var(--ink3)">
+    <strong style="color:var(--ink2)">Reference:</strong> Lakens, D. (2022). Sample size justification. <em>Collabra: Psychology</em>, 8(1), 33267.
+    <a href="https://doi.org/10.1525/collabra.33267" target="_blank" style="color:var(--a2);text-decoration:none">doi:10.1525/collabra.33267</a> — open access, includes R code and interactive examples.</p>
+
+    <div class="help-sh">Terms</div>
+    <p class="help-p"><strong>α (Type I error):</strong> probability of incorrectly rejecting H₀.<br>
+    <strong>β (Type II error):</strong> probability of missing a real effect. Power = 1−β.<br>
+    <strong>NCP (non-centrality parameter):</strong> δ · √(n/2) — indicates how far H₁ is from H₀ (in SD units of the test statistic).<br>
+    <strong>MDES (Minimum Detectable Effect Size):</strong> smallest effect that can be detected with given n and α at target power. Readable from Section 3.<br>
+    <strong>SESOI (Smallest Effect Size of Interest):</strong> the smallest effect that would still be substantively practically or clinically relevant. Planning should ensure MDES ≤ SESOI.<br>
+    <strong>Post-hoc power:</strong> power computed <em>after</em> the study using the observed d — circular and uninformative, because it just reflects the p-value back at you.</p>
+  </div>
+</div>
+
+<script>
+// ── Theme / Help ───────────────────────────────────────────────────────────
+function toggleTheme(){
+  const h=document.documentElement;
+  const dark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('btn-theme').textContent=dark?'🌙 Dark':'☀ Light';
+  update();
+}
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
+}
+
+// ── State ──────────────────────────────────────────────────────────────────
+let showCohen=false;
+const ST={alpha:.05,tails:2,design:2,n:64,d:.50,targetPow:.80};
+
+function toggleCohen(){
+  showCohen=!showCohen;
+  const btn=document.getElementById('btn-cohen');
+  btn.classList.toggle('active',showCohen);
+  drawPowerCurve();
+}
+const ALPHA_VALS=[0.01,0.05,0.10];
+
+// ── Normalverteilung ───────────────────────────────────────────────────────
+function phi(x){return .5*(1+erf(x/Math.SQRT2));}
+function phiInv(p){  // Rational approximation (Beasley-Springer-Moro)
+  if(p<=0)return -8;if(p>=1)return 8;
+  const a=[2.50662823884,-18.61500062529,41.39119773534,-25.44106049637];
+  const b=[-8.47351093090,23.08336743743,-21.06224101826,3.13082909833];
+  const c=[0.3374754822726147,0.9761690190917186,0.1607979714918209,
+           0.0276438810333863,0.0038405729373609,0.0003951896511349,
+           0.0000321767881768,0.0000002888167364,0.0000003960315187];
+  let r,x;
+  const q=p-.5;
+  if(Math.abs(q)<.42){r=q*q;x=q*(((a[3]*r+a[2])*r+a[1])*r+a[0])/((((b[3]*r+b[2])*r+b[1])*r+b[0])*r+1);}
+  else{
+    r=q<0?p:1-p;r=Math.log(-Math.log(r));
+    x=c[0]+r*(c[1]+r*(c[2]+r*(c[3]+r*(c[4]+r*(c[5]+r*(c[6]+r*(c[7]+r*c[8])))))));
+    if(q<0)x=-x;
+  }
+  return x;
+}
+function erf(x){
+  const t=1/(1+.3275911*Math.abs(x));
+  const y=1-((((1.061405429*t-1.453152027)*t+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-x*x);
+  return x<0?-y:y;
+}
+
+// ── Power-Berechnung (Normalapproximation) ─────────────────────────────────
+function computePower(d,n,alpha,tails,design){
+  const ncp=design===2?Math.abs(d)*Math.sqrt(n/2):Math.abs(d)*Math.sqrt(n);
+  const za=tails===2?phiInv(1-alpha/2):phiInv(1-alpha);
+  return phi(ncp-za);
+}
+
+// ── n aus Power-Ziel ───────────────────────────────────────────────────────
+function nForPower(d,power,alpha,tails,design){
+  if(Math.abs(d)<1e-6)return Infinity;
+  const za=tails===2?phiInv(1-alpha/2):phiInv(1-alpha);
+  const zb=phiInv(power);
+  const base=Math.pow(za+zb,2)/Math.pow(d,2);
+  return design===2?Math.ceil(2*base):Math.ceil(base);
+}
+
+// ── n-Slider Mapping (Log-Skala, 10–500) ──────────────────────────────────
+function sliderToN(v){return Math.round(Math.exp(Math.log(10)+(Math.log(500)-Math.log(10))*v/100));}
+function nToSlider(n){return Math.round((Math.log(n)-Math.log(10))/(Math.log(500)-Math.log(10))*100);}
+
+// ── Slider-Initialisierung ─────────────────────────────────────────────────
+document.getElementById('s-n').value=nToSlider(64);
+
+// ── Slider-Events ──────────────────────────────────────────────────────────
+document.getElementById('s-alpha').addEventListener('input',function(){
+  ST.alpha=ALPHA_VALS[+this.value-1];
+  document.getElementById('v-alpha').textContent=ST.alpha.toFixed(2);
+  update();
+});
+document.getElementById('s-n').addEventListener('input',function(){
+  ST.n=sliderToN(+this.value);
+  document.getElementById('v-n').textContent=ST.n;
+  document.getElementById('n-total-note').textContent=ST.design===2?`Total N: ${ST.n*2}`:'';
+  document.getElementById('lbl-n-sens').textContent=ST.n;
+  update();
+});
+document.getElementById('s-d').addEventListener('input',function(){
+  ST.d=(+this.value/100).toFixed(2)*1;
+  document.getElementById('v-d').textContent=ST.d.toFixed(2);
+  update();
+});
+document.getElementById('s-pow').addEventListener('input',function(){
+  ST.targetPow=+this.value/100;
+  document.getElementById('v-pow').textContent=ST.targetPow.toFixed(2);
+  update();
+});
+
+function setTails(t){
+  ST.tails=t;
+  document.getElementById('btn-two').classList.toggle('active',t===2);
+  document.getElementById('btn-one').classList.toggle('active',t===1);
+  update();
+}
+function setDesign(d){
+  ST.design=d;
+  document.getElementById('btn-two-samp').classList.toggle('active',d===2);
+  document.getElementById('btn-one-samp').classList.toggle('active',d===1);
+  document.getElementById('lbl-n-design').textContent=d===2?'(per group)':'';
+  document.getElementById('n-total-note').textContent=d===2?`Total N: ${ST.n*2}`:'';
+  update();
+}
+
+// ── CSS-Variablen lesen ────────────────────────────────────────────────────
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+// ── update: Story-Box + Badge ──────────────────────────────────────────────
+function updateStory(){
+  const pow=computePower(ST.d,ST.n,ST.alpha,ST.tails,ST.design);
+  document.getElementById('sb-d').textContent=`d = ${ST.d.toFixed(2)}`;
+  document.getElementById('sb-n').textContent=`n = ${ST.n}`;
+  document.getElementById('sb-power').textContent=`${(pow*100).toFixed(1)}%`;
+  document.getElementById('power-display').textContent=`${(pow*100).toFixed(1)}%`;
+
+  const badge=pow>=ST.targetPow?
+    `<span class="power-badge badge-ok">✓ Power ${(pow*100).toFixed(1)}% ≥ target ${(ST.targetPow*100).toFixed(0)}%</span>`:
+    pow>=.50?
+    `<span class="power-badge badge-warn">⚠ Power ${(pow*100).toFixed(1)}% — below target ${(ST.targetPow*100).toFixed(0)}%</span>`:
+    `<span class="power-badge badge-bad">✗ Power ${(pow*100).toFixed(1)}% — severely underpowered</span>`;
+  document.getElementById('power-badge-wrap').innerHTML=badge;
+
+  const nNeeded=nForPower(ST.d,ST.targetPow,ST.alpha,ST.tails,ST.design);
+  document.getElementById('hint-power').textContent=
+    `n=${ST.n} → power ${(pow*100).toFixed(1)}% at d=${ST.d.toFixed(2)} | `+
+    `For ${(ST.targetPow*100).toFixed(0)}% power at d=${ST.d.toFixed(2)}: n=${isFinite(nNeeded)?nNeeded:'∞'}`;
+}
+
+// ── Power-Kurve ────────────────────────────────────────────────────────────
+function drawPowerCurve(){
+  const canvas=document.getElementById('cv-power');
+  const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  const pad={l:58,r:20,t:24,b:58};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5');
+  const ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),paper=cv('--paper'),bg=cv('--bg');
+  ctx.clearRect(0,0,W,H);
+
+  const dMax=2.0;
+  const sx=v=>pad.l+cW*v/dMax;
+  const sy=v=>pad.t+cH*(1-v);
+
+  // Grid
+  [0,.2,.4,.6,.8,1].forEach(p=>{
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,sy(p));ctx.lineTo(pad.l+cW,sy(p));ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(p.toFixed(1),pad.l-6,sy(p)+5);
+  });
+  [0,.5,1.0,1.5,2.0].forEach(d=>{
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(sx(d),pad.t);ctx.lineTo(sx(d),pad.t+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(d.toFixed(1),sx(d),pad.t+cH+18);
+  });
+  // Achsen
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
+  ctx.fillStyle=ink2;ctx.font='15px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText("Cohen's d (true effect size)",pad.l+cW/2,H-4);
+  ctx.save();ctx.translate(15,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Power (1−β)',0,0);ctx.restore();
+
+  // Kurvenschar: n/4, n/2, n (aktuell), 2n — je eigene Farbe
+  const n4=Math.max(4,Math.round(ST.n/4));
+  const n2=Math.max(4,Math.round(ST.n/2));
+  const n2x=Math.min(500,ST.n*2);
+  const nCurves=[
+    {n:n4,  col:a1, dash:[4,3], lw:1.4, lbl:`n=${n4} (1/4)`},
+    {n:n2,  col:a5, dash:[4,3], lw:1.4, lbl:`n=${n2} (1/2)`},
+    {n:ST.n,col:a3, dash:[],    lw:2.5, lbl:`n=${ST.n} ← current`},
+    {n:n2x, col:a2, dash:[4,3], lw:1.4, lbl:`n=${n2x} (×2)`},
+  ];
+  const ND=250;
+  nCurves.forEach(nc=>{
+    ctx.strokeStyle=nc.col;ctx.lineWidth=nc.lw;ctx.setLineDash(nc.dash);
+    ctx.beginPath();
+    for(let i=0;i<ND;i++){
+      const d=i*dMax/(ND-1);
+      const px=sx(d),py=sy(computePower(d,nc.n,ST.alpha,ST.tails,ST.design));
+      i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+    }
+    ctx.stroke();ctx.setLineDash([]);
+  });
+
+  // Ziel-Power-Linie
+  ctx.strokeStyle=a4;ctx.lineWidth=1.3;ctx.setLineDash([6,3]);
+  ctx.beginPath();ctx.moveTo(pad.l,sy(ST.targetPow));ctx.lineTo(pad.l+cW,sy(ST.targetPow));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=a4;ctx.font='13px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText(`Target ${(ST.targetPow*100).toFixed(0)}%`,pad.l+5,sy(ST.targetPow)-5);
+
+  // Cohen conventions (toggle)
+  if(showCohen){
+    [{d:.2,lbl:'small'},{d:.5,lbl:'medium'},{d:.8,lbl:'large'}].forEach(c=>{
+      ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([2,4]);
+      ctx.beginPath();ctx.moveTo(sx(c.d),pad.t);ctx.lineTo(sx(c.d),pad.t+cH);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+      ctx.fillText(`d=${c.d}`,sx(c.d),pad.t+13);
+      ctx.fillText(`(${c.lbl})`,sx(c.d),pad.t+27);
+    });
+  }
+
+  // Aktuelles d — vertikale Linie + Punkt
+  const curPow=computePower(ST.d,ST.n,ST.alpha,ST.tails,ST.design);
+  ctx.strokeStyle=a1;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(sx(ST.d),pad.t);ctx.lineTo(sx(ST.d),pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();ctx.arc(sx(ST.d),sy(curPow),5.5,0,2*Math.PI);
+  ctx.fillStyle=a3;ctx.fill();
+  ctx.strokeStyle=bg;ctx.lineWidth=1.5;ctx.stroke();
+
+  // Legende
+  const lgW=168,lgItemH=20,lgPad=8;
+  const lgH=nCurves.length*lgItemH+lgPad*2;
+  const lgX=pad.l+cW-lgW-4,lgY=pad.t+4;
+  ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(lgX,lgY,lgW,lgH);
+  ctx.globalAlpha=1;ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.strokeRect(lgX,lgY,lgW,lgH);
+  nCurves.forEach((nc,i)=>{
+    const y=lgY+lgPad+(i+.5)*lgItemH;
+    ctx.strokeStyle=nc.col;ctx.lineWidth=nc.lw;ctx.setLineDash(nc.dash);
+    ctx.beginPath();ctx.moveTo(lgX+7,y);ctx.lineTo(lgX+29,y);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=nc.col;ctx.font='13px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(nc.lbl,lgX+34,y+5);
+  });
+}
+
+// ── H₀/H₁-Verteilungen ────────────────────────────────────────────────────
+function drawDist(){
+  const canvas=document.getElementById('cv-dist');
+  const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  const pad={l:40,r:18,t:24,b:58};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a5=cv('--a5');
+  const ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),paper=cv('--paper');
+  ctx.clearRect(0,0,W,H);
+
+  const ncp=ST.design===2?ST.d*Math.sqrt(ST.n/2):ST.d*Math.sqrt(ST.n);
+  const za=ST.tails===2?phiInv(1-ST.alpha/2):phiInv(1-ST.alpha);
+
+  const xMin=Math.min(-4,ncp-4),xMax=Math.max(4,ncp+4);
+  const NX=300;
+  const xs=Array.from({length:NX},(_,i)=>xMin+i*(xMax-xMin)/(NX-1));
+  const pNorm=(x,mu)=>Math.exp(-(x-mu)*(x-mu)/2)/Math.sqrt(2*Math.PI);
+  const pH0=xs.map(x=>pNorm(x,0));
+  const pH1=xs.map(x=>pNorm(x,ncp));
+  const yMax=Math.max(...pH0,...pH1)*1.18;
+
+  const sx=v=>pad.l+cW*(v-xMin)/(xMax-xMin);
+  const sy=v=>pad.t+cH*(1-v/yMax);
+
+  // Grid X
+  for(let xv=Math.ceil(xMin);xv<=Math.floor(xMax);xv++){
+    const px=sx(xv);
+    if(px<pad.l-1||px>pad.l+cW+1)continue;
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(px,pad.t);ctx.lineTo(px,pad.t+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(xv,px,pad.t+cH+18);
+  }
+  // Achsen
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
+  ctx.fillStyle=ink2;ctx.font='15px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Test statistic z',pad.l+cW/2,H-4);
+
+  // Hilfsfunktion: Fläche unter Kurve füllen
+  const fillArea=(pdf,col,fromX,toX,alpha)=>{
+    const i0=xs.findIndex(x=>x>=fromX),i1=xs.findLastIndex(x=>x<=toX);
+    if(i0<0||i1<0||i0>i1)return;
+    ctx.fillStyle=col;ctx.globalAlpha=alpha;
+    ctx.beginPath();ctx.moveTo(sx(xs[i0]),sy(0));
+    for(let i=i0;i<=i1;i++)ctx.lineTo(sx(xs[i]),sy(pdf[i]));
+    ctx.lineTo(sx(xs[i1]),sy(0));ctx.closePath();ctx.fill();
+    ctx.globalAlpha=1;
+  };
+
+  // β (Typ-II) — gelb: unter H₁, links von z_crit
+  fillArea(pH1,a5,xMin,za,.38);
+  // Power — grün: unter H₁, rechts von z_crit
+  fillArea(pH1,a3,za,xMax,.38);
+  // α (Typ-I) — rot: unter H₀, rechts von z_crit (+ linker Tail bei zweiseitig)
+  fillArea(pH0,a1,za,xMax,.50);
+  if(ST.tails===2)fillArea(pH0,a1,xMin,-za,.50);
+
+  // Kurven
+  const drawCurve=(pdf,col,lw,dash=[])=>{
+    ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.setLineDash(dash);
+    ctx.beginPath();
+    xs.forEach((x,i)=>{i===0?ctx.moveTo(sx(x),sy(pdf[i])):ctx.lineTo(sx(x),sy(pdf[i]));});
+    ctx.stroke();ctx.setLineDash([]);
+  };
+  drawCurve(pH0,a2,2,[5,3]);   // H₀ blau, gestrichelt
+  drawCurve(pH1,a3,2.5);       // H₁ grün, solid
+
+  // Kritischer Wert (nur Linien hier, Label folgt weiter unten mit Kollisionsvermeidung)
+  ctx.strokeStyle=a1;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(sx(za),pad.t+8);ctx.lineTo(sx(za),pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  if(ST.tails===2&&sx(-za)>pad.l){
+    ctx.strokeStyle=a1;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+    ctx.beginPath();ctx.moveTo(sx(-za),pad.t+8);ctx.lineTo(sx(-za),pad.t+cH);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // NCP-Pfeil (nur Pfeil, Label folgt weiter unten)
+  const ay=pad.t+cH*0.18;
+  if(ncp>0.5){
+    ctx.strokeStyle=ink3;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(sx(0),ay);ctx.lineTo(sx(ncp)-3,ay);ctx.stroke();
+    // Pfeilspitze
+    ctx.beginPath();ctx.moveTo(sx(ncp),ay);ctx.lineTo(sx(ncp)-6,ay-3);ctx.lineTo(sx(ncp)-6,ay+3);ctx.closePath();
+    ctx.fillStyle=ink3;ctx.fill();
+  }
+
+  // Labels (H₀, H₁, z_c, ncp) mit Kollisionsvermeidung: überlappende Labels weichen vertikal aus,
+  // statt sich bei kleinem ncp oder za≈ncp gegenseitig oder mit der Pfeil-Linie zu überdecken.
+  const placedBoxes=[];
+  if(ncp>0.5){
+    // Pfeil-Linie selbst als Hindernis registrieren, damit kein Label auf ihr landet
+    const ax0=Math.min(sx(0),sx(ncp)),ax1=Math.max(sx(0),sx(ncp));
+    placedBoxes.push({x:ax0-4,y:ay-5,w:(ax1-ax0)+8,h:10});
+  }
+  function placeLabel(text,x0,y0,align,color,font){
+    ctx.font=font;ctx.textAlign=align;
+    const w=ctx.measureText(text).width;
+    let y=y0;
+    for(let tries=0;tries<8;tries++){
+      const bx=align==='left'?x0:align==='right'?x0-w:x0-w/2;
+      const box={x:bx-3,y:y-12,w:w+6,h:16};
+      const hit=placedBoxes.some(b=>!(box.x+box.w<b.x||box.x>b.x+b.w||box.y+box.h<b.y||box.y>b.y+b.h));
+      if(!hit){placedBoxes.push(box);break;}
+      y+=13;
+    }
+    ctx.fillStyle=color;ctx.fillText(text,x0,y);
+  }
+  const peakY=sy(pNorm(0,0));   // H₀- und H₁-Kurve haben identische Amplitude (beide SD=1) → gleiche Peak-Höhe
+  placeLabel('H₀',sx(0),peakY-9,'center',a2,'bold 14px DM Mono,monospace');
+  placeLabel('H₁',sx(ncp),peakY-9,'center',a3,'bold 14px DM Mono,monospace');
+  placeLabel(`z_c=${za.toFixed(2)}`,sx(za)+4,pad.t+22,'left',a1,'13px DM Mono,monospace');
+  if(ncp>0.5)placeLabel(`ncp = ${ncp.toFixed(2)}`,sx(ncp/2),ay-7,'center',ink3,'13px DM Mono,monospace');
+
+  // Legende
+  const curPow=computePower(ST.d,ST.n,ST.alpha,ST.tails,ST.design);
+  const lgItems=[
+    {col:a2,lbl:`H₀: N(0,1)`,fill:false},
+    {col:a3,lbl:`H₁: N(${ncp.toFixed(1)},1)`,fill:false},
+    {col:a3,lbl:`Power = ${(curPow*100).toFixed(1)}%`,fill:true},
+    {col:a5,lbl:`β = ${((1-curPow)*100).toFixed(1)}%`,fill:true},
+    {col:a1,lbl:`α = ${(ST.alpha*100).toFixed(0)}%`,fill:true},
+  ];
+  const lgW=182,lgItemH=19,lgPad=7;
+  const lgH=lgItems.length*lgItemH+lgPad*2;
+  const lgX=pad.l+4,lgY=pad.t+4;
+  ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(lgX,lgY,lgW,lgH);
+  ctx.globalAlpha=1;ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.strokeRect(lgX,lgY,lgW,lgH);
+  lgItems.forEach((it,i)=>{
+    const y=lgY+lgPad+(i+.5)*lgItemH;
+    if(it.fill){ctx.fillStyle=it.col;ctx.globalAlpha=.45;ctx.fillRect(lgX+7,y-5,20,10);ctx.globalAlpha=1;}
+    else{ctx.strokeStyle=it.col;ctx.lineWidth=it.col===a2?1.5:2;if(it.col===a2)ctx.setLineDash([4,2]);
+      ctx.beginPath();ctx.moveTo(lgX+7,y);ctx.lineTo(lgX+27,y);ctx.stroke();ctx.setLineDash([]);}
+    ctx.fillStyle=it.col;ctx.font='13px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(it.lbl,lgX+32,y+5);
+  });
+}
+
+// ── Heatmap n × d → Power ─────────────────────────────────────────────────
+function drawHeatmap(){
+  const canvas=document.getElementById('cv-heat');
+  const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  const pad={l:60,r:26,t:18,b:58};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),bg=cv('--bg');
+  ctx.clearRect(0,0,W,H);
+
+  const dMin=0.02,dMax=2.0,nMin=10,nMax=400;
+  const logMin=Math.log(nMin),logMax=Math.log(nMax);
+  const NDX=120,NDY=100;
+  const cellW=cW/NDX,cellH=cH/NDY;
+
+  // Farbe: dunkelrot → orange → gelbgrün → grün
+  const pCol=p=>{
+    const stops=[[40,10,10],[220,80,0],[180,220,0],[0,200,60]];
+    const pts=[0,.5,.8,1];
+    let i=0;while(i<pts.length-2&&p>pts[i+1])i++;
+    const t=(p-pts[i])/(pts[i+1]-pts[i]);
+    const a=stops[i],b=stops[i+1];
+    return`rgb(${Math.round(a[0]+(b[0]-a[0])*t)},${Math.round(a[1]+(b[1]-a[1])*t)},${Math.round(a[2]+(b[2]-a[2])*t)})`;
+  };
+
+  // Heatmap-Zellen
+  for(let ix=0;ix<NDX;ix++){
+    const d=dMin+(dMax-dMin)*(ix+.5)/NDX;
+    for(let iy=0;iy<NDY;iy++){
+      const n=Math.round(Math.exp(logMin+(logMax-logMin)*(iy+.5)/NDY));
+      ctx.fillStyle=pCol(computePower(d,n,ST.alpha,ST.tails,ST.design));
+      ctx.fillRect(pad.l+ix*cellW,pad.t+(NDY-1-iy)*cellH,cellW+.6,cellH+.6);
+    }
+  }
+
+  // Hilfs-Koordinaten
+  const sx=d=>pad.l+cW*(d-dMin)/(dMax-dMin);
+  const sn=n=>pad.t+cH*(1-(Math.log(n)-logMin)/(logMax-logMin));
+
+  // Y-Gitterlinien + Ticks
+  [10,20,50,100,200,400].forEach(n=>{
+    const py=sn(n);
+    ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(pad.l+cW,py);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(n,pad.l-6,py+5);
+  });
+
+  // Isopower-Kurven: 50% (dünn) · 80% (dick, weiß) · 95% (dünn)
+  [{pow:.50,lw:1.3,dash:[3,3],alpha:.6},{pow:.80,lw:2.2,dash:[],alpha:.95},{pow:.95,lw:1.3,dash:[3,3],alpha:.6}]
+  .forEach(iso=>{
+    ctx.strokeStyle=`rgba(255,255,255,${iso.alpha})`;
+    ctx.lineWidth=iso.lw;ctx.setLineDash(iso.dash);
+    ctx.beginPath();let started=false;
+    for(let ix=0;ix<NDX*2;ix++){
+      const d=dMin+(dMax-dMin)*(ix+.5)/(NDX*2);
+      const nStar=nForPower(d,iso.pow,ST.alpha,ST.tails,ST.design);
+      if(!isFinite(nStar)||nStar<nMin||nStar>nMax){started=false;continue;}
+      const px=sx(d),py=sn(nStar);
+      if(!started){ctx.moveTo(px,py);started=true;}else ctx.lineTo(px,py);
+    }
+    ctx.stroke();ctx.setLineDash([]);
+    // Label an guter Position
+    const dLbl=[.25,.35,.45].find(dl=>{const ns=nForPower(dl,iso.pow,ST.alpha,ST.tails,ST.design);return isFinite(ns)&&ns>=nMin&&ns<=nMax;});
+    if(dLbl!=null){
+      const ns=nForPower(dLbl,iso.pow,ST.alpha,ST.tails,ST.design);
+      ctx.fillStyle=`rgba(255,255,255,${iso.alpha})`;
+      ctx.font=`${iso.lw>2?'bold ':''  }13px DM Mono,monospace`;ctx.textAlign='left';
+      ctx.fillText(`${(iso.pow*100).toFixed(0)}%`,sx(dLbl)+3,sn(ns)-4);
+    }
+  });
+
+  // Crosshair am aktuellen (d, n)
+  const cxp=Math.max(pad.l,Math.min(pad.l+cW,sx(ST.d)));
+  const cnp=Math.max(pad.t,Math.min(pad.t+cH,sn(ST.n)));
+  ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(cxp,pad.t);ctx.lineTo(cxp,pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,cnp);ctx.lineTo(pad.l+cW,cnp);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();ctx.arc(cxp,cnp,5,0,2*Math.PI);
+  ctx.fillStyle='white';ctx.fill();
+  ctx.strokeStyle=bg;ctx.lineWidth=1.5;ctx.stroke();
+
+  // Achsen + Beschriftungen
+  ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
+  ctx.fillStyle=ink2;ctx.font='15px DM Mono,monospace';ctx.textAlign='center';
+  const nLbl=ST.design===2?'n (per group)':'n';
+  ctx.fillText("Cohen's d",pad.l+cW/2,H-4);
+  ctx.save();ctx.translate(15,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText(nLbl,0,0);ctx.restore();
+  [.5,1.0,1.5,2.0].forEach(d=>{
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(d.toFixed(1),sx(d),pad.t+cH+18);
+  });
+
+  // Farblegende (rechts)
+  const barX=pad.l+cW+4,barY=pad.t,barW=12,barH=cH;
+  for(let i=0;i<barH;i++){ctx.fillStyle=pCol(1-i/barH);ctx.fillRect(barX,barY+i,barW,1.5);}
+  ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('1.0',barX+barW+2,barY+7);
+  ctx.fillText('.80',barX+barW+2,barY+barH*(1-.80)+5);
+  ctx.fillText('.50',barX+barW+2,barY+barH*(1-.50)+5);
+  ctx.fillText('0',  barX+barW+2,barY+barH+5);
+
+  // Note
+  const curPow=computePower(ST.d,ST.n,ST.alpha,ST.tails,ST.design);
+  document.getElementById('hint-heat').textContent=
+    `Current ✕: d=${ST.d.toFixed(2)}, n=${ST.n} → power ${(curPow*100).toFixed(1)}%. `+
+    `White isopower lines: 50% (thin) · 80% (thick) · 95% (thin). `+
+    `⚠ Cohen conventions (d=0.2/0.5/0.8) are domain-specific — not universal standards.`;
+}
+// ── Sensitivitätskurve ────────────────────────────────────────────────────
+function drawSens(){
+  const canvas=document.getElementById('cv-sens');
+  const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  const pad={l:58,r:20,t:24,b:62};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5');
+  const ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),paper=cv('--paper');
+  ctx.clearRect(0,0,W,H);
+
+  const dPlan=ST.d;
+  const dMax=Math.max(dPlan*1.6,0.8);
+  const ND=250;
+  const sx=v=>pad.l+cW*v/dMax;
+  const sy=v=>pad.t+cH*(1-v);
+
+  // Grid
+  [0,.2,.4,.6,.8,1].forEach(p=>{
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,sy(p));ctx.lineTo(pad.l+cW,sy(p));ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(p.toFixed(1),pad.l-6,sy(p)+5);
+  });
+  [0,.25,.5,.75,1].map(f=>f*dMax).forEach(d=>{
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(sx(d),pad.t);ctx.lineTo(sx(d),pad.t+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(d.toFixed(2),sx(d),pad.t+cH+18);
+  });
+  // Achsen
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
+  ctx.fillStyle=ink2;ctx.font='15px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Actual Cohen\'s d (true effect size)',pad.l+cW/2,H-4);
+  ctx.save();ctx.translate(15,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Power (1−β)',0,0);ctx.restore();
+
+  // Shaded region: d < d_plan (warning — smaller than planned)
+  const shadeEnd=Math.min(dPlan,dMax);
+  ctx.fillStyle=a1;ctx.globalAlpha=.07;
+  ctx.fillRect(pad.l,pad.t,sx(shadeEnd)-pad.l,cH);
+  ctx.globalAlpha=1;
+  ctx.fillStyle=a1;ctx.font='12px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('← true d smaller than planned',pad.l+5,pad.t+16);
+
+  // Target-power line
+  ctx.strokeStyle=a4;ctx.lineWidth=1.3;ctx.setLineDash([6,3]);
+  ctx.beginPath();ctx.moveTo(pad.l,sy(ST.targetPow));ctx.lineTo(pad.l+cW,sy(ST.targetPow));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=a4;ctx.font='13px DM Mono,monospace';ctx.textAlign='right';
+  ctx.fillText(`Target ${(ST.targetPow*100).toFixed(0)}%`,pad.l+cW-4,sy(ST.targetPow)-5);
+
+  // Power-Kurve (grün)
+  ctx.strokeStyle=a3;ctx.lineWidth=2.5;
+  ctx.beginPath();
+  for(let i=0;i<ND;i++){
+    const d=i*dMax/(ND-1);
+    const px=sx(d),py=sy(computePower(d,ST.n,ST.alpha,ST.tails,ST.design));
+    i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+
+  // Planned d — vertical line + power point
+  const planPow=computePower(dPlan,ST.n,ST.alpha,ST.tails,ST.design);
+  ctx.strokeStyle=a3;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(sx(dPlan),pad.t);ctx.lineTo(sx(dPlan),sy(planPow));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();ctx.arc(sx(dPlan),sy(planPow),6,0,2*Math.PI);
+  ctx.fillStyle=a3;ctx.fill();
+  ctx.strokeStyle=cv('--bg');ctx.lineWidth=1.5;ctx.stroke();
+  // Label left or right of the line, to avoid overlap
+  const planOnRight=sx(dPlan)<pad.l+cW*0.55;
+  ctx.fillStyle=a3;ctx.font='bold 13px DM Mono,monospace';
+  ctx.textAlign=planOnRight?'left':'right';
+  const plx=planOnRight?sx(dPlan)+7:sx(dPlan)-7;
+  ctx.fillText(`planned: d = ${dPlan.toFixed(2)}`,plx,pad.t+18);
+  ctx.fillText(`Power = ${(planPow*100).toFixed(0)}%`,plx,pad.t+34);
+
+  // Reference points: d_plan × 0.25, 0.50, 0.75 — dots + labels
+  [.25,.50,.75].forEach(frac=>{
+    const d=dPlan*frac;
+    if(d<=0||d>dMax)return;
+    const p=computePower(d,ST.n,ST.alpha,ST.tails,ST.design);
+    const col=p>=ST.targetPow?a3:p>=.5?a5:a1;
+    ctx.beginPath();ctx.arc(sx(d),sy(p),5,0,2*Math.PI);
+    ctx.fillStyle=col;ctx.fill();
+    ctx.strokeStyle=cv('--bg');ctx.lineWidth=1;ctx.stroke();
+    // Labels: d value + power — left/right depending on position
+    const onRight=sx(d)<pad.l+cW*0.7;
+    ctx.fillStyle=col;ctx.font='bold 12px DM Mono,monospace';
+    ctx.textAlign=onRight?'left':'right';
+    const lx=onRight?sx(d)+7:sx(d)-7;
+    ctx.fillText(`d = ${d.toFixed(2)}`,lx,sy(p)-2);
+    ctx.fillText(`Power: ${(p*100).toFixed(0)}%`,lx,sy(p)+13);
+  });
+
+  // MDES — where the curve crosses target power
+  const mdes=nForPower(1,ST.targetPow,ST.alpha,ST.tails,ST.design); // used only for the computation
+  // Find MDES: smallest d for which power >= targetPow
+  let mdesD=null;
+  for(let i=1;i<ND;i++){
+    const d=i*dMax/(ND-1);
+    if(computePower(d,ST.n,ST.alpha,ST.tails,ST.design)>=ST.targetPow){mdesD=d;break;}
+  }
+  if(mdesD!=null&&mdesD<dMax*.98){
+    ctx.strokeStyle=a4;ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(sx(mdesD),pad.t+cH);ctx.lineTo(sx(mdesD),sy(ST.targetPow));ctx.stroke();
+    ctx.setLineDash([]);
+    // MDES label inside the plot, just below the intersection with target power
+    const lblX=sx(mdesD)>pad.l+cW*0.75?sx(mdesD)-4:sx(mdesD)+4;
+    const lblAlign=sx(mdesD)>pad.l+cW*0.75?'right':'left';
+    ctx.fillStyle=a4;ctx.font='bold 13px DM Mono,monospace';ctx.textAlign=lblAlign;
+    ctx.fillText(`MDES=${mdesD.toFixed(2)}`,lblX,sy(ST.targetPow)+18);
+  }
+
+  // ── Text ───────────────────────────────────────────────────────────────
+  const p75=computePower(dPlan*.75,ST.n,ST.alpha,ST.tails,ST.design);
+  const half=computePower(dPlan*.50,ST.n,ST.alpha,ST.tails,ST.design);
+  const quarter=computePower(dPlan*.25,ST.n,ST.alpha,ST.tails,ST.design);
+
+  const col=p=>`color:${p>=ST.targetPow?'var(--a3)':p>=.5?'var(--a5)':'var(--a1)'}`;
+
+  // Short summary directly below the canvas
+  document.getElementById('hint-sens').innerHTML=
+    `<strong style="color:var(--a3)">Planned:</strong> d = ${dPlan.toFixed(2)}, n = ${ST.n} &rarr; power <strong>${(planPow*100).toFixed(0)}%</strong>`+
+    (mdesD!=null?` &nbsp;&bull;&nbsp; <strong style="color:var(--a4)">MDES = ${mdesD.toFixed(2)}</strong> (smallest detectable effect at target power ${(ST.targetPow*100).toFixed(0)}%)`:'');
+
+  // Detailed tutorial explanation
+  document.getElementById('sens-erklaer').innerHTML=`
+<span class="ek-lbl">What this plot shows</span>
+<strong>X-axis:</strong> The <em>actual</em> true d in the population — unknown before the study.<br>
+<strong>Y-axis:</strong> The resulting power (= probability of correctly rejecting H<sub>0</sub>).<br>
+<strong>Green curve:</strong> Power of your study at n&nbsp;=&nbsp;${ST.n} for <em>every</em> possible true d. The curve is known before the study — it depends only on n, &alpha;, and design, not on the data.<br>
+<strong style="color:var(--a3)">Green point</strong> (d&nbsp;=&nbsp;${dPlan.toFixed(2)}, power&nbsp;=&nbsp;${(planPow*100).toFixed(0)}%): your planning assumption — the 80% power holds <em>only</em> if the true d matches this value exactly.<br>
+<strong style="color:var(--a1)">Red region</strong> (d &lt; ${dPlan.toFixed(2)}): the risk zone of overestimation. Published effects are often too large due to selection bias — the true d then lies to the left of your planned point.
+<div class="erklaer-row" style="margin-top:.55rem">
+  <span class="erklaer-key">3/4 of planned</span><span class="erklaer-val">true d = ${(dPlan*.75).toFixed(2)} &rarr; power = <strong style="${col(p75)}">${(p75*100).toFixed(0)}%</strong></span>
+  <span class="erklaer-key">1/2 of planned</span><span class="erklaer-val">true d = ${(dPlan*.50).toFixed(2)} &rarr; power = <strong style="${col(half)}">${(half*100).toFixed(0)}%</strong></span>
+  <span class="erklaer-key">1/4 of planned</span><span class="erklaer-val">true d = ${(dPlan*.25).toFixed(2)} &rarr; power = <strong style="${col(quarter)}">${(quarter*100).toFixed(0)}%</strong></span>
+</div>
+${mdesD!=null?`<strong style="color:var(--a4)">MDES = ${mdesD.toFixed(2)}</strong> (purple dashed line): Minimum Detectable Effect Size — the smallest effect you can still detect with n&nbsp;=&nbsp;${ST.n} and &alpha;&nbsp;=&nbsp;${ST.alpha} at ${(ST.targetPow*100).toFixed(0)}% probability. Effects below this value likely remain undetected. <em>Is MDES&nbsp;=&nbsp;${mdesD.toFixed(2)} clinically/practically meaningful in your research context?</em>`:'(MDES cannot be determined in the current range — adjust n or target power.)'}`;
+}
+
+function update(){
+  updateStory();
+  drawPowerCurve();
+  drawDist();
+  drawHeatmap();
+  drawSens();
+}
+
+window.addEventListener('resize',update);
+update();
+</script>
+</body>
+</html>

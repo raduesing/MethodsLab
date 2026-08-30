@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Effect Size Calculator — MethodsLab</title>
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+.tbtn-active{border-color:var(--accent)!important;background:var(--accent)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.mode-row{display:grid;grid-template-columns:1fr;gap:.4rem;margin-bottom:.2rem}
+.mode-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.4rem .5rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
+.mode-btn:hover{border-color:var(--accent);color:var(--accent)}
+.mode-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.sb-note{font-size:.78rem;line-height:1.65;color:var(--ink3);margin-top:.5rem}
+.tab-row{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.7rem}
+.tab-btn{font-family:'DM Mono',monospace;font-size:.73rem;padding:.28rem .4rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
+.tab-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tab-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.field-row{margin-bottom:.52rem}
+.field-lbl{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2);margin-bottom:.2rem;display:block}
+.field-lbl em{color:var(--ink3);font-style:normal;font-size:.7rem}
+.field-inp{font-family:'DM Mono',monospace;font-size:.82rem;width:100%;background:var(--bg);border:1.5px solid var(--border);
+  color:var(--ink);padding:.3rem .5rem;outline:none;transition:border-color .15s}
+.field-inp:focus{border-color:var(--accent)}
+.field-inp.err{border-color:var(--a1)}
+.field-row-2{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.52rem}
+.csv-hint{font-size:.76rem;line-height:1.55;color:var(--ink3);margin-bottom:.5rem}
+.file-drop{border:2px dashed var(--border);padding:.9rem;text-align:center;cursor:pointer;
+  font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);transition:border-color .15s;margin-bottom:.5rem}
+.file-drop:hover,.file-drop.drag{border-color:var(--accent);color:var(--accent)}
+.file-drop input{display:none}
+.file-status{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.4rem;min-height:1.1rem}
+.col-sel-row{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.52rem}
+.col-sel{font-family:'DM Mono',monospace;font-size:.75rem;width:100%;background:var(--bg);border:1.5px solid var(--border);
+  color:var(--ink);padding:.28rem .4rem;outline:none}
+.calc-btn{font-family:'DM Mono',monospace;font-size:.78rem;padding:.38rem .7rem;
+  border:1.5px solid var(--accent);background:var(--accent);cursor:pointer;color:var(--bg);
+  transition:all .15s;width:100%;margin-top:.3rem}
+.calc-btn:hover{opacity:.85}
+.alpha-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem}
+.alpha-lbl{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.alpha-sel{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--bg);border:1.5px solid var(--border);
+  color:var(--ink);padding:.22rem .4rem;outline:none}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.tool-note{background:var(--panel);border-left:3px solid var(--a2);padding:.7rem .9rem;
+  margin-bottom:1rem;font-size:.85rem;line-height:1.65;color:var(--ink2)}
+.tool-note a{color:var(--a2)}
+.results-section{margin-bottom:1.2rem}
+.rs-head{font-family:'DM Mono',monospace;font-size:.73rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.55rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.d-table{width:100%;border-collapse:collapse;margin-bottom:.35rem;table-layout:auto}
+.d-table th{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink3);text-align:left;padding:.28rem .5rem;border-bottom:1px solid var(--grid);background:var(--panel);
+  white-space:nowrap}
+.d-table th.num{text-align:right}
+.d-table td{font-family:'DM Mono',monospace;font-size:.79rem;padding:.28rem .5rem;border-bottom:1px solid var(--grid);
+  background:var(--paper);vertical-align:middle;white-space:nowrap}
+.d-table tr:last-child td{border-bottom:none}
+.d-table td.num{text-align:right;color:var(--ink);font-weight:500}
+.d-table td.lbl{color:var(--ink2)}
+.d-table td.ci{color:var(--ink3);font-size:.74rem;text-align:right}
+.ci-note{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);
+  border-left:2px solid var(--a1);padding:.3rem .55rem;margin:.25rem 0 .35rem;
+  background:var(--panel);line-height:1.5}
+.d-table-ci{width:100%;border-collapse:collapse;margin-bottom:.7rem;table-layout:auto}
+.d-table-ci th{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink3);text-align:left;padding:.28rem .5rem;border-bottom:1px solid var(--grid);background:var(--panel);
+  white-space:nowrap}
+.d-table-ci th.num{text-align:right}
+.d-table-ci td{font-family:'DM Mono',monospace;font-size:.79rem;padding:.28rem .5rem;border-bottom:1px solid var(--grid);
+  background:var(--paper);vertical-align:middle;white-space:nowrap}
+.d-table-ci tr:last-child td{border-bottom:none}
+.d-table-ci td.num{text-align:right;color:var(--ink);font-weight:500}
+.d-table-ci td.lbl{color:var(--ink2)}
+.canvas-wrap{background:var(--panel);border:1px solid var(--grid);margin-bottom:.85rem;overflow:hidden}
+.canvas-wrap canvas{width:100%;display:block}
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.85rem}
+.rb{background:var(--panel);border:1px solid var(--grid);padding:.75rem .9rem}
+.rb-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.2rem}
+.rb-val{font-family:'DM Mono',monospace;font-size:1.05rem;font-weight:500;color:var(--ink)}
+.rb-sub{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.15rem}
+.placeholder{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink3);
+  background:var(--panel);border:1px solid var(--grid);padding:1.8rem 1.4rem;
+  text-align:center;margin-bottom:.85rem}
+.help-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.82);overflow-y:auto;padding:2rem 1rem}
+.help-overlay.open{display:block}
+.help-panel{max-width:700px;margin:0 auto;background:var(--paper);border:1px solid var(--border);padding:2rem}
+.help-panel h2{font-family:'Fraunces',serif;font-weight:300;font-size:1.2rem;margin-bottom:1.2rem}
+.help-h3{font-family:'DM Mono',monospace;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--a1);margin:1.1rem 0 .35rem}
+.help-p{font-size:.85rem;line-height:1.8;color:var(--ink2);margin-bottom:.6rem}
+.help-p code{font-family:'DM Mono',monospace;font-size:.8rem;background:var(--panel);padding:.1rem .35rem;color:var(--ink)}
+.help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
+  border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
+.help-close:hover{background:var(--a1);color:var(--bg)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Effect Size <em>Calculator</em> — computation &amp; translation</h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- HELP OVERLAY -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-panel">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
+      <h2>Help — Effect Size Calculator</h2>
+      <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    </div>
+    <div class="help-h3">What does this tool show?</div>
+    <p class="help-p">This calculator computes and translates effect sizes for <strong style="color:var(--ink)">within t-tests (repeated measures)</strong> and <strong style="color:var(--ink)">between t-tests (independent groups)</strong> — with exact statistics for your own study. It shows three standardizations at once — d<sub>z</sub>, d<sub>rm</sub>, d<sub>av</sub> — as well as three small-sample corrections and three CI methods. For a conceptual introduction with a guided example see the <a href="../Effektgroessen.html" style="color:var(--a2)">Effect Size tutorial</a>.</p>
+    <div class="help-h3">The running example</div>
+    <p class="help-p">A psychologist is investigating whether an 8-week mindfulness training improves well-being. <strong style="color:var(--ink)">Within:</strong> 40 participants, M<sub>pre</sub>=45.8 (SD=8.4), M<sub>post</sub>=52.4 (SD=9.6), r=.65. Convention: d = post − pre, d > 0 = increase. <strong style="color:var(--ink)">Between:</strong> 40 participants per group (waitlist control vs. training). Convention: d = intervention − control, d > 0 = intervention higher — parallel to within, so the same raw data yields the same sign in both modes.</p>
+    <div class="help-h3">Three standardizations (within)</div>
+    <p class="help-p"><code>d<sub>z</sub></code> — difference-score SD as denominator; usable directly for t-test power and CLES (Wuensch).<br>
+    <code>d<sub>rm</sub></code> — d<sub>z</sub> · √(2(1−r)) (Becker 1988): equals d<sub>av</sub> under variance homogeneity, equals d<sub>z</sub> at r=.5.<br>
+    <code>d<sub>av</sub></code> — average SD as denominator (Lakens 2013); no r in the denominator.</p>
+    <div class="help-h3">d_av and comparability with between designs</div>
+    <p class="help-p"><strong style="color:var(--ink)">d<sub>av</sub> is the most comparable to between designs.</strong> Since the pre-post correlation doesn't enter the denominator, d<sub>av</sub> is — ceteris paribus — identical to Cohen's d from an independent-groups comparison. This allows a direct comparison across designs: a within-d<sub>av</sub> of 0.5 means the same as a between-d<sub>s</sub> of 0.5. d<sub>z</sub> and d<sub>rm</sub>, by contrast, depend on r and are design-specific.</p>
+    <div class="help-h3">Corrections for small samples</div>
+    <p class="help-p"><code>j (Hedges)</code> — 1 − 3/(4(n−1)−1); the most common.<br>
+    <code>nag (Nakagawa)</code> — 1 − 3/(4(2n−2)−1); recommended for within designs.<br>
+    <code>Bon (Bonett)</code> — √((n−2)/(n−1)); based on variance unbiasedness.</p>
+    <div class="help-h3">Confidence intervals</div>
+    <p class="help-p"><strong style="color:var(--ink)">Bonett (2015) approx:</strong> z-based (Equations 8, 9, 16). Available for d<sub>z</sub>, d<sub>rm</sub>, d<sub>av</sub>.<br>
+    <strong style="color:var(--ink)">Rosenthal (1994) approx:</strong> t-based, only for d<sub>rm</sub> — same SE as Bonett there, but crit_t instead of crit_z. No Rosenthal CI is defined in the original literature for d<sub>z</sub> and d<sub>av</sub>.<br>
+    <strong style="color:var(--ink)">NCT (exact):</strong> noncentral t-distribution via direct numerical integration (Simpson's rule) of the definition T=(Z+ncp)/√(V/df); CDF inversion by bisection yields the ncp bounds. Accurate for arbitrary df, including non-integer ones (e.g. Welch df).</p>
+    <div class="help-h3">Between: Student's t vs. Welch's t</div>
+    <p class="help-p">Whether variance homogeneity holds is a substantive judgment — the tool doesn't make it for you, but always shows <strong style="color:var(--ink)">both</strong> effect-size families:<br>
+    <strong style="color:var(--ink)">A) Student's t</strong> — pooled SD, assumes equal population variances: d<sub>s</sub>, g<sub>s</sub>, with Bonett, Rosenthal, and NCT CIs.<br>
+    <strong style="color:var(--ink)">B) Welch's t</strong> — Welch-Satterthwaite df, no homogeneity assumption (Delacre, Lakens &amp; Leys 2017 recommend this as the default): <code>d<sub>Welch</sub></code> (unweighted 1:1 average of the variances) and <code>g<sub>Welch</sub></code> (Hedges correction with df<sub>Welch</sub>), plus an alternative t-to-d conversion <code>d = t<sub>Welch</sub>·√(1/n₁+1/n₂)</code> (Borenstein et al. 2009) — identical to d<sub>Welch</sub> at n₁=n₂, otherwise diverging. Both get an NCT CI by rescaling <code>conf.limits.nct(t<sub>Welch</sub>, df<sub>Welch</sub>)</code> — the same trick used to get d<sub>rm</sub>'s CI from d<sub>z</sub>'s. For Welch, there is deliberately no closed-form approximate CI (Bonett-style) here — a reliable source for the variance formula under heteroscedasticity is lacking.</p>
+    <div class="help-h3">CSV upload</div>
+    <p class="help-p">Upload a CSV file with two numeric columns. In within mode: column 1 = measurement 1 (pre), column 2 = measurement 2 (post). In between mode: column 1 = control, column 2 = intervention (different lengths allowed). The first row is treated as a header if it's non-numeric.</p>
+  </div>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title"><span class="circ">①</span> Design</div>
+    <div class="mode-row">
+      <button class="mode-btn active" id="mode-between" onclick="setMode('between')">Between<br><span style="font-size:.65rem;opacity:.7">Indep. groups</span></button>
+      <button class="mode-btn" id="mode-within" onclick="setMode('within')">Within<br><span style="font-size:.65rem;opacity:.7">Repeated measures</span></button>
+    </div>
+    <div class="sb-note" id="mode-note">Two independent groups — the simpler case: one denominator, one standardization.</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title"><span class="circ">②</span> Input</div>
+    <div class="tab-row">
+      <button class="tab-btn active" id="tab-stats" onclick="setTab('stats')">Statistics</button>
+      <button class="tab-btn" id="tab-csv" onclick="setTab('csv')">CSV upload</button>
+    </div>
+
+    <!-- Stats input panel -->
+    <div id="panel-stats">
+      <div class="field-row-2">
+        <div>
+          <label class="field-lbl" id="lbl-m1">M₁ <em>(pre)</em></label>
+          <input type="number" class="field-inp" id="inp-m1" value="45.8" step="0.1" oninput="onInput()">
+        </div>
+        <div>
+          <label class="field-lbl" id="lbl-m2">M₂ <em>(post)</em></label>
+          <input type="number" class="field-inp" id="inp-m2" value="52.4" step="0.1" oninput="onInput()">
+        </div>
+      </div>
+      <div class="field-row-2">
+        <div>
+          <label class="field-lbl" id="lbl-sd1">SD₁ <em>(pre)</em></label>
+          <input type="number" class="field-inp" id="inp-sd1" value="8.4" min="0.001" step="0.1" oninput="onInput()">
+        </div>
+        <div>
+          <label class="field-lbl" id="lbl-sd2">SD₂ <em>(post)</em></label>
+          <input type="number" class="field-inp" id="inp-sd2" value="9.6" min="0.001" step="0.1" oninput="onInput()">
+        </div>
+      </div>
+      <div class="field-row">
+        <label class="field-lbl" id="lbl-n1">n <em>(pairs)</em></label>
+        <input type="number" class="field-inp" id="inp-n1" value="40" min="3" step="1" oninput="onInput()">
+      </div>
+      <div class="field-row" id="row-n2" style="display:none">
+        <label class="field-lbl" id="lbl-n2">n₂ <em>(intervention)</em></label>
+        <input type="number" class="field-inp" id="inp-n2" value="40" min="3" step="1" oninput="onInput()">
+      </div>
+      <div class="field-row" id="row-r">
+        <label class="field-lbl">r <em>(pre-post corr.)</em></label>
+        <input type="number" class="field-inp" id="inp-r" value="0.65" min="-0.999" max="0.999" step="0.01" oninput="onInput()">
+      </div>
+    </div>
+
+    <!-- CSV upload panel -->
+    <div id="panel-csv" style="display:none">
+      <div class="csv-hint" id="csv-hint">2 columns: column&nbsp;1&nbsp;=&nbsp;control, column&nbsp;2&nbsp;=&nbsp;intervention — different lengths allowed. Comma/semicolon-separated, header optional, decimal comma is recognized.</div>
+      <div class="file-drop" id="file-drop" onclick="document.getElementById('file-input').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="fileDrop(event)">
+        <input type="file" id="file-input" accept=".csv,.txt" onchange="fileSelect(event)">
+        Drop CSV here<br>or click
+      </div>
+      <div class="file-status" id="file-status">No file loaded</div>
+      <div id="col-sel-wrap" style="display:none">
+        <div class="field-row">
+          <label class="field-lbl" id="csv-lbl-1">Column 1 (pre / control)</label>
+          <select class="col-sel" id="csv-col1" onchange="csvCompute()"></select>
+        </div>
+        <div class="field-row">
+          <label class="field-lbl" id="csv-lbl-2">Column 2 (post / intervention)</label>
+          <select class="col-sel" id="csv-col2" onchange="csvCompute()"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="alpha-row" style="margin-top:.4rem">
+      <span class="alpha-lbl">α =</span>
+      <select class="alpha-sel" id="sel-alpha" onchange="onInput()">
+        <option value="0.05" selected>.05</option>
+        <option value="0.01">.01</option>
+        <option value="0.10">.10</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Sidebar: key results summary -->
+  <div class="scard" id="sb-summary" style="display:none">
+    <div class="scard-title" id="sb-sum-title">Key findings</div>
+    <div style="font-family:'DM Mono',monospace;font-size:.78rem;line-height:2">
+      <div>t = <span id="sb-t" style="color:var(--ink);font-weight:600">—</span></div>
+      <div>p = <span id="sb-p" style="color:var(--ink);font-weight:600">—</span></div>
+      <div style="border-top:1px solid var(--grid);margin:.3rem 0;padding-top:.3rem">
+        <span id="sb-dz-lbl">d<sub>z</sub></span> = <span id="sb-dz" style="color:var(--a2);font-weight:600">—</span>
+      </div>
+      <div id="sb-rm-row">d<sub>rm</sub> = <span id="sb-drm" style="color:var(--a6);font-weight:600">—</span></div>
+      <div id="sb-av-row">d<sub>av</sub> = <span id="sb-dav" style="color:var(--a4);font-weight:600">—</span></div>
+    </div>
+  </div>
+
+</div><!-- /sidebar -->
+
+<div id="main">
+
+  <div class="tool-note">Here you can enter <strong style="color:var(--ink)">your own values for analysis</strong> (summary statistics or CSV upload) — exact effect sizes including corrections and confidence intervals. For a detailed explanation of the parameters, standardizations, and corrections see the <a href="../Effektgroessen.html">Effect Size tutorial</a>.</div>
+
+  <!-- placeholder shown before first computation -->
+  <div id="placeholder-msg" class="placeholder">
+    Enter statistics or load a CSV — results will appear here.
+  </div>
+
+  <!-- RESULTS (hidden until computed) -->
+  <div id="results-wrap" style="display:none">
+
+    <!-- t-test info bar -->
+    <div class="results-grid" id="ttest-grid">
+      <div class="rb">
+        <div class="rb-lbl" id="rb-test-lbl">Within t-test</div>
+        <div class="rb-val" id="rb-t">—</div>
+        <div class="rb-sub" id="rb-df">df = —</div>
+      </div>
+      <div class="rb">
+        <div class="rb-lbl">p-value</div>
+        <div class="rb-val" id="rb-p">—</div>
+        <div class="rb-sub" id="rb-sig">—</div>
+      </div>
+      <div class="rb">
+        <div class="rb-lbl" id="rb-d1lbl">M₁ (pre)</div>
+        <div class="rb-val" id="rb-m1">—</div>
+        <div class="rb-sub" id="rb-sd1">SD = —</div>
+      </div>
+      <div class="rb">
+        <div class="rb-lbl" id="rb-d2lbl">M₂ (post)</div>
+        <div class="rb-val" id="rb-m2">—</div>
+        <div class="rb-sub" id="rb-sd2">SD = —</div>
+      </div>
+      <div class="rb">
+        <div class="rb-lbl" id="rb-mdif-lbl">M_dif (post − pre)</div>
+        <div class="rb-val" id="rb-mdif">—</div>
+        <div class="rb-sub" id="rb-mdif-sub">Raw difference</div>
+      </div>
+      <div class="rb">
+        <div class="rb-lbl" id="rb-ci-raw-lbl">95% CI (raw)</div>
+        <div class="rb-val" id="rb-ci-raw" style="font-size:.85rem">—</div>
+        <div class="rb-sub" id="rb-ci-raw-sub">CI for mean diff.</div>
+      </div>
+    </div>
+
+    <!-- Within mode: three standardizer tables -->
+    <div id="within-results">
+
+      <div class="sec-h">Effect size: standardizations compared</div>
+
+      <div class="results-section">
+        <div class="rs-head" style="color:var(--a2)">d<sub>z</sub> — difference-score SD as denominator (direct value for within power)</div>
+        <div id="tbl-dz"></div>
+      </div>
+
+      <div class="results-section">
+        <div class="rs-head" style="color:var(--a6)">d<sub>rm</sub> — corrected for repeated measures (Becker 1988)</div>
+        <div id="tbl-drm"></div>
+      </div>
+
+      <div class="results-section">
+        <div class="rs-head" style="color:var(--a4)">d<sub>av</sub> — average SD as denominator (Lakens 2013)</div>
+        <div id="tbl-dav"></div>
+      </div>
+
+      <div class="results-section">
+        <div class="rs-head">Further measures</div>
+        <table class="d-table" id="tbl-other-within"></table>
+      </div>
+
+    </div>
+
+    <!-- Between mode: Student's t and Welch's t side by side -->
+    <div id="between-results" style="display:none">
+
+      <div class="sec-h">Effect size: between-groups comparison</div>
+
+      <div class="results-section">
+        <div class="rs-head" style="color:var(--a2)">A) Student's t — pooled variance (assumes variance homogeneity)</div>
+        <div id="tbl-between"></div>
+      </div>
+
+      <div class="results-section">
+        <div class="rs-head" style="color:var(--a5)">B) Welch's t — unequal variances (Delacre, Lakens &amp; Leys 2017)</div>
+        <div id="tbl-welch"></div>
+      </div>
+
+      <div class="results-section">
+        <div class="rs-head">Further measures</div>
+        <table class="d-table" id="tbl-other-between"></table>
+      </div>
+
+    </div>
+
+    <!-- Overlap Canvas -->
+    <div class="sec-h">Visualization: overlap</div>
+    <div class="canvas-wrap">
+      <canvas id="overlap-canvas" height="360"></canvas>
+    </div>
+
+    <!-- NCT Distribution Canvas -->
+    <div class="sec-h" id="nct-sec-h">Noncentral t-distribution &amp; CI</div>
+    <div class="canvas-wrap">
+      <canvas id="nct-canvas" height="180"></canvas>
+    </div>
+
+    <!-- Conversion table -->
+    <div class="sec-h">Effect size translator (from d<sub>av</sub> / d<sub>s</sub>)</div>
+    <table class="d-table" id="tbl-convert"></table>
+
+  </div><!-- /results-wrap -->
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let state = {
+  mode: 'between',   // 'within' | 'between'
+  tab: 'stats',     // 'stats' | 'csv'
+  csvData: null,    // parsed CSV rows
+  csvHeaders: [],
+  results: null
+};
+
+// ─── Theme ────────────────────────────────────────────────────────────────────
+function toggleTheme(){
+  const d=document.documentElement;
+  const dark=d.getAttribute('data-theme')==='dark';
+  const next=dark?'light':'dark';
+  d.setAttribute('data-theme',next);
+  localStorage.setItem('ml-theme',next);
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  if(state.results) drawCanvases(state.results);
+}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('help-overlay').classList.remove('open')});
+
+// ─── Mode / Tab switching ─────────────────────────────────────────────────────
+function setMode(m){
+  state.mode=m;
+  ['within','between'].forEach(x=>{
+    document.getElementById('mode-'+x).classList.toggle('active',x===m);
+  });
+  const isW=m==='within';
+  document.getElementById('mode-note').textContent=isW
+    ? 'The same people before and after the training — this is where the standardization question arises: SD of what?'
+    : 'Two independent groups — the simpler case: one denominator, one standardization.';
+  document.getElementById('lbl-m1').innerHTML=isW?'M₁ <em>(pre)</em>':'M₁ <em>(control)</em>';
+  document.getElementById('lbl-m2').innerHTML=isW?'M₂ <em>(post)</em>':'M₂ <em>(intervention)</em>';
+  document.getElementById('lbl-sd1').innerHTML=isW?'SD₁ <em>(pre)</em>':'SD₁ <em>(control)</em>';
+  document.getElementById('lbl-sd2').innerHTML=isW?'SD₂ <em>(post)</em>':'SD₂ <em>(intervention)</em>';
+  document.getElementById('lbl-n1').innerHTML=isW?'n <em>(pairs)</em>':'n₁ <em>(control)</em>';
+  document.getElementById('row-r').style.display=isW?'':'none';
+  document.getElementById('row-n2').style.display=isW?'none':'';
+  document.getElementById('sb-rm-row').style.display=isW?'':'none';
+  document.getElementById('sb-av-row').style.display=isW?'':'none';
+  document.getElementById('csv-lbl-1').textContent=isW?'Column 1 (pre)':'Column 1 (control)';
+  document.getElementById('csv-lbl-2').textContent=isW?'Column 2 (post)':'Column 2 (intervention)';
+  document.getElementById('csv-hint').innerHTML = isW
+    ? '2 columns, same number of rows: column&nbsp;1&nbsp;=&nbsp;pre, column&nbsp;2&nbsp;=&nbsp;post (same person per row). Comma/semicolon-separated, header optional, decimal comma is recognized.'
+    : '2 columns: column&nbsp;1&nbsp;=&nbsp;control, column&nbsp;2&nbsp;=&nbsp;intervention — different lengths allowed. Comma/semicolon-separated, header optional, decimal comma is recognized.';
+  if(state.tab==='csv'&&state.csvData) csvCompute(); else onInput();
+}
+
+function setTab(t){
+  state.tab=t;
+  ['stats','csv'].forEach(x=>{
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+    document.getElementById('panel-'+x).style.display=x===t?'':'none';
+  });
+  if(t==='csv'&&state.csvData) csvCompute();
+}
+
+// ─── Math utilities ──────────────────────────────────────────────────────────
+function lgamma(x){
+  const c=[76.18009172947146,-86.50532032941677,24.01409824083091,
+    -1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+  let y=x,tmp=x+5.5;
+  tmp-=(x+.5)*Math.log(tmp);
+  let s=1.000000000190015;
+  for(let j=0;j<6;j++) s+=c[j]/++y;
+  return -tmp+Math.log(2.5066282746310005*s/x);
+}
+
+function ibeta(x,a,b){
+  if(x<=0) return 0;
+  if(x>=1) return 1;
+  const lbeta=lgamma(a+b)-lgamma(a)-lgamma(b);
+  function cf(x,a,b){
+    const maxit=200,eps=3e-7,fpmin=1e-30;
+    const qab=a+b,qap=a+1,qam=a-1;
+    let c=1,d=1-(qab*x/qap);
+    if(Math.abs(d)<fpmin) d=fpmin; d=1/d;
+    let h=d;
+    for(let m=1;m<=maxit;m++){
+      const m2=2*m;
+      let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+      d=1+aa*d; if(Math.abs(d)<fpmin) d=fpmin;
+      c=1+aa/c; if(Math.abs(c)<fpmin) c=fpmin;
+      d=1/d; h*=d*c;
+      aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+      d=1+aa*d; if(Math.abs(d)<fpmin) d=fpmin;
+      c=1+aa/c; if(Math.abs(c)<fpmin) c=fpmin;
+      d=1/d; const del=d*c; h*=del;
+      if(Math.abs(del-1)<eps) break;
+    }
+    return h;
+  }
+  const bt=Math.exp(lbeta+a*Math.log(x)+b*Math.log(1-x));
+  if(x<(a+1)/(a+b+2)) return bt*cf(x,a,b)/a;
+  return 1-bt*cf(1-x,b,a)/b;
+}
+
+// Non-central t CDF: P(T_{df,ncp} <= t)
+// T = (Z+ncp)/sqrt(V/df) with Z~N(0,1), V~χ²(df) independent, so
+// P(T<=t) = E_V[ Φ(t·√(v/df) − ncp) ], computed by direct numerical integration
+// (Simpson's rule) over V's χ² density. Avoids the Poisson-series/incomplete-beta
+// route entirely, which turned out to be numerically unstable for moderate-to-large
+// noncentrality (verified: it produced a near step-function instead of a smooth CDF).
+function nctCDF(t, df, ncp){
+  if(!isFinite(t)) return t>0?1:0;
+  const mean=df, sd=Math.sqrt(2*df);
+  const a=Math.max(1e-9, mean-12*sd), b=mean+12*sd;
+  const N=400; // even, required for Simpson's rule
+  const h=(b-a)/N;
+  const lg=lgamma(df/2), log2=Math.log(2);
+  let sum=0;
+  for(let i=0;i<=N;i++){
+    const v=a+i*h;
+    const logf=(df/2-1)*Math.log(v)-v/2-(df/2)*log2-lg;
+    const val=stdNorm(t*Math.sqrt(v/df)-ncp);
+    const w=(i===0||i===N)?1:(i%2===1?4:2);
+    sum+=w*Math.exp(logf)*val;
+  }
+  return Math.min(1, Math.max(0, (h/3)*sum));
+}
+
+function stdNorm(z){
+  // Rational approximation for Φ(z)
+  const p=0.2316419,b1=0.319381530,b2=-0.356563782,b3=1.781477937,b4=-1.821255978,b5=1.330274429;
+  const t2=1/(1+p*Math.abs(z));
+  const poly=t2*(b1+t2*(b2+t2*(b3+t2*(b4+t2*b5))));
+  const pdf=Math.exp(-0.5*z*z)/Math.sqrt(2*Math.PI);
+  const q=1-pdf*poly;
+  return z>=0?q:1-q;
+}
+
+function invStdNorm(p){
+  // Beasley-Springer-Moro
+  const a=[2.50662823884,-18.61500062529,41.39119773534,-25.44106049637];
+  const b=[-8.47351093090,23.08336743743,-21.06224101826,3.13082909833];
+  const c=[-2.78718931138,-2.29796479134,4.85014127135,2.32121276858];
+  const d=[3.54388924762,1.63706781897];
+  const q=p-0.5;
+  let r;
+  if(Math.abs(q)<=0.42){
+    r=q*q;
+    return q*(((a[3]*r+a[2])*r+a[1])*r+a[0])/((((b[3]*r+b[2])*r+b[1])*r+b[0])*r+1);
+  }
+  r=p<0.5?p:1-p;
+  r=Math.sqrt(-Math.log(r));
+  let x=(((c[3]*r+c[2])*r+c[1])*r+c[0])/((d[1]*r+d[0])*r+1);
+  return p<0.5?-x:x;
+}
+
+// Find ncp s.t. P(T_{df,ncp} <= t) = targetP  (bisection; CDF is decreasing in ncp)
+function invNCTncp(t, df, targetP){
+  // Bracket: ncp_low gives CDF near 1, ncp_high gives CDF near 0
+  const range=Math.max(Math.abs(t)*3+6, 12);
+  let lo=t-range, hi=t+range;
+  for(let i=0;i<60;i++){
+    const mid=0.5*(lo+hi);
+    const p=nctCDF(t, df, mid);
+    if(p<targetP) hi=mid; else lo=mid;
+  }
+  return 0.5*(lo+hi);
+}
+
+// NCT CI for d_z: t_obs = d_z * sqrt(n), scale ncp back to d
+function nctCI_dz(dz, n, alpha){
+  const t=dz*Math.sqrt(n);
+  const df=n-1, a2=alpha/2;
+  // ncp_L: P(T_{df,ncp_L} <= t_obs) = 1-alpha/2 (ncp_L is below t for t>0)
+  // ncp_U: P(T_{df,ncp_U} <= t_obs) = alpha/2   (ncp_U is above t for t>0)
+  const ncp_L=invNCTncp(t, df, 1-a2);
+  const ncp_U=invNCTncp(t, df, a2);
+  return {lo: ncp_L/Math.sqrt(n), hi: ncp_U/Math.sqrt(n)};
+}
+
+// NCT CI for d_av (Algina & Keselman 2003)
+// lambda = d_av * sqrt(n / (2*(1-r)))  ... only when using the within-design SE
+// Actually for d_av: t_w = M_dif / (s_dif/sqrt(n)), d_av = M_dif / s_av
+// So d_av = d_z * (s_dif/s_av) → scale ncp by s_av/s_dif
+function nctCI_dav(dav, dz, n, alpha){
+  if(dz===0) return {lo:0,hi:0};
+  const scale=dav/dz;  // = s_dif/s_av
+  const ci_z=nctCI_dz(dz, n, alpha);
+  return {lo: ci_z.lo*scale, hi: ci_z.hi*scale};
+}
+
+function tCDF(t, df){
+  const x=df/(df+t*t);
+  const p=0.5*ibeta(x, df/2, 0.5);
+  return t>=0 ? 1-p : p;
+}
+
+function tQuantile(p, df){
+  // Binary search on tCDF
+  let lo=-30, hi=30;
+  for(let i=0;i<120;i++){
+    const mid=0.5*(lo+hi);
+    if(tCDF(mid,df)<p) lo=mid; else hi=mid;
+  }
+  return 0.5*(lo+hi);
+}
+
+// ─── Effect size computation ──────────────────────────────────────────────────
+function computeWithin(m1,m2,sd1,sd2,n,r,alpha){
+  const m_dif=m2-m1;  // Post − Prä: positive d = increase
+  const s_dif=Math.sqrt(sd1*sd1+sd2*sd2-2*r*sd1*sd2);
+  const s_av=Math.sqrt((sd1*sd1+sd2*sd2)/2);
+  const df=n-1;
+
+  const t_w=m_dif/(s_dif/Math.sqrt(n));
+  const p=2*(1-tCDF(Math.abs(t_w),df));
+
+  const dz=m_dif/s_dif;
+  // d_rm = d_z * sqrt(2*(1-r))  — Becker (1988): at SD1=SD2 → equals d_av; at r=0.5 → equals d_z
+  const drm=dz*Math.sqrt(2*(1-r));
+  const dav=m_dif/s_av;
+
+  // Small sample corrections
+  const j=1-3/(4*(n-1)-1);
+  const nag=1-3/(4*(2*n-2)-1);
+  const bon=Math.sqrt((n-2)/(n-1));
+
+  // Glass delta (sd1 as control denominator)
+  const glass=m_dif/sd1;
+
+  // CLES — two variants
+  // Wuensch: P(D > 0) = Phi(d_z), probability a randomly chosen person improves
+  const cles_w=stdNorm(dz);
+  // McGraw & Wong (1992): P(X_post > X_pre) treating as independent draws, = Phi(d_av / sqrt(2))
+  const cles_mw=stdNorm(dav/Math.sqrt(2));
+
+  const z_a=invStdNorm(1-alpha/2);
+  const t_a=tQuantile(1-alpha/2, df);
+
+  // --- d_z CIs (Bonett 2015 Eq.16; Rosenthal 1994 not defined for d_z) ---
+  const se_dz_bonett=Math.sqrt(dz*dz/(2*(n-1))+1/n);
+  const ci_dz_bonett={lo:dz-z_a*se_dz_bonett, hi:dz+z_a*se_dz_bonett};
+  const ci_dz_nct=nctCI_dz(dz, n, alpha);
+  const ci_raw={lo:m_dif-t_a*s_dif/Math.sqrt(n), hi:m_dif+t_a*s_dif/Math.sqrt(n)};
+
+  // --- d_av CIs (Bonett 2015 Eq.9; Rosenthal 1994 not defined for d_av) ---
+  const s_av4=(s_av*s_av)*(s_av*s_av);
+  const se_dav_bonett=Math.sqrt(
+    dav*dav*(sd1*sd1*sd1*sd1+sd2*sd2*sd2*sd2+2*r*r*sd1*sd1*sd2*sd2)/(8*s_av4*(n-1))
+    +(sd1*sd1+sd2*sd2-2*r*sd1*sd2)/((n-1)*s_av*s_av));
+  const ci_dav_bonett={lo:dav-z_a*se_dav_bonett, hi:dav+z_a*se_dav_bonett};
+  const ci_dav_nct=nctCI_dav(dav,dz,n,alpha);
+
+  // --- d_rm CIs (Bonett 2015 Eq.8; Rosenthal 1994: same SE, t instead of z) ---
+  const rmScale=Math.sqrt(2*(1-r));
+  const ci_drm_nct={lo:ci_dz_nct.lo*rmScale, hi:ci_dz_nct.hi*rmScale};
+  const se_drm=Math.sqrt(2*(1-r)*(drm*drm/(2*n)+1/n));
+  const ci_drm_bonett={lo:drm-z_a*se_drm, hi:drm+z_a*se_drm};
+  const ci_drm_rosenthal={lo:drm-t_a*se_drm, hi:drm+t_a*se_drm};
+
+  return {mode:'within',m1,m2,sd1,sd2,n,r,alpha,
+    t:t_w,df,p,s_dif,s_av,m_dif,ci_raw,
+    dz,drm,dav,glass,cles_w,cles_mw,
+    j,nag,bon,
+    ci:{
+      dz:{bonett:ci_dz_bonett, nct:ci_dz_nct},
+      drm:{bonett:ci_drm_bonett, rosenthal:ci_drm_rosenthal, nct:ci_drm_nct},
+      dav:{bonett:ci_dav_bonett, nct:ci_dav_nct},
+    }
+  };
+}
+
+function computeBetween(m1,m2,sd1,sd2,n1,n2,alpha){
+  const df=n1+n2-2;
+  const s_pool=Math.sqrt(((n1-1)*sd1*sd1+(n2-1)*sd2*sd2)/df);
+  const s_pool_n=Math.sqrt((n1*sd1*sd1+n2*sd2*sd2)/(n1+n2));
+  const s_av=Math.sqrt((sd1*sd1+sd2*sd2)/2);
+  const m_dif=m2-m1;  // Intervention − Kontrolle: positive d = Intervention höher (parallel zu Within: Post − Prä)
+
+  const se_pool=s_pool*Math.sqrt(1/n1+1/n2);
+  const t_b=m_dif/se_pool;
+  const p=2*(1-tCDF(Math.abs(t_b),df));
+
+  // Cohen's d_s (n-1 pooled, most common)
+  const ds=m_dif/s_pool;
+  // Cohen's d pool_n
+  const d_pool_n=m_dif/s_pool_n;
+  // Glass delta (SD1 = control group denominator)
+  const glass=m_dif/sd1;
+  // Hedges g_s = d_s * j
+  const j=1-3/(4*df-1);
+  const gs=ds*j;
+  // CLES
+  const cles=stdNorm(ds/Math.sqrt(2));
+
+  const z_a=invStdNorm(1-alpha/2);
+  const t_a=tQuantile(1-alpha/2,df);
+
+  // NCT CI for d_s: lambda = d_s * sqrt(n1*n2/(n1+n2))
+  const lambda_scale=Math.sqrt(n1*n2/(n1+n2));
+  const t_obs=ds*lambda_scale;
+  const ncp_L=invNCTncp(t_obs, df, 1-alpha/2);
+  const ncp_U=invNCTncp(t_obs, df, alpha/2);
+  const ci_ds_nct={lo:ncp_L/lambda_scale, hi:ncp_U/lambda_scale};
+
+  const se_ds_bonett=Math.sqrt(ds*ds/(2*df)+(n1+n2)/(n1*n2));
+  const ci_ds_bonett={lo:ds-z_a*se_ds_bonett, hi:ds+z_a*se_ds_bonett};
+  const ci_ds_rosenthal={lo:ds-t_a*Math.sqrt((n1+n2)/(n1*n2)+ds*ds/(2*(n1+n2))), hi:ds+t_a*Math.sqrt((n1+n2)/(n1*n2)+ds*ds/(2*(n1+n2)))};
+  const ci_raw={lo:m_dif-t_a*se_pool, hi:m_dif+t_a*se_pool};
+
+  // CLES McGraw & Wong (1992): P(Intervention > Kontrolle) = Phi(d_s / sqrt(2))
+  const cles_mw=stdNorm(ds/Math.sqrt(2));
+
+  // ── Welch's t (unequal variances) — Delacre, Lakens & Leys (2017) recommend this
+  // as the default and discuss d_welch (unweighted 1:1 SD average) as its companion
+  // effect size. Whether variances are actually homogeneous is left to the user to
+  // judge (e.g. via a Levene test) — both families are always shown side by side.
+  const se_welch=Math.sqrt(sd1*sd1/n1+sd2*sd2/n2);
+  const t_welch=m_dif/se_welch;
+  const df_welch=Math.pow(sd1*sd1/n1+sd2*sd2/n2,2)/((Math.pow(sd1*sd1/n1,2)/(n1-1))+(Math.pow(sd2*sd2/n2,2)/(n2-1)));
+  const p_welch=2*(1-tCDF(Math.abs(t_welch),df_welch));
+  const t_a_welch=tQuantile(1-alpha/2,df_welch);
+  const ci_raw_welch={lo:m_dif-t_a_welch*se_welch, hi:m_dif+t_a_welch*se_welch};
+
+  const s_welch=Math.sqrt((sd1*sd1+sd2*sd2)/2);
+  const d_welch=m_dif/s_welch;
+  // Classic t-to-d conversion (Borenstein et al. 2009), applied to Welch's t;
+  // identical to d_welch iff n1===n2, diverges as group sizes become more unequal.
+  const d_welch_t=t_welch*Math.sqrt(1/n1+1/n2);
+  const j_welch=1-3/(4*df_welch-1);
+  const g_welch=d_welch*j_welch;
+
+  // Both d_welch and d_welch_t are fixed linear rescalings of t_welch (by
+  // se_welch/s_welch and by sqrt(1/n1+1/n2) respectively) for given sd1,sd2,n1,n2 —
+  // so the same ncp-CI on the t_welch scale rescales to a CI for either one, exactly
+  // like d_rm's CI is derived by rescaling d_z's in within mode.
+  const ncp_L_w=invNCTncp(t_welch, df_welch, 1-alpha/2);
+  const ncp_U_w=invNCTncp(t_welch, df_welch, alpha/2);
+  const welchScale=se_welch/s_welch;
+  const ci_welch_nct={lo:ncp_L_w*welchScale, hi:ncp_U_w*welchScale};
+  const tScale=Math.sqrt(1/n1+1/n2);
+  const ci_welch_t_nct={lo:ncp_L_w*tScale, hi:ncp_U_w*tScale};
+
+  return {mode:'between',m1,m2,sd1,sd2,n1,n2,alpha,
+    t:t_b,df,p,s_pool,s_av,m_dif,ci_raw,
+    ds,d_pool_n,glass,gs,cles_mw,j,
+    ci:{
+      ds:{bonett:ci_ds_bonett, rosenthal:ci_ds_rosenthal, nct:ci_ds_nct}
+    },
+    welch:{
+      t:t_welch, df:df_welch, p:p_welch, ci_raw:ci_raw_welch,
+      d_welch, g_welch, d_welch_t,
+      ci:{ welch_nct:ci_welch_nct, welch_t_nct:ci_welch_t_nct }
+    }
+  };
+}
+
+// ─── UI helpers ───────────────────────────────────────────────────────────────
+function fmt(x,d=3){return isNaN(x)||!isFinite(x)?'—':x.toFixed(d)}
+function fmtp(p){if(p<.001) return '<.001'; if(p<.01) return p.toFixed(3); return p.toFixed(3)}
+function fmtCI(ci){return '['+fmt(ci.lo,3)+', '+fmt(ci.hi,3)+']'}
+
+// Builds two-part block: (1) point estimates table, (2) CI note + CI table
+// container: DOM element to append into; d, ci, j, nag, bon: numbers; dname: e.g. 'd_z'
+function buildWithinBlock(container, d, ci, j, nag, bon, dname){
+  // --- Part 1: point estimates ---
+  const tbl1=document.createElement('table');
+  tbl1.className='d-table';
+  tbl1.style.cssText='margin-bottom:.3rem';
+  const h1=document.createElement('thead');
+  const hr1=document.createElement('tr');
+  // 5 cols: label | d (unkorr.) | g·j | g·nag | g·Bon
+  ['', dname+' (uncorr.)', 'g · j', 'g · nag', 'g · Bon'].forEach((t,i)=>{
+    const th=document.createElement('th'); th.textContent=t;
+    if(i>0) th.className='num';
+    hr1.appendChild(th);
+  });
+  h1.appendChild(hr1); tbl1.appendChild(h1);
+  const b1=document.createElement('tbody');
+  const tr1=document.createElement('tr');
+  ['Point estimate', fmt(d), fmt(d*j), fmt(d*nag), fmt(d*bon)].forEach((v,i)=>{
+    const td=document.createElement('td'); td.textContent=v;
+    td.className=i===0?'lbl':'num'; tr1.appendChild(td);
+  });
+  b1.appendChild(tr1); tbl1.appendChild(b1);
+  container.appendChild(tbl1);
+
+  // --- CI note ---
+  const note=document.createElement('div');
+  note.className='ci-note';
+  note.textContent='CIs refer to '+dname+' (uncorrected) — not to g (Lakens 2013; Cousineau & Goulet-Pelletier 2021)';
+  container.appendChild(note);
+
+  // --- Part 2: CI table ---
+  const tbl2=document.createElement('table');
+  tbl2.className='d-table-ci';
+  const h2=document.createElement('thead');
+  const hr2=document.createElement('tr');
+  ['CI method', '95% confidence interval'].forEach((t,i)=>{
+    const th=document.createElement('th'); th.textContent=t;
+    if(i>0) th.className='num';
+    hr2.appendChild(th);
+  });
+  h2.appendChild(hr2); tbl2.appendChild(h2);
+  const b2=document.createElement('tbody');
+  const ciRowList=[['Bonett (2015)', ci.bonett]];
+  if(ci.rosenthal) ciRowList.push(['Rosenthal (1994)', ci.rosenthal]);
+  ciRowList.push(['NCT', ci.nct]);
+  ciRowList.forEach(([lbl,c])=>{
+    const tr=document.createElement('tr');
+    const td1=document.createElement('td'); td1.textContent=lbl; td1.className='lbl'; tr.appendChild(td1);
+    const td2=document.createElement('td'); td2.textContent=fmtCI(c); td2.className='num'; tr.appendChild(td2);
+    b2.appendChild(tr);
+  });
+  tbl2.appendChild(b2);
+  container.appendChild(tbl2);
+}
+
+// Point-estimate + CI block for a between-groups d with a single (Hedges j) correction —
+// same two-part layout as buildWithinBlock, just one correction column instead of three.
+function buildBetweenBlock(container, d, ci, j, dname){
+  container.innerHTML='';
+  const tbl1=document.createElement('table');
+  tbl1.className='d-table';
+  tbl1.style.cssText='margin-bottom:.3rem';
+  const h1=document.createElement('thead');
+  const hr1=document.createElement('tr');
+  ['', dname+' (uncorr.)', 'g · j (Hedges)'].forEach((t,i)=>{
+    const th=document.createElement('th'); th.textContent=t;
+    if(i>0) th.className='num';
+    hr1.appendChild(th);
+  });
+  h1.appendChild(hr1); tbl1.appendChild(h1);
+  const b1=document.createElement('tbody');
+  const tr1=document.createElement('tr');
+  ['Point estimate', fmt(d), fmt(d*j)].forEach((v,i)=>{
+    const td=document.createElement('td'); td.textContent=v;
+    td.className=i===0?'lbl':'num'; tr1.appendChild(td);
+  });
+  b1.appendChild(tr1); tbl1.appendChild(b1);
+  container.appendChild(tbl1);
+
+  if(ci){
+    const note=document.createElement('div');
+    note.className='ci-note';
+    note.textContent='CIs refer to '+dname+' (uncorrected) — not to g';
+    container.appendChild(note);
+
+    const tbl2=document.createElement('table');
+    tbl2.className='d-table-ci';
+    const h2=document.createElement('thead');
+    const hr2=document.createElement('tr');
+    ['CI method', '95% confidence interval'].forEach((t,i)=>{
+      const th=document.createElement('th'); th.textContent=t;
+      if(i>0) th.className='num';
+      hr2.appendChild(th);
+    });
+    h2.appendChild(hr2); tbl2.appendChild(h2);
+    const b2=document.createElement('tbody');
+    const ciRowList=[];
+    if(ci.bonett) ciRowList.push(['Bonett (2015)', ci.bonett]);
+    if(ci.rosenthal) ciRowList.push(['Rosenthal (1994)', ci.rosenthal]);
+    if(ci.nct) ciRowList.push(['Noncentral t', ci.nct]);
+    ciRowList.forEach(([lbl,c])=>{
+      const tr=document.createElement('tr');
+      const td1=document.createElement('td'); td1.textContent=lbl; td1.className='lbl'; tr.appendChild(td1);
+      const td2=document.createElement('td'); td2.textContent=fmtCI(c); td2.className='num'; tr.appendChild(td2);
+      b2.appendChild(tr);
+    });
+    tbl2.appendChild(b2);
+    container.appendChild(tbl2);
+  }
+}
+
+// Welch family: d_welch (unweighted SD average) + Hedges g_welch, and the alternative
+// t-to-d conversion d_welch_t — each with its own noncentral-t CI (see computeBetween).
+function buildWelchBlock(container, w){
+  container.innerHTML='';
+
+  const tbl1=document.createElement('table');
+  tbl1.className='d-table';
+  tbl1.style.cssText='margin-bottom:.3rem';
+  const h1=document.createElement('thead');
+  const hr1=document.createElement('tr');
+  ['', 'd_Welch (uncorr.)', 'g_Welch (j via df_Welch)'].forEach((t,i)=>{
+    const th=document.createElement('th'); th.textContent=t;
+    if(i>0) th.className='num';
+    hr1.appendChild(th);
+  });
+  h1.appendChild(hr1); tbl1.appendChild(h1);
+  const b1=document.createElement('tbody');
+  const tr1=document.createElement('tr');
+  ['Point estimate', fmt(w.d_welch), fmt(w.g_welch)].forEach((v,i)=>{
+    const td=document.createElement('td'); td.textContent=v;
+    td.className=i===0?'lbl':'num'; tr1.appendChild(td);
+  });
+  b1.appendChild(tr1); tbl1.appendChild(b1);
+  container.appendChild(tbl1);
+
+  const note=document.createElement('div');
+  note.className='ci-note';
+  note.textContent='95% CI (noncentral t, rescaled from t_Welch) refers to d_Welch (uncorrected)';
+  container.appendChild(note);
+
+  const tbl2=document.createElement('table');
+  tbl2.className='d-table-ci';
+  const h2=document.createElement('thead');
+  const hr2=document.createElement('tr');
+  ['CI method', '95% confidence interval'].forEach((t,i)=>{
+    const th=document.createElement('th'); th.textContent=t;
+    if(i>0) th.className='num';
+    hr2.appendChild(th);
+  });
+  h2.appendChild(hr2); tbl2.appendChild(h2);
+  const b2=document.createElement('tbody');
+  const tr2=document.createElement('tr');
+  const td1=document.createElement('td'); td1.textContent='Noncentral t'; td1.className='lbl'; tr2.appendChild(td1);
+  const td2=document.createElement('td'); td2.textContent=fmtCI(w.ci.welch_nct); td2.className='num'; tr2.appendChild(td2);
+  b2.appendChild(tr2);
+  tbl2.appendChild(b2);
+  container.appendChild(tbl2);
+
+  const tbl3=document.createElement('table');
+  tbl3.className='d-table';
+  tbl3.style.cssText='margin-top:.7rem;margin-bottom:.3rem';
+  const h3=document.createElement('thead');
+  const hr3=document.createElement('tr');
+  ['t-to-d conversion (Borenstein et al. 2009)', 'Value'].forEach((t,i)=>{
+    const th=document.createElement('th'); th.textContent=t;
+    if(i>0) th.className='num';
+    hr3.appendChild(th);
+  });
+  h3.appendChild(hr3); tbl3.appendChild(h3);
+  const b3=document.createElement('tbody');
+  const tr3=document.createElement('tr');
+  const td3a=document.createElement('td'); td3a.textContent='d = t_Welch · √(1/n₁+1/n₂)'; td3a.className='lbl'; tr3.appendChild(td3a);
+  const td3b=document.createElement('td'); td3b.textContent=fmt(w.d_welch_t); td3b.className='num'; tr3.appendChild(td3b);
+  b3.appendChild(tr3); tbl3.appendChild(b3);
+  container.appendChild(tbl3);
+
+  const note2=document.createElement('div');
+  note2.className='ci-note';
+  note2.textContent='95% CI (noncentral t) '+fmtCI(w.ci.welch_t_nct)+' — identical to d_Welch at n₁=n₂, otherwise diverging';
+  container.appendChild(note2);
+}
+
+function buildConversionTable(d_ref, overrideCles){
+  const tbl=document.getElementById('tbl-convert');
+  tbl.innerHTML='';
+  const thead=document.createElement('thead');
+  const hrow=document.createElement('tr');
+  ['Measure','Value','Convention (small/medium/large)'].forEach((h,i)=>{
+    const th=document.createElement('th'); th.textContent=h;
+    th.style.width=i===0?'38%':i===1?'20%':'42%';
+    if(i===1) th.className='num';
+    hrow.appendChild(th);
+  });
+  thead.appendChild(hrow); tbl.appendChild(thead);
+  const tbody=document.createElement('tbody');
+  const d=d_ref;
+  const r=d/Math.sqrt(d*d+4);
+  const r2=r*r;
+  const eta2=d*d/(d*d+4);
+  const OR=Math.exp(d*Math.PI/Math.sqrt(3));
+  const u3=stdNorm(d)*100;
+  const cles_mw=overrideCles!==undefined?overrideCles*100:stdNorm(d/Math.sqrt(2))*100;
+  [
+    ['d (Cohen)', fmt(d_ref,3), '0.2 / 0.5 / 0.8'],
+    ['r (Pearson)', fmt(r,3), '0.1 / 0.3 / 0.5'],
+    ['r² (variance expl.)', fmt(r2,3), '0.01 / 0.09 / 0.25'],
+    ['η² (eta²)', fmt(eta2,3), '0.01 / 0.06 / 0.14'],
+    ['OR (Odds Ratio)', fmt(OR,2), '1.49 / 3.45 / 9.00'],
+    ["Cohen's U₃", fmt(u3,1)+'%', '57.9 / 69.1 / 78.8%'],
+    ['CLES (McGraw & Wong)', fmt(cles_mw,1)+'%', '55.6 / 63.8 / 71.4%'],
+  ].forEach(row=>{
+    const tr=document.createElement('tr');
+    row.forEach((v,i)=>{
+      const td=document.createElement('td'); td.textContent=v;
+      td.className=i===1?'num':'lbl';
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+}
+
+function updateResultsUI(res){
+  state.results=res;
+  document.getElementById('placeholder-msg').style.display='none';
+  document.getElementById('results-wrap').style.display='';
+  document.getElementById('sb-summary').style.display='';
+
+  // t-test bar
+  document.getElementById('rb-test-lbl').textContent=res.mode==='within'?'Within t (t_w)':'Between t (t_b)';
+  document.getElementById('rb-t').textContent='t = '+fmt(res.t,3);
+  document.getElementById('rb-df').textContent='df = '+res.df;
+  document.getElementById('rb-p').textContent=fmtp(res.p);
+  document.getElementById('rb-sig').textContent=res.p<res.alpha?'significant (α='+res.alpha+')':'n.s. (α='+res.alpha+')';
+  const d1=res.mode==='within'?'M₁ (pre)':'M₁ (control)';
+  const d2=res.mode==='within'?'M₂ (post)':'M₂ (intervention)';
+  document.getElementById('rb-d1lbl').textContent=d1;
+  document.getElementById('rb-d2lbl').textContent=d2;
+  document.getElementById('rb-m1').textContent=fmt(res.m1,2);
+  document.getElementById('rb-m2').textContent=fmt(res.m2,2);
+  document.getElementById('rb-sd1').textContent='SD = '+fmt(res.sd1,2);
+  document.getElementById('rb-sd2').textContent='SD = '+fmt(res.sd2,2);
+  const ciPct=Math.round((1-res.alpha)*100);
+  document.getElementById('rb-mdif-lbl').textContent=res.mode==='within'?'M_dif (post − pre)':'M_dif (intervention − control)';
+  document.getElementById('rb-mdif').textContent=fmt(res.m_dif,2);
+  document.getElementById('rb-mdif-sub').textContent='Raw difference';
+  document.getElementById('rb-ci-raw-lbl').textContent=ciPct+'% CI (raw)';
+  document.getElementById('rb-ci-raw').textContent='['+fmt(res.ci_raw.lo,2)+', '+fmt(res.ci_raw.hi,2)+']';
+  document.getElementById('rb-ci-raw-sub').textContent=ciPct+'% CI for mean diff.';
+
+  // Sidebar summary
+  document.getElementById('sb-t').textContent=fmt(res.t,3);
+  document.getElementById('sb-p').textContent=fmtp(res.p);
+
+  if(res.mode==='within'){
+    document.getElementById('within-results').style.display='';
+    document.getElementById('between-results').style.display='none';
+    document.getElementById('sb-dz-lbl').innerHTML='d<sub>z</sub>';
+    document.getElementById('sb-dz').textContent=fmt(res.dz,3);
+    document.getElementById('sb-drm').textContent=fmt(res.drm,3);
+    document.getElementById('sb-dav').textContent=fmt(res.dav,3);
+    document.getElementById('sb-rm-row').style.display='';
+    document.getElementById('sb-av-row').style.display='';
+
+    // Populate standardizer blocks
+    ['dz','drm','dav'].forEach(key=>{
+      const wrap=document.getElementById('tbl-'+key);
+      if(wrap){ wrap.innerHTML=''; buildWithinBlock(wrap, res[key], res.ci[key], res.j, res.nag, res.bon, key==='dz'?'d_z':key==='drm'?'d_rm':'d_av'); }
+    });
+
+    // Other measures table
+    const otherTbl=document.getElementById('tbl-other-within');
+    otherTbl.innerHTML='<thead><tr><th style="width:40%">Measure</th><th style="width:20%">Value</th><th style="width:40%">Description</th></tr></thead>';
+    const otb=document.createElement('tbody');
+    [['Glass Δ', fmt(res.glass,3), 'SD₁ (pre) as denominator'],
+     ['CLES Wuensch', fmt(res.cles_w*100,1)+'%', 'Φ(d_z) — P(a person improves)'],
+     ['CLES McGraw & Wong', fmt(res.cles_mw*100,1)+'%', 'Φ(d_av/√2) — comparable to indep.']
+    ].forEach(row=>{
+      const tr=document.createElement('tr');
+      row.forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;td.className=i===1?'num':'lbl';tr.appendChild(td);});
+      otb.appendChild(tr);
+    });
+    otherTbl.appendChild(otb);
+
+    buildConversionTable(res.dav, res.cles_mw);
+    document.getElementById('nct-sec-h').textContent='Noncentral t-distribution & CI — d_av';
+  } else {
+    document.getElementById('within-results').style.display='none';
+    document.getElementById('between-results').style.display='';
+    document.getElementById('sb-dz-lbl').innerHTML='d<sub>s</sub>';
+    document.getElementById('sb-dz').textContent=fmt(res.ds,3);
+    document.getElementById('sb-rm-row').style.display='none';
+    document.getElementById('sb-av-row').style.display='none';
+
+    buildBetweenBlock(document.getElementById('tbl-between'), res.ds, res.ci.ds, res.j, 'd_s');
+    buildWelchBlock(document.getElementById('tbl-welch'), res.welch);
+
+    const otherTblB=document.getElementById('tbl-other-between');
+    otherTblB.innerHTML='<thead><tr><th style="width:40%">Measure</th><th style="width:20%">Value</th><th style="width:40%">Description</th></tr></thead>';
+    const otbB=document.createElement('tbody');
+    [['d_pool_n', fmt(res.d_pool_n), 'n-pooled SD (instead of n−1)'],
+     ['Glass Δ', fmt(res.glass), 'SD₁ (control group) only as denominator'],
+     ['CLES (McGraw & Wong)', fmt(res.cles_mw*100,1)+'%', 'Φ(d_s/√2) — P(intervention > control)'],
+     ['t_Welch(df_Welch)', fmt(res.welch.t)+' ('+fmt(res.welch.df,1)+')', 'p = '+fmtp(res.welch.p)+'; 95% CI mean diff. '+fmtCI(res.welch.ci_raw)]
+    ].forEach(row=>{
+      const tr=document.createElement('tr');
+      row.forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;td.className=i===1?'num':'lbl';tr.appendChild(td);});
+      otbB.appendChild(tr);
+    });
+    otherTblB.appendChild(otbB);
+
+    buildConversionTable(res.ds, res.cles_mw);
+    document.getElementById('nct-sec-h').textContent='Noncentral t-distribution & CI — d_s (Student, pooled)';
+  }
+
+  drawCanvases(res);
+}
+
+// ─── Canvas drawing ────────────────────────────────────────────────────────────
+function getC(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  return{
+    ink: dark?'#ece6d8':'#18130e',
+    ink2: dark?'#8a8070':'#5a4f42',
+    ink3: dark?'#857c68':'#8a7f72',
+    paper: dark?'#111520':'#f8f3e8',
+    panel: dark?'#171d28':'#e8e0ce',
+    grid: dark?'#1e242e':'#ddd5c5',
+    a1: dark?'#e8614a':'#c94a2a',
+    a2: dark?'#4ab0d8':'#2a6e8a',
+    a3: dark?'#80cb52':'#5a8a2a',
+    a4: dark?'#c87ad8':'#7a3a8a',
+    a5: dark?'#e07830':'#b85c00',
+    a6: dark?'#2bc7c4':'#0e7c7b',
+  };
+}
+
+function drawCanvases(res){
+  drawOverlap(res);
+  drawNCT(res);
+}
+
+function drawOverlap(res){
+  const H=360;
+  const cv=document.getElementById('overlap-canvas');
+  const W=cv.offsetWidth||800; cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  const C=getC();
+  ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,H);
+
+  const d=res.mode==='within'?res.dav:res.ds;
+  const isWithin=res.mode==='within';
+  const lbl1=isWithin?'Pre':'Control';
+  const lbl2=isWithin?'Post':'Intervention';
+
+  const padL=64, padR=64, padT=46, padB=90;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const cx=padL+plotW/2;
+  const yBase=padT+plotH;
+
+  // Scale: show ±4 SD around midpoint
+  const xRange=8;
+  const scale=plotW/xRange;
+  const yPeak=plotH*0.82;  // pixel height for the Gaussian peak
+
+  function xpx(x){ return cx+(x-d/2)*scale; }
+  function norm01(x){ return Math.exp(-0.5*x*x)/Math.sqrt(2*Math.PI); }
+
+  function drawDist(mu, col){
+    // filled area
+    ctx.beginPath();
+    const xL=mu-4, xR=mu+4;
+    ctx.moveTo(xpx(xL), yBase);
+    for(let i=0;i<=300;i++){
+      const x=xL+i*(xR-xL)/300;
+      ctx.lineTo(xpx(x), yBase-norm01(x-mu)*yPeak/norm01(0));
+    }
+    ctx.lineTo(xpx(xR), yBase);
+    ctx.closePath();
+    ctx.globalAlpha=0.22; ctx.fillStyle=col; ctx.fill(); ctx.globalAlpha=1;
+    // outline
+    ctx.strokeStyle=col; ctx.lineWidth=2.2;
+    ctx.beginPath();
+    for(let i=0;i<=300;i++){
+      const x=xL+i*(xR-xL)/300;
+      const py=yBase-norm01(x-mu)*yPeak/norm01(0);
+      i===0?ctx.moveTo(xpx(x),py):ctx.lineTo(xpx(x),py);
+    }
+    ctx.stroke();
+  }
+
+  // Draw overlap region (shaded) between the two Gaussians
+  if(Math.abs(d)>0.05){
+    const xL=Math.min(0,d)-4, xR=Math.max(0,d)+4;
+    ctx.beginPath();
+    for(let i=0;i<=600;i++){
+      const x=xL+i*(xR-xL)/600;
+      const y1=norm01(x-0), y2=norm01(x-d);
+      const py=yBase-Math.min(y1,y2)*yPeak/norm01(0);
+      i===0?ctx.moveTo(xpx(x),py):ctx.lineTo(xpx(x),py);
+    }
+    const pts=[];
+    for(let i=600;i>=0;i--){
+      const x=xL+i*(xR-xL)/600;
+      pts.push([xpx(x),yBase]);
+    }
+    pts.forEach(([px,py],i)=>i===0?ctx.lineTo(px,py):ctx.lineTo(px,py));
+    ctx.closePath();
+    ctx.globalAlpha=0.18; ctx.fillStyle=C.ink3; ctx.fill(); ctx.globalAlpha=1;
+  }
+
+  drawDist(0, C.a2);
+  drawDist(d, C.a5);
+
+  // Baseline
+  ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(padL,yBase); ctx.lineTo(W-padR,yBase); ctx.stroke();
+
+  // X axis ticks and labels
+  ctx.fillStyle=C.ink3; ctx.font='12px DM Mono,monospace'; ctx.textAlign='center';
+  for(let v=-4;v<=4;v++){
+    const px=xpx(v+d/2);
+    if(px>=padL-5 && px<=W-padR+5){
+      ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(px,yBase); ctx.lineTo(px,yBase+5); ctx.stroke();
+      if(v!==0||Math.abs(d/2)<0.15) ctx.fillText(v.toFixed(0),px,yBase+18);
+    }
+  }
+
+  // Mean lines + group labels
+  [0,d].forEach((mu,i)=>{
+    const px=xpx(mu);
+    const col=i===0?C.a2:C.a5;
+    ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.setLineDash([5,3]);
+    ctx.beginPath(); ctx.moveTo(px,padT+8); ctx.lineTo(px,yBase); ctx.stroke();
+    ctx.setLineDash([]);
+    // Group label above curve
+    ctx.fillStyle=col; ctx.font='bold 13px DM Mono,monospace'; ctx.textAlign='center';
+    const peakY=yBase-yPeak-6;
+    ctx.fillText(i===0?lbl1:lbl2, px, peakY);
+  });
+
+  // d arrow between means
+  const px1=xpx(0), px2=xpx(d);
+  const arrY=yBase+38;
+  ctx.strokeStyle=C.ink; ctx.lineWidth=1.8; ctx.setLineDash([]);
+  // Arrow line
+  ctx.beginPath(); ctx.moveTo(px1,arrY); ctx.lineTo(px2,arrY); ctx.stroke();
+  // Arrowheads
+  const ah=6;
+  [[px1,1],[px2,-1]].forEach(([px,dir])=>{
+    ctx.beginPath(); ctx.moveTo(px,arrY); ctx.lineTo(px+dir*ah,arrY-ah); ctx.moveTo(px,arrY); ctx.lineTo(px+dir*ah,arrY+ah); ctx.stroke();
+  });
+  // d label
+  ctx.fillStyle=C.ink; ctx.font='bold 13px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('d = '+fmt(d,3), (px1+px2)/2, arrY+18);
+
+  // Statistics legend box (bottom right)
+  const u3=stdNorm(d)*100;
+  const cles_mw=res.mode==='within'?(res.cles_mw||stdNorm(d/Math.sqrt(2)))*100:res.cles_mw*100;
+  const cles_w=res.mode==='within'?(res.cles_w||stdNorm(res.dz))*100:null;
+
+  const bx=W-padR-220, by=yBase+28, bw=218, bh=cles_w!==null?70:54;
+  ctx.fillStyle=C.paper;
+  ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+  ctx.fillRect(bx,by,bw,bh); ctx.strokeRect(bx,by,bw,bh);
+
+  ctx.fillStyle=C.ink2; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
+  const lx=bx+8;
+  ctx.fillText("Cohen's U₃ = "+u3.toFixed(1)+'%  (% overlap. > M₁)', lx, by+16);
+  ctx.fillText('CLES McGraw & Wong = '+cles_mw.toFixed(1)+'%', lx, by+32);
+  if(cles_w!==null){
+    ctx.fillText('CLES Wuensch = '+cles_w.toFixed(1)+'%  (P(improve))', lx, by+48);
+  }
+  // Legend color patches
+  const lgY=by+bh+14;
+  [[C.a2, lbl1],[C.a5, lbl2]].forEach(([col,lbl],i)=>{
+    const lx2=padL+i*140;
+    ctx.fillStyle=col; ctx.fillRect(lx2,lgY-10,14,12);
+    ctx.fillStyle=C.ink2; ctx.font='12px DM Mono,monospace'; ctx.textAlign='left';
+    ctx.fillText(lbl, lx2+18, lgY);
+  });
+}
+
+function drawNCT(res){
+  const cv=document.getElementById('nct-canvas');
+  const W=cv.offsetWidth||800; cv.width=W; cv.height=180;
+  const ctx=cv.getContext('2d');
+  const C=getC();
+  ctx.fillStyle=C.panel; ctx.fillRect(0,0,W,180);
+
+  const n=res.mode==='within'?res.n:null;
+  const d=res.mode==='within'?res.dav:res.ds;
+  const df=res.df;
+  const ci_b=res.mode==='within'?res.ci.dav.bonett:res.ci.ds.bonett;
+  const ci_r=res.mode==='within'?res.ci.dav.rosenthal:res.ci.ds.rosenthal;
+  const ci_n=res.mode==='within'?res.ci.dav.nct:res.ci.ds.nct;
+
+  const pad={l:55,r:30,t:28,b:40};
+  const pw=W-pad.l-pad.r;
+  const ph=180-pad.t-pad.b;
+  const dRange=Math.max(Math.abs(d)*3, 1.5);
+  const dLo=-dRange, dHi=dRange;
+
+  const tx=v=>pad.l+pw*(v-dLo)/(dHi-dLo);
+
+  // Grid
+  ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad.l,pad.t+ph); ctx.lineTo(pad.l+pw,pad.t+ph); ctx.stroke();
+
+  // CIs as horizontal bars — only include rows that are defined
+  const ciList=[];
+  ciList.push({ci:ci_b, col:C.a5, lbl:'Bonett'});
+  if(ci_r) ciList.push({ci:ci_r, col:C.a3, lbl:'Rosenthal'});
+  ciList.push({ci:ci_n, col:C.a2, lbl:'NCT'});
+  const step=1/(ciList.length+1);
+  ciList.forEach((item,i)=>{ item.y=(i+1)*step; });
+
+  ciList.forEach(({ci,col,lbl,y})=>{
+    const yp=pad.t+ph*y;
+    ctx.strokeStyle=col; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(tx(ci.lo),yp); ctx.lineTo(tx(ci.hi),yp); ctx.stroke();
+    [ci.lo,ci.hi].forEach(v=>{
+      ctx.beginPath(); ctx.moveTo(tx(v),yp-6); ctx.lineTo(tx(v),yp+6); ctx.stroke();
+    });
+    ctx.fillStyle=col; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
+    ctx.fillText(lbl, pad.l+4, yp-8);
+  });
+
+  // Point estimate
+  const dpx=tx(d);
+  ctx.fillStyle=C.ink; ctx.strokeStyle=C.ink; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(dpx, pad.t+ph*0.5, 5, 0, 2*Math.PI); ctx.fill();
+  ctx.strokeStyle=C.ink2; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(dpx,pad.t); ctx.lineTo(dpx,pad.t+ph); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Zero line
+  const zpx=tx(0);
+  ctx.strokeStyle=C.a1; ctx.lineWidth=1; ctx.setLineDash([2,3]);
+  ctx.beginPath(); ctx.moveTo(zpx,pad.t); ctx.lineTo(zpx,pad.t+ph); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // X axis labels
+  ctx.fillStyle=C.ink3; ctx.font='11px DM Mono,monospace'; ctx.textAlign='center';
+  [-1.5,-1,-.5,0,.5,1,1.5].forEach(v=>{
+    if(v>=dLo&&v<=dHi) ctx.fillText(fmt(v,1), tx(v), pad.t+ph+14);
+  });
+  ctx.fillStyle=C.ink2; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('d', pad.l+pw+4, pad.t+ph+14);
+}
+
+// ─── Input handling ────────────────────────────────────────────────────────────
+function onInput(){
+  const m1=parseFloat(document.getElementById('inp-m1').value);
+  const m2=parseFloat(document.getElementById('inp-m2').value);
+  const sd1=parseFloat(document.getElementById('inp-sd1').value);
+  const sd2=parseFloat(document.getElementById('inp-sd2').value);
+  const n1=parseInt(document.getElementById('inp-n1').value);
+  const alpha=parseFloat(document.getElementById('sel-alpha').value);
+  if(isNaN(m1)||isNaN(m2)||isNaN(sd1)||isNaN(sd2)||isNaN(n1)) return;
+  if(sd1<=0||sd2<=0||n1<3) return;
+
+  if(state.mode==='within'){
+    const r=parseFloat(document.getElementById('inp-r').value);
+    if(isNaN(r)||r<=-1||r>=1) return;
+    const res=computeWithin(m1,m2,sd1,sd2,n1,r,alpha);
+    updateResultsUI(res);
+  } else {
+    const n2=parseInt(document.getElementById('inp-n2').value);
+    if(isNaN(n2)||n2<3) return;
+    const res=computeBetween(m1,m2,sd1,sd2,n1,n2,alpha);
+    updateResultsUI(res);
+  }
+}
+
+// ─── CSV upload ────────────────────────────────────────────────────────────────
+function dragOver(e){e.preventDefault();document.getElementById('file-drop').classList.add('drag')}
+function dragLeave(){document.getElementById('file-drop').classList.remove('drag')}
+function fileDrop(e){e.preventDefault();dragLeave();if(e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0])}
+function fileSelect(e){if(e.target.files[0]) processFile(e.target.files[0])}
+
+function processFile(file){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      parseCSV(e.target.result, file.name);
+    } catch(err){
+      document.getElementById('file-status').textContent='Error: '+err.message;
+    }
+  };
+  reader.readAsText(file);
+}
+
+function parseCSV(text, fname){
+  const lines=text.trim().split(/\r?\n/);
+  if(lines.length<2) throw new Error('File too short');
+  const delim=lines[0].includes(';')?';':',';
+  const rows=lines.map(l=>l.split(delim).map(v=>v.trim()));
+  const ncols=rows[0].length;
+  if(ncols<2) throw new Error('At least 2 columns required');
+
+  let headers=[], dataStart=0;
+  const firstRowNums=rows[0].map(v=>!isNaN(parseFloat(v.replace(',','.'))));
+  if(firstRowNums.every(Boolean)){
+    headers=rows[0].map((_,i)=>'Column '+(i+1));
+    dataStart=0;
+  } else {
+    headers=rows[0];
+    dataStart=1;
+  }
+
+  const data=rows.slice(dataStart).map(r=>r.map(v=>v.replace(',','.')));
+  state.csvData=data; state.csvHeaders=headers;
+
+  const sel1=document.getElementById('csv-col1');
+  const sel2=document.getElementById('csv-col2');
+  [sel1,sel2].forEach(s=>{s.innerHTML='';headers.forEach((h,i)=>{const o=document.createElement('option');o.value=i;o.textContent=h;s.appendChild(o);});});
+  sel2.value=Math.min(1,headers.length-1);
+
+  document.getElementById('col-sel-wrap').style.display='';
+  document.getElementById('file-status').textContent='✓ '+fname+' — '+data.length+' rows, '+ncols+' columns';
+  csvCompute();
+}
+
+function csvCompute(){
+  if(!state.csvData) return;
+  const c1=parseInt(document.getElementById('csv-col1').value);
+  const c2=parseInt(document.getElementById('csv-col2').value);
+  const alpha=parseFloat(document.getElementById('sel-alpha').value);
+
+  const col1=state.csvData.map(r=>parseFloat(r[c1])).filter(v=>!isNaN(v));
+  const col2=state.csvData.map(r=>parseFloat(r[c2])).filter(v=>!isNaN(v));
+
+  if(state.mode==='within'){
+    // Paired: use only rows where both columns have values
+    const pairs=state.csvData.map(r=>[parseFloat(r[c1]),parseFloat(r[c2])]).filter(([a,b])=>!isNaN(a)&&!isNaN(b));
+    if(pairs.length<3){document.getElementById('file-status').textContent+=' — Not enough valid pairs';return;}
+    const n=pairs.length;
+    const a=pairs.map(p=>p[0]), b=pairs.map(p=>p[1]);
+    const m1=a.reduce((s,v)=>s+v,0)/n, m2=b.reduce((s,v)=>s+v,0)/n;
+    const sd1=Math.sqrt(a.map(v=>(v-m1)**2).reduce((s,v)=>s+v,0)/(n-1));
+    const sd2=Math.sqrt(b.map(v=>(v-m2)**2).reduce((s,v)=>s+v,0)/(n-1));
+    const cov=pairs.reduce((s,p)=>s+(p[0]-m1)*(p[1]-m2),0)/(n-1);
+    const r=(sd1>0&&sd2>0)?cov/(sd1*sd2):0;
+    // Update sidebar inputs
+    document.getElementById('inp-m1').value=m1.toFixed(3);
+    document.getElementById('inp-m2').value=m2.toFixed(3);
+    document.getElementById('inp-sd1').value=sd1.toFixed(3);
+    document.getElementById('inp-sd2').value=sd2.toFixed(3);
+    document.getElementById('inp-n1').value=n;
+    document.getElementById('inp-r').value=Math.max(-0.999,Math.min(0.999,r)).toFixed(3);
+    const res=computeWithin(m1,m2,sd1,sd2,n,Math.max(-0.999,Math.min(0.999,r)),alpha);
+    updateResultsUI(res);
+  } else {
+    if(col1.length<3||col2.length<3){return;}
+    const n1=col1.length, n2=col2.length;
+    const m1=col1.reduce((s,v)=>s+v,0)/n1, m2=col2.reduce((s,v)=>s+v,0)/n2;
+    const sd1=Math.sqrt(col1.map(v=>(v-m1)**2).reduce((s,v)=>s+v,0)/(n1-1));
+    const sd2=Math.sqrt(col2.map(v=>(v-m2)**2).reduce((s,v)=>s+v,0)/(n2-1));
+    document.getElementById('inp-m1').value=m1.toFixed(3);
+    document.getElementById('inp-m2').value=m2.toFixed(3);
+    document.getElementById('inp-sd1').value=sd1.toFixed(3);
+    document.getElementById('inp-sd2').value=sd2.toFixed(3);
+    document.getElementById('inp-n1').value=n1;
+    document.getElementById('inp-n2').value=n2;
+    const res=computeBetween(m1,m2,sd1,sd2,n1,n2,alpha);
+    updateResultsUI(res);
+  }
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('resize', ()=>{ if(state.results) drawCanvases(state.results); });
+if(document.documentElement.getAttribute('data-theme')==='light'){
+  const tb=document.getElementById('theme-btn');if(tb)tb.textContent='🌙 Dark';
+}
+setMode('between');
+</script>
+</body>
+</html>
