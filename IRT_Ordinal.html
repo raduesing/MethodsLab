@@ -41,6 +41,21 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--accent);margin-bottom:.45rem}
 .story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.proc-step{margin-bottom:.7rem;font-size:.87rem;line-height:1.75;color:var(--ink2)}
+.proc-step strong{color:var(--ink)}
+.proc-step .circ{margin-right:.4rem;font-size:1.7em}
+.proc-jump{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);text-decoration:none;
+  border-bottom:1px dotted var(--a2)}
+.proc-jump:hover{color:var(--ink)}
+.advantage-box{background:color-mix(in srgb,var(--a3) 10%,var(--bg));border:1px solid var(--a3);
+  padding:.8rem 1rem;margin-bottom:.85rem;line-height:1.7}
+.advantage-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a3);margin-bottom:.45rem}
+.advantage-box strong{color:var(--ink)} .advantage-box em{font-style:italic;color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink3);margin:1.1rem 0 .52rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
 .sec-h:first-child{margin-top:0}
@@ -230,7 +245,24 @@ P*(X≥0) = 1,  P*(X≥K) = 0</code>
   <div class="story-box"><div class="story-lbl">📋 Beispiel — Burnout-Screening</div>
   4-Item-Fragebogen zum Wohlbefinden am Arbeitsplatz, 5-stufige Likert-Skala (<strong>0 = nie · 4 = immer</strong>). θ repräsentiert allgemeines Wohlbefinden.</div>
 
-  <div class="sec-h" style="margin-top:0">Kategorie-Antwortkurven (CRF) — <span id="crf-item-lbl" style="text-transform:none;letter-spacing:0">Item 1</span></div>
+  <div class="advantage-box">
+    <div class="advantage-lbl">✓ Warum eigene Modelle für Likert-/Teilpunkt-Items?</div>
+    Setzt die Grundbegriffe θ, ICC und Trennschärfe aus <a href="IRT.html" target="_blank">IRT — Dichotome Modelle</a> voraus, hier für Items mit <strong>mehr als zwei geordneten Antwortkategorien</strong>. Der Gewinn: jede Zwischenkategorie trägt zur Messung bei — ein 5-stufiges Item kann deutlich mehr Information liefern als ein binär kodiertes. Das gilt aber nur, wenn die Kategorien auch wirklich gut diskriminieren; schwache oder <em>ungeordnete</em> Schwellen (Schritt ③) zehren diesen Vorteil sofort wieder auf.
+  </div>
+
+  <div class="sec-h" style="margin-top:0">Vorgehen — vom binären zum polytomen Item</div>
+  <div>
+    <div class="proc-step"><span class="circ">①</span><strong>Von binär zu polytom.</strong> Statt einer Schwierigkeit b hat ein Item mit K Kategorien K−1 Schwellenparameter — Übergänge zwischen benachbarten (PCM/GPCM) oder kumulierten (GRM) Kategorien. <a class="proc-jump" href="#cv-crf">→ Kategorie-Antwortkurven ansehen</a></div>
+    <div class="proc-step"><span class="circ">②</span><strong>Modellwahl: PCM, GPCM oder GRM?</strong> Teilleistungsstufen (0/Teilansatz/vollständig) → PCM. Heterogene Trennschärfen in gemischten Itemformaten → GPCM. Zustimmungsgrade auf Likert-Skalen → GRM (eng verwandt mit ordinaler Faktorenanalyse über polychorische Korrelationen).</div>
+    <div class="proc-step"><span class="circ">③</span><strong>Disordered Thresholds prüfen.</strong> Sind die Schwellen nicht der Reihe nach geordnet, ist eine Kategorie empirisch redundant — ein Warnsignal für zu ähnlich formulierte Antwortstufen. <a class="proc-jump" href="#crf-note">→ Warnhinweis ansehen</a></div>
+    <div class="proc-step"><span class="circ">④</span><strong>Expected Score &amp; Item-Information.</strong> Wo entlang der θ-Skala trägt das Item am meisten zur Messung bei? <a class="proc-jump" href="#cv-esc">→ Expected Score</a> · <a class="proc-jump" href="#cv-info">→ Item-Information</a></div>
+  </div>
+  <div>
+    <a class="xlink" href="IRT.html" target="_blank">← Grundlagen: IRT — Dichotome Modelle</a>
+    <a class="xlink" href="DIF.html" target="_blank">Gruppenspezifisch geschätzt: liegt DIF vor? → DIF</a>
+  </div>
+
+  <div class="sec-h">Kategorie-Antwortkurven (CRF) — <span id="crf-item-lbl" style="text-transform:none;letter-spacing:0">Item 1</span></div>
   <canvas id="cv-crf" height="360"></canvas>
   <div class="hint" id="crf-note"></div>
 

@@ -41,6 +41,21 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--accent);margin-bottom:.45rem}
 .story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.proc-step{margin-bottom:.7rem;font-size:.87rem;line-height:1.75;color:var(--ink2)}
+.proc-step strong{color:var(--ink)}
+.proc-step .circ{margin-right:.4rem;font-size:1.7em}
+.proc-jump{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);text-decoration:none;
+  border-bottom:1px dotted var(--a2)}
+.proc-jump:hover{color:var(--ink)}
+.advantage-box{background:color-mix(in srgb,var(--a3) 10%,var(--bg));border:1px solid var(--a3);
+  padding:.8rem 1rem;margin-bottom:.85rem;line-height:1.7}
+.advantage-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a3);margin-bottom:.45rem}
+.advantage-box strong{color:var(--ink)} .advantage-box em{font-style:italic;color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
 .slider-row{margin-bottom:.52rem}
 .slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
 .slider-name{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink)}
@@ -233,7 +248,25 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="story-box"><div class="story-lbl">📋 Beispiel — Leseverständnistest</div>
   <strong>Max (Kl. 8)</strong> schreibt einen standardisierten <strong>Leseverständnistest</strong> mit 5 Items — von einfachem Faktenwissen (Item 1) bis zur komplexen Synthese (Item 5). Wie gut misst der Test seine wahre Lesekompetenz θ?</div>
 
-  <div class="sec-h" style="margin-top:0">ICC — Item Characteristic Curves</div>
+  <div class="advantage-box">
+    <div class="advantage-lbl">✓ Warum IRT — zusätzlich zur Klassischen Testtheorie?</div>
+    KTT/Faktorenanalyse und IRT sind keine Konkurrenten, sondern ergänzen sich: Beide gehen davon aus, dass eine <strong>latente Fähigkeit</strong> das Antwortverhalten erzeugt (das 2PL-Modell ist für dichotome Daten sogar formal äquivalent zu einem <a href="Faktoranalyse.html" target="_blank">Einfaktormodell</a> auf tetrachorischen Korrelationen — a entspricht einer Faktorladung). Der Unterschied liegt im Fokus: Bei <a href="KTT_Grundlagen.html" target="_blank">KTT</a>/Faktorenanalyse ist die latente Variable das <em>Ziel</em> der Analyse; die Reliabilität (α/ω) ist dabei eine <strong>einzelne Zahl für den ganzen Test</strong> — sie unterstellt implizit gleich große Messgenauigkeit über die komplette Skala. IRT macht das <strong>einzelne Item</strong> zum Gegenstand und zeigt explizit, dass diese Annahme oft nicht stimmt: ein Test kann in der Mitte sehr präzise und an den Rändern kaum informativ sein (siehe Testinformationsfunktion unten).
+  </div>
+
+  <div class="sec-h" style="margin-top:0">Vorgehen — vom Item zur Fähigkeitsschätzung</div>
+  <div>
+    <div class="proc-step"><span class="circ">①</span><strong>Item-Charakteristik-Kurve (ICC).</strong> Die S-förmige Kurve zeigt P(richtig | θ) — die Lösungswahrscheinlichkeit als Funktion der Fähigkeit. <a class="proc-jump" href="#cv-icc">→ ICC ansehen</a></div>
+    <div class="proc-step"><span class="circ">②</span><strong>Modell wählen — wie viele Parameter braucht das Item?</strong> Rasch/1PL/2PL/3PL/4PL unterscheiden sich darin, ob Trennschärfe, Raten und Flüchtigkeitsfehler modelliert werden. Rasch vs. 1PL ist dabei kein rein statistischer, sondern ein messtheoretisch-philosophischer Unterschied (Details in der Hilfe).</div>
+    <div class="proc-step"><span class="circ">③</span><strong>Testinformation I(θ) und SE(θ) — wie präzise misst der Test wo?</strong> Das ist der Kernvorteil aus dem Kasten oben, jetzt sichtbar gemacht: die Präzision ist keine Konstante, sondern hängt von θ ab. <a class="proc-jump" href="#cv-tif">→ Testinformationsfunktion ansehen</a></div>
+    <div class="proc-step"><span class="circ">④</span><strong>Wright Map — Personen und Items auf einer Skala.</strong> Passen die Itemschwierigkeiten zur Fähigkeitsverteilung der Personen (Targeting)? <a class="proc-jump" href="#cv-wright">→ Wright Map ansehen</a></div>
+    <div class="proc-step"><span class="circ">⑤</span><strong>Von Antworten zu θ̂.</strong> Aus einem konkreten Antwortmuster lässt sich die Fähigkeit einer Person per Maximum-Likelihood schätzen — probiere es unten in der Seitenleiste aus.</div>
+  </div>
+  <div>
+    <a class="xlink" href="IRT_Ordinal.html" target="_blank">Items mit mehr als zwei Antwortkategorien? → Ordinale IRT</a>
+    <a class="xlink" href="DIF.html" target="_blank">Funktioniert ein Item für alle Gruppen gleich? → DIF</a>
+  </div>
+
+  <div class="sec-h">ICC — Item Characteristic Curves</div>
   <canvas id="cv-icc" height="360"></canvas>
   <div class="hint" id="icc-note"></div>
 

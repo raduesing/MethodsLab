@@ -40,7 +40,22 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
   padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
 .story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--accent);margin-bottom:.45rem}
+.xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
 .story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.proc-step{margin-bottom:.7rem;font-size:.87rem;line-height:1.75;color:var(--ink2)}
+.proc-step strong{color:var(--ink)}
+.proc-step .circ{margin-right:.4rem;font-size:1.7em}
+.proc-jump{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);text-decoration:none;
+  border-bottom:1px dotted var(--a2)}
+.proc-jump:hover{color:var(--ink)}
+.advantage-box{background:color-mix(in srgb,var(--a3) 10%,var(--bg));border:1px solid var(--a3);
+  padding:.8rem 1rem;margin-bottom:.85rem;line-height:1.7}
+.advantage-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a3);margin-bottom:.45rem}
+.advantage-box strong{color:var(--ink)} .advantage-box em{font-style:italic;color:var(--ink)}
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink3);margin:1.1rem 0 .52rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
 .sec-h:first-child{margin-top:0}
@@ -123,7 +138,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <p class="help-p"><strong>DIF:</strong> Ein Item ist für die Fokusgruppe schwerer (oder leichter), auch <em>nachdem</em> man auf gleiche Fähigkeit θ konditioniert. Das kann auf irrelevante Itemmerkmale hinweisen: Kulturspezifisches Vorwissen, sprachliche Komplexität, Kontext (z.B. Sport, Berufsbilder), der für eine Gruppe vertrauter ist.</p>
   <p class="help-p">Im Tool: Verändere die Gruppenverteilung (μ_Fokus) ohne DIF-Parameter zu ändern — Impact ändert sich, DIF bleibt null. Verändere Δb oder Δa ohne die Gruppenverteilungen zu ändern — DIF ändert sich, Impact bleibt gleich.</p>
 
-  <div class="help-sh">Uniforomes DIF (Δb ≠ 0, Δa = 0)</div>
+  <div class="help-sh">Uniformes DIF (Δb ≠ 0, Δa = 0)</div>
   <p class="help-p">Beim uniformen DIF ist die Schwierigkeitsparameter b der Fokusgruppe systematisch erhöht (oder erniedrigt): b_fok = b_ref + Δb. Die ICC-Form bleibt gleich — die Kurven verlaufen parallel, ohne sich zu kreuzen. Die Fokusgruppe wird über alle θ-Niveaus hinweg gleichmäßig benachteiligt (oder bevorzugt).</p>
   <code class="help-formula">Uniformes DIF:  b_fok = b_ref + Δb,  a_fok = a_ref
 ICCs verlaufen parallel — kein Kreuzungspunkt</code>
@@ -220,9 +235,29 @@ ICCs kreuzen sich — DIF wechselt die Richtung</code>
 <div id="main">
 
   <div class="story-box"><div class="story-lbl">📋 Beispiel — Hochschulzulassungstest</div>
-  4 Items, zwei Gruppen: <strong>Referenz</strong> (deutschsprachig aufgewachsen) und <strong>Fokus</strong> (nicht-deutschsprachig). Haben alle Items nach Kontrolle der Fähigkeit θ die gleiche Schwierigkeit für beide Gruppen?</div>
+  4 Items, zwei Gruppen: <strong>Referenz</strong> (deutschsprachig aufgewachsen) und <strong>Fokus</strong> (nicht-deutschsprachig). Haben alle Items nach Kontrolle der Fähigkeit θ die gleiche Schwierigkeit für beide Gruppen?
+  <div style="margin-top:.6rem">
+    <a class="xlink" href="Messinvarianz.html" target="_blank">DIF ist die itembasierte Sicht — die modellbasierte Prüfung ganzer Faktorstrukturen → Messinvarianz</a>
+  </div></div>
 
-  <div class="sec-h" style="margin-top:0">ICC-Vergleich — <span id="crf-item-lbl" style="text-transform:none;letter-spacing:0">Item 1</span></div>
+  <div class="advantage-box">
+    <div class="advantage-lbl">✓ Warum DIF prüfen?</div>
+    Die konsequente item-fokussierte Frage aus der <a href="IRT.html" target="_blank">IRT</a>-Perspektive: Nicht "unterscheiden sich die Gruppen im Mittel?" (das ist <strong>Impact</strong> — oft legitim, z.B. wenn eine Gruppe tatsächlich mehr gelernt hat), sondern "funktioniert <em>dieses eine Item</em> fair, nachdem man auf gleiche Fähigkeit θ kontrolliert hat?". Das Gegenstück auf Faktorebene ist <a href="Messinvarianz.html" target="_blank">Messinvarianz</a> — DIF fragt nach dem einzelnen Item, Messinvarianz nach dem ganzen Messmodell.
+  </div>
+
+  <div class="sec-h" style="margin-top:0">Vorgehen — item-fokussierte Testfairness prüfen</div>
+  <div>
+    <div class="proc-step"><span class="circ">①</span><strong>Impact vs. DIF unterscheiden.</strong> Unterschiedliche Gruppenmittelwerte (Impact) sind kein Bias. DIF liegt erst vor, wenn ein Item auch bei <em>gleichem</em> θ unterschiedliche Lösungswahrscheinlichkeiten hat.</div>
+    <div class="proc-step"><span class="circ">②</span><strong>ICC-Vergleich zwischen Gruppen.</strong> Weichen die Kurven der Referenz- und Fokusgruppe voneinander ab? <a class="proc-jump" href="#cv-icc">→ ICC-Vergleich ansehen</a></div>
+    <div class="proc-step"><span class="circ">③</span><strong>Uniform vs. nicht-uniform (Δb vs. Δa).</strong> Verlaufen die Kurven parallel (uniformes DIF) oder kreuzen sie sich (nicht-uniformes DIF)? <a class="proc-jump" href="#cv-diff">→ Differenzkurve ansehen</a></div>
+    <div class="proc-step"><span class="circ">④</span><strong>Effektgröße: Signed vs. Unsigned Area (Raju).</strong> Wie groß ist der DIF-Betrag, und rechtfertigt er eine Konsequenz (Item überarbeiten oder entfernen)? <a class="proc-jump" href="#cv-groups">→ Gruppenverteilungen als Kontext</a></div>
+  </div>
+  <div>
+    <a class="xlink" href="IRT.html" target="_blank">← Grundlagen: IRT — Dichotome Modelle</a>
+    <a class="xlink" href="IRT_Ordinal.html" target="_blank">← Grundlagen: IRT — Ordinale Modelle</a>
+  </div>
+
+  <div class="sec-h">ICC-Vergleich — <span id="crf-item-lbl" style="text-transform:none;letter-spacing:0">Item 1</span></div>
   <canvas id="cv-icc" height="340"></canvas>
   <div class="hint" id="icc-note"></div>
 

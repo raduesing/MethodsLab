@@ -211,7 +211,7 @@ table.htab th{color:var(--accent);font-weight:500}
 
   <div class="scard">
     <div class="scard-title">Baseline-Messmodell</div>
-    <div class="hint" style="border-top:none;padding-top:0;margin-bottom:0">4 Items, ein Faktor, Likert 1–5.<br>Ladungen λ = 0.75 / 0.65 / 0.80 / 0.60<br>Intercepts τ = 3.00 (alle).<br>In Gruppe A gelten diese Werte exakt; Verletzungen oben betreffen nur Gruppe B.</div>
+    <div class="hint" style="border-top:none;padding-top:0;margin-bottom:0">V1–V4 (Verbal-Subtest aus dem Kognitionstest), ein Faktor, Likert 1–5.<br>Ladungen λ = 0.75 / 0.65 / 0.80 / 0.60<br>Intercepts τ = 3.00 (alle).<br>In Gruppe A gelten diese Werte exakt; Verletzungen oben betreffen nur Gruppe B.</div>
   </div>
 
 </div><!-- #sidebar -->
@@ -221,11 +221,17 @@ table.htab th{color:var(--accent);font-weight:500}
 
   <div class="story-box">
     <div class="story-lbl">📋 Worum geht's</div>
-    Du vergleichst zwei Gruppen (Männer/Frauen, zwei Länder, zwei Messzeitpunkte) auf einem Konstrukt — etwa
-    <em>Depressivität</em> oder <em>Arbeitszufriedenheit</em>. Bevor du Mittelwerte vergleichst, musst du sicher sein,
-    dass der Fragebogen in <strong>beiden Gruppen dasselbe und auf gleiche Weise</strong> misst. Ist das verletzt
-    (<strong>Nicht-Invarianz / DIF</strong>), kann eine „Gruppendifferenz" ein reines <strong>Messartefakt</strong> sein.
-    Stelle die wahre Differenz und eine Verletzung ein — und sieh, wie viel des beobachteten Unterschieds echt ist.
+    Aus dem 8-Item-Kognitionstest (Faktoranalyse, Messmodelle, CFA) greifen wir den <strong>Verbal-Subtest V1–V4</strong>
+    heraus und vergleichen zwei Gruppen damit — etwa eine deutsche und eine übersetzte Testversion, oder zwei
+    Testzeitpunkte. Bevor du Mittelwerte vergleichst, musst du sicher sein, dass der Test in <strong>beiden Gruppen
+    dasselbe und auf gleiche Weise</strong> misst. Ist das verletzt (<strong>Nicht-Invarianz / DIF</strong>), kann eine
+    „Gruppendifferenz" ein reines <strong>Messartefakt</strong> sein. Stelle die wahre Differenz und eine Verletzung
+    ein — und sieh, wie viel des beobachteten Unterschieds echt ist.
+    <div style="margin-top:.6rem">
+      <a class="xlink" href="Faktoranalyse.html" target="_blank">← Faktoranalyse (EFA)</a>
+      <a class="xlink" href="Messmodelle.html" target="_blank">← Messmodelle</a>
+      <a class="xlink" href="Konfirmatorische_Faktoranalyse.html" target="_blank">← Konfirmatorische Faktoranalyse (CFA)</a>
+    </div>
   </div>
 
   <div class="sec-h">Was ist Messinvarianz — und wozu?</div>
@@ -316,24 +322,24 @@ table.htab th{color:var(--accent);font-weight:500}
   <button class="work-toggle" id="work-toggle" onclick="toggleWork()">▸ Lückenlose Rechnung zum aktuellen Szenario anzeigen</button>
   <div class="work" id="work"></div>
 
-  <div class="sec-h">Konzepte</div>
+  <div class="sec-h">Lernkarten</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">Die Invarianz-Hierarchie</div>
+      <div class="lcard-h">① Die Invarianz-Hierarchie</div>
       <div class="lcard-body"><strong>Konfigural</strong> ⊂ <strong>metrisch</strong> ⊂ <strong>skalar</strong> ⊂ <strong>strikt</strong> —
         jede Stufe verlangt zusätzlich Gleichheit: konfigural nur dieselbe Struktur, metrisch gleiche <strong>Ladungen λ</strong>,
         skalar zusätzlich gleiche <strong>Intercepts τ</strong>, strikt zusätzlich gleiche <strong>Fehlervarianzen θ</strong>.
         Geprüft wird genestet, meist per CFA-Mehrgruppenmodell.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Warum <em>skalar</em> für Mittelwerte?</div>
+      <div class="lcard-h">② Warum <em>skalar</em> für Mittelwerte?</div>
       <div class="lcard-body">Ein beobachteter Item-Mittelwert ist <strong>τ + λ·μ</strong>. Vergleicht man latente Mittelwerte μ,
         müssen Intercept τ <em>und</em> Ladung λ gruppengleich sein — sonst ist nicht trennbar, ob ein höherer Score von einem
         höheren <strong>Konstrukt</strong> (μ) oder von einem verschobenen <strong>Item</strong> (τ) kommt. Genau das macht der
         orange Anteil sichtbar.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Zwei Fehlerrichtungen: Schein vs. Maskierung</div>
+      <div class="lcard-h">③ Zwei Fehlerrichtungen: Schein vs. Maskierung</div>
       <div class="lcard-body">Nicht-Invarianz täuscht in <em>beide</em> Richtungen. <strong>Schein-Differenz</strong> („Skalar verletzt"):
         Δμ = 0, aber ein DIF erzeugt einen Unterschied, wo keiner ist → <strong>falsch-positiv</strong>.
         <strong>Maskierung</strong> („Maskierte Diff."): Δμ ist <em>echt</em> (+0.5), aber ein gegenläufiges DIF (Δτ = −0.7)
@@ -341,7 +347,7 @@ table.htab th{color:var(--accent);font-weight:500}
         Beide Male ist der rohe Mittelwertvergleich irreführend; das SEM holt aus den Ankern κ_B = 0.5 zurück.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Score-Skala ≠ latente Skala</div>
+      <div class="lcard-h">④ Score-Skala ≠ latente Skala</div>
       <div class="lcard-body">Die latente Differenz <strong>Δμ</strong> und die beobachtete <strong>Score-Differenz</strong> leben auf
         <em>verschiedenen Metriken</em>. Selbst bei voller Invarianz ist die beobachtete Differenz nur <strong>Δμ·(Σλ/k)</strong> —
         die latente Differenz, skaliert mit der mittleren Ladung (hier <strong>×0.70</strong>). Gleich wären beide nur bei mittlerer
@@ -349,7 +355,7 @@ table.htab th{color:var(--accent);font-weight:500}
         im SEM die latenten Mittel direkt statt roher Summenscores. Die Kette über den Diagrammen zeigt diese Übersetzung.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Uniformer vs. nicht-uniformer DIF</div>
+      <div class="lcard-h">⑤ Uniformer vs. nicht-uniformer DIF</div>
       <div class="lcard-body"><strong>Δτ</strong> verschiebt das Item für alle gleich stark (uniformer DIF) → verletzt nur die
         <em>skalare</em> Stufe. <strong>Δλ</strong> ändert, wie stark das Item das Konstrukt misst (nicht-uniformer DIF) → verletzt
         schon die <em>metrische</em> Stufe und damit auch Zusammenhangs­vergleiche. Dasselbe Phänomen heißt in der IRT
@@ -357,22 +363,24 @@ table.htab th{color:var(--accent);font-weight:500}
         <a class="xlink" href="DIF.html" target="_blank">→ DIF (IRT)</a></div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Partielle Invarianz &amp; Anker</div>
+      <div class="lcard-h">⑥ Partielle Invarianz &amp; Anker</div>
       <div class="lcard-body">Selten sind <em>alle</em> Items invariant. Mit genug <strong>invarianten Anker-Items</strong> lässt sich
         die latente Skala trotzdem identifizieren und man erlaubt einzelnen Items freie Parameter (<strong>partielle Invarianz</strong>,
         Byrne/Shavelson/Muthén 1989). Faustregel: mindestens zwei invariante Items pro Faktor.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Wie man es real testet</div>
+      <div class="lcard-h">⑦ Wie man es real testet</div>
       <div class="lcard-body">Modelle nesten und vergleichen: <strong>Δχ²</strong>-Differenztest (oft zu streng bei großem n) oder
         besser <strong>ΔCFI ≤ .01</strong> / ΔRMSEA ≤ .015 (Cheung &amp; Rensvold 2002; Chen 2007). Wird eine Stufe nicht
         gehalten, ist der entsprechende Gruppenvergleich nicht zulässig — oder man geht zu partieller Invarianz.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Verwandte Werkzeuge</div>
+      <div class="lcard-h">⑧ Verwandte Werkzeuge</div>
       <div class="lcard-body">Messinvarianz ist der <em>Gruppenvergleich</em> von Messmodellen: dieselben CFA-Bausteine wie im
-        Messmodell-Tool, nur über Gruppen restringiert. Verschobene Intercepts erinnern an Normverschiebungen.
-        <a class="xlink" href="Messmodelle.html" target="_blank">→ Messmodelle (CFA)</a>
+        Messmodell- und CFA-Tool, nur über Gruppen restringiert. Verschobene Intercepts erinnern an Normverschiebungen.
+        <a class="xlink" href="Konfirmatorische_Faktoranalyse.html" target="_blank">→ Konfirmatorische Faktoranalyse (CFA)</a>
+        <a class="xlink" href="Messmodelle.html" target="_blank">→ Messmodelle</a>
+        <a class="xlink" href="Strukturgleichungsmodell.html" target="_blank">→ Strukturgleichungsmodell (SEM)</a>
         <a class="xlink" href="Normierungsverzerrung.html" target="_blank">→ Normierung</a></div>
     </div>
   </div>
@@ -395,8 +403,8 @@ table.htab th{color:var(--accent);font-weight:500}
       und prüft, welche Invarianz-Stufen halten.</p>
 
     <div class="help-sh">Das Modell pro Gruppe g</div>
-    <span class="help-formula">X_ij = τ_ig + λ_ig · ξ_g + ε_ig
-E[X_ij | Gruppe g] = τ_ig + λ_ig · μ_g     (μ_A = 0 als Referenz)
+    <span class="help-formula">V_ij = τ_ig + λ_ig · ξ_g + ε_ig
+E[V_ij | Gruppe g] = τ_ig + λ_ig · μ_g     (μ_A = 0 als Referenz)
 Σλ/k = (0.75+0.65+0.80+0.60)/4 = 0.70</span>
     <p class="help-p">In Gruppe A gelten die Baseline-Werte. In Gruppe B addiert eine Verletzung beim gewählten Item v:
       τ_vB = τ_v + Δτ und λ_vB = λ_v + Δλ. Alle anderen Items bleiben invariant.</p>
@@ -539,7 +547,7 @@ function drawGroup(ctx,px0,px1,gName,mu,isB){
     ctx.fillStyle=paper; ctx.strokeStyle=ink2; ctx.lineWidth=2;
     ctx.fillRect(cx-bw/2,by,bw,bh); ctx.strokeRect(cx-bw/2,by,bw,bh);
     ctx.fillStyle=ink; ctx.font='600 16px DM Mono,monospace'; ctx.textBaseline='middle';
-    ctx.fillText('X'+(i+1),cx,by+bh/2-12);
+    ctx.fillText('V'+(i+1),cx,by+bh/2-12);
     // intercept τ
     const dt=tauDiff(i), tcol=dt?a1:a3;
     const tval=TAU[i]+(isB&&ST.vItem===i?ST.dTau:0);
@@ -611,7 +619,7 @@ function drawItems(){
     }
     // item label
     ctx.fillStyle=ink2; ctx.font='11px DM Mono,monospace'; ctx.textAlign='center'; ctx.textBaseline='top';
-    ctx.fillText('Item '+(i+1),cxg,y1+6);
+    ctx.fillText('V'+(i+1),cxg,y1+6);
   }
   // axis
   ctx.strokeStyle=ink3; ctx.lineWidth=1.2;
@@ -713,8 +721,8 @@ function update(){
   } else {
     vd.className='verdict v-bad';
     let head;
-    if(!s.metric) head='Metrische Invarianz verletzt (Item '+(ST.vItem+1)+', Δλ): schon Zusammenhangs- und Mittelwertvergleiche sind verzerrt. ';
-    else head='Skalare Invarianz verletzt (Item '+(ST.vItem+1)+', Δτ): ';
+    if(!s.metric) head='Metrische Invarianz verletzt (V'+(ST.vItem+1)+', Δλ): schon Zusammenhangs- und Mittelwertvergleiche sind verzerrt. ';
+    else head='Skalare Invarianz verletzt (V'+(ST.vItem+1)+', Δτ): ';
     let body;
     if(aTrue<TOL && aArt>=TOL)
       body='Die Gruppen unterscheiden sich latent <strong>nicht</strong> — die beobachtete Differenz von <strong>'+sgn(dob)+'</strong> ist ein <strong>reines Messartefakt</strong>.';
@@ -727,7 +735,7 @@ function update(){
 
   // item hint
   document.getElementById('hint-items').innerHTML = violated()
-    ? 'Graue Balken = Gruppe A, blaue = Gruppe B. Item <strong>'+(ST.vItem+1)+'</strong> ist nicht-invariant (rot umrandet) — seine Lücke entsteht nicht durch das Konstrukt.'
+    ? 'Graue Balken = Gruppe A, blaue = Gruppe B. <strong>V'+(ST.vItem+1)+'</strong> ist nicht-invariant (rot umrandet) — seine Lücke entsteht nicht durch das Konstrukt.'
     : 'Graue Balken = Gruppe A, blaue = Gruppe B. Alle Items invariant: die blauen Balken stehen einheitlich um Δμ·λ über den grauen.';
 
   drawPath(); drawItems(); drawDecomp(); buildWork();
@@ -757,24 +765,24 @@ function buildWork(){
   D.forEach(r=>{
     const lamCell = (r.dif&&Math.abs(ST.dLam)>TOL) ? (LAM[r.i].toFixed(2)+' / '+r.lamB.toFixed(2)) : LAM[r.i].toFixed(2);
     rows+=`<tr${r.dif?' style="background:color-mix(in srgb,var(--a5) 13%,transparent)"':''}>`
-      +`<td class="lbl">X${r.i+1}${r.dif?' ⚠':''}</td>`
+      +`<td class="lbl">V${r.i+1}${r.dif?' ⚠':''}</td>`
       +`<td>${lamCell}</td><td>${TAU[r.i].toFixed(1)}</td><td>${r.tauB.toFixed(1)}</td>`
       +`<td>${r.XA.toFixed(3)}</td><td>${r.XB.toFixed(3)}</td>`
       +`<td class="${r.dif?'or':''}"><b>${(r.d>=0?'+':'')+r.d.toFixed(3)}</b></td></tr>`;
   });
   const table=`<table>
-    <tr><th class="lbl">Item</th><th>λ (A/B)</th><th>τ<sub>A</sub></th><th>τ<sub>B</sub></th><th>E[X|A]</th><th>E[X|B]</th><th>d = B−A</th></tr>
+    <tr><th class="lbl">Item</th><th>λ (A/B)</th><th>τ<sub>A</sub></th><th>τ<sub>B</sub></th><th>E[V|A]</th><th>E[V|B]</th><th>d = B−A</th></tr>
     ${rows}
     <tr class="sum"><td class="lbl">Σ</td><td></td><td></td><td></td><td>${sumA.toFixed(3)}</td><td>${sumB.toFixed(3)}</td><td>${(sumB-sumA>=0?'+':'')+(sumB-sumA).toFixed(3)}</td></tr>
     <tr class="sum"><td class="lbl">Ø (/${K})</td><td></td><td></td><td></td><td>${meanA.toFixed(3)}</td><td>${meanB.toFixed(3)}</td><td><b>${(Dobs>=0?'+':'')+Dobs.toFixed(3)}</b></td></tr>
   </table>`;
 
   // ── setup line ──
-  const vtxt = v<0 ? 'keine (volle Invarianz)' : ('Item '+(v+1)+',  Δτ = '+fmt2(ST.dTau)+',  Δλ = '+fmt2(ST.dLam));
+  const vtxt = v<0 ? 'keine (volle Invarianz)' : ('V'+(v+1)+',  Δτ = '+fmt2(ST.dTau)+',  Δλ = '+fmt2(ST.dLam));
   const setup=`Baseline (Gruppe A):  λ = [${LAM.map(x=>x.toFixed(2)).join(', ')}],   τ = [${TAU.map(x=>x.toFixed(1)).join(', ')}]
 Latente Mittel:        μ_A = 0,   μ_B = Δμ = ${fmt2(mu)}
 Nicht-Invarianz:       ${vtxt}
-Modell pro Item:       E[X|A] = τ + λ·0 = τ ;   E[X|B] = τ_B + λ_B·μ_B`;
+Modell pro Item:       E[V|A] = τ + λ·0 = τ ;   E[V|B] = τ_B + λ_B·μ_B`;
 
   // ── approach A ──
   const apprA=`Ø Score A = (${xaP.join(' + ')}) / ${K} = ${sumA.toFixed(3)} / ${K} = ${meanA.toFixed(3)}
@@ -790,22 +798,22 @@ D_beob = ${meanB.toFixed(3)} − ${meanA.toFixed(3)} = <b>${(Dobs>=0?'+':'')+Dob
   let anchorLines='';
   for(let i=0;i<K;i++){ if(i===v) continue;
     const di=D[i].d;
-    anchorLines+=`  Item ${i+1}:  d / λ = ${di.toFixed(3)} / ${LAM[i].toFixed(2)} = ${(di/LAM[i]).toFixed(3)}\n`;
+    anchorLines+=`  V${i+1}:  d / λ = ${di.toFixed(3)} / ${LAM[i].toFixed(2)} = ${(di/LAM[i]).toFixed(3)}\n`;
   }
   let difBlock='';
   if(v>=0){
     const dv=D[v].d, exp=LAM[v]*mu, rest=dv-exp;
     difBlock=`
-Nicht-invariantes Item ${v+1} — Parameter wird freigesetzt (NICHT gelöscht):
+Nicht-invariantes V${v+1} — Parameter wird freigesetzt (NICHT gelöscht):
   erwartet aus κ_B:  λ·κ_B = ${LAM[v].toFixed(2)} · ${mu.toFixed(3)} = ${exp.toFixed(3)}
   beobachtet:        d = ${dv.toFixed(3)}
   Rest:  ${dv.toFixed(3)} − ${exp.toFixed(3)} = ${rest.toFixed(3)}  → vom freien Item-Parameter aufgefangen, κ_B bleibt unberührt
 
-  (Fehler-Probe — Item ${v+1} fälschlich als Anker: d/λ = ${dv.toFixed(3)} / ${LAM[v].toFixed(2)} = ${(dv/LAM[v]).toFixed(3)} ≠ κ_B → Bias)`;
+  (Fehler-Probe — V${v+1} fälschlich als Anker: d/λ = ${dv.toFixed(3)} / ${LAM[v].toFixed(2)} = ${(dv/LAM[v]).toFixed(3)} ≠ κ_B → Bias)`;
   } else {
     difBlock=`\nKein nicht-invariantes Item — alle ${K} Items sind Anker und liefern denselben Wert.`;
   }
-  const apprB=`Anker = ${v<0?('alle '+K+' Items'):('Items '+[0,1,2,3].filter(i=>i!==v).map(i=>i+1).join(', '))}.
+  const apprB=`Anker = ${v<0?('alle '+K+' Items'):('Items '+[0,1,2,3].filter(i=>i!==v).map(i=>'V'+(i+1)).join(', '))}.
 Bei gleichen Intercepts gilt pro Anker:  d_i = λ_i · κ_B   ⇒   κ_B = d_i / λ_i
 
 ${anchorLines}  → alle Anker einig:  <b>κ_B = ${mu.toFixed(3)}</b>  = wahre latente Differenz Δμ ✓
@@ -822,8 +830,8 @@ ${difBlock}`;
     let eqs='';
     for(let i=0;i<K;i++){
       eqs += (i===v)
-        ? `  Item ${i+1} (FREI):   E[X${i+1}|B] = τ${i+1}ᴮ + ${LAM[i].toFixed(2)}·κ_B   → 2 Unbekannte (τ${i+1}ᴮ, κ_B)\n`
-        : `  Item ${i+1} (Anker):  E[X${i+1}|B] = ${TAU[i].toFixed(1)} + ${LAM[i].toFixed(2)}·κ_B   → 1 Unbekannte (κ_B)\n`;
+        ? `  V${i+1} (FREI):   E[V${i+1}|B] = τ${i+1}ᴮ + ${LAM[i].toFixed(2)}·κ_B   → 2 Unbekannte (τ${i+1}ᴮ, κ_B)\n`
+        : `  V${i+1} (Anker):  E[V${i+1}|B] = ${TAU[i].toFixed(1)} + ${LAM[i].toFixed(2)}·κ_B   → 1 Unbekannte (κ_B)\n`;
     }
     const lamBv=LAM[v]+ST.dLam;
     const tauFree=D[v].XB - lamBv*kPart;          // freed B-intercept solved afterwards
@@ -834,8 +842,8 @@ ${difBlock}`;
     const resBound=D[v].XB - implBound;
     mech=`Was ist τ?  τ ist der INTERCEPT = erwarteter Item-Wert bei Konstrukt 0 (κ=0), NICHT der Item-Mittelwert:
   Item-Mittelwert = τ + λ·κ
-  • Gruppe A = Referenz, κ_A = 0  ⇒  E[X_i|A] = τ_i  → die A-Mittelwerte LIEFERN die geteilten Intercepts (hier τ = ${TAU[0].toFixed(1)} für alle).
-  • Gruppe B, κ_B ≠ 0  ⇒  E[X_i|B] = τ_i + λ_i·κ_B  (um λ_i·κ_B gegenüber τ_i verschoben).
+  • Gruppe A = Referenz, κ_A = 0  ⇒  E[V_i|A] = τ_i  → die A-Mittelwerte LIEFERN die geteilten Intercepts (hier τ = ${TAU[0].toFixed(1)} für alle).
+  • Gruppe B, κ_B ≠ 0  ⇒  E[V_i|B] = τ_i + λ_i·κ_B  (um λ_i·κ_B gegenüber τ_i verschoben).
   (κ_A = 0 ist die Identifikations-Konvention — latente Mittel sind nur relativ bestimmt; daher „τ aus Gruppe A".)
 
 Mittelwertgleichungen für Gruppe B  (Anker-Intercepts τ also aus Gruppe A bekannt):
@@ -844,24 +852,24 @@ ${eqs}
 Schritt 1 — κ_B NUR aus den Ankern (gewichtet, Σλd/Σλ²):
   κ_B = ${sAld.toFixed(3)} / ${sAl2.toFixed(3)} = <b>${kPart.toFixed(3)}</b>
 
-Schritt 2 — freien Intercept von Item ${v+1} NACHTRÄGLICH lösen:
+Schritt 2 — freien Intercept von V${v+1} NACHTRÄGLICH lösen:
   ${D[v].XB.toFixed(3)} = τ${v+1}ᴮ + ${lamBv.toFixed(2)}·${kPart.toFixed(3)}   ⇒   τ${v+1}ᴮ = ${tauFree.toFixed(3)}
   ${Math.abs(lamBv*kPart)<0.005
     ? `(hier κ_B ≈ 0  ⇒  τ${v+1}ᴮ = B-Mittelwert ${D[v].XB.toFixed(3)})`
     : `(τ${v+1}ᴮ = ${tauFree.toFixed(3)} ≠ B-Mittelwert ${D[v].XB.toFixed(3)};  Differenz ${(lamBv*kPart).toFixed(3)} = λ·κ_B ist der Konstrukt-Anteil)`}
 
-Schritt 3 — Residuum von Item ${v+1}:
+Schritt 3 — Residuum von V${v+1}:
   ${D[v].XB.toFixed(3)} − (${tauFree.toFixed(3)} + ${(lamBv*kPart).toFixed(3)}) = <b>${resFree.toFixed(3)}</b>   → exakt null
 
 Folge:   ∂F/∂κ_B = Σᵢ (λᵢ/vᵢ)·Residuumᵢ = 0
-  Item ${v+1} liefert (λ/v)·0 = 0  →  null Gewicht auf κ_B, obwohl voll im Modell.
+  V${v+1} liefert (λ/v)·0 = 0  →  null Gewicht auf κ_B, obwohl voll im Modell.
 
 ──  Gegenprobe: τ${v+1}ᴮ GEBUNDEN (volle skalare Invarianz)  ──
-  Jetzt zählt Item ${v+1} mit, κ_B mittelt über ALLE Items:
+  Jetzt zählt V${v+1} mit, κ_B mittelt über ALLE Items:
   κ_B = Σλd/Σλ² = ${sld.toFixed(3)} / ${sl2.toFixed(3)} = <b>${kBound.toFixed(3)}</b>   ${Math.abs(kBound-mu)>0.005?'(verzerrt)':''}
-  Residuum von Item ${v+1} = ${resBound.toFixed(3)} ${Math.abs(resBound)>0.005?'≠ 0  → das Misfit-/MI-Signal':'= 0'}
+  Residuum von V${v+1} = ${resBound.toFixed(3)} ${Math.abs(resBound)>0.005?'≠ 0  → das Misfit-/MI-Signal':'= 0'}
 
-Einziger Unterschied zwischen frei und gebunden: ob Item ${v+1} in der Summe Σλd/Σλ² steckt.
+Einziger Unterschied zwischen frei und gebunden: ob V${v+1} in der Summe Σλd/Σλ² steckt.
 (Realer ML gewichtet zusätzlich mit 1/Residualvarianz und n; hier äquivalent zu Σλd/Σλ².)`;
   } else {
     mech=`Keine Verletzung — alle ${K} Intercepts sind gebunden (Anker), keiner muss freigesetzt werden.
@@ -889,7 +897,7 @@ Setzt du oben ein Item als nicht-invariant, fällt es hier aus dieser Summe hera
 // ══════════════════════════════════════════════════════════════════════
 function buildItemPick(){
   const w=document.getElementById('item-pick'); w.innerHTML='';
-  const opts=[{v:-1,l:'keins'},{v:0,l:'1'},{v:1,l:'2'},{v:2,l:'3'},{v:3,l:'4'}];
+  const opts=[{v:-1,l:'keins'},{v:0,l:'V1'},{v:1,l:'V2'},{v:2,l:'V3'},{v:3,l:'V4'}];
   opts.forEach(o=>{
     const b=document.createElement('button');
     b.className='mbtn'+(ST.vItem===o.v?' active':''); b.textContent=o.l; b.dataset.v=o.v;
