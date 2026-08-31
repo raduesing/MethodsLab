@@ -61,17 +61,37 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   font-size:.77rem;color:var(--ink2);line-height:1.9}
 .erklaer strong{color:var(--ink)}
 .erklaer em{color:var(--accent);font-style:normal}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+.proc-list{margin-bottom:1rem}
+.proc-step{margin-bottom:.7rem;font-size:.87rem;line-height:1.75;color:var(--ink2)}
+.proc-step strong{color:var(--ink)}
+.proc-step .circ{margin-right:.4rem;font-size:1.7em}
+.proc-jump{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);text-decoration:none;
+  border-bottom:1px dotted var(--a2);white-space:nowrap}
+.proc-jump:hover{color:var(--accent);border-bottom-color:var(--accent)}
 .stat-row{display:flex;justify-content:space-between;align-items:center;
   padding:.25rem 0;border-bottom:1px solid var(--grid);font-family:'DM Mono',monospace;font-size:.75rem}
 .stat-row:last-child{border-bottom:none}
 .stat-label{color:var(--ink3)}
 .stat-val{color:var(--accent);font-weight:500}
 .plot-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:.9rem}
-.plot-panel{background:var(--paper);border:1px solid var(--grid)}
+.plot-panel{background:var(--paper);border:1px solid var(--grid);margin-bottom:.9rem}
+.plot-panel:last-child{margin-bottom:0}
+.plot-grid .plot-panel{margin-bottom:0}
 .plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
   padding:.55rem .8rem .35rem;border-bottom:1px solid var(--grid)}
 .pt-blue{color:var(--a2)} .pt-purple{color:var(--a4)} .pt-teal{color:var(--a6)} .pt-green{color:var(--a3)}
 canvas{display:block;width:100%}
+.plot-note{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);line-height:1.75;
+  padding:.65rem .9rem;border-top:1px solid var(--grid)}
+.plot-note strong{color:var(--ink)}
 /* Reliability panel */
 .reli-panel{background:var(--paper);border:1px solid var(--grid);margin-bottom:.9rem}
 .reli-head{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
@@ -221,27 +241,59 @@ canvas{display:block;width:100%}
 
 <div id="main">
 
-  <div class="plot-grid">
-    <div class="plot-panel">
-      <div class="plot-title pt-blue">Scree-Plot — Eigenwerte (aus R)</div>
-      <canvas id="cv-scree" height="230"></canvas>
-    </div>
-    <div class="plot-panel">
-      <div class="plot-title pt-purple">Faktorladungs-Biplot (F1 vs. F2)</div>
-      <canvas id="cv-biplot" height="230"></canvas>
-    </div>
-    <div class="plot-panel">
-      <div class="plot-title pt-teal">Reduzierte Korrelationsmatrix R<sub>r</sub> (h² auf Diagonale)</div>
-      <canvas id="cv-heat" height="230"></canvas>
-    </div>
-    <div class="plot-panel">
-      <div class="plot-title pt-green">Ladungsmatrix &amp; Kommunalitäten (PAF)</div>
-      <div id="tbl-wrap"></div>
+  <div class="story-box">
+    <div class="story-lbl">📋 Beispiel — Kognitionstest mit 8 Untertests</div>
+    300 Personen bearbeiten einen Kognitionstest mit <strong>8 Untertests</strong>: <em>V1–V4</em> prüfen verbale Fähigkeiten, <em>S1–S4</em> räumliches Denken. Vorab ist unklar, wie viele latente Faktoren dahinterstecken und welche Items zu welchem Faktor gehören — genau das soll die <strong>explorative Faktorenanalyse (EFA)</strong> aufdecken. Die Regler links stellen das <strong>wahre</strong> Messmodell ein (in der Praxis unbekannt): Ladung <span class="gk">λ</span>, Kreuzladung <span class="gk">λ</span><sub>x</sub>, Faktorkorrelation <span class="gk">φ</span> — so lässt sich direkt beobachten, wie sich Änderungen am Modell auf Scree-Plot, Ladungen und die Reliabilität des Gesamtscores auswirken.
+    <div style="margin-top:.6rem">
+      <a class="xlink" href="KTT_Grundlagen.html" target="_blank">← KTT-Grundlagen: ein einzelner Testwert</a>
+      <a class="xlink" href="Messmodelle.html" target="_blank" style="margin-left:.4rem">Welches Messmodell steckt in den Ladungen? →</a>
     </div>
   </div>
 
+  <div class="sec-h" style="margin-top:0">Vorgehen — von den Items zu den Faktoren</div>
+  <div class="proc-list">
+    <div class="proc-step"><span class="circ">①</span><strong>Items &amp; Messmodell.</strong> 8 Items (V1–V4, S1–S4), N = 300. Was hier per Regler vorgegeben wird, müsste man in der Praxis aus echten Item-Antworten schätzen.</div>
+    <div class="proc-step"><span class="circ">②</span><strong>Korrelationsmatrix R.</strong> Aus den Item-Antworten (bzw. hier: aus dem Messmodell) ergibt sich, wie stark je zwei Items zusammenhängen. <a class="proc-jump" href="#cv-heat">→ reduzierte Matrix R<sub>r</sub> ansehen</a></div>
+    <div class="proc-step"><span class="circ">③</span><strong>Faktorextraktion — Eigenwerte &amp; Scree-Plot.</strong> Wie viele Faktoren erklären die gemeinsame Varianz? Das Kaiser-Kriterium (Eigenwert &gt; 1) ist gebräuchlich, aber recht freizügig — robuster ist die Parallelanalyse (Vergleich mit Eigenwerten zufälliger, unkorrelierter Daten gleicher Größe). <a class="proc-jump" href="#cv-scree">→ Scree-Plot ansehen</a></div>
+    <div class="proc-step"><span class="circ">④</span><strong>Rotation &amp; Ladungsmatrix.</strong> Die unrotierte Lösung wird rotiert (Varimax/Oblique), um eine interpretierbare Einfachstruktur zu erhalten — welches Item lädt auf welchen Faktor? Tabelle und Biplot zeigen dieselbe Information zweimal, einmal als Zahlen und einmal räumlich. <a class="proc-jump" href="#tbl-wrap">→ Ladungstabelle</a> · <a class="proc-jump" href="#cv-biplot">→ Biplot</a></div>
+    <div class="proc-step"><span class="circ">⑤</span><strong>Finale Kommunalität h² &amp; Reliabilität.</strong> Die Ladungstabelle zeigt bereits, wie viel Varianz jedes Items durch die Faktoren gemeinsam erklärt wird. Was folgt daraus für die Reliabilität (α, ω) des Gesamtscores? <a class="proc-jump" href="#reli-panel">→ Reliabilität ansehen</a></div>
+  </div>
+
+  <div class="plot-panel">
+    <div class="plot-title pt-teal">Korrelationsmatrix — reduziert R<sub>r</sub> (finale h² auf der Diagonale)</div>
+    <canvas id="cv-heat" height="200" style="height:200px"></canvas>
+    <div class="plot-note">Jede Zelle ist die (vom Messmodell implizierte) Korrelation zwischen zwei Items — teal = positiv, orange = negativ. Die <strong>grau hinterlegte Diagonale</strong> ist kein Korrelationswert, sondern h². In der Praxis kennt man h² vorab nicht: PAF startet mit einer <strong>initialen</strong> Schätzung — meist der quadrierten multiplen Korrelation SMC, also dem R² aus der <em>gemeinsamen</em> Regression jedes Items auf <em>alle</em> p−1 übrigen Items (nicht auf ein einzelnes anderes Item) — und verbessert das iterativ, bis h² konvergiert. Dieses Tool überspringt die Schätzung komplett: Da das Populationsmodell (Λ, Φ) über die Regler bekannt ist, steht direkt die modellimplizierte ("wahre") Kommunalität auf der Diagonale.</div>
+  </div>
+
+  <div class="plot-panel">
+    <div class="plot-title pt-blue">Scree-Plot — Eigenwerte (aus R)</div>
+    <canvas id="cv-scree" height="320" style="height:320px"></canvas>
+    <div class="plot-note"><strong>Kaiser-Kriterium</strong> (gestrichelte Linie bei Eigenwert = 1): Faktoren mit Eigenwert &gt; 1 behalten. Gebräuchlich, aber notorisch <strong>zu freizügig</strong> — es hängt kaum von der Itemanzahl oder der Stichprobengröße ab und überschätzt oft die Faktorenzahl. Robuster ist die <strong>Parallelanalyse</strong> (Horn, 1965): Man simuliert viele Datensätze aus unkorrelierten Zufallsvariablen derselben Größe (n Personen, p Items) und behält nur Faktoren, deren Eigenwert über dem 95. Perzentil der simulierten Eigenwerte liegt. Das entfernt Faktoren, die im echten Scree-Plot nur knapp über 1 liegen und tatsächlich Stichprobenrauschen sind.</div>
+  </div>
+
+  <div class="plot-panel">
+    <div class="plot-title pt-green">Faktorladungstabelle &amp; finale Kommunalitäten (PAF)</div>
+    <div id="tbl-wrap"></div>
+  </div>
+
+  <div class="plot-panel">
+    <div class="plot-title pt-purple" style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap">
+      <span id="biplot-title-text">Faktorladungs-Biplot (F1 vs. F2)</span>
+      <button class="rbtn" id="btn-geom" onclick="toggleGeom()" style="padding:.3rem .65rem;flex:none">📐 Winkel &amp; Lot anzeigen</button>
+    </div>
+    <canvas id="cv-biplot" height="460" style="height:460px"></canvas>
+    <div class="plot-note" id="geom-note" style="display:none"></div>
+  </div>
+
+  <div class="plot-panel">
+    <div class="plot-title pt-green">Wie liest man Tabelle &amp; Biplot?</div>
+    <div class="plot-note">Beide zeigen <strong>dieselbe Information</strong> zweimal — einmal als Zahlen, einmal räumlich. In der <strong>Tabelle</strong> stehen für jedes der 8 Items die Ladungen auf F1 und F2 sowie h² (Varianzanteil, der durch beide Faktoren gemeinsam erklärt wird) und u² = 1−h² (Rest). SSL (Summe der quadrierten Ladungen) und % Var. in der letzten Zeile zeigen, wie viel Gesamtvarianz jeder Faktor über alle 8 Items hinweg erklärt.
+    <br><br>Im <strong>Biplot</strong> ist jeder Punkt ein Item, seine Koordinaten sind exakt dieselben Ladungen (F1 = x, F2 = y) — das sind dieselben Zahlen wie in der Tabelle, nur als Position statt als Zahl. Nahe der F1-Achse = lädt fast nur auf F1; nahe der F2-Achse = fast nur auf F2; nahe dem <strong>Ursprung</strong> = niedrige Ladungen auf beide Faktoren (schlecht erklärtes Item, geringe Kommunalität). Der Abstand vom Ursprung wächst mit h². Nach <strong>Varimax</strong>-Rotation clustern gut trennbare Items nahe den Achsen (Einfachstruktur); Items zwischen den Achsen haben nennenswerte Kreuzladungen auf beide Faktoren. Bei <strong>Oblique</strong>-Rotation stehen die Faktorachsen im Winkel arccos(φ) zueinander statt senkrecht — die eingezeichneten Achsen selbst zeigen dann die Faktorkorrelation.
+    <br><br>Gezeigt werden nur <strong>V1 und S1</strong> als Vertreter ihrer Gruppe — die übrigen Items liegen (in diesem vereinfachten Modell) exakt auf denselben Positionen.</div>
+  </div>
+
   <!-- Reliability add-on -->
-  <div class="reli-panel">
+  <div class="reli-panel" id="reli-panel">
     <div class="reli-head">Reliabilität des Gesamtscores &nbsp;—&nbsp; aus der EFA-Struktur abgeleitet</div>
     <div class="reli-inner">
       <div class="reli-row">
@@ -278,30 +330,30 @@ canvas{display:block;width:100%}
     </div>
   </div>
 
-  <div class="sec-h">Konzepte</div>
+  <div class="sec-h">Lernkarten — Explorative Faktorenanalyse</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">EFA vs. HKA/PCA</div>
+      <div class="lcard-h"><span class="circ">①</span> EFA vs. HKA/PCA</div>
       <div class="lcard-body">Die <strong>Explorative Faktoranalyse (EFA)</strong> erklärt nur die <em>gemeinsame Varianz</em> der Items — sie verwendet eine <em>reduzierte</em> Korrelationsmatrix mit Kommunalitäten h² auf der Diagonalen. Die <strong>Hauptkomponentenanalyse (HKA)</strong> erklärt die <em>gesamte</em> Varianz (inkl. Fehler) und verwendet Einsen auf der Diagonalen. Dies ist ein konzeptuell wichtiger Unterschied.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Kommunalität &amp; Uniqueness</div>
-      <div class="lcard-body">Die <strong>Kommunalität h²</strong> ist der Varianzanteil eines Items, der durch alle gemeinsamen Faktoren erklärt wird. Sie liegt im Wertebereich [0, 1]. Die <strong>Uniqueness u² = 1 − h²</strong> enthält Messfehler und itemspezifische Varianz. Hohe h² (nahe 1) = Item gut in die Faktorstruktur eingebunden.</div>
+      <div class="lcard-h"><span class="circ">②</span> Kommunalität &amp; Uniqueness</div>
+      <div class="lcard-body">Die <strong>Kommunalität h²</strong> ist der Varianzanteil eines Items, der durch die gemeinsamen Faktoren erklärt wird. Man unterscheidet zwei Zeitpunkte: die <strong>initiale</strong> Kommunalität (Startschätzung vor der Extraktion, meist die quadrierte multiple Korrelation SMC — das R² aus der gemeinsamen Regression des Items auf <em>alle</em> übrigen Items, nicht auf ein einzelnes) und die <strong>finale</strong> Kommunalität (nach der Extraktion: h² = Summe der quadrierten Ladungen über alle behaltenen Faktoren — was die Faktorlösung tatsächlich aufklärt). Die Tabelle in diesem Tool zeigt immer die finale h². Die <strong>Uniqueness u² = 1 − h²</strong> enthält Messfehler und itemspezifische Varianz.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Eigenwerte &amp; Scree-Plot</div>
+      <div class="lcard-h"><span class="circ">③</span> Eigenwerte &amp; Scree-Plot</div>
       <div class="lcard-body">Der Eigenwert eines Faktors zeigt, wie viel Varianz (in Einheiten standardisierter Items) er erklärt. Der Scree-Plot zeigt die Eigenwerte nach Größe sortiert. Das <strong>Kaiser-Kriterium</strong> (Eigenwert &gt; 1) und der <strong>Scree-Knick (Elbow)</strong> sind die häufigsten Kriterien zur Faktoranzahl-Bestimmung.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Rotation &amp; Einfachstruktur</div>
+      <div class="lcard-h"><span class="circ">④</span> Rotation &amp; Einfachstruktur</div>
       <div class="lcard-body"><strong>Varimax</strong> rotiert die orthogonalen Achsen so, dass jedes Item möglichst hoch auf genau <em>einen</em> Faktor lädt (Thurstons Einfachstruktur). <strong>Oblique</strong> erlaubt Faktorkorrelation (phi &gt; 0) — realistischer, aber schwieriger zu interpretieren. Kommunalitäten ändern sich durch Rotation nicht.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Cronbachs Alpha</div>
+      <div class="lcard-h"><span class="circ">⑤</span> Cronbachs Alpha</div>
       <div class="lcard-body">Cronbachs <strong>Alpha</strong> schätzt die interne Konsistenz als Funktion der durchschnittlichen Interitemkorrelation. Ein häufiges Missverständnis: Alpha ist <strong>kein Maß für Unidimensionalität</strong>. Eine 2-faktorielle Struktur kann identisches Alpha wie eine 1-faktorielle haben — wenn die mittlere Interitemkorrelation gleich bleibt.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Omega total &amp; hierarchisch</div>
+      <div class="lcard-h"><span class="circ">⑥</span> Omega total &amp; hierarchisch</div>
       <div class="lcard-body"><strong>Omega total</strong> berücksichtigt alle Faktoren und ist eine bessere untere Schranke der Reliabilität als Alpha. <strong>Omega hierarchisch</strong> (Schmid-Leiman) misst nur den Anteil eines übergeordneten Generalfaktors — es steigt mit phi und ist 0 bei orthogonalen Faktoren (kein g). Hohe phi → mehr gemeinsame Varianz → omegas hierarchisch steigt.</div>
     </div>
   </div>
@@ -327,7 +379,8 @@ canvas{display:block;width:100%}
     </ul>
 
     <div class="help-sh">Extraktionsmethode: PAF</div>
-    <p class="help-p">Dieses Tool verwendet die <strong>Hauptachsenfaktorisierung (PAF)</strong> — eine echte EFA-Methode. PAF arbeitet mit einer <em>reduzierten</em> Korrelationsmatrix, bei der die Diagonale durch die wahren Kommunalitäten h² ersetzt wird. Dadurch wird nur die gemeinsame Varianz (Faktorvarianz) modelliert, nicht die Gesamtvarianz wie bei der HKA/PCA.</p>
+    <p class="help-p">Dieses Tool verwendet die <strong>Hauptachsenfaktorisierung (PAF)</strong> — eine echte EFA-Methode. PAF arbeitet mit einer <em>reduzierten</em> Korrelationsmatrix, bei der die Diagonale durch Kommunalitäten h² ersetzt wird — nicht durch Einsen wie bei der HKA/PCA. Dadurch wird nur die gemeinsame Varianz (Faktorvarianz) modelliert, nicht die Gesamtvarianz.</p>
+    <p class="help-p">In der Praxis läuft das iterativ: Man startet mit einer <strong>initialen</strong> Kommunalitätenschätzung (meist die quadrierte multiple Korrelation SMC jedes Items mit allen anderen), extrahiert Faktoren, berechnet daraus neue, <strong>finale</strong> Kommunalitäten (h² = Summe der quadrierten Ladungen) und wiederholt das, bis sich h² kaum noch ändert. Da in diesem Tool das Populationsmodell (Λ, Φ) über die Regler direkt vorgegeben wird, überspringt es diese Iteration und setzt sofort die modellimplizierte Kommunalität ein — mit echten Daten ist h² dagegen immer nur eine Schätzung, kein bekannter wahrer Wert.</p>
     <p class="help-p">Der Scree-Plot zeigt die Eigenwerte der <em>vollen</em> R-Matrix (wie in der Praxis üblich, da die meisten Softwarepakete dies so ausgeben). Die eigentliche Faktorextraktion erfolgt aus der reduzierten Matrix.</p>
 
     <div class="help-sh">Reliabilitätsindizes (Add-on)</div>
@@ -384,6 +437,12 @@ function syncScenBtns(){
 }
 
 let ROT='none';
+let SHOW_GEOM=false;
+function toggleGeom(){
+  SHOW_GEOM=!SHOW_GEOM;
+  document.getElementById('btn-geom').classList.toggle('act',SHOW_GEOM);
+  update();
+}
 function setRot(btn){
   document.querySelectorAll('.rbtn').forEach(b=>b.classList.remove('act'));
   btn.classList.add('act'); ROT=btn.dataset.rot;
@@ -495,6 +554,15 @@ function computeFA(){
   let rotLoads=unrotated.map(r=>[...r]);
   if(ROT==='varimax'){
     rotLoads=varimax(unrotated.map(r=>[...r]));
+    // Canonical column order: F1 = the axis the V-group (items 0–3) loads higher on.
+    // Varimax's pairwise Jacobi sweep has no inherent factor order — the two columns
+    // it returns can land in either orientation depending on rounding/starting signs
+    // (verified: at phi=.40/.55/.65 it flips while neighboring phi values don't).
+    // Enforce the same "F1 = verbal axis" convention Oblique uses below, so switching
+    // rotation methods for the same scenario never flips which axis V/S load on.
+    const vAvg0=rotLoads.slice(0,4).reduce((s,r)=>s+Math.abs(r[0]),0)/4;
+    const vAvg1=rotLoads.slice(0,4).reduce((s,r)=>s+Math.abs(r[1]),0)/4;
+    if(vAvg1>vAvg0) rotLoads.forEach(r=>{const t=r[0];r[0]=r[1];r[1]=t;});
   } else if(ROT==='oblique'){
     // Oblique (true population solution):
     // For a known population model with factor correlation phi, the correct oblique
@@ -539,7 +607,7 @@ function col(v){return cssVar('--'+v);}
 // Scree plot (blue, eigenvalues of R)
 function drawScree(eigVals){
   const{ctx,W,H}=setupCanvas('cv-scree');
-  const pad={t:22,r:16,b:38,l:42};
+  const pad={t:28,r:20,b:52,l:56};
   const pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
   const n=eigVals.length;
   const maxV=Math.max(...eigVals,1.2)*1.08;
@@ -550,28 +618,28 @@ function drawScree(eigVals){
     const y=toY(v);
     ctx.strokeStyle=col('grid');ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+pw,y);ctx.stroke();
-    ctx.fillStyle=col('ink3');ctx.font='11px DM Mono,monospace';ctx.textAlign='right';
-    ctx.fillText(v.toFixed(1),pad.l-5,y+4);
+    ctx.fillStyle=col('ink3');ctx.font='14px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(v.toFixed(1),pad.l-7,y+5);
   });
   ctx.save();ctx.strokeStyle=col('a1');ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
   ctx.beginPath();ctx.moveTo(pad.l,toY(1));ctx.lineTo(pad.l+pw,toY(1));ctx.stroke();
-  ctx.setLineDash([]);ctx.fillStyle=col('a1');ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
-  ctx.fillText('Kaiser=1',pad.l+4,toY(1)-4);ctx.restore();
-  const bw=Math.min(pw/n*0.55,22);
+  ctx.setLineDash([]);ctx.fillStyle=col('a1');ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('Kaiser=1',pad.l+6,toY(1)-6);ctx.restore();
+  const bw=Math.min(pw/n*0.55,26);
   eigVals.forEach((v,i)=>{
     const x=toX(i),y=toY(v),barH=ph-(y-pad.t);
     ctx.fillStyle=v>1?col('a2')+'bb':col('ink3')+'55';
     ctx.fillRect(x-bw/2,y,bw,barH);
-    if(v>0.2){ctx.fillStyle=v>1?col('a2'):col('ink3');ctx.font='10px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(v.toFixed(2),x,y-4);}
-    ctx.fillStyle=col('ink3');ctx.font='11px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(String(i+1),x,pad.t+ph+14);
+    if(v>0.2){ctx.fillStyle=v>1?col('a2'):col('ink3');ctx.font='bold 14px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(v.toFixed(2),x,y-7);}
+    ctx.fillStyle=col('ink3');ctx.font='14px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(String(i+1),x,pad.t+ph+20);
   });
   ctx.strokeStyle=col('a2');ctx.lineWidth=1.5;ctx.beginPath();
   eigVals.forEach((v,i)=>{const x=toX(i),y=toY(v);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
   ctx.stroke();
-  eigVals.forEach((v,i)=>{ctx.beginPath();ctx.arc(toX(i),toY(v),3.5,0,Math.PI*2);ctx.fillStyle=v>1?col('a2'):col('ink3');ctx.fill();});
-  ctx.fillStyle=col('ink3');ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
-  ctx.fillText('Faktor',pad.l+pw/2,H-4);
-  ctx.save();ctx.translate(13,pad.t+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText('Eigenwert',0,0);ctx.restore();
+  eigVals.forEach((v,i)=>{ctx.beginPath();ctx.arc(toX(i),toY(v),4,0,Math.PI*2);ctx.fillStyle=v>1?col('a2'):col('ink3');ctx.fill();});
+  ctx.fillStyle=col('ink2');ctx.font='bold 14px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Faktor',pad.l+pw/2,H-6);
+  ctx.save();ctx.translate(16,pad.t+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText('Eigenwert',0,0);ctx.restore();
 }
 
 // Biplot (purple V, orange S)
@@ -598,14 +666,66 @@ function drawBiplot(loads,phi){
   ctx.fillStyle=f1col;ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('F1',sx(1.08)+4,sy(0)+4);
   const labels=['V1','V2','V3','V4','S1','S2','S3','S4'];
   const colors=[f1col,f1col,f1col,f1col,f2col,f2col,f2col,f2col];
-  loads.forEach((l,i)=>{
-    const x=sx(l[0]),y=sy(l[1]),clr=colors[i];
-    ctx.strokeStyle=clr+'55';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke();
-    ctx.beginPath();ctx.arc(x,y,5.5,0,Math.PI*2);ctx.fillStyle=clr;ctx.fill();
-    ctx.strokeStyle=col('paper');ctx.lineWidth=1.5;ctx.stroke();
-    ctx.fillStyle=clr;ctx.font='bold 10px DM Mono,monospace';
-    const offX=l[0]>0.0?8:-22,offY=l[1]>0.0?-8:14;
-    ctx.fillText(labels[i],x+offX,y+offY);
+
+  // Nur 2 Vertreter-Items (V1, S1) — der Übersichtlichkeit halber, da innerhalb einer
+  // Gruppe ohnehin alle Items exakt dieselbe Ladung/Position hätten. Beide werden an ihrer
+  // TRUE Cartesian position geplottet: V=(S1, P2·sin(arccos(axisPhi))), was sich für
+  // axisPhi=0 (Unrotiert/Varimax) exakt auf V=(P1,P2) reduziert — verifiziert numerisch,
+  // z. B. lam=.70,cross=.10,phi=.40 → S1=.74,S2=.38, Pattern-Fußpunkt auf F1 reproduziert
+  // P1=.70 exakt (Struktur = Pattern·Φ).
+  const axisPhi=(ROT==='oblique'&&phi>0.02)?phi:0;
+  const alpha=Math.acos(axisPhi), sinA=Math.sin(alpha);
+  const structCol=col('a2'), patCol=col('a3');
+  function footTick(fx,fy,dx,dy,strokeCol){
+    const len=Math.hypot(dx,dy)||1, tx=-dy/len*6, ty=dx/len*6;
+    ctx.strokeStyle=strokeCol;ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.moveTo(fx-tx,fy-ty);ctx.lineTo(fx+tx,fy+ty);ctx.stroke();
+  }
+  [0,4].forEach(i=>{
+    const [P1,P2]=loads[i], clr=colors[i];
+    const S1=P1+axisPhi*P2, S2=axisPhi*P1+P2;
+    const Vx=S1, Vy=P2*sinA;
+    const px=sx(Vx), py=sy(Vy);
+
+    ctx.strokeStyle=clr+'70';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();
+
+    // Konstruktion (Winkelbogen + Struktur-/Pattern-Projektion) nur exemplarisch für EIN
+    // Item (V1, i===0) einblenden — bei zwei Items gleichzeitig würden sich die Linien bei
+    // engem Achsenwinkel (starkes Oblique) visuell nicht mehr trennen lassen.
+    if(SHOW_GEOM&&i===0){
+      const canvasAngle=Math.atan2(-Vy,Vx), arcR=26, angDeg=Math.abs(canvasAngle)*180/Math.PI;
+      if(angDeg>4){
+        ctx.strokeStyle=col('ink3');ctx.lineWidth=1;ctx.beginPath();
+        if(canvasAngle>=0) ctx.arc(cx,cy,arcR,0,canvasAngle); else ctx.arc(cx,cy,arcR,canvasAngle,0);
+        ctx.stroke();
+        const midA=canvasAngle/2;
+        ctx.fillStyle=col('ink3');ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+        ctx.fillText(Math.round(angDeg)+'°',cx+(arcR+13)*Math.cos(midA),cy+(arcR+13)*Math.sin(midA)+3);
+      }
+      const footF1x=sx(S1),footF1y=sy(0);
+      const footF2x=sx(S2*axisPhi),footF2y=sy(S2*sinA);
+      ctx.strokeStyle=structCol;ctx.lineWidth=1.5;ctx.setLineDash([2,3]);
+      ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(footF1x,footF1y);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(footF2x,footF2y);ctx.stroke();
+      ctx.setLineDash([]);
+      footTick(footF1x,footF1y,1,0,structCol);
+      footTick(footF2x,footF2y,axisPhi,sinA,structCol);
+      if(axisPhi>0.02){
+        const patF1x=sx(P1),patF1y=sy(0);
+        const patF2x=sx(P2*axisPhi),patF2y=sy(P2*sinA);
+        ctx.strokeStyle=patCol;ctx.lineWidth=1.5;ctx.setLineDash([6,3]);
+        ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(patF1x,patF1y);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(patF2x,patF2y);ctx.stroke();
+        ctx.setLineDash([]);
+        footTick(patF1x,patF1y,1,0,patCol);
+        footTick(patF2x,patF2y,axisPhi,sinA,patCol);
+      }
+    }
+
+    ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fillStyle=clr;ctx.fill();
+    ctx.strokeStyle=col('paper');ctx.lineWidth=1.8;ctx.stroke();
+    ctx.fillStyle=clr;ctx.font='bold 13px DM Mono,monospace';ctx.textAlign=Vx>=0?'left':'right';
+    ctx.fillText(labels[i],px+(Vx>=0?11:-11),py-11);
   });
   ctx.fillStyle=col('ink3');ctx.font='10px DM Mono,monospace';ctx.textAlign='center';
   ctx.fillText('−1',sx(-1),cy+14);ctx.fillText('1',sx(1),cy+14);
@@ -615,25 +735,29 @@ function drawBiplot(loads,phi){
 // Heatmap (teal/orange)
 function drawHeatmap(R){
   const{ctx,W,H}=setupCanvas('cv-heat');
-  const n=R.length,pad={t:6,r:6,b:22,l:28};
+  const n=R.length,pad={t:10,r:10,b:28,l:38};
   const pw=W-pad.l-pad.r,ph=H-pad.t-pad.b,cw=pw/n,ch=ph/n;
   const lbls=['V1','V2','V3','V4','S1','S2','S3','S4'];
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   ctx.clearRect(0,0,W,H);
-  ctx.fillStyle=col('ink3');ctx.font='10px DM Mono,monospace';
+  ctx.fillStyle=col('ink3');ctx.font='bold 13px DM Mono,monospace';
   lbls.forEach((lb,i)=>{
-    ctx.textAlign='right';ctx.fillText(lb,pad.l-3,pad.t+ch*(i+0.5)+4);
-    ctx.textAlign='center';ctx.fillText(lb,pad.l+cw*(i+0.5),pad.t+ph+14);
+    ctx.textAlign='right';ctx.fillText(lb,pad.l-6,pad.t+ch*(i+0.5)+5);
+    ctx.textAlign='center';ctx.fillText(lb,pad.l+cw*(i+0.5),pad.t+ph+20);
   });
   const baseD=[23,21,20],baseL=[232,225,210];
   const posC=[43,199,196],negC=[224,120,48];
+  const diagC=dark?[133,124,104]:[138,127,114];
   R.forEach((row,i)=>row.forEach((v,j)=>{
-    const t=Math.min(Math.abs(v),1),base=dark?baseD:baseL,tgt=v>=0?posC:negC;
+    const isDiag=i===j;
+    const t=Math.min(Math.abs(v),1),base=dark?baseD:baseL,tgt=isDiag?diagC:(v>=0?posC:negC);
     const r=Math.round(base[0]+(tgt[0]-base[0])*t);
     const g=Math.round(base[1]+(tgt[1]-base[1])*t);
     const b=Math.round(base[2]+(tgt[2]-base[2])*t);
     ctx.fillStyle=`rgb(${r},${g},${b})`;ctx.fillRect(pad.l+j*cw,pad.t+i*ch,cw-1,ch-1);
-    if(cw>22){ctx.fillStyle=t>0.45?'#fff':(dark?'#ece6d8':'#18130e');ctx.font='9px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(v.toFixed(2),pad.l+j*cw+cw/2,pad.t+i*ch+ch/2+3);}
+    ctx.fillStyle=t>0.45?'#fff':(dark?'#ece6d8':'#18130e');
+    ctx.font=(isDiag?'bold ':'')+'15px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(v.toFixed(2),pad.l+j*cw+cw/2,pad.t+i*ch+ch/2+5);
   }));
 }
 
@@ -695,7 +819,7 @@ function renderStats(eigVals,eigValsRr,h2val){
     <div class="stat-row"><span class="stat-label">Eigenwert F2 (R)</span><span class="stat-val">${eigVals[1].toFixed(3)}</span></div>
     <div class="stat-row"><span class="stat-label">EW F1 (Rr, PAF)</span><span class="stat-val">${eigValsRr[0].toFixed(3)}</span></div>
     <div class="stat-row"><span class="stat-label">Var. erklärt F1+F2</span><span class="stat-val">${v12}%</span></div>
-    <div class="stat-row"><span class="stat-label">Kommunalität h²</span><span class="stat-val">${h2val.toFixed(3)}</span></div>
+    <div class="stat-row"><span class="stat-label">Finale Kommunalität h²</span><span class="stat-val">${h2val.toFixed(3)}</span></div>
   `;
 }
 
@@ -707,7 +831,27 @@ function update(){
     varimax:'Faktorladungs-Biplot — Varimax (F1 vs. F2)',
     oblique:'Pattern-Matrix-Biplot — Oblique (Λ, Achsen bei arccosφ)'
   };
-  document.querySelector('#cv-biplot').closest('.plot-panel').querySelector('.plot-title').textContent=biplotTitles[ROT];
+  document.getElementById('biplot-title-text').textContent=biplotTitles[ROT]+(SHOW_GEOM?' · Geometrie':'');
+  const geomNote=document.getElementById('geom-note');
+  if(SHOW_GEOM){
+    const axisPhi=(ROT==='oblique'&&fa.phi>0.02)?fa.phi:0;
+    const readout=([P1,P2])=>{
+      const S1v=P1+axisPhi*P2, S2v=axisPhi*P1+P2;
+      return {P1,P2,S1v,S2v};
+    };
+    const v1=readout(fa.rotLoads[0]), s1=readout(fa.rotLoads[4]);
+    geomNote.style.display='';
+    geomNote.innerHTML=`Reduziert auf <strong>2 Items</strong> (V1, S1 — stellvertretend für ihre Gruppe, da innerhalb einer Gruppe eh alle Items identisch sind). Die Konstruktion (Winkelbogen, Lot) wird nur exemplarisch für <strong>V1</strong> eingezeichnet — bei beiden Items gleichzeitig wären die Linien bei engem Achsenwinkel nicht mehr sauber zu trennen.
+    <br><br><strong style="color:${col('a2')}">Punktiert = Struktur (Korrelation)</strong>: Lot fällen — orthogonale Projektion auf die Achse. S₁=P₁+φ·P₂, S₂=φ·P₁+P₂.
+    ${axisPhi>0.02?`<br><strong style="color:${col('a3')}">Gestrichelt = Pattern (Regressionsgewicht)</strong>: parallel zur jeweils anderen Achse projiziert — das sind die rohen Ladungen aus der Tabelle.
+    <br><br>Bei φ=${fa.phi.toFixed(2)} weichen Struktur und Pattern sichtbar voneinander ab — die Ladungstabelle zeigt nur das Pattern, nicht die Korrelation mit dem Faktor.
+    <br><br><strong>V1:</strong> Pattern (P₁=${v1.P1.toFixed(2)}, P₂=${v1.P2.toFixed(2)}) → Struktur (S₁=${v1.S1v.toFixed(2)}, S₂=${v1.S2v.toFixed(2)})
+    <br><strong>S1:</strong> Pattern (P₁=${s1.P1.toFixed(2)}, P₂=${s1.P2.toFixed(2)}) → Struktur (S₁=${s1.S1v.toFixed(2)}, S₂=${s1.S2v.toFixed(2)})`
+    :`<br><br>Hier sind Struktur und Pattern <strong>identisch</strong>, weil die Achsen orthogonal stehen (Unrotiert/Varimax) — schalte auf Oblique um, um den Unterschied zu sehen.
+    <br><br><strong>V1:</strong> P₁=${v1.P1.toFixed(2)}, P₂=${v1.P2.toFixed(2)} · <strong>S1:</strong> P₁=${s1.P1.toFixed(2)}, P₂=${s1.P2.toFixed(2)}`}`;
+  } else {
+    geomNote.style.display='none';
+  }
   drawScree(fa.eigVals);
   drawBiplot(fa.rotLoads,fa.phi);
   drawHeatmap(fa.Rr);
