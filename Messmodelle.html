@@ -93,14 +93,14 @@ input[type=range].acc-t::-webkit-slider-thumb{background:var(--a1)}
 canvas{width:100%;display:block}
 .hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.7;
   border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
-.two-col{display:grid;grid-template-columns:1.15fr 1fr;gap:.85rem}
+.two-col{display:grid;grid-template-columns:1.45fr 0.85fr;gap:.85rem}
 @media(max-width:900px){.two-col{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr}}
 
 /* covariance matrix */
 .matwrap{overflow-x:auto}
-table.mat{border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.8rem;margin:0 auto}
-table.mat th{color:var(--ink3);font-weight:400;padding:.3rem .5rem;font-size:.72rem}
-table.mat td{border:1px solid var(--grid);padding:.4rem .55rem;text-align:center;color:var(--ink);min-width:46px}
+table.mat{border-collapse:collapse;font-family:'DM Mono',monospace;font-size:1.15rem;margin:0 auto}
+table.mat th{color:var(--ink3);font-weight:400;padding:.35rem .6rem;font-size:.85rem}
+table.mat td{border:1px solid var(--grid);padding:.6rem .9rem;text-align:center;color:var(--ink);min-width:58px}
 td.diag{font-weight:600;outline:2px solid var(--a1);outline-offset:-2px}
 
 .lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
@@ -226,7 +226,7 @@ table.htab th{color:var(--accent);font-weight:500}
   <div class="two-col">
     <div class="plot-box" style="margin-bottom:0">
       <div class="plot-title"><span class="circ">②</span> Messmodell — Pfaddiagramm</div>
-      <canvas id="cv-path" height="300"></canvas>
+      <canvas id="cv-path" height="380"></canvas>
     </div>
     <div class="plot-box" style="margin-bottom:0">
       <div class="plot-title"><span class="circ">③</span> Implizierte <span id="mat-kind">Kovarianz</span>matrix</div>
@@ -236,7 +236,7 @@ table.htab th{color:var(--accent);font-weight:500}
   </div>
 
   <div class="plot-box" id="means-box" style="display:none">
-    <div class="plot-title"><span class="circ">④</span> Item-Mittelwerte E[X<sub>i</sub>] = <span class="gk" style="text-transform:none">ν</span><sub>i</sub> (Intercepts)</div>
+    <div class="plot-title"><span class="circ">④</span> Item-Mittelwerte E[V<sub>i</sub>] = <span class="gk" style="text-transform:none">ν</span><sub>i</sub> (Intercepts)</div>
     <canvas id="cv-means" height="120"></canvas>
     <div class="hint">Ungleiche Intercepts erzeugen <strong>essenzielle</strong> (Tau-)Äquivalenz: Die Item-<em>Mittelwerte</em> verschieben sich, aber die Kovarianzmatrix oben und damit ω/α bleiben <strong>unverändert</strong>.</div>
   </div>
@@ -309,10 +309,10 @@ table.htab th{color:var(--accent);font-weight:500}
       und die vertiefte α-vs-ω-Demonstration mit Split-Half/KR-20 (→ kommendes Reliabilitäts-Tool).</p>
 
     <div class="help-sh">Das einfaktorielle Modell</div>
-    <span class="help-formula">X_i = ν_i + λ_i · F + e_i        (F = latentes Konstrukt)
+    <span class="help-formula">V_i = ν_i + λ_i · F + e_i        (F = latentes Konstrukt)
 Var(F) = 1   (zur Identifikation standardisiert)
-Var(X_i)      = λ_i² + θ_i
-Cov(X_i, X_j) = λ_i · λ_j     (i ≠ j)</span>
+Var(V_i)      = λ_i² + θ_i
+Cov(V_i, V_j) = λ_i · λ_j     (i ≠ j)</span>
     <p class="help-p">λ<sub>i</sub> ist die Ladung (wie stark das Item das Konstrukt misst), θ<sub>i</sub> die Fehlervarianz
       (Messrauschen). Die Kovarianz zweier Items entsteht <em>nur</em> über den gemeinsamen Faktor — das ist die zentrale
       Annahme (lokale Unabhängigkeit).</p>
@@ -459,11 +459,12 @@ function drawPath(){
   const a1=cv('--a1'),a2=cv('--a2'),a4=cv('--a4'),ink2=cv('--ink2'),ink3=cv('--ink3'),paper=cv('--paper'),bg=cv('--bg');
   ctx.clearRect(0,0,W,H);
   const k=ST.k;
-  const fx=W/2, fy=42, frx=46, fry=26;
-  const iy=196, ih=38, iw=Math.min(58,(W-40)/k-10);
-  const ey=270, er=13;
-  const xOf=i=>20+iw/2+(i+0.5)*((W-40-iw)/(k));   // approx center spacing
+  const s=H/300;   // scales the layout (tuned for H=300) to the actual canvas height
+  const fx=W/2, fy=42*s, frx=46*s, fry=26*s;
+  const iy=196*s, ih=38*s, iw=Math.min(64,(W-40)/k-10);
+  const ey=270*s, er=13*s;
   const cxs=[]; for(let i=0;i<k;i++) cxs.push(20 + (i+0.5)*(W-40)/k);
+  const fS=px=>Math.round(px*s);
 
   // arrows factor -> items
   for(let i=0;i<k;i++){
@@ -476,9 +477,9 @@ function drawPath(){
     ctx.lineTo(cx-7*Math.cos(ang+0.4),iy-7*Math.sin(ang+0.4));ctx.closePath();ctx.fillStyle=ink2;ctx.fill();
     // lambda label
     const lx=fx+(cx-fx)*0.5, ly=fy+fry+(iy-(fy+fry))*0.5;
-    ctx.fillStyle=paper;ctx.globalAlpha=.9;ctx.fillRect(lx-22,ly-9,44,18);ctx.globalAlpha=1;
-    ctx.fillStyle=a2;ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';
-    ctx.fillText('λ='+ST.lam[i].toFixed(2),lx,ly+4);
+    ctx.fillStyle=paper;ctx.globalAlpha=.9;ctx.fillRect(lx-24,ly-10,48,20);ctx.globalAlpha=1;
+    ctx.fillStyle=a2;ctx.font='bold '+fS(13)+'px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('λ='+ST.lam[i].toFixed(2),lx,ly+5);
   }
   // error -> item arrows
   for(let i=0;i<k;i++){
@@ -488,22 +489,22 @@ function drawPath(){
     ctx.beginPath();ctx.moveTo(cx,iy+ih);ctx.lineTo(cx-5,iy+ih+7);ctx.lineTo(cx+5,iy+ih+7);ctx.closePath();ctx.fillStyle=a1;ctx.fill();
     // error circle
     ctx.beginPath();ctx.arc(cx,ey,er,0,2*Math.PI);ctx.fillStyle=bg;ctx.fill();ctx.strokeStyle=a1;ctx.lineWidth=1.6;ctx.stroke();
-    ctx.fillStyle=a1;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('e'+(i+1),cx,ey+4);
-    ctx.fillText('θ='+ST.th[i].toFixed(2),cx,ey+er+13);
+    ctx.fillStyle=a1;ctx.font=fS(13)+'px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('e'+(i+1),cx,ey+5);
+    ctx.fillText('θ='+ST.th[i].toFixed(2),cx,ey+er+fS(15));
   }
   // items (squares)
   for(let i=0;i<k;i++){
     const cx=cxs[i];
     ctx.fillStyle=paper;ctx.strokeStyle=a2;ctx.lineWidth=2;
     ctx.fillRect(cx-iw/2,iy,iw,ih);ctx.strokeRect(cx-iw/2,iy,iw,ih);
-    ctx.fillStyle=a2;ctx.font='bold 15px DM Mono,monospace';ctx.textAlign='center';
-    ctx.fillText('X'+(i+1),cx,iy+ih/2+5);
+    ctx.fillStyle=a2;ctx.font='bold '+fS(16)+'px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('V'+(i+1),cx,iy+ih/2+6);
   }
   // factor (ellipse)
   ctx.beginPath();ctx.ellipse(fx,fy,frx,fry,0,0,2*Math.PI);
   ctx.fillStyle=paper;ctx.fill();ctx.strokeStyle=a4;ctx.lineWidth=2.4;ctx.stroke();
-  ctx.fillStyle=a4;ctx.font='bold 15px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('F',fx,fy-2);
-  ctx.font='12px DM Mono,monospace';ctx.fillText('Var=1',fx,fy+12);
+  ctx.fillStyle=a4;ctx.font='bold '+fS(16)+'px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('F',fx,fy-2);
+  ctx.font=fS(13)+'px DM Mono,monospace';ctx.fillText('Var=1',fx,fy+14);
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -512,13 +513,13 @@ function drawPath(){
 function drawMatrix(){
   const k=ST.k; const t=document.getElementById('mat');
   let html='<tr><th></th>';
-  for(let j=0;j<k;j++) html+=`<th>X${j+1}</th>`;
+  for(let j=0;j<k;j++) html+=`<th>V${j+1}</th>`;
   html+='</tr>';
   // find max for shading
   let vmax=0;
   for(let i=0;i<k;i++)for(let j=0;j<k;j++){const v=cell(i,j);if(Math.abs(v)>vmax)vmax=Math.abs(v);}
   for(let i=0;i<k;i++){
-    html+=`<tr><th>X${i+1}</th>`;
+    html+=`<tr><th>V${i+1}</th>`;
     for(let j=0;j<k;j++){
       const v=cell(i,j); const a=(vmax>0?Math.abs(v)/vmax:0)*0.5;
       const diag=i===j?' diag':'';
@@ -531,7 +532,7 @@ function drawMatrix(){
   document.getElementById('mat-kind').textContent = showCov?'Kovarianz':'Korrelations';
   document.getElementById('btn-mat').textContent = 'Matrix: '+(showCov?'Kovarianz':'Korrelation');
   document.getElementById('hint-mat').innerHTML = showCov
-    ? 'Diagonale (rot) = Var(X<sub>i</sub>) = λ<sub>i</sub>²+θ<sub>i</sub> · Off-Diagonal = Cov = λ<sub>i</sub>λ<sub>j</sub>. Gleichmäßige Muster = restriktiveres Modell.'
+    ? 'Diagonale (rot) = Var(V<sub>i</sub>) = λ<sub>i</sub>²+θ<sub>i</sub> · Off-Diagonal = Cov = λ<sub>i</sub>λ<sub>j</sub>. Gleichmäßige Muster = restriktiveres Modell.'
     : 'Korrelationen r<sub>ij</sub> = λ<sub>i</sub>λ<sub>j</sub> / √(Var<sub>i</sub>·Var<sub>j</sub>). Diagonale = 1.';
 }
 function cell(i,j){
@@ -563,7 +564,7 @@ function drawMeans(){
   for(let i=0;i<ST.k;i++){
     const px=toX(ST.nu[i]);
     ctx.beginPath();ctx.arc(px,axisY,6,0,2*Math.PI);ctx.fillStyle=eq?a2:a4;ctx.fill();ctx.strokeStyle=bg;ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle=eq?a2:a4;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('X'+(i+1),px,axisY-12);
+    ctx.fillStyle=eq?a2:a4;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('V'+(i+1),px,axisY-12);
   }
   ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
   ctx.fillText('Item-Mittelwert  ν',ml+cW/2,H-3);
