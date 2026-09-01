@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Survivorship Bias — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;background:var(--a1);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+
+.reset-btn{font-family:'DM Mono',monospace;font-size:.74rem;padding:.45rem .7rem;width:100%;margin-top:0;
+  border:1.5px solid var(--a2);background:transparent;cursor:pointer;color:var(--a2);transition:all .15s}
+.reset-btn:hover{background:var(--a2);color:var(--bg)}
+.legend-row{display:flex;align-items:center;gap:.5rem;font-family:'DM Mono',monospace;font-size:.72rem;
+  color:var(--ink2);margin-bottom:.35rem;line-height:1.3}
+.legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.legend-box{width:13px;height:13px;flex-shrink:0}
+
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.sec-h:first-child{margin-top:0}
+
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a5);
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a5);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+
+.verdict{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:500;padding:.7rem .95rem;margin-bottom:1rem;
+  border:1.5px solid;text-align:center;letter-spacing:.01em;line-height:1.5}
+.v-up{color:var(--a3);border-color:var(--a3);background:color-mix(in srgb,var(--a3) 12%,transparent)}
+.v-down{color:var(--a1);border-color:var(--a1);background:color-mix(in srgb,var(--a1) 12%,transparent)}
+.v-flat{color:var(--ink3);border-color:var(--border);background:var(--panel)}
+
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block;cursor:pointer}
+.hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
+
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+@media(max-width:900px){.lcard-grid{grid-template-columns:1fr}}
+
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Survivorship Bias — <em>where to put the armor?</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- HELP -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+<div class="help-box">
+  <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+  <div class="help-box-h">Survivorship Bias — Help</div>
+
+  <div class="help-sh">The story (Abraham Wald, 1943)</div>
+  <p class="help-p">In World War II, the US Air Force examined returning bombers and mapped their bullet holes. The obvious conclusion: armor where most of the holes are (wings, fuselage). Statistician <strong>Abraham Wald</strong> disagreed: armor where the returning planes have <em>almost no</em> holes — cockpit, engines, fuel tanks. Because planes hit there <em>never came back</em>. They're missing from the dataset.</p>
+
+  <div class="help-sh">Does / does NOT</div>
+  <p class="help-p"><strong>Does:</strong> shows how a sample made entirely of "survivors" systematically deceives — the crucial information lies in the <em>missing</em> cases.<br>
+  <strong>Does NOT:</strong> the returning planes' holes aren't "wrong" — they're just half the truth. It's a <em>selection on the outcome</em> (survival), not measurement error.</p>
+
+  <div class="help-sh">The mechanism</div>
+  <p class="help-p">In truth, all zones get hit about equally often. But a hit in a <em>critical</em> zone causes a crash → that plane doesn't return → in that zone, the returning planes show almost no holes. So what you observe isn't "where planes get hit," but "where you can get hit and still make it home."</p>
+
+  <div class="help-sh">How to use it</div>
+  <p class="help-p"><strong>1.</strong> Look at the returning planes. <strong>2.</strong> Click the zones in the image that you would armor. <strong>3.</strong> Click <strong>▸ Reveal</strong> — the shot-down planes (the missing data) appear, and your choice is evaluated. <strong>Lethality</strong> controls how reliably a critical hit causes a crash.</p>
+
+  <div class="help-sh">Everyday life</div>
+  <p class="help-p">"Successful dropouts," "this fund has beaten the market for 10 years" (you don't see the funds that went bust), "old buildings/bands/products were built better" — wherever only the survivors make it into the sample, survivorship bias threatens. Related to selection and collider bias.</p>
+
+  <div class="help-sh">References</div>
+  <p class="help-p">Wald, A. (1943). A method of estimating plane vulnerability based on damage of survivors. Statistical Research Group, Columbia University (CRC 432). · Mangel, M. &amp; Samaniego, F. J. (1984). Abraham Wald's work on aircraft survivability. <em>JASA, 79</em>(386), 259–267.</p>
+</div>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Your Task</div>
+    <div style="font-size:.9rem;line-height:1.55;margin-bottom:.55rem">
+      Click the zones in the image that you would <strong>armor</strong> (limited weight!). Then reveal.
+    </div>
+    <button class="reset-btn" id="btn-reveal" style="border-color:var(--a1);color:var(--a1);margin-bottom:.4rem">▸ Reveal</button>
+    <button class="reset-btn" id="btn-retry">↺ Try again</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Settings</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Lethality of critical hits</span><span class="slider-val" id="v-leth">85 %</span></div>
+      <input type="range" id="s-leth" min="40" max="98" step="1" value="85">
+    </div>
+    <div class="slider-row" style="margin-bottom:.5rem">
+      <div class="slider-lbl"><span class="slider-name">Number of hits</span><span class="slider-val" id="v-n">160</span></div>
+      <input type="range" id="s-n" min="60" max="320" step="10" value="160">
+    </div>
+    <button class="reset-btn" onclick="reroll()">🎲 New mission</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Legend</div>
+    <div class="legend-row"><span class="legend-dot" style="background:var(--bg);border:1.5px solid var(--ink2)"></span> hit on a returning plane</div>
+    <div class="legend-row"><span class="legend-dot" style="background:var(--a1)"></span> hit that caused a crash</div>
+    <div class="legend-row"><span class="legend-box" style="background:color-mix(in srgb,var(--a3) 30%,transparent);border:1.5px solid var(--a3)"></span> armored by you</div>
+    <div class="legend-row"><span class="legend-box" style="border:1.5px dashed var(--ink3)"></span> clickable zone</div>
+  </div>
+
+</div><!-- #sidebar -->
+
+<!-- ══ MAIN ══ -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 1943 — Where to Put the Armor?</div>
+    The returning bombers show their bullet holes. Armor costs weight — you can only protect <strong>a few zones</strong>.
+    <strong>Question:</strong> where do you armor? Click the zones in the image and decide — then <strong>"▸ Reveal."</strong>
+  </div>
+
+  <div class="sec-h"><span class="circ">①</span> The Bomber Fleet</div>
+  <div class="plot-box">
+    <div class="plot-title" id="plot-title">Returning planes only · click zones to armor</div>
+    <canvas id="cv" height="540"></canvas>
+    <div class="hint" id="hint">Click cockpit, engines, fuel tanks, wings, or fuselage/tail — they light up green when you armor them.</div>
+  </div>
+  <div class="verdict v-flat" id="verdict">Choose your armor zones and click "▸ Reveal."</div>
+
+  <div class="sec-h">Concepts</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">What is survivorship bias?</div>
+      <div class="lcard-body">A bias that arises when only the <strong>survivors</strong> (successes, returners) make it into the sample. The losers are missing — and with them, often the crucial information.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Wald's insight</div>
+      <div class="lcard-body">Armor where the returning planes have <strong>no</strong> holes. Those zones aren't safe — quite the opposite: hits there were fatal, which is why they're missing from the survivors. <strong>Absence of damage = location of fatal damage.</strong></div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Selection on the outcome</div>
+      <div class="lcard-body">The sample is filtered by the <strong>outcome</strong> (survival). That's the same pattern as collider/selection bias: conditioning on "returned" biases the relationship between hit location and frequency.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">In everyday life</div>
+      <div class="lcard-body">Successful dropouts, "this fund beats the market," "things used to be built to last" — you don't see the failures. Always ask: <strong>who's missing from the data?</strong>
+      <a class="xlink" href="Berksons_Paradox.html">→ Berkson's Paradox</a>
+      <a class="xlink" href="Range_Restriction.html">→ Range Restriction</a></div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<script>
+'use strict';
+// ── Zonen (normierte Koordinaten 0..1, Nase oben) ──
+const ZONES=[
+  {id:'cockpit', label:'Cockpit',    lethal:true,  rects:[[0.44,0.04,0.56,0.18]]},
+  {id:'engines', label:'Engines',    lethal:true,  rects:[[0.23,0.39,0.35,0.53],[0.65,0.39,0.77,0.53]]},
+  {id:'tanks',   label:'Fuel Tanks', lethal:true,  rects:[[0.44,0.39,0.56,0.53]]},
+  {id:'wings',   label:'Wings',      lethal:false, rects:[[0.05,0.39,0.23,0.53],[0.77,0.39,0.95,0.53]]},
+  {id:'body',    label:'Fuselage/Tail', lethal:false, rects:[[0.45,0.18,0.55,0.39],[0.45,0.53,0.55,0.80],[0.34,0.80,0.66,0.90]]},
+];
+const LETHAL_IDS=['cockpit','engines','tanks'];
+
+// ── State ──
+const ST={leth:0.85, n:160};
+let seed=11, hits=[], armored=new Set(), revealed=false, hoverZone=null;
+let LAY={x:0,y:0,s:0};
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let rng=mulberry32(seed);
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+// ── Treffer erzeugen (überall ähnlich dicht; kritische werden ggf. tödlich) ──
+function buildHits(){
+  rng=mulberry32(seed);
+  hits=[];
+  const areas=ZONES.map(z=>z.rects.reduce((s,r)=>s+(r[2]-r[0])*(r[3]-r[1]),0));
+  const total=areas.reduce((a,b)=>a+b,0);
+  for(let i=0;i<ST.n;i++){
+    let t=rng()*total, zi=0;
+    while(zi<ZONES.length-1 && t>areas[zi]){t-=areas[zi];zi++;}
+    const z=ZONES[zi];
+    const ra=z.rects.map(r=>(r[2]-r[0])*(r[3]-r[1]));
+    let rt=rng()*ra.reduce((a,b)=>a+b,0), ri=0;
+    while(ri<z.rects.length-1 && rt>ra[ri]){rt-=ra[ri];ri++;}
+    const r=z.rects[ri];
+    const x=r[0]+rng()*(r[2]-r[0]), y=r[1]+rng()*(r[3]-r[1]);
+    const downed = z.lethal && rng()<ST.leth;   // tödlicher Treffer → Maschine fehlt
+    hits.push({x,y,zoneId:z.id,lethal:z.lethal,downed});
+  }
+}
+
+function zoneAt(nx,ny){
+  for(const z of ZONES) for(const r of z.rects)
+    if(nx>=r[0]&&nx<=r[2]&&ny>=r[1]&&ny<=r[3]) return z;
+  return null;
+}
+
+// ── Zeichnen ──
+function nx(v){return LAY.x+v*LAY.s;}
+function ny(v){return LAY.y+v*LAY.s;}
+function rrect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+function poly(ctx,pts,fill,stroke,lw){ctx.beginPath();pts.forEach((p,i)=>{const X=nx(p[0]),Y=ny(p[1]);i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);});ctx.closePath();if(fill){ctx.fillStyle=fill;ctx.fill();}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke();}}
+// 90°-CW-Rotation: Plan-Normkoord. (Nase oben) -> Canvas (Nase rechts) und zurück
+function P(px,py){const s=LAY.s;return{X:LAY.W/2+s/2-py*s, Y:LAY.H/2-s/2+px*s};}
+function canvasToPlane(px,py){const s=LAY.s,cx=px-LAY.W/2,cy=py-LAY.H/2;return{x:(cy+s/2)/s, y:(-cx+s/2)/s};}
+
+function draw(){
+  const canvas=document.getElementById('cv');
+  const W=canvas.clientWidth||640; canvas.width=W;
+  const H=canvas.height, ctx=canvas.getContext('2d');
+  const panel=cv('--panel'),ink2=cv('--ink2'),ink3=cv('--ink3'),bg=cv('--bg'),a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3');
+  ctx.clearRect(0,0,W,H);
+  const m=10, s=Math.min(W-2*m, H-2*m);
+  LAY={x:0,y:0,s,W,H};
+  const u=s/500;
+  const body=`color-mix(in srgb,${ink2} 13%,${panel})`, edge=ink2;
+  ctx.lineJoin='round';ctx.lineCap='round';
+
+  // gedrehter Zeichenbereich: 90° im Uhrzeigersinn (Nase nach rechts)
+  ctx.save();
+  ctx.translate(W/2,H/2); ctx.rotate(Math.PI/2); ctx.translate(-s/2,-s/2);
+
+  // ── Flugzeug ──
+  // Tragflächen (getapert)
+  poly(ctx,[[0.47,0.405],[0.47,0.525],[0.06,0.49],[0.06,0.452]],body,edge,1.7*u);
+  poly(ctx,[[0.53,0.405],[0.53,0.525],[0.94,0.49],[0.94,0.452]],body,edge,1.7*u);
+  // Höhenleitwerk
+  poly(ctx,[[0.48,0.80],[0.48,0.875],[0.35,0.858],[0.35,0.818]],body,edge,1.4*u);
+  poly(ctx,[[0.52,0.80],[0.52,0.875],[0.65,0.858],[0.65,0.818]],body,edge,1.4*u);
+  // Seitenflosse
+  poly(ctx,[[0.5,0.84],[0.482,0.93],[0.518,0.93]],`color-mix(in srgb,${ink2} 22%,${panel})`,edge,1.3*u);
+  // Rumpf (Pille)
+  rrect(ctx,nx(0.448),ny(0.05),0.104*s,0.86*s,0.052*s); ctx.fillStyle=body;ctx.fill();ctx.strokeStyle=edge;ctx.lineWidth=1.8*u;ctx.stroke();
+  // Mittellinie
+  ctx.strokeStyle=`color-mix(in srgb,${ink2} 32%,transparent)`;ctx.lineWidth=1*u;ctx.setLineDash([6*u,5*u]);
+  ctx.beginPath();ctx.moveTo(nx(0.5),ny(0.11));ctx.lineTo(nx(0.5),ny(0.88));ctx.stroke();ctx.setLineDash([]);
+  // Triebwerksgondeln + Propeller
+  const nac=cx=>{
+    rrect(ctx,nx(cx-0.026),ny(0.40),0.052*s,0.105*s,0.02*s);ctx.fillStyle=`color-mix(in srgb,${ink2} 30%,${panel})`;ctx.fill();ctx.strokeStyle=edge;ctx.lineWidth=1.3*u;ctx.stroke();
+    const px=nx(cx),py=ny(0.392),pr=0.027*s;
+    ctx.strokeStyle=edge;ctx.lineWidth=1.4*u;ctx.beginPath();ctx.arc(px,py,pr,0,2*Math.PI);ctx.stroke();
+    for(let k=0;k<3;k++){const ang=k*2.0944+0.5;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+pr*Math.cos(ang),py+pr*Math.sin(ang));ctx.stroke();}
+    ctx.fillStyle=edge;ctx.beginPath();ctx.arc(px,py,1.7*u,0,2*Math.PI);ctx.fill();
+  };
+  [0.255,0.325,0.675,0.745].forEach(nac);
+  // Cockpit-Verglasung
+  rrect(ctx,nx(0.46),ny(0.085),0.08*s,0.062*s,0.02*s);ctx.fillStyle=`color-mix(in srgb,${a2} 32%,${panel})`;ctx.fill();ctx.strokeStyle=edge;ctx.lineWidth=1.2*u;ctx.stroke();
+
+  // ── Zonen-Flächen + Rahmen ──
+  ZONES.forEach(z=>{
+    const arm=armored.has(z.id), hov=(hoverZone===z.id && !revealed);
+    z.rects.forEach(r=>{
+      const x=nx(r[0]),y=ny(r[1]),w=(r[2]-r[0])*s,h=(r[3]-r[1])*s;
+      if(arm){ctx.fillStyle=`color-mix(in srgb,${a3} 24%,transparent)`;ctx.fillRect(x,y,w,h);ctx.strokeStyle=a3;ctx.lineWidth=2.2*u;ctx.setLineDash([]);ctx.strokeRect(x,y,w,h);}
+      else if(hov){ctx.fillStyle=`color-mix(in srgb,${a2} 16%,transparent)`;ctx.fillRect(x,y,w,h);ctx.strokeStyle=a2;ctx.lineWidth=2*u;ctx.setLineDash([]);ctx.strokeRect(x,y,w,h);}
+      else{ctx.fillStyle=`color-mix(in srgb,${ink2} 5%,transparent)`;ctx.fillRect(x,y,w,h);ctx.strokeStyle=ink3;ctx.lineWidth=1.1*u;ctx.setLineDash([4*u,3*u]);ctx.globalAlpha=.6;ctx.strokeRect(x,y,w,h);ctx.globalAlpha=1;ctx.setLineDash([]);}
+      if(revealed && z.lethal){ctx.strokeStyle=a1;ctx.lineWidth=2*u;ctx.setLineDash([5*u,3*u]);ctx.strokeRect(x+1.5,y+1.5,w-3,h-3);ctx.setLineDash([]);}
+    });
+  });
+
+  // ── Treffer ──
+  hits.forEach(h=>{
+    if(!revealed && h.downed) return;
+    const x=nx(h.x),y=ny(h.y);
+    ctx.beginPath();ctx.arc(x,y,3.3,0,2*Math.PI);
+    if(revealed && h.downed){ctx.fillStyle=a1;ctx.globalAlpha=.9;ctx.fill();ctx.globalAlpha=1;}
+    else{ctx.fillStyle=bg;ctx.fill();ctx.strokeStyle=ink2;ctx.lineWidth=1.3;ctx.stroke();}
+  });
+
+  ctx.restore();
+
+  // ── Zonen-Label (aufrecht, Bildschirmraum) ──
+  ZONES.forEach(z=>{
+    const arm=armored.has(z.id), hov=(hoverZone===z.id&&!revealed);
+    const r0=z.rects[0], pc=P((r0[0]+r0[2])/2,(r0[1]+r0[3])/2);
+    const txt=(arm?'🛡 ':'')+z.label;
+    const col=arm?a3:(z.lethal&&revealed?a1:(hov?a2:ink2));
+    ctx.font=`bold 12px 'DM Mono',monospace`;ctx.textAlign='center';ctx.textBaseline='middle';
+    const tw=ctx.measureText(txt).width;
+    ctx.fillStyle=panel;ctx.globalAlpha=.9;rrect(ctx,pc.X-tw/2-6,pc.Y-9,tw+12,18,5);ctx.fill();ctx.globalAlpha=1;
+    ctx.strokeStyle=col;ctx.lineWidth=1.2;rrect(ctx,pc.X-tw/2-6,pc.Y-9,tw+12,18,5);ctx.stroke();
+    ctx.fillStyle=col;ctx.fillText(txt,pc.X,pc.Y);
+  });
+  ctx.textBaseline='alphabetic';
+
+  document.getElementById('plot-title').textContent = revealed
+    ? 'Revealed · red points = hits on shot-down planes (invisible before)'
+    : 'Returning planes only · click zones to armor';
+}
+
+// ── Bewertung ──
+function reveal(){
+  if(armored.size===0){
+    document.getElementById('verdict').className='verdict v-flat';
+    document.getElementById('verdict').textContent='You haven\'t armored any zone yet — click in the image first.';
+    return;
+  }
+  revealed=true; draw();
+  const good=[...armored].filter(id=>LETHAL_IDS.includes(id));
+  const naive=[...armored].filter(id=>!LETHAL_IDS.includes(id));
+  const missed=LETHAL_IDS.filter(id=>!armored.has(id));
+  const vd=document.getElementById('verdict');
+  const lbl=id=>ZONES.find(z=>z.id===id).label;
+  if(good.length===3 && naive.length===0){
+    vd.className='verdict v-up';
+    vd.innerHTML='🛡 Wald would have applauded! You\'re armoring exactly the zones where the returning planes had almost no holes — cockpit, engines, fuel tanks. The red points show: those zones were hit plenty, those planes just never came back.';
+  }else if(good.length===0){
+    vd.className='verdict v-down';
+    vd.innerHTML='✗ Classic survivorship bias: you\'re armoring where the <em>survivors</em> have holes ('+naive.map(lbl).join(', ')+') — but they survived that hit. The fatal zones stay unprotected: '+missed.map(lbl).join(', ')+'.';
+  }else{
+    vd.className='verdict v-flat';
+    vd.innerHTML='Partly right: critically armored → <strong>'+good.map(lbl).join(', ')+'</strong>'+(naive.length?'; unnecessary (survivors only) → '+naive.map(lbl).join(', '):'')+(missed.length?'; still unprotected → <strong style="color:var(--a1)">'+missed.map(lbl).join(', ')+'</strong>':'')+'.';
+  }
+  // Note: hit counts per critical zone (returned vs. total)
+  const cnt=id=>{const all=hits.filter(h=>h.zoneId===id).length, ret=hits.filter(h=>h.zoneId===id&&!h.downed).length; return `${lbl(id)}: ${ret} visible / ${all} actual`;};
+  document.getElementById('hint').textContent='Critical zones — '+LETHAL_IDS.map(cnt).join(' · ')+'. Few visible, many actual: that\'s exactly where the shot-down planes are missing.';
+}
+function retry(){
+  revealed=false; armored.clear();
+  document.getElementById('verdict').className='verdict v-flat';
+  document.getElementById('verdict').textContent='Choose your armor zones and click "▸ Reveal."';
+  document.getElementById('hint').textContent='Click cockpit, engines, fuel tanks, wings, or fuselage/tail — they light up green when you armor them.';
+  draw();
+}
+
+// ── Klick auf Canvas → Zone (de)panzern ──
+const canvas=document.getElementById('cv');
+canvas.addEventListener('click',e=>{
+  if(revealed) return;
+  const r=canvas.getBoundingClientRect();
+  const px=(e.clientX-r.left)*(canvas.width/r.width);
+  const py=(e.clientY-r.top)*(canvas.height/r.height);
+  const pn=canvasToPlane(px,py);
+  const z=zoneAt(pn.x,pn.y);
+  if(z){ armored.has(z.id)?armored.delete(z.id):armored.add(z.id); draw(); }
+});
+canvas.addEventListener('mousemove',e=>{
+  if(revealed){ if(hoverZone!==null){hoverZone=null;draw();} return; }
+  const r=canvas.getBoundingClientRect();
+  const px=(e.clientX-r.left)*(canvas.width/r.width);
+  const py=(e.clientY-r.top)*(canvas.height/r.height);
+  const pn=canvasToPlane(px,py);
+  const z=zoneAt(pn.x,pn.y);
+  const id=z?z.id:null;
+  if(id!==hoverZone){hoverZone=id;draw();}
+});
+canvas.addEventListener('mouseleave',()=>{ if(hoverZone!==null){hoverZone=null;draw();} });
+
+// ── Controls ──
+document.getElementById('btn-reveal').addEventListener('click',reveal);
+document.getElementById('btn-retry').addEventListener('click',retry);
+document.getElementById('s-leth').addEventListener('input',function(){
+  ST.leth=+this.value/100; document.getElementById('v-leth').textContent=this.value+' %';
+  buildHits(); retry();
+});
+document.getElementById('s-n').addEventListener('input',function(){
+  ST.n=+this.value; document.getElementById('v-n').textContent=ST.n;
+  buildHits(); retry();
+});
+function reroll(){ seed=(seed*1103515245+12345)>>>0; buildHits(); retry(); }
+
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+function toggleTheme(){
+  const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',d?'light':'dark');
+  document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';
+  requestAnimationFrame(draw);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('help-overlay').classList.remove('open');});
+window.addEventListener('resize',()=>requestAnimationFrame(draw));
+
+// ── Init ──
+buildHits();
+draw();
+</script>
+</body>
+</html>

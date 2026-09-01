@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Confirmatory Factor Analysis | MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a4);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+.gk{font-family:'Fraunces',Georgia,serif;font-style:italic;text-transform:none!important}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem;height:var(--topbar-h)}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn.help{background:var(--a1);border-color:var(--a1);color:#fff}
+.tbtn.help:hover{filter:brightness(1.12)}
+
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.1rem 1.4rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+
+.rot-grid{display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-top:.3rem}
+.rbtn{font-family:'DM Mono',monospace;font-size:.68rem;padding:.4rem .3rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center;line-height:1.3}
+.rbtn:hover{border-color:var(--accent);color:var(--accent)}
+.rbtn.act{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);font-weight:700}
+.rbtn.warn.act{border-color:var(--a1);background:color-mix(in srgb,var(--a1) 16%,transparent);color:var(--a1)}
+
+.scen-grid{display:grid;grid-template-columns:1fr;gap:.28rem;margin-top:.3rem}
+.scen-btn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.35rem .52rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:left;line-height:1.42;width:100%}
+.scen-btn:hover{border-color:var(--a6);color:var(--a6)}
+.scen-btn.act{border-color:var(--a6);background:color-mix(in srgb,var(--a6) 14%,transparent);color:var(--a6);font-weight:700}
+.scen-sub{font-size:.68rem;color:var(--ink3);display:block}
+.scen-btn.act .scen-sub{color:color-mix(in srgb,var(--a6) 70%,var(--ink3))}
+
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.sec-h:first-child{margin-top:0}
+
+.proc-list{margin-bottom:1rem}
+.proc-step{margin-bottom:.7rem;font-size:.87rem;line-height:1.75;color:var(--ink2)}
+.proc-step strong{color:var(--ink)}
+.proc-step .circ{margin-right:.4rem;font-size:1.7em}
+.proc-jump{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);text-decoration:none;
+  border-bottom:1px dotted var(--a2)}
+.proc-jump:hover{color:var(--accent);border-bottom-color:var(--accent)}
+
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block}
+.hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
+
+.metric-grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin-bottom:1rem}
+@media(max-width:1100px){.metric-grid5{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.metric-grid5{grid-template-columns:repeat(2,1fr)}}
+.metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.3rem;line-height:1.3}
+.metric-val{font-family:'DM Mono',monospace;font-size:1.35rem;font-weight:500;line-height:1}
+.metric-sub{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--ink3);margin-top:.25rem;line-height:1.4}
+
+.verdict{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:500;padding:.6rem .9rem;margin-bottom:1rem;
+  border:1.5px solid;text-align:center;letter-spacing:.01em;line-height:1.5}
+.v-par{color:var(--a3);border-color:var(--a3);background:color-mix(in srgb,var(--a3) 12%,transparent)}
+.v-tau{color:var(--a2);border-color:var(--a2);background:color-mix(in srgb,var(--a2) 12%,transparent)}
+.v-con{color:var(--a1);border-color:var(--a1);background:color-mix(in srgb,var(--a1) 12%,transparent)}
+
+/* R / lavaan code box */
+.r-code{background:#14161c;border:1px solid var(--grid);padding:.85rem 1rem;font-family:'DM Mono',monospace;
+  font-size:.78rem;line-height:1.7;color:#c9d1d9;white-space:pre;overflow-x:auto}
+[data-theme="light"] .r-code{background:#1e2128;color:#e6e6e6}
+.r-code .rk{color:#e8614a} .r-code .rs{color:#80cb52} .r-code .rc{color:#7a8590;font-style:italic}
+.r-code .rf{color:#4ab0d8}
+
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+@media(max-width:900px){.lcard-grid{grid-template-columns:1fr}}
+
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+
+.fitidx-list{display:flex;flex-direction:column;gap:.5rem;margin:.4rem 0 .7rem}
+.fitidx{background:var(--bg);border:1px solid var(--grid);border-left:3px solid var(--accent);padding:.5rem .7rem .55rem}
+.fitidx-name{font-family:'DM Mono',monospace;font-size:.78rem;font-weight:700;color:var(--accent);
+  display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;margin-bottom:.15rem}
+.fitidx-range{font-weight:400;color:var(--ink3);font-size:.68rem;white-space:nowrap}
+.fitidx-formula{font-family:'DM Mono',monospace;font-size:.73rem;color:var(--a2);margin-bottom:.3rem;line-height:1.5}
+.fitidx-body{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);line-height:1.7}
+.help-callout{background:color-mix(in srgb,var(--a1) 10%,var(--bg));border:1px solid var(--a1);
+  padding:.55rem .75rem;margin:.4rem 0 .6rem;font-family:'DM Mono',monospace;font-size:.77rem;
+  color:var(--ink2);line-height:1.78}
+.help-callout strong{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Confirmatory Factor Analysis — <em>CFA</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn help" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">True Model (Population)</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Primary loading <span class="gk">λ</span></span>
+        <span class="slider-val" id="v-lam" style="color:var(--a4)">0.70</span></div>
+      <input type="range" id="sl-lam" min="30" max="90" value="70" oninput="update()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Cross-loading S1→F1 <span class="gk">λx</span></span>
+        <span class="slider-val" id="v-cross" style="color:var(--a1)">0.25</span></div>
+      <input type="range" id="sl-cross" min="0" max="50" value="25" oninput="update()">
+    </div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">Factor correlation <span class="gk">φ</span></span>
+        <span class="slider-val" id="v-phi" style="color:var(--a6)">0.40</span></div>
+      <input type="range" id="sl-phi" min="0" max="70" value="40" oninput="update()">
+    </div>
+    <div class="hint" style="margin-top:.5rem">Only <strong>S1</strong> truly has a cross-loading on F1 — the
+      remaining 7 items load purely on their own factor. This lets misspecification be traced back to exactly one item.</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Scenarios</div>
+    <div class="scen-grid">
+      <button class="scen-btn" data-lam="70" data-phi="0" onclick="setScen(this)">
+        <span><span class="circ">①</span> Orthogonal &nbsp;&mdash;&nbsp; <span class="gk">φ</span> = 0</span>
+        <span class="scen-sub">Independent factors</span>
+      </button>
+      <button class="scen-btn act" data-lam="70" data-phi="40" onclick="setScen(this)">
+        <span><span class="circ">②</span> Oblique &nbsp;&mdash;&nbsp; <span class="gk">φ</span> = .40</span>
+        <span class="scen-sub">Moderate factor correlation</span>
+      </button>
+      <button class="scen-btn" data-lam="70" data-phi="70" onclick="setScen(this)">
+        <span><span class="circ">③</span> Strongly oblique &nbsp;&mdash;&nbsp; <span class="gk">φ</span> = .70</span>
+        <span class="scen-sub">Nearly unidimensional</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Specified Model</div>
+    <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.3rem">Factor correlation</div>
+    <div class="rot-grid">
+      <button class="rbtn act" id="btn-phi-free" onclick="setAllowPhi(true)">Oblique (free)</button>
+      <button class="rbtn warn" id="btn-phi-fix" onclick="setAllowPhi(false)">Orthogonal (Φ fixed 0)</button>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin:.6rem 0 .3rem">Cross-loading S1→F1</div>
+    <div class="rot-grid">
+      <button class="rbtn warn act" id="btn-cross-fix" onclick="setAllowCross(false)">Ignore</button>
+      <button class="rbtn" id="btn-cross-free" onclick="setAllowCross(true)">Model</button>
+    </div>
+    <div class="hint" style="margin-top:.6rem">These two switches determine what the <strong>model</strong> assumes —
+      independent of what actually holds in the population (left). If they diverge from the truth, misfit results.</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Statistics</div>
+    <div id="stats" style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);line-height:2"></div>
+  </div>
+
+</div><!-- #sidebar -->
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 From Exploratory to Confirmatory Factor Analysis</div>
+    <strong>Factor analysis (EFA)</strong> <em>searched for</em> the structure of the 8-item cognitive test (V1–V4 verbal,
+    S1–S4 spatial). In <strong>confirmatory factor analysis (CFA)</strong>, it's the other way around: theory
+    <em>specifies in advance</em> which item loads on which factor — you <em>test</em> whether this structure fits the
+    data. Here you set the <em>true</em> population on the left and, on the right, what the <em>specified</em> model
+    assumes — and see how strongly the typical <strong>fit indices</strong> react when the two diverge.
+    <div style="margin-top:.6rem">
+      <a class="xlink" href="Faktoranalyse.html" target="_blank">← Factor Analysis (EFA): where does the structure come from?</a>
+      <a class="xlink" href="Messmodelle.html" target="_blank">← Measurement Models: 1-factor model classes</a>
+      <a class="xlink" href="Messinvarianz.html" target="_blank">Compare the same model across groups? → Measurement Invariance</a>
+    </div>
+  </div>
+
+  <div class="sec-h"><span class="circ">①</span> Approach</div>
+  <div class="proc-list">
+    <div class="proc-step"><span class="circ">①</span><strong>Specify the model.</strong> The item→factor assignment is fixed (V group→F1, S group→F2). You only decide: may F1/F2 correlate, and is S1's cross-loading known to the model? <a class="proc-jump" href="#cv-path">→ view path diagram</a></div>
+    <div class="proc-step"><span class="circ">②</span><strong>Fit to the population.</strong> The tool estimates the specified model's free parameters so that the implied covariance matrix comes as close as possible to the true one (maximum likelihood) — <em>genuine</em> estimation, not an analogy trick.</div>
+    <div class="proc-step"><span class="circ">③</span><strong>Check the fit.</strong> χ², CFI, TLI, RMSEA, SRMR show how well the fit succeeded. <a class="proc-jump" href="#fit-grid">→ view fit indices</a></div>
+    <div class="proc-step"><span class="circ">④</span><strong>Spot misspecification.</strong> Turn on "Orthogonal" or "Ignore" even though the population dictates otherwise — watch the fit collapse.</div>
+  </div>
+
+  <div class="plot-box" id="cv-path-box">
+    <div class="plot-title"><span class="circ">②</span> Path Diagram — Specified Model</div>
+    <canvas id="cv-path" height="420"></canvas>
+    <div class="hint" id="hint-path"></div>
+  </div>
+
+  <div class="sec-h" id="fit-grid"><span class="circ">③</span> Fit Indices</div>
+  <div class="metric-grid5">
+    <div class="metric">
+      <div class="metric-lbl"><span class="gk">χ</span>² (df)</div>
+      <div class="metric-val" id="m-chi2" style="color:var(--a1)">—</div>
+      <div class="metric-sub" id="m-chi2-sub">N = 300</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">CFI</div>
+      <div class="metric-val" id="m-cfi" style="color:var(--a3)">—</div>
+      <div class="metric-sub">≥ .95 good</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">TLI</div>
+      <div class="metric-val" id="m-tli" style="color:var(--a3)">—</div>
+      <div class="metric-sub">≥ .95 good</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">RMSEA</div>
+      <div class="metric-val" id="m-rmsea" style="color:var(--a2)">—</div>
+      <div class="metric-sub">≤ .06 good</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">SRMR</div>
+      <div class="metric-val" id="m-srmr" style="color:var(--a2)">—</div>
+      <div class="metric-sub">≤ .08 good</div>
+    </div>
+  </div>
+  <div class="verdict" id="verdict">—</div>
+
+  <div class="plot-box">
+    <div class="plot-title"><span class="circ">④</span> lavaan Syntax (R) — Matching the Specified Model</div>
+    <div class="r-code" id="r-code"></div>
+    <div class="hint">Cutoffs follow Hu &amp; Bentler (1999). This tool fits itself via maximum likelihood on the
+      (known) population-implied covariance matrix — <code>lavaan</code> would estimate the same structure on real data
+      and additionally deliver standard errors/p-values for every parameter (not simulated here, see Help).</div>
+  </div>
+
+  <div class="sec-h">Flashcards</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">① EFA vs. CFA</div>
+      <div class="lcard-body">In <strong>EFA</strong>, the data determine which item loads on which factor (all
+        loadings free, then the pattern is interpreted). In <strong>CFA</strong>, theory fixes the structure
+        in advance — most loadings are <em>fixed</em> at 0 (simple structure), only a few are free. The fit
+        tests whether this restriction is compatible with the data.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">② Why Misspecification Worsens Fit</div>
+      <div class="lcard-body">Every fixation (e.g. "cross-loading = 0" or "Φ = 0") is an <strong>assumption</strong>. If it's
+        correct, it costs nothing — the model still hits the true covariance matrix exactly. If it's wrong, the
+        model can no longer reproduce the affected covariances; the residual difference drives χ² up
+        and CFI/TLI down.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">③ Degrees of Freedom Here</div>
+      <div class="lcard-body">df = possible unique covariances/variances (8·9/2 = 36) minus estimated free parameters
+        (8 loadings + 8 error variances + possibly 1 cross-loading + possibly 1 factor correlation). Every additional
+        fixation (orthogonal, ignoring the cross-loading) <strong>increases</strong> df by 1 — the model becomes more
+        parsimonious, but risks misfit.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">④ TLI Above 1.00?</div>
+      <div class="lcard-body">Unlike CFI, TLI is <strong>not</strong> capped at 1 — for a very parsimonious,
+        well-fitting model (many df, little misfit), TLI can slightly exceed 1. That's not an error but a
+        known property of the formula; <code>lavaan</code> shows the same effect.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">⑤ What This Tool Doesn't Show</div>
+      <div class="lcard-body">No real sampling, no standard errors/p-values for the loadings, no
+        modification indices (which single fixation to relax?). N = 300 only serves to convert the
+        population-implied discrepancy value into a realistic χ² — it's not actually simulated.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">⑥ What's Next?</div>
+      <div class="lcard-body">The next tool in this series extends CFA with <strong>structural paths
+        between</strong> the factors (regression between latent variables instead of only between factor and items) —
+        a <strong>structural equation model (SEM)</strong>, with the same bridges to regression and mediation, just with
+        latent instead of observed variables.
+        <br><a class="xlink" href="Strukturgleichungsmodell.html" target="_blank">→ Structural Equation Model (SEM)</a></div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Confirmatory Factor Analysis — Background
+      <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    </div>
+
+    <div class="help-sh">What This Tool Shows — and What It Doesn't</div>
+    <p class="help-p"><strong>Shows:</strong> a 2-factor CFA model with a fixed item-factor assignment, two
+      misspecification switches (factor correlation, one cross-loading), and the resulting fit indices —
+      via genuine maximum-likelihood fitting to the (known) population-implied covariance matrix, no
+      analogy formula. <strong>Not here:</strong> real sampling/standard errors, free item-factor assignment,
+      modification indices, multi-group CFA (→ Measurement Invariance).</p>
+
+    <div class="help-sh">Maximum Likelihood Discrepancy</div>
+    <span class="help-formula">F_ML(Σ, Σ(θ)) = log|Σ(θ)| + tr(Σ(θ)⁻¹Σ) − log|Σ| − p
+χ² = (N−1) · F_ML,min          (N = 300, p = 8 items)</span>
+    <p class="help-p">Σ is the true (population-implied) covariance matrix, Σ(θ) that of the specified model with
+      the currently best parameters θ. The tool <strong>minimizes F_ML</strong> numerically over all free parameters
+      (coordinate descent) — for a correctly specified model, this minimum lands at practically exactly 0.</p>
+
+    <div class="help-sh">Fit Indices — In Detail</div>
+    <p class="help-p">Index "M" = specified model, "B" = baseline/independence model (all covariances fixed at 0
+      — the worst sensible comparison point conceivable). CFI and TLI set the fit relative to this
+      zero point; RMSEA and SRMR are absolute misfit measures that need no comparison model.</p>
+
+    <div class="fitidx-list">
+      <div class="fitidx">
+        <div class="fitidx-name">CFI <span class="fitidx-range">Comparative Fit Index · 0–1, higher = better</span></div>
+        <div class="fitidx-formula">CFI = 1 − max(0, χ²_M−df_M) / max(χ²_B−df_B, χ²_M−df_M)</div>
+        <div class="fitidx-body">How much better is the model than the assumption of "no associations at all between the
+          items"? Relative to the baseline model, hence bounded to [0,1] and comparatively robust with small
+          samples.</div>
+      </div>
+      <div class="fitidx">
+        <div class="fitidx-name">TLI <span class="fitidx-range">Tucker-Lewis Index · usually 0–1, can be &gt;1</span></div>
+        <div class="fitidx-formula">TLI = [(χ²_B/df_B) − (χ²_M/df_M)] / [(χ²_B/df_B) − 1]</div>
+        <div class="fitidx-body">Like CFI relative to the baseline model, but additionally <strong>parsimony-corrected</strong>
+          — a model with many df (few estimated parameters) is favored given good fit. That's why it's not
+          capped at 1 (see flashcard "TLI Above 1.00?").</div>
+      </div>
+      <div class="fitidx">
+        <div class="fitidx-name">RMSEA <span class="fitidx-range">Root Mean Square Error of Approximation · 0–1, lower = better</span></div>
+        <div class="fitidx-formula">RMSEA = √( max(0, (χ²_M−df_M) / (df_M·(N−1))) )</div>
+        <div class="fitidx-body">Misfit per degree of freedom, independent of a comparison model. Penalizes unnecessarily
+          complex models (few df); common practice additionally reports a 90% confidence interval (not
+          computed here, since no real sampling occurs).</div>
+      </div>
+      <div class="fitidx">
+        <div class="fitidx-name">SRMR <span class="fitidx-range">Standardized Root Mean Square Residual · 0–1, lower = better</span></div>
+        <div class="fitidx-formula">SRMR = square root of the mean squared standardized residual</div>
+        <div class="fitidx-body">The most direct measure: how far apart are the model and true correlation matrices on
+          average? Weights every residual equally — a single strongly misspecified item (like
+          S1 here) can therefore get lost if the remaining 27 cells fit perfectly.</div>
+      </div>
+    </div>
+
+    <div class="help-callout">
+      <strong>Cutoffs are a heuristic, not a law of nature.</strong> The widely used thresholds CFI/TLI ≥ .95,
+      RMSEA ≤ .06, SRMR ≤ .08 come from Hu &amp; Bentler (1999) and are cited most often — but they were derived from
+      a limited number of simulated model types and are <strong>not</strong> universally valid.
+      How appropriate a cutoff is depends on the number of factors, number of items, sample size, and type of
+      misspecification. Hu &amp; Bentler themselves already pointed out that model-specific simulations are
+      more accurate than fixed thresholds; more recent work (e.g. McNeish &amp; Wolf, 2023, "Dynamic Fit Index") carries
+      this forward consistently: for <em>your own</em> model structure, simulation determines which fit values are to
+      be expected at which degree of misspecification — instead of relying on the generic .95/.06/.08 values that
+      were calibrated for a completely different model.
+    </div>
+
+    <div class="help-sh">The Two Misspecification Switches</div>
+    <p class="help-p"><strong>Orthogonal forced:</strong> the model fixes Φ = 0, even though the factors truly
+      correlate (φ slider). The resulting forced zero covariances between the V and S groups cannot be
+      reproduced — the fit worsens systematically as the true φ grows.</p>
+    <p class="help-p"><strong>Cross-loading ignored:</strong> the model fixes S1's loading on F1 at 0, even though it is
+      truly nonzero (λx slider). The misfit concentrates on the 7 covariances between S1 and the
+      remaining items — a classic example of a misspecification detectable via modification indices.</p>
+
+    <div class="help-sh">Why a Custom Optimizer?</div>
+    <p class="help-p">For a misspecified model there is no closed-form formula for the best fit — it
+      must be found numerically, exactly as <code>lavaan</code> does with real data. This tool implements
+      a compact coordinate descent with line search over all free parameters (loadings, error variances,
+      optionally factor correlation/cross-loading). For a correctly specified model, it demonstrably converges exactly
+      back to the true values.</p>
+
+    <div class="help-sh">Literature</div>
+    <p class="help-p">Hu, L. &amp; Bentler, P. M. (1999). Cutoff criteria for fit indices. <em>Structural Equation
+      Modeling, 6</em>, 1–55.<br>
+      McNeish, D. &amp; Wolf, M. G. (2023). Dynamic fit index cutoffs for confirmatory factor analysis models.
+      <em>Psychological Methods, 28</em>(1), 61–88.<br>
+      Marsh, H. W., Hau, K.-T. &amp; Wen, Z. (2004). In search of golden rules: Comment on hypothesis-testing approaches
+      to setting cutoff values for fit indexes. <em>Structural Equation Modeling, 11</em>(3), 320–341.<br>
+      Brown, T. A. (2015). <em>Confirmatory Factor Analysis for Applied Research</em> (2nd ed.). Guilford.<br>
+      Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. <em>Journal of Statistical Software,
+      48</em>(2).</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// MATH CORE — verified in isolation (Cholesky / ML discrepancy / coordinate-descent
+// optimizer) before any UI code was written. See project memory for the 4 closed-form
+// cross-checks this was validated against.
+// ══════════════════════════════════════════════════════════════════════
+function matMul(A,B){
+  const m=A.length,k=B.length,n=B[0].length;
+  return Array.from({length:m},(_,i)=>Array.from({length:n},(_,j)=>
+    Array.from({length:k},(_,l)=>A[i][l]*B[l][j]).reduce((a,b)=>a+b,0)));
+}
+function matT(A){return A[0].map((_,j)=>A.map(r=>r[j]));}
+function cholesky(A){
+  const n=A.length;
+  const L=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++){
+    for(let j=0;j<=i;j++){
+      let sum=A[i][j];
+      for(let k=0;k<j;k++) sum-=L[i][k]*L[j][k];
+      if(i===j){ if(sum<=1e-12) return null; L[i][j]=Math.sqrt(sum); }
+      else { L[i][j]=sum/L[j][j]; }
+    }
+  }
+  return L;
+}
+function logdetChol(L){return 2*L.reduce((s,row,i)=>s+Math.log(row[i]),0);}
+function cholSolveVec(L,b){
+  const n=L.length; const y=Array(n).fill(0);
+  for(let i=0;i<n;i++){let s=b[i];for(let k=0;k<i;k++)s-=L[i][k]*y[k];y[i]=s/L[i][i];}
+  const x=Array(n).fill(0);
+  for(let i=n-1;i>=0;i--){let s=y[i];for(let k=i+1;k<n;k++)s-=L[k][i]*x[k];x[i]=s/L[i][i];}
+  return x;
+}
+function traceSigmaInvS(L,S){
+  const n=L.length; let tr=0;
+  for(let j=0;j<n;j++){ const col=S.map(row=>row[j]); const x=cholSolveVec(L,col); tr+=x[j]; }
+  return tr;
+}
+function F_ML(S,Sigma,logdetS){
+  const L=cholesky(Sigma);
+  if(!L) return 1e6;
+  return logdetChol(L)+traceSigmaInvS(L,S)-logdetS-S.length;
+}
+function goldenSectionMin(f,lo,hi,tol,maxIter){
+  const gr=(Math.sqrt(5)-1)/2; let a=lo,b=hi;
+  let c=b-gr*(b-a), d=a+gr*(b-a), fc=f(c), fd=f(d);
+  for(let i=0;i<maxIter && (b-a)>tol;i++){
+    if(fc<fd){ b=d; d=c; fd=fc; c=b-gr*(b-a); fc=f(c); }
+    else { a=c; c=d; fc=fd; d=a+gr*(b-a); fd=f(d); }
+  }
+  return (a+b)/2;
+}
+
+// TRUE population model: V1-V4 -> F1, S2-S4 -> F2, S1 additionally cross-loads on F1.
+function buildLambdaTrue(lam,crossS1){
+  const L=[]; for(let i=0;i<4;i++) L.push([lam,0]);
+  L.push([crossS1,lam]); for(let i=0;i<3;i++) L.push([0,lam]);
+  return L;
+}
+function h2FromRow(row,Phi){const[a,b]=row;return a*a*Phi[0][0]+2*a*b*Phi[0][1]+b*b*Phi[1][1];}
+function buildSigmaTrue(lam,crossS1,phi){
+  const Lambda=buildLambdaTrue(lam,crossS1);
+  const Phi=[[1,phi],[phi,1]];
+  const h2=Lambda.map(row=>h2FromRow(row,Phi));
+  const Theta=h2.map(h=>Math.max(0.02,1-h));
+  const LPLt=matMul(matMul(Lambda,Phi),matT(Lambda));
+  return LPLt.map((row,i)=>row.map((v,j)=> i===j? v+Theta[i] : v));
+}
+function buildSigmaFit(params,allowCross,allowPhi){
+  const Lambda=[];
+  for(let i=0;i<4;i++) Lambda.push([params.lam[i],0]);
+  Lambda.push([allowCross?params.crossS1:0, params.lam[4]]);
+  for(let i=5;i<8;i++) Lambda.push([0,params.lam[i]]);
+  const phi=allowPhi?params.phi:0;
+  const Phi=[[1,phi],[phi,1]];
+  const LPLt=matMul(matMul(Lambda,Phi),matT(Lambda));
+  return LPLt.map((row,i)=>row.map((v,j)=> i===j? v+params.theta[i] : v));
+}
+function paramLayout(allowCross,allowPhi){
+  let idx=0; const L={lam:[]};
+  for(let i=0;i<8;i++) L.lam.push(idx++);
+  if(allowCross) L.crossS1=idx++;
+  L.theta=[]; for(let i=0;i<8;i++) L.theta.push(idx++);
+  if(allowPhi) L.phi=idx++;
+  return {layout:L,n:idx};
+}
+function unflatten(x,layout){
+  const p={lam:layout.lam.map(i=>x[i]), theta:layout.theta.map(i=>x[i])};
+  p.crossS1 = layout.crossS1!==undefined? x[layout.crossS1] : 0;
+  p.phi = layout.phi!==undefined? x[layout.phi] : 0;
+  return p;
+}
+function flattenStart(lam0,crossS1_0,theta0,phi0,layout,n){
+  const x=Array(n).fill(0);
+  layout.lam.forEach((idx,i)=>x[idx]=lam0[i]);
+  if(layout.crossS1!==undefined) x[layout.crossS1]=crossS1_0;
+  layout.theta.forEach((idx,i)=>x[idx]=theta0[i]);
+  if(layout.phi!==undefined) x[layout.phi]=phi0;
+  return x;
+}
+function boundsFor(layout,n){
+  const b=Array(n).fill([-1.4,1.4]);
+  layout.theta.forEach(idx=>b[idx]=[0.02,3]);
+  if(layout.phi!==undefined) b[layout.phi]=[-0.95,0.95];
+  return b;
+}
+function fitCFA(SigmaTrue,x0,bounds,allowCross,allowPhi,layout,sweeps){
+  sweeps=sweeps||30;
+  const Ltrue=cholesky(SigmaTrue), logdetS=logdetChol(Ltrue);
+  const sigmaFromX=(x)=>buildSigmaFit(unflatten(x,layout),allowCross,allowPhi);
+  const obj=(x)=>F_ML(SigmaTrue, sigmaFromX(x), logdetS);
+  let x=x0.slice(), fBest=obj(x);
+  for(let sweep=0;sweep<sweeps;sweep++){
+    for(let k=0;k<x.length;k++){
+      const [lo,hi]=bounds[k]; const xk0=x[k];
+      const window = sweep<4? (hi-lo) : 0.4*Math.pow(0.6,sweep-4);
+      const sLo=Math.max(lo,xk0-window/2), sHi=Math.min(hi,xk0+window/2);
+      const f1d=(v)=>{const xx=x.slice();xx[k]=v;return obj(xx);};
+      x[k]=goldenSectionMin(f1d,sLo,sHi,1e-6,50);
+    }
+    const fNew=obj(x);
+    if(Math.abs(fBest-fNew)<1e-10){fBest=fNew;break;}
+    fBest=fNew;
+  }
+  return {x,F:fBest,params:unflatten(x,layout)};
+}
+function buildSigmaBaseline(S){return S.map((row,i)=>row.map((v,j)=> i===j? S[i][i] : 0));}
+function fitIndices(F_model,df_model,SigmaTrue,N){
+  const chi2_model=(N-1)*F_model;
+  const SigmaBase=buildSigmaBaseline(SigmaTrue);
+  const Ltrue=cholesky(SigmaTrue), logdetS=logdetChol(Ltrue);
+  const F_base=F_ML(SigmaTrue,SigmaBase,logdetS);
+  const p=SigmaTrue.length, df_base=p*(p-1)/2, chi2_base=(N-1)*F_base;
+  const CFI=1-Math.max(0,chi2_model-df_model)/Math.max(chi2_base-df_base,chi2_model-df_model,1e-9);
+  const TLI=((chi2_base/df_base)-(chi2_model/df_model))/((chi2_base/df_base)-1);
+  const RMSEA=Math.sqrt(Math.max(0,(chi2_model-df_model)/(df_model*(N-1))));
+  return {chi2_model,df_model,chi2_base,df_base,CFI,TLI,RMSEA};
+}
+function computeSRMR(SigmaTrue,SigmaFit){
+  const p=SigmaTrue.length;
+  const corr=(M)=>M.map((row,i)=>row.map((v,j)=>v/Math.sqrt(M[i][i]*M[j][j])));
+  const Rt=corr(SigmaTrue), Rf=corr(SigmaFit);
+  let sumSq=0,count=0;
+  for(let i=0;i<p;i++) for(let j=0;j<=i;j++){ sumSq+=(Rt[i][j]-Rf[i][j])**2; count++; }
+  return Math.sqrt(sumSq/count);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// STATE / UI GLUE
+// ══════════════════════════════════════════════════════════════════════
+let ALLOW_PHI=true, ALLOW_CROSS=false;
+const N=300;
+
+function setAllowPhi(v){ ALLOW_PHI=v;
+  document.getElementById('btn-phi-free').classList.toggle('act',v);
+  document.getElementById('btn-phi-fix').classList.toggle('act',!v);
+  update();
+}
+function setAllowCross(v){ ALLOW_CROSS=v;
+  document.getElementById('btn-cross-free').classList.toggle('act',v);
+  document.getElementById('btn-cross-fix').classList.toggle('act',!v);
+  update();
+}
+function setScen(btn){
+  document.querySelectorAll('.scen-btn').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  document.getElementById('sl-lam').value=btn.dataset.lam;
+  document.getElementById('sl-phi').value=btn.dataset.phi;
+  update();
+}
+function syncScenBtns(){
+  const lv=document.getElementById('sl-lam').value, pv=document.getElementById('sl-phi').value;
+  document.querySelectorAll('.scen-btn').forEach(b=>{
+    b.classList.toggle('act', b.dataset.lam===lv && b.dataset.phi===pv);
+  });
+}
+
+function computeAll(){
+  const lam=parseInt(document.getElementById('sl-lam').value)/100;
+  const crossS1=parseInt(document.getElementById('sl-cross').value)/100;
+  const phi=parseInt(document.getElementById('sl-phi').value)/100;
+  document.getElementById('v-lam').textContent=lam.toFixed(2);
+  document.getElementById('v-cross').textContent=crossS1.toFixed(2);
+  document.getElementById('v-phi').textContent=phi.toFixed(2);
+  syncScenBtns();
+
+  const SigmaTrue=buildSigmaTrue(lam,crossS1,phi);
+  const {layout,n}=paramLayout(ALLOW_CROSS,ALLOW_PHI);
+  const lam0=Array(8).fill(lam);
+  const theta0=SigmaTrue.map((row,i)=>Math.max(0.1,row[i]-lam*lam));
+  const x0=flattenStart(lam0, ALLOW_CROSS?crossS1*0.5:0, theta0, 0, layout, n);
+  const bounds=boundsFor(layout,n);
+  const res=fitCFA(SigmaTrue,x0,bounds,ALLOW_CROSS,ALLOW_PHI,layout,32);
+  const df=36-n;
+  const fit=fitIndices(res.F,df,SigmaTrue,N);
+  const SigmaFit=buildSigmaFit(res.params,ALLOW_CROSS,ALLOW_PHI);
+  const srmr=computeSRMR(SigmaTrue,SigmaFit);
+  return {lam,crossS1,phi,params:res.params,df,fit,srmr};
+}
+
+function fitVerdict(CFI,RMSEA,SRMR){
+  if(CFI>=0.95 && RMSEA<=0.06 && SRMR<=0.08) return {cls:'v-par',name:'GOOD FIT',
+    txt:'By the common cutoffs (Hu & Bentler, 1999), the specified model fits the (true) structure well.'};
+  if(CFI>=0.90 && RMSEA<=0.08) return {cls:'v-tau',name:'ACCEPTABLE FIT',
+    txt:'Borderline — the misspecification is already visible, but not (yet) dramatic.'};
+  return {cls:'v-con',name:'POOR FIT',
+    txt:'Substantial misfit — the specified model deviates noticeably from the true structure.'};
+}
+
+function lavaanCode(allowCross,allowPhi){
+  const f2ind = allowCross? 'S1 + S2 + S3 + S4' : 'S1 + S2 + S3 + S4';
+  const f1ind = allowCross? 'V1 + V2 + V3 + V4 + S1' : 'V1 + V2 + V3 + V4';
+  let s = "model <- '\n";
+  s += "  F1 =~ " + f1ind + "\n";
+  s += "  F2 =~ " + f2ind + "\n";
+  if(!allowPhi) s += "  F1 ~~ 0*F2" + "    # orthogonal forced\n";
+  s += "'\n\n";
+  s += "fit <- cfa(model, sample.cov = Sigma, sample.nobs = 300, std.lv = TRUE)\n";
+  s += "summary(fit, fit.measures = TRUE, standardized = TRUE)";
+  return s;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW — 2-factor path diagram
+// ══════════════════════════════════════════════════════════════════════
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function drawPath(state){
+  const c=document.getElementById('cv-path'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d');
+  const a1=cv('--a1'),a4=cv('--a4'),a5=cv('--a5'),a6=cv('--a6'),ink2=cv('--ink2'),ink3=cv('--ink3'),paper=cv('--paper'),bg=cv('--bg');
+  ctx.clearRect(0,0,W,H);
+  const s=H/420;
+  const fy=54*s, frx=52*s, fry=28*s;
+  const f1x=W*0.27, f2x=W*0.73;
+  const iy=220*s, ih=42*s, iw=Math.min(72,(W*0.46-30)/4-12);
+  const ey=310*s, er=15*s;
+  const fS=px=>Math.round(px*s);
+  const grp=(cx0)=>{const a=[];for(let i=0;i<4;i++) a.push(cx0-1.5*(iw+18)+i*(iw+18));return a;};
+  const cxsV=grp(f1x), cxsS=grp(f2x);
+
+  function drawArrows(cxs,fx,col,lamArr){
+    cxs.forEach((cx,i)=>{
+      ctx.strokeStyle=ink2; ctx.lineWidth=1+Math.min(1.4,Math.abs(lamArr[i]))*2.2;
+      ctx.beginPath();ctx.moveTo(fx,fy+fry);ctx.lineTo(cx,iy);ctx.stroke();
+      const ang=Math.atan2(iy-(fy+fry),cx-fx);
+      ctx.beginPath();ctx.moveTo(cx,iy);ctx.lineTo(cx-7*Math.cos(ang-0.4),iy-7*Math.sin(ang-0.4));
+      ctx.lineTo(cx-7*Math.cos(ang+0.4),iy-7*Math.sin(ang+0.4));ctx.closePath();ctx.fillStyle=ink2;ctx.fill();
+      const lx=fx+(cx-fx)*0.55, ly=fy+fry+(iy-(fy+fry))*0.55;
+      ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(lx-25,ly-9,50,18);ctx.globalAlpha=1;
+      ctx.fillStyle=col;ctx.font='bold '+fS(12)+'px DM Mono,monospace';ctx.textAlign='center';
+      ctx.fillText('λ='+lamArr[i].toFixed(2),lx,ly+4);
+    });
+  }
+  drawArrows(cxsV,f1x,a4,state.params.lam.slice(0,4));
+  drawArrows(cxsS,f2x,a5,state.params.lam.slice(4,8));
+
+  const allCx=cxsV.concat(cxsS), allLabels=['V1','V2','V3','V4','S1','S2','S3','S4'], allColors=[a4,a4,a4,a4,a5,a5,a5,a5];
+  allCx.forEach((cx,i)=>{
+    ctx.strokeStyle=a1;ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.moveTo(cx,ey-er);ctx.lineTo(cx,iy+ih);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx,iy+ih);ctx.lineTo(cx-5,iy+ih+7);ctx.lineTo(cx+5,iy+ih+7);ctx.closePath();ctx.fillStyle=a1;ctx.fill();
+    ctx.beginPath();ctx.arc(cx,ey,er,0,2*Math.PI);ctx.fillStyle=bg;ctx.fill();ctx.strokeStyle=a1;ctx.lineWidth=1.6;ctx.stroke();
+    ctx.fillStyle=a1;ctx.font=fS(11)+'px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('e'+(i+1),cx,ey+4);
+    ctx.fillText('θ='+state.params.theta[i].toFixed(2),cx,ey+er+fS(14));
+  });
+  allCx.forEach((cx,i)=>{
+    ctx.fillStyle=paper;ctx.strokeStyle=allColors[i];ctx.lineWidth=2;
+    ctx.fillRect(cx-iw/2,iy,iw,ih);ctx.strokeRect(cx-iw/2,iy,iw,ih);
+    ctx.fillStyle=allColors[i];ctx.font='bold '+fS(15)+'px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(allLabels[i],cx,iy+ih/2+5);
+  });
+
+  [[f1x,'F1',a4],[f2x,'F2',a5]].forEach(([fx,label,col])=>{
+    ctx.beginPath();ctx.ellipse(fx,fy,frx,fry,0,0,2*Math.PI);
+    ctx.fillStyle=paper;ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=2.4;ctx.stroke();
+    ctx.fillStyle=col;ctx.font='bold '+fS(15)+'px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(label,fx,fy-2);
+    ctx.font=fS(11)+'px DM Mono,monospace';ctx.fillText('Var=1',fx,fy+13);
+  });
+
+  // correlation arc
+  const midY=fy-fry-20*s;
+  ctx.strokeStyle= ALLOW_PHI? a6 : ink3; ctx.lineWidth=2;
+  if(!ALLOW_PHI) ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  ctx.moveTo(f1x+frx*0.6, fy-fry*0.8);
+  ctx.quadraticCurveTo(W/2, midY, f2x-frx*0.6, fy-fry*0.8);
+  ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(W/2-42,midY-11,84,20);ctx.globalAlpha=1;
+  ctx.fillStyle= ALLOW_PHI? a6 : ink3;
+  ctx.font='bold '+fS(12)+'px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText(ALLOW_PHI? 'φ='+state.params.phi.toFixed(2) : 'Φ fixed = 0', W/2, midY+4);
+
+  // S1 cross-loading F1 -> S1
+  const s1x=cxsS[0];
+  if(ALLOW_CROSS || state.crossS1>0.02){
+    ctx.strokeStyle = ALLOW_CROSS? a4 : a1; ctx.lineWidth=1.6;
+    if(!ALLOW_CROSS) ctx.setLineDash([3,4]);
+    ctx.beginPath();ctx.moveTo(f1x,fy+fry*0.3);ctx.lineTo(s1x,iy+ih*0.3);ctx.stroke();
+    ctx.setLineDash([]);
+    const clx=f1x+(s1x-f1x)*0.68, cly=(fy+fry*0.3)+((iy+ih*0.3)-(fy+fry*0.3))*0.68;
+    const label = ALLOW_CROSS? 'λx='+state.params.crossS1.toFixed(2) : 'true .'+Math.round(state.crossS1*100)+', model fixed=0';
+    ctx.font=fS(11)+'px DM Mono,monospace';
+    const tw=ctx.measureText(label).width+14;
+    ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(clx-tw/2,cly-9,tw,18);ctx.globalAlpha=1;
+    ctx.fillStyle = ALLOW_CROSS? a4 : a1;
+    ctx.textAlign='center';ctx.fillText(label, clx, cly+4);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// UPDATE
+// ══════════════════════════════════════════════════════════════════════
+function update(){
+  const state=computeAll();
+  drawPath(state);
+
+  document.getElementById('m-chi2').textContent=state.fit.chi2_model.toFixed(1)+' ('+state.df+')';
+  document.getElementById('m-chi2-sub').textContent='N = '+N+', df = '+state.df;
+  document.getElementById('m-cfi').textContent=state.fit.CFI.toFixed(3);
+  document.getElementById('m-tli').textContent=state.fit.TLI.toFixed(3);
+  document.getElementById('m-rmsea').textContent=state.fit.RMSEA.toFixed(3);
+  document.getElementById('m-srmr').textContent=state.srmr.toFixed(3);
+
+  const vd=fitVerdict(state.fit.CFI,state.fit.RMSEA,state.srmr);
+  const v=document.getElementById('verdict'); v.className='verdict '+vd.cls;
+  v.innerHTML='<strong>'+vd.name+'</strong> — '+vd.txt;
+
+  document.getElementById('r-code').textContent=lavaanCode(ALLOW_CROSS,ALLOW_PHI);
+
+  const hint=document.getElementById('hint-path');
+  const parts=[];
+  if(!ALLOW_PHI) parts.push('<strong style="color:var(--a1)">Orthogonal forced</strong> — Φ is fixed at 0 in the model, even though the population has φ='+state.phi.toFixed(2)+'.');
+  if(!ALLOW_CROSS && state.crossS1>0.02){
+    let txt='<strong style="color:var(--a1)">Cross-loading ignored</strong> — S1 truly also loads on F1 with λx='+state.crossS1.toFixed(2)+', but the model doesn\'t know that.';
+    if(ALLOW_PHI) txt+=' The model partially compensates by estimating φ higher than it truly is ('+state.params.phi.toFixed(2)+' instead of '+state.phi.toFixed(2)+') — misspecification in one place often distorts other parameters too.';
+    parts.push(txt);
+  }
+  hint.innerHTML = parts.length? parts.join(' ') : 'The specified model matches the population — hence the (nearly) perfect fit above.';
+}
+
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  requestAnimationFrame(update);
+}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.getElementById('help-overlay').classList.remove('open'); } });
+
+update();
+window.addEventListener('resize',()=>{ if(window._rt) clearTimeout(window._rt); window._rt=setTimeout(update,120); });
+</script>
+</body>
+</html>

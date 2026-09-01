@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Factor Analysis | MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a4);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem;height:var(--topbar-h)}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn.help{background:var(--a1);border-color:var(--a1);color:#fff}
+.tbtn.help:hover{filter:brightness(1.12)}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.1rem 1.4rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.rot-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.3rem;margin-top:.3rem}
+.rbtn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.3rem .1rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
+.rbtn:hover{border-color:var(--accent);color:var(--accent)}
+.rbtn.act{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);font-weight:700}
+/* Scenario buttons */
+.scen-grid{display:grid;grid-template-columns:1fr;gap:.28rem;margin-top:.3rem}
+.scen-btn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.35rem .52rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:left;line-height:1.42;width:100%}
+.scen-btn:hover{border-color:var(--a6);color:var(--a6)}
+.scen-btn.act{border-color:var(--a6);background:color-mix(in srgb,var(--a6) 14%,transparent);color:var(--a6);font-weight:700}
+.scen-sub{font-size:.68rem;color:var(--ink3);display:block}
+.scen-btn.act .scen-sub{color:color-mix(in srgb,var(--a6) 70%,var(--ink3))}
+.erklaer{background:var(--panel);border-left:3px solid var(--accent);
+  padding:.7rem .9rem;margin-bottom:.85rem;font-family:'DM Mono',monospace;
+  font-size:.77rem;color:var(--ink2);line-height:1.9}
+.erklaer strong{color:var(--ink)}
+.erklaer em{color:var(--accent);font-style:normal}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+.proc-list{margin-bottom:1rem}
+.proc-step{margin-bottom:.7rem;font-size:.87rem;line-height:1.75;color:var(--ink2)}
+.proc-step strong{color:var(--ink)}
+.proc-step .circ{margin-right:.4rem;font-size:1.7em}
+.proc-jump{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);text-decoration:none;
+  border-bottom:1px dotted var(--a2);white-space:nowrap}
+.proc-jump:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.stat-row{display:flex;justify-content:space-between;align-items:center;
+  padding:.25rem 0;border-bottom:1px solid var(--grid);font-family:'DM Mono',monospace;font-size:.75rem}
+.stat-row:last-child{border-bottom:none}
+.stat-label{color:var(--ink3)}
+.stat-val{color:var(--accent);font-weight:500}
+.plot-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:.9rem}
+.plot-panel{background:var(--paper);border:1px solid var(--grid);margin-bottom:.9rem}
+.plot-panel:last-child{margin-bottom:0}
+.plot-grid .plot-panel{margin-bottom:0}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:.55rem .8rem .35rem;border-bottom:1px solid var(--grid)}
+.pt-blue{color:var(--a2)} .pt-purple{color:var(--a4)} .pt-teal{color:var(--a6)} .pt-green{color:var(--a3)}
+canvas{display:block;width:100%}
+.plot-note{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);line-height:1.75;
+  padding:.65rem .9rem;border-top:1px solid var(--grid)}
+.plot-note strong{color:var(--ink)}
+/* Reliability panel */
+.reli-panel{background:var(--paper);border:1px solid var(--grid);margin-bottom:.9rem}
+.reli-head{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink2);padding:.55rem .8rem .35rem;border-bottom:1px solid var(--grid)}
+.reli-inner{padding:.85rem 1.2rem .9rem}
+.reli-row{display:grid;grid-template-columns:108px 1fr 64px;align-items:center;gap:.9rem;margin-bottom:.75rem}
+.reli-row:last-of-type{margin-bottom:0}
+/* two-line label: large Greek symbol + small description */
+.reli-lbl{display:flex;flex-direction:column;gap:.1rem}
+.reli-sym{font-family:'Fraunces',Georgia,serif;font-style:italic;font-size:1.2rem;line-height:1.05}
+.reli-sym sub{font-style:normal;font-size:.55em;vertical-align:-.1em}
+.reli-lbl-name{font-family:'DM Mono',monospace;font-size:.64rem;color:var(--ink3);letter-spacing:.025em;line-height:1.2}
+.reli-track{background:var(--grid);height:15px;border-radius:2px;overflow:hidden}
+.reli-bar{height:100%;border-radius:2px;transition:width .38s ease}
+.reli-val{font-family:'DM Mono',monospace;font-size:.87rem;font-weight:700;text-align:right}
+.reli-note{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2);
+  margin-top:.65rem;line-height:1.68;padding-top:.5rem;border-top:1px solid var(--grid)}
+.reli-note strong{color:var(--ink)}
+.reli-note em{color:var(--ink);font-style:normal}
+/* Greek letter helper — use for λ φ α ω in monospace contexts */
+.gk{font-family:'Fraunces',Georgia,serif;font-style:italic;text-transform:none}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+/* Table */
+.ltbl{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.77rem;display:block;padding:.5rem .7rem}
+.ltbl th{font-size:.7rem;letter-spacing:.06em;padding:.3rem .5rem;border-bottom:2px solid var(--grid);text-align:right;font-weight:600}
+.ltbl th:first-child{text-align:left;color:var(--ink3)}
+.ltbl td{padding:.28rem .5rem;border-bottom:1px solid var(--grid);text-align:right;color:var(--ink2)}
+.ltbl td:first-child{text-align:left;color:var(--ink);font-family:'Fraunces',serif;font-size:.8rem}
+.ltbl tr:last-child td{border-bottom:none}
+.hi2{color:var(--a2)!important;font-weight:700} .hi3{color:var(--a3)!important;font-weight:700}
+.hi5{color:var(--a5)!important;font-weight:700} .lo{color:var(--ink3)!important}
+/* Hat/bar diacritics */
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+/* Learn cards */
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.3rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+/* Help */
+.help-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.82);overflow-y:auto;padding:2rem 1rem}
+.help-overlay.open{display:block}
+.help-panel{max-width:740px;margin:0 auto;background:var(--paper);border:1px solid var(--border);padding:2rem}
+.help-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-ul{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;padding-left:1.1rem;margin-bottom:.5rem}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.35rem .75rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a6);margin:.3rem 0 .45rem}
+.help-ex{background:var(--panel);border-left:3px solid var(--accent);padding:.6rem .9rem;margin:.5rem 0;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.85}
+.help-ex strong{color:var(--ink)}
+.close-btn{float:right;font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2)}
+.close-btn:hover{background:var(--ink);color:var(--bg)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Exploratory Factor Analysis &mdash; <em>EFA / PAF</em></h1>
+  <button class="tbtn help" onclick="openHelp()">❓ Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Factor Structure</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">Primary loading <span class="gk">λ</span></span>
+        <span class="slider-val" id="v-lam" style="color:var(--a4)">0.70</span>
+      </div>
+      <input type="range" id="sl-lam" min="30" max="90" value="70" oninput="update()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">Cross-loading <span class="gk">λ</span><sub>x</sub></span>
+        <span class="slider-val" id="v-cross" style="color:var(--a5)">0.10</span>
+      </div>
+      <input type="range" id="sl-cross" min="0" max="50" value="10" oninput="update()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">Factor correlation <span class="gk">φ</span></span>
+        <span class="slider-val" id="v-phi" style="color:var(--a6)">0.00</span>
+      </div>
+      <input type="range" id="sl-phi" min="0" max="70" value="0" oninput="update()">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a6)">Scenarios</div>
+    <div class="scen-grid">
+      <button class="scen-btn act" data-lam="70" data-cross="10" data-phi="0"
+              onclick="setScen(this)">
+        <span><span class="circ">①</span> Orthogonal &nbsp;&mdash;&nbsp; <span class="gk">φ</span> = 0</span>
+        <span class="scen-sub">Independent factors &mdash; no g &mdash; <span class="gk">ω</span><sub>h</sub> = 0</span>
+      </button>
+      <button class="scen-btn" data-lam="70" data-cross="10" data-phi="40"
+              onclick="setScen(this)">
+        <span><span class="circ">②</span> Oblique &nbsp;&mdash;&nbsp; <span class="gk">φ</span> = .40</span>
+        <span class="scen-sub">Moderate factor correlation &mdash; <span class="gk">ω</span><sub>h</sub> &asymp; .51</span>
+      </button>
+      <button class="scen-btn" data-lam="70" data-cross="10" data-phi="70"
+              onclick="setScen(this)">
+        <span><span class="circ">③</span> Strongly oblique &nbsp;&mdash;&nbsp; <span class="gk">φ</span> = .70</span>
+        <span class="scen-sub">Nearly unidimensional &mdash; <span class="gk">ω</span><sub>h</sub> &asymp; .75</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Rotation</div>
+    <div class="rot-grid">
+      <button class="rbtn act" data-rot="none"    onclick="setRot(this)">Unrotated</button>
+      <button class="rbtn"     data-rot="varimax" onclick="setRot(this)">Varimax</button>
+      <button class="rbtn"     data-rot="oblique" onclick="setRot(this)">Oblique</button>
+    </div>
+    <div id="rot-hint" style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.55rem;line-height:1.6"></div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Statistics</div>
+    <div id="stats"></div>
+  </div>
+
+  <div class="erklaer">
+    <strong>Example:</strong> 300 people complete 8 cognitive tests. <em>V1–V4</em> = verbal ability, <em>S1–S4</em> = spatial reasoning. The scenarios vary <strong><span class="gk">φ</span> (factor correlation)</strong>:<br>
+    <em>① <span class="gk">φ</span>=0</em>: independent factors, no g &rarr; <span class="gk">ω</span><sub>h</sub> = 0<br>
+    <em>② <span class="gk">φ</span>=.40</em>: moderate factor correlation &rarr; <span class="gk">ω</span><sub>h</sub> &asymp; .51<br>
+    <em>③ <span class="gk">φ</span>=.70</em>: strongly oblique, nearly unidimensional &rarr; <span class="gk">ω</span><sub>h</sub> &asymp; .75<br>
+    &rarr; <em><span class="gk">ω</span><sub>h</sub> grows with <span class="gk">φ</span> — a direct measure of unidimensionality.</em>
+  </div>
+
+</div><!-- /sidebar -->
+
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 Example — Cognitive Test with 8 Subtests</div>
+    300 people complete a cognitive test with <strong>8 subtests</strong>: <em>V1–V4</em> assess verbal ability, <em>S1–S4</em> spatial reasoning. It's unclear in advance how many latent factors underlie this and which items belong to which factor — that's exactly what <strong>exploratory factor analysis (EFA)</strong> is meant to uncover. The sliders on the left set the <strong>true</strong> measurement model (unknown in practice): loading <span class="gk">λ</span>, cross-loading <span class="gk">λ</span><sub>x</sub>, factor correlation <span class="gk">φ</span> — so you can directly observe how changing the model affects the scree plot, loadings, and the reliability of the total score.
+    <div style="margin-top:.6rem">
+      <a class="xlink" href="KTT_Grundlagen.html" target="_blank">← CTT Foundations: a single test score</a>
+      <a class="xlink" href="Messmodelle.html" target="_blank" style="margin-left:.4rem">What measurement model underlies the loadings? →</a>
+      <a class="xlink" href="Konfirmatorische_Faktoranalyse.html" target="_blank" style="margin-left:.4rem">Structure already known from theory? → Confirmatory Factor Analysis</a>
+      <a class="xlink" href="Messinvarianz.html" target="_blank" style="margin-left:.4rem">Measure the same structure in two groups? → Measurement Invariance</a>
+    </div>
+  </div>
+
+  <div class="sec-h" style="margin-top:0">Approach — From Items to Factors</div>
+  <div class="proc-list">
+    <div class="proc-step"><span class="circ">①</span><strong>Items &amp; measurement model.</strong> 8 items (V1–V4, S1–S4), N = 300. What is set here via sliders would, in practice, have to be estimated from real item responses.</div>
+    <div class="proc-step"><span class="circ">②</span><strong>Correlation matrix R.</strong> From the item responses (or here: from the measurement model) follows how strongly each pair of items is related. <a class="proc-jump" href="#cv-heat">→ view reduced matrix R<sub>r</sub></a></div>
+    <div class="proc-step"><span class="circ">③</span><strong>Factor extraction — eigenvalues &amp; scree plot.</strong> How many factors explain the shared variance? The Kaiser criterion (eigenvalue &gt; 1) is common but rather permissive — parallel analysis (comparison with eigenvalues of random, uncorrelated data of the same size) is more robust. <a class="proc-jump" href="#cv-scree">→ view scree plot</a></div>
+    <div class="proc-step"><span class="circ">④</span><strong>Rotation &amp; loading matrix.</strong> The unrotated solution is rotated (varimax/oblique) to obtain an interpretable simple structure — which item loads on which factor? The table and biplot show the same information twice, once as numbers and once spatially. <a class="proc-jump" href="#tbl-wrap">→ loading table</a> · <a class="proc-jump" href="#cv-biplot">→ biplot</a></div>
+    <div class="proc-step"><span class="circ">⑤</span><strong>Final communality h² &amp; reliability.</strong> The loading table already shows how much variance of each item is jointly explained by the factors. What follows from this for the reliability (α, ω) of the total score? <a class="proc-jump" href="#reli-panel">→ view reliability</a></div>
+  </div>
+
+  <div class="plot-panel">
+    <div class="plot-title pt-teal">Correlation Matrix — Reduced R<sub>r</sub> (Final h² on the Diagonal)</div>
+    <canvas id="cv-heat" height="200" style="height:200px"></canvas>
+    <div class="plot-note">Each cell is the (measurement-model-implied) correlation between two items — teal = positive, orange = negative. The <strong>gray-shaded diagonal</strong> is not a correlation value but h². In practice, h² is not known in advance: PAF starts with an <strong>initial</strong> estimate — usually the squared multiple correlation SMC, i.e. the R² from the <em>joint</em> regression of each item on <em>all</em> p−1 remaining items (not on a single other item) — and improves it iteratively until h² converges. This tool skips the estimation entirely: since the population model (Λ, Φ) is known via the sliders, the model-implied ("true") communality is placed directly on the diagonal.</div>
+  </div>
+
+  <div class="plot-panel">
+    <div class="plot-title pt-blue">Scree Plot — Eigenvalues (from R)</div>
+    <canvas id="cv-scree" height="320" style="height:320px"></canvas>
+    <div class="plot-note"><strong>Kaiser criterion</strong> (dashed line at eigenvalue = 1): keep factors with eigenvalue &gt; 1. Common, but notoriously <strong>too permissive</strong> — it barely depends on the number of items or sample size and often overestimates the number of factors. <strong>Parallel analysis</strong> (Horn, 1965) is more robust: many datasets of uncorrelated random variables of the same size (n people, p items) are simulated, and only factors whose eigenvalue exceeds the 95th percentile of the simulated eigenvalues are kept. This removes factors that, in a real scree plot, sit just above 1 and are actually sampling noise.</div>
+  </div>
+
+  <div class="plot-panel">
+    <div class="plot-title pt-green">Factor Loading Table &amp; Final Communalities (PAF)</div>
+    <div id="tbl-wrap"></div>
+  </div>
+
+  <div class="plot-panel">
+    <div class="plot-title pt-purple" style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap">
+      <span id="biplot-title-text">Factor Loading Biplot (F1 vs. F2)</span>
+      <button class="rbtn" id="btn-geom" onclick="toggleGeom()" style="padding:.3rem .65rem;flex:none">📐 Show Angle &amp; Perpendicular</button>
+    </div>
+    <canvas id="cv-biplot" height="460" style="height:460px"></canvas>
+    <div class="plot-note" id="geom-note" style="display:none"></div>
+  </div>
+
+  <div class="plot-panel">
+    <div class="plot-title pt-green">How to Read the Table &amp; Biplot</div>
+    <div class="plot-note">Both show <strong>the same information</strong> twice — once as numbers, once spatially. The <strong>table</strong> lists, for each of the 8 items, the loadings on F1 and F2 as well as h² (proportion of variance jointly explained by both factors) and u² = 1−h² (remainder). SSL (sum of squared loadings) and % var. in the last row show how much total variance each factor explains across all 8 items.
+    <br><br>In the <strong>biplot</strong>, every point is an item, and its coordinates are exactly the same loadings (F1 = x, F2 = y) — the same numbers as in the table, just shown as position instead of number. Near the F1 axis = loads almost purely on F1; near the F2 axis = almost purely on F2; near the <strong>origin</strong> = low loadings on both factors (poorly explained item, low communality). Distance from the origin grows with h². After <strong>varimax</strong> rotation, well-separated items cluster near the axes (simple structure); items between the axes have notable cross-loadings on both factors. Under <strong>oblique</strong> rotation, the factor axes sit at an angle of arccos(φ) to each other instead of at a right angle — the drawn axes themselves then show the factor correlation.
+    <br><br>Only <strong>V1 and S1</strong> are shown as representatives of their group — the remaining items sit (in this simplified model) at exactly the same positions.</div>
+  </div>
+
+  <!-- Reliability add-on -->
+  <div class="reli-panel" id="reli-panel">
+    <div class="reli-head">Reliability of the Total Score &nbsp;—&nbsp; Derived from the EFA Structure</div>
+    <div class="reli-inner">
+      <div class="reli-row">
+        <div class="reli-lbl">
+          <div class="reli-sym" style="color:var(--a6)">&#945;</div>
+          <div class="reli-lbl-name">Cronbach's Alpha</div>
+        </div>
+        <div class="reli-track"><div class="reli-bar" id="bar-alpha" style="background:var(--a6);width:0%"></div></div>
+        <div class="reli-val" id="val-alpha" style="color:var(--a6)">—</div>
+      </div>
+      <div class="reli-row">
+        <div class="reli-lbl">
+          <div class="reli-sym" style="color:var(--a3)">&#969;<sub>t</sub></div>
+          <div class="reli-lbl-name">Omega total (McDonald)</div>
+        </div>
+        <div class="reli-track"><div class="reli-bar" id="bar-wt" style="background:var(--a3);width:0%"></div></div>
+        <div class="reli-val" id="val-wt" style="color:var(--a3)">—</div>
+      </div>
+      <div class="reli-row">
+        <div class="reli-lbl">
+          <div class="reli-sym" style="color:var(--a2)">&#969;<sub>h</sub></div>
+          <div class="reli-lbl-name">Omega hierarchical (McDonald)</div>
+        </div>
+        <div class="reli-track"><div class="reli-bar" id="bar-wh" style="background:var(--a2);width:0%"></div></div>
+        <div class="reli-val" id="val-wh" style="color:var(--a2)">—</div>
+      </div>
+      <div class="reli-note" id="reli-note"></div>
+      <div class="reli-note" style="margin-top:.4rem;border-top:1px solid var(--grid);padding-top:.5rem">
+        Here, reliability is a <em>byproduct</em> of the factor structure (ω<sub>h</sub> grows with the
+        factor correlation φ). The α-vs-ω question itself — when α underestimates or feigns
+        unidimensionality — is explored in depth by its own tool:
+        <a href="Reliabilitaet.html" target="_blank" style="color:var(--a4);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a4)">→ Reliability: α vs. ω</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-h">Flashcards — Exploratory Factor Analysis</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">①</span> EFA vs. PCA</div>
+      <div class="lcard-body"><strong>Exploratory factor analysis (EFA)</strong> only explains the <em>shared variance</em> of the items — it uses a <em>reduced</em> correlation matrix with communalities h² on the diagonal. <strong>Principal component analysis (PCA)</strong> explains <em>all</em> variance (including error) and uses ones on the diagonal. This is a conceptually important difference.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">②</span> Communality &amp; Uniqueness</div>
+      <div class="lcard-body">The <strong>communality h²</strong> is the proportion of an item's variance explained by the common factors. There are two time points: the <strong>initial</strong> communality (starting estimate before extraction, usually the squared multiple correlation SMC — the R² from the joint regression of the item on <em>all</em> other items, not a single one) and the <strong>final</strong> communality (after extraction: h² = sum of squared loadings across all retained factors — what the factor solution actually accounts for). The table in this tool always shows the final h². The <strong>uniqueness u² = 1 − h²</strong> contains measurement error and item-specific variance.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">③</span> Eigenvalues &amp; Scree Plot</div>
+      <div class="lcard-body">A factor's eigenvalue shows how much variance (in units of standardized items) it explains. The scree plot shows the eigenvalues sorted by size. The <strong>Kaiser criterion</strong> (eigenvalue &gt; 1) and the <strong>scree elbow</strong> are the most common criteria for determining the number of factors.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">④</span> Rotation &amp; Simple Structure</div>
+      <div class="lcard-body"><strong>Varimax</strong> rotates the orthogonal axes so that each item loads as highly as possible on exactly <em>one</em> factor (Thurstone's simple structure). <strong>Oblique</strong> allows factor correlation (phi &gt; 0) — more realistic, but harder to interpret. Communalities do not change under rotation.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">⑤</span> Cronbach's Alpha</div>
+      <div class="lcard-body">Cronbach's <strong>alpha</strong> estimates internal consistency as a function of the average inter-item correlation. A common misconception: alpha is <strong>not a measure of unidimensionality</strong>. A 2-factor structure can have identical alpha to a 1-factor structure — if the mean inter-item correlation stays the same.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">⑥</span> Omega Total &amp; Hierarchical</div>
+      <div class="lcard-body"><strong>Omega total</strong> accounts for all factors and is a better lower bound on reliability than alpha. <strong>Omega hierarchical</strong> (Schmid-Leiman) measures only the share of a higher-order general factor — it rises with phi and is 0 for orthogonal factors (no g). High phi → more shared variance → omega hierarchical rises.</div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- Help -->
+<div class="help-overlay" id="help-ov" onclick="closeHelp(event)">
+  <div class="help-panel" onclick="event.stopPropagation()">
+    <button class="close-btn" onclick="closeHelp()">✕ Close</button>
+    <div class="help-h">❓ Help — Exploratory Factor Analysis (EFA)</div>
+
+    <div class="help-ex">
+      <strong>Research example:</strong> a psychologist develops a cognitive test with 8 subtests. The EFA is meant to check whether 2 latent factors — verbal ability and spatial reasoning — underlie it, without specifying in advance which items belong to which factor.
+    </div>
+
+    <div class="help-sh">Parameters</div>
+    <ul class="help-ul">
+      <li><strong>Primary loading (lambda):</strong> strength of each item's main loading on its "own" factor. Higher values = clearer factor structure, higher communalities.</li>
+      <li><strong>Cross-loading (lambda_x):</strong> an item's loading on the other factor. At 0 = perfect simple structure. At high values = items are harder to unambiguously assign to one factor.</li>
+      <li><strong>Factor correlation (phi):</strong> correlation between F1 and F2 (only relevant for oblique). At phi = 0 = orthogonal factors; phi > 0 = oblique factors (e.g. verbal and spatial ability are related).</li>
+    </ul>
+
+    <div class="help-sh">Extraction Method: PAF</div>
+    <p class="help-p">This tool uses <strong>Principal Axis Factoring (PAF)</strong> — a genuine EFA method. PAF works with a <em>reduced</em> correlation matrix in which the diagonal is replaced by communalities h² — not by ones as in PCA. This models only the shared variance (factor variance), not the total variance.</p>
+    <p class="help-p">In practice this runs iteratively: you start with an <strong>initial</strong> communality estimate (usually each item's squared multiple correlation SMC with all others), extract factors, compute new <strong>final</strong> communalities from them (h² = sum of squared loadings), and repeat until h² barely changes anymore. Since in this tool the population model (Λ, Φ) is given directly via the sliders, it skips this iteration and inserts the model-implied communality immediately — with real data, by contrast, h² is always only an estimate, not a known true value.</p>
+    <p class="help-p">The scree plot shows the eigenvalues of the <em>full</em> R matrix (as is common in practice, since most software packages report it this way). The actual factor extraction is performed from the reduced matrix.</p>
+
+    <div class="help-sh">Reliability Indices (Add-On)</div>
+    <p class="help-p">The reliability indices are computed <em>analytically</em> from the population structure:</p>
+    <code class="help-formula">r_within = lambda² + lambda_x² + 2·phi·lambda·lambda_x &nbsp;(correlation within a group)</code>
+    <code class="help-formula">r_between = 2·lambda·lambda_x + phi·(lambda²+lambda_x²) &nbsp;(correlation between groups)</code>
+    <code class="help-formula">sigma²_X = 8 + 24·r_within + 32·r_between &nbsp;(variance of the total score)</code>
+    <code class="help-formula">Alpha = (8/7)·(sigma²_X − 8) / sigma²_X</code>
+    <code class="help-formula">Omega_total = 1 − 8·(1 − r_within) / sigma²_X</code>
+    <code class="help-formula">Omega_hier = 64·(lambda+lambda_x)²·phi / sigma²_X &nbsp;(Schmid-Leiman)</code>
+    <p class="help-p"><strong>Omega hierarchical</strong> is based on the Schmid-Leiman orthogonalization: for oblique factors with correlation phi, the shared variance components can be traced back to a higher-order general factor g. The g-loading per item is (lambda + lambda_x)·sqrt(phi). Omega hierarchical = 0 when phi = 0 (no correlated factors, no g).</p>
+
+    <div class="help-sh">Biplot &amp; Correlation Matrix</div>
+    <p class="help-p">The biplot shows each item as a point in the F1/F2 coordinate system. Items near (1,0) load highly on F1; near (0,1) highly on F2. After varimax rotation, items cluster near the axes (simple structure). Under oblique rotation, the factor axes are drawn at an angle of arccos(phi).</p>
+    <p class="help-p">The correlation matrix shows the population matrix <em>implied</em> by the factor structure, R = Lambda·Phi·Lambda' + Psi. Teal = positive, orange = negative correlation.</p>
+  </div>
+</div>
+
+<script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  redraw();
+}
+function openHelp(){document.getElementById('help-ov').classList.add('open');}
+function closeHelp(e){
+  if(!e||e.target===document.getElementById('help-ov'))
+    document.getElementById('help-ov').classList.remove('open');
+}
+
+// Scenario presets
+function setScen(btn){
+  document.querySelectorAll('.scen-btn').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  document.getElementById('sl-lam').value  =btn.dataset.lam;
+  document.getElementById('sl-cross').value=btn.dataset.cross;
+  document.getElementById('sl-phi').value  =btn.dataset.phi;
+  update();
+}
+// Deactivate scenario button when sliders move manually
+function syncScenBtns(){
+  const lv=document.getElementById('sl-lam').value;
+  const cv=document.getElementById('sl-cross').value;
+  const pv=document.getElementById('sl-phi').value;
+  document.querySelectorAll('.scen-btn').forEach(b=>{
+    b.classList.toggle('act',b.dataset.lam===lv&&b.dataset.cross===cv&&b.dataset.phi===pv);
+  });
+}
+
+let ROT='none';
+let SHOW_GEOM=false;
+function toggleGeom(){
+  SHOW_GEOM=!SHOW_GEOM;
+  document.getElementById('btn-geom').classList.toggle('act',SHOW_GEOM);
+  update();
+}
+function setRot(btn){
+  document.querySelectorAll('.rbtn').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act'); ROT=btn.dataset.rot;
+  const hints={
+    none:'Unrotated principal-axis solution. Often many items load on the first factor.',
+    varimax:'Orthogonal rotation (axes stay at right angles). Maximizes simple structure — communalities unchanged.',
+    oblique:'Oblique rotation: axis angle = arccos(φ). The biplot shows the pattern matrix (Λ) — partial regression weights, not correlations. Increase φ to see the difference from varimax.'
+  };
+  document.getElementById('rot-hint').textContent=hints[ROT];
+  update();
+}
+
+// Matrix utils
+function matMul(A,B){
+  const m=A.length,k=B.length,n=B[0].length;
+  return Array.from({length:m},(_,i)=>Array.from({length:n},(_,j)=>
+    Array.from({length:k},(_,l)=>A[i][l]*B[l][j]).reduce((a,b)=>a+b,0)));
+}
+function matT(A){return A[0].map((_,j)=>A.map(r=>r[j]));}
+
+// Jacobi eigendecomposition
+function jacobi(M_in){
+  const n=M_in.length;
+  let M=M_in.map(r=>[...r]);
+  let V=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?1:0));
+  for(let iter=0;iter<200*n*n;iter++){
+    let maxV=0,p=0,q=1;
+    for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) if(Math.abs(M[i][j])>maxV){maxV=Math.abs(M[i][j]);p=i;q=j;}
+    if(maxV<1e-12)break;
+    const denom=M[p][p]-M[q][q];
+    const th=Math.abs(denom)<1e-14?(Math.PI/4)*Math.sign(M[p][q]):0.5*Math.atan2(2*M[p][q],denom);
+    const c=Math.cos(th),s=Math.sin(th);
+    for(let i=0;i<n;i++){
+      if(i!==p&&i!==q){const mip=M[i][p],miq=M[i][q];M[i][p]=M[p][i]=c*mip+s*miq;M[i][q]=M[q][i]=-s*mip+c*miq;}
+    }
+    const mpp=M[p][p],mqq=M[q][q],mpq=M[p][q];
+    M[p][p]=c*c*mpp+2*s*c*mpq+s*s*mqq;M[q][q]=s*s*mpp-2*s*c*mpq+c*c*mqq;M[p][q]=M[q][p]=0;
+    for(let i=0;i<n;i++){const vip=V[i][p],viq=V[i][q];V[i][p]=c*vip+s*viq;V[i][q]=-s*vip+c*viq;}
+  }
+  const pairs=Array.from({length:n},(_,i)=>({val:M[i][i],vec:V.map(r=>r[i])}));
+  pairs.sort((a,b)=>b.val-a.val);
+  return{values:pairs.map(p=>p.val),vectors:pairs.map(p=>p.vec)};
+}
+
+// Varimax rotation
+function varimax(L_in,maxIter=500){
+  const p=L_in.length,m=L_in[0].length;
+  let L=L_in.map(r=>[...r]);
+  for(let iter=0;iter<maxIter;iter++){
+    let changed=false;
+    for(let j=0;j<m-1;j++) for(let k=j+1;k<m;k++){
+      let A=0,B=0,C=0,D=0;
+      for(let i=0;i<p;i++){const u=L[i][j]*L[i][j]-L[i][k]*L[i][k],v=2*L[i][j]*L[i][k];A+=u;B+=v;C+=u*u-v*v;D+=u*v;}
+      const num=2*(p*D-A*B),den=p*C-(A*A-B*B);
+      if(Math.abs(num)<1e-10&&Math.abs(den)<1e-10)continue;
+      const th=0.25*Math.atan2(num,den);
+      if(Math.abs(th)<1e-9)continue;
+      changed=true;
+      const c=Math.cos(th),s=Math.sin(th);
+      for(let i=0;i<p;i++){const lj=L[i][j],lk=L[i][k];L[i][j]=c*lj+s*lk;L[i][k]=-s*lj+c*lk;}
+    }
+    if(!changed)break;
+  }
+  for(let f=0;f<m;f++){const sumL=L.reduce((s,r)=>s+r[f],0);if(sumL<0)L.forEach(r=>r[f]=-r[f]);}
+  return L;
+}
+
+// Core: PAF (true EFA) + reliability
+function computeFA(){
+  const lam  =parseInt(document.getElementById('sl-lam').value)/100;
+  const cross=parseInt(document.getElementById('sl-cross').value)/100;
+  const phi  =parseInt(document.getElementById('sl-phi').value)/100;
+
+  document.getElementById('v-lam').textContent  =lam.toFixed(2);
+  document.getElementById('v-cross').textContent=cross.toFixed(2);
+  document.getElementById('v-phi').textContent  =phi.toFixed(2);
+  syncScenBtns();
+
+  // True loadings: items 0–3 on F1, items 4–7 on F2
+  const Lambda=[];
+  for(let i=0;i<4;i++)Lambda.push([lam,cross]);
+  for(let i=0;i<4;i++)Lambda.push([cross,lam]);
+  const Phi=[[1,phi],[phi,1]];
+
+  // Communality h² = lambda_i' Phi lambda_i (same for all items)
+  const h2val=Math.min(lam*lam+cross*cross+2*phi*lam*cross,0.999);
+  const h2=Array(8).fill(h2val);
+  const u2=h2.map(h=>1-h);
+
+  // Implied R = Lambda Phi Lambda' + Psi (full, 1s on diagonal)
+  const LPLt=matMul(matMul(Lambda,Phi),matT(Lambda));
+  const R=LPLt.map((row,i)=>row.map((v,j)=>{
+    if(i===j)return 1;
+    return Math.max(-0.999,Math.min(0.999,v));
+  }));
+
+  // Scree: eigenvalues of full R (standard practice)
+  const{values:eigVals}=jacobi(R);
+
+  // PAF: eigendecompose REDUCED R (h² on diagonal)
+  const Rr=R.map((row,i)=>row.map((v,j)=>i===j?h2val:v));
+  const{values:eigValsRr,vectors:eigVecsRr}=jacobi(Rr);
+
+  // Unrotated PAF loadings (first 2 factors)
+  const unrotated=Array.from({length:8},(_,i)=>
+    Array.from({length:2},(_,f)=>eigVecsRr[f][i]*Math.sqrt(Math.max(0,eigValsRr[f]))));
+
+  // Rotation
+  let rotLoads=unrotated.map(r=>[...r]);
+  if(ROT==='varimax'){
+    rotLoads=varimax(unrotated.map(r=>[...r]));
+    // Canonical column order: F1 = the axis the V-group (items 0–3) loads higher on.
+    // Varimax's pairwise Jacobi sweep has no inherent factor order — the two columns
+    // it returns can land in either orientation depending on rounding/starting signs
+    // (verified: at phi=.40/.55/.65 it flips while neighboring phi values don't).
+    // Enforce the same "F1 = verbal axis" convention Oblique uses below, so switching
+    // rotation methods for the same scenario never flips which axis V/S load on.
+    const vAvg0=rotLoads.slice(0,4).reduce((s,r)=>s+Math.abs(r[0]),0)/4;
+    const vAvg1=rotLoads.slice(0,4).reduce((s,r)=>s+Math.abs(r[1]),0)/4;
+    if(vAvg1>vAvg0) rotLoads.forEach(r=>{const t=r[0];r[0]=r[1];r[1]=t;});
+  } else if(ROT==='oblique'){
+    // Oblique (true population solution):
+    // For a known population model with factor correlation phi, the correct oblique
+    // solution IS Lambda itself as the Pattern Matrix. PAF spans the same factor
+    // space; the oblique rotation simply recovers Lambda with phi as factor correlation.
+    // Pattern matrix loadings differ from structure matrix loadings when phi > 0.
+    rotLoads=Lambda.map(r=>[...r]);
+    // Sign convention: positive dominant loading per factor
+    for(let f=0;f<2;f++){
+      const sumL=rotLoads.reduce((s,r)=>s+r[f],0);
+      if(sumL<0) rotLoads.forEach(r=>{r[f]=-r[f];});
+    }
+  }
+
+  // Reliability (analytical from population model)
+  // r_within = corr between items in same group
+  // r_between = corr between items in different groups
+  const r_within =lam*lam+cross*cross+2*phi*lam*cross;
+  const r_between=2*lam*cross+phi*(lam*lam+cross*cross);
+  const sigX2=8+24*r_within+32*r_between;
+  const alpha =(8/7)*(sigX2-8)/sigX2;
+  // Omega total = 1 - sum(u²)/sigX2
+  const omegaT=1-8*(1-h2val)/sigX2;
+  // Omega hierarchical (Schmid-Leiman): g-loading = (lam+cross)*sqrt(phi)
+  const omegaH=64*(lam+cross)*(lam+cross)*phi/sigX2;
+
+  return{R,Rr,eigVals,eigValsRr,unrotated,rotLoads,h2,u2,phi,lam,cross,alpha,omegaT,omegaH};
+}
+
+// Canvas helper
+function setupCanvas(id){
+  const cv=document.getElementById(id);
+  const dpr=window.devicePixelRatio||1;
+  const rect=cv.getBoundingClientRect();
+  cv.width=rect.width*dpr; cv.height=rect.height*dpr;
+  const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  return{ctx,W:rect.width,H:rect.height};
+}
+function cssVar(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function col(v){return cssVar('--'+v);}
+
+// Scree plot (blue, eigenvalues of R)
+function drawScree(eigVals){
+  const{ctx,W,H}=setupCanvas('cv-scree');
+  const pad={t:28,r:20,b:52,l:56};
+  const pw=W-pad.l-pad.r,ph=H-pad.t-pad.b;
+  const n=eigVals.length;
+  const maxV=Math.max(...eigVals,1.2)*1.08;
+  const toX=i=>pad.l+(i/(n-1))*pw;
+  const toY=v=>pad.t+ph*(1-v/maxV);
+  ctx.clearRect(0,0,W,H);
+  [0.5,1,1.5,2,2.5,3,3.5,4,5].filter(v=>v<=maxV).forEach(v=>{
+    const y=toY(v);
+    ctx.strokeStyle=col('grid');ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+pw,y);ctx.stroke();
+    ctx.fillStyle=col('ink3');ctx.font='14px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(v.toFixed(1),pad.l-7,y+5);
+  });
+  ctx.save();ctx.strokeStyle=col('a1');ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(pad.l,toY(1));ctx.lineTo(pad.l+pw,toY(1));ctx.stroke();
+  ctx.setLineDash([]);ctx.fillStyle=col('a1');ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('Kaiser=1',pad.l+6,toY(1)-6);ctx.restore();
+  const bw=Math.min(pw/n*0.55,26);
+  eigVals.forEach((v,i)=>{
+    const x=toX(i),y=toY(v),barH=ph-(y-pad.t);
+    ctx.fillStyle=v>1?col('a2')+'bb':col('ink3')+'55';
+    ctx.fillRect(x-bw/2,y,bw,barH);
+    if(v>0.2){ctx.fillStyle=v>1?col('a2'):col('ink3');ctx.font='bold 14px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(v.toFixed(2),x,y-7);}
+    ctx.fillStyle=col('ink3');ctx.font='14px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(String(i+1),x,pad.t+ph+20);
+  });
+  ctx.strokeStyle=col('a2');ctx.lineWidth=1.5;ctx.beginPath();
+  eigVals.forEach((v,i)=>{const x=toX(i),y=toY(v);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.stroke();
+  eigVals.forEach((v,i)=>{ctx.beginPath();ctx.arc(toX(i),toY(v),4,0,Math.PI*2);ctx.fillStyle=v>1?col('a2'):col('ink3');ctx.fill();});
+  ctx.fillStyle=col('ink2');ctx.font='bold 14px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Factor',pad.l+pw/2,H-6);
+  ctx.save();ctx.translate(16,pad.t+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText('Eigenvalue',0,0);ctx.restore();
+}
+
+// Biplot (purple V, orange S)
+function drawBiplot(loads,phi){
+  const{ctx,W,H}=setupCanvas('cv-biplot');
+  const pad=36;const s=Math.min(W-2*pad,H-2*pad)/2;const cx=W/2,cy=H/2;
+  const sx=v=>cx+v*s,sy=v=>cy-v*s;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle=col('border');ctx.lineWidth=1;ctx.beginPath();ctx.arc(cx,cy,s,0,Math.PI*2);ctx.stroke();
+  ctx.strokeStyle=col('grid');ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad,cy);ctx.lineTo(W-pad,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,pad);ctx.lineTo(cx,H-pad);ctx.stroke();
+  const f1col=col('a4'),f2col=col('a5');
+  if(ROT==='oblique'&&phi>0.02){
+    ctx.strokeStyle=f1col+'aa';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(sx(-1.08),sy(0));ctx.lineTo(sx(1.08),sy(0));ctx.stroke();
+    const f2x=phi,f2y=Math.sqrt(Math.max(0,1-phi*phi));
+    ctx.strokeStyle=f2col+'aa';ctx.beginPath();ctx.moveTo(sx(-f2x*1.08),sy(-f2y*1.08));ctx.lineTo(sx(f2x*1.08),sy(f2y*1.08));ctx.stroke();
+    ctx.fillStyle=f2col;ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('F2',sx(f2x*1.08)+4,sy(f2y*1.08)-2);
+  }else{
+    ctx.strokeStyle=f1col+'aa';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(sx(-1.08),sy(0));ctx.lineTo(sx(1.08),sy(0));ctx.stroke();
+    ctx.strokeStyle=f2col+'aa';ctx.beginPath();ctx.moveTo(sx(0),sy(-1.08));ctx.lineTo(sx(0),sy(1.08));ctx.stroke();
+    ctx.fillStyle=f2col;ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('F2',sx(0)+4,sy(1.08)-2);
+  }
+  ctx.fillStyle=f1col;ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('F1',sx(1.08)+4,sy(0)+4);
+  const labels=['V1','V2','V3','V4','S1','S2','S3','S4'];
+  const colors=[f1col,f1col,f1col,f1col,f2col,f2col,f2col,f2col];
+
+  // Nur 2 Vertreter-Items (V1, S1) — der Übersichtlichkeit halber, da innerhalb einer
+  // Gruppe ohnehin alle Items exakt dieselbe Ladung/Position hätten. Beide werden an ihrer
+  // TRUE Cartesian position geplottet: V=(S1, P2·sin(arccos(axisPhi))), was sich für
+  // axisPhi=0 (Unrotiert/Varimax) exakt auf V=(P1,P2) reduziert — verifiziert numerisch,
+  // z. B. lam=.70,cross=.10,phi=.40 → S1=.74,S2=.38, Pattern-Fußpunkt auf F1 reproduziert
+  // P1=.70 exakt (Struktur = Pattern·Φ).
+  const axisPhi=(ROT==='oblique'&&phi>0.02)?phi:0;
+  const alpha=Math.acos(axisPhi), sinA=Math.sin(alpha);
+  const structCol=col('a2'), patCol=col('a3');
+  function footTick(fx,fy,dx,dy,strokeCol){
+    const len=Math.hypot(dx,dy)||1, tx=-dy/len*6, ty=dx/len*6;
+    ctx.strokeStyle=strokeCol;ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.moveTo(fx-tx,fy-ty);ctx.lineTo(fx+tx,fy+ty);ctx.stroke();
+  }
+  [0,4].forEach(i=>{
+    const [P1,P2]=loads[i], clr=colors[i];
+    const S1=P1+axisPhi*P2, S2=axisPhi*P1+P2;
+    const Vx=S1, Vy=P2*sinA;
+    const px=sx(Vx), py=sy(Vy);
+
+    ctx.strokeStyle=clr+'70';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(px,py);ctx.stroke();
+
+    // Konstruktion (Winkelbogen + Struktur-/Pattern-Projektion) nur exemplarisch für EIN
+    // Item (V1, i===0) einblenden — bei zwei Items gleichzeitig würden sich die Linien bei
+    // engem Achsenwinkel (starkes Oblique) visuell nicht mehr trennen lassen.
+    if(SHOW_GEOM&&i===0){
+      const canvasAngle=Math.atan2(-Vy,Vx), arcR=26, angDeg=Math.abs(canvasAngle)*180/Math.PI;
+      if(angDeg>4){
+        ctx.strokeStyle=col('ink3');ctx.lineWidth=1;ctx.beginPath();
+        if(canvasAngle>=0) ctx.arc(cx,cy,arcR,0,canvasAngle); else ctx.arc(cx,cy,arcR,canvasAngle,0);
+        ctx.stroke();
+        const midA=canvasAngle/2;
+        ctx.fillStyle=col('ink3');ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+        ctx.fillText(Math.round(angDeg)+'°',cx+(arcR+13)*Math.cos(midA),cy+(arcR+13)*Math.sin(midA)+3);
+      }
+      const footF1x=sx(S1),footF1y=sy(0);
+      const footF2x=sx(S2*axisPhi),footF2y=sy(S2*sinA);
+      ctx.strokeStyle=structCol;ctx.lineWidth=1.5;ctx.setLineDash([2,3]);
+      ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(footF1x,footF1y);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(footF2x,footF2y);ctx.stroke();
+      ctx.setLineDash([]);
+      footTick(footF1x,footF1y,1,0,structCol);
+      footTick(footF2x,footF2y,axisPhi,sinA,structCol);
+      if(axisPhi>0.02){
+        const patF1x=sx(P1),patF1y=sy(0);
+        const patF2x=sx(P2*axisPhi),patF2y=sy(P2*sinA);
+        ctx.strokeStyle=patCol;ctx.lineWidth=1.5;ctx.setLineDash([6,3]);
+        ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(patF1x,patF1y);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(patF2x,patF2y);ctx.stroke();
+        ctx.setLineDash([]);
+        footTick(patF1x,patF1y,1,0,patCol);
+        footTick(patF2x,patF2y,axisPhi,sinA,patCol);
+      }
+    }
+
+    ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fillStyle=clr;ctx.fill();
+    ctx.strokeStyle=col('paper');ctx.lineWidth=1.8;ctx.stroke();
+    ctx.fillStyle=clr;ctx.font='bold 13px DM Mono,monospace';ctx.textAlign=Vx>=0?'left':'right';
+    ctx.fillText(labels[i],px+(Vx>=0?11:-11),py-11);
+  });
+  ctx.fillStyle=col('ink3');ctx.font='10px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('−1',sx(-1),cy+14);ctx.fillText('1',sx(1),cy+14);
+  ctx.textAlign='right';ctx.fillText('1',cx-4,sy(1)+4);ctx.fillText('−1',cx-4,sy(-1)+4);
+}
+
+// Heatmap (teal/orange)
+function drawHeatmap(R){
+  const{ctx,W,H}=setupCanvas('cv-heat');
+  const n=R.length,pad={t:10,r:10,b:28,l:38};
+  const pw=W-pad.l-pad.r,ph=H-pad.t-pad.b,cw=pw/n,ch=ph/n;
+  const lbls=['V1','V2','V3','V4','S1','S2','S3','S4'];
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=col('ink3');ctx.font='bold 13px DM Mono,monospace';
+  lbls.forEach((lb,i)=>{
+    ctx.textAlign='right';ctx.fillText(lb,pad.l-6,pad.t+ch*(i+0.5)+5);
+    ctx.textAlign='center';ctx.fillText(lb,pad.l+cw*(i+0.5),pad.t+ph+20);
+  });
+  const baseD=[23,21,20],baseL=[232,225,210];
+  const posC=[43,199,196],negC=[224,120,48];
+  const diagC=dark?[133,124,104]:[138,127,114];
+  R.forEach((row,i)=>row.forEach((v,j)=>{
+    const isDiag=i===j;
+    const t=Math.min(Math.abs(v),1),base=dark?baseD:baseL,tgt=isDiag?diagC:(v>=0?posC:negC);
+    const r=Math.round(base[0]+(tgt[0]-base[0])*t);
+    const g=Math.round(base[1]+(tgt[1]-base[1])*t);
+    const b=Math.round(base[2]+(tgt[2]-base[2])*t);
+    ctx.fillStyle=`rgb(${r},${g},${b})`;ctx.fillRect(pad.l+j*cw,pad.t+i*ch,cw-1,ch-1);
+    ctx.fillStyle=t>0.45?'#fff':(dark?'#ece6d8':'#18130e');
+    ctx.font=(isDiag?'bold ':'')+'15px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(v.toFixed(2),pad.l+j*cw+cw/2,pad.t+i*ch+ch/2+5);
+  }));
+}
+
+// Loading table (green highlights)
+function renderTable(loads,h2,u2){
+  const lbls=['V1','V2','V3','V4','S1','S2','S3','S4'],thr=0.35;
+  let html=`<table class="ltbl"><thead><tr>
+    <th style="text-align:left">Item</th>
+    <th style="color:var(--a4)">F1</th><th style="color:var(--a5)">F2</th>
+    <th style="color:var(--a3)">h²</th><th>u²</th>
+  </tr></thead><tbody>`;
+  loads.forEach((l,i)=>{
+    const c1=Math.abs(l[0])>=thr?'hi2':'lo',c2=Math.abs(l[1])>=thr?'hi5':'lo';
+    const hc=h2[i]>=0.35?'hi3':'';
+    html+=`<tr><td>${lbls[i]}</td><td class="${c1}">${l[0].toFixed(3)}</td><td class="${c2}">${l[1].toFixed(3)}</td><td class="${hc}">${h2[i].toFixed(3)}</td><td>${u2[i].toFixed(3)}</td></tr>`;
+  });
+  const ssl1=loads.reduce((s,r)=>s+r[0]*r[0],0),ssl2=loads.reduce((s,r)=>s+r[1]*r[1],0),p=loads.length;
+  html+=`<tr style="border-top:2px solid var(--border)">
+    <td style="color:var(--ink3);font-size:.73rem;font-family:'DM Mono',monospace">SSL</td>
+    <td class="hi2">${ssl1.toFixed(3)}</td><td class="hi5">${ssl2.toFixed(3)}</td>
+    <td colspan="2" style="color:var(--ink3);font-size:.73rem">&#931;&#955;&#178;</td>
+  </tr><tr>
+    <td style="color:var(--ink3);font-size:.73rem;font-family:'DM Mono',monospace">% Var.</td>
+    <td class="hi2">${(ssl1/p*100).toFixed(1)}%</td><td class="hi5">${(ssl2/p*100).toFixed(1)}%</td>
+    <td colspan="2" style="color:var(--ink3);font-size:.73rem">SSL/p</td>
+  </tr>`;
+  html+='</tbody></table>';
+  document.getElementById('tbl-wrap').innerHTML=html;
+}
+
+// Reliability panel
+function renderReliability(alpha,omegaT,omegaH,phi){
+  const pct=v=>(Math.max(0,Math.min(1,v))*100).toFixed(1)+'%';
+  document.getElementById('bar-alpha').style.width=pct(alpha);
+  document.getElementById('bar-wt').style.width=pct(omegaT);
+  document.getElementById('bar-wh').style.width=pct(omegaH);
+  document.getElementById('val-alpha').textContent=alpha.toFixed(3);
+  document.getElementById('val-wt').textContent=omegaT.toFixed(3);
+  document.getElementById('val-wh').textContent=omegaH<0.001?'0.000':omegaH.toFixed(3);
+  // Unidimensionality interpretation of omega_h (innerHTML for Greek)
+  let note='';
+  if(phi<0.01){
+    note='<strong>φ = 0:</strong> factors F1 and F2 are orthogonal — no general factor g. ω<sub>h</sub> = 0: a total score is <em>not</em> justified as unidimensional. α and ω<sub>t</sub> measure internal consistency but say nothing about unidimensionality.';
+  } else if(omegaH/omegaT>0.91){
+    note='<strong>Nearly unidimensional (φ = '+phi.toFixed(2)+'):</strong> all three measures converge. ω<sub>h</sub> = '+omegaH.toFixed(3)+' — most of the variance is attributable to a higher-order general factor g. As φ → 1, α = ω<sub>t</sub> = ω<sub>h</sub>: genuine unidimensionality.';
+  } else {
+    note='<strong>Oblique factors (φ = '+phi.toFixed(2)+'):</strong> there is a general factor g. ω<sub>h</sub> = '+omegaH.toFixed(3)+' grows with φ and measures the g-variance share — a direct measure of unidimensionality. α = '+alpha.toFixed(3)+' stays nearly constant and does not detect the change in unidimensionality.';
+  }
+  document.getElementById('reli-note').innerHTML=note;
+}
+
+// Stats sidebar
+function renderStats(eigVals,eigValsRr,h2val){
+  const nK=eigVals.filter(v=>v>1).length;
+  const v1=(eigVals[0]/8*100).toFixed(1),v12=((eigVals[0]+eigVals[1])/8*100).toFixed(1);
+  document.getElementById('stats').innerHTML=`
+    <div class="stat-row"><span class="stat-label">Factors (Kaiser)</span><span class="stat-val">${nK}</span></div>
+    <div class="stat-row"><span class="stat-label">Eigenvalue F1 (R)</span><span class="stat-val">${eigVals[0].toFixed(3)}</span></div>
+    <div class="stat-row"><span class="stat-label">Eigenvalue F2 (R)</span><span class="stat-val">${eigVals[1].toFixed(3)}</span></div>
+    <div class="stat-row"><span class="stat-label">EV F1 (Rr, PAF)</span><span class="stat-val">${eigValsRr[0].toFixed(3)}</span></div>
+    <div class="stat-row"><span class="stat-label">Var. explained F1+F2</span><span class="stat-val">${v12}%</span></div>
+    <div class="stat-row"><span class="stat-label">Final communality h²</span><span class="stat-val">${h2val.toFixed(3)}</span></div>
+  `;
+}
+
+function update(){
+  const fa=computeFA();
+  // Update biplot panel title depending on rotation mode
+  const biplotTitles={
+    none:'Factor Loading Biplot — Unrotated (F1 vs. F2)',
+    varimax:'Factor Loading Biplot — Varimax (F1 vs. F2)',
+    oblique:'Pattern Matrix Biplot — Oblique (Λ, axes at arccosφ)'
+  };
+  document.getElementById('biplot-title-text').textContent=biplotTitles[ROT]+(SHOW_GEOM?' · Geometry':'');
+  const geomNote=document.getElementById('geom-note');
+  if(SHOW_GEOM){
+    const axisPhi=(ROT==='oblique'&&fa.phi>0.02)?fa.phi:0;
+    const readout=([P1,P2])=>{
+      const S1v=P1+axisPhi*P2, S2v=axisPhi*P1+P2;
+      return {P1,P2,S1v,S2v};
+    };
+    const v1=readout(fa.rotLoads[0]), s1=readout(fa.rotLoads[4]);
+    geomNote.style.display='';
+    geomNote.innerHTML=`Reduced to <strong>2 items</strong> (V1, S1 — representing their group, since within a group all items are identical anyway). The construction (angle arc, perpendicular) is drawn only for <strong>V1</strong> as an example — with both items at once, the lines would no longer be cleanly separable at a narrow axis angle.
+    <br><br><strong style="color:${col('a2')}">Dotted = structure (correlation)</strong>: dropping a perpendicular — orthogonal projection onto the axis. S₁=P₁+φ·P₂, S₂=φ·P₁+P₂.
+    ${axisPhi>0.02?`<br><strong style="color:${col('a3')}">Dashed = pattern (regression weight)</strong>: projected parallel to the other axis — these are the raw loadings from the table.
+    <br><br>At φ=${fa.phi.toFixed(2)} structure and pattern diverge visibly — the loading table shows only the pattern, not the correlation with the factor.
+    <br><br><strong>V1:</strong> pattern (P₁=${v1.P1.toFixed(2)}, P₂=${v1.P2.toFixed(2)}) → structure (S₁=${v1.S1v.toFixed(2)}, S₂=${v1.S2v.toFixed(2)})
+    <br><strong>S1:</strong> pattern (P₁=${s1.P1.toFixed(2)}, P₂=${s1.P2.toFixed(2)}) → structure (S₁=${s1.S1v.toFixed(2)}, S₂=${s1.S2v.toFixed(2)})`
+    :`<br><br>Here structure and pattern are <strong>identical</strong>, because the axes are orthogonal (unrotated/varimax) — switch to oblique to see the difference.
+    <br><br><strong>V1:</strong> P₁=${v1.P1.toFixed(2)}, P₂=${v1.P2.toFixed(2)} · <strong>S1:</strong> P₁=${s1.P1.toFixed(2)}, P₂=${s1.P2.toFixed(2)}`}`;
+  } else {
+    geomNote.style.display='none';
+  }
+  drawScree(fa.eigVals);
+  drawBiplot(fa.rotLoads,fa.phi);
+  drawHeatmap(fa.Rr);
+  renderTable(fa.rotLoads,fa.h2,fa.u2);
+  renderReliability(fa.alpha,fa.omegaT,fa.omegaH,fa.phi);
+  renderStats(fa.eigVals,fa.eigValsRr,fa.h2[0]);
+}
+function redraw(){update();}
+window.addEventListener('resize',()=>requestAnimationFrame(update));
+document.getElementById('rot-hint').textContent='Unrotated principal-axis solution. Often many items load on the first factor.';
+window.addEventListener('load',update);
+</script>
+</body>
+</html>

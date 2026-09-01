@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Regression to the Mean — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a4);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.85rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.85rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.preset-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.3rem .65rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .15s;letter-spacing:.03em;width:100%;text-align:left;display:block;margin-bottom:.3rem}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.preset-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.seed-btn{font-family:'DM Mono',monospace;font-size:.76rem;padding:.28rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .12s;width:100%;text-align:left;margin-top:.3rem}
+.seed-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.eq-wrap{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem;margin-bottom:.8rem}
+.eq-main{font-family:'DM Mono',monospace;font-size:.9rem;line-height:2.1;letter-spacing:.01em}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+.insight-box{background:var(--panel);border-left:3px solid var(--a1);padding:.85rem 1rem;
+  margin-bottom:.85rem;font-size:.88rem;line-height:1.75}
+.insight-box strong{color:var(--a1)}
+.kw-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.85rem}
+.kw-box{background:var(--panel);border:1px solid var(--grid);padding:.6rem .75rem}
+.kw-label{font-family:'DM Mono',monospace;font-size:.69rem;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink3);margin-bottom:.28rem;line-height:1.3}
+.kw-val{font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;color:var(--ink)}
+.kw-sub{font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink2)}
+.canvas-wrap{background:var(--panel);border:1px solid var(--grid);margin-bottom:.85rem;overflow:hidden}
+#plot-canvas{width:100%;display:block}
+.learn-section{margin-top:2.2rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a4);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+/* Help Modal */
+.help-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.82);
+  overflow-y:auto;padding:2rem 1rem}
+.help-overlay.open{display:block}
+.help-panel{max-width:700px;margin:0 auto;background:var(--paper);border:1px solid var(--border);padding:2rem}
+.help-panel h2{font-family:'Fraunces',serif;font-weight:300;font-size:1.2rem;margin-bottom:1.2rem;color:var(--ink)}
+.help-h3{font-family:'DM Mono',monospace;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--a1);margin:1.1rem 0 .35rem}
+.help-p{font-size:.85rem;line-height:1.8;color:var(--ink2);margin-bottom:.6rem}
+.help-p code{font-family:'DM Mono',monospace;font-size:.8rem;background:var(--panel);
+  padding:.1rem .35rem;color:var(--ink)}
+.help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
+  border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
+.help-close:hover{background:var(--a1);color:var(--bg)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Regression to the <em>Mean</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- Help Modal -->
+<div class="help-overlay" id="help-overlay">
+  <div class="help-panel">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
+      <h2>Help — Regression to the Mean</h2>
+      <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    </div>
+    <div class="help-h3">What does this tool show?</div>
+    <p class="help-p">People who score <strong style="color:var(--ink)">extremely high or extremely low</strong> on a first measurement tend, on average, to land closer to the mean on a second measurement — even with no intervention at all. The tool simulates this effect using a fictitious blood-pressure study.</p>
+    <div class="help-h3">The running example</div>
+    <p class="help-p">A GP practice measures systolic blood pressure in n patients (baseline T1). Everyone with blood pressure ≥ the threshold is enrolled in a hypertension program and measured again four weeks later (T2) — <em>with no medication</em>. The question: where does the improvement come from?</p>
+    <div class="help-h3">The math</div>
+    <p class="help-p">For bivariate normally distributed measurement occasions X (T1) and Y (T2) with correlation r:</p>
+    <p class="help-p"><code>E[Y | X = x] = μ + r · (x − μ)</code></p>
+    <p class="help-p">The regression effect equals <code>(1 − r) · (x − μ)</code> — proportional to how extreme the score is and to (1−r). At r = 1 (perfect measurement) there is no effect. The larger the measurement uncertainty, the stronger the regression to the mean.</p>
+    <div class="help-h3">Why does this matter?</div>
+    <p class="help-p">Regression to the mean can masquerade as a genuine treatment effect. In pre-post studies without a control group, it's unclear whether improvements stem from the intervention or from this statistical artifact. Randomized control groups are the only remedy — they show the same RTM effect, so the difference between groups estimates the adjusted intervention effect.</p>
+    <div class="help-h3">Controls</div>
+    <p class="help-p"><strong style="color:var(--ink)">Scenarios A–D</strong>: predefined examples for comparison. <strong style="color:var(--ink)">r</strong>: reliability / correlation between T1 and T2 — the central parameter. <strong style="color:var(--ink)">Threshold</strong>: the value above which people are selected. <strong style="color:var(--ink)">Red points</strong>: high-selected (≥ threshold), <strong style="color:var(--ink)">blue points</strong>: low-selected (mirror-image). <strong style="color:var(--ink)">Orange line</strong>: E[Y|X] — the theoretical regression line. <strong style="color:var(--ink)">Dashed</strong>: Y = X (no change).</p>
+  </div>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Scenarios</div>
+    <button class="preset-btn" id="pre-A" onclick="setPreset('A')">A — Perfect reliability (r = 1.0)</button>
+    <button class="preset-btn active" id="pre-B" onclick="setPreset('B')">B — Blood-pressure study (r = 0.70)</button>
+    <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — Extreme selection (thr. = 175)</button>
+    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — Poor measurement (r = 0.40)</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Simulation</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n</span><span class="slider-val" id="val-n">400</span></div>
+      <input type="range" id="sl-n" min="100" max="800" step="50" value="400" oninput="onSl('n',this)">
+    </div>
+    <button class="seed-btn" onclick="newSeed()">⟳ New sample</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Parameters</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name" style="color:var(--a5)">r (reliability / corr.)</span>
+        <span class="slider-val" id="val-r">0.70</span>
+      </div>
+      <input type="range" id="sl-r" min="0.10" max="1.00" step="0.05" value="0.70" oninput="onSl('r',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name" style="color:var(--a1)">Threshold (mmHg)</span>
+        <span class="slider-val" id="val-threshold">160</span>
+      </div>
+      <input type="range" id="sl-threshold" min="140" max="185" step="5" value="160" oninput="onSl('threshold',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">σ (spread, mmHg)</span>
+        <span class="slider-val" id="val-sigma">20</span>
+      </div>
+      <input type="range" id="sl-sigma" min="8" max="35" step="1" value="20" oninput="onSl('sigma',this)">
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin-top:.5rem;
+      padding-top:.4rem;border-top:1px solid var(--grid);line-height:1.6">
+      μ = 130 mmHg (population mean)<br>
+      z(threshold) = <span id="sl-z">+1.50</span>
+    </div>
+  </div>
+
+</div><!-- /sidebar -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 Example — Blood-pressure study</div>
+    A GP practice measures systolic blood pressure in
+    <span id="ex-n">400</span> patients (baseline T1, μ = 130, σ = 20 mmHg). Every patient with
+    blood pressure ≥ <span id="ex-thr">160</span> mmHg is enrolled in a hypertension program and
+    measured again four weeks later (T2) — <em>with no medication</em>.
+    On average, the group improves by <span id="ex-rtm" style="color:var(--a1);font-weight:600">—</span> mmHg.
+    Real effect, or statistical artifact?
+  </div>
+
+  <div class="sec-h">Basic principle</div>
+  <div class="eq-wrap">
+    <div class="eq-main">
+      <span style="color:var(--a3)">E[Y | X = x]</span>
+      <span style="color:var(--ink3)"> = μ + </span>
+      <span style="color:var(--a5)">r</span>
+      <span style="color:var(--ink3)"> · (x − μ)</span>
+      <span style="color:var(--ink3);font-size:.78rem;margin-left:1.2rem">(regression line)</span>
+    </div>
+    <div class="eq-main">
+      <span style="color:var(--a1)">Regression effect</span>
+      <span style="color:var(--ink3)"> = (1 − </span>
+      <span style="color:var(--a5)">r</span>
+      <span style="color:var(--ink3)">) · (x − μ)</span>
+      <span style="color:var(--ink3);font-size:.78rem;margin-left:1.2rem">(regression to the mean)</span>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink3);margin-top:.45rem;
+      padding-top:.4rem;border-top:1px solid var(--grid)">
+      r = <span id="eq-r" style="color:var(--a5)">0.70</span> &nbsp;·&nbsp;
+      threshold = <span id="eq-thr" style="color:var(--a1)">160</span> mmHg &nbsp;·&nbsp;
+      exp. RTM at threshold: <span id="eq-rtm" style="color:var(--a1)">−9.0</span> mmHg
+    </div>
+  </div>
+
+  <div class="sec-h">Scatterplot T1 vs. T2</div>
+  <div class="canvas-wrap">
+    <canvas id="plot-canvas"></canvas>
+  </div>
+
+  <div class="kw-grid">
+    <div class="kw-box">
+      <div class="kw-label">Selected group</div>
+      <div class="kw-val"><span id="kw-nsel">—</span> people</div>
+      <div class="kw-sub">X ≥ <span id="kw-thr">—</span> mmHg</div>
+    </div>
+    <div class="kw-box">
+      <div class="kw-label">Mean T1 (selected)</div>
+      <div class="kw-val" id="kw-mx">—</div>
+      <div class="kw-sub">Baseline, mmHg</div>
+    </div>
+    <div class="kw-box">
+      <div class="kw-label">Observed regression</div>
+      <div class="kw-val" id="kw-obs">—</div>
+      <div class="kw-sub">T2 − T1 (mmHg)</div>
+    </div>
+    <div class="kw-box">
+      <div class="kw-label">Expected from r</div>
+      <div class="kw-val" id="kw-exp">—</div>
+      <div class="kw-sub">(r−1)·(T1̄−μ), mmHg</div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <strong>Conclusion:</strong> The selected group improves on average by
+    <span id="ins-diff">—</span> mmHg — <em>with no treatment at all</em>. This regression effect
+    is exactly predictable from r: <span id="ins-exp">—</span> mmHg expected.
+    Without a control group, this artifact would falsely be attributed to the intervention.
+    Also note the <span style="color:var(--a2)">blue group</span> (low T1 values):
+    it shows regression <em>upward</em> — the same effect, opposite direction.
+  </div>
+
+  <div class="learn-section">
+    <div class="sec-h">Concepts</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">What is regression to the mean?</div>
+        <div class="lcard-body">Anyone who scores extremely high or low on one measurement tends to land <strong>closer to the mean</strong> on the next — even if nothing has actually changed. Cause: an extreme result contains a large random component that "disappears" at the next measurement occasion. The less reliable the measurement, the stronger the effect.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Galton's discovery (1886)</div>
+        <div class="lcard-body">Francis Galton observed that children of very tall parents were taller than average — but on average <strong>shorter than their parents</strong>. Children of very short parents were shorter than average, but taller than their parents. He called it <em>"regression toward mediocrity."</em> The term "regression line" is a direct legacy of this observation.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Reliability r as the key factor</div>
+        <div class="lcard-body">The regression effect equals <code>(1 − r) · (x − μ)</code>. At <code>r = 1.0</code>: no effect. At <code>r = 0.7</code>: 30% of the distance to the mean vanishes. At <code>r = 0.4</code>: 60% vanishes. Reliability is the only controllable factor — more precise measurement reduces the RTM effect.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Control group as the solution</div>
+        <div class="lcard-body">The only way to separate a real intervention effect from RTM is a <strong>randomized control group</strong>. Both groups show the same RTM effect. The <em>difference</em> between them estimates the adjusted intervention effect. Without a control group, a pre-post result is simply not interpretable.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Bidirectionality</div>
+        <div class="lcard-body"><strong style="color:var(--a1)">High scorers</strong> regress downward, <strong style="color:var(--a2)">low scorers</strong> upward. The "sophomore slump" in sports (last season's best player does worse the following year), spontaneous recovery from extreme states, the apparent effect of remedial programs for weak performers — all of these contain an RTM component.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Clinical relevance</div>
+        <div class="lcard-body">Patients with very high blood pressure, severe pain, or poor well-being are often at a temporary "high point" at study enrollment. Even without treatment, many improve — because the next measurement occasion is almost bound to be less extreme. Pre-post studies without a control group almost inevitably produce positive but artifactual results.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+const ST={n:400,r:0.70,sigma:20,mu:130,threshold:160,seed:42,data:null};
+
+function mulberry32(a){
+  return function(){
+    a|=0;a=a+0x6D2B79F5|0;
+    var t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return((t^t>>>14)>>>0)/4294967296;
+  };
+}
+function makeGauss(rand){
+  let sp=null;
+  return ()=>{
+    if(sp!==null){const s=sp;sp=null;return s;}
+    const u1=Math.max(rand(),1e-15),u2=rand();
+    const m=Math.sqrt(-2*Math.log(u1));
+    sp=m*Math.sin(2*Math.PI*u2);
+    return m*Math.cos(2*Math.PI*u2);
+  };
+}
+
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function f1(v){return isFinite(v)?v.toFixed(1):'—';}
+
+function genData(){
+  const rand=mulberry32(ST.seed),gauss=makeGauss(rand);
+  const sigY=ST.sigma*Math.sqrt(Math.max(0,1-ST.r*ST.r));
+  const loThr=2*ST.mu-ST.threshold;
+  return Array.from({length:ST.n},()=>{
+    const x=ST.mu+ST.sigma*gauss();
+    const y=ST.mu+ST.r*(x-ST.mu)+(sigY>0?sigY*gauss():0);
+    return{x,y,hi:x>=ST.threshold,lo:x<=loThr};
+  });
+}
+
+function drawCanvas(){
+  const canvas=document.getElementById('plot-canvas');
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.offsetWidth||560;
+  const H=450;
+  canvas.width=Math.round(W*dpr);
+  canvas.height=Math.round(H*dpr);
+  canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr);
+
+  const mu=ST.mu,sg=ST.sigma;
+  const rng=3.6*sg;
+  const xmin=mu-rng,xmax=mu+rng;
+  const ML=58,MR=16,MT=18,MB=46;
+  const PW=W-ML-MR,PH=H-MT-MB;
+
+  const tx=x=>ML+(x-xmin)/(xmax-xmin)*PW;
+  const ty=y=>MT+PH-(y-xmin)/(xmax-xmin)*PH;
+
+  const cBg=css('--panel'),cInk=css('--ink'),cInk2=css('--ink2'),cInk3=css('--ink3');
+  const cGrid=css('--grid'),cA1=css('--a1'),cA2=css('--a2'),cA3=css('--a3'),cA5=css('--a5');
+
+  ctx.fillStyle=cBg;ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle=cGrid;ctx.lineWidth=0.8;
+  for(let v=Math.ceil(xmin/20)*20;v<=xmax;v+=20){
+    ctx.beginPath();ctx.moveTo(tx(v),MT);ctx.lineTo(tx(v),MT+PH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(ML,ty(v));ctx.lineTo(ML+PW,ty(v));ctx.stroke();
+  }
+
+  // Identity line y=x
+  ctx.strokeStyle=cInk3;ctx.lineWidth=1.2;ctx.setLineDash([6,5]);
+  ctx.beginPath();ctx.moveTo(tx(xmin),ty(xmin));ctx.lineTo(tx(xmax),ty(xmax));ctx.stroke();
+
+  // Regression line E[Y|X]
+  ctx.strokeStyle=cA5;ctx.lineWidth=2;ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(tx(xmin),ty(mu+ST.r*(xmin-mu)));
+  ctx.lineTo(tx(xmax),ty(mu+ST.r*(xmax-mu)));
+  ctx.stroke();
+
+  // Threshold lines
+  ctx.lineWidth=1.4;ctx.setLineDash([7,4]);
+  ctx.strokeStyle=cA1;
+  ctx.beginPath();ctx.moveTo(tx(ST.threshold),MT);ctx.lineTo(tx(ST.threshold),MT+PH);ctx.stroke();
+  const loThr=2*ST.mu-ST.threshold;
+  ctx.strokeStyle=cA2;
+  ctx.beginPath();ctx.moveTo(tx(loThr),MT);ctx.lineTo(tx(loThr),MT+PH);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Data points: background first, then selected on top
+  if(ST.data){
+    ST.data.forEach(p=>{
+      if(!p.hi&&!p.lo){
+        ctx.fillStyle=cInk3+'44';
+        ctx.beginPath();ctx.arc(tx(p.x),ty(p.y),2.2,0,2*Math.PI);ctx.fill();
+      }
+    });
+    ST.data.forEach(p=>{
+      if(p.lo){
+        ctx.fillStyle=cA2+'cc';
+        ctx.beginPath();ctx.arc(tx(p.x),ty(p.y),3.4,0,2*Math.PI);ctx.fill();
+      }
+    });
+    ST.data.forEach(p=>{
+      if(p.hi){
+        ctx.fillStyle=cA1+'cc';
+        ctx.beginPath();ctx.arc(tx(p.x),ty(p.y),3.4,0,2*Math.PI);ctx.fill();
+      }
+    });
+
+    // Mean markers for hi group
+    const hi=ST.data.filter(p=>p.hi);
+    if(hi.length>1){
+      const mxHi=hi.reduce((s,p)=>s+p.x,0)/hi.length;
+      const myHi=hi.reduce((s,p)=>s+p.y,0)/hi.length;
+      ctx.strokeStyle=cA1;ctx.lineWidth=1.4;ctx.setLineDash([4,3]);
+      ctx.beginPath();ctx.moveTo(tx(mxHi),MT);ctx.lineTo(tx(mxHi),MT+PH);ctx.stroke();
+      ctx.strokeStyle=cA3;
+      ctx.beginPath();ctx.moveTo(ML,ty(myHi));ctx.lineTo(ML+PW,ty(myHi));ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font='bold 11px DM Mono,monospace';
+      ctx.fillStyle=cA1;ctx.textAlign='left';
+      ctx.fillText('T1='+f1(mxHi),tx(mxHi)+4,MT+16);
+      ctx.fillStyle=cA3;ctx.textAlign='right';
+      ctx.fillText('T2='+f1(myHi),ML+PW-4,ty(myHi)-5);
+      // Arrow showing regression
+      const ax=tx(mxHi)+50,ay1=ty(mxHi),ay2=ty(myHi);
+      if(Math.abs(ay2-ay1)>8){
+        ctx.strokeStyle=cA1;ctx.lineWidth=1.5;ctx.setLineDash([]);
+        ctx.beginPath();ctx.moveTo(ax,ay1);ctx.lineTo(ax,ay2);ctx.stroke();
+        const dir=ay2>ay1?1:-1;
+        ctx.beginPath();ctx.moveTo(ax,ay2);ctx.lineTo(ax-4,ay2-dir*8);ctx.lineTo(ax+4,ay2-dir*8);ctx.closePath();
+        ctx.fillStyle=cA1;ctx.fill();
+        ctx.font='10px DM Mono,monospace';ctx.fillStyle=cA1;ctx.textAlign='left';
+        ctx.fillText(f1(myHi-mxHi),ax+5,(ay1+ay2)/2+4);
+      }
+    }
+
+    // Mean markers for lo group
+    const lo=ST.data.filter(p=>p.lo);
+    if(lo.length>1){
+      const mxLo=lo.reduce((s,p)=>s+p.x,0)/lo.length;
+      const myLo=lo.reduce((s,p)=>s+p.y,0)/lo.length;
+      ctx.strokeStyle=cA2;ctx.lineWidth=1.2;ctx.setLineDash([4,3]);
+      ctx.beginPath();ctx.moveTo(tx(mxLo),MT);ctx.lineTo(tx(mxLo),MT+PH);ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  // Axes labels
+  ctx.fillStyle=cInk3;ctx.font='11px DM Mono,monospace';ctx.setLineDash([]);
+  ctx.textAlign='center';
+  for(let v=Math.ceil(xmin/20)*20;v<=xmax;v+=20){
+    ctx.fillText(v,tx(v),MT+PH+16);
+  }
+  ctx.textAlign='right';
+  for(let v=Math.ceil(xmin/20)*20;v<=xmax;v+=20){
+    ctx.fillText(v,ML-5,ty(v)+4);
+  }
+  ctx.fillStyle=cInk;ctx.font='12px DM Mono,monospace';
+  ctx.textAlign='center';
+  ctx.fillText('Baseline T1 (mmHg)',ML+PW/2,H-6);
+  ctx.save();ctx.translate(14,MT+PH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Follow-up T2 (mmHg)',0,0);ctx.restore();
+
+  // Legend (top-left)
+  const lx=ML+10,ly=MT+10;
+  ctx.font='10.5px DM Mono,monospace';ctx.textAlign='left';
+  ctx.strokeStyle=cA5;ctx.lineWidth=2;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(lx,ly+4);ctx.lineTo(lx+20,ly+4);ctx.stroke();
+  ctx.fillStyle=cInk2;ctx.fillText('E[Y|X]  (r = '+ST.r.toFixed(2)+')',lx+24,ly+8);
+  ctx.strokeStyle=cInk3;ctx.lineWidth=1;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(lx,ly+19);ctx.lineTo(lx+20,ly+19);ctx.stroke();
+  ctx.setLineDash([]);ctx.fillStyle=cInk2;ctx.fillText('Y = X  (no change)',lx+24,ly+23);
+  ctx.fillStyle=cA1+'dd';ctx.beginPath();ctx.arc(lx+4,ly+34,3.5,0,2*Math.PI);ctx.fill();
+  ctx.fillStyle=cInk2;ctx.fillText('≥ threshold (selected)',lx+12,ly+38);
+  ctx.fillStyle=cA2+'dd';ctx.beginPath();ctx.arc(lx+4,ly+49,3.5,0,2*Math.PI);ctx.fill();
+  ctx.fillStyle=cInk2;ctx.fillText('≤ mirror threshold',lx+12,ly+53);
+}
+
+function updateStats(){
+  if(!ST.data)return;
+  const hi=ST.data.filter(p=>p.hi);
+  const nSel=hi.length;
+  document.getElementById('kw-nsel').textContent=nSel;
+  document.getElementById('kw-thr').textContent=ST.threshold;
+
+  const z=((ST.threshold-ST.mu)/ST.sigma).toFixed(2);
+  document.getElementById('sl-z').textContent=(z>=0?'+':'')+z;
+  document.getElementById('eq-r').textContent=ST.r.toFixed(2);
+  document.getElementById('eq-thr').textContent=ST.threshold;
+  document.getElementById('eq-rtm').textContent=f1(-(1-ST.r)*(ST.threshold-ST.mu));
+
+  if(nSel<2){
+    ['kw-mx','kw-obs','kw-exp'].forEach(id=>document.getElementById(id).textContent='—');
+    document.getElementById('ex-rtm').textContent='—';
+    return;
+  }
+  const mxHi=hi.reduce((s,p)=>s+p.x,0)/nSel;
+  const myHi=hi.reduce((s,p)=>s+p.y,0)/nSel;
+  const diff=myHi-mxHi;
+  const expDiff=(ST.r-1)*(mxHi-ST.mu);
+
+  document.getElementById('kw-mx').textContent=f1(mxHi)+' mmHg';
+  document.getElementById('kw-obs').textContent=f1(diff)+' mmHg';
+  document.getElementById('kw-exp').textContent=f1(expDiff)+' mmHg';
+  document.getElementById('ex-rtm').textContent=f1(Math.abs(diff));
+  document.getElementById('ins-diff').textContent=f1(Math.abs(diff));
+  document.getElementById('ins-exp').textContent=f1(Math.abs(expDiff));
+}
+
+function updateLabels(){
+  document.getElementById('ex-n').textContent=ST.n;
+  document.getElementById('ex-thr').textContent=ST.threshold;
+}
+
+function recompute(){
+  ST.data=genData();
+  drawCanvas();
+  updateStats();
+  updateLabels();
+}
+
+function onSl(key,el){
+  ST[key]=parseFloat(el.value);
+  const d=document.getElementById('val-'+key);
+  if(d) d.textContent=key==='r'?ST[key].toFixed(2):ST[key];
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  recompute();
+}
+
+const PRESETS={
+  A:{n:400,r:1.00,sigma:20,threshold:160},
+  B:{n:400,r:0.70,sigma:20,threshold:160},
+  C:{n:400,r:0.70,sigma:20,threshold:175},
+  D:{n:400,r:0.40,sigma:20,threshold:160},
+};
+
+function setPreset(k){
+  const p=PRESETS[k];if(!p)return;
+  Object.assign(ST,p);
+  document.getElementById('sl-n').value=ST.n;document.getElementById('val-n').textContent=ST.n;
+  document.getElementById('sl-r').value=ST.r;document.getElementById('val-r').textContent=ST.r.toFixed(2);
+  document.getElementById('sl-sigma').value=ST.sigma;document.getElementById('val-sigma').textContent=ST.sigma;
+  document.getElementById('sl-threshold').value=ST.threshold;document.getElementById('val-threshold').textContent=ST.threshold;
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pre-'+k).classList.add('active');
+  recompute();
+}
+
+function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
+
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+
+  recompute();
+}
+
+setPreset('B');
+</script>
+</body>
+</html>

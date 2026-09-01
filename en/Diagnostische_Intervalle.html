@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnostic Intervals — Single-Case Assessment</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--warm:#c8a96e;
+  --accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;--warm:#c8a96e;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+
+select{font-family:'DM Mono',monospace;font-size:.82rem;background:var(--bg);color:var(--ink);
+  border:1px solid var(--border);padding:.3rem .5rem;width:100%;cursor:pointer;margin-bottom:.3rem}
+select:focus{outline:1px solid var(--accent)}
+
+.info-box{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.7;
+  background:var(--bg);border:1px solid var(--grid);padding:.55rem .7rem;margin-top:.4rem}
+.info-box strong{color:var(--ink)}
+
+.p-above-box{background:var(--bg);border:1px solid var(--a2);padding:.5rem .7rem;margin-top:.5rem;
+  font-family:'DM Mono',monospace;font-size:.82rem}
+.p-above-label{color:var(--ink3);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem}
+.p-above-val{color:var(--a2);font-size:1.1rem;font-weight:500}
+.p-above-interp{color:var(--ink2);font-size:.75rem;margin-top:.25rem;line-height:1.5}
+
+/* canvas */
+#canvas-wrap{position:relative;width:100%;cursor:crosshair}
+#cv{width:100%;display:block}
+
+/* results table */
+.res-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.85rem;margin-top:1rem}
+.res-table th{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);
+  border-bottom:1px solid var(--grid);padding:.3rem .6rem;text-align:left}
+.res-table td{padding:.35rem .6rem;border-bottom:1px solid var(--grid)}
+.res-table th:not(:first-child){text-align:right}
+.res-table td:not(:first-child){text-align:right;font-weight:500}
+.res-table .row-aq td:not(:first-child){color:var(--a1)}
+.res-table .row-reg td:not(:first-child){color:var(--a3)}
+.res-table .row-cri td:not(:first-child){color:var(--a2)}
+.row-hd{background:var(--panel)}
+.row-hd td{color:var(--ink2);font-size:.77rem;font-style:italic}
+
+/* interpretation section */
+.interp-select-row{display:flex;gap:.6rem;align-items:center;margin-top:1.4rem;margin-bottom:.5rem}
+.interp-select-row label{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);white-space:nowrap}
+.interp-select-row select{flex:1;margin-bottom:0}
+
+#text-output{font-family:'Fraunces',Georgia,serif;font-size:.92rem;line-height:1.8;color:var(--ink);
+  background:var(--panel);border:1px solid var(--grid);padding:1rem 1.2rem;white-space:pre-wrap}
+
+.copy-btn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.25rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);margin-top:.4rem;letter-spacing:.04em}
+.copy-btn:hover{background:var(--ink);color:var(--bg)}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;margin-bottom:.6rem;font-family:'DM Mono',monospace;font-size:.75rem}
+.legend-item{display:flex;align-items:center;gap:.35rem}
+.legend-line{width:22px;height:3px;border-radius:1px}
+.legend-dash{width:22px;height:2px;border-top:2px dashed}
+
+/* section heading */
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.5rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+/* help panel */
+.help-panel{background:var(--panel);border:1px solid var(--grid);padding:.8rem 1rem;margin-top:.8rem;display:none}
+.help-panel.open{display:block}
+.help-panel p{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75;margin-bottom:.5rem}
+.help-panel p:last-child{margin-bottom:0}
+.help-panel strong{color:var(--ink)}
+.help-formula{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--grid);
+  padding:.35rem .7rem;margin:.35rem 0;color:var(--a2)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula2{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+.gk{text-transform:none!important}
+/* Learn cards */
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+@media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Diagnostic <em>Intervals</em> — Single-Case Assessment</h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Scale</div>
+    <select id="sel-scale" onchange="onScaleChange()">
+      <option value="iq">IQ scores (μ=100, σ=15)</option>
+      <option value="sw">Standard scores (μ=100, σ=10)</option>
+      <option value="t">T scores (μ=50, σ=10)</option>
+      <option value="z">z scores (μ=0, σ=1)</option>
+      <option value="stan">Stanine (μ=5, σ=2)</option>
+      <option value="wp">Scaled scores (μ=10, σ=3)</option>
+      <option value="c">C scores (μ=5, σ=2)</option>
+      <option value="custom">— Custom scaling —</option>
+    </select>
+    <div id="custom-scale-row" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.35rem">
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.12rem">Mean μ</div>
+          <input type="number" id="inp-mu" value="100" step="1"
+            oninput="onCustomScale()"
+            style="font-family:'DM Mono',monospace;font-size:.82rem;background:var(--bg);color:var(--ink);border:1px solid var(--border);padding:.28rem .4rem;width:100%;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.12rem">SD σ</div>
+          <input type="number" id="inp-sigma" value="15" min="0.01" step="1"
+            oninput="onCustomScale()"
+            style="font-family:'DM Mono',monospace;font-size:.82rem;background:var(--bg);color:var(--ink);border:1px solid var(--border);padding:.28rem .4rem;width:100%;outline:none;box-sizing:border-box">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Input</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">Test Score X</span>
+        <span class="slider-val" id="lbl-x">115</span>
+      </div>
+      <input type="range" id="sl-x" min="55" max="145" step="1" value="115" oninput="onInput()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">Reliability r<sub>xx</sub></span>
+        <span class="slider-val" id="lbl-rxx">0.85</span>
+      </div>
+      <input type="range" id="sl-rxx" min="0.50" max="0.99" step="0.01" value="0.85" oninput="onInput()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">Prior SD</span>
+        <span class="slider-val" id="lbl-sdp">15</span>
+      </div>
+      <input type="range" id="sl-sdp" min="1" max="100" step="0.5" value="15" oninput="onInput()">
+      <div style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);margin-top:.25rem">
+        Default: σ = <span id="note-sigma">15</span> (≡ regression hypothesis when ≈ σ·√r<sub>xx</sub>)
+      </div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Bayesian Cutoff T</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">Cutoff T</span>
+        <span class="slider-val" id="lbl-t">112</span>
+      </div>
+      <input type="range" id="sl-t" min="55" max="145" step="1" value="112" oninput="onInput()">
+    </div>
+    <div class="p-above-box">
+      <div class="p-above-label">P(<span class="gk">τ</span> &gt; T | X)</div>
+      <div class="p-above-val" id="p-above">—</div>
+      <div class="p-above-interp" id="p-above-interp"></div>
+    </div>
+    <div class="info-box" style="margin-top:.5rem">
+      The line can also be moved by click/drag in the plot.
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Metrics</div>
+    <table class="res-table" id="kw-table">
+      <tr><td colspan="2" style="color:var(--ink3);font-size:.7rem;font-family:'DM Mono',monospace;padding-bottom:.1rem">Measurement Error</td></tr>
+      <tr><td style="color:var(--ink2);font-size:.8rem">SEM</td><td id="kw-sem">—</td></tr>
+      <tr><td colspan="2" style="color:var(--ink3);font-size:.7rem;font-family:'DM Mono',monospace;padding-top:.35rem;padding-bottom:.1rem">Regression Hypothesis</td></tr>
+      <tr><td style="color:var(--a3);font-size:.8rem">τ̂ (regression estimator)</td><td id="kw-xreg" style="color:var(--a3)">—</td></tr>
+      <tr><td style="color:var(--ink2);font-size:.8rem">SE<sub>reg</sub></td><td id="kw-sereg">—</td></tr>
+      <tr><td colspan="2" style="color:var(--ink3);font-size:.7rem;font-family:'DM Mono',monospace;padding-top:.35rem;padding-bottom:.1rem">Bayesian Posterior</td></tr>
+      <tr><td style="color:var(--a2);font-size:.8rem">τ̂ (posterior mean)</td><td id="kw-taubayes" style="color:var(--a2)">—</td></tr>
+      <tr><td style="color:var(--ink2);font-size:.8rem">SD<sub>posterior</sub></td><td id="kw-sdbayes">—</td></tr>
+      <tr id="kw-equiv-note" style="display:none"><td colspan="2" style="color:var(--a6);font-size:.72rem;font-family:'DM Mono',monospace;font-style:italic">≡ regression hypothesis (prior SD ≈ σ·√r<sub>xx</sub>)</td></tr>
+      <tr><td colspan="2" style="color:var(--ink3);font-size:.7rem;font-family:'DM Mono',monospace;padding-top:.35rem;padding-bottom:.1rem">Observation</td></tr>
+      <tr><td style="color:var(--ink2);font-size:.8rem">Percentile Rank (X)</td><td id="kw-pr">—</td></tr>
+    </table>
+  </div>
+
+</div><!-- /sidebar -->
+
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Running Example</div>
+    <div class="story-vars">
+      <span class="sv">Person</span><span class="sd">Child undergoing IQ testing (Wechsler scale, μ=100, σ=15)</span>
+      <span class="sv">X</span><span class="sd">Observed test score = 115 (single measurement, 1 SD above μ)</span>
+      <span class="sv">r_xx</span><span class="sd">Subtest reliability = 0.85</span>
+      <span class="sv">SEM</span><span class="sd">Standard error of measurement = σ·√(1−r_xx) = 15·√0.15 ≈ 5.81</span>
+    </div>
+    <div class="story-q">In what range does this child's true IQ lie with 95% probability — and why do the three methods yield different intervals even though all use the same test score?</div>
+  </div>
+
+  <div class="sec-h">Distributions &amp; Intervals</div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dash" style="border-color:var(--ink3)"></span> Population distribution</span>
+    <span class="legend-item"><span class="legend-dash" style="border-color:var(--a4)"></span> Prior (background knowledge)</span>
+    <span class="legend-item"><span class="legend-line" style="background:var(--a1);opacity:.9"></span> Likelihood</span>
+    <span class="legend-item"><span class="legend-line" style="background:var(--a2)"></span> Posterior / CrI</span>
+  </div>
+
+  <div id="canvas-wrap">
+    <canvas id="cv" height="420"></canvas>
+  </div>
+
+  <div class="sec-h">Results Table</div>
+
+  <table class="res-table">
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Point Estimate</th>
+        <th>Lower Bound</th>
+        <th>Upper Bound</th>
+        <th>Width</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-hd"><td colspan="5">95% Intervals</td></tr>
+      <tr class="row-aq">
+        <td>CI Equivalence Hypothesis</td>
+        <td id="t-aq-est">—</td>
+        <td id="t-aq-lo">—</td>
+        <td id="t-aq-hi">—</td>
+        <td id="t-aq-w">—</td>
+      </tr>
+      <tr class="row-reg">
+        <td>CI Regression Hypothesis</td>
+        <td id="t-reg-est">—</td>
+        <td id="t-reg-lo">—</td>
+        <td id="t-reg-hi">—</td>
+        <td id="t-reg-w">—</td>
+      </tr>
+      <tr class="row-cri">
+        <td>Bayesian CrI</td>
+        <td id="t-cri-est">—</td>
+        <td id="t-cri-lo">—</td>
+        <td id="t-cri-hi">—</td>
+        <td id="t-cri-w">—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="interp-select-row">
+    <label>Interpretation model:</label>
+    <select id="sel-model" onchange="onInput()">
+      <option value="std">Standard model (±1σ / ±2σ)</option>
+      <option value="mar">Marburg model (±0.5σ / ±1.5σ)</option>
+      <option value="stan">Stanine model (±0.75σ / ±1.75σ)</option>
+    </select>
+    <label>Interval:</label>
+    <select id="sel-interp-ki" onchange="onInput()">
+      <option value="aq">CI Equivalence</option>
+      <option value="reg">CI Regression</option>
+      <option value="cri">CrI (Bayes)</option>
+    </select>
+  </div>
+
+  <div id="text-output"></div>
+  <button class="copy-btn" onclick="copyText()">Copy</button>
+
+  <div class="learn-section">
+    <div class="sec-h">Concepts</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">Why an Interval Instead of a Point Value?</div>
+        <div class="lcard-body">Every measurement contains measurement error — the observed value <strong>X</strong> is not the true value <strong>τ</strong>. The size of the uncertainty is given by the <strong>standard error of measurement</strong>: <code>SEM = σ · √(1 − r_xx)</code>. The <em>less reliable</em> the test (small r_xx), the larger the SEM and the wider the interval. So instead of a single point value ("the IQ is 115"), one states a range of uncertainty — but <strong>what exactly this range means depends on the method</strong> (frequentist CI vs. Bayesian CrI). That's exactly the difference this tool shows.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">CI per the Equivalence Hypothesis</div>
+        <div class="lcard-body">The classical CTT confidence interval, <strong>centered on the observed value X</strong>: <code>CI = X ± 1.96 · SEM</code>. Assumption: X is an unbiased estimator of τ (observed = true value "on average"). Frequentist interpretation: over infinitely many repetitions, this interval would contain the true value in 95% of cases.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">CI per the Regression Hypothesis</div>
+        <div class="lcard-body">Accounts for <strong>regression to the mean</strong>: extreme test scores contain more measurement error, so the best estimator sits closer to the mean. <code><span class="gl-hat">τ</span> = μ + r_xx · (X − μ)</code> always lies between X and μ; <code>SE_reg = σ · √(r_xx · (1 − r_xx))</code>. Compared to the equivalence CI, the interval is shifted toward the mean and somewhat narrower. <a class="xlink" href="Regression_zur_Mitte.html" target="_blank" rel="noopener">→ Regression to the Mean</a></div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Bayesian CrI (Credible Interval)</div>
+        <div class="lcard-body">Prior <code>N(μ, SD_prior)</code> + likelihood <code>N(X, SEM)</code> → posterior via precision weighting. The estimator <span class="gl-hat">τ</span> is a weighted mean of μ and X (weight = 1/variance). With <code>SD_prior = σ·√r_xx</code>, the CrI exactly matches the regression CI; with a flat prior, it approaches the equivalence CI. The advantage: <strong>direct</strong> probability statements <code>P(τ &gt; T | X)</code>.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Which Interval — and How to Interpret It?</div>
+        <div class="lcard-body"><strong>Equivalence:</strong> when you consider X unbiased and only want to represent measurement uncertainty. <strong>Regression:</strong> when you need the best <em>corrected</em> estimate of the true value (single-case assessment, progress monitoring). <strong>Bayes:</strong> when you want to incorporate prior knowledge and answer cutoff questions directly. Caution: the frequentist CI says something about <em>repetitions</em>, the CrI about <em>credibility</em> for the specific case.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Context &amp; Related Tools</div>
+        <div class="lcard-body">SEM and reliability come from <strong>Classical Test Theory</strong>; the regression hypothesis is the application of regression to the mean to the single case; the CrI brings in the <strong>Bayesian</strong> perspective (prior knowledge, no multiple-testing problem with flexible cutoffs). <a class="xlink" href="KTT_Grundlagen.html" target="_blank" rel="noopener">→ CTT Foundations</a> · <a class="xlink" href="Regression_zur_Mitte.html" target="_blank" rel="noopener">→ Regression to the Mean</a></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- Hilfe-Overlay -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Diagnostic Intervals — Help</div>
+    <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+
+    <div class="help-sh">Example</div>
+    <p class="help-p">A child scores an IQ of X=115 (Wechsler, μ=100, σ=15, r_xx=0.85). The standard error of measurement is SEM = 15·√(1−0.85) ≈ 5.81. Question: in what range does the true IQ lie — and what statement does the chosen interval allow?</p>
+
+    <div class="help-sh">CI Equivalence Hypothesis</div>
+    <p class="help-p">The interval is centered on the observed test score X. Assumption: X is an unbiased estimator of the true value τ. The classical CTT confidence interval.</p>
+    <span class="help-formula2">CI = X ± 1.96 · SEM  &nbsp;  (SEM = σ · √(1 − r_xx))</span>
+    <p class="help-p">In the example: 115 ± 1.96 · 5.81 → [103.6, 126.4]. Interpretation: under repeated testing (n → ∞), this interval would contain the true value in 95% of cases.</p>
+
+    <div class="help-sh">CI Regression Hypothesis</div>
+    <p class="help-p">The interval is centered on the regressed estimate τ̂, not on the observed X. Accounts for <strong>regression to the mean</strong>: extreme test scores have more measurement error than values near the mean — that's why τ̂ always lies between X and μ.</p>
+    <span class="help-formula2">τ̂ = μ + r_xx · (X − μ)  &nbsp;  SE_reg = σ · √(r_xx · (1 − r_xx))</span>
+    <p class="help-p">In the example: τ̂ = 100 + 0.85 · (115−100) = 112.75. SE_reg = 15·√(0.85·0.15) ≈ 5.36. CI_reg = 112.75 ± 1.96 · 5.36 → [102.2, 123.3]. The location and width sit closer to μ than the equivalence-hypothesis CI.</p>
+
+    <div class="help-sh">Bayesian CrI (Credible Interval)</div>
+    <p class="help-p">Prior N(μ, SD_prior) + likelihood N(X, SEM) → posterior via precision weighting. The posterior is a weighted mean of prior mean μ and observed X, where the weight is inversely proportional to the variance.</p>
+    <span class="help-formula2">w_data = 1/SEM²  &nbsp;  w_prior = 1/SD_prior²</span>
+    <span class="help-formula2">τ̂ = (μ·w_prior + X·w_data) / (w_prior + w_data)  &nbsp;  SD_post = √(1/(w_prior+w_data))</span>
+    <p class="help-p"><strong>What does SD_prior control?</strong> SD_prior indicates how far the true value τ is allowed to deviate from the population mean μ according to prior knowledge. <em>Large</em> SD_prior: weak, broad prior knowledge — the prior barely pulls, and the location and width of the CrI are governed almost entirely by the data (X and SEM). <em>Small</em> SD_prior: strong prior knowledge — τ̂ and the CrI are pulled noticeably toward μ. Recommendation: SD_prior = σ·√r_xx is the Bayesian equivalent of the regression hypothesis and, given known reliability, a well-justified choice. SD_prior = σ (population SD) is a neutral, population-based starting point.</p>
+    <p class="help-p">In the example (SD_prior=σ=15, X=115, r_xx=0.85): w_prior=1/225, w_data=1/33.75 → τ̂ ≈ 113.1, SD_post ≈ 5.42. CrI ≈ [102.5, 123.7]. The CrI allows direct probability statements: P(τ &gt; 110 | X=115) can be read directly.</p>
+    <p class="help-p"><strong>Special cases:</strong><br>
+    — SD_prior = σ·√r_xx: the CrI matches the regression-hypothesis CI exactly (same location and width).<br>
+    — SD_prior = σ (default): the CrI's location (τ̂ ≈ 113) and width sit close to the regression-hypothesis CI (τ̂=112.75), because the SEM is small under good reliability and the data dominate the weighting. Not to be confused with the equivalence-hypothesis CI, which is centered on X=115.<br>
+    — SD_prior → ∞ (flat prior): CrI → equivalence-hypothesis CI (location at X, width SEM-based).<br>
+    The Bayesian advantage: direct probability statements about any cutoff without frequentist detours.</p>
+    <div class="help-sh">Bayesian Cutoff — a Flexible Decision Question</div>
+    <p class="help-p">Once the posterior is computed, one can ask directly for <em>any</em> cutoff T: <strong>how likely is it that the true value τ lies above (or below) T?</strong></p>
+    <span class="help-formula2">P(τ &gt; T | X) = 1 − Φ((T − τ̂) / SD_post)</span>
+    <p class="help-p">In the example (τ̂≈113, SD_post≈5.42): at cutoff T=112, P(τ &gt; 112 | X=115) ≈ 58% — even though the observed X=115 is above T, considerable uncertainty remains due to measurement imprecision. Moving T to 100 (the average) gives P(τ &gt; 100 | X=115) ≈ 99%. These values can be read directly in the tool by dragging the cutoff.</p>
+    <p class="help-p"><strong>Interpretation:</strong> P(τ &gt; T | X) = 87% means: given the observed test score and the prior knowledge, the true value lies above T with 87% probability. This statement is direct and substantively interpretable — unlike a p-value, which refers to hypothetical repetitions under H₀.</p>
+    <p class="help-p"><strong>No Multiple Testing:</strong> a frequentist test is tied to an α. If you ask sequentially "Is τ &gt; T₁?", "Is τ &gt; T₂?", "Is τ &gt; T₃?", the probability of a Type I error rises — and an α correction (Bonferroni etc.) becomes necessary. The posterior, by contrast, is computed once: all cutoff questions draw on the same distribution, without further questions increasing the error risk. The cutoff can therefore be chosen freely — clinically, for support planning, or administratively — without a statistical price for that flexibility.</p>
+    <p class="help-p" style="color:var(--ink3);font-size:.74rem">Wagenmakers, E.-J., Morey, R. D., &amp; Lee, M. D. (2016). Bayesian benefits for the pragmatic researcher. Current Directions in Psychological Science, 25, 169–176.</p>
+  </div>
+</div>
+
+<script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
+// ── SCALES ──────────────────────────────────────────────────────
+const SCALES={
+  iq:  {label:'IQ score',      mu:100,sigma:15,step:1,   dec:0, sdpMin:1,  sdpMax:30,sdpStep:0.5},
+  sw:  {label:'standard score',mu:100,sigma:10,step:1,   dec:0, sdpMin:1,  sdpMax:20,sdpStep:0.5},
+  t:   {label:'T score',       mu:50, sigma:10,step:1,   dec:0, sdpMin:1,  sdpMax:20,sdpStep:0.5},
+  z:   {label:'z score',       mu:0,  sigma:1, step:0.1, dec:2, sdpMin:0.1,sdpMax:3, sdpStep:0.05},
+  stan:{label:'stanine',       mu:5,  sigma:2, step:0.1, dec:0, clamp:[1,9], fixedMin:1,fixedMax:9,  sdpMin:0.1,sdpMax:5, sdpStep:0.1},
+  wp:  {label:'scaled score',  mu:10, sigma:3, step:0.5, dec:1, sdpMin:0.5,sdpMax:6, sdpStep:0.25},
+  c:   {label:'C score',       mu:5,  sigma:2, step:0.1, dec:0, clamp:[0,10],fixedMin:0,fixedMax:10, sdpMin:0.1,sdpMax:5, sdpStep:0.1},
+};
+
+// Classification boundaries in z-score units: [very_low, low, avg_lo, avg_hi, high, very_high]
+const MODELS={
+  std: {name:'Standard model', bounds:[-2,-1,1,2], labels:['far below average','below average','average','above average','far above average']},
+  mar: {name:'Marburg model', bounds:[-1.5,-0.5,0.5,1.5], labels:['very low','low','average','high','very high']},
+  stan:{name:'Stanine model', bounds:[-1.75,-0.75,0.75,1.75], labels:['very low','low','average','high','very high']},
+};
+
+let sc = SCALES.iq;
+let scKey = 'iq';
+
+// ── HELPERS ─────────────────────────────────────────────────────
+function normalPDF(x,mu,sigma){
+  const z=(x-mu)/sigma;
+  return Math.exp(-0.5*z*z)/(sigma*Math.sqrt(2*Math.PI));
+}
+function normalCDF(z){
+  // Abramowitz & Stegun approximation
+  const t=1/(1+0.2316419*Math.abs(z));
+  const d=0.3989423*Math.exp(-z*z/2);
+  const p=d*t*(0.3193815+t*(-0.3565638+t*(1.7814779+t*(-1.8212560+t*1.3302744))));
+  return z>0?1-p:p;
+}
+function fmt(v,d){
+  if(isNaN(v)) return '—';
+  const dec=d??sc.dec;
+  if(dec===0 && sc.clamp) v=Math.round(Math.max(sc.clamp[0],Math.min(sc.clamp[1],v)));
+  return v.toFixed(dec);
+}
+function fmtPR(z){return (normalCDF(z)*100).toFixed(1)+'%'}
+
+function classifyZ(z,modelKey){
+  const m=MODELS[modelKey];
+  const b=m.bounds;
+  if(z<b[0]) return m.labels[0];
+  if(z<b[1]) return m.labels[1];
+  if(z<=b[2]) return m.labels[2];
+  if(z<=b[3]) return m.labels[3];
+  return m.labels[4];
+}
+function classifyInterval(zLo,zHi,modelKey){
+  const lo=classifyZ(zLo,modelKey);
+  const hi=classifyZ(zHi,modelKey);
+  return lo===hi?lo:lo+' to '+hi;
+}
+
+// ── TOPBAR ──────────────────────────────────────────────────────
+function toggleTheme(){
+  const d=document.documentElement;
+  const dark=d.getAttribute('data-theme')==='dark';
+  d.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  draw();
+}
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
+}
+
+// ── SCALE CHANGE ────────────────────────────────────────────────
+function buildSc(){
+  const key   = document.getElementById('sel-scale').value;
+  const mu    = parseFloat(document.getElementById('inp-mu').value);
+  const sigma = parseFloat(document.getElementById('inp-sigma').value);
+  if(isNaN(mu) || isNaN(sigma) || sigma <= 0) return;
+
+  const base   = SCALES[key] || SCALES.iq;
+  const dec    = sigma >= 5 ? 0 : sigma >= 1 ? 1 : 2;
+  const step   = sigma >= 5 ? 1 : sigma >= 1 ? 0.5 : 0.1;
+  const isCustom = !SCALES[key]
+    || Math.abs(mu - SCALES[key].mu) > 0.001
+    || Math.abs(sigma - SCALES[key].sigma) > 0.001;
+
+  sc = {
+    ...base,
+    mu, sigma, dec, step,
+    min: base.fixedMin !== undefined ? base.fixedMin : (step >= 1 ? Math.floor(mu - 3.5*sigma) : mu - 3.5*sigma),
+    max: base.fixedMax !== undefined ? base.fixedMax : (step >= 1 ? Math.ceil(mu + 3.5*sigma)  : mu + 3.5*sigma),
+    sdpMin:  base.sdpMin  ?? Math.max(0.1, +(sigma*0.1).toFixed(2)),
+    sdpMax:  base.sdpMax  ?? +(sigma*3).toFixed(1),
+    sdpStep: base.sdpStep ?? Math.max(0.05, +(sigma/20).toFixed(2)),
+    label: isCustom ? 'Test' : base.label,
+  };
+  scKey = key;
+
+  const slx  = document.getElementById('sl-x');
+  const slt  = document.getElementById('sl-t');
+  const slsdp= document.getElementById('sl-sdp');
+  slx.min=sc.min;  slx.max=sc.max;  slx.step=sc.step;
+  slt.min=sc.min;  slt.max=sc.max;  slt.step=sc.step;
+  slsdp.min=sc.sdpMin; slsdp.max=sc.sdpMax; slsdp.step=sc.sdpStep;
+  document.getElementById('note-sigma').textContent = sigma.toFixed(dec>0?dec+1:0);
+}
+
+function onScaleChange(){
+  const key       = document.getElementById('sel-scale').value;
+  const customRow = document.getElementById('custom-scale-row');
+  if(key === 'custom'){
+    customRow.style.display = '';
+    onCustomScale(); // rebuild sc from current inp-mu/inp-sigma, clamp sliders, redraw
+    return;
+  }
+  customRow.style.display = 'none';
+  const s = SCALES[key];
+  document.getElementById('inp-mu').value    = s.mu;
+  document.getElementById('inp-sigma').value = s.sigma;
+  buildSc();
+  const defX={iq:115,sw:112,t:57,z:1.0,stan:6.5,wp:12,c:6.5};
+  const defT={iq:112,sw:110,t:55,z:0.8,stan:6,wp:11,c:6};
+  const slx  = document.getElementById('sl-x');
+  const slt  = document.getElementById('sl-t');
+  const slsdp= document.getElementById('sl-sdp');
+  slx.value  = defX[key] ?? sc.mu + sc.sigma;
+  slt.value  = defT[key] ?? sc.mu + 0.5*sc.sigma;
+  slsdp.value= sc.sigma;
+  onInput();
+}
+
+function onCustomScale(){
+  buildSc();
+  // clamp slider values into new range
+  const slx  = document.getElementById('sl-x');
+  const slt  = document.getElementById('sl-t');
+  const slsdp= document.getElementById('sl-sdp');
+  slx.value  = Math.max(sc.min, Math.min(sc.max, parseFloat(slx.value)  || sc.mu));
+  slt.value  = Math.max(sc.min, Math.min(sc.max, parseFloat(slt.value)  || sc.mu));
+  slsdp.value= Math.max(sc.sdpMin, Math.min(sc.sdpMax, parseFloat(slsdp.value) || sc.sigma));
+  onInput();
+}
+
+// ── MAIN COMPUTE ────────────────────────────────────────────────
+let lastRes={};
+
+function compute(){
+  const X   = parseFloat(document.getElementById('sl-x').value);
+  const rxx = parseFloat(document.getElementById('sl-rxx').value);
+  const T   = parseFloat(document.getElementById('sl-t').value);
+  const sdp = parseFloat(document.getElementById('sl-sdp').value);
+  const {mu,sigma} = sc;
+
+  // KI Äquivalenzhypothese
+  const sem    = sigma * Math.sqrt(1 - rxx);
+  const ki_aq  = [X - 1.96*sem, X + 1.96*sem];
+
+  // KI Regressionshypothese
+  const s_true    = sigma * Math.sqrt(rxx);
+  const x_reg     = mu + rxx*(X - mu);
+  const s_post_reg= sigma * Math.sqrt(rxx*(1 - rxx));
+  const ki_reg    = [x_reg - 1.96*s_post_reg, x_reg + 1.96*s_post_reg];
+
+  // Flexible Bayesian CrI: Prior N(mu, sdp), Likelihood N(X, sem)
+  const w_data    = 1/(sem*sem);
+  const w_prior   = 1/(sdp*sdp);
+  const tau_bayes = (mu*w_prior + X*w_data) / (w_prior + w_data);
+  const sd_bayes  = Math.sqrt(1/(w_prior + w_data));
+  const cri       = [tau_bayes - 1.96*sd_bayes, tau_bayes + 1.96*sd_bayes];
+
+  const p_above   = 1 - normalCDF((T - tau_bayes)/sd_bayes);
+  const zX        = (X - mu)/sigma;
+  const pr        = normalCDF(zX)*100;
+
+  return {X,rxx,T,sdp,mu,sigma,sem,s_true,x_reg,s_post_reg,ki_aq,ki_reg,tau_bayes,sd_bayes,cri,p_above,zX,pr};
+}
+
+function onInput(){
+  const r = compute();
+  lastRes = r;
+  const dp2 = sc.dec>0 ? sc.dec+1 : 2;
+
+  // slider labels
+  document.getElementById('lbl-x').textContent   = fmt(r.X, sc.dec);
+  document.getElementById('lbl-rxx').textContent = parseFloat(document.getElementById('sl-rxx').value).toFixed(2);
+  document.getElementById('lbl-t').textContent   = fmt(r.T, sc.dec);
+  document.getElementById('lbl-sdp').textContent = fmt(r.sdp, dp2);
+
+  // p above
+  const pct = (r.p_above*100).toFixed(1);
+  document.getElementById('p-above').textContent = pct+'%';
+  document.getElementById('p-above-interp').textContent =
+    `Per the posterior distribution, the true value lies above the cutoff ${fmt(r.T,sc.dec)} with ${pct}% probability.`;
+
+  // sidebar stats
+  document.getElementById('kw-sem').textContent      = fmt(r.sem, dp2);
+  document.getElementById('kw-xreg').textContent     = fmt(r.x_reg, sc.dec);
+  document.getElementById('kw-sereg').textContent    = fmt(r.s_post_reg, dp2);
+  document.getElementById('kw-taubayes').textContent = fmt(r.tau_bayes, sc.dec);
+  document.getElementById('kw-sdbayes').textContent  = fmt(r.sd_bayes, dp2);
+  document.getElementById('kw-pr').textContent       = r.pr.toFixed(1)+'%';
+
+  // equiv note: sdp ≈ s_true → Bayes ≡ Regression
+  const s_true_eq = r.sigma * Math.sqrt(r.rxx);
+  document.getElementById('kw-equiv-note').style.display =
+    Math.abs(r.sdp - s_true_eq) < s_true_eq*0.05 ? '' : 'none';
+
+  // result table
+  const d = sc.dec;
+  function setRow(pfx,est,lo,hi){
+    document.getElementById(`t-${pfx}-est`).textContent = fmt(est,d);
+    document.getElementById(`t-${pfx}-lo`).textContent  = fmt(lo,d);
+    document.getElementById(`t-${pfx}-hi`).textContent  = fmt(hi,d);
+    document.getElementById(`t-${pfx}-w`).textContent   = fmt(hi-lo, d>0?d:1);
+  }
+  setRow('aq',  r.X,         r.ki_aq[0],  r.ki_aq[1]);
+  setRow('reg', r.x_reg,     r.ki_reg[0], r.ki_reg[1]);
+  setRow('cri', r.tau_bayes, r.cri[0],    r.cri[1]);
+
+  updateText(r);
+  draw();
+}
+
+// ── TEXT OUTPUT ─────────────────────────────────────────────────
+function updateText(r){
+  const modelKey = document.getElementById('sel-model').value;
+  const kiSel    = document.getElementById('sel-interp-ki').value;
+  const m   = MODELS[modelKey];
+  const {mu,sigma} = sc;
+  const d   = sc.dec;
+  const dp2 = d>0 ? d+1 : 2;
+
+  let estVal, kiLo, kiHi, kiLabel, methodName;
+  if(kiSel==='aq'){
+    estVal=r.X;         kiLo=r.ki_aq[0];  kiHi=r.ki_aq[1];
+    kiLabel='95% confidence interval (equivalence hypothesis)'; methodName='equivalence hypothesis';
+  } else if(kiSel==='reg'){
+    estVal=r.x_reg;     kiLo=r.ki_reg[0]; kiHi=r.ki_reg[1];
+    kiLabel='95% confidence interval (regression hypothesis)'; methodName='regression hypothesis';
+  } else {
+    estVal=r.tau_bayes; kiLo=r.cri[0];    kiHi=r.cri[1];
+    kiLabel='95% credible interval (Bayesian)'; methodName='Bayesian estimator';
+  }
+
+  const zEst  = (estVal - mu)/sigma;
+  const zLo   = (kiLo - mu)/sigma;
+  const zHi   = (kiHi - mu)/sigma;
+  const prEst = (normalCDF(zEst)*100).toFixed(1);
+  const prX   = r.pr.toFixed(1);
+  const pct   = (r.p_above*100).toFixed(1);
+
+  const classEst = classifyZ(zEst, modelKey);
+  const classKI  = classifyInterval(zLo, zHi, modelKey);
+  const isCrI    = kiSel==='cri';
+  const isReg    = kiSel==='reg';
+
+  let txt = `Observed test score: ${sc.label} = ${fmt(r.X,d)} (PR = ${prX}%).\n`;
+  if(!isCrI && !isReg){
+    txt += `Estimated true value (${methodName}): ${sc.label} = ${fmt(estVal,d)} (PR = ${prEst}%) `;
+    txt += `with a ${kiLabel} [${fmt(kiLo,d)}, ${fmt(kiHi,d)}].\n`;
+  } else {
+    txt += `Estimated true value (${methodName}): ${sc.label} = ${fmt(estVal,d)} (PR = ${prEst}%) `;
+    txt += `with a ${kiLabel} [${fmt(kiLo,d)}, ${fmt(kiHi,d)}].\n`;
+    txt += `This estimate accounts for regression to the mean `;
+    txt += `(observation: ${fmt(r.X,d)}, population mean: ${fmt(mu,d)}).\n`;
+  }
+  txt += `Per the ${m.name}, the estimate is classified as "${classEst}". `;
+  txt += `The ${isCrI?'credible interval':'confidence interval'} [${fmt(kiLo,d)}, ${fmt(kiHi,d)}] `;
+  txt += `corresponds to the range "${classKI}".`;
+  if(isCrI){
+    txt += `\n\nGiven the data at hand and the prior (SD = ${fmt(r.sdp,dp2)}), `;
+    txt += `the most plausible 95% of true values lie between ${fmt(r.cri[0],d)} and ${fmt(r.cri[1],d)}. `;
+    txt += `The true value lies above the cutoff ${fmt(r.T,d)} with ${pct}% probability.`;
+  }
+  document.getElementById('text-output').textContent = txt;
+}
+
+function copyText(){
+  navigator.clipboard.writeText(document.getElementById('text-output').textContent);
+}
+
+// ── CANVAS ──────────────────────────────────────────────────────
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+
+function cssVar(name){
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function draw(){
+  const r = lastRes;
+  if(r.X === undefined) return;
+
+  const dpr = window.devicePixelRatio||1;
+  const W   = cv.parentElement.clientWidth;
+  const H   = 490;
+  cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px';
+  ctx.scale(dpr,dpr);
+
+  const ink   = cssVar('--ink');
+  const ink2  = cssVar('--ink2');
+  const ink3  = cssVar('--ink3');
+  const a1    = cssVar('--a1');
+  const a2    = cssVar('--a2');
+  const a3    = cssVar('--a3');
+  const a4    = cssVar('--a4');
+  const paper = cssVar('--paper');
+  const grid  = cssVar('--grid');
+
+  const pad         = {l:48, r:20, top:20};
+  const densH       = 250;
+  const axH         = 26;
+  const whiskerStep = 58;
+  const barsTop     = pad.top + densH + axH + 10;
+  const plotW       = W - pad.l - pad.r;
+
+  const {mu, sigma} = sc;
+  const xMin   = sc.min;
+  const xMax   = sc.max;
+  const xScale = v => (v-xMin)/(xMax-xMin)*plotW + pad.l;
+  const densBot = pad.top + densH;
+
+  // Dynamic Y scale: max density across all four curves + 8% headroom
+  const maxDens = Math.max(
+    normalPDF(mu,        mu,        sigma),
+    normalPDF(mu,        mu,        r.sdp),
+    normalPDF(r.X,       r.X,       r.sem),
+    normalPDF(r.tau_bayes, r.tau_bayes, r.sd_bayes)
+  ) * 1.08;
+  const scaleY = v => densBot - v*(densH-10)/maxDens;
+
+  // clear
+  ctx.fillStyle = paper;
+  ctx.fillRect(0,0,W,H);
+
+  // x axis
+  ctx.strokeStyle = ink3; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.l,densBot); ctx.lineTo(pad.l+plotW,densBot); ctx.stroke();
+
+  ctx.fillStyle = ink2; ctx.font = `11px 'DM Mono',monospace`; ctx.textAlign = 'center';
+  for(let z=-3; z<=3; z++){
+    const xv = mu + z*sigma;
+    const px = xScale(xv);
+    ctx.strokeStyle = ink3; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(px,densBot); ctx.lineTo(px,densBot+5); ctx.stroke();
+    ctx.fillText(fmt(xv,sc.dec), px, densBot+axH-4);
+  }
+
+  // ─ density curve drawing helpers ─
+  const N  = 500;
+  const dx = (xMax-xMin)/N;
+
+  function drawCurve(muC, sigC, color, lw, dash){
+    ctx.beginPath();
+    ctx.setLineDash(dash||[]);
+    ctx.strokeStyle = color; ctx.lineWidth = lw||1.5;
+    for(let i=0; i<=N; i++){
+      const xv = xMin+i*dx;
+      const py = scaleY(normalPDF(xv,muC,sigC));
+      i===0 ? ctx.moveTo(xScale(xv),py) : ctx.lineTo(xScale(xv),py);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function fillCurveSplit(muC, sigC, color, splitAt){
+    // lighter fill left of threshold, stronger fill right of threshold
+    [[xMin, splitAt,'2a'],[splitAt, xMax,'66']].forEach(([from,to,alpha])=>{
+      let fp = true;
+      ctx.beginPath(); ctx.fillStyle = color+alpha;
+      for(let i=0; i<=N; i++){
+        const xv = xMin+i*dx;
+        if(xv < from || xv > to) continue;
+        const py = scaleY(normalPDF(xv,muC,sigC));
+        if(fp){ ctx.moveTo(xScale(xv),densBot); ctx.lineTo(xScale(xv),py); fp=false; }
+        else ctx.lineTo(xScale(xv),py);
+      }
+      if(!fp){ ctx.lineTo(xScale(Math.min(to,xMax)),densBot); ctx.closePath(); ctx.fill(); }
+    });
+  }
+
+  // Population — dashed gray
+  drawCurve(mu, sigma, ink3, 1, [5,4]);
+  // Prior N(mu, sdp) — dashed purple
+  drawCurve(mu, r.sdp, a4, 1.5, [3,3]);
+  // Likelihood N(X, sem) — red
+  drawCurve(r.X, r.sem, a1, 2);
+  // Posterior fill then curve — blue (tool accent)
+  fillCurveSplit(r.tau_bayes, r.sd_bayes, a2, r.T);
+  drawCurve(r.tau_bayes, r.sd_bayes, a2, 2.5);
+
+  // ─ vertical markers ─
+  const lineBot = barsTop + 3*whiskerStep;
+
+  // Threshold T
+  const px_T = xScale(r.T);
+  ctx.save();
+  ctx.strokeStyle = ink; ctx.lineWidth = 1.5; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(px_T, pad.top); ctx.lineTo(px_T, lineBot); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = ink; ctx.font = `bold 11px 'DM Mono',monospace`; ctx.textAlign = 'center';
+  ctx.fillText('T='+fmt(r.T,sc.dec), px_T, pad.top+11);
+  ctx.restore();
+
+  // Observed X — thin dashed red
+  const px_X = xScale(r.X);
+  ctx.save();
+  ctx.strokeStyle = a1; ctx.lineWidth = 1.2; ctx.setLineDash([3,4]);
+  ctx.beginPath(); ctx.moveTo(px_X, pad.top+16); ctx.lineTo(px_X, densBot); ctx.stroke();
+  ctx.setLineDash([]);
+  // offset label if X and T are close
+  const labelOffX = Math.abs(px_X-px_T)<32 ? (px_X<px_T?-16:16) : 0;
+  ctx.fillStyle = a1; ctx.font = `bold 11px 'DM Mono',monospace`; ctx.textAlign = 'center';
+  ctx.fillText('X='+fmt(r.X,sc.dec), px_X+labelOffX, pad.top+27);
+  ctx.restore();
+
+  // Posterior mean — thin dashed blue
+  const px_tau = xScale(r.tau_bayes);
+  ctx.save();
+  ctx.strokeStyle = a2; ctx.lineWidth = 1; ctx.setLineDash([2,4]);
+  ctx.beginPath(); ctx.moveTo(px_tau, pad.top+30); ctx.lineTo(px_tau, densBot); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  // ─ whisker CI/CrI plots ─
+  function drawWhisker(rowIdx, lo, hi, center, color, label){
+    const midY  = barsTop + rowIdx*whiskerStep + 24;
+    const capH  = 8;
+    const pxLo  = xScale(lo);
+    const pxHi  = xScale(hi);
+    const pxC   = xScale(center);
+
+    // row label above whisker
+    ctx.fillStyle = ink2; ctx.font = `11px 'DM Mono',monospace`; ctx.textAlign = 'left';
+    ctx.fillText(label, pad.l+2, barsTop+rowIdx*whiskerStep+10);
+
+    // horizontal line
+    ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(pxLo,midY); ctx.lineTo(pxHi,midY); ctx.stroke();
+
+    // end caps
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(pxLo,midY-capH); ctx.lineTo(pxLo,midY+capH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pxHi,midY-capH); ctx.lineTo(pxHi,midY+capH); ctx.stroke();
+
+    // center dot (filled circle with paper core)
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(pxC,midY,5.5,0,2*Math.PI); ctx.fill();
+    ctx.fillStyle = paper;
+    ctx.beginPath(); ctx.arc(pxC,midY,2.5,0,2*Math.PI); ctx.fill();
+
+    // center value above dot
+    ctx.fillStyle = color; ctx.font = `bold 11px 'DM Mono',monospace`; ctx.textAlign = 'center';
+    ctx.fillText(fmt(center,sc.dec), pxC, midY-capH-5);
+
+    // bound values below
+    ctx.font = `10px 'DM Mono',monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText(fmt(lo,sc.dec), pxLo, midY+capH+13);
+    ctx.fillText(fmt(hi,sc.dec), pxHi, midY+capH+13);
+  }
+
+  drawWhisker(0, r.ki_aq[0],  r.ki_aq[1],  r.X,         a1, 'CI Equivalence Hypothesis');
+  drawWhisker(1, r.ki_reg[0], r.ki_reg[1], r.x_reg,     a3, 'CI Regression Hypothesis');
+  drawWhisker(2, r.cri[0],    r.cri[1],    r.tau_bayes, a2, 'CrI Bayesian (95%)');
+
+  // y axis label
+  ctx.save();
+  ctx.translate(13, pad.top+densH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillStyle = ink3; ctx.font = `10px 'DM Mono',monospace`; ctx.textAlign = 'center';
+  ctx.fillText('Density (relative)', 0, 0);
+  ctx.restore();
+}
+
+// ── CANVAS INTERACTION ──────────────────────────────────────────
+let dragging=false;
+
+function canvasX_to_value(clientX){
+  const rect=cv.getBoundingClientRect();
+  const px=clientX-rect.left;
+  const W=rect.width;
+  const pad_l=48, pad_r=20;
+  const plotW=W-pad_l-pad_r;
+  const xMin=sc.min, xMax=sc.max;
+  const frac=(px-pad_l)/plotW;
+  return xMin+frac*(xMax-xMin);
+}
+
+function setThresholdFromCanvas(clientX){
+  const val=canvasX_to_value(clientX);
+  const sl=document.getElementById('sl-t');
+  const clamped=Math.max(sc.min,Math.min(sc.max,val));
+  const stepped=Math.round(clamped/sc.step)*sc.step;
+  sl.value=stepped;
+  onInput();
+}
+
+cv.addEventListener('mousedown',e=>{dragging=true; setThresholdFromCanvas(e.clientX);});
+cv.addEventListener('mousemove',e=>{if(dragging) setThresholdFromCanvas(e.clientX);});
+cv.addEventListener('mouseup',()=>dragging=false);
+cv.addEventListener('mouseleave',()=>dragging=false);
+cv.addEventListener('touchstart',e=>{dragging=true; setThresholdFromCanvas(e.touches[0].clientX); e.preventDefault();},{passive:false});
+cv.addEventListener('touchmove',e=>{if(dragging) setThresholdFromCanvas(e.touches[0].clientX); e.preventDefault();},{passive:false});
+cv.addEventListener('touchend',()=>dragging=false);
+
+// ── INIT ────────────────────────────────────────────────────────
+window.addEventListener('resize',()=>draw());
+
+buildSc();
+onInput();
+document.querySelectorAll('td,.help-p,.help-formula2').forEach(el=>{el.innerHTML=fixDiacritics(el.innerHTML);});
+</script>
+</body>
+</html>

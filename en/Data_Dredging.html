@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Data Dredging — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;background:var(--a1);border-radius:50%;cursor:pointer}
+.reset-btn{font-family:'DM Mono',monospace;font-size:.74rem;padding:.45rem .7rem;width:100%;margin-top:.2rem;
+  border:1.5px solid var(--a2);background:transparent;cursor:pointer;color:var(--a2);transition:all .15s}
+.reset-btn:hover{background:var(--a2);color:var(--bg)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.3rem}
+.toggle-lbl{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.tg{font-family:'DM Mono',monospace;font-size:.72rem;padding:.25rem .6rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);width:74px;text-align:center}
+.tg.on{border-color:var(--a3);background:var(--a3);color:var(--bg)}
+
+.mode-tabs{display:flex;gap:.5rem;margin-bottom:1rem}
+.mode-tab{font-family:'DM Mono',monospace;font-size:.8rem;padding:.5rem .9rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s}
+.mode-tab.active{border-color:var(--a1);background:color-mix(in srgb,var(--a1) 12%,transparent);color:var(--a1);font-weight:500}
+
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a1);
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a1);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:.85rem}
+.metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);margin-bottom:.3rem;line-height:1.3}
+.metric-val{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:500;line-height:1}
+.metric-sub{font-family:'DM Mono',monospace;font-size:.64rem;color:var(--ink3);margin-top:.3rem;line-height:1.4}
+
+.formula{font-family:'DM Mono',monospace;font-size:.84rem;color:var(--ink2);background:var(--panel);
+  border:1px solid var(--grid);border-left:3px solid var(--a5);padding:.6rem .85rem;margin-bottom:.9rem;line-height:1.7}
+.formula b{color:var(--a1)} .formula .ok{color:var(--a3)}
+
+.dredge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.6rem;margin-bottom:.9rem}
+.dcell{border:1.5px solid var(--border);background:var(--panel);padding:.6rem .7rem;font-family:'DM Mono',monospace;line-height:1.45}
+.dcell .dn{font-size:.78rem;color:var(--ink2);display:block}
+.dcell .dr{font-size:.82rem;color:var(--ink3);margin-top:.3rem}
+.dcell.sig{border-color:var(--a1);background:color-mix(in srgb,var(--a1) 14%,transparent)}
+.dcell.sig .dn{color:var(--ink)} .dcell.sig .dr{color:var(--a1);font-weight:500}
+.dcell.bonf{border-style:dashed;opacity:.6}
+
+.hark{background:var(--paper);border:1.5px solid var(--a4);padding:.5rem 1.1rem .9rem;margin-bottom:.9rem}
+.hark-item{padding:.65rem 0;border-bottom:1px dashed var(--border)}
+.hark-item:last-of-type{border-bottom:none}
+.hark-head{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--a4);line-height:1.3;margin-bottom:.3rem}
+.hark-head b{color:var(--ink)}
+.hark-body{font-size:.9rem;line-height:1.62;color:var(--ink2)} .hark-body em{font-style:italic;color:var(--ink)}
+.hark-d{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.6rem;border-top:1px solid var(--grid);padding-top:.55rem}
+
+
+.r2-compare{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:.6rem}
+.r2-side{background:var(--panel);border:1px solid var(--grid);padding:.85rem .9rem;text-align:center}
+.r2-cap{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.03em;text-transform:uppercase;color:var(--ink3);line-height:1.4;min-height:2.6em}
+.r2-track{height:26px;background:var(--grid);margin:.6rem 0 .5rem;overflow:hidden}
+.r2-fill{height:100%;transition:width .35s;min-width:2px} .r2-fill.train{background:var(--a1)} .r2-fill.new{background:var(--a3)}
+.r2-num{font-family:'DM Mono',monospace;font-size:1.8rem;font-weight:500;line-height:1}
+.pp-row{display:grid;grid-template-columns:128px 1fr;gap:.7rem;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--grid)}
+.pp-name{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-bars{display:flex;flex-direction:column;gap:.3rem}
+.pp-bar{display:grid;grid-template-columns:72px 1fr 60px;align-items:center;gap:.45rem;font-family:'DM Mono',monospace;font-size:.68rem}
+.pp-lab{color:var(--ink3)} .pp-track{height:12px;background:var(--grid);overflow:hidden}
+.pp-fill{display:block;height:100%;min-width:1px} .pp-fill.train{background:var(--a1)} .pp-fill.new{background:color-mix(in srgb,var(--a3) 60%,transparent)}
+.pp-v{text-align:right;color:var(--ink2)}
+.step-note{font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);line-height:1.65;margin-top:.7rem;border-top:1px solid var(--grid);padding-top:.5rem}
+
+.verdict{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:500;padding:.7rem .95rem;margin-bottom:1rem;
+  border:1.5px solid;text-align:center;letter-spacing:.01em;line-height:1.5}
+.v-bad{color:var(--a1);border-color:var(--a1);background:color-mix(in srgb,var(--a1) 12%,transparent)}
+.v-flat{color:var(--ink3);border-color:var(--border);background:var(--panel)}
+
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)} .lcard-body strong{color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;font-family:'DM Mono',monospace;font-size:.73rem;padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+.hide{display:none!important}
+@media(max-width:900px){.metric-grid{grid-template-columns:1fr 1fr}.lcard-grid{grid-template-columns:1fr}}
+
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Data Dredging — <em>search long enough, and you'll find something</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- HELP -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+<div class="help-box">
+  <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+  <div class="help-box-h">Data Dredging &amp; the Spotlight Paradox — Help</div>
+
+  <div class="help-sh">What's this about</div>
+  <p class="help-p">Anyone who <em>searches</em> a large dataset for significant relationships ("data dredging," "p-hacking," "fishing expedition") is bound to find some — even if no true effect exists at all. Every test at α = 5% has a 5% chance of a false alarm. With many tests, at least one hit becomes almost certain.</p>
+
+  <div class="help-sh">Multiple comparisons</div>
+  <p class="help-p">For m independent tests under the null hypothesis, the probability of <em>at least one</em> false alarm is:</p>
+  <code class="help-formula">P(≥ 1 false positive) = 1 − (1 − α)^m</code>
+  <p class="help-p">At α = .05 and m = 20, that's already 64%. On average, α·m false alarms are expected. <strong>Bonferroni</strong> corrects for this by tightening the threshold: α' = α/m. <strong>HARKing</strong> (Hypothesizing After Results are Known): a plausible-sounding theory is invented <em>after the fact</em> for a random hit.</p>
+
+  <div class="help-sh">Stepwise regression (Freedman's paradox)</div>
+  <p class="help-p">Regressing an outcome on many <em>pure noise predictors</em> and keeping the "significant" ones yields a model with an impressive R² — one that <strong>collapses on new data</strong>. The selection process adapted to random patterns (Freedman 1983). This mode shows R² in the training set vs. in fresh data.</p>
+
+  <div class="help-sh">What to do?</div>
+  <p class="help-p">Set hypotheses <em>in advance</em> (preregistration), correct for multiple testing (Bonferroni, FDR/Benjamini-Hochberg), separate exploratory from confirmatory analyses, and replicate findings on <strong>independent data</strong>. "Significant" is no substitute for "replicated."</p>
+
+  <div class="help-sh">References</div>
+  <p class="help-p">Freedman, D. A. (1983). A note on screening regression equations. <em>The American Statistician, 37</em>(2), 152–155. · Simmons, Nelson &amp; Simonsohn (2011). False-positive psychology. <em>Psychological Science, 22</em>(11). · Gelman &amp; Loken (2014). The garden of forking paths.</p>
+</div>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══ -->
+<div id="sidebar">
+  <div class="scard">
+    <div class="scard-title">Study</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name" id="lbl-cnt">Number of tests m</span><span class="slider-val" id="v-cnt">25</span></div>
+      <input type="range" id="s-cnt" min="6" max="48" step="1" value="25">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Sample n</span><span class="slider-val" id="v-n">50</span></div>
+      <input type="range" id="s-n" min="20" max="200" step="5" value="50">
+    </div>
+    <div class="slider-row" style="margin-bottom:.3rem">
+      <div class="slider-lbl"><span class="slider-name">Significance α</span><span class="slider-val" id="v-a">0.05</span></div>
+      <input type="range" id="s-a" min="1" max="3" step="1" value="2">
+      <div style="display:flex;justify-content:space-between;font-family:'DM Mono';font-size:.62rem;color:var(--ink3)"><span>0.01</span><span>0.05</span><span>0.10</span></div>
+    </div>
+    <div class="toggle-row" id="row-bonf">
+      <span class="toggle-lbl">Bonferroni correction</span>
+      <button class="tg" id="tg-bonf" onclick="toggleBonf()">off</button>
+    </div>
+    <button class="reset-btn" onclick="reroll()" style="margin-top:.55rem">🎲 Roll new study</button>
+  </div>
+  <div class="scard">
+    <div class="scard-title">Note</div>
+    <div style="font-size:.86rem;line-height:1.55;color:var(--ink2)">
+      <strong style="color:var(--ink)">All</strong> variables are <strong style="color:var(--ink)">pure noise</strong> by construction — there is no true relationship. Every "hit" is chance.
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div id="main">
+
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="tab-dredge" onclick="setMode('dredge')">🔦 Data Dredging</button>
+    <button class="mode-tab" id="tab-step" onclick="setMode('step')">📉 Stepwise (Freedman)</button>
+  </div>
+
+  <!-- ─── MODE 1 ─── -->
+  <div id="mode-dredge">
+    <div class="story-box">
+      <div class="story-lbl">📋 The Fishing Expedition</div>
+      You're looking for correlates of <strong>life satisfaction</strong> and test dozens of variables (chocolate, zodiac sign, shoe size …) — all in truth <em>independent</em>.
+      With enough tests, some light up red: "significant." <strong>Question:</strong> are these discoveries? Turn the m dial and see what the formula says.
+    </div>
+    <div class="sec-h"><span class="circ">①</span> Test Tally</div>
+    <div class="metric-grid">
+      <div class="metric"><div class="metric-lbl">Tests run</div><div class="metric-val" id="m-m">—</div></div>
+      <div class="metric"><div class="metric-lbl">Significant (p&lt;α)</div><div class="metric-val" id="m-sig" style="color:var(--a1)">—</div><div class="metric-sub">"random hits"</div></div>
+      <div class="metric"><div class="metric-lbl">Expected by chance</div><div class="metric-val" id="m-exp">—</div><div class="metric-sub">α · m</div></div>
+      <div class="metric"><div class="metric-lbl">P(≥1 false alarm)</div><div class="metric-val" id="m-pany">—</div><div class="metric-sub">1−(1−α)<sup>m</sup></div></div>
+    </div>
+    <div class="formula" id="formula-d">—</div>
+    <div class="sec-h"><span class="circ">②</span> All Tests (red = "significant")</div>
+    <div class="dredge-grid" id="dredge-grid"></div>
+    <div class="sec-h"><span class="circ">③</span> HARKing — Turning Noise into a Story</div>
+    <button class="reset-btn" id="btn-hark" style="border-color:var(--a4);color:var(--a4);width:auto;padding:.45rem 1rem">🎣 Invent headlines</button>
+    <div class="hark hide" id="hark-box"></div>
+  </div>
+
+  <!-- ─── MODE 2 ─── -->
+  <div id="mode-step" class="hide">
+    <div class="story-box">
+      <div class="story-lbl">📋 Stepwise Regression on Pure Noise</div>
+      One outcome and k <strong>noise predictors</strong> — none has a real effect. Stepwise selection still keeps the ones that randomly look "significant" in the <em>training set</em>; together they yield a model with an impressive R².
+      <strong>The litmus test:</strong> apply the same predictors to a <strong>fresh sample</strong> — does anything survive? <strong>Guess first.</strong>
+    </div>
+    <div class="sec-h"><span class="circ">①</span> Model Fit: Training Set &nbsp;vs.&nbsp; New Data</div>
+    <div class="r2-compare">
+      <div class="r2-side">
+        <div class="r2-cap">Training set<br>(selection happened here)</div>
+        <div class="r2-track"><div class="r2-fill train" id="r2-bar-train" style="width:0"></div></div>
+        <div class="r2-num" id="f-r2" style="color:var(--a1)">—</div>
+      </div>
+      <div class="r2-side">
+        <div class="r2-cap">Fresh sample<br>(same predictors, new data)</div>
+        <div class="r2-track"><div class="r2-fill new" id="r2-bar-new" style="width:0"></div></div>
+        <div class="r2-num" id="f-r2n" style="color:var(--a3)">—</div>
+      </div>
+    </div>
+    <div class="verdict v-flat" id="f-verdict">—</div>
+    <div class="sec-h"><span class="circ">②</span> Every "Selected" Predictor — and What Survives</div>
+    <div id="step-bars"></div>
+    <div class="step-note" id="step-note"></div>
+  </div>
+
+  <div class="sec-h">Concepts</div>
+  <div class="lcard-grid">
+    <div class="lcard"><div class="lcard-h">Multiple comparisons</div><div class="lcard-body">Every test at α=.05 has a 5% false-alarm chance. For m tests: P(≥1)=1−(1−α)<sup>m</sup>. Already over 50% at m=14. "Search long enough, and you'll find something."</div></div>
+    <div class="lcard"><div class="lcard-h">HARKing</div><div class="lcard-body">Hypothesizing After the Results are Known: first the random result, then the "theory" to explain it. Sounds plausible but is circular — the hypothesis was born from exactly the data it's supposed to support.</div></div>
+    <div class="lcard"><div class="lcard-h">Freedman's paradox</div><div class="lcard-body">Stepwise variable selection on noise yields "significant" predictors and a high R² — which vanishes on new data. Overfitting to random patterns (Freedman 1983).</div></div>
+    <div class="lcard"><div class="lcard-h">Remedies</div><div class="lcard-body">Preregister, correct for multiple testing (Bonferroni/FDR), keep exploratory ≠ confirmatory, and <strong>replicate</strong> on independent data. The same trap lurks in modification indices in
+      <a class="xlink" href="../Strukturgleichungsmodell.html">structural equation models (SEM)</a>, when a model is adjusted post hoc, data-driven rather than theory-driven.
+      <a class="xlink" href="Lindleys_Paradox.html">→ Lindley's Paradox</a></div></div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<script>
+'use strict';
+const VARS=['Chocolate consumption','Shoe size','Coffee consumption','Houseplant height','Number of sock pairs','Streaming duration','Smartphone battery level','Pizza topping variety','Step count on Tuesday','Number of browser tabs','Number of pets','Typing speed','Number of Ikea furniture pieces','Rainy days in birthplace','Surname length','Keychain size','Toothbrush firmness','Playlist length','Toothbrushing duration','Number of apps','Number of fridge magnets','Number of vowels in first name','Birth month','House number','Pillows on the bed','Alarm clock volume','Cups in the cupboard','Commute length','Water bottles per day','Screen brightness','Browser bookmarks','Books on the shelf','WhatsApp groups','Spiciness of favorite food','Calendar entries','Room temperature at home','Pairs of shoes in the hallway','Morning shower duration','Number of passwords','Office chair height','Sticky notes on the monitor','Streaming subscriptions','Coffee mug size','Restaurant visits/month','Apartment brightness','Number of potted plants','Commute distance in km','Number of candles at home','Stride length','Apps on the home screen'];
+const MECH=['a shared lifestyle factor','a deep-rooted evolutionary imprint','the influence of gut flora','a hidden socioeconomic factor','an interplay of genes and environment','unconscious neural reward patterns','an effect on circadian rhythm'];
+const HEADS=['🗞 Study reveals: <b>{N}</b> predicts life satisfaction','🗞 Researchers stunned: <b>{N}</b> linked to well-being','🗞 Is the secret to happiness hidden in <b>{N}</b>?','🗞 Surprise in massive dataset: <b>{N}</b> &amp; satisfaction','🗞 What your happiness reveals: a look at <b>{N}</b>'];
+const QUOTES=['The implications are enormous.','We were surprised ourselves.','This changes our understanding of happiness.','This opens up an entire field of research.','This belongs in the textbooks.','Nobody saw this coming.'];
+const DRNAMES=['Bergmann','Kowalski','Fischer','Almeida','Nguyen','Okonkwo','Rossi','Svensson','Hofer','Yıldız'];
+const EXPL={
+'Chocolate consumption':{pos:'Cocoa flavonoids boost cerebral blood flow and lift mood.',neg:'The high sugar content causes blood-sugar rollercoasters that hit the mood.'},
+'Shoe size':{pos:'Taller people subtly enjoy more social status — a well-known happiness factor.',neg:'Taller people constantly bump into beds, doors, and airplane seats — chronic minor annoyance.'},
+'Coffee consumption':{pos:'Caffeine boosts dopamine and drive — a genuine mood booster.',neg:'Lots of coffee disrupts sleep, and poor sleep drags down satisfaction.'},
+'Houseplant height':{pos:'Raising plants practices care and mindfulness — both boost satisfaction.',neg:'Tall plants mean lots of upkeep and constant worry about their thriving.'},
+'Number of sock pairs':{pos:'A well-organized household lowers everyday stress.',neg:'Many sock pairs signal consumerism and tidying stress.'},
+'Streaming duration':{pos:'Regular screen-time relaxation buffers stress.',neg:'Long streaming sessions crowd out exercise and real social contact.'},
+'Smartphone battery level':{pos:'Keeping an eye on the battery makes people feel less "cut off" and more secure.',neg:'Constant battery worry is a sign of chronic digital tension.'},
+'Pizza topping variety':{pos:'Openness to flavor variety goes along with general openness to life.',neg:'Whoever needs many toppings is also harder to satisfy in general.'},
+'Step count on Tuesday':{pos:'Exercise releases endorphins — the body\'s own happiness hormones.',neg:'High step counts hint at restless busyness and little recovery.'},
+'Number of browser tabs':{pos:'Many open tabs signal curiosity and lively mental activity.',neg:'Many open tabs reflect overstimulation and concentration stress.'},
+'Number of pets':{pos:'Contact with animals lowers cortisol and boosts the bonding hormone oxytocin.',neg:'Multiple animals mean a lot of responsibility, cost, and worry.'},
+'Typing speed':{pos:'Fluent work creates "flow" — a well-known state of happiness.',neg:'Very fast typing signals time pressure and hectic multitasking.'},
+'Number of Ikea furniture pieces':{pos:'Self-assembled furniture strengthens attachment to home via the "IKEA effect."',neg:'Lots of cheap furniture hints at frequent moves and a lack of roots.'},
+'Rainy days in birthplace':{pos:'A mild, humid climate fosters balanced moods.',neg:'Many rainy days mean less sunlight — a risk for low mood.'},
+'Surname length':{pos:'Longer names seem more distinguished and confer subtle social advantages.',neg:'Long, complicated names constantly get misspelled — a perpetual annoyance.'},
+'Keychain size':{pos:'Many keys stand for responsibility and social embeddedness.',neg:'A bulky keychain represents many obligations and burdens.'},
+'Toothbrush firmness':{pos:'Thorough oral hygiene signals conscientiousness — a predictor of satisfaction.',neg:'Firm bristles irritate the gums; chronic minor pain dampens mood.'},
+'Playlist length':{pos:'Large playlists offer the right song for every mood — good emotion regulation.',neg:'Endless playlists lead to choice stress and constant skipping.'},
+'Toothbrushing duration':{pos:'Daily mini-routines give structure and a sense of control.',neg:'Excessively long brushing hints at compulsiveness and inner tension.'},
+'Number of apps':{pos:'Digital connectivity expands social contacts and opportunities.',neg:'Many apps mean many notifications — chronic digital tension.'},
+'Number of fridge magnets':{pos:'Mementos on the fridge signal a rich social life.',neg:'An overloaded fridge represents visual chaos and disorder.'},
+'Number of vowels in first name':{pos:'Vowel-rich, melodious names trigger more positive social reactions.',neg:'Many vowels make names sound softer and less assertive.'},
+'Birth month':{pos:'Those born later benefit from more daylight in formative early months.',neg:'Those born later are often the youngest in their school year — a long-term disadvantage.'},
+'House number':{pos:'Higher house numbers are often at the quieter end of the street — less noise stress.',neg:'Higher house numbers mean longer walks from the bus stop — daily minor annoyance.'},
+'Pillows on the bed':{pos:'More pillows create a feeling of coziness and comfort.',neg:'An overloaded bed means annoying tidying every evening.'},
+'Alarm clock volume':{pos:'Being woken vigorously starts the day more alert and energized.',neg:'A loud alarm delivers a startled cortisol spike every morning.'},
+'Cups in the cupboard':{pos:'A well-stocked kitchen invites sociable get-togethers.',neg:'Many cups mostly means: lots of dishes and clutter.'},
+'Commute length':{pos:'A longer commute offers buffer time to unwind between work and home.',neg:'Long commuting eats up time and is a well-known satisfaction killer.'},
+'Water bottles per day':{pos:'Good hydration keeps concentration and mood stable.',neg:'Constant drinking and running to the bathroom makes for a restless, fragmented day.'},
+'Screen brightness':{pos:'Bright screens mimic daylight and lift mood.',neg:'Overly bright screens overstimulate the eyes and disrupt sleep.'},
+'Browser bookmarks':{pos:'A well-kept bookmark collection signals structure and thirst for knowledge.',neg:'Hundreds of bookmarks are a graveyard of good intentions — quiet pressure.'},
+'Books on the shelf':{pos:'Frequent readers train empathy and perspective-taking.',neg:'Stacks of unread books ("tsundoku") produce a guilty conscience.'},
+'WhatsApp groups':{pos:'Many groups mean a dense, lively social network.',neg:'Many groups mean constant notifications and pressure to reply.'},
+'Spiciness of favorite food':{pos:'Capsaicin releases endorphins — the pleasant "chili high."',neg:'Very spicy food irritates the stomach and dampens well-being.'},
+'Calendar entries':{pos:'A full calendar represents an active, meaningful life.',neg:'An overcrowded calendar means deadline pressure and constant rushing.'},
+'Room temperature at home':{pos:'Warmer rooms convey coziness and comfort.',neg:'Higher temperatures reduce sleep quality and increase irritability.'},
+'Pairs of shoes in the hallway':{pos:'A good selection allows the right look for every occasion.',neg:'Many shoes in the hallway mean chaos and tripping hazards.'},
+'Morning shower duration':{pos:'A generous shower is a soothing self-care ritual.',neg:'Long showers hint at procrastination and morning reluctance.'},
+'Number of passwords':{pos:'Many accounts represent a richly connected digital life.',neg:'Many passwords mean constant login frustration.'},
+'Office chair height':{pos:'An ergonomically high sitting position promotes alertness and posture.',neg:'Whoever raises the chair often compensates for back trouble.'},
+'Sticky notes on the monitor':{pos:'Visible notes offload the memory and are calming.',neg:'A monitor covered in notes signals being overwhelmed.'},
+'Streaming subscriptions':{pos:'Many subscriptions offer the right program for every mood.',neg:'Many subscriptions mean choice stress and subscription-cost frustration.'},
+'Coffee mug size':{pos:'A large mug promises a longer, more enjoyable ritual.',neg:'Bigger mugs mean more caffeine — and more nervous restlessness.'},
+'Restaurant visits/month':{pos:'Eating out is sociable enjoyment and welcome variety.',neg:'Frequent eating out strains budget and diet.'},
+'Apartment brightness':{pos:'Lots of daylight demonstrably lifts mood.',neg:'Harshly lit apartments often feel cold and uninviting.'},
+'Number of potted plants':{pos:'Greenery in a room lowers stress and boosts well-being.',neg:'Many plants mean lots of watering, repotting, and grief over the ones that died.'},
+'Commute distance in km':{pos:'Living further out often means more peace and nature.',neg:'Long commuting distances drain time and nerves.'},
+'Number of candles at home':{pos:'Candlelight creates "hygge" — a warm, cozy atmosphere.',neg:'Many candles hint at an attempt to cover up gloominess.'},
+'Stride length':{pos:'A long, upright stride signals self-confidence.',neg:'Very large strides look hurried and tense.'},
+'Apps on the home screen':{pos:'A full home screen offers quick access to many options.',neg:'An overloaded home screen creates visual overstimulation.'}
+};
+const ST={mode:'dredge', cnt:25, n:50, alpha:0.05, bonf:false};
+let seed=3, R=null;
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let rng=mulberry32(seed);
+function randn(){let u=0,v=0;while(u===0)u=rng();while(v===0)v=rng();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;}
+function Phi(z){return 0.5*(1+erf(z/Math.SQRT2));}
+function corr(a,b){const n=a.length;let ma=0,mb=0;for(let i=0;i<n;i++){ma+=a[i];mb+=b[i];}ma/=n;mb/=n;let sa=0,sb=0,sab=0;for(let i=0;i<n;i++){const da=a[i]-ma,db=b[i]-mb;sa+=da*da;sb+=db*db;sab+=da*db;}return sab/Math.sqrt(sa*sb||1e-9);}
+function pFromR(r,n){const rr=Math.max(-0.9999,Math.min(0.9999,r));const z=Math.atanh(rr)*Math.sqrt(Math.max(1,n-3));return 2*(1-Phi(Math.abs(z)));}
+function normVec(n){const v=[];for(let i=0;i<n;i++)v.push(randn());return v;}
+
+// ── Simulation (für beide Modi: m Variablen vs. eine Zielgröße, alles Rauschen) ──
+function build(){
+  rng=mulberry32(seed);
+  const n=ST.n, m=ST.cnt;
+  const target=normVec(n);
+  const names=[]; const idx=[];
+  // zufällige, nicht doppelte Namen
+  const pool=VARS.slice();
+  for(let i=0;i<m;i++){ const j=Math.floor(rng()*pool.length); names.push(pool.splice(j,1)[0]||('Variable '+(i+1)+'')); }
+  const tests=[];
+  for(let i=0;i<m;i++){
+    const x=normVec(n), r=corr(target,x), p=pFromR(r,n);
+    // frische Stichprobe für Validierung (Freedman)
+    const tg2=normVec(n), x2=normVec(n), r2=corr(tg2,x2);
+    tests.push({name:names[i], r, p, r2});
+  }
+  R={n,m,tests};
+}
+
+function render(){
+  const al=ST.alpha, thr=(ST.mode==='dredge'&&ST.bonf)?al/R.m:al;
+  R.tests.forEach(t=>t.sig=t.p<thr);
+  if(ST.mode==='dredge') renderDredge(thr); else renderStep();
+}
+
+function renderDredge(thr){
+  const sig=R.tests.filter(t=>t.sig).length;
+  const pAny=1-Math.pow(1-ST.alpha,R.m);
+  document.getElementById('m-m').textContent=R.m;
+  document.getElementById('m-sig').textContent=sig;
+  document.getElementById('m-exp').textContent=(ST.alpha*R.m).toFixed(1);
+  document.getElementById('m-pany').textContent=Math.round(pAny*100)+' %';
+  const f=document.getElementById('formula-d');
+  let html=`P(≥1 false alarm) = 1 − (1 − ${ST.alpha})<sup>${R.m}</sup> = <b>${(pAny*100).toFixed(0)} %</b> · expected <b>${(ST.alpha*R.m).toFixed(1)}</b> random hits`;
+  if(ST.bonf) html+=` · <span class="ok">Bonferroni: α' = α/m = ${thr.toExponential(1)}</span>`;
+  f.innerHTML=html;
+  const g=document.getElementById('dredge-grid'); g.innerHTML='';
+  R.tests.forEach(t=>{
+    const passBonf = ST.bonf && (t.p<ST.alpha) && !t.sig; // wäre roh signifikant, aber Bonferroni filtert
+    const d=document.createElement('div');
+    d.className='dcell'+(t.sig?' sig':'')+(passBonf?' bonf':'');
+    d.innerHTML=`<span class="dn" title="${t.name}">${t.name}</span><span class="dr">r=${t.r>=0?'+':''}${t.r.toFixed(2)} · p=${t.p<0.001?'<.001':t.p.toFixed(3)}${t.sig?' ✓':''}</span>`;
+    g.appendChild(d);
+  });
+}
+
+function renderStep(){
+  const sel=R.tests.filter(t=>t.sig);
+  const r2train=Math.min(0.99,sel.reduce((s,t)=>s+t.r*t.r,0));
+  const r2new=Math.min(0.99,sel.reduce((s,t)=>s+t.r2*t.r2,0));
+  document.getElementById('f-r2').textContent=r2train.toFixed(2);
+  document.getElementById('f-r2n').textContent=r2new.toFixed(2);
+  const scale=Math.max(0.25,r2train);
+  document.getElementById('r2-bar-train').style.width=(r2train/scale*100)+'%';
+  document.getElementById('r2-bar-new').style.width=(r2new/scale*100)+'%';
+  const vd=document.getElementById('f-verdict');
+  if(sel.length===0){
+    vd.className='verdict v-flat';
+    vd.textContent='This time, none of the '+R.m+' noise variables turned "significant" — re-roll or increase k.';
+  } else {
+    vd.className='verdict v-bad';
+    vd.innerHTML='The selection "finds" <strong>'+sel.length+' of '+R.m+'</strong> predictors and explains <strong>'+Math.round(r2train*100)+' %</strong> of the variance in training — on new data, only <strong>'+Math.round(r2new*100)+' %</strong> of that survives. The "model" adapted to random patterns (Freedman\'s paradox).';
+  }
+  const b=document.getElementById('step-bars'); b.innerHTML='';
+  const note=document.getElementById('step-note');
+  if(sel.length===0){
+    note.textContent='';
+    b.innerHTML='<button class="reset-btn" onclick="rerollStep()" style="width:auto">🎲 Re-roll until something is "found"</button>';
+    return;
+  }
+  const mx=Math.max(0.1,...sel.map(t=>Math.abs(t.r)));
+  sel.slice().sort((a,c)=>Math.abs(c.r)-Math.abs(a.r)).forEach(t=>{
+    const row=document.createElement('div'); row.className='pp-row';
+    row.innerHTML='<span class="pp-name" title="'+t.name+'">'+t.name+'</span><div class="pp-bars">'
+      +'<div class="pp-bar"><span class="pp-lab">Training</span><span class="pp-track"><span class="pp-fill train" style="width:'+(Math.abs(t.r)/mx*100).toFixed(0)+'%"></span></span><span class="pp-v">r='+(t.r>=0?'+':'')+t.r.toFixed(2)+'</span></div>'
+      +'<div class="pp-bar"><span class="pp-lab">new data</span><span class="pp-track"><span class="pp-fill new" style="width:'+(Math.abs(t.r2)/mx*100).toFixed(0)+'%"></span></span><span class="pp-v">r='+(t.r2>=0?'+':'')+t.r2.toFixed(2)+'</span></div>'
+      +'</div>';
+    b.appendChild(row);
+  });
+  note.textContent='The red bar was the reason each variable was kept. On new data (green), the correlation is practically zero — the "discovery" doesn\'t replicate. That\'s exactly overfitting to noise.';
+}
+
+// ── HARKing ──
+function makeStory(t){
+  const pick=arr=>arr[Math.floor(rng()*arr.length)];
+  const strength=Math.abs(t.r)<0.2?'weak':(Math.abs(t.r)<0.35?'moderate':'clear');
+  const up=t.r>=0, dir=up?'higher':'lower';
+  const headPool=HEADS.concat([up?'🗞 Sensational finding: <b>{N}</b> makes you happy!':'🗞 Alarming: <b>{N}</b> makes you unhappy!']);
+  const head=pick(headPool).replace('{N}',t.name);
+  const q=pick(QUOTES), dr=pick(DRNAMES), e=EXPL[t.name];
+  const expl=e?('The researchers explain it this way: '+(up?e.pos:e.neg)):('The researchers suspect '+pick(MECH)+' behind this.');
+  const pTxt=t.p<.001?'< .001':'= '+t.p.toFixed(3);
+  return `<div class="hark-item"><div class="hark-head">${head}</div>`
+    +`<div class="hark-body">${t.name} is associated with <em>${dir}</em> life satisfaction (r = ${(up?'+':'')+t.r.toFixed(2)}, p ${pTxt}) — a ${strength} relationship. ${expl} "${q}," explains lead researcher Dr. ${dr}.</div></div>`;
+}
+function hark(){
+  const sig=R.tests.filter(t=>t.sig);
+  const box=document.getElementById('hark-box'); box.classList.remove('hide');
+  if(sig.length===0){ box.innerHTML='<div class="hark-body">No "significant" hit to hype up this time — re-roll or increase m.</div>'; return; }
+  rng=mulberry32((seed^0x9e3779b9)>>>0);  // separate, reproducible RNG for story variation
+  box.innerHTML = sig.map(t=>makeStory(t)).join('')
+    + `<div class="hark-d">⚠ All pure noise: these ${sig.length} variable${sig.length>1?'s were':' was'} generated independently by construction. Every "explanation" was invented AFTER the random hit — that's HARKing.</div>`;
+}
+
+// ── Modus / Controls ──
+// stellt sicher, dass es mind. 1 "signifikanten" Treffer gibt (sonst zeigt der Stepwise-Modus nichts an)
+function ensureHit(maxTries){
+  for(let i=0;i<(maxTries||40);i++){
+    if(R.tests.some(t=>t.p<ST.alpha)) return;
+    seed=(seed*1103515245+12345)>>>0; build();
+  }
+}
+function setMode(mode){
+  ST.mode=mode;
+  document.getElementById('tab-dredge').classList.toggle('active',mode==='dredge');
+  document.getElementById('tab-step').classList.toggle('active',mode==='step');
+  document.getElementById('mode-dredge').classList.toggle('hide',mode!=='dredge');
+  document.getElementById('mode-step').classList.toggle('hide',mode!=='step');
+  document.getElementById('row-bonf').style.display = mode==='dredge'?'':'none';
+  document.getElementById('lbl-cnt').textContent = mode==='dredge'?'Number of tests m':'Number of predictors k';
+  if(mode==='step') ensureHit();
+  render();
+}
+function toggleBonf(){ ST.bonf=!ST.bonf; document.getElementById('tg-bonf').textContent=ST.bonf?'on':'off'; document.getElementById('tg-bonf').classList.toggle('on',ST.bonf); render(); }
+document.getElementById('s-cnt').addEventListener('input',function(){ST.cnt=+this.value;document.getElementById('v-cnt').textContent=ST.cnt;build();render();});
+document.getElementById('s-n').addEventListener('input',function(){ST.n=+this.value;document.getElementById('v-n').textContent=ST.n;build();render();});
+document.getElementById('s-a').addEventListener('input',function(){ST.alpha=[0.01,0.05,0.10][+this.value-1];document.getElementById('v-a').textContent=ST.alpha.toFixed(2);render();});
+document.getElementById('btn-hark').addEventListener('click',hark);
+function reroll(){ seed=(seed*1103515245+12345)>>>0; build(); document.getElementById('hark-box').classList.add('hide'); render(); }
+function rerollStep(){ ensureHit(); render(); }
+
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+function toggleTheme(){const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('help-overlay').classList.remove('open');});
+
+// beim Start einen Seed wählen, der mind. 1 Zufallstreffer liefert (sonst ist die Pointe weg)
+function buildWithHit(){
+  for(let i=0;i<80;i++){ build(); if(R.tests.some(t=>t.p<ST.alpha)) return; seed=(seed*1103515245+12345)>>>0; }
+}
+
+// ── Init ──
+buildWithHit(); render();
+</script>
+</body>
+</html>

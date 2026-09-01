@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Structural Equation Model | MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a4);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+.gk{font-family:'Fraunces',Georgia,serif;font-style:italic;text-transform:none!important}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem;height:var(--topbar-h)}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn.help{background:var(--a1);border-color:var(--a1);color:#fff}
+.tbtn.help:hover{filter:brightness(1.12)}
+
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.1rem 1.4rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+
+.rot-grid{display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-top:.3rem}
+.rbtn{font-family:'DM Mono',monospace;font-size:.68rem;padding:.4rem .3rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center;line-height:1.3}
+.rbtn:hover{border-color:var(--accent);color:var(--accent)}
+.rbtn.act{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);font-weight:700}
+.rbtn.warn.act{border-color:var(--a1);background:color-mix(in srgb,var(--a1) 16%,transparent);color:var(--a1)}
+
+.scen-grid{display:grid;grid-template-columns:1fr;gap:.28rem;margin-top:.3rem}
+.scen-btn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.35rem .52rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:left;line-height:1.42;width:100%}
+.scen-btn:hover{border-color:var(--a6);color:var(--a6)}
+.scen-btn.act{border-color:var(--a6);background:color-mix(in srgb,var(--a6) 14%,transparent);color:var(--a6);font-weight:700}
+.scen-sub{font-size:.68rem;color:var(--ink3);display:block}
+.scen-btn.act .scen-sub{color:color-mix(in srgb,var(--a6) 70%,var(--ink3))}
+
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.sec-h:first-child{margin-top:0}
+
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block}
+.hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
+
+.advantage-box{background:color-mix(in srgb,var(--a3) 10%,var(--bg));border:1px solid var(--a3);
+  padding:.8rem 1rem;margin-bottom:.85rem;line-height:1.7}
+.advantage-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a3);margin-bottom:.45rem}
+.advantage-box strong{color:var(--ink)}
+
+.metric-grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin-bottom:1rem}
+@media(max-width:1100px){.metric-grid5{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.metric-grid5{grid-template-columns:repeat(2,1fr)}}
+.metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.3rem;line-height:1.3}
+.metric-val{font-family:'DM Mono',monospace;font-size:1.35rem;font-weight:500;line-height:1}
+.metric-sub{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--ink3);margin-top:.25rem;line-height:1.4}
+
+.verdict{font-family:'DM Mono',monospace;font-size:.9rem;font-weight:500;padding:.6rem .9rem;margin-bottom:1rem;
+  border:1.5px solid;text-align:center;letter-spacing:.01em;line-height:1.5}
+.v-par{color:var(--a3);border-color:var(--a3);background:color-mix(in srgb,var(--a3) 12%,transparent)}
+.v-tau{color:var(--a2);border-color:var(--a2);background:color-mix(in srgb,var(--a2) 12%,transparent)}
+.v-con{color:var(--a1);border-color:var(--a1);background:color-mix(in srgb,var(--a1) 12%,transparent)}
+
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.6rem}
+@media(max-width:700px){.cmp-grid{grid-template-columns:1fr}}
+.cmp-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem}
+.cmp-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);margin-bottom:.3rem}
+.cmp-val{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500}
+.cmp-sub{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);margin-top:.3rem;line-height:1.5}
+.cmp-gap{font-family:'DM Mono',monospace;font-size:.83rem;color:var(--a1);text-align:center;padding:.55rem;
+  border:1px dashed var(--a1);margin-top:.2rem;background:color-mix(in srgb,var(--a1) 8%,transparent);line-height:1.6}
+
+/* R / lavaan code box */
+.r-code{background:#14161c;border:1px solid var(--grid);padding:.85rem 1rem;font-family:'DM Mono',monospace;
+  font-size:.78rem;line-height:1.7;color:#c9d1d9;white-space:pre;overflow-x:auto}
+[data-theme="light"] .r-code{background:#1e2128;color:#e6e6e6}
+
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+@media(max-width:900px){.lcard-grid{grid-template-columns:1fr}}
+
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+
+.help-callout{background:color-mix(in srgb,var(--a1) 10%,var(--bg));border:1px solid var(--a1);
+  padding:.55rem .75rem;margin:.4rem 0 .6rem;font-family:'DM Mono',monospace;font-size:.77rem;
+  color:var(--ink2);line-height:1.78}
+.help-callout strong{color:var(--ink)}
+.help-callout.ok{background:color-mix(in srgb,var(--a3) 10%,var(--bg));border-color:var(--a3)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Structural Equation Model — <em>SEM</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn help" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">True Model (Population)</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Loading <span class="gk">λ</span> (reliability)</span>
+        <span class="slider-val" id="v-lam" style="color:var(--a4)">0.70</span></div>
+      <input type="range" id="sl-lam" min="30" max="90" value="70" oninput="update()">
+    </div>
+    <div id="simple-sliders">
+      <div class="slider-row" style="margin-bottom:0">
+        <div class="slider-lbl"><span class="slider-name">Structural path X→Y <span class="gk">β</span></span>
+          <span class="slider-val" id="v-beta" style="color:var(--a6)">0.40</span></div>
+        <input type="range" id="sl-beta" min="0" max="70" value="40" oninput="update()">
+      </div>
+    </div>
+    <div id="med-sliders" style="display:none">
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">X→M <span class="gk">a</span></span>
+          <span class="slider-val" id="v-a" style="color:var(--a6)">0.40</span></div>
+        <input type="range" id="sl-a" min="0" max="60" value="40" oninput="update()">
+      </div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">M→Y <span class="gk">b</span></span>
+          <span class="slider-val" id="v-b" style="color:var(--a6)">0.30</span></div>
+        <input type="range" id="sl-b" min="0" max="60" value="30" oninput="update()">
+      </div>
+      <div class="slider-row" style="margin-bottom:0">
+        <div class="slider-lbl"><span class="slider-name">X→Y direct <span class="gk">c'</span></span>
+          <span class="slider-val" id="v-cp" style="color:var(--a1)">0.20</span></div>
+        <input type="range" id="sl-cp" min="0" max="60" value="20" oninput="update()">
+      </div>
+    </div>
+  </div>
+
+  <div class="scard" id="scen-card">
+    <div class="scard-title">Scenarios</div>
+    <div class="scen-grid">
+      <button class="scen-btn" data-lam="70" data-beta="0" onclick="setScen(this)">
+        <span><span class="circ">①</span> No Effect &nbsp;&mdash;&nbsp; <span class="gk">β</span> = 0</span>
+        <span class="scen-sub">X and Y independent</span>
+      </button>
+      <button class="scen-btn act" data-lam="70" data-beta="40" onclick="setScen(this)">
+        <span><span class="circ">②</span> Moderate &nbsp;&mdash;&nbsp; <span class="gk">β</span> = .40</span>
+        <span class="scen-sub">Medium-strength structural path</span>
+      </button>
+      <button class="scen-btn" data-lam="70" data-beta="70" onclick="setScen(this)">
+        <span><span class="circ">③</span> Strong &nbsp;&mdash;&nbsp; <span class="gk">β</span> = .70</span>
+        <span class="scen-sub">Strong structural path</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Model Type</div>
+    <div class="rot-grid">
+      <button class="rbtn act" id="btn-med-off" onclick="setMediation(false)">Simple (X→Y)</button>
+      <button class="rbtn" id="btn-med-on" onclick="setMediation(true)">Mediation (X→M→Y)</button>
+    </div>
+    <div class="hint" style="margin-top:.6rem" id="hint-modelart"></div>
+  </div>
+
+  <div class="scard" id="full-med-card" style="display:none">
+    <div class="scard-title">Specified Model</div>
+    <div class="rot-grid">
+      <button class="rbtn act" id="btn-partial" onclick="setAllowFull(false)">Partial (c' free)</button>
+      <button class="rbtn warn" id="btn-full" onclick="setAllowFull(true)">Full Mediation (c'=0)</button>
+    </div>
+    <div class="hint" style="margin-top:.6rem">"Full mediation" fixes the direct path c' at 0 — a genuine,
+      testable assumption. If it's wrong (true c'≠0), the fit visibly worsens.</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Statistics</div>
+    <div id="stats" style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);line-height:2"></div>
+  </div>
+
+</div><!-- #sidebar -->
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 From Measurement Model to Structural Model</div>
+    The <strong>CFA</strong> checked whether the item structure (X = V1–V4 verbal, Y = S1–S4 spatial) fits the
+    data. A <strong>structural equation model (SEM)</strong> goes a step further: it places a
+    <em>directed</em> regression path between the latent factors — instead of only estimating their correlation,
+    it estimates how strongly X affects Y, <em>after</em> both are cleaned of measurement error.
+    <div style="margin-top:.6rem">
+      <a class="xlink" href="Konfirmatorische_Faktoranalyse.html" target="_blank">← Confirmatory Factor Analysis (CFA)</a>
+      <a class="xlink" href="Mediationsanalyse.html" target="_blank">Mediation with manifest variables →</a>
+      <a class="xlink" href="OLS_Regression.html" target="_blank">OLS Regression →</a>
+    </div>
+  </div>
+
+  <div class="advantage-box">
+    <div class="advantage-lbl">✓ The Advantage over Manifest Variables</div>
+    If you instead simply formed <strong>sum scores</strong> of the items (classic test-score approach)
+    and regressed those directly, the estimated association would be <strong>attenuated by measurement
+    error</strong> — unreliable items pull every correlation toward 0 (see <a class="xlink" style="margin:0;padding:.15rem .5rem;font-size:.68rem"
+    href="Messfehler_Attenuierung.html" target="_blank">Measurement Error &amp; Attenuation</a>). SEM models the
+    latent factors <em>directly</em> from the items and explicitly nets out measurement error — the estimated
+    structural path targets the <em>true</em>, unattenuated relationship. The comparison card further below shows
+    exactly this gap live.
+  </div>
+
+  <div class="story-box" id="med-story-box" style="display:none;border-left-color:var(--a6)">
+    <div class="story-lbl" style="color:var(--a6)">📋 The Mediation Example</div>
+    <strong>X — Verbal ability</strong> (V1–V4) may not only affect <strong>Y — Spatial reasoning</strong>
+    (S1–S4) <em>directly</em>, but also <em>indirectly</em> via <strong>M — Working memory</strong> (three
+    additional subtests, M1–M3): people with stronger verbal ability often also have higher working-memory
+    capacity — which in turn helps solve spatial tasks. The sliders on the left set how strongly X affects M
+    (a), M affects Y (b), and whether X additionally has a direct path bypassing M (c').
+  </div>
+
+  <div class="plot-box" id="cv-path-box">
+    <div class="plot-title"><span class="circ">①</span> Path Diagram — Specified Model</div>
+    <canvas id="cv-path" height="420"></canvas>
+    <div class="hint" id="hint-path"></div>
+  </div>
+
+  <div class="help-callout ok" id="saturated-note" style="margin:0 0 .85rem">
+    <strong>With only 2 constructs, the arrow direction is not empirically testable.</strong> X→Y produces exactly
+    the same implied covariance matrix (and the same fit) as Y→X or a mere correlation (CFA) — with a single
+    free path between two factors, there is no degree of freedom that could test the direction. The arrow direction
+    here is a <em>substantive</em> assumption, not a conclusion from this data. Only from 3 constructs onward
+    (mediation model, right) does the structural model become empirically informative.
+  </div>
+
+  <div class="sec-h" id="cmp-anchor"><span class="circ">②</span> Latent (SEM) vs. Manifest (Sum Score)</div>
+  <div class="cmp-grid" id="cmp-grid"></div>
+  <div class="cmp-gap" id="cmp-gap"></div>
+
+  <div class="sec-h" id="fit-grid"><span class="circ">③</span> Fit Indices</div>
+  <div class="metric-grid5">
+    <div class="metric">
+      <div class="metric-lbl"><span class="gk">χ</span>² (df)</div>
+      <div class="metric-val" id="m-chi2" style="color:var(--a1)">—</div>
+      <div class="metric-sub" id="m-chi2-sub">N = 300</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">CFI</div>
+      <div class="metric-val" id="m-cfi" style="color:var(--a3)">—</div>
+      <div class="metric-sub">≥ .95 good</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">TLI</div>
+      <div class="metric-val" id="m-tli" style="color:var(--a3)">—</div>
+      <div class="metric-sub">≥ .95 good</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">RMSEA</div>
+      <div class="metric-val" id="m-rmsea" style="color:var(--a2)">—</div>
+      <div class="metric-sub">≤ .06 good</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">SRMR</div>
+      <div class="metric-val" id="m-srmr" style="color:var(--a2)">—</div>
+      <div class="metric-sub">≤ .08 good</div>
+    </div>
+  </div>
+  <div class="verdict" id="verdict">—</div>
+
+  <div class="plot-box">
+    <div class="plot-title"><span class="circ">④</span> lavaan Syntax (R) — Matching the Specified Model</div>
+    <div class="r-code" id="r-code"></div>
+    <div class="hint">Cutoffs follow Hu &amp; Bentler (1999), with caveats (see Help). This tool fits itself via
+      maximum likelihood on the (known) population-implied covariance matrix — <code>lavaan</code> would
+      estimate the same structure on real data and additionally deliver standard errors/p-values.</div>
+  </div>
+
+  <div class="sec-h">Flashcards</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">① CFA vs. SEM</div>
+      <div class="lcard-body"><strong>CFA</strong> only estimates the measurement model plus an <em>undirected</em>
+        factor correlation Φ. An <strong>SEM</strong> replaces Φ (partly) with <em>directed</em>
+        structural equations between the factors — the same measurement model, but now with regression paths instead
+        of (only) correlations between them.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">② =~ Measures, ~~ Correlates, ~ Regresses</div>
+      <div class="lcard-body">Three lavaan operators, three model parts: <code>=~</code> defines the <strong>measurement model</strong>
+        (factor → items), <code>~~</code> a <strong>covariance/correlation</strong> (undirected, as in CFA),
+        <code>~</code> a <strong>regression</strong> (directed — the actual "structural" part of SEM). An
+        SEM typically uses all three; <code>cfa()</code> and <code>sem()</code> in lavaan are nearly identical,
+        <code>sem()</code> is just the conventional call once <code>~</code> lines appear.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">③ Why Measurement-Error Correction Matters</div>
+      <div class="lcard-body">A sum score is only an <em>approximation</em> of the latent factor — its
+        reliability (ω) is almost never 1. Any regression on such scores <strong>attenuates</strong> the true
+        association by the factor √(ω<sub>X</sub>·ω<sub>Y</sub>). SEM sidesteps this by modeling the factor directly
+        from the individual items — the structural path targets the relationship <em>between the constructs</em>, not
+        between their error-laden indicators.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">④ Indirect Effects Are Especially Vulnerable</div>
+      <div class="lcard-body">Under mediation, attenuation multiplies: the manifest indirect effect
+        â·b̂ is dampened by roughly ω<sub>X</sub>·ω<sub>M</sub>·ω<sub>M</sub>·ω<sub>Y</sub> (measurement error in <em>X and
+        M</em> acts twice). At realistic reliabilities, this can drastically underestimate the estimated indirect
+        effect — a key argument for latent over manifest mediation analysis.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">⑤ Full vs. Partial Mediation — Genuinely Testable</div>
+      <div class="lcard-body">Unlike the simple X→Y path (flashcard "not empirically testable" above), the
+        question "does the effect run <em>entirely</em> through M?" becomes a genuine model restriction (c'=0)
+        with its own degree of freedom from 3 constructs onward. If the fit is worse at c'=0, that argues for an
+        additional direct path — <em>partial</em> mediation.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">⑥ What This Tool Doesn't Show</div>
+      <div class="lcard-body">No real sampling, no standard errors/significance tests for the paths, no
+        moderation or non-recursive (feedback) models. For manifest mediation with real
+        significance tests (Sobel, bootstrap) see <a class="xlink" style="margin:0;padding:.15rem .5rem;font-size:.68rem"
+        href="Mediationsanalyse.html" target="_blank">Mediation Analysis</a>.</div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Structural Equation Model — Background
+      <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    </div>
+
+    <div class="help-sh">What This Tool Shows — and What It Doesn't</div>
+    <p class="help-p"><strong>Shows:</strong> a 2- or 3-construct SEM (CFA measurement model + directed
+      structural paths) with genuine maximum-likelihood fitting, plus a direct, closed-form
+      comparison to the naive sum-score approach. <strong>Not here:</strong> real sampling/standard errors
+      for the paths, free item-factor assignment, moderation, non-recursive models, multi-group SEM.</p>
+
+    <div class="help-sh">The Structural Model as a Covariance Reparameterization</div>
+    <p class="help-p">For standardized factors (Var=1), a single path Y~β·X is <strong>numerically
+      identical</strong> to Φ=[[1,β],[β,1]] from the CFA — only the interpretation (directed vs. undirected) changes.
+      Under mediation, path tracing (Wright's rules) yields the 3×3 structure
+      Φ=[[1,a,ab+c'],[a,1,b+ac'],[ab+c',b+ac',1]] — derived in closed form and confirmed against an independent
+      Monte Carlo simulation (200,000 cases) to two decimal places before this tool was built.</p>
+
+    <div class="help-sh">The Manifest Comparison — Sum-Score Covariance</div>
+    <span class="help-formula">Cov(sum scores) = G · Σ · G'      (G = grouping matrix, 1 per item→construct)
+r_manifest = Cov(sumX,sumY) / √(Var(sumX)·Var(sumY))
+≈ β · √(ω_X · ω_Y)      (attenuation formula, exactly reproduced)</span>
+    <p class="help-p">No new mechanism: the same aggregation that produces the sum-score covariance matrix
+      is also used for the latent model covariance matrix — just fitted <em>before</em> instead of <em>after</em> the
+      aggregation. Under mediation, the manifest indirect effect is determined as a partial standardized regression
+      (Y on M and X, both standardized) from the same aggregated correlation matrix.</p>
+
+    <div class="help-sh">Fit Indices</div>
+    <p class="help-p">The same formulas and cutoff caveats as in the CFA tool (χ², CFI, TLI, RMSEA, SRMR — explained
+      there in detail with formulas and interpretation: <a class="xlink" style="margin:0;padding:.15rem .5rem;font-size:.68rem"
+      href="Konfirmatorische_Faktoranalyse.html" target="_blank">→ open CFA help</a>). The structural equations
+      only change <em>which</em> covariances count as "explained" — not how the overall fit is computed. An SEM
+      with structural paths has exactly the same fit statistics as the underlying CFA with the same number of free
+      parameters.</p>
+
+    <div class="help-sh">Advantages of SEM over Separate Analyses</div>
+    <p class="help-p"><strong>Test all paths simultaneously.</strong> A classic three-step mediation approach
+      (Baron &amp; Kenny, 1986) estimates a, b, and c' in <em>separate</em> regressions one after another — each with
+      its own measurement error, with no overall fit test. SEM estimates <strong>all parameters of the whole model
+      in a single step</strong> (full-information ML), including all covariances between the measurement errors of
+      the individual equations — statistically more efficient, and with a single fit test for the <em>entire</em>
+      theory, not just individual paths.</p>
+    <p class="help-p"><strong>Arbitrarily complex models.</strong> This tool shows at most 3 constructs, but the
+      principle scales: multiple predictors, multiple parallel or serial mediators, multiple outcomes,
+      higher-order (second-order factor) constructs — all in <em>one</em> model, with a shared fit.</p>
+    <p class="help-p"><strong>Formal model comparison.</strong> "Full vs. partial mediation" (this tool) is
+      a special case of a general principle: <strong>nested models</strong> (one model arises by fixing
+      parameters of the other) can be formally compared via a χ² difference test or information criteria (AIC, BIC)
+      — an explicit statistical decision between competing theories, not just
+      "eyeballing the coefficients."</p>
+    <p class="help-p"><strong>Explicit, falsifiable theory.</strong> Every fixation (loading = 0, path = 0,
+      covariance = 0) is a <em>publicly visible, testable</em> assumption — the model forces you to specify
+      precisely what the theory actually claims, instead of leaving it implicit.</p>
+    <p class="help-p"><strong>Further extensible.</strong> The same logic extends to multi-group comparisons
+      (→ <a class="xlink" style="margin:0;padding:.15rem .5rem;font-size:.68rem" href="Messinvarianz.html" target="_blank">Measurement Invariance</a>),
+      growth models (change over time), and categorical/ordinal indicators — not shown here, but the
+      same framework.</p>
+
+    <div class="help-sh">Disadvantages &amp; Limitations</div>
+    <p class="help-p"><strong>Good fit does not prove the correct causal structure.</strong> This tool shows it
+      itself: with 2 constructs, X→Y is indistinguishable from Y→X or a mere correlation. Even with more
+      constructs: equally good fit is often compatible with several, sometimes opposing, causal structures
+      (<em>equivalent models</em>) — fit alone never decides between them; only theory and study design
+      (randomization, time series) can.</p>
+    <p class="help-p"><strong>Larger samples needed.</strong> More free parameters require more cases for
+      stable estimates — rules of thumb range from n ≈ 10–20 per free parameter, quickly reaching several hundred
+      cases for more complex models.</p>
+    <p class="help-p"><strong>Distributional assumptions.</strong> Standard ML estimation assumes multivariate
+      normality; under substantial violation (e.g. categorical items, outliers), standard errors
+      and χ² become biased — robust estimators or WLS methods are then needed, not shown here.</p>
+    <p class="help-p"><strong>Specification searching is a trap.</strong> Real software shows modification indices
+      indicating which additional fixation would improve the fit the most. Using that post hoc, data-driven
+      (instead of justifying it theoretically in advance) drastically raises the error rate — the same logic as with
+      <a class="xlink" style="margin:0;padding:.15rem .5rem;font-size:.68rem" href="Data_Dredging.html" target="_blank">Data Dredging</a>.</p>
+    <p class="help-p"><strong>Only as good as the measurement model.</strong> An incorrect fixation <em>in the
+      measurement model</em> (see the CFA tool) also distorts the <em>structural</em> estimates — and is often not
+      easy to distinguish from the actually interesting structural problem based on overall fit alone.</p>
+
+    <div class="help-sh">Literature</div>
+    <p class="help-p">Tomarken, A. J. &amp; Waller, N. G. (2005). Structural equation modeling: Strengths,
+      limitations, and misconceptions. <em>Annual Review of Clinical Psychology, 1</em>, 31–65.<br>
+      Kline, R. B. (2023). <em>Principles and Practice of Structural Equation Modeling</em> (5th ed.). Guilford.<br>
+      Baron, R. M. &amp; Kenny, D. A. (1986). The moderator-mediator variable distinction. <em>Journal of
+      Personality and Social Psychology, 51</em>, 1173–1182.<br>
+      Cole, D. A. &amp; Preacher, K. J. (2014). Manifest variable path analysis: potentially serious and misleading
+      consequences due to unreliability. <em>Psychological Methods, 19</em>(2), 300–315.<br>
+      MacCallum, R. C. &amp; Austin, J. T. (2000). Applications of structural equation modeling in psychological
+      research. <em>Annual Review of Psychology, 51</em>, 201–226.<br>
+      Rosseel, Y. (2012). lavaan: An R Package for Structural Equation Modeling. <em>Journal of Statistical Software,
+      48</em>(2).</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// MATH CORE — Cholesky/ML engine copied from Konfirmatorische_Faktoranalyse.html,
+// extended for a directed structural part (2 or 3 constructs). Verified in isolation
+// (Monte-Carlo cross-check of the path-tracing Phi formula, saturation of the 2-construct
+// model, exact recovery under correct specification, misfit under forced full mediation,
+// exact match to the closed-form attenuation formula) before this UI code was written.
+// ══════════════════════════════════════════════════════════════════════
+function matMul(A,B){
+  const m=A.length,k=B.length,n=B[0].length;
+  return Array.from({length:m},(_,i)=>Array.from({length:n},(_,j)=>
+    Array.from({length:k},(_,l)=>A[i][l]*B[l][j]).reduce((a,b)=>a+b,0)));
+}
+function matT(A){return A[0].map((_,j)=>A.map(r=>r[j]));}
+function cholesky(A){
+  const n=A.length;
+  const L=Array.from({length:n},()=>Array(n).fill(0));
+  for(let i=0;i<n;i++){
+    for(let j=0;j<=i;j++){
+      let sum=A[i][j];
+      for(let k=0;k<j;k++) sum-=L[i][k]*L[j][k];
+      if(i===j){ if(sum<=1e-12) return null; L[i][j]=Math.sqrt(sum); }
+      else { L[i][j]=sum/L[j][j]; }
+    }
+  }
+  return L;
+}
+function logdetChol(L){return 2*L.reduce((s,row,i)=>s+Math.log(row[i]),0);}
+function cholSolveVec(L,b){
+  const n=L.length; const y=Array(n).fill(0);
+  for(let i=0;i<n;i++){let s=b[i];for(let k=0;k<i;k++)s-=L[i][k]*y[k];y[i]=s/L[i][i];}
+  const x=Array(n).fill(0);
+  for(let i=n-1;i>=0;i--){let s=y[i];for(let k=i+1;k<n;k++)s-=L[k][i]*x[k];x[i]=s/L[i][i];}
+  return x;
+}
+function traceSigmaInvS(L,S){
+  const n=L.length; let tr=0;
+  for(let j=0;j<n;j++){ const col=S.map(row=>row[j]); const x=cholSolveVec(L,col); tr+=x[j]; }
+  return tr;
+}
+function F_ML(S,Sigma,logdetS){
+  const L=cholesky(Sigma);
+  if(!L) return 1e6;
+  return logdetChol(L)+traceSigmaInvS(L,S)-logdetS-S.length;
+}
+function goldenSectionMin(f,lo,hi,tol,maxIter){
+  const gr=(Math.sqrt(5)-1)/2; let a=lo,b=hi;
+  let c=b-gr*(b-a), d=a+gr*(b-a), fc=f(c), fd=f(d);
+  for(let i=0;i<maxIter && (b-a)>tol;i++){
+    if(fc<fd){ b=d; d=c; fd=fc; c=b-gr*(b-a); fc=f(c); }
+    else { a=c; c=d; fc=fd; d=a+gr*(b-a); fd=f(d); }
+  }
+  return (a+b)/2;
+}
+
+// TRUE population model: X=V1-4, (M=M1-3 if mediation), Y=S1-4. No cross-loadings (this
+// tool's misspecification focus is structural, not measurement -- CFA tool covers that).
+function itemGroups(mediation){ return mediation? [{n:4,f:0},{n:3,f:1},{n:4,f:2}] : [{n:4,f:0},{n:4,f:1}]; }
+function nItems(mediation){ return mediation?11:8; }
+function buildLambda(mediation,lamArr){
+  const groups=itemGroups(mediation), k=mediation?3:2;
+  const L=[]; let idx=0;
+  groups.forEach(g=>{ for(let i=0;i<g.n;i++){ const row=Array(k).fill(0); row[g.f]=lamArr[idx++]; L.push(row); } });
+  return L;
+}
+// Path-traced structural covariance (Wright's rules); mediation=false reduces to plain CFA Phi.
+function buildPhi(mediation,beta,a,b,cp){
+  if(!mediation) return [[1,beta],[beta,1]];
+  return [
+    [1, a, a*b+cp],
+    [a, 1, b+a*cp],
+    [a*b+cp, b+a*cp, 1]
+  ];
+}
+function buildSigmaTrue(mediation,lam,beta,a,b,cp){
+  const Lambda=buildLambda(mediation,Array(nItems(mediation)).fill(lam));
+  const Phi=buildPhi(mediation,beta,a,b,cp);
+  const h2=lam*lam;
+  const Theta=Lambda.map(()=>Math.max(0.02,1-h2));
+  const LPLt=matMul(matMul(Lambda,Phi),matT(Lambda));
+  return LPLt.map((row,i)=>row.map((v,j)=> i===j? v+Theta[i] : v));
+}
+function buildSigmaFit(mediation,params,allowFull){
+  const Lambda=buildLambda(mediation,params.lam);
+  const cpUsed = mediation? (allowFull? 0 : params.cp) : 0;
+  const Phi = mediation? buildPhi(true,0,params.a,params.b,cpUsed) : [[1,params.beta],[params.beta,1]];
+  const LPLt=matMul(matMul(Lambda,Phi),matT(Lambda));
+  return LPLt.map((row,i)=>row.map((v,j)=> i===j? v+params.theta[i] : v));
+}
+function paramLayout(mediation,allowFull){
+  const n=nItems(mediation);
+  let idx=0; const L={lam:[]};
+  for(let i=0;i<n;i++) L.lam.push(idx++);
+  L.theta=[]; for(let i=0;i<n;i++) L.theta.push(idx++);
+  if(!mediation){ L.beta=idx++; }
+  else { L.a=idx++; L.b=idx++; if(!allowFull) L.cp=idx++; }
+  return {layout:L,n:idx};
+}
+function unflatten(x,layout){
+  const p={lam:layout.lam.map(i=>x[i]), theta:layout.theta.map(i=>x[i])};
+  p.beta = layout.beta!==undefined? x[layout.beta]:0;
+  p.a = layout.a!==undefined? x[layout.a]:0;
+  p.b = layout.b!==undefined? x[layout.b]:0;
+  p.cp = layout.cp!==undefined? x[layout.cp]:0;
+  return p;
+}
+function flattenStart(lam0,theta0,beta0,a0,b0,cp0,layout,n){
+  const x=Array(n).fill(0);
+  layout.lam.forEach((idx,i)=>x[idx]=lam0[i]);
+  layout.theta.forEach((idx,i)=>x[idx]=theta0[i]);
+  if(layout.beta!==undefined) x[layout.beta]=beta0;
+  if(layout.a!==undefined) x[layout.a]=a0;
+  if(layout.b!==undefined) x[layout.b]=b0;
+  if(layout.cp!==undefined) x[layout.cp]=cp0;
+  return x;
+}
+function boundsFor(layout,n){
+  const b=Array(n).fill([-1.4,1.4]);
+  layout.theta.forEach(idx=>b[idx]=[0.02,3]);
+  return b;
+}
+function fitSEM(mediation,SigmaTrue,x0,bounds,allowFull,layout,sweeps){
+  sweeps=sweeps||32;
+  const Ltrue=cholesky(SigmaTrue), logdetS=logdetChol(Ltrue);
+  const sigmaFromX=(x)=>buildSigmaFit(mediation,unflatten(x,layout),allowFull);
+  const obj=(x)=>F_ML(SigmaTrue, sigmaFromX(x), logdetS);
+  let x=x0.slice(), fBest=obj(x);
+  for(let sweep=0;sweep<sweeps;sweep++){
+    for(let k=0;k<x.length;k++){
+      const [lo,hi]=bounds[k]; const xk0=x[k];
+      const window = sweep<4? (hi-lo) : 0.4*Math.pow(0.6,sweep-4);
+      const sLo=Math.max(lo,xk0-window/2), sHi=Math.min(hi,xk0+window/2);
+      const f1d=(v)=>{const xx=x.slice();xx[k]=v;return obj(xx);};
+      x[k]=goldenSectionMin(f1d,sLo,sHi,1e-6,50);
+    }
+    const fNew=obj(x);
+    if(Math.abs(fBest-fNew)<1e-10){fBest=fNew;break;}
+    fBest=fNew;
+  }
+  return {x,F:fBest,params:unflatten(x,layout)};
+}
+function buildSigmaBaseline(S){return S.map((row,i)=>row.map((v,j)=> i===j? S[i][i] : 0));}
+function fitIndices(F_model,df_model,SigmaTrue,N){
+  const chi2_model=(N-1)*F_model;
+  const SigmaBase=buildSigmaBaseline(SigmaTrue);
+  const Ltrue=cholesky(SigmaTrue), logdetS=logdetChol(Ltrue);
+  const F_base=F_ML(SigmaTrue,SigmaBase,logdetS);
+  const p=SigmaTrue.length, df_base=p*(p-1)/2, chi2_base=(N-1)*F_base;
+  const CFI=1-Math.max(0,chi2_model-df_model)/Math.max(chi2_base-df_base,chi2_model-df_model,1e-9);
+  const TLI=((chi2_base/df_base)-(chi2_model/df_model))/((chi2_base/df_base)-1);
+  const RMSEA=Math.sqrt(Math.max(0,(chi2_model-df_model)/(df_model*(N-1))));
+  return {chi2_model,df_model,chi2_base,df_base,CFI,TLI,RMSEA};
+}
+function computeSRMR(SigmaTrue,SigmaFit){
+  const p=SigmaTrue.length;
+  const corr=(M)=>M.map((row,i)=>row.map((v,j)=>v/Math.sqrt(M[i][i]*M[j][j])));
+  const Rt=corr(SigmaTrue), Rf=corr(SigmaFit);
+  let sumSq=0,count=0;
+  for(let i=0;i<p;i++) for(let j=0;j<=i;j++){ sumSq+=(Rt[i][j]-Rf[i][j])**2; count++; }
+  return Math.sqrt(sumSq/count);
+}
+
+// ---- Manifest (sum-score) comparison — closed form, same aggregation for both modes ----
+function aggregationMatrix(mediation){
+  const groups=itemGroups(mediation), n=nItems(mediation), K=groups.length;
+  const G=Array.from({length:K},()=>Array(n).fill(0));
+  let idx=0;
+  groups.forEach((g,k)=>{ for(let i=0;i<g.n;i++){ G[k][idx]=1; idx++; } });
+  return G;
+}
+function toCorr(M){ return M.map((row,i)=>row.map((v,j)=>v/Math.sqrt(M[i][i]*M[j][j]))); }
+function manifestPaths(mediation,SigmaTrue){
+  const G=aggregationMatrix(mediation);
+  const covSS=matMul(matMul(G,SigmaTrue),matT(G));
+  const R=toCorr(covSS);
+  if(!mediation) return {r:R[0][1]};
+  const rXM=R[0][1], rXY=R[0][2], rMY=R[1][2];
+  const det=1-rXM*rXM;
+  const b=(rMY-rXM*rXY)/det, cp=(rXY-rXM*rMY)/det;
+  return {a:rXM,b,cp,indirect:rXM*b};
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// STATE / UI GLUE
+// ══════════════════════════════════════════════════════════════════════
+let MEDIATION=false, ALLOW_FULL=false;
+const N=300;
+
+function setMediation(v){
+  MEDIATION=v;
+  document.getElementById('btn-med-off').classList.toggle('act',!v);
+  document.getElementById('btn-med-on').classList.toggle('act',v);
+  document.getElementById('simple-sliders').style.display=v?'none':'';
+  document.getElementById('med-sliders').style.display=v?'':'none';
+  document.getElementById('scen-card').style.display=v?'none':'';
+  document.getElementById('full-med-card').style.display=v?'':'none';
+  document.getElementById('saturated-note').style.display=v?'none':'';
+  document.getElementById('med-story-box').style.display=v?'':'none';
+  update();
+}
+function setAllowFull(v){
+  ALLOW_FULL=v;
+  document.getElementById('btn-partial').classList.toggle('act',!v);
+  document.getElementById('btn-full').classList.toggle('act',v);
+  update();
+}
+function setScen(btn){
+  document.querySelectorAll('.scen-btn').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  document.getElementById('sl-lam').value=btn.dataset.lam;
+  document.getElementById('sl-beta').value=btn.dataset.beta;
+  update();
+}
+function syncScenBtns(){
+  const lv=document.getElementById('sl-lam').value, bv=document.getElementById('sl-beta').value;
+  document.querySelectorAll('.scen-btn').forEach(b=>{
+    b.classList.toggle('act', b.dataset.lam===lv && b.dataset.beta===bv);
+  });
+}
+
+function computeAll(){
+  const lam=parseInt(document.getElementById('sl-lam').value)/100;
+  document.getElementById('v-lam').textContent=lam.toFixed(2);
+  let beta=0,a=0,b=0,cp=0;
+  if(!MEDIATION){
+    beta=parseInt(document.getElementById('sl-beta').value)/100;
+    document.getElementById('v-beta').textContent=beta.toFixed(2);
+    syncScenBtns();
+  } else {
+    a=parseInt(document.getElementById('sl-a').value)/100;
+    b=parseInt(document.getElementById('sl-b').value)/100;
+    cp=parseInt(document.getElementById('sl-cp').value)/100;
+    document.getElementById('v-a').textContent=a.toFixed(2);
+    document.getElementById('v-b').textContent=b.toFixed(2);
+    document.getElementById('v-cp').textContent=cp.toFixed(2);
+  }
+
+  const SigmaTrue=buildSigmaTrue(MEDIATION,lam,beta,a,b,cp);
+  const {layout,n}=paramLayout(MEDIATION,ALLOW_FULL);
+  const nTot=nItems(MEDIATION);
+  const lam0=Array(nTot).fill(lam);
+  const theta0=Array(nTot).fill(Math.max(0.1,1-lam*lam));
+  const x0=flattenStart(lam0,theta0, beta*0.5, a*0.5, b*0.5, (MEDIATION&&!ALLOW_FULL)?cp*0.5:0, layout, n);
+  const bounds=boundsFor(layout,n);
+  const res=fitSEM(MEDIATION,SigmaTrue,x0,bounds,ALLOW_FULL,layout,32);
+  const p=nTot, df=p*(p+1)/2-n;
+  const fit=fitIndices(res.F,df,SigmaTrue,N);
+  const SigmaFit=buildSigmaFit(MEDIATION,res.params,ALLOW_FULL);
+  const srmr=computeSRMR(SigmaTrue,SigmaFit);
+  const manifest=manifestPaths(MEDIATION,SigmaTrue);
+
+  return {lam,beta,a,b,cp,params:res.params,df,fit,srmr,manifest};
+}
+
+function fitVerdict(CFI,RMSEA,SRMR){
+  if(CFI>=0.95 && RMSEA<=0.06 && SRMR<=0.08) return {cls:'v-par',name:'GOOD FIT',
+    txt:'By the common cutoffs (Hu & Bentler, 1999), the specified model fits the (true) structure well.'};
+  if(CFI>=0.90 && RMSEA<=0.08) return {cls:'v-tau',name:'ACCEPTABLE FIT',
+    txt:'Borderline — the misspecification is already visible, but not (yet) dramatic.'};
+  return {cls:'v-con',name:'POOR FIT',
+    txt:'Substantial misfit — the specified model deviates noticeably from the true structure.'};
+}
+
+function lavaanCode(mediation,allowFull){
+  let s = "model <- '\n";
+  s += "  X =~ V1 + V2 + V3 + V4\n";
+  if(mediation) s += "  M =~ M1 + M2 + M3\n";
+  s += "  Y =~ S1 + S2 + S3 + S4\n";
+  if(!mediation){
+    s += "  Y ~ beta*X\n";
+  } else {
+    s += "  M ~ a*X\n";
+    s += "  Y ~ b*M" + (allowFull? "" : " + cp*X") + "\n";
+    if(allowFull) s += "  # full mediation: no direct path specified\n";
+    s += "  indirect := a*b\n";
+    if(!allowFull) s += "  total := a*b + cp\n";
+  }
+  s += "'\n\n";
+  s += (mediation? "fit <- sem(" : "fit <- sem(") + "model, sample.cov = Sigma, sample.nobs = 300, std.lv = TRUE)\n";
+  s += "summary(fit, fit.measures = TRUE, standardized = TRUE)";
+  return s;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW — path diagram (2 or 3 constructs, directed structural arrows)
+// ══════════════════════════════════════════════════════════════════════
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function drawArrow(ctx,x1,y1,x2,y2,color,width,dashed,label,labelColor,paper){
+  ctx.strokeStyle=color; ctx.lineWidth=width;
+  if(dashed) ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  ctx.setLineDash([]);
+  const ang=Math.atan2(y2-y1,x2-x1);
+  ctx.beginPath();ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-9*Math.cos(ang-0.35),y2-9*Math.sin(ang-0.35));
+  ctx.lineTo(x2-9*Math.cos(ang+0.35),y2-9*Math.sin(ang+0.35));
+  ctx.closePath();ctx.fillStyle=color;ctx.fill();
+  if(label){
+    const lx=x1+(x2-x1)*0.5, ly=y1+(y2-y1)*0.5;
+    ctx.font='bold 13px DM Mono,monospace';
+    const tw=ctx.measureText(label).width+12;
+    ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(lx-tw/2,ly-11,tw,20);ctx.globalAlpha=1;
+    ctx.fillStyle=labelColor;ctx.textAlign='center';ctx.fillText(label,lx,ly+5);
+  }
+}
+function drawPath(state){
+  const c=document.getElementById('cv-path'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d');
+  const a1=cv('--a1'),a4=cv('--a4'),a5=cv('--a5'),a6=cv('--a6'),ink2=cv('--ink2'),ink3=cv('--ink3'),paper=cv('--paper'),bg=cv('--bg');
+  ctx.clearRect(0,0,W,H);
+  const s=H/420;
+  const fy=58*s, frx=52*s, fry=32*s;
+  const iy=224*s, ih=42*s;
+  const ey=310*s, er=15*s;
+  const fS=px=>Math.round(px*s);
+
+  const constructs = MEDIATION
+    ? [{frac:0.15,label:'X',name:'Verbal',color:a4,n:4,labels:['V1','V2','V3','V4']},
+       {frac:0.5, label:'M',name:'Work. mem.',color:a6,n:3,labels:['M1','M2','M3']},
+       {frac:0.85,label:'Y',name:'Spatial',color:a5,n:4,labels:['S1','S2','S3','S4']}]
+    : [{frac:0.27,label:'X',name:'Verbal',color:a4,n:4,labels:['V1','V2','V3','V4']},
+       {frac:0.73,label:'Y',name:'Spatial',color:a5,n:4,labels:['S1','S2','S3','S4']}];
+
+  const iw=Math.min(66,(W/constructs.length-30)/4-10);
+  let lamIdx=0;
+  constructs.forEach(con=>{
+    con.fx=W*con.frac;
+    con.cxs=[]; for(let i=0;i<con.n;i++) con.cxs.push(con.fx-((con.n-1)/2)*(iw+16)+i*(iw+16));
+    con.lamSlice=state.params.lam.slice(lamIdx,lamIdx+con.n);
+    con.thetaSlice=state.params.theta.slice(lamIdx,lamIdx+con.n);
+    lamIdx+=con.n;
+  });
+
+  // measurement arrows + item boxes + error circles
+  constructs.forEach(con=>{
+    con.cxs.forEach((cx,i)=>{
+      ctx.strokeStyle=ink2; ctx.lineWidth=1+Math.min(1.4,Math.abs(con.lamSlice[i]))*2.2;
+      ctx.beginPath();ctx.moveTo(con.fx,fy+fry);ctx.lineTo(cx,iy);ctx.stroke();
+      const ang=Math.atan2(iy-(fy+fry),cx-con.fx);
+      ctx.beginPath();ctx.moveTo(cx,iy);ctx.lineTo(cx-7*Math.cos(ang-0.4),iy-7*Math.sin(ang-0.4));
+      ctx.lineTo(cx-7*Math.cos(ang+0.4),iy-7*Math.sin(ang+0.4));ctx.closePath();ctx.fillStyle=ink2;ctx.fill();
+
+      ctx.strokeStyle=a1;ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.moveTo(cx,ey-er);ctx.lineTo(cx,iy+ih);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx,iy+ih);ctx.lineTo(cx-5,iy+ih+7);ctx.lineTo(cx+5,iy+ih+7);ctx.closePath();ctx.fillStyle=a1;ctx.fill();
+      ctx.beginPath();ctx.arc(cx,ey,er,0,2*Math.PI);ctx.fillStyle=bg;ctx.fill();ctx.strokeStyle=a1;ctx.lineWidth=1.6;ctx.stroke();
+      ctx.fillStyle=a1;ctx.font=fS(10)+'px DM Mono,monospace';ctx.textAlign='center';
+      ctx.fillText('θ='+con.thetaSlice[i].toFixed(2),cx,ey+er+fS(13));
+
+      ctx.fillStyle=paper;ctx.strokeStyle=con.color;ctx.lineWidth=2;
+      ctx.fillRect(cx-iw/2,iy,iw,ih);ctx.strokeRect(cx-iw/2,iy,iw,ih);
+      ctx.fillStyle=con.color;ctx.font='bold '+fS(13)+'px DM Mono,monospace';ctx.textAlign='center';
+      ctx.fillText(con.labels[i],cx,iy+ih/2+5);
+    });
+    ctx.beginPath();ctx.ellipse(con.fx,fy,frx,fry,0,0,2*Math.PI);
+    ctx.fillStyle=paper;ctx.fill();ctx.strokeStyle=con.color;ctx.lineWidth=2.4;ctx.stroke();
+    ctx.fillStyle=con.color;ctx.font='bold '+fS(16)+'px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(con.label,con.fx,fy-2);
+    ctx.font=fS(11)+'px DM Mono,monospace';ctx.fillText(con.name,con.fx,fy+16);
+  });
+
+  // structural arrows
+  if(!MEDIATION){
+    const [X,Y]=constructs;
+    drawArrow(ctx, X.fx+frx*1.05, fy, Y.fx-frx*1.05, fy, a6, 2.4, false,
+      'β='+state.params.beta.toFixed(2), a6, paper);
+  } else {
+    const [X,M,Y]=constructs;
+    drawArrow(ctx, X.fx+frx*1.05, fy-6*s, M.fx-frx*1.05, fy-6*s, a6, 2.2, false,
+      'a='+state.params.a.toFixed(2), a6, paper);
+    drawArrow(ctx, M.fx+frx*1.05, fy-6*s, Y.fx-frx*1.05, fy-6*s, a6, 2.2, false,
+      'b='+state.params.b.toFixed(2), a6, paper);
+    // direct path c', drawn as a lower curve beneath the item boxes
+    const curveY=ey+er+fS(34);
+    const cpFixed = ALLOW_FULL;
+    const cpVal = cpFixed? state.cp : state.params.cp;
+    const col = cpFixed? ink3 : a1;
+    ctx.strokeStyle=col; ctx.lineWidth=2;
+    if(cpFixed) ctx.setLineDash([5,4]);
+    ctx.beginPath();
+    ctx.moveTo(X.fx, ey+er+8*s);
+    ctx.quadraticCurveTo(W/2, curveY+18*s, Y.fx, ey+er+8*s);
+    ctx.stroke(); ctx.setLineDash([]);
+    const ang=Math.atan2(8,(Y.fx-X.fx)*0.15);
+    ctx.beginPath();ctx.moveTo(Y.fx,ey+er+8*s);
+    ctx.lineTo(Y.fx-10,ey+er+8*s-6);
+    ctx.lineTo(Y.fx-4,ey+er+8*s+8);
+    ctx.closePath();ctx.fillStyle=col;ctx.fill();
+    const label = cpFixed? "c' fixed = 0" : "c'="+cpVal.toFixed(2);
+    ctx.font='bold 13px DM Mono,monospace';
+    const tw=ctx.measureText(label).width+12;
+    ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(W/2-tw/2,curveY+18*s-10,tw,20);ctx.globalAlpha=1;
+    ctx.fillStyle=col;ctx.textAlign='center';ctx.fillText(label,W/2,curveY+18*s+5);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// UPDATE
+// ══════════════════════════════════════════════════════════════════════
+function fmtGap(latent,manifest){
+  const gap=latent-manifest;
+  const pct = Math.abs(latent)>1e-6? (gap/latent*100) : 0;
+  return {gap,pct};
+}
+function update(){
+  const state=computeAll();
+  drawPath(state);
+
+  document.getElementById('m-chi2').textContent=state.fit.chi2_model.toFixed(1)+' ('+state.df+')';
+  document.getElementById('m-chi2-sub').textContent='N = '+N+', df = '+state.df;
+  document.getElementById('m-cfi').textContent=state.fit.CFI.toFixed(3);
+  document.getElementById('m-tli').textContent=state.fit.TLI.toFixed(3);
+  document.getElementById('m-rmsea').textContent=state.fit.RMSEA.toFixed(3);
+  document.getElementById('m-srmr').textContent=state.srmr.toFixed(3);
+
+  const vd=fitVerdict(state.fit.CFI,state.fit.RMSEA,state.srmr);
+  const v=document.getElementById('verdict'); v.className='verdict '+vd.cls;
+  v.innerHTML='<strong>'+vd.name+'</strong> — '+vd.txt;
+
+  document.getElementById('r-code').textContent=lavaanCode(MEDIATION,ALLOW_FULL);
+
+  // comparison card
+  const cg=document.getElementById('cmp-grid'), gapEl=document.getElementById('cmp-gap');
+  if(!MEDIATION){
+    const latent=state.params.beta, manifest=state.manifest.r;
+    const {gap,pct}=fmtGap(latent,manifest);
+    cg.innerHTML =
+      '<div class="cmp-box"><div class="cmp-lbl" style="color:var(--a6)">Latent (SEM) — β̂</div>'+
+      '<div class="cmp-val" style="color:var(--a6)">'+latent.toFixed(3)+'</div>'+
+      '<div class="cmp-sub">Estimated from the measurement model, cleaned of measurement error.</div></div>'+
+      '<div class="cmp-box"><div class="cmp-lbl" style="color:var(--a1)">Manifest (sum score) — r</div>'+
+      '<div class="cmp-val" style="color:var(--a1)">'+manifest.toFixed(3)+'</div>'+
+      '<div class="cmp-sub">Correlation of the raw sum scores, without measurement-error correction.</div></div>';
+    gapEl.innerHTML = 'Gap: <strong>'+gap.toFixed(3)+'</strong> ('+pct.toFixed(0)+'% underestimation from measurement error) — '+
+      'raise the λ slider to see how the gap shrinks with better reliability.';
+  } else {
+    const latent=state.params.a*state.params.b, manifest=state.manifest.indirect;
+    const {gap,pct}=fmtGap(latent,manifest);
+    cg.innerHTML =
+      '<div class="cmp-box"><div class="cmp-lbl" style="color:var(--a6)">Latent (SEM) — a·b</div>'+
+      '<div class="cmp-val" style="color:var(--a6)">'+latent.toFixed(3)+'</div>'+
+      '<div class="cmp-sub">Indirect effect X (verbal) → M (working memory) → Y (spatial), estimated from the measurement model.</div></div>'+
+      '<div class="cmp-box"><div class="cmp-lbl" style="color:var(--a1)">Manifest (sum score) — â·b̂</div>'+
+      '<div class="cmp-val" style="color:var(--a1)">'+manifest.toFixed(3)+'</div>'+
+      '<div class="cmp-sub">Partial standardized regression on the raw sum scores.</div></div>';
+    gapEl.innerHTML = 'Gap: <strong>'+gap.toFixed(3)+'</strong> ('+pct.toFixed(0)+'% underestimation) — measurement error in '+
+      '<strong>X and M</strong> acts twice on the indirect effect, so the gap here is usually larger than for the '+
+      'simple path.';
+  }
+
+  const hint=document.getElementById('hint-path');
+  const hintModelart=document.getElementById('hint-modelart');
+  if(!MEDIATION){
+    hint.innerHTML='X→Y is always saturated (df-neutral) with only 2 constructs — the fit is always '+
+      'perfect regardless of β, see note below.';
+    hintModelart.textContent='Simple model: a directed path between two latent factors.';
+  } else {
+    const parts=[];
+    if(ALLOW_FULL && state.cp>0.02){
+      parts.push('<strong style="color:var(--a1)">Full mediation forced</strong> — c\' is fixed at 0 in the model, '+
+        'even though the population has c\'='+state.cp.toFixed(2)+'. The fit worsens accordingly.');
+    } else if(!ALLOW_FULL) {
+      parts.push('Partial mediation: c\' is estimated freely (c\'̂='+state.params.cp.toFixed(2)+').');
+    } else {
+      parts.push('Full mediation correctly specified — the population truly has c\'=0.');
+    }
+    hint.innerHTML=parts.join(' ');
+    hintModelart.textContent='Verbal ability (X) affects spatial reasoning (Y) both directly (c\') and '+
+      'indirectly via working memory (M, a·b).';
+  }
+}
+
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  requestAnimationFrame(update);
+}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.getElementById('help-overlay').classList.remove('open'); } });
+
+update();
+window.addEventListener('resize',()=>{ if(window._rt) clearTimeout(window._rt); window._rt=setTimeout(update,120); });
+</script>
+</body>
+</html>

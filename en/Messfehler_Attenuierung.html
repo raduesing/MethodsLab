@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Measurement-Error Attenuation — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a4);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.83rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.83rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.preset-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.3rem .65rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .15s;width:100%;text-align:left;display:block;margin-bottom:.3rem}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.preset-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.seed-btn{font-family:'DM Mono',monospace;font-size:.76rem;padding:.28rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .12s;width:100%;text-align:left;margin-top:.3rem}
+.seed-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.eq-wrap{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem;margin-bottom:.8rem}
+.eq-main{font-family:'DM Mono',monospace;font-size:.9rem;line-height:2.1;letter-spacing:.01em}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a4);
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a4);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+.insight-box{background:var(--panel);border-left:3px solid var(--a1);padding:.85rem 1rem;
+  margin-bottom:.85rem;font-size:.88rem;line-height:1.75}
+.insight-box strong{color:var(--a1)}
+.kw-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.85rem}
+.kw-box{background:var(--panel);border:1px solid var(--grid);padding:.6rem .75rem}
+.kw-label{font-family:'DM Mono',monospace;font-size:.69rem;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink3);margin-bottom:.28rem;line-height:1.3}
+.kw-val{font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;color:var(--ink)}
+.kw-sub{font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink2)}
+.canvas-wrap{background:var(--panel);border:1px solid var(--grid);margin-bottom:.85rem;overflow:hidden}
+#plot-canvas{width:100%;display:block}
+.learn-section{margin-top:2.2rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a4);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.help-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.82);
+  overflow-y:auto;padding:2rem 1rem}
+.help-overlay.open{display:block}
+.help-panel{max-width:700px;margin:0 auto;background:var(--paper);border:1px solid var(--border);padding:2rem}
+.help-panel h2{font-family:'Fraunces',serif;font-weight:300;font-size:1.2rem;margin-bottom:1.2rem}
+.help-h3{font-family:'DM Mono',monospace;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--a1);margin:1.1rem 0 .35rem}
+.help-p{font-size:.85rem;line-height:1.8;color:var(--ink2);margin-bottom:.6rem}
+.help-p code{font-family:'DM Mono',monospace;font-size:.8rem;background:var(--panel);padding:.1rem .35rem;color:var(--ink)}
+.help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
+  border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
+.help-close:hover{background:var(--a1);color:var(--bg)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Measurement-Error <em>Attenuation</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div class="help-overlay" id="help-overlay">
+  <div class="help-panel">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
+      <h2>Help — Measurement-Error Attenuation</h2>
+      <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    </div>
+    <div class="help-h3">What does this tool show?</div>
+    <p class="help-p">Measurement error systematically attenuates (shrinks) correlations. The <strong style="color:var(--ink)">true correlation</strong> between two latent constructs (X*, Y*) is always larger than the <strong style="color:var(--ink)">observed correlation</strong> between the error-laden measurements (X, Y). The tool shows both worlds side by side.</p>
+    <div class="help-h3">The running example</div>
+    <p class="help-p">A study examines the relationship between intelligence (X*) and academic performance (Y*). An IQ test measures intelligence with reliability r_xx = 0.85, school grades measure performance with r_yy = 0.70. The true correlation ρ = 0.60 shows up in the data only as r ≈ 0.46.</p>
+    <div class="help-h3">The math</div>
+    <p class="help-p"><code>r_obs = ρ_true · √(r_xx · r_yy)</code></p>
+    <p class="help-p">Disattenuation (correction) reverses this: <code>ρ̂ = r_obs / √(r_xx · r_yy)</code>. It requires r_xx and r_yy to be correctly known — a strong assumption.</p>
+    <div class="help-h3">The two panels</div>
+    <p class="help-p"><strong style="color:var(--a4)">Left (purple):</strong> Latent true scores X* and Y* — what the world would look like if measurement were error-free. Regression line with slope ρ_true.<br>
+    <strong style="color:var(--a2)">Right (blue):</strong> Observed, error-laden measurements X and Y. The point cloud is wider, the regression line (blue) flatter. The dashed purple line shows the true slope for comparison.</p>
+    <div class="help-h3">Controls</div>
+    <p class="help-p"><strong style="color:var(--ink)">ρ_true:</strong> true latent correlation. <strong style="color:var(--ink)">r_xx / r_yy:</strong> reliability of the two measurement instruments (1.0 = perfect). <strong style="color:var(--ink)">Scenarios A–D</strong> illustrate different constellations.</p>
+  </div>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Scenarios</div>
+    <button class="preset-btn" id="pre-A" onclick="setPreset('A')">A — Perfect reliability (no attenuation)</button>
+    <button class="preset-btn active" id="pre-B" onclick="setPreset('B')">B — Intelligence &amp; academic performance</button>
+    <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — Both strongly error-laden</button>
+    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — One-sided unreliability</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Simulation</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n</span><span class="slider-val" id="val-n">300</span></div>
+      <input type="range" id="sl-n" min="50" max="600" step="25" value="300" oninput="onSl('n',this)">
+    </div>
+    <button class="seed-btn" onclick="newSeed()">⟳ New sample</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Parameters</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name" style="color:var(--a4)">ρ_true (latent corr.)</span>
+        <span class="slider-val" id="val-rTrue">0.60</span>
+      </div>
+      <input type="range" id="sl-rTrue" min="0.00" max="0.95" step="0.05" value="0.60" oninput="onSl('rTrue',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name" style="color:var(--a2)">r_xx (reliab. X)</span>
+        <span class="slider-val" id="val-rXX">0.85</span>
+      </div>
+      <input type="range" id="sl-rXX" min="0.20" max="1.00" step="0.05" value="0.85" oninput="onSl('rXX',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name" style="color:var(--a3)">r_yy (reliab. Y)</span>
+        <span class="slider-val" id="val-rYY">0.70</span>
+      </div>
+      <input type="range" id="sl-rYY" min="0.20" max="1.00" step="0.05" value="0.70" oninput="onSl('rYY',this)">
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin-top:.5rem;
+      padding-top:.4rem;border-top:1px solid var(--grid);line-height:1.7">
+      √(r_xx · r_yy) = <span id="sl-sqrtrr" style="color:var(--a5)">0.771</span><br>
+      r_obs (theory) = <span id="sl-robs" style="color:var(--a2)">0.463</span>
+    </div>
+  </div>
+
+</div><!-- /sidebar -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 Example — Intelligence &amp; academic performance</div>
+    A study measures intelligence (X) with an IQ test
+    (r_xx = <span id="ex-rxx">0.85</span>) and academic performance (Y) via school grades (r_yy = <span id="ex-ryy">0.70</span>).
+    The true correlation between the latent constructs is ρ = <span id="ex-rtrue">0.60</span>.
+    <span id="ex-tail">In the data it shows up attenuated as r ≈ <span style="color:var(--a2);font-weight:600">0.46</span> —
+    an underestimate of <span style="color:var(--a1);font-weight:600">.14</span>.
+    Without correction, the relationship is systematically underestimated.</span>
+    <div style="margin-top:.6rem">
+      <a class="xlink" href="../Strukturgleichungsmodell.html" target="_blank">Latent variables instead of sum scores: SEM →</a>
+      <a class="xlink" href="Mediationsanalyse.html" target="_blank">Attenuation in indirect effects? → Mediation Analysis</a>
+      <a class="xlink" href="OLS_Regression.html" target="_blank">Attenuation of the regression coefficient b₁? → OLS Regression</a>
+    </div>
+  </div>
+
+  <div class="sec-h">Basic principle</div>
+  <div class="eq-wrap">
+    <div class="eq-main">
+      <span style="color:var(--a2)">r_obs</span>
+      <span style="color:var(--ink3)"> = </span>
+      <span style="color:var(--a4)">ρ_true</span>
+      <span style="color:var(--ink3)"> · √(</span>
+      <span style="color:var(--a2)">r_xx</span>
+      <span style="color:var(--ink3)"> · </span>
+      <span style="color:var(--a3)">r_yy</span>
+      <span style="color:var(--ink3)">)</span>
+      <span style="color:var(--ink3);font-size:.78rem;margin-left:1.2rem">(attenuation)</span>
+    </div>
+    <div class="eq-main">
+      <span style="color:var(--a4)">ρ̂_true</span>
+      <span style="color:var(--ink3)"> = </span>
+      <span style="color:var(--a2)">r_obs</span>
+      <span style="color:var(--ink3)"> / √(</span>
+      <span style="color:var(--a2)">r_xx</span>
+      <span style="color:var(--ink3)"> · </span>
+      <span style="color:var(--a3)">r_yy</span>
+      <span style="color:var(--ink3)">)</span>
+      <span style="color:var(--ink3);font-size:.78rem;margin-left:1.2rem">(disattenuation)</span>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink3);margin-top:.45rem;
+      padding-top:.4rem;border-top:1px solid var(--grid)">
+      Attenuation factor: <span id="eq-att" style="color:var(--a5)">0.771</span>
+      &nbsp;·&nbsp;
+      r_obs (theory): <span id="eq-robs" style="color:var(--a2)">0.463</span>
+      &nbsp;·&nbsp;
+      Underestimate: <span id="eq-diff" style="color:var(--a1)">−0.137</span>
+    </div>
+  </div>
+
+  <div class="sec-h">Latent Scores vs. Observed Scores</div>
+  <div class="canvas-wrap">
+    <canvas id="plot-canvas"></canvas>
+  </div>
+
+  <div class="kw-grid">
+    <div class="kw-box">
+      <div class="kw-label" style="color:var(--a4)">ρ_true (population)</div>
+      <div class="kw-val" id="kw-rtrue" style="color:var(--a4)">—</div>
+      <div class="kw-sub">true latent correlation</div>
+    </div>
+    <div class="kw-box">
+      <div class="kw-label" style="color:var(--a2)">r_obs (theory)</div>
+      <div class="kw-val" id="kw-robs-pop" style="color:var(--a2)">—</div>
+      <div class="kw-sub">ρ_true · √(r_xx · r_yy)</div>
+    </div>
+    <div class="kw-box">
+      <div class="kw-label" style="color:var(--a2)">r_obs (sample)</div>
+      <div class="kw-val" id="kw-robs-samp" style="color:var(--a2)">—</div>
+      <div class="kw-sub">empirical correlation</div>
+    </div>
+    <div class="kw-box">
+      <div class="kw-label" style="color:var(--a4)">r_disattenuated</div>
+      <div class="kw-val" id="kw-rdisatt" style="color:var(--a4)">—</div>
+      <div class="kw-sub">r_obs / √(r_xx · r_yy)</div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <strong>Conclusion:</strong> <span id="ins-body">—</span>
+  </div>
+
+  <div class="learn-section">
+    <div class="sec-h">Concepts</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">What is attenuation?</div>
+        <div class="lcard-body">Measurement error in X or Y systematically reduces the observed correlation. The formula <code>r_obs = ρ · √(r_xx · r_yy)</code> shows: only when both instruments are perfectly reliable (r_xx = r_yy = 1.0) does r_obs = ρ_true hold. Any measurement imprecision pulls the observed value closer to zero. Attenuation is always conservative — it <strong>never overestimates</strong>.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Disattenuation — correction</div>
+        <div class="lcard-body">Spearman (1904) proposed the formula <code>ρ̂ = r_obs / √(r_xx · r_yy)</code>. It is applied routinely in meta-analysis (Schmidt &amp; Hunter, 2015) to estimate population correlations from biased sample correlations. Requirement: r_xx and r_yy must be validly known. Misestimated reliabilities lead to over- or undercorrection.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">One-sided vs. two-sided attenuation</div>
+        <div class="lcard-body">If only X is error-laden (r_xx &lt; 1, r_yy = 1): <code>r_obs = ρ · √(r_xx)</code>. If only Y is error-laden (r_xx = 1, r_yy &lt; 1): <code>r_obs = ρ · √(r_yy)</code>. Two-sided attenuation (the usual case) is stronger. Scenario D shows: even if one variable is measured perfectly, attenuation from the other persists.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Range restriction as an additional factor</div>
+        <div class="lcard-body">If the sample is restricted in X (e.g. only applicants who passed a preselection), the observed correlation drops further beyond attenuation. Taylor &amp; Russell (1939) and Thorndike (1947) developed corrections for direct and indirect selection. Both corrections together (measurement error + range restriction) are standard in personnel psychology.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Consequences for research practice</div>
+        <div class="lcard-body">Raw (uncorrected) correlations from primary studies are systematically too small. This has consequences for: <strong>theoretical conclusions</strong> (the true relationship is stronger than it appears), <strong>criterion validity</strong> of tests (predictors look weaker), and <strong>power analyses</strong> (expected effects too small → planned sample sizes too large). Without correction, theory gets built on attenuated findings.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Limits &amp; instability at small N</div>
+        <div class="lcard-body">Disattenuated values &gt; 1.0 are mathematically impossible and arise from two sources: (1) misestimated reliabilities, or (2) sampling fluctuation of the empirical correlation. At <strong>N &lt; 200</strong>, the latter is the bigger problem — r_obs fluctuates so much that the corrected value frequently exceeds the true correlation (Zimmerman &amp; Williams, 1997; Revelle &amp; Condon, 2019). Kraemer (2005, <em>Psych. Methods</em>) recommends <strong>confidence sets</strong> instead of point estimates; bootstrap CIs are more stable than delta methods. Rule of thumb: <strong>N ≥ 200</strong> for reliable disattenuation. The correction requires <strong>parallel measurements</strong>; for heterogeneous items, Cronbach's α underestimates reliability — McDonald's ω is more reliable.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Which reliability to use?</div>
+        <div class="lcard-body">Hunter &amp; Schmidt (2004) recommend a clear hierarchy: <strong>(1) Your own sample reliability</strong> — but only if N &gt; 200, otherwise estimation error destabilizes the disattenuation. <strong>(2) Norm reliability from test manuals</strong> — more stable due to larger norming samples, valid if your sample resembles the norming population. <strong>(3) Meta-analytic mean</strong> — only in explicit meta-analyses. <br><br>Rule of practice: at N &lt; 200, prefer manual reliability — the variance-bias trade-off clearly favors more stable external estimates. Different populations (e.g. clinical vs. non-clinical) often have systematically different reliabilities, though — so it should always be reported which reliability came from where.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+const ST={n:300,rTrue:0.60,rXX:0.85,rYY:0.70,seed:42,data:null};
+
+function mulberry32(a){
+  return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
+}
+function makeGauss(rand){
+  let sp=null;
+  return ()=>{
+    if(sp!==null){const s=sp;sp=null;return s;}
+    const u1=Math.max(rand(),1e-15),u2=rand();
+    const m=Math.sqrt(-2*Math.log(u1));
+    sp=m*Math.sin(2*Math.PI*u2);return m*Math.cos(2*Math.PI*u2);
+  };
+}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function f2(v){if(!isFinite(v))return'—';return(v>=0?'+':'')+v.toFixed(2);}
+function f2u(v){return isFinite(v)?v.toFixed(2):'—';}
+function fAbs(v){if(!isFinite(v))return'—';const s=Math.abs(v).toFixed(2);return(v<0?'−':'')+s.replace(/^0\./,'.');}
+function sampleCorr(pts,gx,gy){
+  const n=pts.length;
+  const mx=pts.reduce((s,p)=>s+gx(p),0)/n,my=pts.reduce((s,p)=>s+gy(p),0)/n;
+  let sxy=0,sx2=0,sy2=0;
+  pts.forEach(p=>{const dx=gx(p)-mx,dy=gy(p)-my;sxy+=dx*dy;sx2+=dx*dx;sy2+=dy*dy;});
+  return sx2===0||sy2===0?0:sxy/Math.sqrt(sx2*sy2);
+}
+
+function genData(){
+  const rand=mulberry32(ST.seed),gauss=makeGauss(rand);
+  const rT=ST.rTrue,rX=ST.rXX,rY=ST.rYY;
+  const sigYstar=Math.sqrt(1-rT*rT);
+  const sigXerr=Math.sqrt(Math.max(0,1-rX)),sigYerr=Math.sqrt(Math.max(0,1-rY));
+  return Array.from({length:ST.n},()=>{
+    const xS=gauss();
+    const yS=rT*xS+sigYstar*gauss();
+    const xO=Math.sqrt(rX)*xS+(sigXerr>0?sigXerr*gauss():0);
+    const yO=Math.sqrt(rY)*yS+(sigYerr>0?sigYerr*gauss():0);
+    return{xS,yS,xO,yO};
+  });
+}
+
+function drawCanvas(){
+  const canvas=document.getElementById('plot-canvas');
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.offsetWidth||620;
+  const H=450;
+  canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);
+  canvas.style.height=H+'px';
+  ctx.scale(dpr,dpr);
+
+  const cBg=css('--panel'),cInk=css('--ink'),cInk2=css('--ink2'),cInk3=css('--ink3');
+  const cGrid=css('--grid'),cA2=css('--a2'),cA3=css('--a3'),cA4=css('--a4'),cA5=css('--a5');
+
+  ctx.fillStyle=cBg;ctx.fillRect(0,0,W,H);
+
+  const rObsPop=ST.rTrue*Math.sqrt(ST.rXX*ST.rYY);
+  const xmin=-3.4,xmax=3.4;
+  const ML=50,MR=14,MT=50,MB=46,gap=22;
+  const panW=Math.floor((W-ML-MR-gap)/2);
+  const PH=H-MT-MB;
+
+  const txL=x=>ML+(x-xmin)/(xmax-xmin)*panW;
+  const txR=x=>ML+panW+gap+(x-xmin)/(xmax-xmin)*panW;
+  const ty=y=>MT+PH-(y-xmin)/(xmax-xmin)*PH;
+
+  function drawPanel(txFn,xOff,pts,gx,gy,slope,col,showRef,panLabel){
+    // Grid
+    ctx.strokeStyle=cGrid;ctx.lineWidth=0.8;
+    for(let v=-3;v<=3;v++){
+      ctx.beginPath();ctx.moveTo(txFn(v),MT);ctx.lineTo(txFn(v),MT+PH);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(xOff,ty(v));ctx.lineTo(xOff+panW,ty(v));ctx.stroke();
+    }
+    // Zero axis emphasis
+    ctx.strokeStyle=cInk3+'88';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(txFn(0),MT);ctx.lineTo(txFn(0),MT+PH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(xOff,ty(0));ctx.lineTo(xOff+panW,ty(0));ctx.stroke();
+
+    // Reference line (true slope), only for observed panel
+    if(showRef){
+      ctx.strokeStyle=cA4+'77';ctx.lineWidth=1.8;ctx.setLineDash([7,5]);
+      ctx.beginPath();ctx.moveTo(txFn(xmin),ty(ST.rTrue*xmin));ctx.lineTo(txFn(xmax),ty(ST.rTrue*xmax));ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Regression line (this panel's slope)
+    ctx.strokeStyle=col;ctx.lineWidth=2.2;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(txFn(xmin),ty(slope*xmin));ctx.lineTo(txFn(xmax),ty(slope*xmax));ctx.stroke();
+
+    // Data points
+    ctx.fillStyle=col+'77';
+    pts.forEach(p=>{
+      ctx.beginPath();ctx.arc(txFn(gx(p)),ty(gy(p)),2.3,0,2*Math.PI);ctx.fill();
+    });
+
+    // Panel border
+    ctx.strokeStyle=cGrid;ctx.lineWidth=1;
+    ctx.strokeRect(xOff,MT,panW,PH);
+
+    // Panel title
+    ctx.font='bold 11.5px DM Mono,monospace';ctx.fillStyle=col;ctx.textAlign='center';
+    ctx.fillText(panLabel,xOff+panW/2,MT-10);
+
+    // Correlation label inside panel
+    const rLabel=showRef
+      ? 'r = '+f2u(slope)+(ST.rTrue!==slope?' (ρ = '+f2u(ST.rTrue)+')':'')
+      : 'ρ = '+f2u(slope);
+    ctx.font='11px DM Mono,monospace';ctx.fillStyle=col;ctx.textAlign='center';
+    ctx.fillText(rLabel,xOff+panW/2,MT+PH-8);
+
+    // X axis ticks
+    ctx.fillStyle=cInk3;ctx.font='10px DM Mono,monospace';ctx.textAlign='center';
+    for(let v=-3;v<=3;v++){
+      ctx.fillText(v===0?'0':v,txFn(v),MT+PH+16);
+    }
+    ctx.fillStyle=cInk2;ctx.font='11px DM Mono,monospace';
+    ctx.fillText('z-score (X)',xOff+panW/2,MT+PH+30);
+  }
+
+  if(ST.data){
+    drawPanel(txL,ML,ST.data,p=>p.xS,p=>p.yS,ST.rTrue,cA4,false,'Latent scores  X*,  Y*');
+    drawPanel(txR,ML+panW+gap,ST.data,p=>p.xO,p=>p.yO,rObsPop,cA2,true,'Observed scores  X,  Y');
+  }
+
+  // Y axis labels (left side)
+  ctx.fillStyle=cInk3;ctx.font='10px DM Mono,monospace';ctx.textAlign='right';
+  for(let v=-3;v<=3;v++) ctx.fillText(v===0?'0':v,ML-5,ty(v)+4);
+  ctx.save();ctx.translate(13,MT+PH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=cInk2;ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('z-score (Y)',0,0);ctx.restore();
+
+  // Divider
+  ctx.strokeStyle=cGrid;ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(ML+panW+gap/2,MT-35);ctx.lineTo(ML+panW+gap/2,MT+PH+10);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Legend (right panel, top-left corner)
+  const lx=ML+panW+gap+8,ly=MT+12;
+  ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+  ctx.strokeStyle=cA2;ctx.lineWidth=2;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(lx,ly+4);ctx.lineTo(lx+18,ly+4);ctx.stroke();
+  ctx.fillStyle=cInk2;ctx.fillText('r_obs',lx+22,ly+8);
+  ctx.strokeStyle=cA4+'88';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(lx,ly+18);ctx.lineTo(lx+18,ly+18);ctx.stroke();
+  ctx.setLineDash([]);ctx.fillStyle=cInk2;ctx.fillText('ρ_true (reference)',lx+22,ly+22);
+}
+
+function updateStats(){
+  const att=Math.sqrt(ST.rXX*ST.rYY);
+  const rObsPop=ST.rTrue*att;
+  const rObsSamp=ST.data?sampleCorr(ST.data,p=>p.xO,p=>p.yO):rObsPop;
+  const rDisatt=att>0?rObsSamp/att:NaN;
+  const noAtt=att>=0.9995;
+
+  document.getElementById('kw-rtrue').textContent=f2u(ST.rTrue);
+  document.getElementById('kw-robs-pop').textContent=f2u(rObsPop);
+  document.getElementById('kw-robs-samp').textContent=f2u(rObsSamp);
+  document.getElementById('kw-rdisatt').textContent=f2u(rDisatt)+(rDisatt>1?' ⚠':'');
+
+  document.getElementById('ins-body').innerHTML=noAtt
+    ?`The observed correlation r ≈ ${f2u(rObsSamp)} sits (aside from sampling noise) at the true correlation ρ = ${f2u(ST.rTrue)} — with (nearly) perfectly reliable measurements there is no attenuation, so no correction is needed either.`
+    :`The observed correlation r = ${f2u(rObsSamp)} underestimates the true correlation ρ = ${f2u(ST.rTrue)} by <span style="color:var(--a1);font-weight:600">${fAbs(ST.rTrue-rObsSamp)}</span>. Disattenuation yields ${f2u(rDisatt)} — close to the true value, but only if r_xx and r_yy are correctly known. Misestimated reliabilities lead to over- or undercorrected results.`;
+
+  document.getElementById('sl-sqrtrr').textContent=f2u(att);
+  document.getElementById('sl-robs').textContent=f2u(rObsPop);
+  document.getElementById('eq-att').textContent=f2u(att);
+  document.getElementById('eq-robs').textContent=f2u(rObsPop);
+  document.getElementById('eq-diff').textContent=f2(rObsPop-ST.rTrue);
+
+  document.getElementById('ex-rxx').textContent=f2u(ST.rXX);
+  document.getElementById('ex-ryy').textContent=f2u(ST.rYY);
+  document.getElementById('ex-rtrue').textContent=f2u(ST.rTrue);
+  document.getElementById('ex-tail').innerHTML=noAtt
+    ?`Since both measurements are (nearly) perfectly reliable, the data show the same correlation r ≈ <span style="color:var(--a2);font-weight:600">${f2u(rObsPop)}</span> — no attenuation. No correction is needed here, because there's nothing to correct.`
+    :`In the data it shows up attenuated as r ≈ <span style="color:var(--a2);font-weight:600">${f2u(rObsPop)}</span> — an underestimate of <span style="color:var(--a1);font-weight:600">${fAbs(ST.rTrue-rObsPop)}</span>. Without correction, the relationship is systematically underestimated.`;
+}
+
+function recompute(){
+  ST.data=genData();
+  drawCanvas();
+  updateStats();
+}
+
+function onSl(key,el){
+  ST[key]=parseFloat(el.value);
+  const d=document.getElementById('val-'+key);
+  if(d) d.textContent=key==='n'?ST[key]:ST[key].toFixed(2);
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  recompute();
+}
+
+const PRESETS={
+  A:{n:300,rTrue:0.60,rXX:1.00,rYY:1.00},
+  B:{n:300,rTrue:0.60,rXX:0.85,rYY:0.70},
+  C:{n:300,rTrue:0.60,rXX:0.55,rYY:0.55},
+  D:{n:300,rTrue:0.60,rXX:0.45,rYY:1.00},
+};
+
+function setPreset(k){
+  const p=PRESETS[k];if(!p)return;
+  Object.assign(ST,p);
+  document.getElementById('sl-n').value=ST.n;document.getElementById('val-n').textContent=ST.n;
+  document.getElementById('sl-rTrue').value=ST.rTrue;document.getElementById('val-rTrue').textContent=ST.rTrue.toFixed(2);
+  document.getElementById('sl-rXX').value=ST.rXX;document.getElementById('val-rXX').textContent=ST.rXX.toFixed(2);
+  document.getElementById('sl-rYY').value=ST.rYY;document.getElementById('val-rYY').textContent=ST.rYY.toFixed(2);
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pre-'+k).classList.add('active');
+  recompute();
+}
+
+function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const nt=dark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',nt);
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  localStorage.setItem('ml-theme',nt);
+  recompute();
+}
+
+window.addEventListener('resize',drawCanvas);
+
+if(document.documentElement.getAttribute('data-theme')==='light'){
+  const tb=document.getElementById('theme-btn');if(tb)tb.textContent='🌙 Dark';
+}
+setPreset('B');
+</script>
+</body>
+</html>

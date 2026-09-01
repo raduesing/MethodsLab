@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Causal Teaching — Causality &amp; Potential Outcomes</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a4);--topbar-h:54px;--nav-h:42px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh;overflow:hidden}
+/* Topbar */
+#topbar{position:fixed;top:0;left:0;right:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.55rem 1.2rem;display:flex;align-items:center;gap:.8rem;height:var(--topbar-h)}
+#topbar h1{font-size:1rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+/* Module nav */
+#mod-nav{position:fixed;top:var(--topbar-h);left:0;right:0;z-index:200;background:var(--paper);
+  border-bottom:2px solid var(--grid);display:flex;height:var(--nav-h)}
+.tab-btn{flex:1;font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.03em;
+  border:none;background:transparent;cursor:pointer;color:var(--ink3);
+  border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;padding:.2rem .3rem;white-space:nowrap}
+.tab-num{font-size:2em;vertical-align:-.15em;line-height:1}
+.circ{font-size:2em;font-weight:600;vertical-align:-.18em;line-height:1;display:inline-block}
+.tab-btn:hover{color:var(--ink);background:var(--grid)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+/* App layout */
+#app{display:grid;grid-template-columns:300px 1fr;
+  height:calc(100vh - var(--topbar-h) - var(--nav-h));
+  margin-top:calc(var(--topbar-h) + var(--nav-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:.85rem .8rem}
+#sidebar::-webkit-scrollbar{width:4px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.6rem 4rem}
+/* Sidebar cards */
+.scard{background:var(--bg);border:1px solid var(--grid);padding:.7rem .8rem;margin-bottom:.65rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.69rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.5rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+/* Controls */
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+.help-btn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.18rem .5rem;
+  border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .12s}
+.help-btn:hover{background:var(--a1);color:var(--bg)}
+.slider-row{margin-bottom:.5rem}
+.slider-lbl{display:flex;justify-content:space-between;margin-bottom:.15rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%}
+/* Step buttons */
+.step-btn{display:block;width:100%;font-family:'DM Mono',monospace;font-size:.75rem;
+  padding:.42rem .7rem;border:1.5px solid var(--border);background:transparent;cursor:pointer;
+  color:var(--ink2);transition:all .13s;text-align:left;margin-bottom:.3rem;letter-spacing:.02em}
+.step-btn:hover{border-color:var(--ink2);color:var(--ink)}
+.step-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(122,58,138,.07)}
+[data-theme="dark"] .step-btn.active{background:rgba(200,122,216,.07)}
+/* Main area */
+.module-header{margin-bottom:1rem}
+.mod-super{font-family:'DM Mono',monospace;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.28rem}
+.mod-title{font-size:1.35rem;font-weight:300;letter-spacing:-.02em;margin-bottom:.4rem}
+.mod-title em{color:var(--accent);font-style:italic}
+.mod-lead{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink2);line-height:1.8;max-width:780px}
+.mod-lead strong{color:var(--ink)}
+/* Problem/Solution boxes */
+.prob-box{background:rgba(201,74,42,.08);border-left:3px solid var(--a1);padding:.65rem .85rem;margin:.75rem 0;font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.75}
+.prob-box strong{color:var(--a1)}
+.sol-box{background:rgba(90,138,42,.07);border-left:3px solid var(--a3);padding:.65rem .85rem;margin:.75rem 0;font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.75}
+.sol-box strong{color:var(--a3)}
+[data-theme="dark"] .prob-box{background:rgba(232,97,74,.07)}
+[data-theme="dark"] .sol-box{background:rgba(128,203,82,.06)}
+/* Canvas */
+canvas{display:block;width:100%}
+/* Badges */
+.badge{display:inline-block;font-family:'DM Mono',monospace;font-size:.72rem;padding:.18rem .58rem;letter-spacing:.04em}
+.b-ok{background:rgba(90,138,42,.11);border:1px solid var(--a3);color:var(--a3)}
+.b-warn{background:rgba(201,74,42,.11);border:1px solid var(--a1);color:var(--a1)}
+.b-info{background:rgba(42,110,138,.11);border:1px solid var(--a2);color:var(--a2)}
+[data-theme="dark"] .b-ok{background:rgba(128,203,82,.09)}
+[data-theme="dark"] .b-warn{background:rgba(232,97,74,.09)}
+/* PO table */
+.po-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.82rem}
+.po-table th{font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);
+  padding:.4rem .6rem;border-bottom:2px solid var(--grid);text-align:center}
+.po-table td{padding:.38rem .6rem;border-bottom:1px solid var(--grid);text-align:center;vertical-align:middle}
+.po-qm{color:var(--border);cursor:help;border-bottom:1px dashed var(--border);position:relative}
+.po-qm:hover::after{content:attr(data-tip);position:absolute;bottom:115%;left:50%;transform:translateX(-50%);
+  background:var(--paper);border:1px solid var(--border);padding:.22rem .5rem;
+  font-size:.73rem;white-space:nowrap;z-index:50;color:var(--ink)}
+/* Stat cards row */
+.stat-row{display:flex;gap:.85rem;margin:.9rem 0;flex-wrap:wrap}
+.stat-card{background:var(--panel);border:1px solid var(--grid);padding:.6rem .9rem;flex:1;min-width:120px}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.stat-val{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:600;color:var(--accent);margin-top:.15rem}
+/* IPW estimand tabs */
+.est-tabs{display:flex;gap:.35rem;margin-bottom:.8rem}
+.est-tab{font-family:'DM Mono',monospace;font-size:.73rem;padding:.26rem .7rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);transition:all .12s}
+.est-tab.active{border-color:var(--accent);color:var(--accent)}
+/* two-col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.panel-box{background:var(--panel);border:1px solid var(--grid);padding:.85rem}
+.panel-title{font-family:'DM Mono',monospace;font-size:.82rem;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3);margin-bottom:.55rem}
+/* Instruction steps */
+.instr{display:flex;gap:.6rem;align-items:flex-start;margin:.45rem 0;font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2)}
+.instr-num{background:var(--accent);color:var(--bg);width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:600;flex-shrink:0;margin-top:.02rem}
+/* Help modal */
+#help-ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;display:none}
+#help-ov.open{display:block}
+#help-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;
+  background:var(--paper);border:1px solid var(--border);padding:1.3rem 1.5rem 1.2rem;
+  max-width:620px;width:92%;max-height:85vh;overflow-y:auto;
+  box-shadow:0 12px 45px rgba(0,0,0,.45);display:none}
+#help-modal.open{display:block}
+#help-modal h2{font-family:'DM Mono',monospace;font-size:.77rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.8rem;padding-bottom:.45rem;border-bottom:1px solid var(--grid)}
+#help-modal h3{font-family:'DM Mono',monospace;font-size:.73rem;letter-spacing:.06em;color:var(--accent);margin:.85rem 0 .32rem;text-transform:uppercase}
+#help-modal p,#help-modal li{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.85;margin-bottom:.38rem}
+#help-modal ul{padding-left:1rem;margin:.3rem 0 .5rem}
+#help-modal .formula{background:var(--bg);border:1px solid var(--grid);padding:.3rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.8rem;color:var(--a2);margin:.35rem 0;display:block}
+#help-modal .ref{font-size:.71rem;color:var(--ink3);margin-top:.85rem;border-top:1px solid var(--grid);padding-top:.55rem}
+#help-close{float:right;font-family:'DM Mono',monospace;font-size:.77rem;padding:.18rem .55rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2)}
+#help-close:hover{background:var(--ink);color:var(--bg)}
+/* module show/hide */
+.module{display:none}.module.active{display:block}
+.sb-mod{display:none}.sb-mod.active{display:block}
+/* story box */
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.7rem .9rem;margin-bottom:.9rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.4rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.16rem .5rem;margin-bottom:.4rem;align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.83rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.86rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.05rem}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+/* Learn cards */
+.learn-section{margin-top:2rem;border-top:1px solid var(--grid);padding-top:1.3rem}
+.sec-h{font-family:'DM Mono',monospace;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.9rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body em{color:var(--ink);font-style:italic}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.xlink{color:var(--accent);font-weight:500;text-decoration:none;border-bottom:1px solid var(--accent)}
+@media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <h1>Causal <em>Thinking</em> — DAGs · Potential Outcomes · Confounding · IPW · G-Computation</h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="openHelp('overview')">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+<div id="mod-nav">
+  <button class="tab-btn active" onclick="goTo(1)"><span class="tab-num">①</span> DAG &amp; Structure</button>
+  <button class="tab-btn" onclick="goTo(2)"><span class="tab-num">②</span> Potential Outcomes</button>
+  <button class="tab-btn" onclick="goTo(3)"><span class="tab-num">③</span> Confounding</button>
+  <button class="tab-btn" onclick="goTo(4)"><span class="tab-num">④</span> IPW</button>
+  <button class="tab-btn" onclick="goTo(5)"><span class="tab-num">⑤</span> G-Computation</button>
+</div>
+<div id="help-ov" onclick="closeHelp()"></div>
+<div id="help-modal"><button id="help-close" onclick="closeHelp()">✕ Close</button><h2 id="h-title"></h2><div id="h-body"></div></div>
+
+<div id="app">
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<div id="sidebar">
+  <!-- Sidebar content per module (show/hide) -->
+
+  <div class="sb-mod active" id="sb-1">
+    <div class="scard">
+      <div class="scard-title">Steps</div>
+      <button class="step-btn active" id="sb1-btn0" onclick="setStep(0)">A · Spot a confounder</button>
+      <button class="step-btn" id="sb1-btn1" onclick="setStep(1)">B · Understand a mediator</button>
+      <button class="step-btn" id="sb1-btn2" onclick="setStep(2)">C · Recognize a collider</button>
+      <button class="step-btn" id="sb1-btn3" onclick="setStep(3)">D · Precision variable</button>
+      <button class="step-btn" id="sb1-btn4" onclick="setStep(4)">E · The full model</button>
+    </div>
+    <div class="scard" id="dag-sb-info">
+      <div class="scard-title">Interpretation</div>
+      <div id="dag-interp" style="font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.75"></div>
+    </div>
+    <div class="scard">
+      <div class="scard-title">Test Adjustment</div>
+      <div id="dag-controls"></div>
+    </div>
+    <div style="margin-top:.5rem"><button class="help-btn" style="width:100%" onclick="openHelp('dag')">? What is a DAG?</button></div>
+  </div>
+
+  <div class="sb-mod" id="sb-2">
+    <div class="scard">
+      <div class="scard-title">Sample</div>
+      <button class="tbtn" style="width:100%;margin-bottom:.4rem" onclick="newSeed()">⟳ New sample (n=300)</button>
+      <button class="tbtn active" id="po-rev-btn" style="width:100%" onclick="toggleReveal()">⊡ Show counterfactuals</button>
+    </div>
+    <div class="scard" id="po-stats-sb">
+      <div class="scard-title">Estimators</div>
+      <div id="po-stats-content" style="font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink2);line-height:1.9"></div>
+    </div>
+    <div style="margin-top:.5rem"><button class="help-btn" style="width:100%" onclick="openHelp('po')">? Potential Outcomes</button></div>
+  </div>
+
+  <div class="sb-mod" id="sb-3">
+    <div class="scard">
+      <div class="scard-title">Confounding Strength</div>
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name">Strength</span><span class="slider-val" id="conf-lbl">very strong</span></div>
+        <input type="range" id="conf-sl" min="0" max="1" step="0.05" value="1.0" oninput="onConfSl(this)">
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin-top:.3rem">
+        Determines how strongly SES influences the probability of treatment.
+      </div>
+    </div>
+    <div class="scard" id="conf-nums-sb">
+      <div class="scard-title">Effect Comparison</div>
+      <div id="conf-nums" style="font-family:'DM Mono',monospace;font-size:.83rem;line-height:2;color:var(--ink2)"></div>
+    </div>
+    <div style="margin-top:.5rem;display:flex;gap:.3rem">
+      <button class="help-btn" style="flex:1" onclick="openHelp('conf')">? Confounding</button>
+      <button class="help-btn" style="flex:1" onclick="openHelp('ovb')">? OVB Formula</button>
+    </div>
+  </div>
+
+  <div class="sb-mod" id="sb-4">
+    <div class="scard">
+      <div class="scard-title">Choose Estimand</div>
+      <div class="est-tabs" style="flex-direction:column;gap:.3rem">
+        <button class="est-tab active" id="et-ate" style="text-align:left" onclick="setEst('ate')">ATE — Overall Population</button>
+        <button class="est-tab" id="et-att" style="text-align:left" onclick="setEst('att')">ATT — Treated</button>
+        <button class="est-tab" id="et-atu" style="text-align:left" onclick="setEst('atu')">ATU — Untreated</button>
+      </div>
+      <div id="est-desc" style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink3);margin-top:.4rem;line-height:1.65"></div>
+    </div>
+    <div class="scard">
+      <div class="scard-title">Action</div>
+      <button class="tbtn" id="btn-wt" style="width:100%;margin-bottom:.3rem" onclick="toggleWeight()">⊡ Apply weighting</button>
+      <div style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);margin-top:.3rem" id="wt-formula"></div>
+    </div>
+    <div class="scard" id="ipw-nums-sb">
+      <div class="scard-title">IPW Estimator</div>
+      <div id="ipw-nums" style="font-family:'DM Mono',monospace;font-size:.83rem;line-height:2;color:var(--ink2)"></div>
+    </div>
+    <div style="margin-top:.5rem;display:flex;gap:.3rem">
+      <button class="help-btn" style="flex:1" onclick="openHelp('pscore')">? P-Score</button>
+      <button class="help-btn" style="flex:1" onclick="openHelp('ipw')">? IPW</button>
+      <button class="help-btn" style="flex:1" onclick="openHelp('estimands')">? ATE/ATT</button>
+    </div>
+  </div>
+
+  <div class="sb-mod" id="sb-5">
+    <div class="scard">
+      <div class="scard-title">Choose Estimand</div>
+      <div class="est-tabs" style="flex-direction:column;gap:.3rem">
+        <button class="est-tab active" id="gc-ate" style="text-align:left" onclick="setGCEst('ate')">ATE — Overall Population</button>
+        <button class="est-tab" id="gc-att" style="text-align:left" onclick="setGCEst('att')">ATT — Treated</button>
+        <button class="est-tab" id="gc-atu" style="text-align:left" onclick="setGCEst('atu')">ATU — Untreated</button>
+      </div>
+      <div id="gc-est-desc" style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);margin-top:.4rem;line-height:1.65">Standardization over all 300 people</div>
+    </div>
+    <div class="scard">
+      <div class="scard-title">Action</div>
+      <button class="tbtn" id="btn-gc" style="width:100%" onclick="revealGC()"><span class="circ">③</span> Show G-Computation</button>
+    </div>
+    <div class="scard" id="gc-nums-sb">
+      <div class="scard-title">Estimator Comparison</div>
+      <div id="gc-nums" style="font-family:'DM Mono',monospace;font-size:.83rem;line-height:2;color:var(--ink2)"></div>
+    </div>
+    <div style="margin-top:.5rem;display:flex;gap:.3rem">
+      <button class="help-btn" style="flex:1" onclick="openHelp('gcomp')">? G-Comp</button>
+      <button class="help-btn" style="flex:1" onclick="openHelp('dr')">? Doubly Robust</button>
+    </div>
+  </div>
+</div><!-- /sidebar -->
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Example</div>
+    <div class="story-vars">
+      <span class="sv">T</span><span class="sd">Regular exercise (yes / no) — treatment</span>
+      <span class="sv">Y</span><span class="sd">Heart-health score (0–100) — outcome</span>
+      <span class="sv">C</span><span class="sd">Socioeconomic status (SES, high / low) — confounder</span>
+    </div>
+    <div class="story-q">People who exercise have, on average, ~19 points better heart health — but is that a causal effect? SES influences both exercise and heart health. All five modules analyze this confounding problem step by step: DAG → Potential Outcomes → Confounding → IPW → G-Computation.</div>
+  </div>
+
+<!-- MODULE 1: DAG -->
+<div class="module active" id="mod-1">
+  <div class="module-header">
+    <div class="mod-super">Module <span class="circ">①</span> of <span class="circ">⑤</span></div>
+    <div class="mod-title">Causal Structure — <em>Directed Acyclic Graphs</em></div>
+    <div class="mod-lead">A DAG shows <strong>who causally influences whom</strong>. Before we estimate any effect, we need to know the causal structure — because it determines which variables we <em>must</em> control for, which we <em>may</em> control for, and which we must <em>never</em> control for.</div>
+  </div>
+  <div class="prob-box"><strong>The problem:</strong> not every observed association is causal. And not every adjustment helps — some make the bias worse.</div>
+  <div class="sol-box"><strong>Approach:</strong> Steps A–D explain the four basic types. Step E shows the complete model of our study — the foundation for all following modules.</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;flex-wrap:wrap;gap:.4rem">
+    <div id="dag-step-lbl" style="font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500"></div>
+    <div style="display:flex;gap:.4rem">
+      <button class="tbtn" onclick="dagNav(-1)">← Back</button>
+      <button class="tbtn" onclick="dagNav(1)">Next →</button>
+    </div>
+  </div>
+  <canvas id="cv-dag" height="552" style="border:1px solid var(--grid);background:var(--paper)"></canvas>
+  <div id="dag-legend" style="display:flex;gap:1.4rem;margin-top:.55rem;flex-wrap:wrap;font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3)"></div>
+  <div id="dag-verdict" style="margin-top:.65rem"></div>
+</div>
+
+<!-- MODULE 2: POTENTIAL OUTCOMES -->
+<div class="module" id="mod-2">
+  <div class="module-header">
+    <div class="mod-super">Module <span class="circ">②</span> of <span class="circ">⑤</span></div>
+    <div class="mod-title"><em>Potential Outcomes</em> — The Fundamental Problem</div>
+    <div class="mod-lead">What would have happened if a person had <em>not</em> exercised — even though they did? We can never answer this question directly. The potential outcomes framework makes this impossibility mathematically tractable and shows how we can still draw causal conclusions.</div>
+  </div>
+  <div class="prob-box"><strong>The core idea:</strong> every person i has <em>two</em> potential outcomes: <strong style="color:var(--a3)">Y_i(1)</strong> — their health score if they exercise — and <strong style="color:var(--a1)">Y_i(0)</strong> — their score if they don't. The individual causal effect would be ICE_i = Y_i(1) − Y_i(0). The problem: we only ever see <em>one</em> of these worlds — the other is counterfactual and forever unobservable. We can never have the same person both exercise and not exercise at the same time.</div>
+  <div class="sol-box"><strong>The solution:</strong> instead of individual effects, we estimate <em>average</em> effects over groups: <strong>ATE</strong> = E[Y(1) − Y(0)] for the overall population, <strong>ATT</strong> for the treated, <strong>ATU</strong> for the untreated. This requires assumptions (SUTVA, ignorability) — and methods like IPW or G-computation, explained in modules <span class="circ">④</span> and <span class="circ">⑤</span>.</div>
+
+  <canvas id="cv-po-vis" height="200" style="border:1px solid var(--grid);background:var(--panel);margin-bottom:1rem"></canvas>
+
+  <div style="overflow-x:auto">
+    <table class="po-table">
+      <thead><tr>
+        <th style="text-align:left">Person</th>
+        <th>SES</th>
+        <th>T (exercise)</th>
+        <th style="color:var(--a3)">Y(1) — with exercise</th>
+        <th style="color:var(--a1)">Y(0) — without exercise</th>
+        <th>ICE = Y(1)−Y(0)</th>
+        <th>observed Y</th>
+      </tr></thead>
+      <tbody id="po-tbody"></tbody>
+    </table>
+  </div>
+  <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin-top:.6rem">
+    <strong style="color:var(--ink2)">ICE</strong> = Individual Causal Effect · hover over "?" for the hypothetical value · scale: heart-health score (0–100)
+  </div>
+</div>
+
+<!-- MODULE 3: CONFOUNDING -->
+<div class="module" id="mod-3">
+  <div class="module-header">
+    <div class="mod-super">Module <span class="circ">③</span> of <span class="circ">⑤</span></div>
+    <div class="mod-title">Confounding — <em>Why the Naive Comparison Deceives</em></div>
+    <div class="mod-lead">A simple comparison of T=1 vs. T=0 does not measure the causal effect. It measures the effect <strong>including the entire confounding bias</strong>. How big is the difference?</div>
+  </div>
+  <div class="prob-box"><strong>The problem:</strong> people with high SES exercise more often <em>and</em> are naturally healthier. The naive comparison wrongly attributes the SES effect to exercise.</div>
+
+  <div style="margin-bottom:1rem">
+    <div class="instr"><div class="instr-num">1</div><div>Look at the <strong>left panel</strong>: the naive group comparison. Notice that the T=1 group contains far more high-SES people (orange).</div></div>
+    <div class="instr"><div class="instr-num">2</div><div>Look at the <strong>right panel</strong>: the comparison <em>within</em> each SES level. The effect is much smaller — that's the true causal effect.</div></div>
+    <div class="instr"><div class="instr-num">3</div><div>Move the <strong>slider on the left</strong> and watch how the bias grows with confounding strength.</div></div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel-box">
+      <div class="panel-title">Naive Group Comparison <span class="badge b-warn">biased</span></div>
+      <canvas id="cv-naive" height="340"></canvas>
+      <div id="naive-est" style="font-family:'DM Mono',monospace;font-size:.84rem;margin-top:.5rem;text-align:center"></div>
+    </div>
+    <div class="panel-box">
+      <div class="panel-title">Stratified by SES <span class="badge b-ok">adjusted</span></div>
+      <canvas id="cv-adj" height="340"></canvas>
+      <div id="adj-est" style="font-family:'DM Mono',monospace;font-size:.84rem;margin-top:.5rem;text-align:center"></div>
+    </div>
+  </div>
+  <div id="conf-msg" style="background:var(--panel);border:1px solid var(--grid);padding:.7rem .9rem;margin-top:.9rem;font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);line-height:1.8"></div>
+</div>
+
+<!-- MODULE 4: IPW -->
+<div class="module" id="mod-4">
+  <div class="module-header">
+    <div class="mod-super">Module <span class="circ">④</span> of <span class="circ">⑤</span> — Solution 1</div>
+    <div class="mod-title">Inverse Probability Weighting — <em>Pseudo-Population</em></div>
+    <div class="mod-lead">IPW creates a weighted pseudo-population in which T and SES are statistically independent — as if exercise had been randomly assigned. Every observation gets a weight corresponding to its rarity.</div>
+  </div>
+  <div class="prob-box"><strong>The problem:</strong> the top panel shows the massive imbalance: almost all high-exercise people come from the high-SES group, almost all non-exercisers from low-SES.</div>
+  <div class="sol-box"><strong>The solution:</strong> weight units that behave "contrary" to their expectation more heavily. A low-SES person who exercises anyway is especially valuable for the estimate.</div>
+
+  <div style="margin-bottom:.8rem">
+    <div class="instr"><div class="instr-num">1</div><div>Top: propensity-score distribution — mirrored. <span style="color:var(--a3)">▲ Exercise (T=1)</span> above, <span style="color:var(--a1)">▼ No exercise (T=0)</span> below. The imbalance is clearly visible.</div></div>
+    <div class="instr"><div class="instr-num">2</div><div>Choose an estimand (ATE/ATT/ATU) on the left and click <strong>"Apply weighting."</strong> Watch the distribution become symmetric.</div></div>
+    <div class="instr"><div class="instr-num">3</div><div>The IPW estimator appears on the left — compare it to the naive value from module <span class="circ">③</span>.</div></div>
+  </div>
+
+  <div class="panel-box" style="margin-bottom:.9rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem">
+      <div class="panel-title" style="margin:0"><span class="circ">①</span> Propensity-Score Distribution — Raw Counts</div>
+      <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3)">
+        <span style="color:var(--a3)">▲ Exercise T=1</span> &nbsp;|&nbsp; <span style="color:var(--a1)">▼ No exercise T=0</span>
+      </div>
+    </div>
+    <canvas id="cv-ps" height="240"></canvas>
+    <div style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);text-align:center;margin-top:.35rem">Propensity score p(T=1 | SES) — unweighted</div>
+  </div>
+
+  <div class="panel-box" style="margin-bottom:.9rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem">
+      <div class="panel-title" style="margin:0"><span class="circ">②</span> Weighted Pseudo-Population</div>
+      <span id="wt-state" style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3)"></span>
+    </div>
+    <canvas id="cv-wt" height="240"></canvas>
+    <div style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);text-align:center;margin-top:.35rem" id="wt-label">Click "Apply weighting" to see the pseudo-population</div>
+  </div>
+  <div id="ipw-guide" style="background:var(--panel);border:1px solid var(--grid);padding:.7rem .9rem;font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.8"></div>
+</div>
+
+<!-- MODULE 5: G-COMPUTATION -->
+<div class="module" id="mod-5">
+  <div class="module-header">
+    <div class="mod-super">Module <span class="circ">⑤</span> of <span class="circ">⑤</span> — Solution 2</div>
+    <div class="mod-title">G-Computation — <em>Standardization</em></div>
+    <div class="mod-lead">G-computation is the <em>statistical counterpart</em> to the potential outcomes from module <span class="circ">②</span>. There we wanted to know Y_i(1) and Y_i(0) for every person — that's impossible. G-computation <em>estimates</em> exactly these counterfactual worlds from an outcome model and then standardizes over the covariate distribution.</div>
+  </div>
+  <div class="prob-box"><strong>The connection to potential outcomes:</strong> Ê[Y(1)] from G-computation corresponds directly to E[Y_i(1)] from the PO framework — the mean outcome if <em>everyone</em> were treated. Ê[Y(0)] corresponds to E[Y_i(0)]. The difference Ê[Y(1)] − Ê[Y(0)] is the ATE. G-computation makes the counterfactually invisible estimable.</div>
+  <div class="sol-box"><strong>Approach:</strong> step <span class="circ">①</span> fits the outcome model E[Y|T,SES]. Steps <span class="circ">②</span> and <span class="circ">③</span> show the two counterfactual worlds (everyone exercises vs. no one exercises). Click "Show G-computation" for the estimator and the comparison with IPW and the doubly robust estimator.</div>
+
+  <div style="margin-bottom:.8rem">
+    <div class="instr"><div class="instr-num">1</div><div>The outcome model shows the predicted Y values for T=1 and T=0, split by SES.</div></div>
+    <div class="instr"><div class="instr-num">2</div><div>The two worlds below show: Ê[Y(1)] if everyone exercises, Ê[Y(0)] if no one exercises — with the same SES distribution.</div></div>
+    <div class="instr"><div class="instr-num">3</div><div>Click <strong>"Show G-computation"</strong> on the left — the estimator appears together with the comparison to IPW from module <span class="circ">④</span>.</div></div>
+  </div>
+
+  <div class="panel-box" style="margin-bottom:.9rem">
+    <div class="panel-title"><span class="circ">①</span> Outcome Model: Ê[Y | T, SES]</div>
+    <canvas id="cv-gmod" height="260"></canvas>
+    <div style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);text-align:center;margin-top:.35rem">
+      <span style="color:var(--a3)">● T=1 (exercise)</span> &nbsp;·&nbsp; <span style="color:var(--a1)">● T=0 (no exercise)</span> &nbsp;·&nbsp; Points = observed data · Lines = model prediction
+    </div>
+  </div>
+
+  <div class="panel-box" style="margin-bottom:.9rem">
+    <div class="panel-title"><span class="circ">①</span> Individual Prediction Panel — Ŷ(1) and Ŷ(0) for Every Person</div>
+    <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75;margin-bottom:.5rem">
+      The outcome model predicts two values for <strong>every person</strong>: what would their score be if they exercised (Ŷ(1)), and what if they didn't (Ŷ(0))?
+      These predictions are based on the SES group — every person is assigned the group mean of their combination group (T×SES).
+      The last column (Ŷ(1)−Ŷ(0)) is the <strong>estimated individual effect</strong> — exactly what was called ICE in module <span class="circ">②</span>, but was unobservable there.
+    </div>
+    <div id="gc-pred-table"></div>
+  </div>
+
+  <div class="two-col" style="margin-bottom:.9rem">
+    <div class="panel-box">
+      <div class="panel-title" style="color:var(--a3)"><span class="circ">②</span> Counterfactual World T=1 — Everyone Exercises</div>
+      <canvas id="cv-w1" height="220"></canvas>
+      <div id="gc-y1-lbl" style="font-family:'DM Mono',monospace;font-size:.88rem;text-align:center;margin-top:.5rem;color:var(--a3)"></div>
+    </div>
+    <div class="panel-box">
+      <div class="panel-title" style="color:var(--a1)"><span class="circ">②</span> Counterfactual World T=0 — No One Exercises</div>
+      <canvas id="cv-w0" height="220"></canvas>
+      <div id="gc-y0-lbl" style="font-family:'DM Mono',monospace;font-size:.88rem;text-align:center;margin-top:.5rem;color:var(--a1)"></div>
+    </div>
+  </div>
+  <div id="gc-result"></div>
+</div>
+
+<!-- LERNKARTEN -->
+<div class="learn-section">
+  <div class="sec-h">Flashcards — Concepts at a Glance</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">Potential Outcomes &amp; the Fundamental Problem</div>
+      <div class="lcard-body">Every person has <em>two</em> potential outcomes: <code>Y(1)</code> (with treatment) and <code>Y(0)</code> (without). The individual effect would be <code>Y(1)−Y(0)</code> — but we only ever observe <em>one</em> world; the other remains counterfactual. That's why we estimate <strong>average effects</strong> across groups instead of individual effects. <strong>ATE</strong> = whole population, <strong>ATT</strong> = treated only, <strong>ATU</strong> = untreated only.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">DAG Building Blocks: Confounder · Mediator · Collider · Precision Variable</div>
+      <div class="lcard-body">The causal structure determines <em>what</em> you're allowed to control for. <strong>Confounder</strong> (X→T, X→Y): <em>must</em> be adjusted for. <strong>Mediator</strong> (T→M→Y): do <em>not</em> adjust, or the effect you want to measure disappears. <strong>Collider</strong> (T→K←Y): adjusting <em>creates</em> a spurious association. <strong>Precision variable</strong> P (only P→Y, no arrow to T) — the classic <em>covariate</em> from an ANCOVA model: it only needs to be associated with Y, not with T (or X), to be used correctly. No confounding, adjustment is <em>optional</em> — it doesn't bias, but reduces the variance of the estimate (more power). Rule of thumb: draw the DAG first, then choose the model — not the other way around.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Confounding &amp; Backdoor Bias</div>
+      <div class="lcard-body">The naive comparison <code>E[Y|T=1] − E[Y|T=0]</code> measures the causal effect <strong>plus</strong> the entire confounding bias through the open "backdoor" path T←X→Y. In the example, high-SES people exercise more often <em>and</em> are healthier — the SES effect gets attributed to exercise. The <strong>OVB formula</strong> decomposes the bias into (effect of X on Y) × (imbalance of X between the T groups).</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">IPW — Pseudo-Population</div>
+      <div class="lcard-body"><strong>Inverse probability weighting</strong> weights every observation by <code>1/P(T=t|X)</code> (propensity score). Rare constellations — say, a low-SES person who exercises <em>anyway</em> — get a large weight. This creates a <strong>pseudo-population</strong> in which T and X are independent, as if treatment had been randomized. Requirement: the propensity model must be correct.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">G-Computation &amp; Doubly Robust</div>
+      <div class="lcard-body">G-computation fits an <strong>outcome model</strong> <code>E[Y|T,X]</code>, predicts both counterfactual worlds for <em>every</em> person (Ŷ(1), Ŷ(0)), and <strong>standardizes</strong> over the covariate distribution. It is the statistical counterpart to module <span class="circ">②</span>. <strong>Doubly robust</strong> combines the outcome and propensity models: consistent if <em>at least one</em> of the two is correct — a double safeguard.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Identification Assumptions &amp; Related Tools</div>
+      <div class="lcard-body">Causal estimation stands or falls with three assumptions: <strong>SUTVA</strong> (no interference, a single treatment version), <strong>ignorability</strong> (all confounders measured — not testable!), and <strong>positivity</strong> (every person could receive either treatment, <code>0&lt;P(T=1|X)&lt;1</code>). <a class="xlink" href="Simpsons_Paradox.html" target="_blank" rel="noopener">→ Simpson's Paradox</a> · <a class="xlink" href="Berksons_Paradox.html" target="_blank" rel="noopener">→ Collider/Berkson</a> · <a class="xlink" href="Mediationsanalyse.html" target="_blank" rel="noopener">→ Mediation</a> · <a class="xlink" href="PSM.html" target="_blank" rel="noopener">→ Propensity Score Matching</a></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
+// ═══ PRNG ════════════════════════════════════════════════════════════════════
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function mkGauss(r){return()=>{const u=Math.max(r(),1e-15);return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*r());};}
+
+// ═══ STATE ═══════════════════════════════════════════════════════════════════
+const ST={seed:42,data:null,dagStep:0,dagAdj:{ses:false,kg:false,ab:false,prec:false},
+  poRevealed:false,confStr:1.0,estimand:'ate',weighted:false,gcRevealed:false,gcEstimand:'ate'};
+
+// ═══ DATA ════════════════════════════════════════════════════════════════════
+function genData(seed,cs){
+  const r=mulberry32(seed),g=mkGauss(r),N=300,D=[];
+  const beta=cs*4.5; // strong: logit(-2.25 + 4.5) = logit(2.25) ≈ 0.90; logit(-2.25) ≈ 0.10
+  for(let i=0;i<N;i++){
+    const ses=r()<0.5?0:1;
+    let p=1/(1+Math.exp(-(-2.25+beta*ses)));
+    p=Math.max(0.04,Math.min(0.96,p+0.08*g()));
+    const t=r()<p?1:0;
+    const y1=Math.round(Math.max(30,Math.min(99,58+11*ses+10+5*g()))); // ATE≈10
+    const y0=Math.round(Math.max(30,Math.min(99,58+11*ses+5*g())));
+    D.push({id:i+1,ses,p,t,y:t?y1:y0,y1,y0});
+  }
+  return D;
+}
+ST.data=genData(ST.seed,ST.confStr);
+
+// ═══ UTILS ═══════════════════════════════════════════════════════════════════
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function mean(arr,f=u=>u.y){return arr.length?arr.reduce((s,u)=>s+f(u),0)/arr.length:0;}
+function pct(v,d=1){return v.toFixed(d);}
+
+// ═══ NAV ═════════════════════════════════════════════════════════════════════
+function goTo(n){
+  document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));
+  document.querySelectorAll('.sb-mod').forEach(m=>m.classList.remove('active'));
+  document.getElementById('mod-'+n).classList.add('active');
+  document.getElementById('sb-'+n).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i+1===n));
+  const mainEl=document.getElementById('main');if(mainEl)mainEl.scrollTop=0;
+  const sbEl=document.getElementById('sidebar');if(sbEl)sbEl.scrollTop=0;
+  setTimeout(()=>{
+    if(n===1)drawDAG();
+    if(n===2){drawPOVis();renderPO();}
+    if(n===3)drawConf();
+    if(n===4)drawIPW();
+    if(n===5)drawGComp();
+  },20);
+}
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const nt=dark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',nt);
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  localStorage.setItem('ml-theme',nt);
+  redrawAll();
+}
+function redrawAll(){
+  [1,2,3,4,5].forEach(n=>{if(document.getElementById('mod-'+n).classList.contains('active')){
+    if(n===1)drawDAG();if(n===2){drawPOVis();renderPO();}if(n===3)drawConf();if(n===4)drawIPW();if(n===5)drawGComp();
+  }});
+}
+window.addEventListener('resize',redrawAll);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MODULE 1: DAG
+// ═══════════════════════════════════════════════════════════════════════════
+const STEPS=[
+  {label:'A — Confounder: SES influences exercise and health',
+   interp:'<strong>SES</strong> (socioeconomic status) is a <em>confounder</em> because it causally influences both exercise (T) and health (Y).<br><br>The backdoor path <strong>T ← SES → Y</strong> is open. A naive comparison would be biased.<br><br><em>Consequence: adjust (control) for SES!</em><br><br>Test it: click "Adjust SES" below and watch the backdoor path close.',
+   nodes:[{id:'T',lbl:'T\nExercise',x:.2,y:.55,c:'--a3'},{id:'Y',lbl:'Y\nHealth',x:.8,y:.55,c:'--a1'},{id:'SES',lbl:'SES\nStatus',x:.5,y:.18,c:'--a5'}],
+   edges:[{f:'SES',t:'T',tp:'back'},{f:'SES',t:'Y',tp:'back'},{f:'T',t:'Y',tp:'causal'}],
+   ctl:'ses',verdict:'<span class="badge b-warn">Backdoor open</span> <span class="badge b-ok">→ adjust SES</span>'},
+  {label:'B — Mediator: weight lies on the causal path',
+   interp:'<strong>Body weight (BW)</strong> is a <em>mediator</em>: exercise (T) reduces weight → lower weight improves health (Y).<br><br><strong>Two paths from T to Y:</strong><br><span class="circ">①</span> Direct effect: T → Y (exercise directly on heart health)<br><span class="circ">②</span> Indirect effect: T → BW → Y (via weight reduction)<br><br><strong>Total effect = direct + indirect effect</strong><br><br>If we adjust for BW:<br>• the indirect path T→BW→Y is blocked<br>• we measure only the direct effect<br><br><em>If you want the total effect: do NOT adjust for BW!</em><br>If you want only the direct effect: adjust.',
+   nodes:[{id:'T',lbl:'T\nExercise',x:.15,y:.25,c:'--a3'},{id:'BW',lbl:'BW\nWeight',x:.5,y:.72,c:'--a2'},{id:'Y',lbl:'Y\nHealth',x:.85,y:.25,c:'--a1'}],
+   edges:[{f:'T',t:'Y',tp:'causal'},{f:'T',t:'BW',tp:'med'},{f:'BW',t:'Y',tp:'med'}],
+   ctl:'kg',verdict:'<span class="badge b-warn">For total effect: do NOT adjust BW</span> <span class="badge b-info">For direct effect: adjust</span>'},
+  {label:'C — Collider: doctor visits are caused by both T and Y',
+   interp:'<strong>Doctor visits (DV)</strong> is a <em>collider</em>: both exercise and poor health lead to more doctor visits.<br><br>The causal path T → Y is present! The path T → DV ← Y is initially <strong>blocked</strong> — no problem!<br><br>But if we <em>condition</em> on DV (adjust, stratify, select), we open a spurious path between T and Y — this phenomenon is generally called <strong>collider bias</strong> (the special case with this M-shaped path structure is also called <strong>M-bias</strong>; closely related: <strong>Berkson bias</strong>, which arises from selecting on a collider).<br><br><em>Consequence: do NOT adjust for DV, even if it intuitively seems sensible!</em><br><br>Test it: click "Adjust DV" and watch the spurious path open.',
+   nodes:[{id:'T',lbl:'T\nExercise',x:.2,y:.28,c:'--a3'},{id:'Y',lbl:'Y\nHealth',x:.8,y:.28,c:'--a1'},{id:'AB',lbl:'DV\nDoctor visit',x:.5,y:.75,c:'--a4'}],
+   edges:[{f:'T',t:'Y',tp:'causal'},{f:'T',t:'AB',tp:'coll'},{f:'Y',t:'AB',tp:'coll'}],
+   ctl:'ab',verdict:'<span class="badge b-warn">Collider: do NOT adjust</span>'},
+  {label:'D — Precision variable: baseline value affects only health',
+   interp:'<strong>Baseline heart health (BL)</strong> — the starting value before the study began — is a <em>precision variable</em>: it influences the later health score Y, but has <strong>no arrow to T</strong> — how fit someone was at the start of the study does not determine whether they go on to exercise.<br><br>There is <strong>no backdoor path</strong> between T and Y via BL — unlike with SES, there is no confounding risk here.<br><br>Adjusting is still worthwhile: BL explains part of the variance in Y and makes the estimate <strong>more precise</strong> (smaller standard error) — the same logic as a covariate in an ANCOVA. Such a covariate only needs to be related to Y, not to T, to be valid.<br><br><em>Consequence: adjustment is optional — it doesn\'t bias, but helps precision.</em><br><br>Test it: click "Adjust BL" — the path stays closed, only the uncertainty of the estimate changes.',
+   nodes:[{id:'T',lbl:'T\nExercise',x:.2,y:.55,c:'--a3'},{id:'Y',lbl:'Y\nHealth',x:.8,y:.55,c:'--a1'},{id:'BL',lbl:'BL\nBaseline',x:.5,y:.18,c:'--a6'}],
+   edges:[{f:'BL',t:'Y',tp:'prec'},{f:'T',t:'Y',tp:'causal'}],
+   ctl:'prec',verdict:'<span class="badge b-info">No backdoor — adjustment optional</span> <span class="badge b-ok">Increases precision</span>'},
+  {label:'E — Complex model: the full causal structure of our study',
+   interp:'The complete model combines all three bias-relevant types (the precision variable BL from step D is hidden here for clarity, since it carries no adjustment risk).<br><br><span style="color:var(--a5)">■ SES</span> → confounder: <span class="badge b-ok">adjust</span><br><span style="color:var(--a2)">■ BW</span> → mediator: <span class="badge b-warn">don\'t adjust</span> (for total effect)<br><span style="color:var(--a4)">■ DV</span> → collider: <span class="badge b-warn">don\'t adjust</span><br><br>This model is the foundation for <strong>all following modules</strong>. Adjust correctly and incorrectly and observe the differences.',
+   nodes:[{id:'T',lbl:'T\nExercise',x:.18,y:.32,c:'--a3'},{id:'Y',lbl:'Y\nHealth',x:.82,y:.32,c:'--a1'},{id:'SES',lbl:'SES\nStatus',x:.5,y:.10,c:'--a5'},{id:'KG',lbl:'BW\nWeight',x:.5,y:.60,c:'--a2'},{id:'AB',lbl:'DV\nDoctor visit',x:.5,y:.87,c:'--a4'}],
+   edges:[{f:'SES',t:'T',tp:'back'},{f:'SES',t:'Y',tp:'back'},{f:'T',t:'Y',tp:'causal'},{f:'T',t:'KG',tp:'med'},{f:'KG',t:'Y',tp:'med'},{f:'T',t:'AB',tp:'coll'},{f:'Y',t:'AB',tp:'coll'}],
+   ctl:'complex',verdict:'<span class="badge b-ok">Adjust SES</span> <span class="badge b-warn">Do NOT adjust BW + DV</span>'},
+];
+
+function setStep(n){
+  ST.dagStep=n;ST.dagAdj={ses:false,kg:false,ab:false,prec:false};
+  [0,1,2,3,4].forEach(i=>{const b=document.getElementById('sb1-btn'+i);if(b)b.classList.toggle('active',i===n);});
+  const lbl=document.getElementById('dag-step-lbl');if(lbl)lbl.textContent=STEPS[n].label;
+  const interp=document.getElementById('dag-interp');if(interp)interp.innerHTML=STEPS[n].interp;
+  updateDagControls();drawDAG();
+}
+function dagNav(d){setStep(Math.max(0,Math.min(4,ST.dagStep+d)));}
+
+function updateDagControls(){
+  const cfg=STEPS[ST.dagStep];
+  const dc=document.getElementById('dag-controls');if(!dc)return;
+  let html='';
+  const adjBtn=(key,lbl,mode)=>{
+    const on=ST.dagAdj[key];
+    const icon=!on?'':mode==='warn'?' ⚠':mode==='ok'?' ✓':' ℹ';
+    return `<button class="tbtn ${on?'active':''}" onclick="toggleAdj('${key}')" style="width:100%;margin-bottom:.3rem;text-align:left">${on?'⊠':'⊡'} ${lbl}${icon}</button>`;
+  };
+  if(cfg.ctl==='ses')html=adjBtn('ses','Adjust SES','ok');
+  else if(cfg.ctl==='kg')html=adjBtn('kg','Adjust BW','neutral');
+  else if(cfg.ctl==='ab')html=adjBtn('ab','Adjust DV','warn');
+  else if(cfg.ctl==='prec')html=adjBtn('prec','Adjust BL','ok');
+  else if(cfg.ctl==='complex'){
+    html=adjBtn('ses','Adjust SES','ok')+adjBtn('kg','Adjust BW','warn')+adjBtn('ab','Adjust DV','warn');
+  }
+  // Feedback
+  let fb='';
+  if(ST.dagAdj.kg&&cfg.ctl==='kg')fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a2);margin-top:.35rem">ℹ Indirect path T→BW→Y blocked. Only the direct effect T→Y remains measurable.</div>';
+  else if(ST.dagAdj.kg)fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a1);margin-top:.35rem">⚠ Mediator path blocked — total effect underestimated!</div>';
+  if(ST.dagAdj.ab)fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a1);margin-top:.35rem">⚠ Spurious path T ↔ Y opened — collider bias (M-bias) introduced!</div>';
+  if(ST.dagAdj.prec)fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a6);margin-top:.35rem">ℹ No backdoor affected — adjustment doesn\'t bias, but reduces variance (more precision, like an ANCOVA covariate).</div>';
+  if(ST.dagAdj.ses&&!ST.dagAdj.kg&&!ST.dagAdj.ab)fb+='<div style="font-family:\'DM Mono\',monospace;font-size:.74rem;color:var(--a3);margin-top:.35rem">✓ Correctly adjusted — backdoor closed.</div>';
+  dc.innerHTML=html+fb;
+  const dv=document.getElementById('dag-verdict');if(dv)dv.innerHTML=cfg.verdict;
+}
+function toggleAdj(k){ST.dagAdj[k]=!ST.dagAdj[k];updateDagControls();drawDAG();}
+
+function drawDAG(){
+  const cv=document.getElementById('cv-dag');if(!cv)return;
+  const W=cv.offsetWidth||800;cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle=css('--paper');ctx.fillRect(0,0,W,H);
+  const cfg=STEPS[ST.dagStep];
+  const pos={};cfg.nodes.forEach(n=>{pos[n.id]={x:n.x*W,y:n.y*H};});
+  const r=38;
+  // Edges
+  cfg.edges.forEach(e=>{
+    const p1=pos[e.f],p2=pos[e.t];
+    const adjSES=ST.dagAdj.ses,adjKG=ST.dagAdj.kg,adjAB=ST.dagAdj.ab;
+    let col,dash=e.dash?[7,4]:[];
+    if(e.tp==='causal'){col=css('--a3');if(adjKG&&cfg.ctl==='kg')dash=[5,4];}
+    else if(e.tp==='back'){col=adjSES?css('--a3'):css('--a1');if(adjSES)dash=[4,4];}
+    else if(e.tp==='med'){col=adjKG?css('--ink3'):css('--a2');if(adjKG)dash=[4,4];}
+    else if(e.tp==='coll'){col=adjAB?css('--a1'):css('--ink3');if(adjAB)dash=[3,3];}
+    else if(e.tp==='prec'){col=css('--a6');}
+    drawArrow(ctx,p1.x,p1.y,p2.x,p2.y,col,dash,r,3);
+  });
+  // Spurious path when collider adjusted
+  if(ST.dagAdj.ab&&pos['T']&&pos['Y']){
+    const p1=pos['T'],p2=pos['Y'];
+    ctx.save();ctx.strokeStyle=css('--a1');ctx.lineWidth=1.5;ctx.setLineDash([3,4]);
+    ctx.beginPath();const mx=(p1.x+p2.x)/2,my=Math.min(p1.y,p2.y)-70;
+    ctx.moveTo(p1.x+r,p1.y);ctx.quadraticCurveTo(mx,my,p2.x-r,p2.y);ctx.stroke();
+    ctx.setLineDash([]);ctx.fillStyle=css('--a1');ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('spurious path (collider bias)',mx,my-10);ctx.restore();
+  }
+  // Nodes
+  cfg.nodes.forEach(n=>{
+    const {x,y}=pos[n.id];
+    const adjThis=(n.id==='SES'&&ST.dagAdj.ses)||(n.id==='KG'&&ST.dagAdj.kg)||(n.id==='AB'&&ST.dagAdj.ab)||(n.id==='BL'&&ST.dagAdj.prec);
+    // outer ring if adjusted
+    if(adjThis){
+      ctx.beginPath();ctx.arc(x,y,r+7,0,2*Math.PI);
+      ctx.strokeStyle=css('--a3');ctx.lineWidth=1.5;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+    }
+    ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);
+    ctx.fillStyle=css('--paper');ctx.fill();
+    ctx.strokeStyle=adjThis?css('--a3'):css(n.c||'--border');ctx.lineWidth=adjThis?3:2.5;ctx.stroke();
+    const lines=n.lbl.split('\n');
+    ctx.fillStyle=css('--ink');ctx.font='bold 15px DM Mono,monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(lines[0],x,lines[1]?y-9:y);
+    if(lines[1]){ctx.font='11px DM Mono,monospace';ctx.fillStyle=css(n.c||'--ink2');ctx.fillText(lines[1],x,y+10);}
+  });
+  const leg=document.getElementById('dag-legend');
+  if(leg)leg.innerHTML=`<span style="color:var(--a3)">━ causal path</span><span style="color:var(--a1)">━ backdoor path</span><span style="color:var(--a2)">━ mediation path</span><span style="color:var(--ink3)">━ collider (blocked)</span><span style="color:var(--a6)">━ precision path</span><span style="color:var(--a3)">⊙ = adjusted</span>`;
+}
+function drawArrow(ctx,x1,y1,x2,y2,col,dash,r,lw){
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);if(len<1)return;
+  const ux=dx/len,uy=dy/len;
+  const sx=x1+ux*r,sy=y1+uy*r,ex=x2-ux*r,ey=y2-uy*r;
+  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=lw||2;ctx.setLineDash(dash||[]);
+  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.stroke();ctx.setLineDash([]);
+  const a=Math.atan2(ey-sy,ex-sx),al=12,aw=0.4;
+  ctx.beginPath();ctx.moveTo(ex,ey);ctx.lineTo(ex-al*Math.cos(a-aw),ey-al*Math.sin(a-aw));
+  ctx.lineTo(ex-al*Math.cos(a+aw),ey-al*Math.sin(a+aw));ctx.closePath();ctx.fill();
+  ctx.restore();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MODULE 2: POTENTIAL OUTCOMES
+// ═══════════════════════════════════════════════════════════════════════════
+function newSeed(){ST.seed=Math.floor(Math.random()*9999)+1;ST.data=genData(ST.seed,ST.confStr);drawPOVis();renderPO();}
+
+function toggleReveal(){
+  ST.poRevealed=!ST.poRevealed;
+  const b=document.getElementById('po-rev-btn');
+  if(b){b.textContent=ST.poRevealed?'⊠ Hide counterfactuals':'⊡ Show counterfactuals';b.classList.toggle('active',ST.poRevealed);}
+  drawPOVis();renderPO();
+}
+
+function drawPOVis(){
+  const cv=document.getElementById('cv-po-vis');if(!cv)return;
+  const W=cv.offsetWidth||900;cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle=css('--panel');ctx.fillRect(0,0,W,H);
+  const D=ST.data.slice(0,24); // show first 24
+  const rng=mulberry32(99);
+  const cellW=W/D.length;
+  D.forEach((u,i)=>{
+    const x=cellW*i+cellW/2;
+    // Y(1) bar (top half)
+    const h1=(u.y1-40)/(60)*H*0.42;
+    ctx.fillStyle=css('--a3');ctx.globalAlpha=u.t?0.85:ST.poRevealed?0.35:0.08;
+    ctx.fillRect(cellW*i+2,H/2-h1,cellW-4,h1);
+    // Y(0) bar (bottom half)
+    const h0=(u.y0-40)/(60)*H*0.42;
+    ctx.fillStyle=css('--a1');ctx.globalAlpha=!u.t?0.85:ST.poRevealed?0.35:0.08;
+    ctx.fillRect(cellW*i+2,H/2,cellW-4,h0);
+    ctx.globalAlpha=1;
+  });
+  // Labels
+  ctx.fillStyle=css('--ink3');ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('Y(1) — with exercise',4,14);
+  ctx.fillText('Y(0) — without exercise',4,H-4);
+  ctx.fillStyle=css('--ink2');ctx.textAlign='center';ctx.font='10px DM Mono,monospace';
+  ctx.fillText('← Person 1 to 24 →',W/2,H/2-3);
+  // Midline
+  ctx.strokeStyle=css('--grid');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+}
+
+function renderPO(){
+  const D=ST.data.slice(0,14);
+  const rev=ST.poRevealed;
+  let html='';
+  D.forEach(u=>{
+    const sLbl=u.ses?`<span style="color:var(--a5)">high</span>`:`<span style="color:var(--ink3)">low</span>`;
+    const tLbl=u.t?`<span style="color:var(--a3);font-weight:600">1 ✓</span>`:`<span style="color:var(--a1)">0 ✗</span>`;
+    const y1c=u.t?`<strong style="color:var(--a3)">${u.y1}</strong>`:rev?`<span style="color:var(--a3);opacity:.5">${u.y1}</span>`:`<span class="po-qm" data-tip="hypothetical: ${u.y1}">?</span>`;
+    const y0c=!u.t?`<strong style="color:var(--a1)">${u.y0}</strong>`:rev?`<span style="color:var(--a1);opacity:.5">${u.y0}</span>`:`<span class="po-qm" data-tip="hypothetical: ${u.y0}">?</span>`;
+    const ite=u.y1-u.y0;
+    const itec=rev?`<span style="color:${ite>=0?'var(--a3)':'var(--a1)'}">${ite>0?'+':''}${ite}</span>`:`<span class="po-qm" data-tip="ICE = ${ite}">?</span>`;
+    html+=`<tr><td style="text-align:left;color:var(--ink2);font-size:.75rem">P${u.id}</td><td>${sLbl}</td><td>${tLbl}</td><td>${y1c}</td><td>${y0c}</td><td>${itec}</td><td style="color:var(--ink2)">${u.y}</td></tr>`;
+  });
+  const tb=document.getElementById('po-tbody');if(tb)tb.innerHTML=html;
+  // Stats in sidebar
+  const al=ST.data;
+  const ate=mean(al,u=>u.y1-u.y0);
+  const att=mean(al.filter(u=>u.t),u=>u.y1-u.y0);
+  const atu=mean(al.filter(u=>!u.t),u=>u.y1-u.y0);
+  const naive=mean(al.filter(u=>u.t))-mean(al.filter(u=>!u.t));
+  const sc=document.getElementById('po-stats-content');
+  if(sc)sc.innerHTML=rev?`
+    <span style="color:var(--a3)">ATE:</span> <strong>${pct(ate)}</strong><br>
+    <span style="color:var(--a3)">ATT:</span> <strong>${pct(att)}</strong><br>
+    <span style="color:var(--a3)">ATU:</span> <strong>${pct(atu)}</strong><br>
+    <span style="color:var(--a1)">Naive:</span> <strong>${pct(naive)}</strong> ← biased!
+  `:`<span style="color:var(--ink3)">Show counterfactuals to see estimators</span>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MODULE 3: KONFUNDIERUNG — Dot Plot
+// ═══════════════════════════════════════════════════════════════════════════
+function onConfSl(el){
+  ST.confStr=parseFloat(el.value);
+  const lbl=['none','weak','moderate','strong','very strong'];
+  document.getElementById('conf-lbl').textContent=lbl[Math.round(ST.confStr*4)];
+  ST.data=genData(ST.seed,ST.confStr);
+  drawConf();
+}
+
+function dotPlotNaive(ctx,W,H,D){
+  ctx.fillStyle=css('--panel');ctx.fillRect(0,0,W,H);
+  const pad={l:52,r:20,t:28,b:50};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const yMin=38,yMax=102;
+  const sy=y=>pad.t+cH-((y-yMin)/(yMax-yMin))*cH;
+  // grid
+  [50,60,70,80,90,100].forEach(v=>{
+    ctx.strokeStyle=css('--grid');ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,sy(v));ctx.lineTo(pad.l+cW,sy(v));ctx.stroke();
+    ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(v,pad.l-5,sy(v)+4);
+  });
+  // x groups: T=1 (left), T=0 (right)
+  const grp0=D.filter(u=>u.t),grp1=D.filter(u=>!u.t);
+  const cx0=pad.l+cW*0.27,cx1=pad.l+cW*0.73;
+  const rng=mulberry32(12);
+  [grp0,grp1].forEach((g,gi)=>{
+    const cx=gi===0?cx0:cx1;
+    g.forEach(u=>{
+      const jx=(rng()-0.5)*36;
+      ctx.beginPath();ctx.arc(cx+jx,sy(u.y),4,0,2*Math.PI);
+      ctx.fillStyle=u.t?css('--a3'):css('--a1');ctx.globalAlpha=0.5;
+      ctx.fill();
+      ctx.strokeStyle=u.ses?css('--a5'):css('--ink3');ctx.lineWidth=1.5;ctx.globalAlpha=1;
+      ctx.stroke();
+    });
+    const m=mean(g);
+    ctx.strokeStyle=gi===0?css('--a3'):css('--a1');ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(cx-36,sy(m));ctx.lineTo(cx+36,sy(m));ctx.stroke();
+    ctx.fillStyle=css('--ink');ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(m.toFixed(1),cx,sy(m)-11);
+  });
+  // effect arrow
+  const m0=mean(grp0),m1=mean(grp1),dy=sy(m0)-sy(m1);
+  ctx.save();ctx.strokeStyle=css('--a1');ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(pad.l+cW*0.5,sy(m1));ctx.lineTo(pad.l+cW*0.5,sy(m0));ctx.stroke();
+  ctx.setLineDash([]);ctx.fillStyle=css('--a1');ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText(`Δ = ${(m0-m1).toFixed(1)}`,pad.l+cW*0.5+32,sy((m0+m1)/2));ctx.restore();
+  // x labels
+  ctx.fillStyle=css('--a3');ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('T=1 (exercise)',cx0,H-32);
+  ctx.fillStyle=css('--a1');ctx.fillText('T=0 (no exercise)',cx1,H-32);
+  ctx.fillStyle=css('--ink3');ctx.font='11px DM Mono,monospace';
+  ctx.fillText('orange border = SES high',W/2,H-14);
+  // y label
+  ctx.save();ctx.translate(14,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=css('--ink3');ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Heart-health score',0,0);ctx.restore();
+}
+
+function dotPlotAdj(ctx,W,H,D){
+  ctx.fillStyle=css('--panel');ctx.fillRect(0,0,W,H);
+  const pad={l:52,r:20,t:28,b:58};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const yMin=38,yMax=102;
+  const sy=y=>pad.t+cH-((y-yMin)/(yMax-yMin))*cH;
+  [50,60,70,80,90,100].forEach(v=>{
+    ctx.strokeStyle=css('--grid');ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,sy(v));ctx.lineTo(pad.l+cW,sy(v));ctx.stroke();
+    ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(v,pad.l-5,sy(v)+4);
+  });
+  // 4 groups
+  const g11=D.filter(u=>u.t&&u.ses),g01=D.filter(u=>!u.t&&u.ses);
+  const g10=D.filter(u=>u.t&&!u.ses),g00=D.filter(u=>!u.t&&!u.ses);
+  const cxs=[pad.l+cW*.14,pad.l+cW*.35,pad.l+cW*.62,pad.l+cW*.83];
+  const rng=mulberry32(33);
+  [[g11,css('--a3'),1],[g01,css('--a1'),1],[g10,css('--a3'),0],[g00,css('--a1'),0]].forEach(([g,col,ses],gi)=>{
+    const cx=cxs[gi];
+    g.forEach(u=>{
+      const jx=(rng()-0.5)*22;
+      ctx.beginPath();ctx.arc(cx+jx,sy(u.y),3.5,0,2*Math.PI);
+      ctx.fillStyle=col;ctx.globalAlpha=0.5;ctx.fill();
+      ctx.globalAlpha=1;ctx.strokeStyle=col;ctx.lineWidth=1;ctx.stroke();
+    });
+    if(!g.length)return;
+    const m=mean(g);
+    ctx.strokeStyle=col;ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(cx-24,sy(m));ctx.lineTo(cx+24,sy(m));ctx.stroke();
+    ctx.fillStyle=css('--ink');ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(m.toFixed(1),cx,sy(m)-10);
+  });
+  // Within-SES effect arrows
+  [[g11,g01,cxs[0],cxs[1],'SES high'],[g10,g00,cxs[2],cxs[3],'SES low']].forEach(([g1,g0,x1,x0,lbl])=>{
+    if(!g1.length||!g0.length)return;
+    const m1=mean(g1),m0=mean(g0),xm=(x1+x0)/2;
+    ctx.save();ctx.strokeStyle=css('--a3');ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(xm,sy(m0));ctx.lineTo(xm,sy(m1));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=css('--a3');ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(`Δ=${(m1-m0).toFixed(1)}`,xm,sy((m1+m0)/2)-6);ctx.restore();
+  });
+  // x labels
+  const lbls=['T=1','T=0','T=1','T=0'];
+  const sub=['SES high','SES high','SES low','SES low'];
+  lbls.forEach((l,i)=>{
+    ctx.fillStyle=i%2===0?css('--a3'):css('--a1');ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(l,cxs[i],H-40);
+    ctx.fillStyle=css('--ink3');ctx.font='11px DM Mono,monospace';
+    ctx.fillText(sub[i],cxs[i],H-25);
+  });
+  // brackets for SES groups
+  ctx.strokeStyle=css('--a5');ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.moveTo(cxs[0]-28,H-14);ctx.lineTo(cxs[1]+28,H-14);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cxs[2]-28,H-14);ctx.lineTo(cxs[3]+28,H-14);ctx.stroke();
+  ctx.fillStyle=css('--a5');ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('SES = high',(cxs[0]+cxs[1])/2,H-2);
+  ctx.fillText('SES = low',(cxs[2]+cxs[3])/2,H-2);
+  ctx.save();ctx.translate(14,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=css('--ink3');ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Heart-health score',0,0);ctx.restore();
+}
+
+function drawConf(){
+  const D=ST.data;
+  const cv1=document.getElementById('cv-naive'),cv2=document.getElementById('cv-adj');
+  if(!cv1||!cv2)return;
+  const W1=cv1.offsetWidth||500;cv1.width=W1;
+  const W2=cv2.offsetWidth||500;cv2.width=W2;
+  dotPlotNaive(cv1.getContext('2d'),W1,cv1.height,D);
+  dotPlotAdj(cv2.getContext('2d'),W2,cv2.height,D);
+  const t1=D.filter(u=>u.t),t0=D.filter(u=>!u.t);
+  const naive=mean(t1)-mean(t0);
+  const g11=D.filter(u=>u.t&&u.ses),g01=D.filter(u=>!u.t&&u.ses);
+  const g10=D.filter(u=>u.t&&!u.ses),g00=D.filter(u=>!u.t&&!u.ses);
+  const pSes1=(D.filter(u=>u.ses).length)/D.length;
+  const eff1=g11.length&&g01.length?mean(g11)-mean(g01):0;
+  const eff0=g10.length&&g00.length?mean(g10)-mean(g00):0;
+  const adj=pSes1*eff1+(1-pSes1)*eff0;
+  const bias=naive-adj;
+  const trueATE=mean(D,u=>u.y1-u.y0);
+  document.getElementById('naive-est').innerHTML=`Naive effect: <strong style="color:var(--a1)">Δ = ${naive.toFixed(1)}</strong>`;
+  document.getElementById('adj-est').innerHTML=`Adjusted effect: <strong style="color:var(--a3)">Δ = ${adj.toFixed(1)}</strong>`;
+  document.getElementById('conf-msg').innerHTML=`<strong>Confounding bias = ${Math.abs(bias).toFixed(1)} points.</strong> Naive effect: <strong style="color:var(--a1)">${naive.toFixed(1)}</strong> — adjusted effect: <strong style="color:var(--a3)">${adj.toFixed(1)}</strong> — true ATE (from PO): <strong>${trueATE.toFixed(1)}</strong>.<br>The confounder SES explains ${(Math.abs(bias)/Math.abs(naive)*100).toFixed(0)}% of the naive effect. The adjusted value approaches the true ATE, but is not exact because it comes from observational data (finite sample, estimation error).`;
+  document.getElementById('conf-nums').innerHTML=`Naive: <strong style="color:var(--a1)">${naive.toFixed(1)}</strong><br>Adjusted: <strong style="color:var(--a3)">${adj.toFixed(1)}</strong><br>True (PO): <strong style="color:var(--accent)">${trueATE.toFixed(1)}</strong><br>Bias: <strong>${bias.toFixed(1)}</strong>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MODULE 4: IPW
+// ═══════════════════════════════════════════════════════════════════════════
+const EST_DESC={ate:'What effect would exercise have if we gave it to the entire population?',att:'What effect did exercise have for those who actually exercised?',atu:'What effect would exercise have for those who did not exercise?'};
+const EST_W={ate:'w = T/p + (1−T)/(1−p)',att:'w = T·1 + (1−T)·p/(1−p)',atu:'w = T·(1−p)/p + (1−T)·1'};
+const EST_GUIDE={
+  ate:{raw:'<strong>Before weighting (ATE):</strong> massive imbalance visible — almost all T=1 bars (top) at high p-score, almost all T=0 bars (bottom) at low p-score. The distributions are mirror-image <em>un</em>equal.',wt:'<strong>After ATE weighting:</strong> ideally, both distributions (T=1 top, T=0 bottom) look <em>mirror-image equal</em> across the whole p-score range [0–1]. Each side now represents the overall population. People with an extreme p-score (near 0 or 1) get very high weights.'},
+  att:{raw:'<strong>Before weighting (ATT):</strong> the T=1 group (top) is concentrated at high p-score. For ATT we\'re interested in: what would have happened to these T=1 people if they hadn\'t exercised?',wt:'<strong>After ATT weighting:</strong> the T=1 distribution (top) stays <em>unchanged</em> — it is the reference. The T=0 distribution (bottom) is reweighted so it takes on the same p-score distribution as T=1. T=0 people with a high p-score (who could have exercised but didn\'t) get high weights.'},
+  atu:{raw:'<strong>Before weighting (ATU):</strong> the T=0 group (bottom) is concentrated at low p-score. For ATU we\'re interested in: what would exercise have done for people who typically don\'t exercise?',wt:'<strong>After ATU weighting:</strong> the T=0 distribution (bottom) stays <em>unchanged</em> — it is the reference. The T=1 distribution (top) is reweighted to take on the same p-score shape as T=0. T=1 people with a low p-score (unlikely exercisers) get high weights.'}
+};
+
+function setEst(e){
+  ST.estimand=e;ST.weighted=false;
+  const btn=document.getElementById('btn-wt');if(btn){btn.textContent='⊡ Apply weighting';btn.classList.remove('active');}
+  ['ate','att','atu'].forEach(k=>{const b=document.getElementById('et-'+k);if(b)b.classList.toggle('active',k===e);});
+  document.getElementById('est-desc').textContent=EST_DESC[e];
+  document.getElementById('wt-formula').textContent='';
+  document.getElementById('ipw-nums').innerHTML='';
+  document.getElementById('wt-label').textContent='Click "Apply weighting" to see the pseudo-population';
+  const g=document.getElementById('ipw-guide');if(g)g.innerHTML=EST_GUIDE[e].raw;
+  drawIPW();
+}
+function toggleWeight(){
+  ST.weighted=!ST.weighted;
+  const btn=document.getElementById('btn-wt');if(btn){btn.textContent=ST.weighted?'⊠ Weighting active':'⊡ Apply weighting';btn.classList.toggle('active',ST.weighted);}
+  document.getElementById('wt-formula').textContent=ST.weighted?EST_W[ST.estimand]:'';
+  document.getElementById('wt-label').textContent=ST.weighted?`Weighted (${ST.estimand.toUpperCase()}) — distribution balanced`:'Click "Apply weighting" to see the pseudo-population';
+  const g=document.getElementById('ipw-guide');if(g)g.innerHTML=ST.weighted?EST_GUIDE[ST.estimand].wt:EST_GUIDE[ST.estimand].raw;
+  document.getElementById('wt-state').textContent=ST.weighted?'weighted':'unweighted';
+  drawIPW();
+  if(ST.weighted)showIPWNums();
+  else document.getElementById('ipw-nums').innerHTML='';
+}
+function ipwW(u,est){
+  const p=u.p;
+  if(est==='ate')return u.t?1/p:1/(1-p);
+  if(est==='att')return u.t?1:p/(1-p);
+  return u.t?(1-p)/p:1;
+}
+function mirrorHist(ctx,W,H,D,weighted,est){
+  ctx.fillStyle=css('--panel');ctx.fillRect(0,0,W,H);
+  const pad={l:45,r:20,t:20,b:20};
+  const cW=W-pad.l-pad.r,cH=(H-pad.t-pad.b)/2,midY=pad.t+cH;
+  const bins=12;
+  ctx.strokeStyle=css('--grid');ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,midY);ctx.lineTo(pad.l+cW,midY);ctx.stroke();
+  for(let i=0;i<=bins;i++){
+    const x=pad.l+i*(cW/bins);
+    ctx.fillStyle=css('--ink3');ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText((i/bins).toFixed(1),x,midY+16);
+  }
+  const b1=new Array(bins).fill(0),b0=new Array(bins).fill(0);
+  D.forEach(u=>{
+    const b=Math.min(bins-1,Math.floor(u.p*bins));
+    const w=weighted?ipwW(u,est):1;
+    if(u.t)b1[b]+=w;else b0[b]+=w;
+  });
+  const mx=Math.max(...b1,...b0,1);
+  const bW=cW/bins*0.72,bGap=cW/bins;
+  for(let i=0;i<bins;i++){
+    const bx=pad.l+i*bGap+(bGap-bW)/2;
+    const h1=(b1[i]/mx)*cH*0.9;
+    ctx.fillStyle=css('--a3');ctx.globalAlpha=0.82;
+    ctx.fillRect(bx,midY-h1,bW,h1);
+    const h0=(b0[i]/mx)*cH*0.9;
+    ctx.fillStyle=css('--a1');
+    ctx.fillRect(bx,midY,bW,h0);
+    ctx.globalAlpha=1;
+    // value labels for tall bars
+    if(h1>18){ctx.fillStyle=css('--a3');ctx.font='10px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(b1[i].toFixed(weighted?1:0),bx+bW/2,midY-h1-3);}
+    if(h0>18){ctx.fillStyle=css('--a1');ctx.fillText(b0[i].toFixed(weighted?1:0),bx+bW/2,midY+h0+12);}
+  }
+  ctx.fillStyle=css('--a3');ctx.font='12px DM Mono,monospace';ctx.textAlign='left';ctx.fillText('T=1 (exercise)',pad.l+3,pad.t+16);
+  ctx.fillStyle=css('--a1');ctx.fillText('T=0 (no exercise)',pad.l+3,H-pad.b-4);
+}
+function drawIPW(){
+  const D=ST.data;
+  const cv1=document.getElementById('cv-ps'),cv2=document.getElementById('cv-wt');
+  if(!cv1||!cv2)return;
+  const W1=cv1.offsetWidth||900;cv1.width=W1;
+  const W2=cv2.offsetWidth||900;cv2.width=W2;
+  mirrorHist(cv1.getContext('2d'),W1,cv1.height,D,false,'ate');
+  mirrorHist(cv2.getContext('2d'),W2,cv2.height,D,ST.weighted,ST.estimand);
+}
+function showIPWNums(){
+  const D=ST.data,e=ST.estimand;
+  let wty=0,wt=0,wcy=0,wc=0;
+  D.forEach(u=>{const w=ipwW(u,e);if(u.t){wty+=w*u.y;wt+=w;}else{wcy+=w*u.y;wc+=w;}});
+  const ipw=(wty/wt)-(wcy/wc);
+  const naive=mean(D.filter(u=>u.t))-mean(D.filter(u=>!u.t));
+  const trueEst=e==='ate'?mean(D,u=>u.y1-u.y0):e==='att'?mean(D.filter(u=>u.t),u=>u.y1-u.y0):mean(D.filter(u=>!u.t),u=>u.y1-u.y0);
+  document.getElementById('ipw-nums').innerHTML=`Naive: <strong style="color:var(--a1)">${naive.toFixed(2)}</strong><br>IPW (${e.toUpperCase()}): <strong style="color:var(--a3)">${ipw.toFixed(2)}</strong><br>True (${e.toUpperCase()}): <strong>${trueEst.toFixed(2)}</strong>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MODULE 5: G-COMPUTATION
+// ═══════════════════════════════════════════════════════════════════════════
+function gcGroupMeans(D){
+  const m={};
+  [[0,0],[0,1],[1,0],[1,1]].forEach(([t,s])=>{
+    const sub=D.filter(u=>u.t===t&&u.ses===s);
+    m[`${t}${s}`]=sub.length?mean(sub):null;
+  });
+  return m;
+}
+function renderGCompPredTable(D,gm){
+  const shown=D.slice(0,16);
+  let html='<div style="overflow-x:auto"><table class="po-table"><thead><tr>';
+  html+='<th style="text-align:left">Person</th><th>SES</th><th>T</th><th>Y obs.</th>';
+  html+=`<th style="color:var(--a3)">Ŷ(1) — exercise</th><th style="color:var(--a1)">Ŷ(0) — no exercise</th><th>Ŷ(1)−Ŷ(0)</th>`;
+  html+='</tr></thead><tbody>';
+  shown.forEach(u=>{
+    const y1=gm[`1${u.ses}`],y0=gm[`0${u.ses}`];
+    const diff=(y1!=null&&y0!=null)?y1-y0:null;
+    const sLbl=u.ses?`<span style="color:var(--a5)">high</span>`:`<span style="color:var(--ink3)">low</span>`;
+    const tLbl=u.t?`<span style="color:var(--a3)">1</span>`:`<span style="color:var(--a1)">0</span>`;
+    html+=`<tr><td style="text-align:left;color:var(--ink2);font-size:.75rem">P${u.id}</td>`;
+    html+=`<td>${sLbl}</td><td>${tLbl}</td><td style="color:var(--ink2)">${u.y}</td>`;
+    html+=`<td style="color:var(--a3);font-weight:600">${y1!=null?y1.toFixed(1):'—'}</td>`;
+    html+=`<td style="color:var(--a1);font-weight:600">${y0!=null?y0.toFixed(1):'—'}</td>`;
+    html+=`<td style="color:var(--accent);font-weight:600">${diff!=null?(diff>0?'+':'')+diff.toFixed(1):'—'}</td></tr>`;
+  });
+  html+='</tbody></table></div>';
+  html+=`<div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.45rem">`;
+  html+=`Ŷ(t) = Ê[Y|T=t, SES] = group mean. People with the same SES get the same value. `;
+  html+=`This is the G-computation estimator of the individual effect — analogous to the ICE from module <span class="circ">②</span>, but <em>estimated from data, not directly observed</em>.</div>`;
+  const el=document.getElementById('gc-pred-table');if(el)el.innerHTML=html;
+}
+function getGCRefPop(D){
+  if(ST.gcEstimand==='att')return D.filter(u=>u.t);
+  if(ST.gcEstimand==='atu')return D.filter(u=>!u.t);
+  return D;
+}
+function drawGComp(){
+  const D=ST.data,refPop=getGCRefPop(D);
+  const gm=gcGroupMeans(D);
+  drawGModel(D);drawWorld(D,1,refPop);drawWorld(D,0,refPop);renderGCompPredTable(D,gm);
+  document.getElementById('gc-result').innerHTML='';
+  document.getElementById('gc-y1-lbl').innerHTML='';document.getElementById('gc-y0-lbl').innerHTML='';
+  document.getElementById('gc-nums').innerHTML='';
+  const btn=document.getElementById('btn-gc');if(btn){btn.innerHTML='<span class="circ">③</span> Show G-computation';btn.classList.remove('active');}
+}
+const GC_DESC={ate:'Standardization over all 300 people (overall population)',att:'Standardization over the SES distribution of the treated (T=1)',atu:'Standardization over the SES distribution of the untreated (T=0)'};
+function setGCEst(e){
+  ST.gcEstimand=e;
+  ['ate','att','atu'].forEach(k=>{const b=document.getElementById('gc-'+k);if(b)b.classList.toggle('active',k===e);});
+  const d=document.getElementById('gc-est-desc');if(d)d.textContent=GC_DESC[e];
+  document.getElementById('gc-result').innerHTML='';
+  document.getElementById('gc-y1-lbl').innerHTML='';document.getElementById('gc-y0-lbl').innerHTML='';
+  document.getElementById('gc-nums').innerHTML='';
+  const btn=document.getElementById('btn-gc');if(btn){btn.innerHTML='<span class="circ">③</span> G-Computation zeigen';btn.classList.remove('active');}
+  setTimeout(()=>{drawWorld(ST.data,1,getGCRefPop(ST.data));drawWorld(ST.data,0,getGCRefPop(ST.data));},20);
+}
+function drawGModel(D){
+  const cv=document.getElementById('cv-gmod');if(!cv)return;
+  const W=cv.offsetWidth||900;cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle=css('--panel');ctx.fillRect(0,0,W,H);
+  const pad={l:52,r:20,t:28,b:48};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const yMin=38,yMax=105;
+  const sy=y=>pad.t+cH-((y-yMin)/(yMax-yMin))*cH;
+  const sx=ses=>pad.l+(ses===0?cW*0.25:cW*0.75);
+  // grid
+  [50,60,70,80,90,100].forEach(v=>{
+    ctx.strokeStyle=css('--grid');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,sy(v));ctx.lineTo(pad.l+cW,sy(v));ctx.stroke();
+    ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='right';ctx.fillText(v,pad.l-5,sy(v)+4);
+  });
+  // raw dots with jitter
+  const rng=mulberry32(77);
+  D.forEach(u=>{
+    ctx.beginPath();ctx.arc(sx(u.ses)+(rng()-0.5)*60,sy(u.y),3.5,0,2*Math.PI);
+    ctx.fillStyle=u.t?css('--a3'):css('--a1');ctx.globalAlpha=0.32;ctx.fill();ctx.globalAlpha=1;
+  });
+  // Group means and model lines
+  const gMeans={};
+  [[0,0],[0,1],[1,0],[1,1]].forEach(([t,s])=>{
+    const sub=D.filter(u=>u.t===t&&u.ses===s);
+    gMeans[`${t}${s}`]=sub.length?mean(sub):null;
+  });
+  [[1,css('--a3')],[0,css('--a1')]].forEach(([t,col])=>{
+    const v0=gMeans[`${t}0`],v1=gMeans[`${t}1`];
+    if(v0==null||v1==null)return;
+    ctx.strokeStyle=col;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(sx(0),sy(v0));ctx.lineTo(sx(1),sy(v1));ctx.stroke();
+    [0,1].forEach(s=>{
+      const v=gMeans[`${t}${s}`];if(v==null)return;
+      ctx.beginPath();ctx.arc(sx(s),sy(v),9,0,2*Math.PI);ctx.fillStyle=col;ctx.fill();
+      ctx.fillStyle=css('--paper');ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(v.toFixed(0),sx(s),sy(v)+4);
+    });
+  });
+  // x axis labels
+  ['SES = 0\n(low)','SES = 1\n(high)'].forEach((l,i)=>{
+    const lines=l.split('\n');
+    ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(lines[0],sx(i),H-28);ctx.fillText(lines[1],sx(i),H-13);
+  });
+  ctx.save();ctx.translate(14,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('Avg. health score',0,0);ctx.restore();
+}
+function drawWorld(D,t,refPop){
+  // refPop: population whose SES distribution is used for standardization (ATE=all, ATT=treated, ATU=control)
+  if(!refPop||!refPop.length)refPop=D;
+  const cvId=t?'cv-w1':'cv-w0';
+  const cv=document.getElementById(cvId);if(!cv)return;
+  const W=cv.offsetWidth||450;cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle=css('--panel');ctx.fillRect(0,0,W,H);
+  const pad={l:48,r:20,t:28,b:48};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const yMin=38,yMax=105;
+  const sy=y=>pad.t+cH-((y-yMin)/(yMax-yMin))*cH;
+  const col=t?css('--a3'):css('--a1');
+  // Outcome-model predictions (observed-data group means), same as revealGC() —
+  // NOT the oracle potential outcomes, which real G-computation never has access to.
+  const gm=gcGroupMeans(D);
+  const m0=gm[`${t}0`]??0,m1=gm[`${t}1`]??0;
+  // SES distribution from reference population
+  const rp1=refPop.filter(u=>u.ses===1).length,rp0=refPop.filter(u=>u.ses===0).length;
+  const pSes1=rp1/refPop.length;
+  const gMean=pSes1*m1+(1-pSes1)*m0;
+  const cx0=pad.l+cW*0.28,cx1=pad.l+cW*0.72;
+  // grid
+  [50,60,70,80,90,100].forEach(v=>{
+    ctx.strokeStyle=css('--grid');ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,sy(v));ctx.lineTo(pad.l+cW,sy(v));ctx.stroke();
+    ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='right';ctx.fillText(v,pad.l-4,sy(v)+4);
+  });
+  // bars (heights from outcome model, labels show refPop SES weights)
+  const bW=50;
+  [[cx0,m0,`${(rp0/refPop.length*100).toFixed(0)}%`,'SES=0'],[cx1,m1,`${(pSes1*100).toFixed(0)}%`,'SES=1']].forEach(([cx,m,pct,lbl])=>{
+    const bh=((m-yMin)/(yMax-yMin))*cH;
+    ctx.fillStyle=col;ctx.globalAlpha=0.7;ctx.fillRect(cx-bW/2,sy(m),bW,bh);ctx.globalAlpha=1;
+    ctx.fillStyle=css('--ink');ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(m.toFixed(1),cx,sy(m)-9);
+    ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.fillText(lbl,cx,H-32);
+    ctx.fillStyle=css('--a5');ctx.fillText('w='+pct,cx,H-17);
+  });
+  // standardized mean line
+  ctx.strokeStyle=col;ctx.lineWidth=2;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(pad.l,sy(gMean));ctx.lineTo(pad.l+cW,sy(gMean));ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=col;ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='right';
+  ctx.fillText(`Ê[Y(${t})] = ${gMean.toFixed(2)}`,pad.l+cW-4,sy(gMean)-8);
+  ctx.save();ctx.translate(14,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=css('--ink3');ctx.font='12px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('Health score',0,0);ctx.restore();
+  cv._gcMean=gMean;
+}
+function revealGC(){
+  const D=ST.data,e=ST.gcEstimand;
+  const refPop=getGCRefPop(D);
+  const pSes1=refPop.filter(u=>u.ses===1).length/refPop.length;
+  // Outcome model group means
+  const mu1={0:0,1:0},mu0={0:0,1:0};
+  [[0,0],[0,1],[1,0],[1,1]].forEach(([t,s])=>{
+    const sub=D.filter(u=>u.t===t&&u.ses===s);
+    if(t===1)mu1[s]=sub.length?mean(sub):0;
+    else mu0[s]=sub.length?mean(sub):0;
+  });
+  // G-Computation (standardize over refPop SES distribution)
+  const gY1=pSes1*mu1[1]+(1-pSes1)*mu1[0];
+  const gY0=pSes1*mu0[1]+(1-pSes1)*mu0[0];
+  const gcEst=gY1-gY0;
+  // IPW for same estimand
+  let wty=0,wt=0,wcy=0,wc=0;
+  D.forEach(u=>{const w=ipwW(u,e);if(u.t){wty+=w*u.y;wt+=w;}else{wcy+=w*u.y;wc+=w;}});
+  const ipwEst=(wty/wt)-(wcy/wc);
+  // Doubly Robust (AIPW) for same estimand
+  const drEst=D.reduce((s,u)=>{
+    const aug1=mu1[u.ses]+(u.t?(u.y-mu1[u.ses])/u.p:0);
+    const aug0=mu0[u.ses]+(!u.t?(u.y-mu0[u.ses])/(1-u.p):0);
+    return s+(aug1-aug0);
+  },0)/D.length;
+  // True value for the selected estimand
+  const trueEst=e==='ate'?mean(D,u=>u.y1-u.y0):e==='att'?mean(D.filter(u=>u.t),u=>u.y1-u.y0):mean(D.filter(u=>!u.t),u=>u.y1-u.y0);
+  const naive=mean(D.filter(u=>u.t))-mean(D.filter(u=>!u.t));
+  const estLbl=e.toUpperCase();
+  document.getElementById('gc-y1-lbl').innerHTML=`Ê[Y(1)|${estLbl}] = <strong>${gY1.toFixed(2)}</strong>`;
+  document.getElementById('gc-y0-lbl').innerHTML=`Ê[Y(0)|${estLbl}] = <strong>${gY0.toFixed(2)}</strong>`;
+  document.getElementById('gc-nums').innerHTML=`Naive: <strong style="color:var(--a1)">${naive.toFixed(2)}</strong><br>G-comp (${estLbl}): <strong style="color:var(--a3)">${gcEst.toFixed(2)}</strong><br>IPW (${estLbl}): <strong style="color:var(--a2)">${ipwEst.toFixed(2)}</strong><br>DR-AIPW: <strong style="color:var(--a6)">${drEst.toFixed(2)}</strong><br>True (${estLbl}): <strong>${trueEst.toFixed(2)}</strong>`;
+  document.getElementById('gc-result').innerHTML=`
+    <div style="background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem;font-family:'DM Mono',monospace;font-size:.81rem;line-height:2;color:var(--ink2)">
+      <strong style="color:var(--ink)">G-computation ${estLbl}:</strong> Ê[Y(1)] − Ê[Y(0)] = ${gY1.toFixed(2)} − ${gY0.toFixed(2)} = <strong style="font-size:1rem;color:var(--a3)">${gcEst.toFixed(2)}</strong>
+      &nbsp;|&nbsp; <strong style="color:var(--a2)">IPW: ${ipwEst.toFixed(2)}</strong>
+      &nbsp;|&nbsp; <strong style="color:var(--a6)">DR-AIPW: ${drEst.toFixed(2)}</strong>
+      &nbsp;|&nbsp; Naive: <strong style="color:var(--a1)">${naive.toFixed(2)}</strong>
+      &nbsp;|&nbsp; True (${estLbl}): <strong>${trueEst.toFixed(2)}</strong><br>
+      <span style="color:var(--ink3);font-size:.74rem">Standardization over ${e==='att'?'treated (T=1)':e==='atu'?'untreated (T=0)':'overall population'} · P(SES=1|refpop) = ${pSes1.toFixed(2)} · DR-AIPW: consistent if the outcome model <em>or</em> IPW is correct</span>
+    </div>`;
+  const btn=document.getElementById('btn-gc');if(btn)btn.classList.add('active');
+}
+
+// ═══ HELP ════════════════════════════════════════════════════════════════════
+const HELP={
+  overview:{title:'Causal Thinking — Overview & Learning Goals',body:`
+    <h3>The running example — all variables</h3>
+    <p>A research team investigates whether regular <strong>exercise (T)</strong> improves
+    <strong>heart health (Y)</strong>. The dataset contains four variables:</p>
+    <ul>
+      <li><strong>SES</strong> (socioeconomic status): influences both who exercises and heart health directly — a classic <strong>confounder</strong>. SES→T and SES→Y. The backdoor path is open → <em>must</em> be adjusted for.</li>
+      <li><strong>Body weight (BW)</strong>: exercise reduces body weight, lower weight improves heart health — T→BW→Y. This is a <strong>mediator</strong>, i.e. part of the causal path. Whether it may be adjusted for depends on the research question: if the <em>total</em> effect of exercise (overall effectiveness) is of interest, BW must <em>not</em> be controlled for — otherwise the causal pathway is blocked. If the <em>direct</em> effect of exercise beyond the weight pathway is of interest (e.g. cardiovascular adaptation independent of weight), BW must be adjusted for and the indirect path calculated separately.</li>
+      <li><strong>Doctor visits (DV)</strong>: neither exercise nor SES directly cause doctor visits — but both exercise and (poor) heart health lead to more doctor visits (T→DV and Y→DV). This makes DV a <strong>collider</strong> on the path between T and Y. Without adjustment, the path T→DV←Y is blocked and introduces no bias. Adjusting for DV opens this path and creates a spurious association between T and Y — do <em>not</em> adjust!</li>
+    </ul>
+    <p>The central question: how do you know what's what? Only from causal prior assumptions — not from the data. For that you need a <strong>DAG</strong> (module <span class="circ">①</span>).</p>
+    <h3>Module <span class="circ">②</span> — Potential Outcomes: what would causal effects be?</h3>
+    <p>To define the causal effect of exercise for person i, think in two parallel worlds:
+    <strong>Y_i(1)</strong> = heart health of i if they exercise, and
+    <strong>Y_i(0)</strong> = heart health of i if they don't exercise.
+    The individual causal effect would be ICE_i = Y_i(1) − Y_i(0).</p>
+    <p>The fundamental problem: for every person we only ever observe <em>one</em> of these worlds —
+    the other is counterfactual and logically unobservable. It is not a data problem that more data could solve: the same person cannot simultaneously exercise and not exercise.</p>
+    <p>To learn something anyway, we shift levels: instead of individual effects, we estimate
+    <em>expected values</em> across groups of people — under the assumption that within groups
+    (or after adjusting for confounders), treatment assignment is quasi-random
+    (ignorability: Y(t) ⊥ T | C). Then:</p>
+    <span class="formula">ATE = E[Y(1)] − E[Y(0)] — mean effect in the overall population</span>
+    <span class="formula">ATT = E[Y(1)−Y(0) | T=1] — mean effect for those who actually exercise</span>
+    <span class="formula">ATU = E[Y(1)−Y(0) | T=0] — mean effect for those who don't exercise</span>
+    <p>ATE, ATT, and ATU can differ if the effect of exercise is heterogeneous — e.g. if only especially health-conscious people exercise and precisely they benefit more from it.</p>
+    <p>The seemingly unsolvable problem of counterfactuality is tackled with suitable statistical methods:
+    <strong>IPW</strong> rebalances the observed groups so they resemble a randomized allocation — thereby estimating E[Y(1)] and E[Y(0)] without directly needing the missing counterfactuals.
+    <strong>G-computation</strong> goes a step further and estimates both potential states for every person from an outcome model — the closest approximation to what a real experiment would directly deliver.
+    Neither method solves the problem in a logical sense; both sidestep it through targeted assumptions — and it is precisely these assumptions (ignorability, correct model) that must be substantively justified.</p>
+    <h3>Module <span class="circ">③</span> — Confounding: two sources of bias</h3>
+    <p>The naive group comparison E[Y|T=1] − E[Y|T=0] is not E[Y(1)] − E[Y(0)].
+    The Heckman decomposition shows where the bias comes from:</p>
+    <span class="formula">Naive = ATE + selection bias + HTEB</span>
+    <ul>
+      <li><strong>Selection bias</strong> = E[Y(0)|T=1] − E[Y(0)|T=0]: the groups already differ at baseline — exercisers would have better heart health even <em>without</em> exercising, because SES influences both. In the example: high-status people exercise more often <em>and</em> are independently healthier.</li>
+      <li><strong>HTEB</strong> (heterogeneous treatment effect bias) = (1−π)·(ATT−ATU): even if there were no baseline differences, the group that exercises could benefit more from it than the group that doesn't — because they are more physically predisposed. HTEB is zero when ATT = ATU (homogeneous effects) or when π = 1.</li>
+    </ul>
+    <p>In the tool: naive estimator ≈ 19 points, true ATE ≈ 10 points — the bias of ~9 points comes predominantly from selection bias due to SES.</p>
+    <h3>Module <span class="circ">④</span> — IPW (Inverse Probability Weighting)</h3>
+    <p>Propensity score e(C) = P(T=1|C) estimates the probability of exercising, given SES.
+    IPW weights w = T/e(C) + (1−T)/(1−e(C)) rebalance the sample so that SES is no longer
+    associated with T in the weighted population — a pseudo-randomized distribution results.
+    The weighted mean comparison then estimates the ATE without confounder bias.</p>
+    <h3>Module <span class="circ">⑤</span> — G-computation: potential outcomes from model data</h3>
+    <p>G-computation closes the loop back to potential outcomes: instead of observing two worlds in reality,
+    they are estimated from a regression model (Y ~ T + C). The model is then evaluated twice for
+    <em>every person</em> — once with T=1 (as if they exercised), once with T=0 (as if they didn't).
+    This yields an estimated Ŷ_i(1) and Ŷ_i(0) for every person i — the model-based counterfactuals.</p>
+    <span class="formula">ATE_GC = (1/n) Σ [ Ŷ_i(1) − Ŷ_i(0) ]</span>
+    <p>G-computation is thus conceptually the most direct implementation of the potential-outcomes idea:
+    both states are estimated for every person and subtracted — except it's done for modeled rather than
+    real counterfactuals. The quality depends on how well the outcome model
+    approximates the true outcome function.</p>
+    <p><strong>DR-AIPW</strong> combines IPW + G-comp: the estimator is consistent if
+    <em>either</em> of the two models (propensity score or outcome model) is correctly specified —
+    more robust than either method alone.</p>
+    <p class="ref">Pearl (2009). <em>Causality.</em> · Hernán &amp; Robins (2020). <em>Causal Inference: What If.</em> · Heckman et al. (1998). JASA. · Robins et al. (1994). G-Computation.</p>
+  `},
+  dag:{title:'DAG — Directed Acyclic Graph',body:`<h3>What is a DAG?</h3><p>A DAG (Directed Acyclic Graph) is a formal representation of causal assumptions. Nodes = variables, arrows = causal influences. "Acyclic" means: no feedback loops — cause and effect are clearly separated.</p><h3>Four causal roles</h3><ul><li><strong>Confounder C:</strong> C→T and C→Y. Backdoor path open → <em>must</em> adjust!</li><li><strong>Mediator M:</strong> T→M→Y. On the causal path → don't adjust, or the (total) effect you want to measure disappears!</li><li><strong>Collider K:</strong> T→K←Y. Blocked → adjusting opens a spurious path (<strong>collider bias</strong>; the special case with an M-shaped structure: <strong>M-bias</strong>) → don't adjust!</li><li><strong>Precision variable P:</strong> only P→Y, no arrow to T. Not a confounder since there's no connection to T → adjusting is <em>allowed</em> (not required) — reduces the variance of the estimate without introducing bias.</li></ul><h3>d-separation</h3><p>Two variables are d-separated (conditionally independent) if all connecting paths are blocked. Colliders block by default; confounders and mediators can be blocked by conditioning.</p><p class="ref">Pearl, J. (2009). <em>Causality</em> (2nd ed.). Cambridge. · Hernán & Robins (2020). <em>Causal Inference: What If.</em></p>`},
+  po:{title:'Potential Outcomes Framework',body:`<h3>The framework (Rubin, 1974)</h3><p>Every person i has two potential outcomes: Y_i(1) under treatment, Y_i(0) without treatment. The individual causal effect (ICE) is ICE_i = Y_i(1) − Y_i(0).</p><h3>The fundamental problem</h3><p>We only ever observe one of the two — the other is counterfactual and forever unobservable. This is not a statistical but a logical problem.</p><h3>Population estimators</h3><span class="formula">ATE = E[Y(1) − Y(0)]</span><span class="formula">ATT = E[Y(1) − Y(0) | T=1]</span><span class="formula">ATU = E[Y(1) − Y(0) | T=0]</span><p>Under heterogeneous effects: ATE ≠ ATT ≠ ATU. Which estimand is relevant depends on the research question.</p><p class="ref">Rubin, D. B. (1974). <em>JASA, 69</em>, 689–701. · Imbens & Rubin (2015). <em>Causal Inference for Statistics.</em></p>`},
+  conf:{title:'Confounding and Omitted Variable Bias',body:`<h3>Definition</h3><p>Confounding occurs when a variable C influences both T and Y. The naive estimator measures E[Y|T=1]−E[Y|T=0] — a mixture of the causal effect and the confounder effect.</p><h3>Omitted variable bias</h3><span class="formula">Naive effect = ATE + bias</span><p>The bias is: Corr(T,C) × effect(C→Y) / SD(T). The stronger C correlates with T and the stronger C affects Y, the larger the bias.</p><h3>True ATE vs. adjusted value</h3><p>In real data, the "true" ATE is unknown. In the tool we can compute it from the simulated potential outcomes (mean(Y_i(1)−Y_i(0))). The adjusted stratification estimator approaches the true ATE but is not an exact value — it has sampling variance and can deviate from it.</p><h3>Solution</h3><p>If all confounders are observed: stratification, regression, IPW, or G-computation. If not: instrumental variables, DiD, RDD, etc.</p><p class="ref">Hernán & Robins (2020). <em>Causal Inference: What If.</em> · VanderWeele (2015). <em>Explanation in Causal Inference.</em></p>`},
+  ovb:{title:'Omitted Variable Bias — the Formula',body:`<h3>Formal decomposition</h3><p>If confounder C is omitted, the OLS estimate becomes:</p><span class="formula">β̂_naive = β_T + β_C · δ_TC</span><p>where β_T = true causal effect of T, β_C = effect of C on Y, δ_TC = regression coefficient of T on C (= Corr(T,C)·SD(C)/SD(T)).</p><h3>Direction of the bias</h3><ul><li>C and T positively correlated + C has a positive effect on Y → bias positive (overestimation)</li><li>C and T negatively correlated or C has a negative effect → bias negative (underestimation)</li></ul><h3>In this tool</h3><p>SES is positively correlated with T (P(T=1|SES=1)≈0.91) and positively with Y (SES effect ≈ +11 points). Hence: bias > 0, naive effect overestimates the ATE.</p><span class="formula">Bias = naive − adjusted ≈ 9–10 points</span><p class="ref">Angrist & Pischke (2009). <em>Mostly Harmless Econometrics.</em> Ch. 3.</p>`},
+  pscore:{title:'Propensity Score',body:`<h3>Definition</h3><p>The propensity score is the conditional probability of treatment given the covariates:</p><span class="formula">e(X) = P(T=1 | X)</span><h3>Balancing property</h3><p>If X contains all confounders: T ⊥ X | e(X). Within the same propensity-score value, treated and control units are comparable with respect to X — as in a randomization.</p><h3>Estimation</h3><p>In practice, e(X) is estimated from the data, usually via logistic regression: P(T=1|X) = logistic(α + βX). In this tool, SES is the only covariate.</p><p class="ref">Rosenbaum & Rubin (1983). <em>Biometrika, 70</em>, 41–55.</p>`},
+  ipw:{title:'Inverse Probability Weighting',body:`<h3>Idea</h3><p>Weighting by the inverse of the treatment probability creates a pseudo-population in which T and X are independent. Units that behave "contrary" to their expected treatment receive higher weights.</p><h3>Weights</h3><span class="formula">w_ATE = T/e(X) + (1−T)/(1−e(X))</span><span class="formula">w_ATT = T + (1−T)·e(X)/(1−e(X))</span><span class="formula">w_ATU = T·(1−e(X))/e(X) + (1−T)</span><h3>Estimator</h3><span class="formula">τ̂ = Σ w_i·T_i·Y_i / Σ w_i·T_i − Σ w_i·(1−T_i)·Y_i / Σ w_i·(1−T_i)</span><p class="ref">Robins, Hernán & Brumback (2000). <em>Epidemiology, 11</em>, 550–560.</p>`},
+  estimands:{title:'ATE, ATT, and ATU',body:`<h3>Three different questions</h3><ul><li><strong>ATE</strong>: what effect would treatment have on average if we treated <em>everyone</em> in the population? Reference: overall population.</li><li><strong>ATT</strong>: what effect does treatment have for those who were <em>actually treated</em>? Reference: the treated.</li><li><strong>ATU</strong>: what effect <em>would</em> treatment have had for the untreated? Reference: control group.</li></ul><h3>Which one when?</h3><p>ATT: when assessing the effectiveness of a measure for its existing users. ATE: when policy decisions are made for everyone. Under homogeneous effects, all three are identical.</p><p class="ref">Imbens (2004). <em>Review of Economics and Statistics, 86</em>. · Heiss (2024). andrewheiss.com/blog/2024/03/21/demystifying-ate-att-atu</p>`},
+  gcomp:{title:'G-Computation / Standardization',body:`<h3>Idea</h3><p>G-computation estimates the causal effect in two steps: (1) fit an outcome model Ê[Y|T,X]. (2) Standardize over the X distribution.</p><span class="formula">Ê[Y(t)] = Σ_x Ê[Y | T=t, X=x] · P(X=x)</span><span class="formula">ATE = Ê[Y(1)] − Ê[Y(0)]</span><h3>Two counterfactual worlds</h3><p>Two identical copies of the sample are created — in one, every person gets T=1, in the other T=0. The outcome model predicts Y for everyone. The difference of the means is the G-comp estimator.</p><p class="ref">Robins (1986). <em>Mathematical Modelling, 7</em>. · Snowden et al. (2011). <em>Am. J. Epidemiol., 173</em>.</p>`},
+  dr:{title:'Doubly Robust Estimation (AIPW)',body:`<h3>Idea</h3><p>A doubly robust (DR) estimator combines IPW (propensity model) and G-computation (outcome model). It is consistent if <em>at least one</em> of the two models is correct — hence "doubly robust".</p><h3>AIPW formula (implemented in this tool)</h3><span class="formula">Ê_DR[Y(t)] = 1/n Σ_i [ μ_t(X_i) + (𝟙(T=t)/p_t(X_i)) · (Y_i − μ_t(X_i)) ]</span><p>where μ_t(X) = outcome model (here: group means) and p_t(X) = propensity score.</p><h3>How it works</h3><ul><li><strong>First term</strong> μ_t(X_i): the G-computation part — outcome model for everyone</li><li><strong>Second term</strong>: the IPW correction — corrects bias in the outcome model via residuals weighted by IP weights</li></ul><h3>Implication</h3><p>DR has favorable semiparametric efficiency properties. In practice: AIPW, targeted MLE (TMLE), DML. The tool shows the DR estimator under "Show G-computation".</p><p class="ref">Bang & Robins (2005). <em>Biometrics, 61</em>. · Funk et al. (2011). <em>Am. J. Epidemiol., 173</em>.</p>`},
+};
+function openHelp(k){const h=HELP[k];if(!h)return;document.getElementById('h-title').textContent=h.title;document.getElementById('h-body').innerHTML=fixDiacritics(h.body);document.getElementById('help-modal').classList.add('open');document.getElementById('help-ov').classList.add('open');}
+function closeHelp(){document.getElementById('help-modal').classList.remove('open');document.getElementById('help-ov').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeHelp();});
+
+// ═══ INIT ════════════════════════════════════════════════════════════════════
+if(document.documentElement.getAttribute('data-theme')==='light'){
+  const tb=document.getElementById('theme-btn');if(tb)tb.textContent='🌙 Dark';
+}
+setStep(0);
+document.getElementById('est-desc').textContent=EST_DESC['ate'];
+document.getElementById('conf-lbl').textContent='very strong';
+const _ig=document.getElementById('ipw-guide');if(_ig)_ig.innerHTML=EST_GUIDE['ate'].raw;
+setTimeout(()=>{drawDAG();},50);
+</script>
+</body>
+</html>

@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ordinal IRT — PCM · GPCM · GRM | MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--accent);
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.proc-step{margin-bottom:.7rem;font-size:.87rem;line-height:1.75;color:var(--ink2)}
+.proc-step strong{color:var(--ink)}
+.proc-step .circ{margin-right:.4rem;font-size:1.7em}
+.proc-jump{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);text-decoration:none;
+  border-bottom:1px dotted var(--a2)}
+.proc-jump:hover{color:var(--ink)}
+.advantage-box{background:color-mix(in srgb,var(--a3) 10%,var(--bg));border:1px solid var(--a3);
+  padding:.8rem 1rem;margin-bottom:.85rem;line-height:1.7}
+.advantage-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a3);margin-bottom:.45rem}
+.advantage-box strong{color:var(--ink)} .advantage-box em{font-style:italic;color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.1rem 0 .52rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.model-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.25rem;margin-bottom:.6rem}
+.item-row{display:flex;flex-wrap:wrap;gap:.28rem;margin-bottom:.6rem}
+.mbtn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.3rem .1rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
+.mbtn:hover{border-color:var(--accent);color:var(--accent)}
+.mbtn.act{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);font-weight:700}
+.mbtn.pcm-act{border-color:var(--a3)!important;background:color-mix(in srgb,var(--a3) 15%,transparent)!important;color:var(--a3)!important}
+.ibtn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.22rem .48rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .12s}
+.ibtn.sel{font-weight:700;color:var(--bg)!important}
+.slider-row{margin-bottom:.52rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.fix-note{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);padding:.25rem 0 .15rem}
+.reset-btn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.28rem .6rem;border:1px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);width:100%;text-align:left;transition:all .12s;margin-top:.3rem}
+.reset-btn:hover{border-color:var(--accent);color:var(--accent)}
+#cv-crf,#cv-esc,#cv-info{width:100%;display:block}
+.erklaer{background:var(--panel);border-left:3px solid var(--accent);
+  padding:.7rem .9rem;margin-bottom:.85rem;font-family:'DM Mono',monospace;
+  font-size:.77rem;color:var(--ink2);line-height:1.9}
+.erklaer strong{color:var(--ink)}
+.hint{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);line-height:1.65;
+  border-top:1px solid var(--grid);padding-top:.35rem;margin-bottom:.8rem}
+.warn-box{background:color-mix(in srgb,var(--a5) 12%,transparent);border-left:3px solid var(--a5);
+  padding:.45rem .7rem;margin-bottom:.7rem;font-family:'DM Mono',monospace;
+  font-size:.72rem;color:var(--ink2);display:none}
+.warn-box.visible{display:block}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}}
+.par-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.8rem;margin-bottom:.85rem}
+.par-table th{font-size:.7rem;letter-spacing:.06em;color:var(--ink3);padding:.3rem .5rem;
+  border-bottom:2px solid var(--grid);text-align:right}
+.par-table th:first-child{text-align:left}
+.par-table td{padding:.3rem .5rem;border-bottom:1px solid var(--grid);text-align:right;vertical-align:middle}
+.par-table td:first-child{text-align:left;font-family:'Fraunces',serif;font-size:.82rem}
+.par-table tr.sel-row td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
+.par-table tr:last-child td{border-bottom:none}
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.help-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.82);overflow-y:auto;padding:2rem 1rem}
+.help-overlay.open{display:block}
+.help-panel{max-width:700px;margin:0 auto;background:var(--paper);border:1px solid var(--border);padding:2rem}
+.help-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);
+  padding:.3rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre}
+.help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);float:right;margin-top:-.3rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Ordinal IRT — <em>PCM · GPCM · GRM</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- HELP OVERLAY -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+<div class="help-panel">
+  <div class="help-h">Ordinal IRT — Help <button class="help-close" onclick="toggleHelp()">✕ Close</button></div>
+
+  <div class="help-sh">What Is Ordinal IRT?</div>
+  <p class="help-p">Classical IRT models dichotomous responses (correct/incorrect). Ordinal IRT extends this framework to polytomous items with ordered response categories (e.g. Likert scales, partial credit). As with binary IRT, person ability θ and item parameters lie on the same scale — but now with several threshold parameters per item.</p>
+
+  <div class="help-sh">Partial Credit Model (PCM) — Masters (1982)</div>
+  <p class="help-p">The PCM is a member of the Rasch family: all items have a = 1 by axiom. The response probability results from cumulated adjacent log-odds transitions:</p>
+  <code class="help-formula">PCM: P(X=k|θ) = exp(Σⱼ₌₁ᵏ (θ − δⱼ)) / Σₘ₌₀ᴷ⁻¹ exp(Σⱼ₌₁ᵐ (θ − δⱼ))
+δⱼ = threshold parameter · sum for m=0: empty (= 0)</code>
+  <p class="help-p">The threshold parameter δⱼ is the θ value at which the adjacent categories j−1 and j are equally probable. As with the binary Rasch model: if an item doesn't fit, it is revised — not the model.</p>
+
+  <div class="help-sh">Generalized Partial Credit Model (GPCM) — Muraki (1992)</div>
+  <p class="help-p">The GPCM extends the PCM with a discrimination parameter a that is estimated from the data:</p>
+  <code class="help-formula">GPCM: P(X=k|θ) = exp(Σⱼ₌₁ᵏ a·(θ − δⱼ)) / Σₘ₌₀ᴷ⁻¹ exp(Σⱼ₌₁ᵐ a·(θ − δⱼ))
+PCM is the special case with a = 1</code>
+  <p class="help-p">High a → steep category curves → item discriminates well. The GPCM adapts to the data — not a measurement ideal, but a descriptive model.</p>
+
+  <div class="help-sh">Graded Response Model (GRM) — Samejima (1969)</div>
+  <p class="help-p">The GRM works with cumulative probabilities (boundary response curves):</p>
+  <code class="help-formula">P*(X≥k|θ) = 1 / (1 + exp(−a·(θ − bₖ)))    k = 1,...,K−1
+P(X=k|θ)  = P*(X≥k|θ) − P*(X≥k+1|θ)
+P*(X≥0) = 1,  P*(X≥K) = 0</code>
+  <p class="help-p">The boundary parameters bₖ must be strictly monotonic (b₁ &lt; b₂ &lt; ... &lt; bₖ₋₁), otherwise negative response probabilities result. This is a structural difference from PCM/GPCM, where disordered thresholds can occur.</p>
+
+  <div class="help-sh">Threshold Parameters and Disordered Thresholds</div>
+  <p class="help-p"><strong>PCM/GPCM (δⱼ):</strong> at δⱼ, categories j−1 and j are equally probable. The δⱼ need not be ordered. Disordered thresholds (δⱼ₊₁ &lt; δⱼ) mean that category j is the most likely response at no θ point — it is empirically redundant. Cause: adjacent categories worded too similarly.</p>
+  <p class="help-p"><strong>GRM (bₖ):</strong> at bₖ, P*(X≥k|θ=bₖ) = 0.5 — the cumulative curve crosses the 50% line. Disordered thresholds are impossible in the GRM by model structure.</p>
+
+  <div class="help-sh">Connection to Factor Analysis</div>
+  <p class="help-p">The GRM and ordinal factor analysis with polychoric correlations are mathematically equivalent: the GRM parameter a corresponds to a factor loading (a = λ/√(1−λ²)). The boundary parameters bₖ correspond to the threshold parameters τₖ in polychoric FA. The person parameter θ corresponds to the factor score.</p>
+  <p class="help-p">The GPCM corresponds to a graded FA model with varying factor loadings. The PCM corresponds to the Rasch ideal for ordinal data — equal loadings (a=1), measurement-theoretic rigor.</p>
+  <p class="help-p">The difference lies in the estimation approach: the GRM estimates parameters directly via ML; polychoric FA first estimates pairwise correlations, then factor loadings. For large samples, both give similar results.</p>
+
+  <div class="help-sh">Item Information in Ordinal Models</div>
+  <p class="help-p">For the GPCM, I(θ) = a² · Var(X|θ) — higher discrimination and more response variance produce more information. Compared to dichotomous items, polytomous items can carry more information — every intermediate category contributes to measurement. But only if the categories discriminate well: disordered thresholds and weak a reduce information despite many categories.</p>
+
+  <div class="help-sh">Expected Score Curve (ESC)</div>
+  <p class="help-p">E[X|θ] = Σₖ k · P(X=k|θ) shows the expected response score as a function of person ability. It runs monotonically from 0 (θ → −∞) to K−1 (θ → +∞). Where the ESC is steepest, I(θ) is highest — because that's where the item discriminates best between similar ability levels.</p>
+
+  <div class="help-sh">Which Model to Choose When?</div>
+  <p class="help-p">The choice depends on the item format, the research question, and the substantive understanding of the response categories:</p>
+  <p class="help-p"><strong>PCM:</strong> suitable when the categories represent graded partial performance — e.g. 0 = no solution, 1 = partial approach recognizable, 2 = complete solution. The model enforces measurement-theoretic rigor (a = 1): items that don't fit are revised or removed. Useful for item banking, computerized adaptive testing, and achievement surveys where item parameters must be stable across samples.</p>
+  <p class="help-p"><strong>GPCM:</strong> suitable when items are allowed different discrimination — e.g. in heterogeneous test batteries with mixed item formats. The GPCM is the standard model in large-scale educational assessments (e.g. PISA, TIMSS) for open-ended tasks with partial credit. Unlike the PCM, no measurement ideal is postulated: a is a free parameter estimated from the data.</p>
+  <p class="help-p"><strong>GRM:</strong> suitable when the categories represent continuous intensity levels or degrees of agreement — e.g. Likert scales in personality or attitude questionnaires. The model is mathematically closely related to confirmatory FA via polychoric correlations. The boundary response curves are substantively easy to interpret: P*(X≥k|θ) is the probability of choosing at least category k.</p>
+  <p class="help-p"><strong>Rating Scale Model (RSM, Andrich 1978):</strong> a special case of the PCM in which all items share the same threshold spacing. The threshold parameter for item i and transition j is τⱼ + βᵢ — where τⱼ is the shared category threshold and βᵢ the item-specific difficulty. Useful when all items use exactly the same response scale and one can assume that the psychological distances between categories are constant across items. The most parsimonious of the four approaches; often fails when items differ substantively.</p>
+
+  <div class="help-sh">Model Comparison and Fit</div>
+  <p class="help-p">PCM and GPCM are nested (PCM ⊂ GPCM): a likelihood-ratio test (LRT) checks whether the additional a parameter significantly improves model fit. GPCM and GRM are not nested — here AIC and BIC are recommended as comparison criteria (lower values = better). For the PCM, Rasch-specific fit statistics are available: <strong>infit</strong> (information-weighted fit, sensitive to mid-range θ) and <strong>outfit</strong> (unweighted fit, sensitive to outliers at the θ extremes). Common rule of thumb: infit/outfit between 0.7 and 1.3 are considered acceptable.</p>
+
+  <div class="help-sh">Sample Size and Number of Categories</div>
+  <p class="help-p"><strong>Sample size:</strong> for the PCM, N ≥ 200–250 is considered a minimum for stable parameter estimation. GPCM and GRM have an additional a parameter per item and need N ≥ 300–500. A pragmatic rule of thumb: at least 10 observations per parameter to be estimated. With small samples, Bayesian estimation (e.g. via Stan/brms or the TAM/mirt package in R) can help, since it uses priors to stabilize parameters.</p>
+  <p class="help-p"><strong>Number of categories:</strong> more categories don't automatically mean more information. What matters is whether each category is chosen by a meaningful proportion of people. Edge categories with very low frequency (&lt; 5% of responses) lead to unstable parameter estimates and should be merged with adjacent categories. In practice, 4–7 categories are usually optimal for Likert scales. Disordered thresholds are often a warning sign that a category is effectively not being used.</p>
+  <p class="help-p"><strong>In R:</strong> the package <strong>mirt</strong> is available for all three models (Chalmers, 2012). The package <strong>TAM</strong> specializes in the Rasch family (PCM, RSM). <strong>ltm</strong> implements the GRM. For an FA perspective on ordinal data: <strong>lavaan</strong> with polychoric correlations or <strong>psych::fa()</strong> with cor="poly".</p>
+
+  <div class="help-sh">Connection to DIF — Test Fairness and Item Bias</div>
+  <p class="help-p">Ordinal IRT models are the methodological basis for <strong>Differential Item Functioning (DIF)</strong> analyses. DIF is present when an item is differentially difficult for two groups (e.g. by gender, background, or language) — even after latent ability θ has been statistically controlled for. That is the decisive difference from mere <em>impact</em> (group differences in mean ability): DIF is a problem of the item, impact is a characteristic of the groups.</p>
+  <p class="help-p">PCM, GPCM, and GRM enable group-specific item parameter estimation. With <strong>uniform DIF</strong>, difficulty b is systematically higher for one group — the CRF curves are shifted horizontally without crossing. With <strong>non-uniform DIF</strong>, discrimination a additionally differs — the curves cross, so the item is differentially fair across ability levels. IRT-based DIF analyses are explored in depth in the separate <strong>DIF tool</strong> in MethodsLab.</p>
+</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+
+  <div class="sec-h" style="margin-top:0">Choose Model</div>
+  <div class="model-grid">
+    <button class="mbtn" id="mbtn-pcm"  onclick="setModel('pcm')">PCM</button>
+    <button class="mbtn" id="mbtn-gpcm" onclick="setModel('gpcm')">GPCM</button>
+    <button class="mbtn" id="mbtn-grm"  onclick="setModel('grm')">GRM</button>
+  </div>
+
+  <div class="sec-h">Select Item</div>
+  <div class="item-row" id="item-row"></div>
+
+  <div class="sec-h">Parameters — <span id="sel-item-lbl" style="text-transform:none;letter-spacing:0">Item 1</span></div>
+  <div id="par-sliders"></div>
+  <div id="a-row">
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">a — discrimination</span>
+        <span class="slider-val" id="v-a">1.20</span>
+      </div>
+      <input type="range" id="sl-a" min="0.3" max="3.0" step="0.05" value="1.2"
+             oninput="ST.items[ST.selItem].a=+this.value;document.getElementById('v-a').textContent=(+this.value).toFixed(2);updateAll()">
+    </div>
+  </div>
+  <div id="pcm-fix" class="fix-note" style="display:none">a = 1 by axiom (PCM — not estimated)</div>
+  <button class="reset-btn" onclick="resetItem()">↺ Default Values</button>
+
+  <div class="sec-h">Person Ability θ</div>
+  <div class="slider-row">
+    <div class="slider-lbl">
+      <span class="slider-name">θ</span>
+      <span class="slider-val" id="v-theta">0.0</span>
+    </div>
+    <input type="range" id="sl-theta" min="-4" max="4" step="0.1" value="0"
+      oninput="ST.thetaPerson=+this.value;document.getElementById('v-theta').textContent=(+this.value).toFixed(1);updateAll()">
+  </div>
+
+</div><!-- /sidebar -->
+
+<!-- MAIN -->
+<div id="main">
+
+  <div class="story-box"><div class="story-lbl">📋 Example — Burnout Screening</div>
+  4-item workplace well-being questionnaire, 5-point Likert scale (<strong>0 = never · 4 = always</strong>). θ represents general well-being.</div>
+
+  <div class="advantage-box">
+    <div class="advantage-lbl">✓ Why Separate Models for Likert/Partial-Credit Items?</div>
+    Assumes the basic concepts θ, ICC, and discrimination from <a href="IRT.html" target="_blank">IRT — Dichotomous Models</a>, now for items with <strong>more than two ordered response categories</strong>. The payoff: every intermediate category contributes to measurement — a 5-point item can carry substantially more information than a binary-coded one. But that only holds if the categories actually discriminate well; weak or <em>disordered</em> thresholds (step ③) wipe out this advantage immediately.
+  </div>
+
+  <div class="sec-h" style="margin-top:0">Approach — From Binary to Polytomous Item</div>
+  <div>
+    <div class="proc-step"><span class="circ">①</span><strong>From binary to polytomous.</strong> Instead of one difficulty b, an item with K categories has K−1 threshold parameters — transitions between adjacent (PCM/GPCM) or cumulated (GRM) categories. <a class="proc-jump" href="#cv-crf">→ View category response curves</a></div>
+    <div class="proc-step"><span class="circ">②</span><strong>Model choice: PCM, GPCM, or GRM?</strong> Partial-credit levels (0/partial approach/complete) → PCM. Heterogeneous discrimination in mixed item formats → GPCM. Degrees of agreement on Likert scales → GRM (closely related to ordinal factor analysis via polychoric correlations).</div>
+    <div class="proc-step"><span class="circ">③</span><strong>Check for disordered thresholds.</strong> If the thresholds are not ordered in sequence, a category is empirically redundant — a warning sign for response levels worded too similarly. <a class="proc-jump" href="#crf-note">→ View the warning note</a></div>
+    <div class="proc-step"><span class="circ">④</span><strong>Expected score &amp; item information.</strong> Where along the θ scale does the item contribute most to measurement? <a class="proc-jump" href="#cv-esc">→ Expected score</a> · <a class="proc-jump" href="#cv-info">→ Item information</a></div>
+  </div>
+  <div>
+    <a class="xlink" href="IRT.html" target="_blank">← Foundations: IRT — Dichotomous Models</a>
+    <a class="xlink" href="DIF.html" target="_blank">Estimated group-specifically: is there DIF? → DIF</a>
+  </div>
+
+  <div class="sec-h">Category Response Functions (CRF) — <span id="crf-item-lbl" style="text-transform:none;letter-spacing:0">Item 1</span></div>
+  <canvas id="cv-crf" height="360"></canvas>
+  <div class="hint" id="crf-note"></div>
+
+  <div class="warn-box" id="warn-disorder">
+    ⚠ Disordered thresholds: at least two threshold parameters are swapped (δⱼ &gt; δⱼ₊₁).
+    An intermediate category then has the highest response probability at no θ point — it is empirically redundant.
+    Not a calculation error — a sign of poorly worded categories.
+  </div>
+  <div class="warn-box" id="warn-grm-sorted" style="border-left-color:var(--a1);background:color-mix(in srgb,var(--a1) 10%,transparent);color:var(--ink)">
+    ⚠ GRM: threshold order automatically adjusted. In the GRM the boundary parameters must be strictly increasing (b₁ &lt; b₂ &lt; b₃ &lt; b₄) — otherwise negative category probabilities result. The slider values were sorted in increasing order for all calculations. The labels above the plot show the order actually used.
+  </div>
+
+  <div class="sec-h">Model Formula &amp; Parameters</div>
+  <div class="erklaer" id="erklaer-formula"></div>
+
+  <div class="two-col">
+    <div>
+      <div class="sec-h" style="margin-top:0">Expected Score E[X|θ]</div>
+      <canvas id="cv-esc" height="270"></canvas>
+      <div class="hint" id="esc-note"></div>
+    </div>
+    <div>
+      <div class="sec-h" style="margin-top:0">Item Information — All Items</div>
+      <canvas id="cv-info" height="270"></canvas>
+      <div class="hint" id="info-note"></div>
+    </div>
+  </div>
+
+  <div class="sec-h">Item Parameter Table</div>
+  <table class="par-table">
+    <thead><tr>
+      <th>Item</th><th>a</th>
+      <th id="th-d1">δ₁</th><th id="th-d2">δ₂</th>
+      <th id="th-d3">δ₃</th><th id="th-d4">δ₄</th>
+      <th>E[X|θ]</th><th>I(θ)</th>
+    </tr></thead>
+    <tbody id="par-tbody"></tbody>
+  </table>
+
+  <div class="learn-section">
+    <div class="sec-h">Flashcards</div>
+    <div class="lcard-grid" id="lcard-grid"></div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+const NCAT=5;
+const CCOLS=['--a2','--a6','--a3','--a5','--a1'];
+const CLABELS=['never','rarely','sometimes','often','always'];
+const ICOLS=['--a2','--a3','--a5','--a4'];
+
+const DEF=[
+  {label:'Item 1',sub:'Exhaustion',    a:1.2,d:[-1.8,-0.5, 0.7,2.0]},
+  {label:'Item 2',sub:'Motivation',    a:0.9,d:[-2.1,-0.8, 0.4,1.6]},
+  {label:'Item 3',sub:'Concentration', a:1.6,d:[-1.5,-0.1, 1.1,2.4]},
+  {label:'Item 4',sub:'Detachment',    a:1.1,d:[-0.9, 0.4, 1.4,2.6]},
+];
+
+const ST={
+  model:'gpcm',
+  selItem:0,
+  items:DEF.map(d=>({...d,d:[...d.d]})),
+  thetaPerson:0.0,
+};
+
+const LK=[
+  {h:'PCM vs. GPCM vs. GRM',
+   b:'<strong>PCM</strong> (Masters, 1982): Rasch family, a = 1 by axiom — no discrimination parameter. If items don\'t fit, they are revised. <strong>GPCM</strong> (Muraki, 1992): like PCM, but a is estimated — items may discriminate to different degrees. <strong>GRM</strong> (Samejima, 1969): models cumulative probabilities P*(X ≥ k|θ) instead of adjacent category transitions.'},
+  {h:'Threshold Parameters',
+   b:'In the <strong>PCM/GPCM</strong>, δⱼ is the θ value at which categories j−1 and j are equally probable. In the <strong>GRM</strong>, bₖ is the θ value at which P*(X≥k|θ) = 0.5. In both cases the parameters lie on the same θ scale as person ability.'},
+  {h:'Disordered Thresholds',
+   b:'In the PCM/GPCM, thresholds can be disordered (δ₂ &lt; δ₁). Category 1 then has the highest response probability at no θ point — it is empirically redundant. Cause: adjacent categories worded too similarly. In the <strong>GRM</strong>, disordered thresholds are impossible by model structure.'},
+  {h:'Expected Score Curve',
+   b:'E[X|θ] = Σₖ k · P(X=k|θ) — expected response score as a function of person ability. Steep ESC → high a → good discrimination. Where the ESC is steepest, I(θ) is highest — because that\'s where the item best distinguishes between similar ability levels.'},
+  {h:'GRM and Factor Analysis',
+   b:'The GRM and ordinal FA with <strong>polychoric correlations</strong> are mathematically equivalent: a ↔ factor loading λ (a = λ/√(1−λ²)), bₖ ↔ threshold parameter τₖ, θ ↔ factor score. Difference: the GRM estimates directly via ML; polychoric FA first estimates correlations, then loadings.'},
+  {h:'Which Model, When?',
+   b:'<strong>PCM:</strong> Rasch conformity, item banking, adaptive tests. <strong>GPCM:</strong> variable discrimination, mixed item formats in psychological tests. <strong>GRM:</strong> connection to FA, rating scales with clearly defined boundaries. Rule of thumb: GRM for Likert scales in questionnaires; PCM/GPCM for graded rating scales in achievement tests.'},
+];
+
+function cv(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+
+function effD(item,model){
+  return model==='grm'?[...item.d].sort((a,b)=>a-b):item.d;
+}
+
+function catProbs(th,a,deltas,model){
+  const K=NCAT,probs=new Array(K).fill(0);
+  if(model==='pcm'||model==='gpcm'){
+    const ea=model==='pcm'?1:a;
+    const phi=[0];
+    for(let k=1;k<K;k++){let s=0;for(let j=0;j<k;j++)s+=ea*(th-deltas[j]);phi.push(s);}
+    const mx=Math.max(...phi);
+    const ex=phi.map(p=>Math.exp(p-mx));
+    const sm=ex.reduce((a,b)=>a+b,0);
+    for(let k=0;k<K;k++)probs[k]=ex[k]/sm;
+  }else{
+    const ps=[1];
+    for(let k=0;k<K-1;k++)ps.push(1/(1+Math.exp(-a*(th-deltas[k]))));
+    ps.push(0);
+    for(let k=0;k<K;k++)probs[k]=Math.max(0,ps[k]-ps[k+1]);
+  }
+  return probs;
+}
+
+function expScore(th,a,deltas,model){
+  return catProbs(th,a,deltas,model).reduce((s,p,k)=>s+k*p,0);
+}
+
+function itemInfoOrd(th,a,deltas,model){
+  const probs=catProbs(th,a,deltas,model);
+  if(model==='pcm'||model==='gpcm'){
+    const ea=model==='pcm'?1:a;
+    const E=probs.reduce((s,p,k)=>s+k*p,0);
+    const E2=probs.reduce((s,p,k)=>s+k*k*p,0);
+    return ea*ea*(E2-E*E);
+  }else{
+    // GRM: analytische Ableitung — P*(X≥k|θ) = σ(a·(θ−bₖ))
+    // dP*(X≥k)/dθ = a · P*(X≥k) · (1 − P*(X≥k))
+    // numerische Differentiation vermieden: stabil auch an den Rändern (θ<−3, θ>3)
+    const K=NCAT;
+    const ps=deltas.map(b=>1/(1+Math.exp(-a*(th-b))));  // P*(X≥k+1) für k=0..K-2
+    const dps=ps.map(p=>a*p*(1-p));                      // ihre Ableitungen
+    let info=0;
+    for(let k=0;k<K;k++){
+      const pcumK =k===0?1:ps[k-1];    // P*(X≥k)
+      const pcumK1=k===K-1?0:ps[k];    // P*(X≥k+1)
+      const dpK   =k===0?0:dps[k-1];   // dP*(X≥k)/dθ
+      const dpK1  =k===K-1?0:dps[k];   // dP*(X≥k+1)/dθ
+      const dpk=dpK-dpK1;
+      if(probs[k]>1e-9)info+=dpk*dpk/probs[k];
+    }
+    return Math.max(0,info);
+  }
+}
+
+const CV_BASE_H={};
+function setupCv(id){
+  const el=document.getElementById(id);
+  if(!(id in CV_BASE_H)) CV_BASE_H[id]=parseInt(el.getAttribute('height'))||360;
+  const origH=CV_BASE_H[id];
+  const W=el.offsetWidth||el.parentElement.offsetWidth||600;
+  const dpr=window.devicePixelRatio||1;
+  el.width=Math.round(W*dpr);el.height=Math.round(origH*dpr);
+  const ctx=el.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return{ctx,W,H:origH};
+}
+
+// ── CRF ──────────────────────────────────────────────────────────────────────
+function drawCRF(){
+  const{ctx,W,H}=setupCv('cv-crf');
+  const pad={l:48,r:22,t:24,b:42};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2'),ink3=cv('--ink3');
+  const a6c=cv('--a6');
+  ctx.fillStyle=paper;ctx.fillRect(0,0,W,H);
+  const thMin=-4,thMax=4,NX=320;
+  const ths=Array.from({length:NX},(_,k)=>thMin+k*(thMax-thMin)/(NX-1));
+  const it=ST.items[ST.selItem];
+  const m=ST.model,a=it.a;
+  const deltas=effD(it,m);
+  const allP=ths.map(t=>catProbs(t,a,deltas,m));
+  const tx=t=>(t-thMin)/(thMax-thMin)*cW+pad.l;
+  const py=v=>pad.t+cH*(1-v);
+  ctx.strokeStyle=grid;ctx.lineWidth=.7;
+  [0,.25,.5,.75,1].forEach(f=>{ctx.beginPath();ctx.moveTo(pad.l,py(f));ctx.lineTo(pad.l+cW,py(f));ctx.stroke();});
+  [-3,-2,-1,0,1,2,3].forEach(t=>{ctx.beginPath();ctx.moveTo(tx(t),pad.t);ctx.lineTo(tx(t),pad.t+cH);ctx.stroke();});
+  effD(it,m).forEach((dv,j)=>{
+    ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([3,4]);
+    ctx.beginPath();ctx.moveTo(tx(dv),pad.t);ctx.lineTo(tx(dv),pad.t+cH);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=cv('--a5');
+    ctx.font=`bold 12px 'DM Mono',monospace`;
+    ctx.textAlign='center';
+    ctx.fillText(m==='grm'?`b${j+1}`:`δ${j+1}`,tx(dv),pad.t-7);
+  });
+  for(let k=0;k<NCAT;k++){
+    ctx.strokeStyle=cv(CCOLS[k]);ctx.lineWidth=2;ctx.setLineDash([]);
+    ctx.beginPath();
+    ths.forEach((t,i)=>{const y=py(allP[i][k]);i?ctx.lineTo(tx(t),y):ctx.moveTo(tx(t),y);});
+    ctx.stroke();
+  }
+  ctx.strokeStyle=a6c;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(tx(ST.thetaPerson),pad.t);ctx.lineTo(tx(ST.thetaPerson),pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=ink2;ctx.font=`11px 'DM Mono',monospace`;ctx.textAlign='center';
+  [-4,-3,-2,-1,0,1,2,3,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+16));
+  ctx.textAlign='right';
+  [0,.25,.5,.75,1].forEach(f=>ctx.fillText(f.toFixed(2),pad.l-5,py(f)+4));
+  ctx.fillStyle=ink2;ctx.textAlign='center';ctx.fillText('Ability θ',pad.l+cW/2,H-4);
+  let legY=pad.t+10;const legX=pad.l+cW-4;ctx.textAlign='right';
+  for(let k=0;k<NCAT;k++){
+    ctx.strokeStyle=cv(CCOLS[k]);ctx.lineWidth=2;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(legX-64,legY);ctx.lineTo(legX-46,legY);ctx.stroke();
+    ctx.fillStyle=ink2;ctx.font=`10px 'DM Mono',monospace`;
+    ctx.fillText(`${k} — ${CLABELS[k]}`,legX,legY+4);legY+=16;
+  }
+  ctx.strokeStyle=a6c;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(legX-64,legY);ctx.lineTo(legX-46,legY);ctx.stroke();
+  ctx.setLineDash([]);ctx.fillStyle=ink2;ctx.fillText('θ person',legX,legY+4);
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.strokeRect(pad.l,pad.t,cW,cH);
+  const tp=ST.thetaPerson;
+  const probs=catProbs(tp,a,deltas,m);
+  const modal=probs.indexOf(Math.max(...probs));
+  document.getElementById('crf-note').textContent=
+    `At θ = ${tp.toFixed(1)}: most frequent category = ${modal} (${CLABELS[modal]}), P = ${probs[modal].toFixed(3)} · all: ${probs.map(p=>p.toFixed(3)).join(' · ')}`;
+}
+
+// ── ESC ──────────────────────────────────────────────────────────────────────
+function drawESC(){
+  const{ctx,W,H}=setupCv('cv-esc');
+  const pad={l:42,r:16,t:18,b:34};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2'),ink3=cv('--ink3');
+  const a2c=cv('--a2'),a6c=cv('--a6');
+  ctx.fillStyle=paper;ctx.fillRect(0,0,W,H);
+  const thMin=-4,thMax=4,NX=280;
+  const ths=Array.from({length:NX},(_,k)=>thMin+k*(thMax-thMin)/(NX-1));
+  const it=ST.items[ST.selItem],m=ST.model,a=it.a;
+  const deltas=effD(it,m);
+  const scores=ths.map(t=>expScore(t,a,deltas,m));
+  const tx=t=>(t-thMin)/(thMax-thMin)*cW+pad.l;
+  const sy=v=>pad.t+cH*(1-v/(NCAT-1));
+  ctx.strokeStyle=grid;ctx.lineWidth=.7;
+  for(let k=0;k<NCAT;k++){ctx.beginPath();ctx.moveTo(pad.l,sy(k));ctx.lineTo(pad.l+cW,sy(k));ctx.stroke();}
+  [-3,-2,-1,0,1,2,3].forEach(t=>{ctx.beginPath();ctx.moveTo(tx(t),pad.t);ctx.lineTo(tx(t),pad.t+cH);ctx.stroke();});
+  ctx.strokeStyle=a2c;ctx.lineWidth=2.2;ctx.setLineDash([]);
+  ctx.beginPath();ths.forEach((t,i)=>i?ctx.lineTo(tx(t),sy(scores[i])):ctx.moveTo(tx(t),sy(scores[i])));ctx.stroke();
+  const curE=expScore(ST.thetaPerson,a,deltas,m);
+  ctx.strokeStyle=a6c;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(tx(ST.thetaPerson),pad.t);ctx.lineTo(tx(ST.thetaPerson),pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=a6c;ctx.beginPath();ctx.arc(tx(ST.thetaPerson),sy(curE),5,0,2*Math.PI);ctx.fill();
+  ctx.fillStyle=ink2;ctx.font=`10px 'DM Mono',monospace`;ctx.textAlign='center';
+  [-4,-3,-2,-1,0,1,2,3,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+13));
+  ctx.textAlign='right';
+  for(let k=0;k<NCAT;k++)ctx.fillText(k,pad.l-4,sy(k)+4);
+  ctx.fillText('E[X|θ]',pad.l+cW/2,H-4);
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.strokeRect(pad.l,pad.t,cW,cH);
+  document.getElementById('esc-note').textContent=
+    `E[X|θ = ${ST.thetaPerson.toFixed(1)}] = ${curE.toFixed(2)} (scale 0–${NCAT-1})`;
+}
+
+// ── Item Info ─────────────────────────────────────────────────────────────────
+function drawItemInfo(){
+  const{ctx,W,H}=setupCv('cv-info');
+  const pad={l:42,r:16,t:18,b:34};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2'),ink3=cv('--ink3');
+  const a6c=cv('--a6');
+  ctx.fillStyle=paper;ctx.fillRect(0,0,W,H);
+  const thMin=-4,thMax=4,NX=280;
+  const ths=Array.from({length:NX},(_,k)=>thMin+k*(thMax-thMin)/(NX-1));
+  const m=ST.model;
+  const allI=ST.items.map(it=>ths.map(t=>itemInfoOrd(t,it.a,effD(it,m),m)));
+  const maxI=Math.max(...allI.flat(),.01);
+  const tx=t=>(t-thMin)/(thMax-thMin)*cW+pad.l;
+  const iy=v=>pad.t+cH*(1-v/maxI);
+  ctx.strokeStyle=grid;ctx.lineWidth=.7;
+  [0,.25,.5,.75,1].forEach(f=>{ctx.beginPath();ctx.moveTo(pad.l,iy(f*maxI));ctx.lineTo(pad.l+cW,iy(f*maxI));ctx.stroke();});
+  [-3,-2,-1,0,1,2,3].forEach(t=>{ctx.beginPath();ctx.moveTo(tx(t),pad.t);ctx.lineTo(tx(t),pad.t+cH);ctx.stroke();});
+  ST.items.forEach((it,i)=>{
+    const isSel=i===ST.selItem;
+    ctx.strokeStyle=cv(ICOLS[i]);ctx.lineWidth=isSel?2.2:1.2;
+    ctx.globalAlpha=isSel?1:.5;ctx.setLineDash(isSel?[]:[4,3]);
+    ctx.beginPath();
+    allI[i].forEach((v,k)=>k?ctx.lineTo(tx(ths[k]),iy(v)):ctx.moveTo(tx(ths[k]),iy(v)));
+    ctx.stroke();
+  });
+  ctx.globalAlpha=1;ctx.setLineDash([]);
+  ctx.strokeStyle=a6c;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(tx(ST.thetaPerson),pad.t);ctx.lineTo(tx(ST.thetaPerson),pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=ink2;ctx.font=`10px 'DM Mono',monospace`;ctx.textAlign='center';
+  [-4,-3,-2,-1,0,1,2,3,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+13));
+  ctx.textAlign='right';
+  [0,.25,.5,.75,1].forEach(f=>ctx.fillText((f*maxI).toFixed(2),pad.l-4,iy(f*maxI)+4));
+  ctx.fillText('I(θ)',pad.l+cW/2,H-4);
+  let legY=pad.t+10;const legX=pad.l+cW-4;ctx.textAlign='right';
+  ST.items.forEach((it,i)=>{
+    const isSel=i===ST.selItem;
+    ctx.strokeStyle=cv(ICOLS[i]);ctx.lineWidth=isSel?2.2:1.2;
+    ctx.globalAlpha=isSel?1:.5;ctx.setLineDash(isSel?[]:[4,3]);
+    ctx.beginPath();ctx.moveTo(legX-55,legY);ctx.lineTo(legX-38,legY);ctx.stroke();
+    ctx.globalAlpha=1;ctx.setLineDash([]);
+    ctx.fillStyle=ink2;ctx.font=`10px 'DM Mono',monospace`;
+    ctx.fillText(it.label,legX,legY+4);legY+=14;
+  });
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.strokeRect(pad.l,pad.t,cW,cH);
+  const tp=ST.thetaPerson;
+  const vals=ST.items.map((it,i)=>
+    `I${i+1}=${itemInfoOrd(tp,it.a,effD(it,m),m).toFixed(3)}`).join(' · ');
+  document.getElementById('info-note').textContent=`At θ = ${tp.toFixed(1)}: ${vals}`;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function checkDisorder(){
+  if(ST.model==='grm'){
+    document.getElementById('warn-disorder').classList.remove('visible');
+    const d=ST.items[ST.selItem].d;
+    const sorted=[...d].sort((a,b)=>a-b);
+    const needsSort=sorted.some((v,i)=>v!==d[i]);
+    document.getElementById('warn-grm-sorted').classList.toggle('visible',needsSort);
+    return;
+  }
+  document.getElementById('warn-grm-sorted').classList.remove('visible');
+  const d=ST.items[ST.selItem].d;
+  document.getElementById('warn-disorder').classList.toggle('visible',d.some((v,i)=>i>0&&v<d[i-1]));
+}
+
+function updateParTable(){
+  const m=ST.model,tp=ST.thetaPerson;
+  const lbl=m==='grm'?'b':'δ';
+  ['th-d1','th-d2','th-d3','th-d4'].forEach((id,j)=>
+    document.getElementById(id).textContent=`${lbl}${j+1}`);
+  const tb=document.getElementById('par-tbody');
+  tb.innerHTML='';
+  ST.items.forEach((it,i)=>{
+    const col=cv(ICOLS[i]);
+    const aStr=m==='pcm'?'1 (fix)':it.a.toFixed(2);
+    const ds=effD(it,m);
+    const tr=document.createElement('tr');
+    if(i===ST.selItem)tr.classList.add('sel-row');
+    tr.innerHTML=`<td style="color:${col}">${it.label} — ${it.sub}</td>
+      <td>${aStr}</td>
+      <td>${ds[0].toFixed(2)}</td><td>${ds[1].toFixed(2)}</td>
+      <td>${ds[2].toFixed(2)}</td><td>${ds[3].toFixed(2)}</td>
+      <td>${expScore(tp,it.a,ds,m).toFixed(2)}</td>
+      <td>${itemInfoOrd(tp,it.a,ds,m).toFixed(3)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function getFormelText(){
+  const it=ST.items[ST.selItem],m=ST.model,a=it.a.toFixed(2);
+  const ds=effD(it,m).map(v=>v.toFixed(2));
+  const lbl=m==='grm'?'b':'δ';
+  if(m==='pcm')
+    return `PCM · ${it.label} (${it.sub}) · <strong>a = 1 (axiom)</strong><br>${lbl}₁=${ds[0]}  ${lbl}₂=${ds[1]}  ${lbl}₃=${ds[2]}  ${lbl}₄=${ds[3]}`;
+  if(m==='gpcm')
+    return `GPCM · ${it.label} (${it.sub}) · <strong>a = ${a}</strong><br>${lbl}₁=${ds[0]}  ${lbl}₂=${ds[1]}  ${lbl}₃=${ds[2]}  ${lbl}₄=${ds[3]}`;
+  return `GRM · ${it.label} (${it.sub}) · <strong>a = ${a}</strong><br>b₁=${ds[0]}  b₂=${ds[1]}  b₃=${ds[2]}  b₄=${ds[3]}  <em>(sorted ascending)</em>`;
+}
+
+// ── Sliders ───────────────────────────────────────────────────────────────────
+function buildSliders(){
+  const m=ST.model,it=ST.items[ST.selItem];
+  const lbl=m==='grm'?'b':'δ';
+  const cont=document.getElementById('par-sliders');
+  cont.innerHTML='';
+  for(let j=0;j<4;j++){
+    const row=document.createElement('div');
+    row.className='slider-row';
+    row.innerHTML=`<div class="slider-lbl">
+      <span class="slider-name">${lbl}${j+1}</span>
+      <span class="slider-val" id="v-d${j}">${it.d[j].toFixed(1)}</span>
+    </div>
+    <input type="range" id="sl-d${j}" min="-3.5" max="3.5" step="0.1"
+           value="${it.d[j].toFixed(1)}" data-idx="${j}">`;
+    cont.appendChild(row);
+    document.getElementById(`sl-d${j}`).oninput=function(){
+      const idx=+this.dataset.idx;
+      ST.items[ST.selItem].d[idx]=+this.value;
+      document.getElementById(`v-d${idx}`).textContent=(+this.value).toFixed(1);
+      updateAll();
+    };
+  }
+  const aRow=document.getElementById('a-row');
+  const pcmFix=document.getElementById('pcm-fix');
+  if(m==='pcm'){aRow.style.display='none';pcmFix.style.display='block';}
+  else{aRow.style.display='block';pcmFix.style.display='none';}
+  document.getElementById('sl-a').value=it.a.toFixed(2);
+  document.getElementById('v-a').textContent=it.a.toFixed(2);
+  document.getElementById('sel-item-lbl').textContent=`${it.label} (${it.sub})`;
+  document.getElementById('crf-item-lbl').textContent=`${it.label} — ${it.sub}`;
+}
+
+// ── Model & Item ──────────────────────────────────────────────────────────────
+function setModel(m){
+  ST.model=m;
+  ['pcm','gpcm','grm'].forEach(x=>{
+    const btn=document.getElementById('mbtn-'+x);
+    btn.classList.toggle('act',x===m);
+    btn.classList.toggle('pcm-act',x===m&&m==='pcm');
+  });
+  buildSliders();updateAll();
+}
+
+function buildItemBtns(){
+  const row=document.getElementById('item-row');
+  row.innerHTML='';
+  ST.items.forEach((it,i)=>{
+    const b=document.createElement('button');
+    b.className='ibtn'+(i===ST.selItem?' sel':'');
+    b.id='ibtn-'+i;b.textContent=it.label;
+    if(i===ST.selItem)b.style.background=cv(ICOLS[i]);
+    b.onclick=()=>{
+      ST.selItem=i;
+      ST.items.forEach((_,j)=>{
+        const btn=document.getElementById('ibtn-'+j);
+        btn.classList.toggle('sel',j===i);
+        btn.style.background=j===i?cv(ICOLS[j]):'';
+      });
+      buildSliders();updateAll();
+    };
+    row.appendChild(b);
+  });
+}
+
+function resetItem(){
+  const d=DEF[ST.selItem];
+  ST.items[ST.selItem].a=d.a;
+  ST.items[ST.selItem].d=[...d.d];
+  buildSliders();updateAll();
+}
+
+function buildLCards(){
+  const grid=document.getElementById('lcard-grid');
+  LK.forEach(({h,b})=>{
+    const d=document.createElement('div');
+    d.className='lcard';
+    d.innerHTML=`<div class="lcard-h">${h}</div><div class="lcard-body">${b}</div>`;
+    grid.appendChild(d);
+  });
+}
+
+// ── updateAll ─────────────────────────────────────────────────────────────────
+function updateAll(){
+  drawCRF();drawESC();drawItemInfo();
+  updateParTable();checkDisorder();
+  document.getElementById('erklaer-formula').innerHTML=getFormelText();
+}
+
+// ── Theme / Help ───────────────────────────────────────────────────────────────
+function toggleTheme(){
+  const doc=document.documentElement;
+  const dark=doc.getAttribute('data-theme')==='dark';
+  doc.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('btn-theme').textContent=dark?'🌙 Dark':'☀ Light';
+  updateAll();
+}
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener('resize',updateAll);
+buildItemBtns();
+buildLCards();
+setModel('gpcm');
+</script>
+</body>
+</html>

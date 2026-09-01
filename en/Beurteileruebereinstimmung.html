@@ -1,0 +1,2400 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inter-Rater Agreement — Diagnostics</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a6);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+/* ── Topbar ── */
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem;flex:none}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+/* ── Layout ── */
+#app{display:grid;grid-template-columns:300px 1fr;flex:1;min-height:0;overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+/* ── Sidebar components ── */
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+/* ── Rater slot ── */
+.rater-slot{background:var(--bg);border:1px solid var(--border);padding:.6rem .75rem;margin-bottom:.5rem;position:relative}
+.rater-slot-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.rater-label{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink);font-weight:500;flex:1}
+.rater-remove{font-family:'DM Mono',monospace;font-size:.72rem;padding:.12rem .4rem;border:1px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink3);transition:all .12s}
+.rater-remove:hover{border-color:var(--a1);color:var(--a1)}
+.upload-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.3rem .65rem;
+  border:1.5px dashed var(--border);background:transparent;cursor:pointer;color:var(--ink3);
+  width:100%;text-align:center;transition:all .15s;display:block}
+.upload-btn:hover{border-color:var(--accent);color:var(--accent)}
+.upload-btn.drag-over{border-color:var(--accent);background:var(--accent-bg,var(--panel));color:var(--accent);border-style:solid}
+.upload-status{font-family:'DM Mono',monospace;font-size:.75rem;margin-top:.35rem;line-height:1.5}
+.status-ok{color:var(--a3)}
+.status-err{color:var(--a1)}
+.add-rater-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.35rem .65rem;
+  border:1.5px solid var(--accent);background:transparent;cursor:pointer;color:var(--accent);
+  width:100%;text-align:center;transition:all .15s;display:block;margin-top:.15rem}
+.add-rater-btn:hover{background:var(--accent);color:var(--bg)}
+/* ── Dropdowns ── */
+.dropdown-row{margin-bottom:.55rem}
+.dropdown-lbl{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink);margin-bottom:.22rem;display:block}
+select{width:100%;font-family:'DM Mono',monospace;font-size:.8rem;padding:.3rem .5rem;
+  background:var(--bg);border:1.5px solid var(--border);color:var(--ink);cursor:pointer;outline:none}
+select:focus{border-color:var(--accent)}
+.sub-option{margin-top:.4rem;padding:.4rem .6rem;background:var(--bg);border:1px solid var(--grid);display:none}
+.sub-option.show{display:block}
+.sub-lbl{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);margin-bottom:.25rem}
+/* ── Detected structure ── */
+#struct-info{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2);
+  padding:.4rem .5rem;background:var(--panel);border:1px solid var(--grid);margin-top:.35rem;
+  display:none;line-height:1.6}
+/* ── Compute button ── */
+#btn-compute{font-family:'DM Mono',monospace;font-size:.82rem;padding:.5rem .9rem;
+  border:2px solid var(--accent);background:transparent;cursor:pointer;color:var(--accent);
+  width:100%;text-align:center;transition:all .15s;margin-top:.6rem;letter-spacing:.04em}
+#btn-compute:hover{background:var(--accent);color:var(--bg)}
+#compute-error{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--a1);
+  margin-top:.4rem;line-height:1.55;display:none}
+/* ── Main sections ── */
+.result-section{display:none}
+.result-section.show{display:block}
+/* ── Global result card ── */
+.global-card{background:var(--panel);border:1px solid var(--grid);padding:1rem 1.2rem;margin-bottom:.8rem;
+  display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap}
+.global-value{font-family:'DM Mono',monospace;font-size:2.2rem;font-weight:600;color:var(--accent);line-height:1}
+.global-meta{flex:1;min-width:180px}
+.global-method{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink3);margin-bottom:.25rem}
+.global-ci{font-family:'DM Mono',monospace;font-size:.83rem;color:var(--ink2)}
+.badge{display:inline-block;font-family:'DM Mono',monospace;font-size:.75rem;padding:.2rem .65rem;
+  border:1px solid;margin-top:.3rem}
+.badge-vg{color:var(--a3);border-color:var(--a3);background:rgba(90,138,42,.1)}
+.badge-g {color:var(--a3);border-color:var(--a3);background:rgba(90,138,42,.07)}
+.badge-m {color:var(--a5);border-color:var(--a5);background:rgba(184,92,0,.09)}
+.badge-s {color:var(--a1);border-color:var(--a1);background:rgba(201,74,42,.09)}
+[data-theme="dark"] .badge-vg{background:rgba(128,203,82,.10)}
+[data-theme="dark"] .badge-g {background:rgba(128,203,82,.07)}
+[data-theme="dark"] .badge-m {background:rgba(224,120,48,.09)}
+[data-theme="dark"] .badge-s {background:rgba(232,97,74,.09)}
+/* ── Tables ── */
+.res-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.8rem;margin-bottom:.8rem}
+.res-table th{font-size:.7rem;letter-spacing:.07em;color:var(--ink3);padding:.28rem .5rem;
+  border-bottom:2px solid var(--grid);text-align:left;white-space:nowrap}
+.res-table td{padding:.3rem .5rem;border-bottom:1px solid var(--grid);vertical-align:middle}
+.res-table td.num{text-align:right;font-weight:600}
+.res-table th.num{text-align:right}
+.res-table td.interp{color:var(--ink2);font-size:.73rem}
+.subsec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.06em;
+  color:var(--accent);border-bottom:1px solid var(--border);padding-bottom:.25rem;margin-bottom:.5rem;margin-top:.6rem}
+.sig1{color:var(--a5)}.sig01{color:var(--a1)}.signs{color:var(--ink3)}
+/* ── Accordion modules ── */
+.mod-header{font-family:'DM Mono',monospace;font-size:.82rem;padding:.65rem .85rem;
+  background:var(--panel);border:1px solid var(--grid);cursor:pointer;
+  display:flex;align-items:center;gap:.65rem;margin-top:.7rem;user-select:none;
+  letter-spacing:.03em;transition:background .12s}
+.mod-header:hover{background:var(--grid)}
+.mod-header.open{border-bottom:none}
+.mod-icon{font-size:.68rem;color:var(--accent);width:12px;display:inline-block;flex-shrink:0}
+.mod-body{border:1px solid var(--grid);border-top:none;padding:.9rem 1rem 1rem;
+  background:var(--bg);display:none}
+.mod-body.open{display:block}
+/* ── Erklaerkarte ── */
+.erklaer{background:var(--panel);border-left:3px solid var(--accent);
+  padding:.7rem .9rem;margin-bottom:.85rem;font-family:'DM Mono',monospace;
+  font-size:.78rem;color:var(--ink2);line-height:1.85}
+.erklaer strong{color:var(--ink)}
+.erklaer-h{font-family:'DM Mono',monospace;font-size:.71rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.formula-line{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+/* ── Canvas ── */
+canvas{width:100%;display:block}
+.cv-wrap{background:var(--panel);border:1px solid var(--grid);padding:.5rem;margin-bottom:.8rem}
+/* ── kw boxes ── */
+.kw-grid{display:grid;gap:.5rem;margin-bottom:.7rem}
+.kw-grid-3{grid-template-columns:repeat(3,1fr)}
+.kw-grid-4{grid-template-columns:repeat(4,1fr)}
+.kw-box{background:var(--panel);border:1px solid var(--grid);padding:.5rem .65rem}
+.kw-label{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink3);margin-bottom:.2rem}
+.kw-val{font-family:'DM Mono',monospace;font-size:1rem;font-weight:600;color:var(--ink)}
+.kw-sub{font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink2)}
+/* ── Empty state ── */
+#empty-state{padding:3rem 1.5rem;text-align:center;font-family:'DM Mono',monospace;
+  font-size:.85rem;color:var(--ink3);line-height:2}
+/* ── Help Modal ── */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:none;
+  overflow-y:auto;padding:2rem 1rem}
+#modal-overlay.show{display:block}
+#modal-box{background:var(--paper);border:1px solid var(--grid);max-width:720px;
+  margin:0 auto;padding:1.8rem 2rem 2rem;position:relative}
+#modal-close{position:absolute;top:1rem;right:1.2rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1px solid var(--border);background:transparent;cursor:pointer;
+  color:var(--ink2);padding:.2rem .55rem}
+#modal-close:hover{border-color:var(--a1);color:var(--a1)}
+.modal-h1{font-family:'DM Mono',monospace;font-size:.95rem;font-weight:600;
+  color:var(--accent);letter-spacing:.04em;margin-bottom:1.2rem}
+.modal-h2{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink3);margin:1.2rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.modal-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.5rem}
+.modal-p strong{color:var(--ink)}
+.csv-example{background:var(--bg);border:1px solid var(--grid);padding:.6rem .9rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);
+  margin:.4rem 0 .8rem;white-space:pre;overflow-x:auto;line-height:1.7}
+.modal-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;
+  font-size:.75rem;margin-bottom:.6rem}
+.modal-table th{background:var(--panel);padding:.3rem .6rem;border:1px solid var(--grid);
+  color:var(--ink3);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase}
+.modal-table td{padding:.28rem .6rem;border:1px solid var(--grid);color:var(--ink2);line-height:1.5}
+.modal-table td strong{color:var(--ink)}
+/* ── Dim selector dropdown ── */
+.dim-select-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;
+  font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2)}
+.dim-select-row select{width:auto;flex:none}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a6);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a6);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ═══════════════════════════════════════════════════════════════ -->
+<div id="topbar">
+  <div style="flex:1;min-width:0">
+    <h1>Inter-Rater <em>Agreement</em></h1>
+    <div style="font-family:'DM Mono',monospace;font-size:.62rem;color:var(--ink3);margin-top:.1rem">
+      © Dr. Rainer Düsing · Diagnostics Course · Osnabrück University · Interactive Tools by Claude</div>
+  </div>
+  <button class="tbtn tbtn-red" onclick="showModal()">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ═══ HELP MODAL ════════════════════════════════════════════════════════════ -->
+<div id="modal-overlay" onclick="if(event.target===this)hideModal()">
+<div id="modal-box">
+  <button id="modal-close" onclick="hideModal()">✕ Close</button>
+  <div class="modal-h1">Inter-Rater Agreement — Guide</div>
+
+  <div class="modal-h2">Example</div>
+  <div class="modal-p">3 clinical psychologists rate 80 patient videos on 2 dimensions: depression severity (ordinal, 4 categories) and risk classification (ordinal, 0–4). Each rater uploads their own CSV file (80 rows × 2 columns). Then, for each dimension individually and globally, the tool computes how well the three raters agree — and what share of the agreement goes beyond chance.</div>
+
+  <div class="modal-h2">CSV Format</div>
+  <div class="modal-p">
+    A separate CSV file is expected for each rater.<br>
+    <strong>Rows = stimuli (targets, people, items)</strong> — one row per rated object.<br>
+    <strong>Columns = dimensions (scales, attributes)</strong> — one column per rating dimension.<br><br>
+    Numbers only; optionally a first row of column headers (D1, D2 …).<br>
+    Delimiter: comma <code>,</code> or semicolon <code>;</code> (detected automatically).
+  </div>
+  <div class="modal-p">Example: 3 raters score 80 patients on 4 scales → each file has 80 rows × 4 columns.</div>
+
+  <div class="modal-p"><strong>D=1 (standard case):</strong> Just one dimension — then each file has n rows × 1 column (a single numeric column).</div>
+
+  <pre class="csv-example">D1,D2,D3,D4      ← optional header row
+3,4,2,5
+3,3,3,4
+5,4,4,3
+2,2,3,2
+...              ← one row per stimulus</pre>
+
+  <div class="modal-h2">Scale of Measurement</div>
+  <table class="modal-table">
+    <tr><th>Level</th><th>Examples</th><th>Available Measures</th></tr>
+    <tr><td><strong>Nominal</strong></td><td>Diagnosis yes/no, category A/B/C</td><td>Cohen's κ, Fleiss' κ, Krippendorff α, Gwet AC1</td></tr>
+    <tr><td><strong>Ordinal</strong></td><td>Likert 1–5, severity 1–4</td><td>κ (weighted), Fleiss' κ, Krippendorff α, Kendall's W, Gwet AC2</td></tr>
+    <tr><td><strong>Interval</strong></td><td>Reaction time, rating 0–100</td><td>Krippendorff α, ICC(1/2/3), Bland-Altman</td></tr>
+  </table>
+
+  <div class="modal-h2">Methods</div>
+  <table class="modal-table">
+    <tr><th>Measure</th><th>When</th></tr>
+    <tr><td><strong>Cohen's κ</strong></td><td>Exactly 2 raters, nominal or ordinal (unweighted)</td></tr>
+    <tr><td><strong>Cohen's κ (weighted)</strong></td><td>2 raters, ordinal — linear weight penalizes larger deviations more</td></tr>
+    <tr><td><strong>Fleiss' κ</strong></td><td>3 or more raters, nominal or ordinal</td></tr>
+    <tr><td><strong>Krippendorff's α</strong></td><td>Any number of raters, all scale levels; tolerates missing values</td></tr>
+    <tr><td><strong>Gwet's AC1</strong></td><td>Nominal, any number of raters; more robust than κ with unequal category frequencies (no kappa paradox)</td></tr>
+    <tr><td><strong>Gwet's AC2</strong></td><td>Ordinal, linear/quadratic weighted; chance correction based on equal category distribution, not marginals</td></tr>
+    <tr><td><strong>ICC(1,x)</strong></td><td>Each stimulus rated by <em>different</em>, randomly chosen raters</td></tr>
+    <tr><td><strong>ICC(2,x)</strong></td><td>Same raters, treated as a random sample — agreement (conservative)</td></tr>
+    <tr><td><strong>ICC(3,x)</strong></td><td>Same fixed raters — consistency (bias is partialled out)</td></tr>
+  </table>
+
+  <div class="modal-h2">Gwet AC1 / AC2 — Formula</div>
+  <div class="modal-p">
+    AC = (p<sub>a</sub> − p<sub>e</sub>) / (1 − p<sub>e</sub>)<br>
+    <strong>p<sub>a</sub></strong> = observed (weighted) agreement.<br>
+    <strong>p<sub>e</sub></strong> = (1/K) · Σ<sub>k</sub> π<sub>k</sub> · (1 − Σ<sub>l</sub> w<sub>kl</sub> · π<sub>l</sub>) — Gwet chance correction (equally weighted categories).<br>
+    K = number of categories; π<sub>k</sub> = mean probability for category k; w<sub>kl</sub> = weight matrix.<br><br>
+    SE and p-value via t-test (df = n − 1) based on the per-stimulus AC estimators g<sub>s</sub> = (p<sub>a,s</sub> − p<sub>e</sub>) / (1 − p<sub>e</sub>).<br>
+    Implementation analogous to <code>irrCAC::gwet.ac1.raw()</code>.
+  </div>
+
+  <div class="modal-h2">Interpretation</div>
+  <table class="modal-table">
+    <tr><th>Value κ / α</th><th>Interpretation (Landis & Koch 1977)</th></tr>
+    <tr><td>≥ .80</td><td>Very good</td></tr>
+    <tr><td>.60 – .79</td><td>Good</td></tr>
+    <tr><td>.40 – .59</td><td>Moderate</td></tr>
+    <tr><td>&lt; .40</td><td>Weak / poor</td></tr>
+  </table>
+  <table class="modal-table">
+    <tr><th>ICC Value</th><th>Interpretation (Koo & Mae 2016)</th></tr>
+    <tr><td>≥ .90</td><td>Excellent</td></tr>
+    <tr><td>.75 – .89</td><td>Good</td></tr>
+    <tr><td>.50 – .74</td><td>Moderate</td></tr>
+    <tr><td>&lt; .50</td><td>Poor</td></tr>
+  </table>
+
+  <div class="modal-h2">Kendall's W</div>
+  <div class="modal-p">Concordance measure for ordinal data with ≥ 2 raters. W = 0: no agreement, W = 1: perfect concordance. Always computed additionally to the main measure when scale level = ordinal.</div>
+
+  <div class="modal-h2">Bland-Altman Plot</div>
+  <div class="modal-p">Interval scale only. Shows the mean of both raters (x-axis) against their difference (y-axis). <strong>Bias</strong> = mean difference. <strong>LoA</strong> (limits of agreement) = bias ± 1.96 × SD(difference). Selectable per dimension when D &gt; 1.</div>
+</div>
+</div>
+
+<!-- ═══ APP ════════════════════════════════════════════════════════════════════ -->
+<div id="app">
+
+<!-- ── SIDEBAR ─────────────────────────────────────────────────────────────── -->
+<div id="sidebar">
+
+  <!-- Daten -->
+  <div class="scard">
+    <div class="scard-title"><span class="circ">①</span> Data</div>
+    <div id="rater-list"></div>
+    <button class="add-rater-btn" onclick="addRaterSlot()">+ Add Rater</button>
+    <div id="struct-info"></div>
+  </div>
+
+  <!-- Skalenniveau -->
+  <div class="scard">
+    <div class="scard-title"><span class="circ">②</span> Scale of Measurement</div>
+    <div class="dropdown-row">
+      <select id="sel-scale" onchange="onScaleChange()">
+        <option value="">— please choose —</option>
+        <option value="nominal">Nominal</option>
+        <option value="ordinal">Ordinal</option>
+        <option value="interval">Interval</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Methode -->
+  <div class="scard">
+    <div class="scard-title"><span class="circ">③</span> Method</div>
+    <div class="dropdown-row">
+      <select id="sel-method" onchange="onMethodChange()">
+        <option value="">— choose scale level first —</option>
+      </select>
+    </div>
+    <!-- Sub: Kappa weight -->
+    <div class="sub-option" id="sub-weight">
+      <div class="sub-lbl">Weighting</div>
+      <select id="sel-weight">
+        <option value="linear">Linear</option>
+        <option value="quadratic">Quadratic</option>
+      </select>
+    </div>
+    <!-- Sub: ICC model -->
+    <div class="sub-option" id="sub-icc">
+      <div class="sub-lbl">ICC Model (Shrout & Fleiss 1979)</div>
+      <select id="sel-icc">
+        <option value="">— please choose —</option>
+        <option value="1">ICC(1,x) — different raters per stimulus</option>
+        <option value="2">ICC(2,x) — same raters, random sample</option>
+        <option value="3">ICC(3,x) — fixed raters, consistency</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Compute -->
+  <button id="btn-compute" onclick="computeAndRender()">▶ Compute</button>
+  <div id="compute-error"></div>
+
+</div><!-- /sidebar -->
+
+<!-- ── MAIN ─────────────────────────────────────────────────────────────────── -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Running Example</div>
+    <div class="story-vars">
+      <span class="sv">Stimuli (n)</span><span class="sd">80 patient videos from an outpatient clinic — each video shows an intake session</span>
+      <span class="sv">Raters (k)</span><span class="sd">3 clinical psychologists — rate each video independently</span>
+      <span class="sv">Dimension 1</span><span class="sd">depression severity (PHQ category: none / mild / moderate / severe)</span>
+      <span class="sv">Dimension 2</span><span class="sd">risk classification (0 = no risk … 4 = acute)</span>
+      <span class="sv">Format</span><span class="sd">3 CSV files (80 rows × 2 columns each) — one per rater</span>
+    </div>
+    <div class="story-q">How well do the three psychologists agree — and does it matter whether we correct for chance agreement (κ, α), partial out rater bias (ICC), or use robust corrections (Gwet AC)?</div>
+  </div>
+
+  <!-- Empty state -->
+  <div id="empty-state">
+    Upload rater files, choose scale level and method,<br>
+    then click <strong>Compute</strong>.
+  </div>
+
+  <!-- ① Global -->
+  <div id="sec-global" class="result-section">
+    <div class="sec-h" style="margin-top:0"><span class="circ">①</span> Global Agreement</div>
+    <div id="global-card"></div>
+    <div id="global-dim-note"></div>
+  </div>
+
+  <!-- ② Dimensionsweise (nur wenn D>1) -->
+  <div id="sec-dims" class="result-section">
+    <div class="sec-h"><span class="circ">②</span> Agreement by Dimension</div>
+    <div class="cv-wrap"><canvas id="cv-dim-bars" height="240"></canvas></div>
+    <div id="dim-table-wrap"></div>
+  </div>
+
+  <!-- ③ Pro-Reiz-Verteilung -->
+  <div id="sec-stim" class="result-section">
+    <div class="sec-h"><span class="circ">③</span> Per-Stimulus Agreement</div>
+
+    <!-- Gesamtmaß: alle Rater -->
+    <div class="subsec-h" id="stim-overall-head">Overall Measure — All Raters</div>
+    <div id="stim-overall-stats"></div>
+    <div class="cv-wrap"><canvas id="cv-stim-overall" height="100"></canvas></div>
+    <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin:.25rem .1rem .6rem;line-height:1.55">
+      Box-and-whisker plot: distribution of the agreement measure across all stimuli. Diamond = mean, line = median.
+    </div>
+    <div class="cv-wrap" style="margin-top:.4rem"><canvas id="cv-stim-hist" height="180"></canvas></div>
+    <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin:.25rem .1rem .6rem;line-height:1.55">
+      Histogram of the stimulus-specific agreement values with an overlaid normal distribution (blue) and mean line.
+    </div>
+    <div class="cv-wrap" style="margin-top:.4rem"><canvas id="cv-stim-index" height="280"></canvas></div>
+    <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin:.25rem .1rem .6rem;line-height:1.55">
+      Trace plot: agreement value per stimulus in dataset order. LOESS trend line shows local fluctuations; reference lines (green = good ≥ .80, orange = moderate ≥ .60, red = weak &lt; .40).
+    </div>
+
+    <!-- Paarweise Vergleiche -->
+    <div class="subsec-h" style="margin-top:1rem">Pairwise Comparisons</div>
+    <div id="stim-desc"></div>
+    <div class="cv-wrap"><canvas id="cv-stim-box" height="200"></canvas></div>
+    <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin:.25rem .1rem .6rem;line-height:1.55">
+      Box-and-whisker plots of the pairwise similarity (Hamming) or mean absolute difference (MAD) per stimulus for each rater pair.
+    </div>
+    <div class="cv-wrap" style="margin-top:.6rem"><canvas id="cv-stim-density" height="240"></canvas></div>
+    <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin:.25rem .1rem .6rem;line-height:1.55">
+      KDE density plots of the pairwise distributions (colored lines) and all raters combined (bold, accent color).
+    </div>
+  </div>
+
+  <!-- Accordion: Kendall's W -->
+  <div id="acc-kendall" class="result-section">
+    <div class="mod-header" id="hd-kendall" onclick="toggleMod('kendall')">
+      <span class="mod-icon" id="ic-kendall">▶</span>
+      Kendall's W — Rank Concordance
+    </div>
+    <div class="mod-body" id="bd-kendall">
+      <div class="erklaer">
+        <div class="erklaer-h">Kendall's W</div>
+        Measures the <strong>concordance</strong> of all raters simultaneously based on ranks.
+        W = 0: no agreement; W = 1: all raters rank identically.<br>
+        Computed per dimension; χ² test checks whether W > 0 (df = n_stimuli − 1).
+      </div>
+      <div id="kendall-result"></div>
+    </div>
+  </div>
+
+  <!-- Accordion: ICC -->
+  <div id="acc-icc" class="result-section">
+    <div class="mod-header" id="hd-icc" onclick="toggleMod('icc')">
+      <span class="mod-icon" id="ic-icc">▶</span>
+      ICC — Intraclass Correlation
+    </div>
+    <div class="mod-body" id="bd-icc">
+      <div class="erklaer">
+        <div class="erklaer-h">ICC(x,1) and ICC(x,k)</div>
+        <strong>ICC(x,1)</strong>: reliability of a single measurement (1 rater per person).<br>
+        <strong>ICC(x,k)</strong>: reliability of the mean of all k raters (Spearman-Brown corrected).<br><br>
+        Reference values (Koo & Mae 2016):<br>
+        &lt; .50 poor · .50–.74 moderate · .75–.89 good · ≥ .90 excellent
+      </div>
+      <div class="cv-wrap"><canvas id="cv-icc" height="240"></canvas></div>
+      <div id="icc-table-wrap"></div>
+    </div>
+  </div>
+
+  <!-- Accordion: Heatmap Dimension × Rater -->
+  <div id="acc-heatmap" class="result-section">
+    <div class="mod-header" id="hd-heatmap" onclick="toggleMod('heatmap')">
+      <span class="mod-icon" id="ic-heatmap">▶</span>
+      Heatmap — Dimension × Rater
+    </div>
+    <div class="mod-body" id="bd-heatmap">
+      <div class="erklaer">
+        <div class="erklaer-h">Heatmap</div>
+        Shows the pairwise agreement value (chosen method) for each <strong>rater pair</strong> (row) and each <strong>dimension</strong> (column).<br>
+        Red = low agreement; green = high agreement.
+      </div>
+      <div class="cv-wrap"><canvas id="cv-heatmap" height="260"></canvas></div>
+      <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin:.25rem .1rem 0;line-height:1.55">
+        Red cells show on which dimensions two raters agree especially poorly; green cells signal good pairwise agreement.
+      </div>
+    </div>
+  </div>
+
+  <!-- Accordion: Bland-Altman -->
+  <div id="acc-bland" class="result-section">
+    <div class="mod-header" id="hd-bland" onclick="toggleMod('bland')">
+      <span class="mod-icon" id="ic-bland">▶</span>
+      Bland-Altman Plot
+    </div>
+    <div class="mod-body" id="bd-bland">
+      <div class="erklaer">
+        <div class="erklaer-h">Bland-Altman</div>
+        Shows for each rater pair: x-axis = mean of both values, y-axis = difference.<br>
+        <strong>Bias</strong> = mean difference. <strong>LoA</strong> = bias ± 1.96 SD.<br>
+        Points outside the LoA = systematic discrepancy between the rater pair.
+      </div>
+      <div id="bland-controls"></div>
+      <div class="cv-wrap"><canvas id="cv-bland" height="280"></canvas></div>
+      <div id="bland-stats"></div>
+    </div>
+  </div>
+
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════════
+const ST = {
+  raters: [],      // [{id, name, data: number[][]}, ...]  data[stimulus][dim]
+  n_stimuli: 0,
+  n_dims: 0,
+  dim_names: [],
+  scale: '',
+  method: '',
+  weight: 'linear',
+  icc_model: '',
+  results: null
+};
+let raterCounter = 0;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CSV PARSING
+// ═══════════════════════════════════════════════════════════════════════════════
+function parseCSV(text) {
+  // Auto-detect delimiter
+  const firstLine = text.split('\n')[0];
+  const delim = (firstLine.split(';').length > firstLine.split(',').length) ? ';' : ',';
+
+  const lines = text.trim().split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (lines.length === 0) return {error: 'Empty file'};
+
+  // Detect header (first row non-numeric)
+  const firstVals = lines[0].split(delim).map(v => v.trim());
+  const hasHeader = firstVals.some(v => isNaN(parseFloat(v)));
+  const dimNames = hasHeader ? firstVals : firstVals.map((_,i) => 'D'+(i+1));
+  const dataLines = hasHeader ? lines.slice(1) : lines;
+
+  if (dataLines.length === 0) return {error: 'No data rows found'};
+
+  const data = [];
+  for (let i = 0; i < dataLines.length; i++) {
+    const vals = dataLines[i].split(delim).map(v => v.trim());
+    if (vals.length !== dimNames.length)
+      return {error: `Row ${i+1+(hasHeader?1:0)}: ${vals.length} values, expected ${dimNames.length}`};
+    const row = vals.map(v => {
+      const n = parseFloat(v);
+      return isNaN(n) ? NaN : n;
+    });
+    data.push(row);
+  }
+
+  return {data, dimNames, n_stimuli: data.length, n_dims: dimNames.length};
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RATER MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════════
+function addRaterSlot() {
+  raterCounter++;
+  const id = raterCounter;
+  const slot = document.createElement('div');
+  slot.className = 'rater-slot';
+  slot.id = 'slot-' + id;
+  slot.innerHTML = `
+    <div class="rater-slot-head">
+      <span class="rater-label">Rater ${id}</span>
+      <button class="rater-remove" onclick="removeRater(${id})">✕</button>
+    </div>
+    <label class="upload-btn" id="lbl-${id}" for="file-${id}"
+      ondragover="onDragOver(event,${id})" ondragleave="onDragLeave(event,${id})" ondrop="onDrop(event,${id})">
+      📂 Load CSV or drop here
+    </label>
+    <input type="file" id="file-${id}" accept=".csv,.txt" style="display:none"
+           onchange="handleUpload(${id}, this)">
+    <div class="upload-status" id="status-${id}" style="color:var(--ink3)">No file loaded</div>
+  `;
+  document.getElementById('rater-list').appendChild(slot);
+
+  // Add rater entry to ST
+  ST.raters.push({id, name: 'B' + id, data: null});
+}
+
+function removeRater(id) {
+  const slot = document.getElementById('slot-' + id);
+  if (slot) slot.remove();
+  const idx = ST.raters.findIndex(r => r.id === id);
+  if (idx >= 0) ST.raters.splice(idx, 1);
+  updateStructInfo();
+}
+
+function processFileContent(id, text, fileName) {
+  const result = parseCSV(text);
+  const statusEl = document.getElementById('status-' + id);
+  const rater = ST.raters.find(r => r.id === id);
+  if (!rater) return;
+
+  if (result.error) {
+    statusEl.innerHTML = `<span class="status-err">✗ ${result.error}</span>`;
+    rater.data = null;
+    rater.dimNames = null;
+  } else {
+    const existing = ST.raters.find(r => r.id !== id && r.data !== null);
+    if (existing) {
+      if (result.n_stimuli !== existing.data.length) {
+        statusEl.innerHTML = `<span class="status-err">✗ ${result.n_stimuli} stimuli — expected ${existing.data.length}</span>`;
+        rater.data = null; return;
+      }
+      if (result.n_dims !== existing.data[0].length) {
+        statusEl.innerHTML = `<span class="status-err">✗ ${result.n_dims} dim. — expected ${existing.data[0].length}</span>`;
+        rater.data = null; return;
+      }
+    }
+    rater.data = result.data;
+    rater.dimNames = result.dimNames;
+    rater.fileName = fileName;
+    statusEl.innerHTML = `<span class="status-ok">✓ ${fileName}</span><br>
+      <span style="color:var(--ink3)">${result.n_stimuli} stimuli · ${result.n_dims} dim.</span>`;
+  }
+  updateStructInfo();
+  updateMethodDropdown();
+}
+
+function handleUpload(id, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => processFileContent(id, e.target.result, file.name);
+  reader.readAsText(file);
+}
+
+function onDragOver(e, id) {
+  e.preventDefault();
+  document.getElementById('lbl-' + id).classList.add('drag-over');
+}
+function onDragLeave(e, id) {
+  document.getElementById('lbl-' + id).classList.remove('drag-over');
+}
+function onDrop(e, id) {
+  e.preventDefault();
+  document.getElementById('lbl-' + id).classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => processFileContent(id, ev.target.result, file.name);
+  reader.readAsText(file);
+}
+
+function updateStructInfo() {
+  const loaded = ST.raters.filter(r => r.data !== null);
+  const si = document.getElementById('struct-info');
+  if (loaded.length === 0) { si.style.display = 'none'; return; }
+  const ref = loaded[0];
+  ST.n_stimuli = ref.data.length;
+  ST.n_dims    = ref.data[0].length;
+  ST.dim_names = ref.dimNames;
+  si.style.display = 'block';
+  si.textContent = `Detected: ${loaded.length} raters · ${ST.n_stimuli} stimuli · ${ST.n_dims} dimension${ST.n_dims>1?'s':''}`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DROPDOWN LOGIC
+// ═══════════════════════════════════════════════════════════════════════════════
+const METHOD_OPTIONS = {
+  nominal: {
+    2: [
+      {v:'cohen_unw', l:"Cohen's κ (unweighted)"},
+      {v:'kripp_nom', l:"Krippendorff's α (nominal)"},
+      {v:'gwet_nom',  l:"Gwet's AC1 (nominal)"},
+    ],
+    k: [
+      {v:'fleiss',    l:"Fleiss' κ"},
+      {v:'kripp_nom', l:"Krippendorff's α (nominal)"},
+      {v:'gwet_nom',  l:"Gwet's AC1 (nominal)"},
+    ]
+  },
+  ordinal: {
+    2: [
+      {v:'cohen_unw',    l:"Cohen's κ (unweighted)"},
+      {v:'cohen_wtd',    l:"Cohen's κ (weighted)"},
+      {v:'kripp_ord',    l:"Krippendorff's α (ordinal)"},
+      {v:'gwet_ord_lin', l:"Gwet's AC2 (linear weighted)"},
+      {v:'gwet_ord_quad',l:"Gwet's AC2 (quadratic weighted)"},
+    ],
+    k: [
+      {v:'fleiss',       l:"Fleiss' κ"},
+      {v:'kripp_ord',    l:"Krippendorff's α (ordinal)"},
+      {v:'gwet_ord_lin', l:"Gwet's AC2 (linear weighted)"},
+      {v:'gwet_ord_quad',l:"Gwet's AC2 (quadratic weighted)"},
+    ]
+  },
+  interval: {
+    2: [
+      {v:'kripp_int', l:"Krippendorff's α (interval)"},
+      {v:'icc',       l:"ICC (intraclass correlation)"},
+    ],
+    k: [
+      {v:'kripp_int', l:"Krippendorff's α (interval)"},
+      {v:'icc',       l:"ICC (intraclass correlation)"},
+    ]
+  }
+};
+
+function onScaleChange() {
+  ST.scale = document.getElementById('sel-scale').value;
+  updateMethodDropdown();
+}
+
+function updateMethodDropdown() {
+  const scale = ST.scale;
+  const sel = document.getElementById('sel-method');
+  sel.innerHTML = '<option value="">— please choose —</option>';
+
+  if (!scale) return;
+  const loaded = ST.raters.filter(r => r.data !== null);
+  const n = loaded.length;
+  if (n < 2) { sel.innerHTML = '<option value="">— load ≥ 2 files first —</option>'; return; }
+
+  const bucket = n === 2 ? METHOD_OPTIONS[scale][2] : METHOD_OPTIONS[scale].k;
+  bucket.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o.v; opt.textContent = o.l;
+    sel.appendChild(opt);
+  });
+  onMethodChange();
+}
+
+function onMethodChange() {
+  const m = document.getElementById('sel-method').value;
+  ST.method = m;
+  document.getElementById('sub-weight').classList.toggle('show', m === 'cohen_wtd');
+  document.getElementById('sub-icc').classList.toggle('show', m === 'icc');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// VALIDATION
+// ═══════════════════════════════════════════════════════════════════════════════
+function validateInputs() {
+  const errors = [];
+  const loaded = ST.raters.filter(r => r.data !== null);
+  if (loaded.length < 2) errors.push('At least 2 rater files required.');
+  if (!ST.scale) errors.push('Scale level not selected.');
+  const m = document.getElementById('sel-method').value;
+  if (!m) errors.push('Method not selected.');
+  if (m === 'icc' && !document.getElementById('sel-icc').value)
+    errors.push('ICC model not selected.');
+  return errors;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ACCORDION
+// ═══════════════════════════════════════════════════════════════════════════════
+function toggleMod(name) {
+  document.getElementById('bd-'+name).classList.toggle('open');
+  const hd = document.getElementById('hd-'+name);
+  hd.classList.toggle('open');
+  document.getElementById('ic-'+name).textContent =
+    document.getElementById('bd-'+name).classList.contains('open') ? '▼' : '▶';
+  // Redraw canvas-based accordions after DOM becomes visible
+  if(document.getElementById('bd-'+name).classList.contains('open') && ST.results){
+    const res=ST.results;
+    if(name==='icc')     setTimeout(()=>drawICCPlot(res),30);
+    if(name==='bland')   setTimeout(()=>drawBlandAltman(res,0,0),30);
+    if(name==='heatmap') setTimeout(()=>drawHeatmap(res),30);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════════════════════════════════════════
+function toggleTheme() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = dark ? '🌙 Dark' : '☀ Light';
+  if (ST.results) redrawAllCanvases();
+}
+function showModal(){ document.getElementById('modal-overlay').classList.add('show'); }
+function hideModal(){ document.getElementById('modal-overlay').classList.remove('show'); }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════════════════════
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function showSec(id){ document.getElementById(id).classList.add('show'); }
+function hideSec(id){ document.getElementById(id).classList.remove('show'); }
+
+// ─── Extract dimension d from all raters → [n_raters][n_stimuli] ─────────────
+function extractDim(raters, d) {
+  return raters.map(r => r.data.map(row => row[d]));
+}
+
+// ─── Interpretation badges ────────────────────────────────────────────────────
+function interpKappa(v) {
+  if (!isFinite(v)) return {cls:'badge-s', txt:'—'};
+  if (v >= .80) return {cls:'badge-vg', txt:'very good'};
+  if (v >= .60) return {cls:'badge-g',  txt:'good'};
+  if (v >= .40) return {cls:'badge-m',  txt:'moderate'};
+  return {cls:'badge-s', txt:'weak'};
+}
+function interpICC(v) {
+  if (!isFinite(v)) return {cls:'badge-s', txt:'—'};
+  if (v >= .90) return {cls:'badge-vg', txt:'excellent'};
+  if (v >= .75) return {cls:'badge-g',  txt:'good'};
+  if (v >= .50) return {cls:'badge-m',  txt:'moderate'};
+  return {cls:'badge-s', txt:'poor'};
+}
+
+// ─── Format p-value ───────────────────────────────────────────────────────────
+function fmtP(p) {
+  if (!isFinite(p)) return '—';
+  if (p < .001) return '<.001';
+  return p.toFixed(3);
+}
+function sigStr(p) {
+  if (!isFinite(p)) return '';
+  if (p < .001) return '<span class="sig01">***</span>';
+  if (p < .01)  return '<span class="sig01">**</span>';
+  if (p < .05)  return '<span class="sig1">*</span>';
+  return '<span class="signs">n.s.</span>';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DISTRIBUTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+function normCDF(x) {
+  const t=1/(1+0.2316419*Math.abs(x));
+  const d=0.3989423*Math.exp(-x*x/2);
+  const p=d*t*(0.3193815+t*(-0.3565638+t*(1.7814779+t*(-1.8212560+t*1.3302744))));
+  return x>=0?1-p:p;
+}
+function lgamma(z){
+  const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,
+    771.32342877765313,-176.61502916214059,12.507343278686905,
+    -0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(z<0.5) return Math.log(Math.PI)-Math.log(Math.sin(Math.PI*z))-lgamma(1-z);
+  z--;let x=c[0];for(let i=1;i<9;i++) x+=c[i]/(z+i);
+  const t=z+7.5;return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x);
+}
+function betainc(x,a,b){
+  if(x<=0)return 0;if(x>=1)return 1;
+  const lb=lgamma(a)+lgamma(b)-lgamma(a+b);
+  const fr=Math.exp(Math.log(x)*a+Math.log(1-x)*b-lb)/a;
+  let f=1,c=1,d=1-(a+b)*x/(a+1);
+  if(Math.abs(d)<1e-30)d=1e-30;d=1/d;f=d;
+  for(let m=1;m<=200;m++){
+    let aa=m*(b-m)*x/((a+2*m-1)*(a+2*m));
+    d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;
+    d=1/d;f*=c*d;
+    aa=-(a+m)*(a+b+m)*x/((a+2*m)*(a+2*m+1));
+    d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;c=1+aa/c;if(Math.abs(c)<1e-30)c=1e-30;
+    d=1/d;const del=c*d;f*=del;if(Math.abs(del-1)<1e-10)break;
+  }
+  return x<(a+1)/(a+b+2)?fr*f:1-betainc(1-x,b,a);
+}
+function tPVal(t,df){return betainc(df/(df+t*t),df/2,.5);}
+function fPVal(F,df1,df2){return 1-betainc(df1*F/(df1*F+df2),df1/2,df2/2);}
+function fQuantile(p,df1,df2){
+  // Bisect on t = df1*F/(df1*F+df2) ∈ (0,1)
+  let lo=1e-9,hi=1-1e-9;
+  for(let i=0;i<120;i++){
+    const mid=(lo+hi)/2;
+    if(betainc(mid,df1/2,df2/2)<p) lo=mid; else hi=mid;
+  }
+  const t=(lo+hi)/2;
+  return df2*t/(df1*(1-t));
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COHEN'S KAPPA  (2 raters, per dimension)
+// ═══════════════════════════════════════════════════════════════════════════════
+function cohensKappa(v1, v2, weight='unweighted') {
+  const n=v1.length;
+  const cats=[...new Set([...v1,...v2].filter(isFinite))].sort((a,b)=>a-b);
+  const K=cats.length; if(K<2) return {kappa:NaN,se:NaN,z:NaN,p:NaN};
+  const idx=new Map(cats.map((c,i)=>[c,i]));
+  const ct=Array.from({length:K},()=>new Array(K).fill(0));
+  for(let i=0;i<n;i++){
+    if(!isFinite(v1[i])||!isFinite(v2[i])) continue;
+    ct[idx.get(v1[i])][idx.get(v2[i])]++;
+  }
+  const N=ct.flat().reduce((s,v)=>s+v,0);
+  const rowM=ct.map(r=>r.reduce((s,v)=>s+v,0));
+  const colM=cats.map((_,j)=>ct.reduce((s,r)=>s+r[j],0));
+  // Weight matrix
+  const w=Array.from({length:K},(_,i)=>cats.map((_,j)=>{
+    if(weight==='unweighted') return i===j?1:0;
+    if(weight==='linear')     return 1-Math.abs(i-j)/(K-1);
+    return 1-((i-j)/(K-1))**2; // quadratic
+  }));
+  let Po=0,Pe=0;
+  for(let i=0;i<K;i++) for(let j=0;j<K;j++){
+    Po+=w[i][j]*ct[i][j]/N;
+    Pe+=w[i][j]*rowM[i]*colM[j]/(N*N);
+  }
+  const kappa=(Po-Pe)/(1-Pe);
+  const se=Math.sqrt(Pe/(N*(1-Pe)**2));
+  const z=kappa/se;
+  const p=2*(1-normCDF(Math.abs(z)));
+  return {kappa,se,z,p,n:N,K,cats,method:'Cohen\'s κ ('+(weight==='unweighted'?'unw.':weight)+')'};
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FLEISS' KAPPA  (k raters, per dimension)
+// ═══════════════════════════════════════════════════════════════════════════════
+function fleissKappa(data) {
+  // data: [n_raters][n_stimuli]
+  const k=data.length, n=data[0].length;
+  const cats=[...new Set(data.flat().filter(isFinite))].sort((a,b)=>a-b);
+  const K=cats.length; if(K<2) return {kappa:NaN,se:NaN,z:NaN,p:NaN};
+  const idx=new Map(cats.map((c,i)=>[c,i]));
+  // n_ij: Häufigkeitsmatrix [Stimulus × Kategorie] — Rohzählungen (wie irr: M)
+  const nij=Array.from({length:n},()=>new Array(K).fill(0));
+  for(let r=0;r<k;r++)
+    for(let i=0;i<n;i++)
+      if(isFinite(data[r][i])) nij[i][idx.get(data[r][i])]++;
+  // p_j: marginale Kategoriehäufigkeit — irr: colMeans(M)/k = colSums(M)/(n*k)
+  const pj=cats.map((_,j)=>nij.reduce((s,row)=>s+row[j],0)/(n*k));
+  // P_i: (Σ_j n_ij² - k) / (k*(k-1)) — irr: (rowSums(M^2)-k)/(k*(k-1))
+  const Pi=nij.map(row=>(row.reduce((s,v)=>s+v*v,0)-k)/(k*(k-1)));
+  const Pbar=Pi.reduce((s,v)=>s+v,0)/n;
+  const Pe=pj.reduce((s,v)=>s+v*v,0);
+  const kappa=(Pbar-Pe)/(1-Pe);
+  const se=Math.sqrt(2/(n*k*(k-1))*(Pe*(1-Pe)));
+  const z=kappa/se;
+  const p=2*(1-normCDF(Math.abs(z)));
+  return {kappa,se,z,p,n,k,K,cats,method:"Fleiss' κ"};
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GWET'S AC1 / AC2  (multi-rater, nominal/ordinal)
+// ═══════════════════════════════════════════════════════════════════════════════
+// data: [n_raters][n_subjects]   weight: 'unweighted'|'linear'|'quadratic'
+// Exact port of irrCAC::gwet.ac1.raw() — formulas verified against R source
+function gwetAC(data, weight='unweighted') {
+  const r=data.length;        // number of raters (= ncol in R)
+  const n=data[0].length;     // number of subjects (= nrow in R)
+  const allV=data.flat().filter(isFinite);
+  if(!allV.length) return {ac:NaN,pa:NaN,pe:NaN,se:NaN,ci_lo:NaN,ci_hi:NaN,p:NaN};
+  const cats=[...new Set(allV)].sort((a,b)=>a-b);
+  const q=cats.length;
+  if(q<2) return {ac:1,pa:1,pe:NaN,se:NaN,ci_lo:NaN,ci_hi:NaN,p:NaN};
+  const idx=new Map(cats.map((c,i)=>[c,i]));
+
+  // Weight matrix W[k][l] — q×q
+  const W=Array.from({length:q},(_,i)=>cats.map((_,j)=>{
+    if(weight==='unweighted') return i===j?1:0;
+    if(weight==='linear')     return 1-Math.abs(i-j)/(q-1);
+    return 1-((i-j)/(q-1))**2;
+  }));
+  const sumW=W.flat().reduce((s,v)=>s+v,0);  // sum(weights.mat)
+
+  // agree[s][k] = count of raters assigning subject s to category k
+  const agree=Array.from({length:n},()=>new Array(q).fill(0));
+  const ri=new Array(n).fill(0);  // ri.vec[s] = valid raters for subject s
+  for(let i=0;i<r;i++) for(let s=0;s<n;s++){
+    const v=data[i][s];
+    if(!isFinite(v)) continue;
+    const k=idx.get(v); if(k===undefined) continue;
+    agree[s][k]++; ri[s]++;
+  }
+
+  // agree_w[s][k] = Σ_l W[k][l]*agree[s][l]  (= agree.mat.w in R)
+  const agreeW=agree.map(row=>
+    Array.from({length:q},(_,k)=>row.reduce((s,nl,l)=>s+W[k][l]*nl,0))
+  );
+
+  // sum.q[s] = Σ_k agree[s][k]*(agreeW[s][k]-1)
+  const sumQ=agree.map((row,s)=>row.reduce((tot,nk,k)=>tot+nk*(agreeW[s][k]-1),0));
+
+  // n2more = subjects with ri >= 2
+  const n2more=ri.filter(v=>v>=2).length;
+  if(!n2more) return {ac:NaN,pa:NaN,pe:NaN,se:NaN,ci_lo:NaN,ci_hi:NaN,p:NaN};
+
+  // pa = mean of sumQ[s]/(ri[s]*(ri[s]-1)) over subjects with ri>=2
+  const pa=ri.reduce((sum,r_s,s)=>r_s>=2?sum+sumQ[s]/(r_s*(r_s-1)):sum,0)/n2more;
+
+  // pi[k] = (1/n) * Σ_s agree[s][k]/ri[s]  — R: colMeans(agree.mat/ri.mat)
+  const pi=Array.from({length:q},(_,k)=>
+    ri.reduce((sum,r_s,s)=>r_s>0?sum+agree[s][k]/r_s:sum,0)/n
+  );
+
+  // pe = sumW/(q*(q-1)) * Σ_k π_k*(1-π_k)  — R's exact formula
+  const pe=sumW/(q*(q-1))*pi.reduce((s,p)=>s+p*(1-p),0);
+
+  const ac=(pa-pe)/(1-pe);
+
+  // ── SE via influence function (R's variance formula, N=Inf so f=0) ──────────
+  // den.ivec[s] = ri[s]*(ri[s]-1), replace 0 with -1 (R trick to avoid /0)
+  // pa.ivec[s] = sumQ[s]/den.ivec[s]
+  const paIvec=sumQ.map((sq,s)=>{
+    const den=ri[s]*(ri[s]-1); return den>0?sq/den:0;
+  });
+  // ac1.ivec[s] = (n/n2more)*(paIvec[s] - pe*(ri[s]>=2)) / (1-pe)
+  const ac1Ivec=paIvec.map((pa_s,s)=>(n/n2more)*(pa_s-(ri[s]>=2?pe:0))/(1-pe));
+  // pe.ivec[s] = (sumW/(q*(q-1))) * Σ_k agree[s][k]*(1-pi[k]) / ri[s]
+  const peIvec=ri.map((r_s,s)=>{
+    if(!r_s) return 0;
+    return (sumW/(q*(q-1)))*agree[s].reduce((sum,nk,k)=>sum+nk*(1-pi[k]),0)/r_s;
+  });
+  // ac1.ivec.x[s] = ac1Ivec[s] - 2*(1-ac)*(peIvec[s]-pe)/(1-pe)
+  const ac1IvecX=ac1Ivec.map((a,s)=>a-2*(1-ac)*(peIvec[s]-pe)/(1-pe));
+  // var.ac1 = (1/(n*(n-1))) * Σ_s (ac1IvecX[s]-ac)^2
+  const varAc=n>=2?ac1IvecX.reduce((s,v)=>s+(v-ac)**2,0)/(n*(n-1)):NaN;
+  const se=isFinite(varAc)&&varAc>=0?Math.sqrt(varAc):NaN;
+
+  // p-value: one-tailed upper — R: 1 - pt(ac/se, n-1)
+  const tStat=isFinite(se)&&se>0?ac/se:NaN;
+  let p=NaN;
+  if(isFinite(tStat)){
+    const twotail=tPVal(Math.abs(tStat),n-1);
+    p=tStat>=0?twotail/2:1-twotail/2;
+  }
+  // 95% CI: ac ± 1.96*se (normal approximation; R uses qt(0.975,n-1))
+  const ci_lo=isFinite(se)?ac-1.96*se:NaN;
+  const ci_hi=isFinite(se)?ac+1.96*se:NaN;
+  return {ac,pa,pe,se,ci_lo,ci_hi,p,n,K:q,cats,method:weight==='unweighted'?'Gwet AC1':`Gwet AC2 (${weight})`};
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// KRIPPENDORFF'S ALPHA  — irr-package compatible
+// ═══════════════════════════════════════════════════════════════════════════════
+// Vergleich in R:
+//   mat <- do.call(rbind, lapply(rater_list, function(r) as.numeric(r[i,])))
+//   irr::kripp.alpha(mat, method="nominal")
+function krippendorffAlpha(data, metric) {
+  // data: [n_raters][n_units]
+  const nR=data.length, nU=data[0].length;
+
+  const allV=data.flat().filter(isFinite);
+  if(allV.length===0) return NaN;
+  const lvls=[...new Set(allV)].sort((a,b)=>a-b);
+  const K=lvls.length;
+  if(K<2) return 1; // alle Rater vollständig einig → α = 1 (wie irr/DescTools)
+  const lidx=new Map(lvls.map((v,i)=>[v,i]));
+
+  // irr: mc=1 für vollständige Daten, mc=m_u-1 wenn fehlende Werte vorhanden
+  const anyMissing=data.some(row=>row.some(v=>!isFinite(v)));
+
+  // Koinzidenzmatrix — ungeordnete Paare, symmetrische Zuweisung (wie irr)
+  const cm=Array.from({length:K},()=>new Array(K).fill(0));
+  for(let u=0;u<nU;u++){
+    const unit=[];
+    for(let r=0;r<nR;r++) if(isFinite(data[r][u])) unit.push(data[r][u]);
+    const m=unit.length; if(m<2) continue;
+    const mc_u=anyMissing?(m-1):1;
+    for(let i1=0;i1<m-1;i1++){
+      for(let i2=i1+1;i2<m;i2++){
+        const idx1=lidx.get(unit[i1]);
+        const idx2=lidx.get(unit[i2]);
+        cm[idx1][idx2]+=(1+(idx1===idx2?1:0))/mc_u;
+        if(idx1!==idx2) cm[idx2][idx1]=cm[idx1][idx2]; // Zuweisung, nicht +=
+      }
+    }
+  }
+
+  // Marginalen (nc) und nmv
+  let nmv=0;
+  const nc=new Array(K).fill(0);
+  for(let j=0;j<K;j++) for(let k=0;k<K;k++){ nmv+=cm[j][k]; nc[j]+=cm[j][k]; }
+  if(nmv<2) return NaN;
+
+  // Oberes Dreieck: sumO = Σ_{k>c} cm[c][k]*d,  sumE = Σ_{k>c} nc[c]*nc[k]*d
+  let sumO=0, sumE=0;
+  for(let k=1;k<K;k++){
+    for(let c=0;c<k;c++){
+      let dv;
+      if(metric==='nominal'){ dv=1; }
+      else if(metric==='interval'){ const diff=lvls[c]-lvls[k]; dv=diff*diff; }
+      else { // ordinal — exakte irr-Formel
+        let s=nc[c]/2;
+        for(let g=c+1;g<k;g++) s+=nc[g];
+        s+=nc[k]/2; dv=s*s;
+      }
+      sumO+=cm[c][k]*dv;
+      sumE+=nc[c]*nc[k]*dv;
+    }
+  }
+
+  if(sumE===0) return 1;
+  return 1-(nmv-1)*sumO/sumE; // irr-Formel
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ICC  (per dimension)
+// ═══════════════════════════════════════════════════════════════════════════════
+function computeICC(data, model) {
+  // data: [n_raters][n_stimuli]
+  const k=data.length, n=data[0].length;
+  const grandMean=data.flat().reduce((s,v)=>s+v,0)/(n*k);
+  const rowMeans=Array.from({length:n},(_,i)=>data.reduce((s,r)=>s+r[i],0)/k);
+  const colMeans=data.map(r=>r.reduce((s,v)=>s+v,0)/n);
+  let SSB=0,SSR=0,SST=0;
+  for(let i=0;i<n;i++) SSB+=k*(rowMeans[i]-grandMean)**2;
+  for(let r=0;r<k;r++) SSR+=n*(colMeans[r]-grandMean)**2;
+  for(let r=0;r<k;r++) for(let i=0;i<n;i++) SST+=(data[r][i]-grandMean)**2;
+  const SSW=SST-SSB, SSE=SST-SSB-SSR;
+  const MSB=SSB/(n-1), MSW=SSW/(n*(k-1)), MSR=SSR/(k-1), MSE=SSE/((n-1)*(k-1));
+
+  let icc1, icc1_f, icc1_df1, icc1_df2;
+  if(model==='1'){
+    icc1=(MSB-MSW)/(MSB+(k-1)*MSW);
+    icc1_f=MSB/MSW; icc1_df1=n-1; icc1_df2=n*(k-1);
+  } else if(model==='2'){
+    icc1=(MSB-MSE)/(MSB+(k-1)*MSE+k*(MSR-MSE)/n);
+    icc1_f=MSB/MSE; icc1_df1=n-1; icc1_df2=(n-1)*(k-1);
+  } else {
+    icc1=(MSB-MSE)/(MSB+(k-1)*MSE);
+    icc1_f=MSB/MSE; icc1_df1=n-1; icc1_df2=(n-1)*(k-1);
+  }
+  // Spearman-Brown for ICC(x,k)
+  const iccK=k*icc1/(1+(k-1)*icc1);
+
+  // 95% CI via F-quantile
+  const FL=fQuantile(0.025,icc1_df1,icc1_df2);
+  const FU=fQuantile(0.975,icc1_df1,icc1_df2);
+  const F0=icc1_f;
+  const icc1_lo=Math.max(-1,(F0/FU-1)/(F0/FU+k-1));
+  const icc1_hi=Math.min(1,(F0/FL-1)/(F0/FL+k-1));
+  const iccK_lo=Math.max(-1,k*icc1_lo/(1+(k-1)*icc1_lo));
+  const iccK_hi=Math.min(1,k*icc1_hi/(1+(k-1)*icc1_hi));
+  const p=fPVal(icc1_f,icc1_df1,icc1_df2);
+
+  return {icc1,iccK,icc1_lo,icc1_hi,iccK_lo,iccK_hi,p,n,k,model,MSB,MSW,MSR,MSE,SSB,SSE};
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// KENDALL'S W  (per dimension)
+// ═══════════════════════════════════════════════════════════════════════════════
+function kendallW(data) {
+  // data: [n_raters][n_stimuli]
+  const k=data.length, n=data[0].length;
+  // Rank each stimulus per rater, then sum ranks per stimulus
+  function rankVec(v){
+    const idx=v.map((_,i)=>i).sort((a,b)=>v[a]-v[b]);
+    const r=new Array(v.length);
+    let i=0;
+    while(i<v.length){
+      let j=i; while(j<v.length&&v[idx[j]]===v[idx[i]]) j++;
+      const avgR=(i+j+1)/2;
+      for(let m=i;m<j;m++) r[idx[m]]=avgR;
+      i=j;
+    }
+    return r;
+  }
+  const ranks=data.map(r=>rankVec(r));
+  const Ri=Array.from({length:n},(_,i)=>ranks.reduce((s,r)=>s+r[i],0));
+  const Rbar=k*(n+1)/2;
+  const S=Ri.reduce((s,r)=>s+(r-Rbar)**2,0);
+  const W=12*S/(k*k*(n*n*n-n));
+  const chi2=k*(n-1)*W;
+  const p=fPVal(chi2/1,n-1,1e6); // approximate chi2 via F with large df2
+  return {W,chi2,df:n-1,p,n,k};
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAD / HAMMING  (per stimulus, per pair)
+// ═══════════════════════════════════════════════════════════════════════════════
+function makePairs(raters) {
+  const pairs=[];
+  for(let i=0;i<raters.length;i++) for(let j=i+1;j<raters.length;j++)
+    pairs.push({i,j,lbl:`B${raters[i].id} vs B${raters[j].id}`});
+  return pairs;
+}
+function madPerStimulus(raters, d) {
+  const pairs=makePairs(raters);
+  return pairs.map(p=>{
+    const v1=raters[p.i].data.map(row=>row[d]);
+    const v2=raters[p.j].data.map(row=>row[d]);
+    const vals=v1.map((a,i)=>Math.abs(a-v2[i]));
+    return {lbl:p.lbl,vals};
+  });
+}
+function hammingPerStimulus(raters) {
+  const pairs=makePairs(raters), nd=raters[0].data[0].length;
+  return pairs.map(p=>{
+    const n=raters[p.i].data.length;
+    const vals=Array.from({length:n},(_,s)=>{
+      let agree=0;
+      for(let d=0;d<nd;d++) if(raters[p.i].data[s][d]===raters[p.j].data[s][d]) agree++;
+      return agree/nd;
+    });
+    return {lbl:p.lbl,vals};
+  });
+}
+// ─── Per-stimulus overall agreement across ALL raters ─────────────────────────
+// Mirrors R: for each stimulus, build mat [n_raters × n_dims] and apply the
+// chosen method — treating DIMENSIONS as items, RATERS as raters.
+// Requires n_dims >= 2. If n_dims == 1: falls back to raw pairwise agreement.
+function stimulusOverallAgreement(raters, scale, method, weight, iccModel) {
+  const nS=raters[0].data.length, nD=raters[0].data[0].length, k=raters.length;
+
+  // D=1 fallback: raw pairwise proportion / MAD (no chance correction possible)
+  if(nD<2){
+    return Array.from({length:nS},(_,s)=>{
+      const vals=raters.map(r=>r.data[s][0]).filter(isFinite);
+      const m=vals.length; if(m<2) return NaN;
+      let sum=0,cnt=0;
+      for(let i=0;i<m;i++) for(let j=i+1;j<m;j++){
+        sum+=scale==='interval'?Math.abs(vals[i]-vals[j]):(vals[i]===vals[j]?1:0);
+        cnt++;
+      }
+      return cnt>0?sum/cnt:NaN;
+    });
+  }
+
+  // D>=2: apply the actual chosen method with dims as items
+  return Array.from({length:nS},(_,s)=>{
+    // mat[rater][dim] — same layout as krippendorffAlpha / fleissKappa expect
+    const mat=raters.map(r=>r.data[s].slice());
+    try{
+      if(method==='cohen_unw')      return k===2?cohensKappa(mat[0],mat[1],'unweighted').kappa:fleissKappa(mat).kappa;
+      if(method==='cohen_wtd')      return cohensKappa(mat[0],mat[1],weight).kappa;
+      if(method==='fleiss')         return fleissKappa(mat).kappa;
+      if(method==='kripp_nom')      return krippendorffAlpha(mat,'nominal');
+      if(method==='kripp_ord')      return krippendorffAlpha(mat,'ordinal');
+      if(method==='kripp_int')      return krippendorffAlpha(mat,'interval');
+      if(method==='icc')            return computeICC(mat,iccModel||'2').icc1;
+      if(method==='gwet_nom')       return gwetAC(mat,'unweighted').ac;
+      if(method==='gwet_ord_lin')   return gwetAC(mat,'linear').ac;
+      if(method==='gwet_ord_quad')  return gwetAC(mat,'quadratic').ac;
+    }catch(e){ return NaN; }
+    return NaN;
+  });
+}
+
+function stimOverallLabel(method, scale, weight, nD) {
+  const dimNote=nD<2?' (D=1: raw value)':'';
+  if(method==='icc')            return 'ICC per stimulus'+dimNote;
+  if(method==='cohen_unw')      return 'κ per stimulus'+dimNote;
+  if(method==='cohen_wtd')      return 'κ ('+weight+') per stimulus'+dimNote;
+  if(method==='fleiss')         return "Fleiss' κ per stimulus"+dimNote;
+  if(method==='kripp_nom')      return 'Krippendorff α (nominal) per stimulus'+dimNote;
+  if(method==='kripp_ord')      return 'Krippendorff α (ordinal) per stimulus'+dimNote;
+  if(method==='kripp_int')      return 'Krippendorff α (interval) per stimulus'+dimNote;
+  if(method==='gwet_nom')       return 'Gwet AC1 (nominal) per stimulus'+dimNote;
+  if(method==='gwet_ord_lin')   return 'Gwet AC2 (linear) per stimulus'+dimNote;
+  if(method==='gwet_ord_quad')  return 'Gwet AC2 (quadratic) per stimulus'+dimNote;
+  return 'Agreement per stimulus'+dimNote;
+}
+
+function descVals(vals){
+  const s=[...vals].sort((a,b)=>a-b);
+  const n=s.length;
+  const mean=s.reduce((a,b)=>a+b,0)/n;
+  const sd=Math.sqrt(s.reduce((a,b)=>a+(b-mean)**2,0)/n);
+  const med=n%2===0?(s[n/2-1]+s[n/2])/2:s[(n-1)/2];
+  return {n,mean,sd,med,min:s[0],max:s[n-1]};
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// GLOBAL MEAN + CI  (over dimensions)
+// ═══════════════════════════════════════════════════════════════════════════════
+function globalMeanCI(vals) {
+  const n=vals.filter(isFinite).length;
+  if(n===0) return {mean:NaN,sd:NaN,lo:NaN,hi:NaN};
+  const m=vals.reduce((s,v)=>s+v,0)/n;
+  if(n===1) return {mean:m,sd:NaN,lo:NaN,hi:NaN};
+  const sd=Math.sqrt(vals.reduce((s,v)=>s+(v-m)**2,0)/(n-1));
+  const se=sd/Math.sqrt(n);
+  const tc=fQuantile(0.975,n-1,1e8); // t-quantile approx via F
+  return {mean:m,sd,lo:m-tc*se,hi:m+tc*se};
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MAIN COMPUTE
+// ═══════════════════════════════════════════════════════════════════════════════
+function computeAndRender() {
+  const errors=validateInputs();
+  const errEl=document.getElementById('compute-error');
+  if(errors.length){
+    errEl.innerHTML=errors.map(e=>'· '+e).join('<br>');
+    errEl.style.display='block'; return;
+  }
+  errEl.style.display='none';
+
+  const method=document.getElementById('sel-method').value;
+  const scale=document.getElementById('sel-scale').value;
+  const weight=document.getElementById('sel-weight').value;
+  const iccModel=document.getElementById('sel-icc').value;
+  ST.method=method; ST.scale=scale; ST.weight=weight; ST.icc_model=iccModel;
+
+  const raters=ST.raters.filter(r=>r.data!==null);
+  const nD=ST.n_dims, nS=ST.n_stimuli, k=raters.length;
+
+  // Per-dimension agreement
+  const dimResults=[];
+  for(let d=0;d<nD;d++){
+    const dimData=extractDim(raters,d);
+    let res={dim:d,name:ST.dim_names[d]};
+    if(method==='cohen_unw'){ res.kappa=cohensKappa(dimData[0],dimData[1],'unweighted'); }
+    else if(method==='cohen_wtd'){ res.kappa=cohensKappa(dimData[0],dimData[1],weight); }
+    else if(method==='fleiss'){ res.kappa=fleissKappa(dimData); }
+    else if(method==='kripp_nom'){ res.alpha=krippendorffAlpha(dimData,'nominal'); }
+    else if(method==='kripp_ord'){ res.alpha=krippendorffAlpha(dimData,'ordinal'); }
+    else if(method==='kripp_int'){ res.alpha=krippendorffAlpha(dimData,'interval'); }
+    else if(method==='icc'){ res.icc=computeICC(dimData,iccModel); }
+    else if(method==='gwet_nom')      { res.gwet=gwetAC(dimData,'unweighted'); }
+    else if(method==='gwet_ord_lin')  { res.gwet=gwetAC(dimData,'linear'); }
+    else if(method==='gwet_ord_quad') { res.gwet=gwetAC(dimData,'quadratic'); }
+    // Kendall W always for ordinal
+    if(scale==='ordinal') res.kendall=kendallW(dimData);
+    dimResults.push(res);
+  }
+
+  // Statistic values per dim
+  const statVals=dimResults.map(r=>{
+    if(r.kappa) return r.kappa.kappa;
+    if(r.alpha!==undefined) return r.alpha;
+    if(r.icc) return r.icc.icc1;
+    if(r.gwet) return r.gwet.ac;
+    return NaN;
+  });
+  const global=globalMeanCI(statVals);
+
+  // MAD / Hamming
+  let stimData=null;
+  if(scale==='nominal') stimData=hammingPerStimulus(raters);
+  else stimData=madPerStimulus(raters,0).map((pair,pi)=>{
+    // Average MAD across all dimensions
+    const allDimVals=dimResults.map((_,d)=>madPerStimulus(raters,d)[pi].vals);
+    const avgVals=allDimVals[0].map((_,s)=>allDimVals.reduce((acc,dv)=>acc+dv[s],0)/nD);
+    return {lbl:pair.lbl,vals:avgVals};
+  });
+
+  // Per-stimulus overall agreement (all raters at once, method-aware)
+  const stimOverall=stimulusOverallAgreement(raters,scale,method,weight,iccModel);
+  const stimOverallLbl=stimOverallLabel(method,scale,weight,nD);
+
+  // ── DEBUG: Per-Reiz-Werte für Vergleich mit R ─────────────────────────────
+  // In R: stim_agree_df$Wert  aus agreement_per_stimulus()
+  //
+  // Für Zwischenschritte (Koinzidenzmatrix, nc, Do, De) eines einzelnen Reizes:
+  //   Konsole öffnen → eingeben:  window.KRIPALPHA_DEBUG = 3
+  //   dann neu berechnen → die ersten 3 Reize werden vollständig geloggt.
+  //
+  // Äquivalenter R-Code für Reiz i:
+  //   mat <- do.call(rbind, lapply(rater_list, function(r) as.numeric(r[i,])))
+  //   irr::kripp.alpha(mat, method="nominal")
+  if(stimOverall && stimOverall.some(isFinite)){
+    const rows=stimOverall.map((v,i)=>({Stimulus:i+1,Value:isFinite(v)?+v.toFixed(6):NaN}));
+    const valid=stimOverall.filter(isFinite);
+    console.group(`[InterRaterAgreement] Overall measure per stimulus — ${stimOverallLbl}`);
+    console.table(rows);
+    console.log('Mean:', valid.length>0?(valid.reduce((s,v)=>s+v,0)/valid.length).toFixed(6):'—',
+                '| N valid:', valid.length, '/', stimOverall.length);
+    console.groupEnd();
+  }
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  ST.results={dimResults,global,statVals,stimData,stimOverall,stimOverallLbl,k,nD,nS,raters,method,scale,iccModel,weight};
+  renderResults(ST.results);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RENDER RESULTS
+// ═══════════════════════════════════════════════════════════════════════════════
+function methodLabel(method,weight,iccModel){
+  if(method==='cohen_unw')      return "Cohen's κ (unweighted)";
+  if(method==='cohen_wtd')      return "Cohen's κ ("+weight+" weighted)";
+  if(method==='fleiss')         return "Fleiss' κ";
+  if(method==='kripp_nom')      return "Krippendorff's α (nominal)";
+  if(method==='kripp_ord')      return "Krippendorff's α (ordinal)";
+  if(method==='kripp_int')      return "Krippendorff's α (interval)";
+  if(method==='icc')            return "ICC("+iccModel+",x)";
+  if(method==='gwet_nom')       return "Gwet's AC1 (nominal)";
+  if(method==='gwet_ord_lin')   return "Gwet's AC2 (linear)";
+  if(method==='gwet_ord_quad')  return "Gwet's AC2 (quadratic)";
+  return method;
+}
+
+function renderResults(res) {
+  document.getElementById('empty-state').style.display='none';
+  const {dimResults,global,statVals,stimData,stimOverall,stimOverallLbl,k,nD,nS,raters,method,scale,iccModel}=res;
+  const mlbl=methodLabel(method,res.weight,iccModel);
+  const isICC=(method==='icc');
+
+  // ── ① Global ──────────────────────────────────────────────────────────────
+  showSec('sec-global');
+  const gv=global.mean;
+  const interp=isICC?interpICC(gv):interpKappa(gv);
+  const ciStr=isFinite(global.lo)?` 95% CI [${global.lo.toFixed(3)}, ${global.hi.toFixed(3)}]`:'';
+  const dimNote=nD>1?` across ${nD} dimensions`:'';
+  document.getElementById('global-card').innerHTML=`
+    <div class="global-card">
+      <div class="global-value">${isFinite(gv)?gv.toFixed(3):'—'}</div>
+      <div class="global-meta">
+        <div class="global-method">${mlbl}${dimNote}</div>
+        <div class="global-ci">${k} raters · ${nS} stimuli · ${nD} dim.${ciStr}</div>
+        <span class="badge ${interp.cls}">${interp.txt}</span>
+      </div>
+    </div>`;
+
+  // ── ② Dimensionen (nur wenn D>1) ──────────────────────────────────────────
+  if(nD>1){
+    showSec('sec-dims');
+    // Table
+    const rows=dimResults.map((r,i)=>{
+      const v=statVals[i];
+      const ip=isICC?interpICC(v):interpKappa(v);
+      let pCell='', seCell='';
+      if(r.kappa){pCell=`${fmtP(r.kappa.p)} ${sigStr(r.kappa.p)}`;seCell=r.kappa.se.toFixed(3);}
+      else if(r.icc){pCell=fmtP(r.icc.p)+' '+sigStr(r.icc.p);seCell=`[${r.icc.icc1_lo.toFixed(3)}, ${r.icc.icc1_hi.toFixed(3)}]`;}
+      else if(r.gwet){pCell=fmtP(r.gwet.p)+' '+sigStr(r.gwet.p);seCell=`[${r.gwet.ci_lo.toFixed(3)}, ${r.gwet.ci_hi.toFixed(3)}]`;}
+      return `<tr>
+        <td style="color:var(--accent)">${r.name}</td>
+        <td class="num">${isFinite(v)?v.toFixed(3):'—'}</td>
+        <td class="num">${seCell}</td>
+        <td class="num">${pCell}</td>
+        <td><span class="badge ${ip.cls}" style="font-size:.68rem">${ip.txt}</span></td>
+      </tr>`;
+    }).join('');
+    const isGwet=method.startsWith('gwet');
+    const seHead=isICC?'95% CI (ICC1)':isGwet?'95% CI':'SE';
+    document.getElementById('dim-table-wrap').innerHTML=`
+      <table class="res-table">
+        <colgroup><col style="width:30%"><col style="width:12%"><col style="width:22%"><col style="width:11%"><col style="width:25%"></colgroup>
+        <tr><th>Dimension</th><th class="num">${mlbl}</th><th class="num">${seHead}</th><th class="num">p</th><th>Interpretation</th></tr>
+        ${rows}</table>`;
+    setTimeout(()=>drawDimBars(res),50);
+  } else {
+    hideSec('sec-dims');
+    // For D=1 show ICC(x,1) and ICC(x,k) if ICC
+    if(isICC && dimResults[0].icc){
+      const icc=dimResults[0].icc;
+      document.getElementById('global-dim-note').innerHTML=`
+        <div class="kw-grid kw-grid-4" style="margin-top:.5rem">
+          <div class="kw-box"><div class="kw-label">ICC(${iccModel},1)</div>
+            <div class="kw-val">${icc.icc1.toFixed(3)}</div>
+            <div class="kw-sub">[${icc.icc1_lo.toFixed(3)}, ${icc.icc1_hi.toFixed(3)}]</div></div>
+          <div class="kw-box"><div class="kw-label">ICC(${iccModel},k)</div>
+            <div class="kw-val">${icc.iccK.toFixed(3)}</div>
+            <div class="kw-sub">[${icc.iccK_lo.toFixed(3)}, ${icc.iccK_hi.toFixed(3)}]</div></div>
+          <div class="kw-box"><div class="kw-label">p-value</div>
+            <div class="kw-val" style="font-size:.85rem">${fmtP(icc.p)}</div>
+            <div class="kw-sub">${sigStr(icc.p)}</div></div>
+          <div class="kw-box"><div class="kw-label">k raters</div>
+            <div class="kw-val">${icc.k}</div></div>
+        </div>`;
+    } else { document.getElementById('global-dim-note').innerHTML=''; }
+  }
+
+  // ── ③ Pro-Reiz ────────────────────────────────────────────────────────────
+  showSec('sec-stim');
+  const stimLbl=stimOverallLbl;
+  const stimLblPair=scale==='nominal'?'Hamming similarity':'MAD';
+
+  // ── Overall-Stats ─────────────────────────────────────────────────────────
+  const overallValid=stimOverall.filter(isFinite);
+  const dOvr=overallValid.length>0?descVals(overallValid):null;
+  document.getElementById('stim-overall-head').textContent=`Overall measure per stimulus — ${mlbl} — all ${k} raters`;
+  document.getElementById('stim-overall-stats').innerHTML=dOvr?`
+    <div class="kw-grid kw-grid-4" style="margin-bottom:.5rem">
+      <div class="kw-box"><div class="kw-label">Mean</div>
+        <div class="kw-val">${dOvr.mean.toFixed(3)}</div></div>
+      <div class="kw-box"><div class="kw-label">Median</div>
+        <div class="kw-val">${dOvr.med.toFixed(3)}</div></div>
+      <div class="kw-box"><div class="kw-label">SD</div>
+        <div class="kw-val">${dOvr.sd.toFixed(3)}</div></div>
+      <div class="kw-box"><div class="kw-label">Range</div>
+        <div class="kw-val">${dOvr.min.toFixed(2)} – ${dOvr.max.toFixed(2)}</div></div>
+    </div>`:'';
+
+  // ── Pairwise table ────────────────────────────────────────────────────────
+  const descRows=stimData.map(pair=>{
+    const d=descVals(pair.vals);
+    return `<tr><td>${pair.lbl}</td>
+      <td class="num">${d.mean.toFixed(3)}</td><td class="num">${d.med.toFixed(3)}</td>
+      <td class="num">${d.sd.toFixed(3)}</td>
+      <td class="num">${d.min.toFixed(2)}</td><td class="num">${d.max.toFixed(2)}</td></tr>`;
+  }).join('');
+  document.getElementById('stim-desc').innerHTML=`
+    <table class="res-table">
+      <colgroup><col style="width:36%"><col style="width:13%"><col style="width:13%"><col style="width:12%"><col style="width:13%"><col style="width:13%"></colgroup>
+      <tr><th>${stimLblPair}</th><th class="num">Mean</th><th class="num">Median</th><th class="num">SD</th><th class="num">Min</th><th class="num">Max</th></tr>
+      ${descRows}</table>`;
+  setTimeout(()=>drawStimOverall(res),50);
+  setTimeout(()=>drawStimHistogram(res,stimLbl),50);
+  setTimeout(()=>drawStimIndex(res,stimLbl),50);
+  setTimeout(()=>drawDensityPlot(res,stimLbl),50);
+  setTimeout(()=>drawStimBox(res,stimLblPair),50);
+
+  // ── Kendall's W ───────────────────────────────────────────────────────────
+  if(scale==='ordinal'){
+    showSec('acc-kendall');
+    const kRows=dimResults.map(r=>{
+      if(!r.kendall) return '';
+      const w=r.kendall;
+      return `<tr><td style="color:var(--accent)">${r.name}</td>
+        <td class="num">${w.W.toFixed(3)}</td>
+        <td class="num">${w.chi2.toFixed(2)}</td>
+        <td class="num">${w.df}</td>
+        <td class="num">${fmtP(w.p)} ${sigStr(w.p)}</td></tr>`;
+    }).join('');
+    document.getElementById('kendall-result').innerHTML=`
+      <table class="res-table"><tr>
+        <th>Dimension</th><th>Kendall's W</th><th>χ²</th><th>df</th><th>p</th>
+      </tr>${kRows}</table>`;
+  } else { hideSec('acc-kendall'); }
+
+  // ── ICC ───────────────────────────────────────────────────────────────────
+  if(isICC && nD>1){
+    showSec('acc-icc');
+    const iRows=dimResults.map(r=>{
+      if(!r.icc) return '';
+      const ic=r.icc;
+      const ip1=interpICC(ic.icc1), ipK=interpICC(ic.iccK);
+      return `<tr>
+        <td style="color:var(--accent)">${r.name}</td>
+        <td class="num">${ic.icc1.toFixed(3)}</td>
+        <td class="num" style="font-size:.72rem;color:var(--ink3)">[${ic.icc1_lo.toFixed(3)}, ${ic.icc1_hi.toFixed(3)}]</td>
+        <td class="num">${ic.iccK.toFixed(3)}</td>
+        <td class="num" style="font-size:.72rem;color:var(--ink3)">[${ic.iccK_lo.toFixed(3)}, ${ic.iccK_hi.toFixed(3)}]</td>
+        <td class="num">${fmtP(ic.p)} ${sigStr(ic.p)}</td>
+        <td><span class="badge ${ip1.cls}" style="font-size:.68rem">${ip1.txt}</span></td>
+      </tr>`;
+    }).join('');
+    document.getElementById('icc-table-wrap').innerHTML=`
+      <table class="res-table"><tr>
+        <th>Dim.</th><th>ICC(${iccModel},1)</th><th>95% CI</th>
+        <th>ICC(${iccModel},k)</th><th>95% CI</th><th>p</th><th>Interpretation</th>
+      </tr>${iRows}</table>`;
+    setTimeout(()=>drawICCPlot(res),50);
+  } else { hideSec('acc-icc'); }
+
+  // ── Bland-Altman (Intervall) ──────────────────────────────────────────────
+  if(scale==='interval'){
+    showSec('acc-bland');
+    buildBlandControls(res);
+    setTimeout(()=>drawBlandAltman(res,0,0),50);
+  } else { hideSec('acc-bland'); }
+
+  // ── Heatmap (Dimension × Rater) ───────────────────────────────────────────
+  showSec('acc-heatmap');
+  setTimeout(()=>drawHeatmap(res),50);
+
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CANVAS: DIMENSION BARS
+// ═══════════════════════════════════════════════════════════════════════════════
+function drawDimBars(res){
+  const cv=document.getElementById('cv-dim-bars');
+  const W=cv.offsetWidth; if(!W) return;
+  cv.width=W;
+  const ctx=cv.getContext('2d');
+  const {dimResults,statVals,global,nD,method}=res;
+  const isICC=(method==='icc');
+  const ink=css('--ink'),ink2=css('--ink2'),ink3=css('--ink3');
+  const a1=css('--a1'),a3=css('--a3'),a5=css('--a5'),accent=css('--a6');
+  const grid=css('--grid'),panel=css('--panel'),bg=css('--bg');
+  const H=cv.height;
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const pad={l:90,r:60,t:22,b:24};
+  const barH=Math.min(28,(H-pad.t-pad.b)/nD-6);
+  const gap=(H-pad.t-pad.b-barH*nD)/(nD+1);
+  const cW=W-pad.l-pad.r;
+  // Benchmarks
+  const bm=isICC?[.50,.75,.90]:[.40,.60,.80];
+  const bmC=[a1,a5,a3];
+  ctx.strokeStyle=grid;ctx.lineWidth=1;
+  for(let i=0;i<=10;i++){
+    const x=pad.l+cW*i/10;
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,H-pad.b);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText((i/10).toFixed(1),x,H-pad.b+16);
+  }
+  bm.forEach((b,i)=>{
+    const x=pad.l+cW*b;
+    ctx.strokeStyle=bmC[i];ctx.lineWidth=1;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,H-pad.b);ctx.stroke();
+    ctx.setLineDash([]);
+  });
+  // Global mean line
+  if(isFinite(global.mean)){
+    const x=pad.l+cW*Math.max(0,Math.min(1,global.mean));
+    ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,H-pad.b);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=accent;ctx.font='bold 10px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('Ø '+global.mean.toFixed(3),x,pad.t-6);
+  }
+  // Bars
+  dimResults.forEach((r,i)=>{
+    const v=Math.max(0,Math.min(1,isFinite(statVals[i])?statVals[i]:0));
+    const y=pad.t+gap+(barH+gap)*i;
+    // Color interpolation
+    let barColor=a1;
+    if(statVals[i]>=(isICC?.75:.60)) barColor=a3;
+    else if(statVals[i]>=(isICC?.50:.40)) barColor=a5;
+    ctx.fillStyle=barColor+'44';
+    ctx.fillRect(pad.l,y,cW*v,barH);
+    ctx.strokeStyle=barColor;ctx.lineWidth=1.5;
+    ctx.strokeRect(pad.l,y,cW*v,barH);
+    ctx.fillStyle=ink;ctx.font='11px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(r.name,pad.l-6,y+barH/2+4);
+    if(isFinite(statVals[i])){
+      ctx.fillStyle=ink2;ctx.textAlign='left';
+      ctx.fillText(statVals[i].toFixed(3),pad.l+cW*v+5,y+barH/2+4);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CANVAS: STIM-OVERALL (single boxplot row, all raters)
+// ═══════════════════════════════════════════════════════════════════════════════
+function drawStimOverall(res){
+  const cv=document.getElementById('cv-stim-overall');
+  const W=cv.offsetWidth;if(!W)return;
+  cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const {stimOverall,scale}=res;
+  const vals=(stimOverall||[]).filter(isFinite);
+  if(vals.length<2) return;
+  const ink2=css('--ink2'),ink3=css('--ink3'),accent=css('--a6');
+  const bg=css('--bg'),grid=css('--grid');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  const pad={l:14,r:14,t:10,b:28};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  let lo=Math.min(...vals),hi=Math.max(...vals);
+  if(scale==='nominal'){lo=0;hi=1;}
+  else{const r=(hi-lo)*.1||.5;lo=Math.max(0,lo-r);hi+=r;}
+  const sx=v=>pad.l+(v-lo)/(hi-lo)*cW;
+  const cy=pad.t+cH/2;
+  const bw=cH*0.55;
+
+  // Grid
+  ctx.strokeStyle=grid;ctx.lineWidth=.8;
+  for(let i=0;i<=5;i++){
+    const v=lo+(hi-lo)*i/5;
+    ctx.beginPath();ctx.moveTo(sx(v),pad.t);ctx.lineTo(sx(v),pad.t+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(v.toFixed(2),sx(v),pad.t+cH+16);
+  }
+
+  // Jitter points
+  const jitterH=bw*0.44;
+  ctx.fillStyle=accent;ctx.globalAlpha=0.3;
+  vals.forEach((v,i)=>{
+    const jy=(((i*0.6180339887)%1)*2-1)*jitterH;
+    ctx.beginPath();ctx.arc(sx(v),cy+jy,2.8,0,2*Math.PI);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+
+  // Box-Whisker
+  const s=[...vals].sort((a,b)=>a-b);
+  const n=s.length;
+  const q1=s[Math.floor(n*.25)],q3=s[Math.floor(n*.75)];
+  const med=n%2===0?(s[n/2-1]+s[n/2])/2:s[(n-1)/2];
+  const mean=s.reduce((a,b)=>a+b,0)/n;
+  const iqr=q3-q1;
+  const wlo=Math.max(s[0],q1-1.5*iqr),whi=Math.min(s[n-1],q3+1.5*iqr);
+
+  ctx.strokeStyle=accent;ctx.lineWidth=1.8;
+  ctx.beginPath();ctx.moveTo(sx(wlo),cy);ctx.lineTo(sx(q1),cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(sx(q3),cy);ctx.lineTo(sx(whi),cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(sx(wlo),cy-bw/3);ctx.lineTo(sx(wlo),cy+bw/3);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(sx(whi),cy-bw/3);ctx.lineTo(sx(whi),cy+bw/3);ctx.stroke();
+  ctx.fillStyle=accent+'33';ctx.fillRect(sx(q1),cy-bw/2,sx(q3)-sx(q1),bw);
+  ctx.strokeRect(sx(q1),cy-bw/2,sx(q3)-sx(q1),bw);
+  ctx.strokeStyle=accent;ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(sx(med),cy-bw/2);ctx.lineTo(sx(med),cy+bw/2);ctx.stroke();
+  ctx.fillStyle=accent;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(sx(mean),cy-5);ctx.lineTo(sx(mean)+6,cy);
+  ctx.lineTo(sx(mean),cy+5);ctx.lineTo(sx(mean)-6,cy);ctx.closePath();ctx.fill();
+
+  // Median annotation
+  ctx.fillStyle=accent;ctx.font='9px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Med='+med.toFixed(2),sx(med),pad.t+2);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CANVAS: STIMBOX (Boxplot per pair)
+// ═══════════════════════════════════════════════════════════════════════════════
+function drawStimBox(res,lbl){
+  const cv=document.getElementById('cv-stim-box');
+  const W=cv.offsetWidth;if(!W)return;
+  cv.width=W;
+  // Height: 54px per pairwise row + margins
+  const nRowsPreview=res.stimData.length;
+  cv.height=Math.max(120, nRowsPreview*54+62);
+  const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const {stimData,scale}=res;
+  const ink=css('--ink'),ink2=css('--ink2'),ink3=css('--ink3');
+  const bg=css('--bg'),grid=css('--grid');
+  const PAL=[css('--a2'),css('--a1'),css('--a3'),css('--a5'),css('--a4')];
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const np=stimData.length;
+  const pad={l:50,r:20,t:22,b:40};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const allV=stimData.flatMap(p=>p.vals).filter(isFinite);
+  let lo=Math.min(...allV),hi=Math.max(...allV);
+  if(scale==='nominal'){lo=0;hi=1;}
+  else{const r=(hi-lo)*.08||.5;lo=Math.max(0,lo-r);hi=hi+r;}
+  const sx=v=>pad.l+(v-lo)/(hi-lo)*cW;
+  const bw=cH/(np+1)*0.55;
+  // Grid
+  ctx.strokeStyle=grid;ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const v=lo+(hi-lo)*i/5;
+    ctx.beginPath();ctx.moveTo(sx(v),pad.t);ctx.lineTo(sx(v),pad.t+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(v.toFixed(scale==='nominal'?1:2),sx(v),pad.t+cH+16);
+  }
+  ctx.fillStyle=ink2;ctx.textAlign='center';ctx.font='13px DM Mono,monospace';
+  ctx.fillText(lbl,pad.l+cW/2,H-4);
+  // Pairwise rows
+  stimData.forEach((pair,pi)=>{
+    const s=[...pair.vals].sort((a,b)=>a-b);
+    const n=s.length;
+    const q1=s[Math.floor(n*.25)],q3=s[Math.floor(n*.75)];
+    const med=n%2===0?(s[n/2-1]+s[n/2])/2:s[(n-1)/2];
+    const mean=s.reduce((a,b)=>a+b,0)/n;
+    const iqr=q3-q1;
+    const wlo=Math.max(s[0],q1-1.5*iqr),whi=Math.min(s[n-1],q3+1.5*iqr);
+    const cy=pad.t+cH/(np+1)*(pi+1);
+    const col=PAL[pi%PAL.length];
+    // Jittered data points (drawn first, below box)
+    const jitterH=bw*0.42;
+    ctx.fillStyle=col;ctx.globalAlpha=0.35;
+    pair.vals.forEach((v,i)=>{
+      // Deterministic jitter: golden-ratio sequence
+      const jy=(((i*0.6180339887)%1)*2-1)*jitterH;
+      ctx.beginPath();ctx.arc(sx(v),cy+jy,2.5,0,2*Math.PI);ctx.fill();
+    });
+    ctx.globalAlpha=1;
+    // Whiskers
+    ctx.strokeStyle=col;ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(sx(wlo),cy);ctx.lineTo(sx(q1),cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(sx(q3),cy);ctx.lineTo(sx(whi),cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(sx(wlo),cy-bw/3);ctx.lineTo(sx(wlo),cy+bw/3);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(sx(whi),cy-bw/3);ctx.lineTo(sx(whi),cy+bw/3);ctx.stroke();
+    // Box
+    ctx.fillStyle=col+'33';ctx.fillRect(sx(q1),cy-bw/2,sx(q3)-sx(q1),bw);
+    ctx.strokeRect(sx(q1),cy-bw/2,sx(q3)-sx(q1),bw);
+    // Median line
+    ctx.strokeStyle=col;ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(sx(med),cy-bw/2);ctx.lineTo(sx(med),cy+bw/2);ctx.stroke();
+    // Mean diamond
+    ctx.fillStyle=col;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(sx(mean),cy-4);ctx.lineTo(sx(mean)+5,cy);
+    ctx.lineTo(sx(mean),cy+4);ctx.lineTo(sx(mean)-5,cy);ctx.closePath();ctx.fill();
+    // Label
+    ctx.fillStyle=col;ctx.font='10.5px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(pair.lbl,pad.l-5,cy+4);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CANVAS: ICC PLOT
+// ═══════════════════════════════════════════════════════════════════════════════
+function drawICCPlot(res){
+  const cv=document.getElementById('cv-icc');
+  const W=cv.offsetWidth;if(!W)return;
+  cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const {dimResults,iccModel}=res;
+  const ink=css('--ink'),ink2=css('--ink2'),ink3=css('--ink3');
+  const a2=css('--a2'),a1=css('--a1'),a3=css('--a3'),a5=css('--a5');
+  const bg=css('--bg'),grid=css('--grid');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const nD=dimResults.length;
+  const pad={l:60,r:60,t:28,b:40};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const sx=i=>pad.l+cW*(i+0.5)/nD;
+  const sy=v=>pad.t+(1-Math.max(-0.1,Math.min(1,v)))/(1+0.1)*cH;
+  // Grid
+  [0,.25,.50,.75,.90,1].forEach(v=>{
+    ctx.strokeStyle=v===0?ink3:grid;ctx.lineWidth=v===0?1.2:.8;
+    ctx.beginPath();ctx.moveTo(pad.l,sy(v));ctx.lineTo(pad.l+cW,sy(v));ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='10px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(v.toFixed(2),pad.l-5,sy(v)+4);
+  });
+  // Benchmarks
+  [[.50,a1],[.75,a5],[.90,a3]].forEach(([b,c])=>{
+    ctx.strokeStyle=c;ctx.lineWidth=.8;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(pad.l,sy(b));ctx.lineTo(pad.l+cW,sy(b));ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=c;ctx.font='9.5px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(b.toFixed(2),pad.l+cW+4,sy(b)+4);
+  });
+  // Points + CI per dim × {icc1, iccK}
+  const cols=[a2,a1];const lbls=[`ICC(${iccModel},1)`,`ICC(${iccModel},k)`];
+  const offsets=[-7,7];
+  dimResults.forEach((r,i)=>{
+    if(!r.icc) return;
+    const ic=r.icc;
+    [[ic.icc1,ic.icc1_lo,ic.icc1_hi],[ic.iccK,ic.iccK_lo,ic.iccK_hi]].forEach(([v,lo,hi],ci)=>{
+      const x=sx(i)+offsets[ci];
+      ctx.strokeStyle=cols[ci];ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(x,sy(lo));ctx.lineTo(x,sy(hi));ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x-5,sy(lo));ctx.lineTo(x+5,sy(lo));ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x-5,sy(hi));ctx.lineTo(x+5,sy(hi));ctx.stroke();
+      ctx.fillStyle=cols[ci];ctx.beginPath();ctx.arc(x,sy(v),4.5,0,2*Math.PI);ctx.fill();
+    });
+    ctx.fillStyle=ink2;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(r.name,sx(i),H-pad.b+16);
+  });
+  // Legend
+  cols.forEach((c,ci)=>{
+    ctx.fillStyle=c;ctx.beginPath();ctx.arc(pad.l+ci*90+10,pad.t-10,4,0,2*Math.PI);ctx.fill();
+    ctx.fillStyle=ink2;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(lbls[ci],pad.l+ci*90+18,pad.t-6);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CANVAS: BLAND-ALTMAN
+// ═══════════════════════════════════════════════════════════════════════════════
+function buildBlandControls(res){
+  const {nD,dim_names}=ST;
+  const pairsCount=makePairs(res.raters).length;
+  let html='<div class="dim-select-row">';
+  if(nD>1){
+    html+=`Dimension: <select id="bland-dim-sel" onchange="drawBlandAltman(ST.results,parseInt(this.value),parseInt(document.getElementById('bland-pair-sel')?.value||0))">`;
+    for(let d=0;d<nD;d++) html+=`<option value="${d}">${dim_names[d]||'D'+(d+1)}</option>`;
+    html+='</select>';
+  }
+  if(pairsCount>1){
+    html+=` Pair: <select id="bland-pair-sel" onchange="drawBlandAltman(ST.results,parseInt(document.getElementById('bland-dim-sel')?.value||0),parseInt(this.value))">`;
+    makePairs(res.raters).forEach((p,pi)=>{
+      html+=`<option value="${pi}">${p.lbl}</option>`;
+    });
+    html+='</select>';
+  }
+  html+='</div>';
+  document.getElementById('bland-controls').innerHTML=html;
+}
+
+function drawBlandAltman(res,dimIdx,pairIdx){
+  if(!res) return;
+  const cv=document.getElementById('cv-bland');
+  const W=cv.offsetWidth;if(!W)return;
+  cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const {raters}=res;
+  const pairs=makePairs(raters);
+  if(pairs.length===0)return;
+  const pair=pairs[pairIdx]||pairs[0];
+  const v1=raters[pair.i].data.map(row=>row[dimIdx]);
+  const v2=raters[pair.j].data.map(row=>row[dimIdx]);
+  const means=v1.map((a,i)=>(a+v2[i])/2);
+  const diffs=v1.map((a,i)=>a-v2[i]);
+  const bias=diffs.reduce((s,v)=>s+v,0)/diffs.length;
+  const sd=Math.sqrt(diffs.reduce((s,v)=>s+(v-bias)**2,0)/diffs.length);
+  const loA=bias-1.96*sd, hiA=bias+1.96*sd;
+  const ink=css('--ink'),ink2=css('--ink2'),ink3=css('--ink3');
+  const a2=css('--a2'),a5=css('--a5');
+  const bg=css('--bg'),grid=css('--grid');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const pad={l:52,r:20,t:22,b:46};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const xMin=Math.min(...means),xMax=Math.max(...means);
+  const xP=(xMax-xMin)*.06||1;
+  const yAll=[...diffs,loA-sd*.2,hiA+sd*.2];
+  const yMin=Math.min(...yAll),yMax=Math.max(...yAll);
+  const yP=(yMax-yMin)*.08||.5;
+  const sx=v=>pad.l+(v-xMin+xP)/(xMax-xMin+2*xP)*cW;
+  const sy=v=>pad.t+(1-(v-yMin+yP)/(yMax-yMin+2*yP))*cH;
+  // Grid
+  ctx.strokeStyle=grid;ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const v=xMin+(xMax-xMin)*i/5;
+    ctx.beginPath();ctx.moveTo(sx(v),pad.t);ctx.lineTo(sx(v),pad.t+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(v.toFixed(1),sx(v),pad.t+cH+16);
+  }
+  // Reference lines
+  [[0,'grey'],[bias,a2],[loA,a5],[hiA,a5]].forEach(([v,c])=>{
+    ctx.strokeStyle=c;ctx.lineWidth=v===0?1.2:1.5;
+    ctx.setLineDash(v===0?[]:[5,4]);
+    ctx.beginPath();ctx.moveTo(pad.l,sy(v));ctx.lineTo(pad.l+cW,sy(v));ctx.stroke();
+    ctx.setLineDash([]);
+    if(v!==0){
+      ctx.fillStyle=c;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+      const lbl=v===bias?`Bias=${bias.toFixed(2)}`:v===loA?`LoA-=${v.toFixed(2)}`:`LoA+=${v.toFixed(2)}`;
+      ctx.fillText(lbl,pad.l+cW+3,sy(v)+4);
+    }
+  });
+  // Dots
+  ctx.fillStyle=a2;ctx.globalAlpha=.5;
+  means.forEach((m,i)=>{
+    ctx.beginPath();ctx.arc(sx(m),sy(diffs[i]),3.5,0,2*Math.PI);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+  // Axis labels
+  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Mean of both raters',pad.l+cW/2,H-5);
+  ctx.save();ctx.translate(12,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Difference (B1 − B2)',0,0);ctx.restore();
+  // Stats
+  document.getElementById('bland-stats').innerHTML=`
+    <div class="kw-grid kw-grid-3" style="margin-top:.5rem">
+      <div class="kw-box"><div class="kw-label">Bias</div>
+        <div class="kw-val">${bias.toFixed(3)}</div><div class="kw-sub">Mean difference</div></div>
+      <div class="kw-box"><div class="kw-label">LoA (lower)</div>
+        <div class="kw-val">${loA.toFixed(3)}</div><div class="kw-sub">Bias − 1.96 SD</div></div>
+      <div class="kw-box"><div class="kw-label">LoA (upper)</div>
+        <div class="kw-val">${hiA.toFixed(3)}</div><div class="kw-sub">Bias + 1.96 SD</div></div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CANVAS: DENSITY PLOT (KDE per pair, all overlaid)
+// ═══════════════════════════════════════════════════════════════════════════════
+function drawDensityPlot(res, lbl){
+  const cv=document.getElementById('cv-stim-density');
+  const W=cv.offsetWidth;if(!W)return;
+  cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const {stimData,stimOverall,scale}=res;
+  const ink=css('--ink'),ink2=css('--ink2'),ink3=css('--ink3');
+  const bg=css('--bg'),grid=css('--grid');
+  const PAL=[css('--a2'),css('--a1'),css('--a3'),css('--a5'),css('--a4'),css('--a6')];
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  const pad={l:14,r:14,t:22,b:46};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+
+  const allV=[...stimData.flatMap(p=>p.vals),...(stimOverall||[])].filter(isFinite);
+  let xlo=Math.min(...allV),xhi=Math.max(...allV);
+  if(scale==='nominal'){xlo=0;xhi=1;}
+  else{const r=(xhi-xlo)*.12||.5;xlo=Math.max(0,xlo-r);xhi=xhi+r;}
+  const sx=v=>pad.l+(v-xlo)/(xhi-xlo)*cW;
+
+  // KDE per pair
+  const nPts=200;
+  const xs=Array.from({length:nPts},(_,i)=>xlo+(xhi-xlo)*i/(nPts-1));
+
+  function kde(vals){
+    const n=vals.length;
+    const mean=vals.reduce((s,v)=>s+v,0)/n;
+    const sd=Math.sqrt(vals.reduce((s,v)=>s+(v-mean)**2,0)/n)||0.1;
+    const h=Math.max(1.06*sd*Math.pow(n,-0.2),1e-6);
+    return xs.map(x=>vals.reduce((s,vi)=>{
+      const u=(x-vi)/h; return s+Math.exp(-0.5*u*u)/(h*Math.sqrt(2*Math.PI));
+    },0)/n);
+  }
+
+  const densities=stimData.map(pair=>kde(pair.vals));
+  const overallValid=(stimOverall||[]).filter(isFinite);
+  const densOvr=overallValid.length>1?kde(overallValid):null;
+
+  const yMax=Math.max(...densities.flat(),...(densOvr||[]))*1.08||1;
+  const sy=v=>pad.t+(1-v/yMax)*cH;
+  const accent=css('--a6');
+
+  // Grid lines (y)
+  ctx.strokeStyle=grid;ctx.lineWidth=.8;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+cH*i/4;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
+  }
+  // x-axis ticks
+  ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+  for(let i=0;i<=5;i++){
+    const v=xlo+(xhi-xlo)*i/5;
+    ctx.fillText(v.toFixed(scale==='nominal'?1:2),sx(v),pad.t+cH+15);
+  }
+
+  // Draw pairwise densities (thin, behind)
+  densities.forEach((dens,pi)=>{
+    const col=PAL[pi%PAL.length];
+    const pair=stimData[pi];
+    const mean=pair.vals.reduce((s,v)=>s+v,0)/pair.vals.length;
+    ctx.beginPath();
+    ctx.moveTo(sx(xs[0]),sy(0));
+    xs.forEach((x,i)=>ctx.lineTo(sx(x),sy(dens[i])));
+    ctx.lineTo(sx(xs[nPts-1]),sy(0));ctx.closePath();
+    ctx.fillStyle=col+'20';ctx.fill();
+    ctx.beginPath();
+    xs.forEach((x,i)=>i===0?ctx.moveTo(sx(x),sy(dens[i])):ctx.lineTo(sx(x),sy(dens[i])));
+    ctx.strokeStyle=col;ctx.lineWidth=1.4;ctx.setLineDash([]);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(sx(mean),pad.t+4);ctx.lineTo(sx(mean),pad.t+cH);
+    ctx.strokeStyle=col;ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // Draw overall density (bold accent, drawn last = on top)
+  if(densOvr){
+    const mean=overallValid.reduce((s,v)=>s+v,0)/overallValid.length;
+    ctx.beginPath();
+    ctx.moveTo(sx(xs[0]),sy(0));
+    xs.forEach((x,i)=>ctx.lineTo(sx(x),sy(densOvr[i])));
+    ctx.lineTo(sx(xs[nPts-1]),sy(0));ctx.closePath();
+    ctx.fillStyle=accent+'30';ctx.fill();
+    ctx.beginPath();
+    xs.forEach((x,i)=>i===0?ctx.moveTo(sx(x),sy(densOvr[i])):ctx.lineTo(sx(x),sy(densOvr[i])));
+    ctx.strokeStyle=accent;ctx.lineWidth=2.5;ctx.setLineDash([]);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(sx(mean),pad.t+4);ctx.lineTo(sx(mean),pad.t+cH);
+    ctx.strokeStyle=accent;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Legend — top-left box, line LEFT of text (no overlap)
+  const legX0=pad.l+6;
+  const legRowH=20;
+  const legItems=(densOvr?1:0)+stimData.length;
+  const legW=120, legH=legItems*legRowH+10;
+  ctx.fillStyle=bg;ctx.globalAlpha=0.85;
+  ctx.fillRect(legX0-4,pad.t+4,legW,legH);
+  ctx.globalAlpha=1;
+  ctx.strokeStyle=grid;ctx.lineWidth=0.8;
+  ctx.strokeRect(legX0-4,pad.t+4,legW,legH);
+  let legRow=0;
+  if(densOvr){
+    const ly=pad.t+14+legRow*legRowH;
+    ctx.strokeStyle=accent;ctx.lineWidth=2.5;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(legX0,ly);ctx.lineTo(legX0+22,ly);ctx.stroke();
+    ctx.fillStyle=accent;ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText('All raters',legX0+28,ly+4);
+    legRow++;
+  }
+  stimData.forEach((pair,pi)=>{
+    const col=PAL[pi%PAL.length];
+    const ly=pad.t+14+legRow*legRowH;
+    ctx.strokeStyle=col;ctx.lineWidth=1.8;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(legX0,ly);ctx.lineTo(legX0+22,ly);ctx.stroke();
+    ctx.fillStyle=col;ctx.font='11px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(pair.lbl,legX0+28,ly+4);
+    legRow++;
+  });
+
+  // x-axis label
+  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText(lbl,pad.l+cW/2,H-5);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CANVAS: STIM-HISTOGRAM (distribution of per-stimulus agreement values)
+// ═══════════════════════════════════════════════════════════════════════════════
+function drawStimHistogram(res, lbl){
+  const cv=document.getElementById('cv-stim-hist');
+  const W=cv.offsetWidth;if(!W)return;
+  cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const {stimOverall,scale}=res;
+  const vals=(stimOverall||[]).filter(isFinite);
+  if(vals.length<2){ctx.clearRect(0,0,W,H);return;}
+  const ink=css('--ink'),ink2=css('--ink2'),ink3=css('--ink3');
+  const accent=css('--a6'),a2=css('--a2');
+  const bg=css('--bg'),grid=css('--grid');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  const pad={l:44,r:14,t:22,b:44};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  let lo=Math.min(...vals),hi=Math.max(...vals);
+  if(scale==='nominal'){lo=0;hi=1;}
+  else{const r=(hi-lo)*.12||.5;lo=Math.max(0,lo-r);hi+=r;}
+  const range=hi-lo||1;
+
+  const nBins=Math.max(8,Math.min(20,Math.ceil(Math.sqrt(vals.length)*1.5)));
+  const bins=new Array(nBins).fill(0);
+  vals.forEach(v=>{
+    const bi=Math.min(nBins-1,Math.floor((v-lo)/range*nBins));
+    bins[Math.max(0,bi)]++;
+  });
+  const maxCount=Math.max(...bins)||1;
+  const sx=i=>pad.l+cW*i/nBins;
+  const sy=v=>pad.t+cH*(1-v/maxCount);
+
+  // Grid lines y
+  ctx.strokeStyle=grid;ctx.lineWidth=.8;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+cH*i/4;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='10px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(Math.round(maxCount*(1-i/4)),pad.l-4,y+3);
+  }
+
+  // Bars
+  bins.forEach((cnt,i)=>{
+    const x=sx(i)+1, bw=cW/nBins-2;
+    const barH=cH*cnt/maxCount;
+    ctx.fillStyle=accent+'55';
+    ctx.fillRect(x,pad.t+cH-barH,bw,barH);
+    ctx.strokeStyle=accent;ctx.lineWidth=1;
+    ctx.strokeRect(x,pad.t+cH-barH,bw,barH);
+  });
+
+  // Normal density overlay
+  const mean=vals.reduce((s,v)=>s+v,0)/vals.length;
+  const sd=Math.sqrt(vals.reduce((s,v)=>s+(v-mean)**2,0)/vals.length)||0.01;
+  const nPts=120;
+  const binW=range/nBins;
+  ctx.beginPath();
+  for(let p=0;p<=nPts;p++){
+    const xv=lo+range*p/nPts;
+    const density=Math.exp(-0.5*((xv-mean)/sd)**2)/(sd*Math.sqrt(2*Math.PI));
+    const yScaled=density*vals.length*binW; // scale to count
+    const px=pad.l+cW*p/nPts;
+    const py=pad.t+cH*(1-yScaled/maxCount);
+    p===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  ctx.strokeStyle=a2;ctx.lineWidth=2;ctx.setLineDash([]);ctx.stroke();
+
+  // x-axis ticks
+  ctx.fillStyle=ink3;ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  for(let i=0;i<=5;i++){
+    const v=lo+range*i/5;
+    ctx.fillText(v.toFixed(scale==='nominal'?1:2),pad.l+cW*i/5,pad.t+cH+16);
+  }
+  // Axes labels
+  ctx.fillStyle=ink2;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText(lbl,pad.l+cW/2,H-4);
+  ctx.save();ctx.translate(13,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Frequency',0,0);ctx.restore();
+
+  // Mean line
+  const mx=pad.l+cW*(mean-lo)/range;
+  ctx.strokeStyle=accent;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(mx,pad.t);ctx.lineTo(mx,pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=accent;ctx.font='9px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Ø'+mean.toFixed(2),mx,pad.t-5);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CANVAS: STIM-INDEX (per-stimulus agreement in order + LOESS trend)
+// ═══════════════════════════════════════════════════════════════════════════════
+function loessSmooth(ys, span){
+  const n=ys.length; if(n<4) return ys.slice();
+  const bw=Math.max(3,Math.ceil(span*n));
+  return ys.map((_,i)=>{
+    const dists=ys.map((_,j)=>({d:Math.abs(i-j),j})).sort((a,b)=>a.d-b.d);
+    const nb=dists.slice(0,bw);
+    const maxD=Math.max(nb[nb.length-1].d,1);
+    let sw=0,swy=0;
+    nb.forEach(({d,j})=>{
+      const u=d/maxD, wt=(1-u**3)**3;
+      sw+=wt; swy+=wt*ys[j];
+    });
+    return sw>0?swy/sw:ys[i];
+  });
+}
+
+function drawStimIndex(res, lbl){
+  const cv=document.getElementById('cv-stim-index');
+  const W=cv.offsetWidth;if(!W)return;
+  cv.width=W;const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const {stimOverall,scale}=res;
+  const vals=(stimOverall||[]);
+  const n=vals.length;
+  if(n<2){ctx.clearRect(0,0,W,H);return;}
+  const ink=css('--ink'),ink2=css('--ink2'),ink3=css('--ink3');
+  const accent=css('--a6'),a2=css('--a2'),a1=css('--a1'),a3=css('--a3'),a5=css('--a5');
+  const bg=css('--bg'),grid=css('--grid');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  const pad={l:56,r:20,t:32,b:48};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const finite=vals.filter(isFinite);
+  // Always show 0–1 range for agreement coefficients
+  let lo=0, hi=1;
+  if(scale==='interval'){
+    const rng=(Math.max(...finite)-Math.min(...finite))*.15||.5;
+    lo=Math.max(0,Math.min(...finite)-rng); hi=Math.max(...finite)+rng;
+  }
+  const range=hi-lo||1;
+  const sx=i=>pad.l+cW*(n>1?i/(n-1):0.5);
+  const sy=v=>pad.t+cH*(1-Math.max(0,Math.min(1,(v-lo)/range)));
+
+  // Benchmark lines (for non-interval)
+  if(scale!=='interval'){
+    const bms=[[.40,a1,'< .40 weak'],[.60,a5,'.60'],[.80,a3,'.80']];
+    bms.forEach(([bv,bc,bl])=>{
+      if(bv>=lo&&bv<=hi){
+        ctx.strokeStyle=bc;ctx.lineWidth=1;ctx.setLineDash([4,3]);
+        ctx.beginPath();ctx.moveTo(pad.l,sy(bv));ctx.lineTo(pad.l+cW,sy(bv));ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle=bc;ctx.font='9px DM Mono,monospace';ctx.textAlign='right';
+        ctx.fillText(bl,pad.l+cW-2,sy(bv)-3);
+      }
+    });
+  }
+
+  // Grid y-lines
+  ctx.strokeStyle=grid;ctx.lineWidth=.8;
+  const nTicks=5;
+  for(let i=0;i<=nTicks;i++){
+    const v=lo+range*i/nTicks;
+    const y=sy(v);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='11px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(v.toFixed(scale==='interval'?1:2),pad.l-5,y+4);
+  }
+
+  // LOESS smooth line
+  const validPairs=vals.map((v,i)=>({v,i})).filter(p=>isFinite(p.v));
+  let smoothed=null;
+  if(validPairs.length>=4){
+    const yArr=validPairs.map(p=>p.v);
+    smoothed=loessSmooth(yArr,Math.max(0.3,Math.min(0.75,10/n)));
+    ctx.beginPath();
+    validPairs.forEach(({i},pi)=>{
+      const px=sx(i), py=sy(smoothed[pi]);
+      pi===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+    });
+    ctx.strokeStyle=a2;ctx.lineWidth=2.8;ctx.setLineDash([]);ctx.stroke();
+  }
+
+  // Individual data points
+  vals.forEach((v,i)=>{
+    if(!isFinite(v)) return;
+    ctx.fillStyle=accent;ctx.globalAlpha=0.7;
+    ctx.beginPath();ctx.arc(sx(i),sy(v),4,0,2*Math.PI);ctx.fill();
+    ctx.globalAlpha=1;
+    ctx.strokeStyle=accent+'aa';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(sx(i),sy(v),4,0,2*Math.PI);ctx.stroke();
+  });
+  ctx.globalAlpha=1;
+
+  // Grand mean line
+  if(finite.length){
+    const mean=finite.reduce((s,v)=>s+v,0)/finite.length;
+    ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.setLineDash([6,4]);
+    ctx.beginPath();ctx.moveTo(pad.l,sy(mean));ctx.lineTo(pad.l+cW,sy(mean));ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=ink2;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText('Ø '+mean.toFixed(3),pad.l+4,sy(mean)-4);
+  }
+
+  // x-axis ticks
+  ctx.fillStyle=ink3;ctx.font='11px DM Mono,monospace';ctx.textAlign='center';
+  const tickStep=Math.max(1,Math.ceil(n/12));
+  for(let i=0;i<n;i+=tickStep){
+    ctx.fillText(i+1,sx(i),pad.t+cH+16);
+    ctx.strokeStyle=grid;ctx.lineWidth=.6;
+    ctx.beginPath();ctx.moveTo(sx(i),pad.t+cH);ctx.lineTo(sx(i),pad.t+cH+5);ctx.stroke();
+  }
+
+  // Axis labels
+  ctx.fillStyle=ink2;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Stimulus No. (dataset order)',pad.l+cW/2,H-4);
+  ctx.save();ctx.translate(14,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=ink2;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText(lbl,0,0);ctx.restore();
+
+  // Legend (top-right)
+  const legX=pad.l+cW-120, legY=pad.t+6;
+  ctx.fillStyle=bg;ctx.globalAlpha=0.85;
+  ctx.fillRect(legX-4,legY-2,118,38);ctx.globalAlpha=1;
+  ctx.strokeStyle=grid;ctx.lineWidth=.8;ctx.strokeRect(legX-4,legY-2,118,38);
+  ctx.strokeStyle=a2;ctx.lineWidth=2.8;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(legX,legY+9);ctx.lineTo(legX+20,legY+9);ctx.stroke();
+  ctx.fillStyle=a2;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('LOESS trend',legX+24,legY+13);
+  ctx.fillStyle=accent;ctx.globalAlpha=0.7;
+  ctx.beginPath();ctx.arc(legX+10,legY+27,4,0,2*Math.PI);ctx.fill();
+  ctx.globalAlpha=1;
+  ctx.fillStyle=accent;ctx.fillText('Individual value',legX+24,legY+31);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CANVAS: HEATMAP (mean pairwise agreement per rater × dimension)
+// ═══════════════════════════════════════════════════════════════════════════════
+function lerp(a,b,t){return a+(b-a)*t;}
+
+function heatPairwiseAgree(r1vals,r2vals,method,weight,iccModel){
+  const dimData=[r1vals,r2vals];
+  if(method==='cohen_unw')      return cohensKappa(r1vals,r2vals,'unweighted').kappa;
+  if(method==='cohen_wtd')      return cohensKappa(r1vals,r2vals,weight).kappa;
+  if(method==='fleiss')         return cohensKappa(r1vals,r2vals,'unweighted').kappa;
+  if(method==='kripp_nom')      return krippendorffAlpha(dimData,'nominal');
+  if(method==='kripp_ord')      return krippendorffAlpha(dimData,'ordinal');
+  if(method==='kripp_int')      return krippendorffAlpha(dimData,'interval');
+  if(method==='icc')            { const r=computeICC(dimData,iccModel); return r?r.icc1:NaN; }
+  if(method==='gwet_nom')       return gwetAC(dimData,'unweighted').ac;
+  if(method==='gwet_ord_lin')   return gwetAC(dimData,'linear').ac;
+  if(method==='gwet_ord_quad')  return gwetAC(dimData,'quadratic').ac;
+  return NaN;
+}
+
+function drawHeatmap(res){
+  const cv=document.getElementById('cv-heatmap');
+  const W=cv.offsetWidth;if(!W)return;
+  cv.width=W;
+  const {raters,method,weight,iccModel,nD}=res;
+  const k=raters.length;
+  const dimNames=ST.dim_names;
+  if(!k||!nD) return;
+
+  // Build rater pairs (same order as R pairwise output)
+  const pairs=[];
+  for(let i=0;i<k;i++) for(let j=i+1;j<k;j++)
+    pairs.push({i,j,lbl:`${raters[i].name} vs ${raters[j].name}`});
+  const nPairs=pairs.length;
+  if(!nPairs) return;
+
+  // Cell (pair, dim) = direct pairwise agreement between rater i and j on dim d
+  const cellAgree=pairs.map(({i,j})=>
+    Array.from({length:nD},(_,d)=>{
+      const r1=raters[i].data.map(row=>row[d]);
+      const r2=raters[j].data.map(row=>row[d]);
+      return heatPairwiseAgree(r1,r2,method,weight,iccModel);
+    })
+  );
+
+  const allM=cellAgree.flat().filter(isFinite);
+  if(!allM.length) return;
+  const vMin=Math.min(0,Math.min(...allM));
+  const vMax=1;
+  const vRange=vMax-vMin||1;
+
+  const rowH=Math.min(50,Math.max(30,(260-50)/nPairs));
+  const lblW=Math.min(120,nD>7?80:120);
+  const totalH=50+nPairs*rowH+20;
+  cv.height=totalH;
+  const ctx=cv.getContext('2d');
+  const bg=css('--bg'),ink=css('--ink'),ink3=css('--ink3'),grid=css('--grid');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,totalH);
+
+  const pad={l:lblW,r:84,t:42,b:20};
+  const cW=W-pad.l-pad.r;
+  const cellW=cW/nD;
+
+  // Color: red (low/bad) → amber (mid) → green (high/good)
+  function heatColor(t){
+    t=Math.max(0,Math.min(1,t));
+    let r,g,b;
+    if(t<0.5){
+      const u=t*2;
+      r=Math.round(lerp(0xc0,0xf0,u));
+      g=Math.round(lerp(0x39,0xb4,u));
+      b=Math.round(lerp(0x2b,0x00,u));
+    } else {
+      const u=(t-0.5)*2;
+      r=Math.round(lerp(0xf0,0x27,u));
+      g=Math.round(lerp(0xb4,0xae,u));
+      b=Math.round(lerp(0x00,0x60,u));
+    }
+    return `rgb(${r},${g},${b})`;
+  }
+
+  // Column headers (dimensions)
+  ctx.fillStyle=ink3;ctx.font='10.5px DM Mono,monospace';ctx.textAlign='center';
+  for(let d=0;d<nD;d++){
+    const lbl=dimNames[d]||('D'+(d+1));
+    ctx.fillText(lbl.length>7?lbl.slice(0,6)+'…':lbl,pad.l+(d+0.5)*cellW,pad.t-10);
+  }
+
+  // Rows: rater pairs
+  cellAgree.forEach((row,pi)=>{
+    const y=pad.t+pi*rowH;
+    ctx.fillStyle=ink;ctx.font='10px DM Mono,monospace';ctx.textAlign='right';
+    const lbl=pairs[pi].lbl;
+    ctx.fillText(lbl.length>16?lbl.slice(0,15)+'…':lbl,pad.l-6,y+rowH/2+4);
+    row.forEach((v,di)=>{
+      const x=pad.l+di*cellW;
+      if(!isFinite(v)){ctx.fillStyle=grid;ctx.fillRect(x+1,y+1,cellW-2,rowH-2);return;}
+      const t=(v-vMin)/vRange;
+      ctx.fillStyle=heatColor(t);
+      ctx.fillRect(x+1,y+1,cellW-2,rowH-2);
+      ctx.fillStyle='rgba(255,255,255,0.95)';
+      ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='center';
+      ctx.fillText(v.toFixed(2),x+cellW/2,y+rowH/2+4);
+    });
+  });
+
+  // Color-scale bar (right)
+  const barX=W-pad.r+10, barY=pad.t, barH2=nPairs*rowH, barW=16;
+  for(let i=0;i<=60;i++){
+    ctx.fillStyle=heatColor(1-i/60);
+    ctx.fillRect(barX,barY+barH2*i/60,barW,barH2/60+1);
+  }
+  ctx.strokeStyle=ink3;ctx.lineWidth=0.8;ctx.strokeRect(barX,barY,barW,barH2);
+  ctx.fillStyle=ink3;ctx.font='9px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('1.00',barX+barW+3,barY+8);
+  ctx.fillText(((vMin+vMax)/2).toFixed(2),barX+barW+3,barY+barH2/2+4);
+  ctx.fillText(vMin.toFixed(2),barX+barW+3,barY+barH2);
+  ctx.save();ctx.translate(barX+barW/2,barY-8);
+  ctx.textAlign='center';ctx.fillStyle=ink3;ctx.font='9px DM Mono,monospace';
+  ctx.fillText('Agreement',0,0);ctx.restore();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// REDRAW ALL CANVASES (theme toggle)
+// ═══════════════════════════════════════════════════════════════════════════════
+function redrawAllCanvases(){
+  const res=ST.results;if(!res)return;
+  if(document.getElementById('sec-dims').classList.contains('show')) drawDimBars(res);
+  if(document.getElementById('sec-stim').classList.contains('show')){
+    drawStimOverall(res);
+    drawStimHistogram(res,res.stimOverallLbl);
+    drawStimIndex(res,res.stimOverallLbl);
+    const lbl=res.scale==='nominal'?'Hamming similarity':'MAD';
+    drawDensityPlot(res,res.stimOverallLbl);
+    drawStimBox(res,lbl);
+  }
+  if(document.getElementById('acc-icc').classList.contains('show')&&res.method==='icc') drawICCPlot(res);
+  if(document.getElementById('acc-bland').classList.contains('show')) drawBlandAltman(res,0,0);
+  if(document.getElementById('acc-heatmap').classList.contains('show')) drawHeatmap(res);
+}
+window.addEventListener('resize',redrawAllCanvases);
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════════
+addRaterSlot();
+addRaterSlot();
+</script>
+
+</body>
+</html>

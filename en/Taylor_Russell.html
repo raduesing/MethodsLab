@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taylor-Russell Tables — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a6);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+.gk{text-transform:none!important;font-style:normal}
+.hat{position:relative;display:inline-block;line-height:1}
+.hat::after{content:"^";position:absolute;left:0;width:100%;text-align:center;top:-.5em;font-size:.8em;font-weight:600;line-height:1;pointer-events:none}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:272px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500;min-width:3.2rem;text-align:right;display:inline-block}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.preset-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.3rem .65rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .15s;width:100%;text-align:left;display:block;margin-bottom:.3rem}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.preset-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a6);
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a6);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+.insight-box{background:var(--panel);border-left:3px solid var(--a5);padding:.85rem 1rem;
+  margin-bottom:.85rem;font-size:.88rem;line-height:1.75}
+.insight-box strong{color:var(--a5)}
+.sym-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem .9rem;background:var(--panel);
+  border:1px solid var(--grid);padding:.85rem 1rem;margin-bottom:.85rem;font-size:.84rem;line-height:1.5}
+.sym-grid .sym{display:grid;grid-template-columns:3.9rem 1fr;gap:.5rem;align-items:baseline}
+.sym-grid b{font-family:'DM Mono',monospace;color:var(--ink);font-weight:600}
+.sym-grid span{color:var(--ink2)}
+.kw-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin-bottom:.85rem}
+.kw-box{background:var(--panel);border:1px solid var(--grid);padding:.6rem .75rem}
+.kw-box.hl{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.kw-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--ink3);margin-bottom:.28rem;line-height:1.3}
+.kw-val{font-family:'DM Mono',monospace;font-size:1.05rem;font-weight:600}
+.kw-sub{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink2)}
+.tbl-wrap{background:var(--panel);border:1px solid var(--grid);padding:.6rem;margin-bottom:.4rem;overflow-x:auto}
+table.tr{border-collapse:collapse;width:100%;font-family:'DM Mono',monospace;font-size:.8rem}
+table.tr th,table.tr td{border:1px solid var(--grid);padding:.32rem .2rem;text-align:center}
+table.tr thead th{background:var(--paper);color:var(--ink2);font-weight:500;font-size:.74rem}
+table.tr th.rowh{background:var(--paper);color:var(--a2);font-weight:600}
+table.tr td{color:var(--ink);transition:background .12s;cursor:pointer}
+table.tr td:hover{outline:2px solid var(--ink2);outline-offset:-2px}
+table.tr td.cur{outline:2.5px solid var(--accent);outline-offset:-2.5px;font-weight:700;color:var(--ink)}
+table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);
+  text-align:left;padding:.2rem .2rem .55rem;caption-side:top}
+.tbl-axis{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;
+  font-size:.72rem;color:var(--ink3);margin-bottom:.85rem;padding:0 .2rem}
+.canvas-wrap{background:var(--panel);border:1px solid var(--grid);margin-bottom:.5rem;overflow:hidden}
+#nomo-canvas{width:100%;display:block;cursor:crosshair}
+.canvas-hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin:0 0 .85rem .2rem}
+.learn-section{margin-top:2.2rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a6);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.help-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.82);overflow-y:auto;padding:2rem 1rem}
+.help-overlay.open{display:block}
+.help-panel{max-width:700px;margin:0 auto;background:var(--paper);border:1px solid var(--border);padding:2rem}
+.help-panel h2{font-family:'Fraunces',serif;font-weight:300;font-size:1.2rem;margin-bottom:1.2rem}
+.help-h3{font-family:'DM Mono',monospace;font-size:.74rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--a5);margin:1.1rem 0 .35rem}
+.help-p{font-size:.85rem;line-height:1.8;color:var(--ink2);margin-bottom:.6rem}
+.help-p code{font-family:'DM Mono',monospace;font-size:.8rem;background:var(--panel);padding:.1rem .35rem;color:var(--ink)}
+.help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
+  border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
+.help-close:hover{background:var(--a1);color:var(--bg)}
+.xlink{color:var(--a6);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a6)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Taylor-Russell Tables <em>— Selection Utility of a Test</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div class="help-overlay" id="help-overlay">
+  <div class="help-panel">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
+      <h2>Help — Taylor-Russell Tables</h2>
+      <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    </div>
+    <div class="help-h3">Does / Does NOT</div>
+    <p class="help-p"><strong style="color:var(--ink)">Does:</strong> compute what proportion of those selected with a test later turn out to be <em>successful/qualified</em> — as a function of validity, selection ratio, and base rate. Shows the table <em>and</em> the nomogram, and makes visible that the table values are grid points of a continuous function. <strong style="color:var(--ink)">Does NOT:</strong> no cost-benefit analysis in monetary terms (that would be Brogden-Cronbach-Gleser), and no correction for bias — as validity, the correlation <em>corrected for range restriction</em> should be used.</p>
+    <div class="help-h3">What Is This About?</div>
+    <p class="help-p">Taylor &amp; Russell (1939) answer the practical question: "Is a selection test worth it?" A test with validity <span class="gk">ρ</span> is more useful the more <strong style="color:var(--ink)">selectively</strong> one selects, and depending on the <strong style="color:var(--ink)">base rate</strong> of suitability. The utility is the <strong style="color:var(--ink)">success rate</strong> of those selected minus the base rate (= what you'd get without a test).</p>
+    <div class="help-h3">The Running Example</div>
+    <p class="help-p">A clinic (or HR department) selects applicants via an aptitude test. <strong style="color:var(--a2)">Validity</strong> = correlation between test and later success. <strong style="color:var(--a5)">Selection ratio</strong> = proportion of applicants taken. <strong style="color:var(--a4)">Base rate</strong> = proportion who would succeed <em>without</em> the test. Result: the <strong style="color:var(--a3)">success rate</strong> of those selected = positive predictive value.</p>
+    <div class="help-h3">How to Read the Table</div>
+    <p class="help-p">A table always applies to <strong>one</strong> base rate (selectable above via the slider). <strong style="color:var(--ink)">Rows</strong> = validity (ascending), <strong style="color:var(--ink)">columns</strong> = selection ratio. The cell value is the success rate in percent. The currently set combination is outlined. Rules of thumb: under <em>strict</em> selection (small column) and a <em>medium</em> base rate, even moderate validity gains a lot; near a base rate of 0 or 1, there's hardly anything to gain.</p>
+    <div class="help-h3">The Nomogram + Target Crosshair</div>
+    <p class="help-p">The nomogram shows the same information continuously: x-axis = validity, y-axis = success rate, each curve a selection ratio. The horizontal line is the base rate (start of all curves at validity 0). <strong style="color:var(--ink)">Click into the chart</strong> to set a target crosshair: validity is read from the x-position, the selection ratio snaps to the nearest curve. Dashed lines drop onto both axes; the boxes below show the exact values.</p>
+    <div class="help-h3">The Symbols</div>
+    <p class="help-p">
+      <code><span class="gk">ρ</span></code> — validity (correlation test ↔ criterion).<br>
+      <code>SR</code> — selection ratio = proportion selected.<br>
+      <code>BR</code> — base rate = proportion in the population that meets the success criterion.<br>
+      <code>EQ</code> — success rate of those selected = positive predictive value (PPV).<br>
+      <code>Lift</code> — gain EQ − BR (utility relative to "selecting without a test").
+    </p>
+    <div class="help-h3">Formula</div>
+    <p class="help-p">Bivariate normal distribution of predictor X and criterion Y with correlation <span class="gk">ρ</span>. Criterion threshold <code>y<sub>c</sub> = <span class="gk">Φ</span>⁻¹(1−BR)</code>, selection threshold <code>x<sub>c</sub> = <span class="gk">Φ</span>⁻¹(1−SR)</code>. Then <code>EQ = P(Y &gt; y<sub>c</sub> | X &gt; x<sub>c</sub>) = P(X&gt;x<sub>c</sub>, Y&gt;y<sub>c</sub>) / SR</code>. At <span class="gk">ρ</span> = 0, EQ = BR (test useless); at <span class="gk">ρ</span> = 1, EQ = min(BR/SR, 1).</p>
+  </div>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Scenarios</div>
+    <button class="preset-btn active" id="pre-A" onclick="setPreset('A')">A — Personnel Selection (BR .50)</button>
+    <button class="preset-btn" id="pre-B" onclick="setPreset('B')">B — Strict Selection (SR .10)</button>
+    <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — Rare Criterion (BR .20)</button>
+    <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — High Base Rate (BR .80)</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Base Rate of the Table</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name" style="color:var(--a4)">BR (proportion qualified)</span>
+        <span class="slider-val" id="val-BR">0.50</span>
+      </div>
+      <input type="range" id="sl-BR" min="0.05" max="0.95" step="0.05" value="0.50" oninput="onSl('BR',this)">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Target Crosshair</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name" style="color:var(--a2)"><span class="gk">ρ</span> Validity</span>
+        <span class="slider-val" id="val-rho">0.50</span>
+      </div>
+      <input type="range" id="sl-rho" min="0.00" max="0.95" step="0.05" value="0.50" oninput="onSl('rho',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name" style="color:var(--a5)">SR Selection Ratio</span>
+        <span class="slider-val" id="val-SR">0.20</span>
+      </div>
+      <input type="range" id="sl-SR" min="0.02" max="0.95" step="0.01" value="0.20" oninput="onSl('SR',this)">
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink3);margin-top:.5rem;
+      padding-top:.4rem;border-top:1px solid var(--grid);line-height:1.7">
+      Tip: clicking into the nomogram sets the target crosshair directly.
+    </div>
+  </div>
+
+</div><!-- /sidebar -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 Example — Is the Selection Test Worth It?</div>
+    Without a test, <span id="ex-br" style="color:var(--a4);font-weight:600">50</span>% of applicants would succeed (base rate). With a test of validity <span class="gk">ρ</span> = <span id="ex-rho" style="color:var(--a2);font-weight:600">0.50</span>, taking the best <span id="ex-sr" style="color:var(--a5);font-weight:600">20</span>%, the success rate of those selected rises to <span id="ex-eq" style="color:var(--a3);font-weight:600">—</span>% — a gain of <span id="ex-lift" style="color:var(--ink);font-weight:600">—</span> percentage points over "selecting blindly".
+  </div>
+
+  <div class="sec-h">What Do the Symbols Mean?</div>
+  <div class="sym-grid">
+    <div class="sym"><b><span class="gk">ρ</span></b><span><strong>Validity</strong> — correlation between the test and the later success criterion</span></div>
+    <div class="sym"><b>SR</b><span><strong>Selection ratio</strong> — proportion of applicants selected (small = strict)</span></div>
+    <div class="sym"><b>BR</b><span><strong>Base rate</strong> — proportion who meet the criterion <em>without</em> the test</span></div>
+    <div class="sym"><b>EQ</b><span><strong>Success rate</strong> of those selected = positive predictive value (PPV)</span></div>
+    <div class="sym"><b>Lift</b><span>EQ − BR — the <strong>incremental utility</strong> of the test in percentage points</span></div>
+    <div class="sym"><b><span class="gk">Φ</span>⁻¹</b><span>Quantile of the standard normal distribution — translates proportions into thresholds</span></div>
+  </div>
+
+  <div class="kw-grid">
+    <div class="kw-box"><div class="kw-label" style="color:var(--a4)">Base Rate BR</div><div class="kw-val" id="kw-br" style="color:var(--a4)">—</div><div class="kw-sub">without test</div></div>
+    <div class="kw-box"><div class="kw-label" style="color:var(--a2)"><span class="gk">ρ</span> Validity</div><div class="kw-val" id="kw-rho" style="color:var(--a2)">—</div><div class="kw-sub">test ↔ criterion</div></div>
+    <div class="kw-box"><div class="kw-label" style="color:var(--a5)">Selection Ratio SR</div><div class="kw-val" id="kw-sr" style="color:var(--a5)">—</div><div class="kw-sub">proportion selected</div></div>
+    <div class="kw-box hl"><div class="kw-label" style="color:var(--a3)">Success Rate EQ</div><div class="kw-val" id="kw-eq" style="color:var(--a3)">—</div><div class="kw-sub">PPV of the selected</div></div>
+    <div class="kw-box"><div class="kw-label">Lift = EQ − BR</div><div class="kw-val" id="kw-lift" style="color:var(--ink)">—</div><div class="kw-sub">Incremental utility</div></div>
+  </div>
+
+  <div class="sec-h">Taylor-Russell Table — Success Rate (%) at Base Rate <span id="tbl-br" class="gk">0.50</span></div>
+  <div class="tbl-wrap">
+    <table class="tr" id="tr-table"></table>
+  </div>
+  <div class="tbl-axis">
+    <span>↓ Rows: validity <span class="gk">ρ</span> (ascending)</span>
+    <span>→ Columns: selection ratio SR &nbsp;·&nbsp; outlined = current setting</span>
+  </div>
+
+  <div class="sec-h">Nomogram — the Same Table as a Continuous Function</div>
+  <div class="canvas-wrap">
+    <canvas id="nomo-canvas"></canvas>
+  </div>
+  <p class="canvas-hint">Clicking into the chart sets the target crosshair: x → validity, selection ratio snaps to the nearest curve. Dashed lines show the projection onto both axes.</p>
+
+  <div class="insight-box" id="insight-box">
+    <strong>Reading:</strong> <span id="ins-text">—</span>
+  </div>
+
+  <div class="learn-section">
+    <div class="sec-h">Concepts</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">The Basic Idea (Taylor &amp; Russell 1939)</div>
+        <div class="lcard-body">The utility of a selection test cannot be read off from its validity alone. What matters is the interplay with two contextual quantities: the <strong>selection ratio</strong> (how strictly is one selecting?) and the <strong>base rate</strong> (how many would succeed anyway?). Under the assumption of a bivariate normal distribution, Taylor and Russell provided tables that give the success rate of those selected.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Why the Selection Ratio Has This Effect</div>
+        <div class="lcard-body">The <strong>stricter</strong> the selection (small SR), the further right the threshold sits on the test — and the more strongly even a moderate validity comes through. At SR = 1 (everyone is taken), the success rate is necessarily equal to the base rate: no selection, no utility. In the nomogram this shows up as all curves starting at the base-rate line at validity 0, with lower-SR curves rising more steeply.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">The Role of the Base Rate</div>
+        <div class="lcard-body">The maximum room for improvement lies at a medium base rate (≈ .50). If the base rate is very <strong>high</strong> (almost everyone qualified), a test can hardly improve anything — you'd be right anyway. If it's very <strong>low</strong>, absolute improvement is hard, but the <em>relative</em> improvement can be large. Set the base rate to .20 vs. .80 and watch how the whole table and nomogram shift.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Success Rate = Positive Predictive Value</div>
+        <div class="lcard-body">The Taylor-Russell success rate is nothing other than the <strong>PPV</strong>: among those selected as "qualified", the proportion who actually meet the criterion. That makes this tool the continuous counterpart to the confusion matrix from sensitivity/specificity — just via a continuous bivariate normal distribution instead of discrete classification. <a class="xlink" href="Sens_Spez.html" target="_blank" rel="noopener">→ Sensitivity &amp; Specificity</a></div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Connection: Range Restriction</div>
+        <div class="lcard-body"><strong>Important:</strong> the <span class="gk">ρ</span> used here must be the <em>true</em> validity in the applicant population. But validity studies are often conducted on people already selected → the observed correlation is biased downward by <strong>range restriction</strong>. Using the uncorrected value <em>systematically underestimates</em> the utility. Correct via Thorndike first, then plug into the Taylor-Russell table. <a class="xlink" href="Range_Restriction.html" target="_blank" rel="noopener">→ Range Restriction</a></div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Connection: Diagnostic Validity</div>
+        <div class="lcard-body">Taylor-Russell is one building block in the utility analysis of selection procedures. The <em>Diagnostic Validity</em> tool places it within construct, criterion, and content validity, and shows the bridge to utility analysis (Brogden-Cronbach-Gleser), which additionally expresses selection utility in monetary units. <a class="xlink" href="Diagnostische_Validitaet.html" target="_blank" rel="noopener">→ Diagnostic Validity</a></div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Limitations &amp; Assumptions</div>
+        <div class="lcard-body">The table assumes (1) a <strong>bivariate normal distribution</strong> of predictor and criterion, (2) a <strong>dichotomous</strong> success criterion (qualified/unqualified via a cutoff), (3) a linear relationship and constant spread (homoscedasticity). Real criteria are often skewed or multi-level; then the values are approximations. For continuous utility measures without an artificial criterion cutoff, the Brogden-Cronbach-Gleser model is more suitable.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Table vs. Nomogram</div>
+        <div class="lcard-body">The classic printed <strong>table</strong> is a discrete grid-point matrix — practical for lookup. The <strong>nomogram</strong> makes visible that a smooth surface EQ(<span class="gk">ρ</span>, SR, BR) lies behind it: every table cell is just one point on a curve. The target crosshair allows stepless reading between table rows — and shows that interpolation in the printed table is valid.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+const ST={BR:0.50,rho:0.50,SR:0.20};
+const SR_COLS=[0.05,0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90];
+const RHO_ROWS=[0.00,0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90];
+const NOMO_SR=[0.05,0.10,0.20,0.40,0.70];
+
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function pct(v){return isFinite(v)?Math.round(v*100):'—';}
+
+// --- Statistics ---
+function erf(x){
+  const s=x<0?-1:1;x=Math.abs(x);
+  const t=1/(1+0.3275911*x);
+  const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);
+  return s*y;
+}
+function ncdf(x){return 0.5*(1+erf(x/Math.SQRT2));}
+function normInv(p){
+  if(p<=0)return -8;if(p>=1)return 8;
+  const a=[-3.969683028665376e+01,2.209460984245205e+02,-2.759285104469687e+02,1.383577518672690e+02,-3.066479806614716e+01,2.506628277459239e+00];
+  const b=[-5.447609879822406e+01,1.615858368580409e+02,-1.556989798598866e+02,6.680131188771972e+01,-1.328068155288572e+01];
+  const c=[-7.784894002430293e-03,-3.223964580411365e-01,-2.400758277161838e+00,-2.549732539343734e+00,4.374664141464968e+00,2.938163982698783e+00];
+  const d=[7.784695709041462e-03,3.224671290700398e-01,2.445134137142996e+00,3.754408661907416e+00];
+  const pl=0.02425;let q,r;
+  if(p<pl){q=Math.sqrt(-2*Math.log(p));return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);}
+  if(p<=1-pl){q=p-0.5;r=q*q;return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);}
+  q=Math.sqrt(-2*Math.log(1-p));return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+}
+// Bivariate normal CDF via Simpson integration of d/dr
+function biv(h,k,r){
+  const n=160;let sum=0;
+  for(let i=0;i<=n;i++){
+    const t=r*i/n;
+    let den=1-t*t;if(den<1e-9)den=1e-9;
+    const f=Math.exp(-(h*h-2*t*h*k+k*k)/(2*den))/(2*Math.PI*Math.sqrt(den));
+    const w=(i===0||i===n)?1:(i%2?4:2);
+    sum+=w*f;
+  }
+  return ncdf(h)*ncdf(k)+(r/n)/3*sum;
+}
+function successRate(BR,SR,r){
+  const h=normInv(1-SR),k=normInv(1-BR);
+  const L=1-ncdf(h)-ncdf(k)+biv(h,k,Math.max(0,Math.min(r,0.999)));
+  return Math.max(0,Math.min(L/SR,1));
+}
+
+// --- Table ---
+function buildTable(){
+  const t=document.getElementById('tr-table');
+  const curRow=RHO_ROWS.reduce((p,c)=>Math.abs(c-ST.rho)<Math.abs(p-ST.rho)?c:p);
+  const curCol=SR_COLS.reduce((p,c)=>Math.abs(c-ST.SR)<Math.abs(p-ST.SR)?c:p);
+  let h='<caption>Base rate BR = '+ST.BR.toFixed(2)+' — cell value = success rate of those selected, in %</caption>';
+  h+='<thead><tr><th class="rowh">ρ \\ SR</th>';
+  SR_COLS.forEach(sr=>h+='<th>'+sr.toFixed(2)+'</th>');
+  h+='</tr></thead><tbody>';
+  RHO_ROWS.forEach(rr=>{
+    h+='<tr><th class="rowh">'+rr.toFixed(2)+'</th>';
+    SR_COLS.forEach(sr=>{
+      const eq=successRate(ST.BR,sr,rr);
+      const diff=eq-ST.BR;
+      let bg;
+      if(diff>=0){const p=Math.round(diff/(1-ST.BR)*68);bg='color-mix(in srgb,var(--a3) '+p+'%,transparent)';}
+      else{const p=Math.round(-diff/ST.BR*68);bg='color-mix(in srgb,var(--a1) '+p+'%,transparent)';}
+      const cur=(Math.abs(rr-curRow)<1e-9&&Math.abs(sr-curCol)<1e-9)?' class="cur"':'';
+      h+='<td'+cur+' onclick="selectCell('+rr+','+sr+')" style="background:'+bg+'">'+pct(eq)+'</td>';
+    });
+    h+='</tr>';
+  });
+  h+='</tbody>';
+  t.innerHTML=h;
+}
+
+// --- Nomogram ---
+let NOMO={ML:0,MT:0,PW:0,PH:0,W:0};
+function drawNomo(){
+  const canvas=document.getElementById('nomo-canvas');
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.offsetWidth||700;
+  const H=480;
+  canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);
+  canvas.style.height=H+'px';
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  const cBg=css('--panel'),cInk=css('--ink'),cInk2=css('--ink2'),cInk3=css('--ink3');
+  const cGrid=css('--grid'),cA2=css('--a2'),cA3=css('--a3'),cA4=css('--a4'),cA5=css('--a5'),cA6=css('--a6');
+  ctx.fillStyle=cBg;ctx.fillRect(0,0,W,H);
+
+  const ML=58,MR=34,MT=24,MB=54;
+  const PW=W-ML-MR,PH=H-MT-MB;
+  NOMO={ML,MT,PW,PH,W};
+  const tx=r=>ML+r*PW;
+  const ty=q=>MT+PH-q*PH;
+
+  // grid + ticks
+  ctx.strokeStyle=cGrid;ctx.lineWidth=0.7;
+  for(let q=0;q<=1.0001;q+=0.1){ctx.beginPath();ctx.moveTo(ML,ty(q));ctx.lineTo(ML+PW,ty(q));ctx.stroke();
+    ctx.fillStyle=cInk3;ctx.font='13px DM Mono,monospace';ctx.textAlign='right';ctx.fillText(Math.round(q*100)+'%',ML-9,ty(q)+4);}
+  for(let r=0;r<=1.0001;r+=0.1){ctx.beginPath();ctx.moveTo(tx(r),MT);ctx.lineTo(tx(r),MT+PH);ctx.stroke();
+    ctx.fillStyle=cInk3;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(r.toFixed(1),tx(r),MT+PH+20);}
+
+  // base-rate line
+  ctx.strokeStyle=cA4;ctx.lineWidth=1.6;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(ML,ty(ST.BR));ctx.lineTo(ML+PW,ty(ST.BR));ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=cA4;ctx.font='13px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('Base rate '+pct(ST.BR)+'%',ML+6,ty(ST.BR)-6);
+
+  // SR curves (grey) — labelled ALONG the curve where curves are vertically separated
+  const labelX=0.60;
+  NOMO_SR.forEach(sr=>{
+    ctx.strokeStyle=cInk3;ctx.lineWidth=1.6;ctx.globalAlpha=0.9;
+    ctx.beginPath();let st=false;
+    for(let r=0;r<=1.0001;r+=0.02){const X=tx(r),Y=ty(successRate(ST.BR,sr,r));if(!st){ctx.moveTo(X,Y);st=true;}else ctx.lineTo(X,Y);}
+    ctx.stroke();ctx.globalAlpha=1;
+    const ly=ty(successRate(ST.BR,sr,labelX));
+    const t='SR '+sr.toFixed(2);
+    ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+    const tw=ctx.measureText(t).width;
+    ctx.fillStyle=cBg+'cc';ctx.fillRect(tx(labelX)-tw/2-3,ly-17,tw+6,15);
+    ctx.fillStyle=cInk2;ctx.fillText(t,tx(labelX),ly-5);
+  });
+
+  // current SR curve (highlighted orange) — its values are shown in the crosshair label
+  ctx.strokeStyle=cA5;ctx.lineWidth=2.8;
+  ctx.beginPath();let st2=false;
+  for(let r=0;r<=1.0001;r+=0.01){const X=tx(r),Y=ty(successRate(ST.BR,ST.SR,r));if(!st2){ctx.moveTo(X,Y);st2=true;}else ctx.lineTo(X,Y);}
+  ctx.stroke();
+
+  // crosshair
+  const eq=successRate(ST.BR,ST.SR,ST.rho);
+  const cx=tx(ST.rho),cy=ty(eq);
+  ctx.strokeStyle=cInk3+'cc';ctx.lineWidth=1.2;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(cx,MT+PH);ctx.lineTo(cx,cy);ctx.lineTo(ML,cy);ctx.stroke();ctx.setLineDash([]);
+  // marker
+  ctx.beginPath();ctx.moveTo(cx-9,cy);ctx.lineTo(cx+9,cy);ctx.moveTo(cx,cy-9);ctx.lineTo(cx,cy+9);
+  ctx.strokeStyle=cA6;ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,6,0,2*Math.PI);ctx.fillStyle=cA6;ctx.fill();
+  ctx.strokeStyle=cBg;ctx.lineWidth=2;ctx.stroke();
+  // value label
+  const lbl='EQ '+pct(eq)+'%  (ρ '+ST.rho.toFixed(2)+', SR '+ST.SR.toFixed(2)+')';
+  ctx.font='bold 13px DM Mono,monospace';
+  const lw=ctx.measureText(lbl).width;let lxp=cx+12;if(lxp+lw>ML+PW)lxp=cx-12-lw;
+  ctx.fillStyle=cBg+'e8';ctx.fillRect(lxp-4,cy-24,lw+8,20);
+  ctx.fillStyle=cA6;ctx.textAlign='left';ctx.fillText(lbl,lxp,cy-9);
+
+  // axis labels
+  ctx.fillStyle=cInk2;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Validity  ρ',ML+PW/2,H-8);
+  ctx.save();ctx.translate(16,MT+PH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=cInk2;ctx.font='14px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Success Rate EQ',0,0);ctx.restore();
+}
+
+function onNomoClick(e){
+  const {ML,MT,PW,PH}=NOMO;
+  const x=e.offsetX,y=e.offsetY;
+  let r=(x-ML)/PW;r=Math.max(0,Math.min(0.95,Math.round(r/0.05)*0.05));
+  const yval=Math.max(0,Math.min(1,(MT+PH-y)/PH));
+  // snap SR to nearest drawn curve (by success at this r)
+  let best=NOMO_SR[0],bd=1e9;
+  NOMO_SR.forEach(sr=>{const d=Math.abs(successRate(ST.BR,sr,r)-yval);if(d<bd){bd=d;best=sr;}});
+  ST.rho=r;ST.SR=best;
+  syncSliders();render();
+}
+
+function selectCell(rho,sr){
+  ST.rho=rho;ST.SR=sr;
+  syncSliders();
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  render();
+}
+
+function render(){
+  buildTable();drawNomo();updateStats();
+}
+function updateStats(){
+  const eq=successRate(ST.BR,ST.SR,ST.rho);
+  const lift=eq-ST.BR;
+  document.getElementById('tbl-br').textContent=ST.BR.toFixed(2);
+  document.getElementById('kw-br').textContent=pct(ST.BR)+'%';
+  document.getElementById('kw-rho').textContent=ST.rho.toFixed(2);
+  document.getElementById('kw-sr').textContent=pct(ST.SR)+'%';
+  document.getElementById('kw-eq').textContent=pct(eq)+'%';
+  const liftEl=document.getElementById('kw-lift');
+  liftEl.textContent=(lift>=0?'+':'')+pct(lift)+' pp';
+  liftEl.style.color=lift>0.001?css('--a3'):lift<-0.001?css('--a1'):css('--ink');
+  document.getElementById('ex-br').textContent=pct(ST.BR);
+  document.getElementById('ex-rho').textContent=ST.rho.toFixed(2);
+  document.getElementById('ex-sr').textContent=pct(ST.SR);
+  document.getElementById('ex-eq').textContent=pct(eq);
+  document.getElementById('ex-lift').textContent=(lift>=0?'+':'')+pct(lift);
+
+  let txt;
+  if(ST.rho<0.025){
+    txt='At validity 0 the test is worthless: the success rate of those selected exactly matches the base rate ('+pct(eq)+'%). Selection by coin flip.';
+  } else if(lift<0.02){
+    txt='Here the test barely helps (lift '+(lift>=0?'+':'')+pct(lift)+' pp): at base rate '+pct(ST.BR)+'% and selection ratio '+pct(ST.SR)+'%, the room for improvement is small. Select more strictly or use a more valid test.';
+  } else {
+    txt='At validity '+ST.rho.toFixed(2)+', selection ratio '+pct(ST.SR)+'%, and base rate '+pct(ST.BR)+'%, the success rate rises to '+pct(eq)+'% — a gain of '+pct(lift)+' percentage points over the base rate. The stricter the selection (smaller SR), the greater this benefit.';
+  }
+  document.getElementById('ins-text').textContent=txt;
+}
+
+function syncSliders(){
+  document.getElementById('sl-BR').value=ST.BR;document.getElementById('val-BR').textContent=ST.BR.toFixed(2);
+  document.getElementById('sl-rho').value=ST.rho;document.getElementById('val-rho').textContent=ST.rho.toFixed(2);
+  document.getElementById('sl-SR').value=ST.SR;document.getElementById('val-SR').textContent=ST.SR.toFixed(2);
+}
+
+function onSl(key,el){
+  ST[key]=parseFloat(el.value);
+  document.getElementById('val-'+key).textContent=ST[key].toFixed(2);
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  render();
+}
+
+const PRESETS={
+  A:{BR:0.50,rho:0.50,SR:0.20},
+  B:{BR:0.50,rho:0.30,SR:0.10},
+  C:{BR:0.20,rho:0.50,SR:0.20},
+  D:{BR:0.80,rho:0.50,SR:0.30},
+};
+function setPreset(k){
+  Object.assign(ST,PRESETS[k]);
+  syncSliders();
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pre-'+k).classList.add('active');
+  render();
+}
+
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  render();
+}
+window.addEventListener('resize',drawNomo);
+document.getElementById('nomo-canvas').addEventListener('click',onNomoClick);
+
+syncSliders();
+setPreset('B');
+</script>
+</body>
+</html>

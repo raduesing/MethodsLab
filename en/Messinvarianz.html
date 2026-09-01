@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Measurement Invariance — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+.gk{text-transform:none!important;font-style:normal}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.5rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.16rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+input[type=range].acc-mu::-webkit-slider-thumb{background:var(--a3)}
+input[type=range].acc-t::-webkit-slider-thumb{background:var(--a1)}
+input[type=range].acc-l::-webkit-slider-thumb{background:var(--a5)}
+
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.btn-row.five{grid-template-columns:repeat(5,1fr)}
+.mbtn{font-family:'DM Mono',monospace;font-size:.71rem;padding:.36rem .25rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center;line-height:1.25}
+.mbtn:hover{border-color:var(--accent);color:var(--accent)}
+.mbtn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.sec-h:first-child{margin-top:0}
+
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+
+.verdict{font-family:'DM Mono',monospace;font-size:.86rem;font-weight:500;padding:.7rem .95rem;margin-bottom:1rem;
+  border:1.5px solid;text-align:center;letter-spacing:.01em;line-height:1.6}
+.v-ok{color:var(--a3);border-color:var(--a3);background:color-mix(in srgb,var(--a3) 12%,transparent)}
+.v-part{color:var(--a2);border-color:var(--a2);background:color-mix(in srgb,var(--a2) 12%,transparent)}
+.v-bad{color:var(--a5);border-color:var(--a5);background:color-mix(in srgb,var(--a5) 12%,transparent)}
+
+.crit{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);margin:-.55rem 0 1.1rem;
+  display:flex;flex-wrap:wrap;gap:.4rem .9rem;align-items:center;
+  background:var(--panel);border:1px solid var(--grid);padding:.6rem .85rem}
+.crit .lvl{display:flex;align-items:center;gap:.3rem}
+.crit b{color:var(--ink)}
+.chk{font-weight:600} .chk.y{color:var(--a3)} .chk.n{color:var(--a1)}
+.crit .arrow{color:var(--ink3)}
+
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1rem}
+.metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.3rem;line-height:1.3}
+.metric-val{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;line-height:1}
+.metric-sub{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.25rem;line-height:1.4}
+
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block}
+.hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
+
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+
+.chain{font-family:'DM Mono',monospace;font-size:.79rem;line-height:2.1;background:var(--panel);
+  border:1px solid var(--grid);border-left:3px solid var(--a3);padding:.65rem .9rem;margin:-.3rem 0 1.1rem;color:var(--ink2)}
+.chain b{color:var(--ink)} .chain .step{white-space:nowrap} .chain .arr{color:var(--ink3);margin:0 .2rem;font-size:.74rem}
+.work-toggle{font-family:'DM Mono',monospace;font-size:.76rem;padding:.45rem .9rem;border:1.5px solid var(--a2);
+  background:transparent;color:var(--a2);cursor:pointer;margin-bottom:.9rem;transition:all .15s;letter-spacing:.03em}
+.work-toggle:hover{background:var(--a2);color:var(--bg)}
+.work{display:none;background:var(--panel);border:1px solid var(--grid);padding:1rem 1.1rem;margin-bottom:1.4rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;line-height:1.7;color:var(--ink2);overflow-x:auto}
+.work.open{display:block}
+.work h4{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--a2);
+  margin:1.2rem 0 .5rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.work h4:first-child{margin-top:0}
+.work table{border-collapse:collapse;width:100%;margin:.4rem 0 .7rem;font-size:.75rem}
+.work th,.work td{border:1px solid var(--grid);padding:.32rem .45rem;text-align:right;white-space:nowrap}
+.work th{color:var(--ink3);font-weight:500}
+.work td.lbl,.work th.lbl{text-align:left;color:var(--ink)}
+.work tr.sum td{border-top:2px solid var(--ink3);color:var(--ink);font-weight:500}
+.work b{color:var(--ink)} .work .gr{color:var(--a3)} .work .or{color:var(--a5)}
+.work pre{font-family:'DM Mono',monospace;font-size:.76rem;line-height:1.65;white-space:pre-wrap;margin:.2rem 0 .6rem;color:var(--ink2)}
+.work pre b{color:var(--ink)}
+.intro-p{line-height:1.7;margin-bottom:.9rem}
+.intro-p strong{color:var(--ink)} .intro-p em{font-style:italic;color:var(--ink)}
+table.deftab{border-collapse:collapse;width:100%;font-size:.8rem;margin-bottom:1.3rem;background:var(--panel);border:1px solid var(--grid)}
+table.deftab th,table.deftab td{border:1px solid var(--grid);padding:.5rem .6rem;text-align:left;vertical-align:top;line-height:1.5}
+table.deftab th{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);font-weight:500;background:var(--paper)}
+table.deftab td.lvl{font-family:'DM Mono',monospace;font-weight:600;white-space:nowrap}
+table.deftab td.canvas-cue{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink2)}
+table.deftab strong{color:var(--ink)}
+@media(max-width:760px){table.deftab,table.deftab tbody,table.deftab tr,table.deftab td,table.deftab th{display:block;width:100%}table.deftab th{display:none}table.deftab td{border-bottom:none}table.deftab tr{border-bottom:2px solid var(--grid);margin-bottom:.5rem}}
+
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+table.htab{border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.74rem;margin:.3rem 0 .6rem;width:100%}
+table.htab th,table.htab td{border:1px solid var(--grid);padding:.3rem .45rem;text-align:left;color:var(--ink2)}
+table.htab th{color:var(--accent);font-weight:500}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr}.lcard-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Measurement Invariance — <em>are you comparing constructs or measurement error?</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Load Scenario</div>
+    <div class="btn-row">
+      <button class="mbtn" id="ps-full" onclick="preset('full')">Scalar Met</button>
+      <button class="mbtn active" id="ps-tau" onclick="preset('tau')">Scalar Violated</button>
+      <button class="mbtn" id="ps-lam" onclick="preset('lam')">Metric Violated</button>
+      <button class="mbtn" id="ps-mask" onclick="preset('mask')">Masked Diff.</button>
+    </div>
+    <div class="hint" style="border-top:none;padding-top:.4rem;margin-bottom:0">Named after the highest level <em>still met</em>: "Scalar violated" = only metric (intercept DIF), "Metric violated" = only configural (loading DIF), "Masked diff." = a real difference is hidden by intercept DIF. Afterward, change any slider freely.</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a3)">True Latent Difference</div>
+    <div class="slider-row" style="margin-bottom:.2rem">
+      <div class="slider-lbl"><span class="slider-name"><span class="gk">Δμ</span> = μ<sub>B</sub> − μ<sub>A</sub></span><span class="slider-val" id="v-mu">0.00</span></div>
+      <input type="range" class="acc-mu" id="s-mu" min="-1" max="1" step="0.05" value="0">
+    </div>
+    <div class="hint" style="border-top:none;padding-top:.3rem;margin-bottom:0">The <em>true</em> difference between the groups on the construct (μ<sub>A</sub> = 0 as reference).</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a1)">Non-Invariance (DIF) in Item</div>
+    <div class="btn-row five" id="item-pick"></div>
+    <div class="slider-row" style="margin:.7rem 0 .2rem">
+      <div class="slider-lbl"><span class="slider-name"><span class="gk">Δτ</span> Intercept (group B)</span><span class="slider-val" id="v-dtau">0.80</span></div>
+      <input type="range" class="acc-t" id="s-dtau" min="-1.5" max="1.5" step="0.05" value="0.8">
+    </div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name"><span class="gk">Δλ</span> Loading (group B)</span><span class="slider-val" id="v-dlam">0.00</span></div>
+      <input type="range" class="acc-l" id="s-dlam" min="-0.5" max="0.5" step="0.02" value="0">
+    </div>
+    <div class="hint">Shifts only <strong>one</strong> item in group B: <span style="color:var(--a1)">Δτ</span> = uniform DIF (intercept), <span style="color:var(--a5)">Δλ</span> = non-uniform DIF (loading). "None" = full invariance.</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Baseline Measurement Model</div>
+    <div class="hint" style="border-top:none;padding-top:0;margin-bottom:0">V1–V4 (verbal subtest from the cognitive test), one factor, Likert 1–5.<br>Loadings λ = 0.75 / 0.65 / 0.80 / 0.60<br>Intercepts τ = 3.00 (all).<br>In group A, these values hold exactly; violations above affect only group B.</div>
+  </div>
+
+</div><!-- #sidebar -->
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 What This Is About</div>
+    From the 8-item cognitive test (factor analysis, measurement models, CFA), we pick out the <strong>verbal
+    subtest V1–V4</strong> and use it to compare two groups — say, a German and a translated test version, or two
+    testing time points. Before you compare means, you must be sure the test measures <strong>the same thing in the
+    same way in both groups</strong>. If that's violated (<strong>non-invariance / DIF</strong>), a "group
+    difference" can be a pure <strong>measurement artifact</strong>. Set the true difference and a violation —
+    and see how much of the observed difference is real.
+    <div style="margin-top:.6rem">
+      <a class="xlink" href="Faktoranalyse.html" target="_blank">← Factor Analysis (EFA)</a>
+      <a class="xlink" href="Messmodelle.html" target="_blank">← Measurement Models</a>
+      <a class="xlink" href="Konfirmatorische_Faktoranalyse.html" target="_blank">← Confirmatory Factor Analysis (CFA)</a>
+    </div>
+  </div>
+
+  <div class="sec-h">What Is Measurement Invariance — and What Is It For?</div>
+  <p class="intro-p"><strong>Measurement invariance (factorial invariance)</strong> holds when an instrument measures a
+    construct <em>the same way</em> across different <strong>groups</strong> (gender, countries) or different
+    <strong>time points</strong> — formally: when the measurement model's parameters (loadings <span class="gk">λ</span>,
+    intercepts <span class="gk">τ</span>, error variances <span class="gk">θ</span>) are <strong>equal</strong> across
+    groups. <strong>What's it for?</strong> Only then does a difference in the <em>test score</em> also mean a
+    difference in the <em>construct</em> — and not merely in the instrument. Without invariance, you're comparing
+    apples to oranges: a "group difference" can be a pure <strong>measurement artifact</strong>. It is tested as a
+    <strong>nested hierarchy</strong> in a multi-group SEM (diagram ② below): step by step, more parameters are set
+    equal across groups (<span style="color:var(--a3)">green paths</span>) and it is checked whether the model still fits.</p>
+
+  <table class="deftab">
+    <thead><tr><th>Level</th><th>what is equal?</th><th>allows comparing …</th><th>in the path diagram (②), recognizable by</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="lvl" style="color:var(--ink2)">Configural</td>
+        <td>only the <strong>structure</strong>: the same items load on the same factor</td>
+        <td>— (only: "same construct, same pattern")</td>
+        <td class="canvas-cue">All four items hang on the same factor <span class="gk">ξ</span> in both groups. This basic structure always holds here.</td>
+      </tr>
+      <tr>
+        <td class="lvl" style="color:var(--a2)">Metric <span style="color:var(--ink3);font-weight:400">(weak)</span></td>
+        <td>+ <strong>loadings <span class="gk">λ</span></strong> equal</td>
+        <td><strong>associations</strong>, covariances, regressions</td>
+        <td class="canvas-cue">All <span class="gk">λ</span> paths <span style="color:var(--a3)">green</span>. A <span style="color:var(--a1)">red</span> <span class="gk">λ</span> path (Δλ) breaks this level.</td>
+      </tr>
+      <tr>
+        <td class="lvl" style="color:var(--a5)">Scalar <span style="color:var(--ink3);font-weight:400">(strong)</span></td>
+        <td>+ <strong>intercepts <span class="gk">τ</span></strong> equal</td>
+        <td><strong>latent &amp; observed means</strong></td>
+        <td class="canvas-cue">Additionally all <span class="gk">τ</span> in the item boxes <span style="color:var(--a3)">green</span>. A <span style="color:var(--a1)">red</span> <span class="gk">τ</span> (Δτ) breaks this level.</td>
+      </tr>
+      <tr>
+        <td class="lvl" style="color:var(--a4)">Strict</td>
+        <td>+ <strong>error variances <span class="gk">θ</span></strong> (residuals <span class="gk">ε</span>) equal</td>
+        <td><strong>observed sum scores</strong> directly (equal measurement precision)</td>
+        <td class="canvas-cue">Additionally the residuals <span class="gk">ε</span> equal across groups (satisfied here by design once scalar holds).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="sec-h"><span class="circ">①</span> What Would You Conclude?</div>
+  <div class="verdict v-bad" id="verdict">—</div>
+  <div class="crit" id="criteria"></div>
+
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-lbl">Observed Score Difference</div>
+      <div class="metric-val" id="m-obs" style="color:var(--ink)">—</div>
+      <div class="metric-sub">avg. sum score B − avg. A</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">of which real (latent)</div>
+      <div class="metric-val" id="m-true" style="color:var(--a3)">—</div>
+      <div class="metric-sub">Δμ · (Σλ / k)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-lbl">of which artifact</div>
+      <div class="metric-val" id="m-art" style="color:var(--a5)">—</div>
+      <div class="metric-sub">(Δτ + Δμ·Δλ) / k</div>
+    </div>
+  </div>
+
+  <div class="chain" id="chain"></div>
+
+  <div class="plot-box">
+    <div class="plot-title"><span class="circ">②</span> The Measurement Model as a Multi-Group CFA</div>
+    <canvas id="cv-path" height="460"></canvas>
+    <div class="hint" id="hint-path">Left group A, right group B — a complete path diagram each (one factor ξ, four items), with the parameter values <em>of that</em> group. <span style="color:var(--a3)">Green</span> = the parameter is equal in <strong>both</strong> groups (invariant), <span style="color:var(--a1)">red</span> = it <strong>differs</strong> between the groups (non-invariant). In a multi-group SEM, parameters are tentatively set equal; if the model still fits, invariance holds at this level.</div>
+  </div>
+
+  <div class="two-col">
+    <div class="plot-box" style="margin-bottom:0">
+      <div class="plot-title"><span class="circ">③</span> Observed Item Means by Group</div>
+      <canvas id="cv-items" height="300"></canvas>
+      <div class="hint" id="hint-items">Gray bars = group A, blue = group B. The violated item is outlined in red.</div>
+    </div>
+    <div class="plot-box" style="margin-bottom:0">
+      <div class="plot-title"><span class="circ">④</span> Decomposition of the Observed Difference</div>
+      <canvas id="cv-decomp" height="300"></canvas>
+      <div class="hint">The blue portion is the <strong>legitimate</strong> (latent) difference, the orange portion the <strong>artifact</strong>. Only when orange = 0 does the observed difference truly measure the construct.</div>
+    </div>
+  </div>
+
+  <div class="sec-h"><span class="circ">⑤</span> Full Calculation: Items Only → Sum Score vs. SEM</div>
+  <button class="work-toggle" id="work-toggle" onclick="toggleWork()">▸ Show full calculation for the current scenario</button>
+  <div class="work" id="work"></div>
+
+  <div class="sec-h">Flashcards</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">① The Invariance Hierarchy</div>
+      <div class="lcard-body"><strong>Configural</strong> ⊂ <strong>metric</strong> ⊂ <strong>scalar</strong> ⊂ <strong>strict</strong> —
+        each level additionally requires equality: configural only the same structure, metric equal <strong>loadings λ</strong>,
+        scalar additionally equal <strong>intercepts τ</strong>, strict additionally equal <strong>error variances θ</strong>.
+        Tested in a nested fashion, usually via a multi-group CFA model.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">② Why <em>Scalar</em> for Means?</div>
+      <div class="lcard-body">An observed item mean is <strong>τ + λ·μ</strong>. To compare latent means μ,
+        intercept τ <em>and</em> loading λ must be equal across groups — otherwise it's not separable whether a higher
+        score comes from a higher <strong>construct</strong> level (μ) or a shifted <strong>item</strong> (τ). That's
+        exactly what the orange portion makes visible.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">③ Two Error Directions: Illusion vs. Masking</div>
+      <div class="lcard-body">Non-invariance can mislead in <em>both</em> directions. <strong>Illusory difference</strong> ("scalar violated"):
+        Δμ = 0, but a DIF creates a difference where none exists → <strong>false positive</strong>.
+        <strong>Masking</strong> ("masked diff."): Δμ is <em>real</em> (+0.5), but an opposing DIF (Δτ = −0.7)
+        hides it — the sum score shows only +0.175 instead of the true difference → <strong>false negative</strong>.
+        In both cases the raw mean comparison is misleading; the SEM recovers it via the anchors, κ_B = 0.5.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">④ Score Scale ≠ Latent Scale</div>
+      <div class="lcard-body">The latent difference <strong>Δμ</strong> and the observed <strong>score difference</strong> live on
+        <em>different metrics</em>. Even under full invariance, the observed difference is only <strong>Δμ·(Σλ/k)</strong> —
+        the latent difference scaled by the mean loading (here <strong>×0.70</strong>). They'd only be equal at a mean
+        loading of 1. That's why "of which real" is <em>not</em> Δμ itself, but its image on the score scale — and in
+        an SEM you compare the latent means directly instead of raw sum scores. The chain above the diagrams shows this
+        translation.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">⑤ Uniform vs. Non-Uniform DIF</div>
+      <div class="lcard-body"><strong>Δτ</strong> shifts the item equally for everyone (uniform DIF) → violates only the
+        <em>scalar</em> level. <strong>Δλ</strong> changes how strongly the item measures the construct (non-uniform DIF)
+        → already violates the <em>metric</em> level and hence also association comparisons. The same phenomenon is
+        called <strong>item DIF</strong> in IRT.
+        <a class="xlink" href="DIF.html" target="_blank">→ DIF (IRT)</a></div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">⑥ Partial Invariance &amp; Anchors</div>
+      <div class="lcard-body">Rarely are <em>all</em> items invariant. With enough <strong>invariant anchor items</strong>, the
+        latent scale can still be identified, and individual items are allowed free parameters (<strong>partial
+        invariance</strong>, Byrne/Shavelson/Muthén 1989). Rule of thumb: at least two invariant items per factor.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">⑦ How It's Tested in Practice</div>
+      <div class="lcard-body">Nest and compare models: the <strong>Δχ²</strong> difference test (often too strict with large n) or,
+        better, <strong>ΔCFI ≤ .01</strong> / ΔRMSEA ≤ .015 (Cheung &amp; Rensvold 2002; Chen 2007). If a level doesn't
+        hold, the corresponding group comparison is not valid — or one moves to partial invariance.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">⑧ Related Tools</div>
+      <div class="lcard-body">Measurement invariance is the <em>group comparison</em> of measurement models: the same
+        CFA building blocks as in the Measurement Model and CFA tools, just restricted across groups. Shifted
+        intercepts are reminiscent of norm shifts.
+        <a class="xlink" href="Konfirmatorische_Faktoranalyse.html" target="_blank">→ Confirmatory Factor Analysis (CFA)</a>
+        <a class="xlink" href="Messmodelle.html" target="_blank">→ Measurement Models</a>
+        <a class="xlink" href="Strukturgleichungsmodell.html" target="_blank">→ Structural Equation Model (SEM)</a>
+        <a class="xlink" href="Normierungsverzerrung.html" target="_blank">→ Norming</a></div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Measurement Invariance — Background
+      <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    </div>
+
+    <div class="help-sh">What This Tool Shows</div>
+    <p class="help-p">A single-factor measurement model with 4 items, measured in <strong>two groups</strong>. You set the
+      <strong>true latent difference Δμ</strong> and — optionally — a <strong>non-invariance</strong> on exactly one item
+      (a shifted intercept Δτ and/or a changed loading Δλ in group B). The tool decomposes the resulting observed
+      score difference into a <strong>legitimate (latent)</strong> and an <strong>artifactual</strong> portion and
+      checks which invariance levels hold.</p>
+
+    <div class="help-sh">The Model per Group g</div>
+    <span class="help-formula">V_ij = τ_ig + λ_ig · ξ_g + ε_ig
+E[V_ij | group g] = τ_ig + λ_ig · μ_g     (μ_A = 0 as reference)
+Σλ/k = (0.75+0.65+0.80+0.60)/4 = 0.70</span>
+    <p class="help-p">In group A the baseline values apply. In group B a violation is added to the selected item v:
+      τ_vB = τ_v + Δτ and λ_vB = λ_v + Δλ. All other items remain invariant.</p>
+
+    <div class="help-sh">Decomposition of the Score Difference</div>
+    <span class="help-formula">D_obs     = mean score(B) − mean score(A)
+         = Δμ·(Σλ/k)  +  (Δτ + Δμ·Δλ)/k
+D_true    = Δμ·(Σλ/k)              (justified by the latent difference)
+D_artifact = (Δτ + Δμ·Δλ)/k        (caused only by the violated item)</span>
+    <p class="help-p">If Δτ = Δλ = 0, D_artifact = 0: the observed difference then genuinely measures the construct.
+      With Δμ = 0 but Δτ ≠ 0, <em>the entire</em> observed difference is an artifact — one would "find" a difference
+      where none exists. An opposing Δτ can also <strong>mask</strong> a real difference.</p>
+
+    <div class="help-sh">The Four Levels</div>
+    <table class="htab">
+      <tr><th>Level</th><th>equal across groups</th><th>allows comparing …</th></tr>
+      <tr><td>Configural</td><td>only pattern/structure</td><td>— (only: same construct)</td></tr>
+      <tr><td>Metric (weak)</td><td>+ loadings λ</td><td>associations, covariances, regressions</td></tr>
+      <tr><td>Scalar (strong)</td><td>+ intercepts τ</td><td>latent &amp; observed means</td></tr>
+      <tr><td>Strict</td><td>+ error variances θ</td><td>observed sum scores directly (equal precision)</td></tr>
+    </table>
+    <p class="help-p"><strong>Note:</strong> Error variances θ are held equal across groups here, so "strict" holds
+      automatically as soon as "scalar" holds. λ (metric) and τ (scalar) are varied deliberately, since those are the
+      practically most important levels for mean comparisons.</p>
+
+    <div class="help-sh">How It's Tested in Practice</div>
+    <p class="help-p">Multi-group CFA: estimate nested models (configural → metric → scalar → strict) and compare
+      them. The χ² difference test is oversensitive with large n; more common are <strong>ΔCFI ≤ .01</strong> and
+      ΔRMSEA ≤ .015 (Cheung &amp; Rensvold 2002; Chen 2007). If a level doesn't hold, the offending item is located
+      (modification indices) and given free parameters → <strong>partial invariance</strong>.</p>
+
+    <div class="help-sh">Relation to DIF and IRT</div>
+    <p class="help-p">Non-invariance at the item level is <strong>Differential Item Functioning (DIF)</strong>: uniform DIF ↔
+      intercept/difficulty (Δτ), non-uniform DIF ↔ discrimination/loading (Δλ). The CFA framework here and the
+      IRT framework in the DIF tool describe the same phenomenon in different parameterizations.</p>
+
+    <div class="help-sh">References</div>
+    <p class="help-p">Meredith, W. (1993). Measurement invariance, factor analysis and factorial invariance. <em>Psychometrika, 58</em>, 525–543.<br>
+      Vandenberg, R. J. &amp; Lance, C. E. (2000). A review of measurement invariance. <em>Organizational Research Methods, 3</em>, 4–70.<br>
+      Cheung, G. W. &amp; Rensvold, R. B. (2002). Evaluating goodness-of-fit indexes for invariance. <em>SEM, 9</em>, 233–255.<br>
+      Putnick, D. L. &amp; Bornstein, M. H. (2016). Measurement invariance conventions and reporting. <em>Developmental Review, 41</em>, 71–90.</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════
+const LAM=[0.75,0.65,0.80,0.60];      // baseline loadings (group A, and B unless violated)
+const TAU=[3.0,3.0,3.0,3.0];          // baseline intercepts
+const K=LAM.length;
+const SUMLK=LAM.reduce((a,b)=>a+b,0)/K;   // Σλ/k = 0.70
+
+const ST={ mu:0, vItem:1, dTau:0.8, dLam:0 };   // vItem: -1 = none, else 0..K-1
+const TOL=0.01;
+
+const PRESETS={
+  full:{mu:0.5, vItem:-1, dTau:0,    dLam:0},
+  tau: {mu:0.0, vItem:1,  dTau:0.8,  dLam:0},
+  lam: {mu:0.5, vItem:2,  dTau:0,    dLam:0.4},
+  mask:{mu:0.5, vItem:1,  dTau:-0.7, dLam:0}
+};
+
+// ══════════════════════════════════════════════════════════════════════
+// MATH
+// ══════════════════════════════════════════════════════════════════════
+function violated(){return ST.vItem>=0 && (Math.abs(ST.dTau)>TOL || Math.abs(ST.dLam)>TOL);}
+function itemMeanA(i){return TAU[i] + LAM[i]*0;}                 // μ_A = 0
+function itemMeanB(i){
+  let t=TAU[i], l=LAM[i];
+  if(ST.vItem===i){ t+=ST.dTau; l+=ST.dLam; }
+  return t + l*ST.mu;
+}
+function dObs(){ let sA=0,sB=0; for(let i=0;i<K;i++){sA+=itemMeanA(i);sB+=itemMeanB(i);} return (sB-sA)/K; }
+function dTrue(){ return ST.mu*SUMLK; }
+function dArt(){ if(ST.vItem<0) return 0; return (ST.dTau + ST.mu*ST.dLam)/K; }
+
+function status(){
+  const metric = !(violated() && Math.abs(ST.dLam)>TOL);   // loadings equal
+  const scalar = metric && !(violated() && Math.abs(ST.dTau)>TOL); // + intercepts equal
+  return {configural:true, metric, scalar, strict:scalar};
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW helpers
+// ══════════════════════════════════════════════════════════════════════
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+function fmt2(v){return (v>=0?'':'-')+Math.abs(v).toFixed(2);}
+// does parameter of item i differ between the two groups?
+function lamDiff(i){return ST.vItem===i && Math.abs(ST.dLam)>TOL;}
+function tauDiff(i){return ST.vItem===i && Math.abs(ST.dTau)>TOL;}
+
+function drawGroup(ctx,px0,px1,gName,mu,isB){
+  const ink=cv('--ink'),ink2=cv('--ink2'),ink3=cv('--ink3'),paper=cv('--paper'),bg=cv('--bg'),
+        a1=cv('--a1'),a3=cv('--a3'),a4=cv('--a4');
+  const pw=px1-px0;
+  const fx=px0+pw/2, fy=104, frx=50, fry=32;
+  const bw=Math.min(74,(pw-40)/K-10), bh=58, by=300;
+  const cxs=[]; for(let i=0;i<K;i++) cxs.push(px0+22+bw/2 + i*((pw-44-bw)/(K-1)));
+
+  // panel title with latent mean μ
+  ctx.fillStyle=ink; ctx.font='600 14px DM Mono,monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('Group '+gName+'   (μ = '+fmt2(mu)+')',fx,58);
+
+  // loadings λ
+  for(let i=0;i<K;i++){
+    const cx=cxs[i], dl=lamDiff(i), col=dl?a1:a3;
+    const val=LAM[i]+(isB&&ST.vItem===i?ST.dLam:0);
+    ctx.strokeStyle=col; ctx.lineWidth=dl?3:2;
+    ctx.beginPath(); ctx.moveTo(fx,fy+fry); ctx.lineTo(cx,by); ctx.stroke();
+    const ang=Math.atan2(by-(fy+fry),cx-fx);
+    ctx.fillStyle=col;
+    ctx.beginPath();ctx.moveTo(cx,by);ctx.lineTo(cx-11*Math.cos(ang-0.4),by-11*Math.sin(ang-0.4));
+    ctx.lineTo(cx-11*Math.cos(ang+0.4),by-11*Math.sin(ang+0.4));ctx.closePath();ctx.fill();
+    const lx=fx+(cx-fx)*0.47, ly=fy+fry+(by-(fy+fry))*0.47;
+    ctx.font='600 14px DM Mono,monospace'; ctx.textAlign='center';
+    const txt='λ '+val.toFixed(2), tw=ctx.measureText(txt).width+10, th=20;
+    ctx.fillStyle=paper; ctx.globalAlpha=.94; ctx.fillRect(lx-tw/2,ly-th/2,tw,th); ctx.globalAlpha=1;
+    ctx.fillStyle=col; ctx.textBaseline='middle'; ctx.fillText(txt,lx,ly);
+  }
+
+  // factor oval
+  ctx.fillStyle=bg; ctx.strokeStyle=a4; ctx.lineWidth=2.4;
+  ctx.beginPath(); ctx.ellipse(fx,fy,frx,fry,0,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle=ink; ctx.font='italic 25px Fraunces,serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('ξ',fx,fy);
+
+  // items + residuals + intercepts
+  for(let i=0;i<K;i++){
+    const cx=cxs[i];
+    const ery=by+bh+38, erR=15;
+    ctx.strokeStyle=ink3; ctx.lineWidth=1.8;
+    ctx.beginPath(); ctx.moveTo(cx,ery-erR); ctx.lineTo(cx,by+bh); ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx,by+bh);ctx.lineTo(cx-5,by+bh+9);ctx.lineTo(cx+5,by+bh+9);ctx.closePath();ctx.fillStyle=ink3;ctx.fill();
+    ctx.fillStyle=bg; ctx.beginPath();ctx.arc(cx,ery,erR,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle=ink3; ctx.font='13px DM Mono,monospace'; ctx.textBaseline='middle'; ctx.textAlign='center';
+    ctx.fillText('ε'+(i+1),cx,ery+1);
+    // box
+    ctx.fillStyle=paper; ctx.strokeStyle=ink2; ctx.lineWidth=2;
+    ctx.fillRect(cx-bw/2,by,bw,bh); ctx.strokeRect(cx-bw/2,by,bw,bh);
+    ctx.fillStyle=ink; ctx.font='600 16px DM Mono,monospace'; ctx.textBaseline='middle';
+    ctx.fillText('V'+(i+1),cx,by+bh/2-12);
+    // intercept τ
+    const dt=tauDiff(i), tcol=dt?a1:a3;
+    const tval=TAU[i]+(isB&&ST.vItem===i?ST.dTau:0);
+    ctx.font='600 16px DM Mono,monospace'; ctx.fillStyle=tcol;
+    ctx.fillText('τ '+tval.toFixed(1),cx,by+bh/2+13);
+  }
+}
+
+function drawPath(){
+  const c=document.getElementById('cv-path'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d');
+  const ink2=cv('--ink2'),grid=cv('--grid'),a1=cv('--a1'),a3=cv('--a3');
+  ctx.clearRect(0,0,W,H);
+  // legend (top)
+  ctx.font='13px DM Mono,monospace'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.strokeStyle=a3; ctx.lineWidth=3; ctx.beginPath();ctx.moveTo(16,22);ctx.lineTo(40,22);ctx.stroke();
+  ctx.fillStyle=ink2; ctx.fillText('equal in both groups (invariant)',46,22);
+  ctx.strokeStyle=a1; ctx.lineWidth=3; ctx.beginPath();ctx.moveTo(16,40);ctx.lineTo(40,40);ctx.stroke();
+  ctx.fillStyle=ink2; ctx.fillText('differs (non-invariant)',46,40);
+  // divider
+  const midX=W/2;
+  ctx.strokeStyle=grid; ctx.lineWidth=1; ctx.setLineDash([5,5]);
+  ctx.beginPath();ctx.moveTo(midX,52);ctx.lineTo(midX,H-10);ctx.stroke(); ctx.setLineDash([]);
+  // two group diagrams
+  drawGroup(ctx,0,midX,'A',0,false);
+  drawGroup(ctx,midX,W,'B',ST.mu,true);
+}
+
+function drawItems(){
+  const c=document.getElementById('cv-items'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d');
+  const ink=cv('--ink'),ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),a1=cv('--a1'),a2=cv('--a2');
+  const gA=cv('--ink3');
+  ctx.clearRect(0,0,W,H);
+  const padL=34,padR=12,padT=18,padB=42;
+  const x0=padL,x1=W-padR,y0=padT,y1=H-padB;
+  // y scale
+  let vals=[]; for(let i=0;i<K;i++){vals.push(itemMeanA(i));vals.push(itemMeanB(i));}
+  let ymin=Math.min(...vals), ymax=Math.max(...vals);
+  ymin=Math.floor((ymin-0.25)*4)/4; ymax=Math.ceil((ymax+0.25)*4)/4;
+  if(ymax-ymin<0.6){ymax=ymin+0.6;}
+  const Y=v=>y1-(v-ymin)/(ymax-ymin)*(y1-y0);
+  // gridlines
+  ctx.strokeStyle=grid; ctx.lineWidth=1; ctx.fillStyle=ink3;
+  ctx.font='10px DM Mono,monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  const step=(ymax-ymin)<=1?0.25:0.5;
+  for(let v=ymin; v<=ymax+1e-9; v+=step){
+    ctx.beginPath();ctx.moveTo(x0,Y(v));ctx.lineTo(x1,Y(v));ctx.stroke();
+    ctx.fillText(v.toFixed(2),x0-5,Y(v));
+  }
+  // bars
+  const grpW=(x1-x0)/K;
+  const bw=Math.min(28,grpW*0.32);
+  for(let i=0;i<K;i++){
+    const cxg=x0+grpW*(i+0.5);
+    const xa=cxg-bw-3, xb=cxg+3;
+    const va=itemMeanA(i), vb=itemMeanB(i);
+    // A
+    ctx.fillStyle=gA; ctx.fillRect(xa,Y(va),bw,y1-Y(va));
+    // B
+    ctx.fillStyle=a2; ctx.fillRect(xb,Y(vb),bw,y1-Y(vb));
+    // violated outline
+    if(ST.vItem===i && violated()){
+      ctx.strokeStyle=a1; ctx.lineWidth=2; ctx.setLineDash([4,3]);
+      ctx.strokeRect(xb-1.5,Y(vb)-1.5,bw+3,(y1-Y(vb))+1.5);
+      ctx.setLineDash([]);
+      ctx.fillStyle=a1; ctx.font='bold 9px DM Mono,monospace'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.fillText('DIF',xb+bw/2,Y(vb)-4);
+    }
+    // item label
+    ctx.fillStyle=ink2; ctx.font='11px DM Mono,monospace'; ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillText('V'+(i+1),cxg,y1+6);
+  }
+  // axis
+  ctx.strokeStyle=ink3; ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0,y1);ctx.lineTo(x1,y1);ctx.stroke();
+  // legend
+  ctx.textBaseline='middle';
+  ctx.fillStyle=gA; ctx.fillRect(x1-150,y0+2,11,11);
+  ctx.fillStyle=ink2; ctx.font='10px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('Group A',x1-135,y0+8);
+  ctx.fillStyle=a2; ctx.fillRect(x1-72,y0+2,11,11);
+  ctx.fillStyle=ink2; ctx.fillText('Group B',x1-57,y0+8);
+}
+
+function drawDecomp(){
+  const c=document.getElementById('cv-decomp'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d');
+  const ink=cv('--ink'),ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),a3=cv('--a3'),a5=cv('--a5');
+  ctx.clearRect(0,0,W,H);
+  const padL=14,padR=14,padT=46,padB=30;
+  const x0=padL,x1=W-padR;
+  const dt=dTrue(), da=dArt(), dob=dObs();
+  // symmetric x-range around 0
+  let mx=Math.max(0.3, Math.abs(dt)+Math.abs(da), Math.abs(dob))*1.15;
+  const X=v=>x0+(v+mx)/(2*mx)*(x1-x0);
+  const zero=X(0);
+  // zero axis
+  ctx.strokeStyle=ink3; ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.moveTo(zero,padT-10);ctx.lineTo(zero,H-padB+4);ctx.stroke();
+  ctx.fillStyle=ink3; ctx.font='10px DM Mono,monospace'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+  ctx.fillText('0',zero,H-padB+20);
+  // scale ticks
+  ctx.strokeStyle=grid; ctx.lineWidth=1;
+  for(let i=-1;i<=1;i+=2){ const v=i*mx*0.66; ctx.beginPath();ctx.moveTo(X(v),padT-6);ctx.lineTo(X(v),H-padB);ctx.stroke();
+    ctx.fillStyle=ink3; ctx.fillText(v.toFixed(2),X(v),H-padB+20);}
+  // stacked bar centerline
+  const by=padT+34, bh=40;
+  // true segment from 0
+  const xt0=X(0), xt1=X(dt);
+  ctx.fillStyle=a3;
+  ctx.fillRect(Math.min(xt0,xt1),by,Math.abs(xt1-xt0),bh);
+  // artifact segment from dt to dt+da (= dob)
+  const xa0=X(dt), xa1=X(dt+da);
+  ctx.fillStyle=a5;
+  ctx.fillRect(Math.min(xa0,xa1),by,Math.abs(xa1-xa0),bh);
+  // outline whole observed
+  ctx.strokeStyle=ink2; ctx.lineWidth=1.5;
+  ctx.strokeRect(Math.min(X(0),X(dob)),by,Math.abs(X(dob)-X(0)),bh);
+  // markers
+  ctx.setLineDash([3,3]); ctx.strokeStyle=a3; ctx.lineWidth=1.3;
+  ctx.beginPath();ctx.moveTo(X(dt),by-8);ctx.lineTo(X(dt),by+bh+8);ctx.stroke();
+  ctx.setLineDash([]);
+  // labels above
+  ctx.font='11px DM Mono,monospace'; ctx.textBaseline='bottom';
+  ctx.fillStyle=a3; ctx.textAlign='center';
+  ctx.fillText('true '+sgn(dt),(X(0)+X(dt))/2,by-12);
+  if(Math.abs(da)>1e-9){ ctx.fillStyle=a5; ctx.fillText('artifact '+sgn(da),(X(dt)+X(dob))/2,by-12); }
+  // observed total marker below
+  ctx.fillStyle=ink; ctx.font='bold 12px DM Mono,monospace'; ctx.textBaseline='top'; ctx.textAlign='center';
+  ctx.fillText('observed '+sgn(dob),X(dob),by+bh+12);
+  // top caption
+  ctx.fillStyle=ink2; ctx.font='10px DM Mono,monospace'; ctx.textAlign='left'; ctx.textBaseline='top';
+  ctx.fillText('score difference B − A (points on the 1–5 scale)',x0,8);
+}
+function sgn(v){return (v>=0?'+':'')+v.toFixed(2);}
+
+// ══════════════════════════════════════════════════════════════════════
+// UPDATE
+// ══════════════════════════════════════════════════════════════════════
+function update(){
+  const dob=dObs(), dt=dTrue(), da=dArt(), s=status();
+  document.getElementById('m-obs').textContent=sgn(dob);
+  document.getElementById('m-true').textContent=sgn(dt);
+  document.getElementById('m-art').textContent=sgn(da);
+
+  // translation chain: latent Δμ → score scale → + artifact → observed
+  let chain=`<span class="step">latent difference <b style="color:var(--a3)">Δμ = ${fmt2(ST.mu)}</b> <span style="color:var(--ink3)">(latent scale)</span></span>`
+    +`<span class="arr">— × mean loading ${SUMLK.toFixed(2)} →</span>`
+    +`<span class="step">true on the score scale <b style="color:var(--a3)">${sgn(dt)}</b></span>`;
+  if(Math.abs(da)>=TOL)
+    chain+=`<span class="arr">— + measurement artifact →</span><span class="step"><b style="color:var(--a5)">${sgn(da)}</b></span>`;
+  chain+=`<span class="arr">— = →</span><span class="step">observed score difference <b>${sgn(dob)}</b></span>`;
+  document.getElementById('chain').innerHTML=chain;
+
+  // criteria chips
+  const chip=(name,ok)=>`<span class="lvl">${name} <span class="chk ${ok?'y':'n'}">${ok?'✓':'✗'}</span></span>`;
+  document.getElementById('criteria').innerHTML=
+    chip('Configural',s.configural)+'<span class="arrow">›</span>'+
+    chip('Metric (λ)',s.metric)+'<span class="arrow">›</span>'+
+    chip('Scalar (τ)',s.scalar)+'<span class="arrow">›</span>'+
+    chip('Strict (θ)',s.strict);
+
+  // verdict
+  const vd=document.getElementById('verdict');
+  const aTrue=Math.abs(dt), aArt=Math.abs(da);
+  if(s.scalar){
+    vd.className='verdict v-ok';
+    if(aTrue<TOL) vd.innerHTML='Scalar invariance holds — and the groups do not differ latently. The observed score is practically equal. <strong>Mean comparison is valid.</strong>';
+    else vd.innerHTML='Scalar invariance holds → the observed difference (<strong>'+sgn(dob)+'</strong>) reflects the <strong>true</strong> latent difference. <strong>Mean comparison is valid.</strong>';
+  } else {
+    vd.className='verdict v-bad';
+    let head;
+    if(!s.metric) head='Metric invariance violated (V'+(ST.vItem+1)+', Δλ): even association and mean comparisons are already distorted. ';
+    else head='Scalar invariance violated (V'+(ST.vItem+1)+', Δτ): ';
+    let body;
+    if(aTrue<TOL && aArt>=TOL)
+      body='The groups do <strong>not</strong> differ latently — the observed difference of <strong>'+sgn(dob)+'</strong> is a <strong>pure measurement artifact</strong>.';
+    else if(aArt>=TOL && (Math.sign(dob)!==Math.sign(dt) || Math.abs(dob)<aTrue-TOL))
+      body='The artifact <strong>masks</strong> the true difference: latent <strong>'+sgn(dt)+'</strong>, but observed <strong>'+sgn(dob)+'</strong>.';
+    else
+      body='Observed <strong>'+sgn(dob)+'</strong> = true '+sgn(dt)+' + artifact '+sgn(da)+'. The difference is partly spurious.';
+    vd.innerHTML=head+body+' <strong>Mean comparison is not valid.</strong>';
+  }
+
+  // item hint
+  document.getElementById('hint-items').innerHTML = violated()
+    ? 'Gray bars = group A, blue = group B. <strong>V'+(ST.vItem+1)+'</strong> is non-invariant (outlined in red) — its gap does not arise from the construct.'
+    : 'Gray bars = group A, blue = group B. All items invariant: the blue bars sit uniformly Δμ·λ above the gray ones.';
+
+  drawPath(); drawItems(); drawDecomp(); buildWork();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// WORKED EXAMPLE (gapless, dynamic to current scenario)
+// ══════════════════════════════════════════════════════════════════════
+function buildWork(){
+  const v = violated()? ST.vItem : -1;
+  const mu=ST.mu;
+  // per-item means
+  const D=[]; let sumA=0,sumB=0; const xaP=[],xbP=[];
+  for(let i=0;i<K;i++){
+    const lamB=LAM[i]+(i===v?ST.dLam:0);
+    const tauB=TAU[i]+(i===v?ST.dTau:0);
+    const XA=TAU[i];                 // + LAM[i]*μ_A , μ_A=0
+    const XB=tauB+lamB*mu;
+    const d=XB-XA;
+    sumA+=XA; sumB+=XB; xaP.push(XA.toFixed(3)); xbP.push(XB.toFixed(3));
+    D.push({i,lamB,tauB,XA,XB,d,dif:(i===v)});
+  }
+  const meanA=sumA/K, meanB=sumB/K, Dobs=meanB-meanA, dt=dTrue(), da=dArt();
+
+  // ── table ──
+  let rows='';
+  D.forEach(r=>{
+    const lamCell = (r.dif&&Math.abs(ST.dLam)>TOL) ? (LAM[r.i].toFixed(2)+' / '+r.lamB.toFixed(2)) : LAM[r.i].toFixed(2);
+    rows+=`<tr${r.dif?' style="background:color-mix(in srgb,var(--a5) 13%,transparent)"':''}>`
+      +`<td class="lbl">V${r.i+1}${r.dif?' ⚠':''}</td>`
+      +`<td>${lamCell}</td><td>${TAU[r.i].toFixed(1)}</td><td>${r.tauB.toFixed(1)}</td>`
+      +`<td>${r.XA.toFixed(3)}</td><td>${r.XB.toFixed(3)}</td>`
+      +`<td class="${r.dif?'or':''}"><b>${(r.d>=0?'+':'')+r.d.toFixed(3)}</b></td></tr>`;
+  });
+  const table=`<table>
+    <tr><th class="lbl">Item</th><th>λ (A/B)</th><th>τ<sub>A</sub></th><th>τ<sub>B</sub></th><th>E[V|A]</th><th>E[V|B]</th><th>d = B−A</th></tr>
+    ${rows}
+    <tr class="sum"><td class="lbl">Σ</td><td></td><td></td><td></td><td>${sumA.toFixed(3)}</td><td>${sumB.toFixed(3)}</td><td>${(sumB-sumA>=0?'+':'')+(sumB-sumA).toFixed(3)}</td></tr>
+    <tr class="sum"><td class="lbl">mean (/${K})</td><td></td><td></td><td></td><td>${meanA.toFixed(3)}</td><td>${meanB.toFixed(3)}</td><td><b>${(Dobs>=0?'+':'')+Dobs.toFixed(3)}</b></td></tr>
+  </table>`;
+
+  // ── setup line ──
+  const vtxt = v<0 ? 'none (full invariance)' : ('V'+(v+1)+',  Δτ = '+fmt2(ST.dTau)+',  Δλ = '+fmt2(ST.dLam));
+  const setup=`Baseline (group A):    λ = [${LAM.map(x=>x.toFixed(2)).join(', ')}],   τ = [${TAU.map(x=>x.toFixed(1)).join(', ')}]
+Latent means:          μ_A = 0,   μ_B = Δμ = ${fmt2(mu)}
+Non-invariance:        ${vtxt}
+Model per item:        E[V|A] = τ + λ·0 = τ ;   E[V|B] = τ_B + λ_B·μ_B`;
+
+  // ── approach A ──
+  const apprA=`Mean score A = (${xaP.join(' + ')}) / ${K} = ${sumA.toFixed(3)} / ${K} = ${meanA.toFixed(3)}
+Mean score B = (${xbP.join(' + ')}) / ${K} = ${sumB.toFixed(3)} / ${K} = ${meanB.toFixed(3)}
+
+D_obs = ${meanB.toFixed(3)} − ${meanA.toFixed(3)} = <b>${(Dobs>=0?'+':'')+Dobs.toFixed(3)}</b>
+
+  of which true     = Δμ · (Σλ/k) = ${fmt2(mu)} · ${SUMLK.toFixed(2)} = ${dt.toFixed(3)}
+  of which artifact = (Δτ + Δμ·Δλ)/k = (${fmt2(ST.vItem<0?0:ST.dTau)} + ${fmt2(mu)}·${fmt2(ST.vItem<0?0:ST.dLam)})/${K} = ${da.toFixed(3)}
+  check:  ${dt.toFixed(3)} + ${da.toFixed(3)} = ${(dt+da).toFixed(3)} = D_obs ✓`;
+
+  // ── approach B ──
+  let anchorLines='';
+  for(let i=0;i<K;i++){ if(i===v) continue;
+    const di=D[i].d;
+    anchorLines+=`  V${i+1}:  d / λ = ${di.toFixed(3)} / ${LAM[i].toFixed(2)} = ${(di/LAM[i]).toFixed(3)}\n`;
+  }
+  let difBlock='';
+  if(v>=0){
+    const dv=D[v].d, exp=LAM[v]*mu, rest=dv-exp;
+    difBlock=`
+Non-invariant V${v+1} — parameter is freed (NOT deleted):
+  expected from κ_B:  λ·κ_B = ${LAM[v].toFixed(2)} · ${mu.toFixed(3)} = ${exp.toFixed(3)}
+  observed:           d = ${dv.toFixed(3)}
+  remainder:  ${dv.toFixed(3)} − ${exp.toFixed(3)} = ${rest.toFixed(3)}  → absorbed by the free item parameter, κ_B stays unaffected
+
+  (error probe — V${v+1} mistakenly used as an anchor: d/λ = ${dv.toFixed(3)} / ${LAM[v].toFixed(2)} = ${(dv/LAM[v]).toFixed(3)} ≠ κ_B → bias)`;
+  } else {
+    difBlock=`\nNo non-invariant item — all ${K} items are anchors and yield the same value.`;
+  }
+  const apprB=`Anchors = ${v<0?('all '+K+' items'):('items '+[0,1,2,3].filter(i=>i!==v).map(i=>'V'+(i+1)).join(', '))}.
+With equal intercepts, per anchor:  d_i = λ_i · κ_B   ⇒   κ_B = d_i / λ_i
+
+${anchorLines}  → all anchors agree:  <b>κ_B = ${mu.toFixed(3)}</b>  = true latent difference Δμ ✓
+${difBlock}`;
+
+  // ── mechanical demonstration: why the freed item has weight 0 on κ_B ──
+  // weighted estimator κ_B = Σλd / Σλ²  (equal-variance, equal-n closed form)
+  let sld=0,sl2=0,sAld=0,sAl2=0;
+  for(let i=0;i<K;i++){ const ld=LAM[i]*D[i].d, l2=LAM[i]*LAM[i];
+    sld+=ld; sl2+=l2; if(i!==v){ sAld+=ld; sAl2+=l2; } }
+  const kPart=sAld/sAl2, kBound=sld/sl2;
+  let mech;
+  if(v>=0){
+    let eqs='';
+    for(let i=0;i<K;i++){
+      eqs += (i===v)
+        ? `  V${i+1} (FREE):    E[V${i+1}|B] = τ${i+1}ᴮ + ${LAM[i].toFixed(2)}·κ_B   → 2 unknowns (τ${i+1}ᴮ, κ_B)\n`
+        : `  V${i+1} (anchor):  E[V${i+1}|B] = ${TAU[i].toFixed(1)} + ${LAM[i].toFixed(2)}·κ_B   → 1 unknown (κ_B)\n`;
+    }
+    const lamBv=LAM[v]+ST.dLam;
+    const tauFree=D[v].XB - lamBv*kPart;          // freed B-intercept solved afterwards
+    const implFree=tauFree + lamBv*kPart;
+    const resFree=D[v].XB - implFree;
+    const tauBound=(D[v].XA + D[v].XB - LAM[v]*kBound)/2;   // bound (shared) intercept ML
+    const implBound=tauBound + LAM[v]*kBound;
+    const resBound=D[v].XB - implBound;
+    mech=`What is τ?  τ is the INTERCEPT = expected item value at construct 0 (κ=0), NOT the item mean:
+  item mean = τ + λ·κ
+  • group A = reference, κ_A = 0  ⇒  E[V_i|A] = τ_i  → the A means DELIVER the shared intercepts (here τ = ${TAU[0].toFixed(1)} for all).
+  • group B, κ_B ≠ 0  ⇒  E[V_i|B] = τ_i + λ_i·κ_B  (shifted by λ_i·κ_B relative to τ_i).
+  (κ_A = 0 is the identification convention — latent means are only relatively determined; hence "τ from group A".)
+
+Mean equations for group B  (anchor intercepts τ thus known from group A):
+
+${eqs}
+Step 1 — κ_B from the anchors ONLY (weighted, Σλd/Σλ²):
+  κ_B = ${sAld.toFixed(3)} / ${sAl2.toFixed(3)} = <b>${kPart.toFixed(3)}</b>
+
+Step 2 — solve the free intercept of V${v+1} AFTERWARD:
+  ${D[v].XB.toFixed(3)} = τ${v+1}ᴮ + ${lamBv.toFixed(2)}·${kPart.toFixed(3)}   ⇒   τ${v+1}ᴮ = ${tauFree.toFixed(3)}
+  ${Math.abs(lamBv*kPart)<0.005
+    ? `(here κ_B ≈ 0  ⇒  τ${v+1}ᴮ = B mean ${D[v].XB.toFixed(3)})`
+    : `(τ${v+1}ᴮ = ${tauFree.toFixed(3)} ≠ B mean ${D[v].XB.toFixed(3)};  difference ${(lamBv*kPart).toFixed(3)} = λ·κ_B is the construct portion)`}
+
+Step 3 — residual of V${v+1}:
+  ${D[v].XB.toFixed(3)} − (${tauFree.toFixed(3)} + ${(lamBv*kPart).toFixed(3)}) = <b>${resFree.toFixed(3)}</b>   → exactly zero
+
+Consequence:   ∂F/∂κ_B = Σᵢ (λᵢ/vᵢ)·residualᵢ = 0
+  V${v+1} contributes (λ/v)·0 = 0  →  zero weight on κ_B, despite being fully in the model.
+
+──  Counter-check: τ${v+1}ᴮ BOUND (full scalar invariance)  ──
+  Now V${v+1} counts in, κ_B averages over ALL items:
+  κ_B = Σλd/Σλ² = ${sld.toFixed(3)} / ${sl2.toFixed(3)} = <b>${kBound.toFixed(3)}</b>   ${Math.abs(kBound-mu)>0.005?'(biased)':''}
+  residual of V${v+1} = ${resBound.toFixed(3)} ${Math.abs(resBound)>0.005?'≠ 0  → the misfit / MI signal':'= 0'}
+
+The only difference between free and bound: whether V${v+1} is included in the sum Σλd/Σλ².
+(Real ML additionally weights by 1/residual variance and n; here equivalent to Σλd/Σλ².)`;
+  } else {
+    mech=`No violation — all ${K} intercepts are bound (anchors), none needs to be freed.
+All items count toward the same estimate:
+  κ_B = Σλd/Σλ² = ${sld.toFixed(3)} / ${sl2.toFixed(3)} = <b>${kBound.toFixed(3)}</b> = Δμ ✓
+If you mark an item above as non-invariant, it drops out of this sum (weight 0).`;
+  }
+
+  // ── verdict ──
+  const concl = v<0
+    ? `Both approaches describe the same difference — the sum score on the score scale (${Dobs.toFixed(3)} = Δμ·0.70), the SEM on the latent scale (κ_B = ${mu.toFixed(3)}).`
+    : `Sum score yields <b>${(Dobs>=0?'+':'')+Dobs.toFixed(3)}</b> (contaminated: contains ${da.toFixed(3)} artifact). SEM yields <b>κ_B = ${mu.toFixed(3)}</b> = true latent difference — DIF isolated in the free parameter.`;
+
+  document.getElementById('work').innerHTML=
+    `<h4>0 · Setup</h4><pre>${setup}</pre>`
+   +`<h4>1 · Item means (the only observable)</h4>${table}`
+   +`<h4>2 · Approach A — naive sum-score t-test</h4><pre>${apprA}</pre>`
+   +`<h4>3 · Approach B — partial-invariance SEM (latent t-test)</h4><pre>${apprB}</pre>`
+   +`<h4>4 · Why the free item has zero weight on κ_B</h4><pre>${mech}</pre>`
+   +`<h4>5 · Comparison</h4><pre>${concl}</pre>`;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════════════════════════════════════
+function buildItemPick(){
+  const w=document.getElementById('item-pick'); w.innerHTML='';
+  const opts=[{v:-1,l:'none'},{v:0,l:'V1'},{v:1,l:'V2'},{v:2,l:'V3'},{v:3,l:'V4'}];
+  opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='mbtn'+(ST.vItem===o.v?' active':''); b.textContent=o.l; b.dataset.v=o.v;
+    b.addEventListener('click',()=>{ST.vItem=o.v; clearPreset(); syncItemPick(); update();});
+    w.appendChild(b);
+  });
+}
+function syncItemPick(){
+  document.querySelectorAll('#item-pick .mbtn').forEach(b=>{
+    b.classList.toggle('active', parseInt(b.dataset.v)===ST.vItem);
+  });
+}
+function clearPreset(){ ['full','tau','lam','mask'].forEach(k=>document.getElementById('ps-'+k).classList.remove('active')); }
+
+function preset(key){
+  const p=PRESETS[key]; ST.mu=p.mu; ST.vItem=p.vItem; ST.dTau=p.dTau; ST.dLam=p.dLam;
+  document.getElementById('s-mu').value=ST.mu; document.getElementById('v-mu').textContent=ST.mu.toFixed(2);
+  document.getElementById('s-dtau').value=ST.dTau; document.getElementById('v-dtau').textContent=ST.dTau.toFixed(2);
+  document.getElementById('s-dlam').value=ST.dLam; document.getElementById('v-dlam').textContent=ST.dLam.toFixed(2);
+  clearPreset(); document.getElementById('ps-'+key).classList.add('active');
+  syncItemPick(); update();
+}
+
+document.getElementById('s-mu').addEventListener('input',function(){
+  ST.mu=parseFloat(this.value); document.getElementById('v-mu').textContent=ST.mu.toFixed(2); clearPreset(); update();});
+document.getElementById('s-dtau').addEventListener('input',function(){
+  ST.dTau=parseFloat(this.value); document.getElementById('v-dtau').textContent=ST.dTau.toFixed(2); clearPreset(); update();});
+document.getElementById('s-dlam').addEventListener('input',function(){
+  ST.dLam=parseFloat(this.value); document.getElementById('v-dlam').textContent=ST.dLam.toFixed(2); clearPreset(); update();});
+
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+function toggleWork(){
+  const w=document.getElementById('work'), b=document.getElementById('work-toggle');
+  const open=w.classList.toggle('open');
+  b.textContent=open?'▾ Hide calculation':'▸ Show full calculation for the current scenario';
+}
+
+// init
+buildItemPick();
+update();
+window.addEventListener('resize',()=>{if(window._rt)clearTimeout(window._rt);window._rt=setTimeout(update,120);});
+</script>
+</body>
+</html>

@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IRT — Item Response Theory | MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--accent);
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.proc-step{margin-bottom:.7rem;font-size:.87rem;line-height:1.75;color:var(--ink2)}
+.proc-step strong{color:var(--ink)}
+.proc-step .circ{margin-right:.4rem;font-size:1.7em}
+.proc-jump{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);text-decoration:none;
+  border-bottom:1px dotted var(--a2)}
+.proc-jump:hover{color:var(--ink)}
+.advantage-box{background:color-mix(in srgb,var(--a3) 10%,var(--bg));border:1px solid var(--a3);
+  padding:.8rem 1rem;margin-bottom:.85rem;line-height:1.7}
+.advantage-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a3);margin-bottom:.45rem}
+.advantage-box strong{color:var(--ink)} .advantage-box em{font-style:italic;color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+.slider-row{margin-bottom:.52rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.1rem 0 .52rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.model-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.25rem;margin-bottom:.6rem}
+.mbtn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.3rem .1rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
+.mbtn:hover{border-color:var(--accent);color:var(--accent)}
+.mbtn.act{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);font-weight:700}
+.mbtn.rasch-act{border-color:var(--a3)!important;background:color-mix(in srgb,var(--a3) 15%,transparent)!important;color:var(--a3)!important}
+.item-row{display:flex;flex-wrap:wrap;gap:.28rem;margin-bottom:.6rem}
+.ibtn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.22rem .48rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .12s}
+.ibtn.sel{font-weight:700;color:var(--bg)!important}
+.prob-grid{display:grid;grid-template-columns:1fr 1fr;gap:.15rem .5rem;margin:.25rem 0}
+.prow{font-family:'DM Mono',monospace;font-size:.78rem;display:flex;justify-content:space-between}
+.resp-row{display:flex;gap:.45rem;margin:.28rem 0;align-items:flex-end}
+.resp-item{display:flex;flex-direction:column;align-items:center;gap:.12rem;
+  font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink2)}
+.resp-item input{accent-color:var(--accent);cursor:pointer;width:1rem;height:1rem}
+.theta-est{font-family:'DM Mono',monospace;font-size:.9rem;color:var(--accent);margin-top:.3rem}
+.reset-btn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.28rem .6rem;border:1px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);width:100%;text-align:left;transition:all .12s;margin-top:.3rem}
+.reset-btn:hover{border-color:var(--accent);color:var(--accent)}
+#cv-icc,#cv-tif,#cv-wright{width:100%;display:block}
+.erklaer{background:var(--panel);border-left:3px solid var(--accent);
+  padding:.7rem .9rem;margin-bottom:.85rem;font-family:'DM Mono',monospace;
+  font-size:.77rem;color:var(--ink2);line-height:1.9}
+.erklaer strong{color:var(--ink)}
+.erklaer code{display:block;background:var(--bg);border:1px solid var(--grid);
+  padding:.28rem .65rem;color:var(--a2);margin:.3rem 0 .2rem;font-size:.78rem}
+.rasch-compare{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.85rem}
+.rcbox{background:var(--panel);border:1px solid var(--grid);padding:.8rem .9rem}
+.rcbox-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;
+  margin-bottom:.4rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.rcbox-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.rcbox-body strong{color:var(--ink)}
+.par-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.8rem;margin-bottom:.85rem}
+.par-table th{font-size:.7rem;letter-spacing:.06em;color:var(--ink3);padding:.3rem .5rem;
+  border-bottom:2px solid var(--grid);text-align:right}
+.par-table th:first-child{text-align:left}
+.par-table td{padding:.3rem .5rem;border-bottom:1px solid var(--grid);text-align:right;vertical-align:middle}
+.par-table td:first-child{text-align:left;font-family:'Fraunces',serif;font-size:.82rem}
+.par-table tr:last-child td{border-bottom:none}
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.hint{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);line-height:1.65;
+  border-top:1px solid var(--grid);padding-top:.35rem;margin-bottom:.8rem}
+.help-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.82);overflow-y:auto;padding:2rem 1rem}
+.help-overlay.open{display:block}
+.help-panel{max-width:700px;margin:0 auto;background:var(--paper);border:1px solid var(--border);padding:2rem}
+.help-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);
+  padding:.3rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.35rem 0 .55rem}
+.help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);float:right;margin-top:-.3rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>IRT — <em>Item Response Theory</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- HELP OVERLAY -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+<div class="help-panel">
+  <div class="help-h">IRT — Item Response Theory — Help <button class="help-close" onclick="toggleHelp()">✕ Close</button></div>
+
+  <div class="help-sh">What Is IRT?</div>
+  <p class="help-p"><strong>Item Response Theory (IRT)</strong> models how the probability of a correct answer depends on a person's ability θ (theta) and the properties of an item. Unlike Classical Test Theory (CTT), person ability and item difficulty lie on <em>the same scale</em> — this allows direct statements about which items are informative for which people.</p>
+
+  <div class="help-sh">IRT and Factor Analysis — Kinship and Difference</div>
+  <p class="help-p">IRT and FA are more closely related than they appear at first glance: both model one or more latent variables that explain response behavior. Mathematically, the 2PL model is equivalent to a single-factor model for dichotomous data — the discrimination parameter a corresponds to a factor loading, θ corresponds to the person-specific ability parameter (the person's value on the latent scale). For ordinal items (Likert scales), the Graded Response Model and ordinal FA with polychoric correlations are closely related.</p>
+  <p class="help-p">The decisive difference lies in the <strong>research question</strong>: factor analysis asks: how many latent dimensions are there, and which items load on which factor? The goal is the structure of the construct. IRT asks: how well does each individual item function? How precisely does the test measure at which point on the θ scale? The goal is the <strong>quality and usefulness of the items</strong> as well as the measurement precision of the test for specific people.</p>
+
+  <div class="help-sh">ICC — Item Characteristic Curve</div>
+  <p class="help-p">For each item there is an S-shaped curve (ICC, also IRF — Item Response Function) that shows: how high is P(correct | θ)? The general model with four parameters (4PL):</p>
+  <code class="help-formula">4PL:   P(θ) = c + (d − c) · 1 / (1 + exp(−a · (θ − b)))</code>
+  <p class="help-p">a = discrimination (steepness) · b = difficulty (inflection point) · c = lower asymptote (guessing) · d = upper asymptote (carelessness)</p>
+  <p class="help-p">The simpler models arise by successively fixing parameters:</p>
+  <code class="help-formula">3PL:   P(θ) = c + (1 − c) / (1 + exp(−a · (θ − b)))          [d = 1]</code>
+  <code class="help-formula">2PL:   P(θ) = 1 / (1 + exp(−a · (θ − b)))                    [c = 0, d = 1]</code>
+  <code class="help-formula">1PL:   P(θ) = 1 / (1 + exp(−a · (θ − b)))   a equal for all items</code>
+  <code class="help-formula">Rasch: P(θ) = 1 / (1 + exp(−1 · (θ − b)))   a = 1 by axiom</code>
+  <p class="help-p">Going from the 4PL to the Rasch model, flexibility decreases but interpretability and measurement-theoretic rigor increase. 2PL and 3PL are the most common models in applied assessment.</p>
+
+  <div class="help-sh">The Four Parameters</div>
+  <p class="help-p"><strong>b — difficulty:</strong> θ value at the inflection point of the ICC — the point where the S-curve has its maximum slope (the transition from increasing to decreasing slope). For the 2PL, P(θ=b) = 0.5. For the 3PL/4PL, P(θ=b) = (c+d)/2. High b values → difficult item. b lies on the same scale as θ.</p>
+  <p class="help-p"><strong>a — discrimination:</strong> steepness of the ICC at the inflection point. High a → steep curve → item discriminates well between ability groups. Typical: a ∈ [0.5, 2.5]. Values below 0.3 indicate a weak item.</p>
+  <p class="help-p"><strong>c — pseudo-guessing probability:</strong> lower asymptote. Even at very low θ, P(correct) ≥ c. For multiple-choice with K options, c ≈ 1/K is plausible. Ignoring c (2PL) overestimates θ for low-ability persons.</p>
+  <p class="help-p"><strong>d — upper asymptote (carelessness):</strong> maximum response probability. d < 1 models careless errors even among very able persons. Hard to estimate in practice — needs many high-ability persons in the dataset.</p>
+
+  <div class="help-sh">Rasch Model vs. 1PL — the Decisive Difference</div>
+  <p class="help-p">This distinction is often blurred in textbooks. Both models have a identical across all items — but the philosophy is fundamentally different:</p>
+  <p class="help-p"><strong>Rasch model:</strong> Georg Rasch defined his model not as a statistical data model, but as a <em>measurement ideal</em>. a = 1 is set <em>by axiom</em> — not because the data demand it, but because it is the precondition for <em>specific objectivity</em>: item difficulty b should hold independently of the sample tested, and person ability θ independently of the test used. If an item doesn't fit, it is removed or revised — not the model.</p>
+  <p class="help-p"><strong>1PL model:</strong> a is <em>estimated</em> as a common parameter from the data. The model is fitted to the data. If a ≠ 1 comes out, that's not a problem. There is no axiomatic claim to measurement independence. <strong>In short: Rasch fits the data to the model — 1PL fits the model to the data.</strong></p>
+  <p class="help-p"><strong>Advantages of Rasch-conforming items:</strong> if items satisfy the Rasch model, strong measurement properties result: (1) <em>Person-free item calibration</em> — difficulty b is estimated independently of which persons took the test. (2) <em>Item-free person measurement</em> — θ is estimated independently of which item selection is used. (3) <em>Item banking</em> — items from different tests can be anchored on a common scale and interchanged (the basis for adaptive testing). (4) <em>Fit statistics</em> — items that don't fit are identified and can be targeted for improvement. These properties make the Rasch model the gold standard in psychometric quality assurance.</p>
+
+  <div class="help-sh">Test Information Function (TIF)</div>
+  <p class="help-p">I(θ) shows how precisely the test measures at each ability level. It is the sum of the item informations:</p>
+  <code class="help-formula">I(θ) = Σᵢ Iᵢ(θ)   with   Iᵢ(θ) = [P'ᵢ(θ)]² / [Pᵢ(θ) · (1 − Pᵢ(θ))]</code>
+  <p class="help-p">The standard error of the estimate is SE(θ) = 1/√I(θ). A test measures most precisely where many items with b ≈ θ are present and discriminations a are high. Extreme groups are often measured poorly.</p>
+  <p class="help-p"><strong>Interpretation:</strong> the TIF shows relatively <em>where</em> a test measures precisely — not whether it reaches an absolute threshold. What matters is the shape of the curve: a narrow, high maximum means precise measurement in a narrow θ range (typical for selection tests); a broad, flat curve means uniform but less precise measurement across many ability levels (typical for screening). The standard error SE(θ) = 1/√I(θ) translates the information directly into measurement uncertainty on the θ scale — at SE = 0.5, the estimate typically lies within ±1 of the true value. More items shift the whole curve upward; harder or easier items shift the information maximum along the θ axis.</p>
+
+  <div class="help-sh">Wright Map — People and Items on One Scale</div>
+  <p class="help-p">A unique feature of IRT: person ability θ and item difficulty b lie on the same scale. The Wright map (item-person map) shows both together. Items with b ≈ θ are most informative for a person. Items that are too easy (b ≪ θ) or too hard (b ≫ θ) contribute little to measurement. In this tool θ is vertical: on the left the person histogram (N(0,1) reference population), on the right the items at their difficulty b. Items with similar difficulty are fanned out horizontally side by side, and a colored tick on the θ axis marks the exact difficulty of each item. Dot size encodes discrimination a (steeper items = larger = more informative), and items within the teal band around the person's θ line (Max) are highlighted — that's exactly where the test measures precisely.</p>
+
+  <div class="help-sh">Response Pattern and θ̂ (MLE)</div>
+  <p class="help-p">From an observed response vector (e.g. 1,1,0,0,0), θ̂ can be estimated via maximum likelihood: find the θ that maximizes the probability of the observed pattern. If someone answers everything correctly or everything incorrectly, the MLE is undefined (±∞) — in practice EAP or MAP estimators are then used.</p>
+</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+
+  <div class="sec-h" style="margin-top:0">Choose Model</div>
+  <div class="model-grid">
+    <button class="mbtn" id="mbtn-rasch" onclick="selectModel('rasch')">Rasch</button>
+    <button class="mbtn" id="mbtn-pl1"   onclick="selectModel('pl1')">1PL</button>
+    <button class="mbtn" id="mbtn-pl2"   onclick="selectModel('pl2')">2PL</button>
+    <button class="mbtn" id="mbtn-pl3"   onclick="selectModel('pl3')">3PL</button>
+    <button class="mbtn" id="mbtn-pl4"   onclick="selectModel('pl4')">4PL</button>
+  </div>
+
+  <div class="sec-h">Select Item</div>
+  <div class="item-row" id="item-row"></div>
+
+  <div class="sec-h">Parameters</div>
+  <div id="par-sliders"></div>
+
+  <button class="reset-btn" onclick="resetItems()">↺ Default Values</button>
+
+  <div class="sec-h">Person Ability θ</div>
+  <div class="slider-row">
+    <div class="slider-lbl">
+      <span class="slider-name">θ</span>
+      <span class="slider-val" id="v-theta">0.0</span>
+    </div>
+    <input type="range" id="sl-theta" min="-4" max="4" step="0.1" value="0"
+      oninput="ST.thetaPerson=+this.value;document.getElementById('v-theta').textContent=(+this.value).toFixed(1);redraw()">
+  </div>
+
+  <div class="scard" style="margin-bottom:.7rem">
+    <div class="scard-title">P(correct | θ)</div>
+    <div class="prob-grid" id="prob-grid"></div>
+  </div>
+
+  <div class="sec-h">Estimate Ability from Responses</div>
+  <div class="scard">
+    <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink2);margin-bottom:.5rem;line-height:1.7">
+      Choose which items a person answered correctly (✓) or incorrectly (☐). The tool estimates the most likely ability θ̂ from this via maximum likelihood.
+    </div>
+    <div class="resp-row" id="resp-row"></div>
+    <div class="theta-est" id="theta-est">θ̂ = —</div>
+    <div style="font-family:'DM Mono',monospace;font-size:.69rem;color:var(--ink3);margin-top:.2rem" id="theta-est-note"></div>
+  </div>
+
+</div><!-- /sidebar -->
+
+<!-- MAIN -->
+<div id="main">
+
+  <div class="story-box"><div class="story-lbl">📋 Example — Reading Comprehension Test</div>
+  <strong>Max (grade 8)</strong> takes a standardized <strong>reading comprehension test</strong> with 5 items — from simple factual knowledge (item 1) to complex synthesis (item 5). How well does the test measure his true reading competence θ?</div>
+
+  <div class="advantage-box">
+    <div class="advantage-lbl">✓ Why IRT — in Addition to Classical Test Theory?</div>
+    CTT/factor analysis and IRT are not competitors but complements: both assume that a <strong>latent ability</strong> generates the response behavior (for dichotomous data, the 2PL model is even formally equivalent to a <a href="Faktoranalyse.html" target="_blank">single-factor model</a> on tetrachoric correlations — a corresponds to a factor loading). The difference lies in the focus: in <a href="KTT_Grundlagen.html" target="_blank">CTT</a>/factor analysis the latent variable is the <em>target</em> of the analysis; reliability (α/ω) is then a <strong>single number for the whole test</strong> — it implicitly assumes equal measurement precision across the entire scale. IRT makes the <strong>individual item</strong> the object of study and shows explicitly that this assumption is often wrong: a test can be very precise in the middle and barely informative at the edges (see the test information function below).
+  </div>
+
+  <div class="sec-h" style="margin-top:0">Approach — From Item to Ability Estimate</div>
+  <div>
+    <div class="proc-step"><span class="circ">①</span><strong>Item Characteristic Curve (ICC).</strong> The S-shaped curve shows P(correct | θ) — the probability of a correct response as a function of ability. <a class="proc-jump" href="#cv-icc">→ View ICC</a></div>
+    <div class="proc-step"><span class="circ">②</span><strong>Choose a model — how many parameters does the item need?</strong> Rasch/1PL/2PL/3PL/4PL differ in whether discrimination, guessing, and carelessness are modeled. Rasch vs. 1PL is not a purely statistical distinction but a measurement-theoretic/philosophical one (details in Help).</div>
+    <div class="proc-step"><span class="circ">③</span><strong>Test information I(θ) and SE(θ) — how precisely does the test measure where?</strong> This is the core advantage from the box above, now made visible: precision is not a constant but depends on θ. <a class="proc-jump" href="#cv-tif">→ View the test information function</a></div>
+    <div class="proc-step"><span class="circ">④</span><strong>Wright Map — people and items on one scale.</strong> Do item difficulties match the ability distribution of the people (targeting)? <a class="proc-jump" href="#cv-wright">→ View the Wright Map</a></div>
+    <div class="proc-step"><span class="circ">⑤</span><strong>From responses to θ̂.</strong> From a concrete response pattern, a person's ability can be estimated via maximum likelihood — try it below in the sidebar.</div>
+  </div>
+  <div>
+    <a class="xlink" href="IRT_Ordinal.html" target="_blank">Items with more than two response categories? → Ordinal IRT</a>
+    <a class="xlink" href="DIF.html" target="_blank">Does an item work the same way for all groups? → DIF</a>
+  </div>
+
+  <div class="sec-h">ICC — Item Characteristic Curves</div>
+  <canvas id="cv-icc" height="360"></canvas>
+  <div class="hint" id="icc-note"></div>
+
+  <div class="sec-h" style="display:flex;align-items:center;justify-content:space-between">
+    Test Information Function I(θ) and SE(θ)
+    <button id="btn-item-info" class="mbtn" style="font-size:.68rem;padding:.25rem .6rem;width:auto" onclick="showItemInfo=!showItemInfo;document.getElementById('btn-item-info').classList.toggle('act',showItemInfo);drawTIF()">Item Traces</button>
+  </div>
+  <canvas id="cv-tif" height="360"></canvas>
+  <div class="hint" id="tif-note"></div>
+
+  <div class="sec-h">Wright Map — Items and People on One Scale</div>
+  <div style="display:flex;gap:1.2rem;align-items:flex-start;flex-wrap:wrap">
+    <div style="flex:0 0 588px;max-width:100%">
+      <canvas id="cv-wright" height="504"></canvas>
+    </div>
+    <div style="flex:1;min-width:230px;font-size:.83rem;line-height:1.55;color:var(--ink2)">
+      <div style="font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin-bottom:.55rem">How to Read the Wright Map</div>
+      <p style="margin:0 0 .6rem"><strong>One shared scale θ</strong> (vertical): people on the left, items on the right — both on the same ability/difficulty axis. This is IRT's unique feature.</p>
+      <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.45rem">
+        <li><span style="display:inline-block;width:11px;height:11px;background:color-mix(in srgb,var(--a2) 45%,transparent);vertical-align:middle;margin-right:.45rem"></span><strong>People</strong> — histogram of the reference population N(0,1).</li>
+        <li><span style="display:inline-block;width:15px;height:0;border-top:2px dashed var(--a6);vertical-align:middle;margin-right:.45rem"></span><strong>Max</strong> — the current person; the teal band is his <em>informative zone</em> (|b−θ| ≤ 0.5).</li>
+        <li><span style="display:inline-block;width:13px;height:13px;border-radius:50%;background:var(--a3);vertical-align:middle;margin-right:.45rem"></span><strong>Items</strong> — at their difficulty b; <strong>dot size = discrimination a</strong> (larger = discriminates more sharply). Items of equal difficulty are fanned out horizontally.</li>
+        <li><span style="display:inline-block;width:13px;height:3px;background:var(--a3);vertical-align:middle;margin-right:.45rem"></span><strong>Tick</strong> (in item color) on the θ axis — marks each item's difficulty on the scale.</li>
+        <li><span style="vertical-align:middle;margin-right:.3rem">◉</span><strong>Highlighted</strong> (halo + ring) = item near θ → the test measures precisely there; faded items are too easy or too hard for Max.</li>
+      </ul>
+      <p style="margin:.7rem 0 .35rem"><strong>Do items and people overlap?</strong></p>
+      <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.4rem">
+        <li><strong style="color:var(--a3)">Good match (targeting):</strong> if items sit at Max's level (b ≈ θ), the test measures <em>precisely</em> there — small standard error. Ideally item difficulties exactly cover the θ range where the people lie.</li>
+        <li><strong>Gap:</strong> in θ ranges <em>without</em> items, the test measures imprecisely even if people sit there — test information is low (see the TIF tab, where SE rises).</li>
+        <li><strong style="color:var(--a1)">No overlap:</strong> if <em>all</em> items are too easy (b ≪ θ), Max solves practically everything → <em>ceiling effect</em>, θ is barely estimable (SE becomes very large). Mirror-image for consistently too-hard items → <em>floor effect</em>.</li>
+      </ul>
+      <p style="margin:.55rem 0 0"><strong>Try it:</strong> drag Max's θ slider out of the item cloud — once no item is highlighted anymore, there is no overlap, and the test is poorly matched to that ability. Item numbers correspond to the sidebar.</p>
+    </div>
+  </div>
+
+  <div class="sec-h" style="margin-top:1.6rem">Model Formula &amp; Interpretation</div>
+  <div class="erklaer" id="erklaer-formula"></div>
+
+  <div class="sec-h">Item Parameter Table</div>
+  <table class="par-table">
+    <thead><tr>
+      <th>Item</th><th>a</th><th>b</th><th>c</th><th>d</th><th>P(θ)</th><th>I(θ)</th>
+    </tr></thead>
+    <tbody id="par-tbody"></tbody>
+  </table>
+
+  <div class="learn-section">
+    <div class="sec-h">Flashcards</div>
+    <div class="lcard-grid" id="lcard-grid"></div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
+// ── Konstanten ─────────────────────────────────────────────────────────────
+const ICOLS=['--a2','--a3','--a5','--a4','--a1'];
+const DEF=[
+  {label:'Item 1',sub:'Factual knowledge',a:1.0, b:-1.5, c:0.10, d:1.00},
+  {label:'Item 2',sub:'Reasoning',        a:1.4, b:-0.3, c:0.15, d:1.00},
+  {label:'Item 3',sub:'Vocabulary',       a:1.8, b: 0.6, c:0.12, d:0.95},
+  {label:'Item 4',sub:'Inference',        a:0.8, b: 1.3, c:0.20, d:0.90},
+  {label:'Item 5',sub:'Synthesis',        a:1.5, b: 2.1, c:0.25, d:0.85},
+];
+let showItemInfo=false;
+const ST={
+  model:'pl2', selItem:0,
+  items:DEF.map(d=>({...d})),
+  thetaPerson:0.0,
+  responses:[1,1,0,0,0],
+  a1pl:1.4,
+};
+
+// ── IRT Mathematik ─────────────────────────────────────────────────────────
+function icc(th,a,b,c,d){return c+(d-c)/(1+Math.exp(-a*(th-b)));}
+function iccP(th,a,b,c,d){const e=Math.exp(-a*(th-b));return a*(d-c)*e/((1+e)**2);}
+function itemInfo(th,a,b,c,d){
+  const p=icc(th,a,b,c,d),pp=iccP(th,a,b,c,d),q=1-p;
+  return p<1e-9||q<1e-9?0:pp**2/(p*q);
+}
+function testInfo(th){return ST.items.reduce((s,it)=>s+itemInfo(th,...eff(it)),0);}
+function eff(it){
+  switch(ST.model){
+    case'rasch': return[1,      it.b, 0,    1   ];
+    case'pl1':   return[ST.a1pl,it.b, 0,    1   ];
+    case'pl2':   return[it.a,   it.b, 0,    1   ];
+    case'pl3':   return[it.a,   it.b, it.c, 1   ];
+    default:     return[it.a,   it.b, it.c, it.d];
+  }
+}
+function estimateTheta(){
+  const r=ST.responses;
+  if(r.every(v=>v===0))return{th:-Infinity,note:'All incorrect → MLE undefined (EAP/MAP needed)'};
+  if(r.every(v=>v===1))return{th:+Infinity,note:'All correct → MLE undefined (EAP/MAP needed)'};
+  let best=0,bestLL=-Infinity;
+  for(let i=-450;i<=450;i++){
+    const th=i*0.01;let ll=0;
+    ST.items.forEach((it,j)=>{
+      const p=Math.max(1e-9,Math.min(1-1e-9,icc(th,...eff(it))));
+      ll+=r[j]?Math.log(p):Math.log(1-p);
+    });
+    if(ll>bestLL){bestLL=ll;best=th;}
+  }
+  return{th:best,note:''};
+}
+
+// ── Canvas Helfer ──────────────────────────────────────────────────────────
+function cv(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+const CV_BASE_H={};
+function setupCv(id){
+  const el=document.getElementById(id);
+  if(!(id in CV_BASE_H)) CV_BASE_H[id]=parseInt(el.getAttribute('height'))||360;
+  const origH=CV_BASE_H[id];
+  const W=el.offsetWidth||el.parentElement.offsetWidth||600;
+  const dpr=window.devicePixelRatio||1;
+  el.width=Math.round(W*dpr); el.height=Math.round(origH*dpr);
+  const ctx=el.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return{ctx,W,H:origH};
+}
+
+// ── ICC ─────────────────────────────────────────────────────────────────────
+function drawICC(){
+  const{ctx,W,H}=setupCv('cv-icc');
+  const pad={l:48,r:18,t:22,b:40};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2'),ink3=cv('--ink3');
+  ctx.fillStyle=paper;ctx.fillRect(0,0,W,H);
+  const thMin=-4,thMax=4;
+  const tx=t=>(t-thMin)/(thMax-thMin)*cW+pad.l;
+  const py=p=>(1-p)*cH+pad.t;
+  ctx.strokeStyle=grid;ctx.lineWidth=.7;
+  [0,.25,.5,.75,1].forEach(p=>{ctx.beginPath();ctx.moveTo(pad.l,py(p));ctx.lineTo(pad.l+cW,py(p));ctx.stroke();});
+  [-3,-2,-1,0,1,2,3].forEach(t=>{ctx.beginPath();ctx.moveTo(tx(t),pad.t);ctx.lineTo(tx(t),pad.t+cH);ctx.stroke();});
+  ctx.fillStyle=ink2;ctx.font=`11px 'DM Mono',monospace`;ctx.textAlign='center';
+  [-4,-2,0,2,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+16));
+  ctx.textAlign='right';
+  [0,.25,.5,.75,1].forEach(p=>ctx.fillText(p.toFixed(2),pad.l-5,py(p)+4));
+  ctx.save();ctx.translate(14,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center';ctx.fillText('P(correct | θ)',0,0);ctx.restore();
+  ctx.textAlign='center';ctx.fillText('Ability θ',pad.l+cW/2,H-4);
+  const NX=300;
+  ST.items.forEach((it,i)=>{
+    const[a,b,c,d]=eff(it);
+    const col=cv(ICOLS[i]);
+    ctx.strokeStyle=col;ctx.lineWidth=i===ST.selItem?2.8:1.6;
+    ctx.setLineDash(i===ST.selItem?[]:[5,4]);
+    ctx.beginPath();
+    for(let k=0;k<NX;k++){
+      const t=thMin+k*(thMax-thMin)/(NX-1);
+      k?ctx.lineTo(tx(t),py(icc(t,a,b,c,d))):ctx.moveTo(tx(t),py(icc(t,a,b,c,d)));
+    }
+    ctx.stroke();ctx.setLineDash([]);
+  });
+  const tp=ST.thetaPerson;
+  ctx.strokeStyle=cv('--a6');ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(tx(tp),pad.t);ctx.lineTo(tx(tp),pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  ST.items.forEach((it,i)=>{
+    const p=icc(tp,...eff(it));
+    ctx.fillStyle=cv(ICOLS[i]);
+    ctx.beginPath();ctx.arc(tx(tp),py(p),3.5,0,Math.PI*2);ctx.fill();
+  });
+  ST.items.forEach((it,i)=>{
+    const col=cv(ICOLS[i]);
+    ctx.strokeStyle=col;ctx.lineWidth=2;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(pad.l+8,pad.t+9+i*17);ctx.lineTo(pad.l+26,pad.t+9+i*17);ctx.stroke();
+    ctx.fillStyle=ink2;ctx.textAlign='left';ctx.font=`11px 'DM Mono',monospace`;
+    ctx.fillText(`${it.label} — ${it.sub} (b=${eff(it)[1].toFixed(1)})`,pad.l+30,pad.t+13+i*17);
+  });
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.strokeRect(pad.l,pad.t,cW,cH);
+}
+
+// ── TIF ─────────────────────────────────────────────────────────────────────
+function drawTIF(){
+  const{ctx,W,H}=setupCv('cv-tif');
+  const pad={l:48,r:18,t:20,b:40};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2'),ink3=cv('--ink3');
+  const a1c=cv('--a1'),a2c=cv('--a2'),a4c=cv('--a6');
+  ctx.fillStyle=paper;ctx.fillRect(0,0,W,H);
+  const thMin=-4,thMax=4,NX=300;
+  const ths=Array.from({length:NX},(_,k)=>thMin+k*(thMax-thMin)/(NX-1));
+  const infos=ths.map(t=>testInfo(t));
+  const maxI=Math.max(...infos,.1);
+  const tx=t=>(t-thMin)/(thMax-thMin)*cW+pad.l;
+  const iy=v=>pad.t+cH*(1-v/maxI);
+  ctx.strokeStyle=grid;ctx.lineWidth=.7;
+  [0,.25,.5,.75,1].forEach(f=>{const v=f*maxI;ctx.beginPath();ctx.moveTo(pad.l,iy(v));ctx.lineTo(pad.l+cW,iy(v));ctx.stroke();});
+  [-3,-2,-1,0,1,2,3].forEach(t=>{ctx.beginPath();ctx.moveTo(tx(t),pad.t);ctx.lineTo(tx(t),pad.t+cH);ctx.stroke();});
+  if(showItemInfo){
+    ST.items.forEach((it,i)=>{
+      const col=cv(ICOLS[i]);
+      ctx.strokeStyle=col;ctx.lineWidth=1.2;ctx.setLineDash([4,3]);ctx.globalAlpha=.75;
+      ctx.beginPath();
+      ths.forEach((t,k)=>{const v=itemInfo(t,...eff(it));k?ctx.lineTo(tx(t),iy(v)):ctx.moveTo(tx(t),iy(v));});
+      ctx.stroke();
+    });
+    ctx.globalAlpha=1;ctx.setLineDash([]);
+  }
+  ctx.fillStyle=`color-mix(in srgb,${a2c} 14%,transparent)`;
+  ctx.beginPath();ctx.moveTo(tx(thMin),iy(0));
+  ths.forEach((t,k)=>ctx.lineTo(tx(t),iy(infos[k])));
+  ctx.lineTo(tx(thMax),iy(0));ctx.closePath();ctx.fill();
+  ctx.strokeStyle=a2c;ctx.lineWidth=2.2;ctx.setLineDash([]);
+  ctx.beginPath();ths.forEach((t,k)=>k?ctx.lineTo(tx(t),iy(infos[k])):ctx.moveTo(tx(t),iy(infos[k])));ctx.stroke();
+  const ses=ths.map(t=>{const I=testInfo(t);return I>0?1/Math.sqrt(I):5;});
+  const seMax=Math.min(4,Math.max(...ses,0.1));
+  ctx.strokeStyle=a1c;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+  ctx.beginPath();
+  ths.forEach((t,k)=>{
+    const y=pad.t+cH*(1-Math.min(ses[k],seMax)/seMax);
+    k?ctx.lineTo(tx(t),y):ctx.moveTo(tx(t),y);
+  });
+  ctx.stroke();ctx.setLineDash([]);
+  ctx.strokeStyle=a4c;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(tx(ST.thetaPerson),pad.t);ctx.lineTo(tx(ST.thetaPerson),pad.t+cH);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=ink2;ctx.font=`11px 'DM Mono',monospace`;ctx.textAlign='center';
+  [-4,-2,0,2,4].forEach(t=>ctx.fillText(t,tx(t),pad.t+cH+16));
+  ctx.textAlign='right';
+  [0,.25,.5,.75,1].forEach(f=>ctx.fillText((f*maxI).toFixed(1),pad.l-5,iy(f*maxI)+4));
+  ctx.save();ctx.translate(14,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center';ctx.fillStyle=a2c;ctx.fillText('I(θ)',0,0);ctx.restore();
+  ctx.fillStyle=ink2;ctx.textAlign='center';ctx.font=`11px 'DM Mono',monospace`;
+  ctx.fillText('Ability θ',pad.l+cW/2,H-4);
+  ctx.strokeStyle=a2c;ctx.lineWidth=2;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(pad.l+8,pad.t+10);ctx.lineTo(pad.l+26,pad.t+10);ctx.stroke();
+  ctx.fillStyle=ink2;ctx.textAlign='left';ctx.fillText('TIF  I(θ)',pad.l+30,pad.t+14);
+  ctx.strokeStyle=a1c;ctx.lineWidth=1.5;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(pad.l+8,pad.t+26);ctx.lineTo(pad.l+26,pad.t+26);ctx.stroke();
+  ctx.setLineDash([]);ctx.fillText('SE(θ) = 1/√I(θ)',pad.l+30,pad.t+30);
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.strokeRect(pad.l,pad.t,cW,cH);
+  const tp=ST.thetaPerson;const I=testInfo(tp);const se=I>0?1/Math.sqrt(I):Infinity;
+  document.getElementById('tif-note').textContent=
+    `At θ = ${tp.toFixed(1)}: I(θ) = ${I.toFixed(2)}, SE(θ) = ${isFinite(se)?se.toFixed(2):'∞'}${se>1?' — not very precise here':se<0.5?' — very precise here':''}`;
+}
+
+// ── Wright Map ───────────────────────────────────────────────────────────────
+function drawWright(){
+  const{ctx,W,H}=setupCv('cv-wright');
+  const pad={l:42,r:14,t:20,b:14};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const paper=cv('--paper'),grid=cv('--grid'),ink2=cv('--ink2'),ink3=cv('--ink3');
+  const a2c=cv('--a2'),a6c=cv('--a6');
+  ctx.fillStyle=paper;ctx.fillRect(0,0,W,H);
+  const thMin=-4,thMax=4;
+  const ty=t=>pad.t+(thMax-t)/(thMax-thMin)*cH;   // θ senkrecht: hoch = oben
+  const midX=pad.l+cW*0.40;                        // Trennung Personen | Items
+
+  // Gridlines + θ-Achsenbeschriftung
+  ctx.font=`13px 'DM Mono',monospace`;ctx.textBaseline='middle';
+  for(let t=-4;t<=4;t++){
+    const y=ty(t);
+    ctx.strokeStyle=grid;ctx.lineWidth=(t===0?1.1:.6);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cW,y);ctx.stroke();
+    if(t%2===0){ctx.fillStyle=ink3;ctx.textAlign='right';ctx.fillText(t,pad.l-4,y);}
+  }
+  ctx.fillStyle=ink2;ctx.font=`bold 15px 'DM Mono',monospace`;
+  ctx.textAlign='left';ctx.textBaseline='top';ctx.fillText('θ',3,pad.t-4);
+
+  // Trennlinie + Spaltenköpfe
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.globalAlpha=.45;
+  ctx.beginPath();ctx.moveTo(midX,pad.t);ctx.lineTo(midX,pad.t+cH);ctx.stroke();ctx.globalAlpha=1;
+  ctx.fillStyle=ink3;ctx.font=`12px 'DM Mono',monospace`;ctx.textBaseline='alphabetic';ctx.textAlign='center';
+  ctx.fillText('People',pad.l+(midX-pad.l)/2,pad.t+10);
+  ctx.fillText('Items',midX+(pad.l+cW-midX)/2,pad.t+10);
+
+  // Personen-Histogramm N(0,1) — Balken wachsen nach links von der Trennlinie
+  const N01=x=>Math.exp(-x*x/2)/Math.sqrt(2*Math.PI);
+  const leftW=(midX-pad.l)*0.86,peak=N01(0),NB=64;
+  for(let k=0;k<NB;k++){
+    const tA=thMin+k*(thMax-thMin)/NB,tB=thMin+(k+1)*(thMax-thMin)/NB;
+    const len=N01((tA+tB)/2)/peak*leftW,yTop=ty(tB),yBot=ty(tA);
+    ctx.fillStyle=`color-mix(in srgb,${a2c} 30%,transparent)`;
+    ctx.fillRect(midX-len,yTop,len,yBot-yTop+0.6);
+  }
+
+  // Informatives Band der Person (|b−θ| ≤ 0.5) — Hintergrund
+  const tp=ST.thetaPerson;
+  const bandTop=Math.max(pad.t,ty(tp+0.5)),bandBot=Math.min(pad.t+cH,ty(tp-0.5));
+  ctx.fillStyle=`color-mix(in srgb,${a6c} 13%,transparent)`;
+  ctx.fillRect(pad.l,bandTop,cW,bandBot-bandTop);
+
+  // Person Max — horizontale Linie über die ganze Breite + Marker links
+  const yP=ty(tp);
+  ctx.strokeStyle=a6c;ctx.lineWidth=1.8;ctx.setLineDash([5,3]);
+  ctx.beginPath();ctx.moveTo(pad.l,yP);ctx.lineTo(pad.l+cW,yP);ctx.stroke();ctx.setLineDash([]);
+  const mx=Math.max(pad.l+6,midX-N01(tp)/peak*leftW-7);
+  ctx.fillStyle=a6c;ctx.beginPath();ctx.arc(mx,yP,4.5,0,Math.PI*2);ctx.fill();
+  ctx.font=`bold 10px 'DM Mono',monospace`;ctx.textAlign='left';ctx.textBaseline='bottom';
+  ctx.fillStyle=a6c;ctx.fillText(`Max θ=${tp.toFixed(1)}`,pad.l+4,yP-4);
+
+  // Items — auf b-Höhe, horizontal aufgefächert (Beeswarm) + farbiger Tick auf der θ-Achse
+  const items=ST.items.map((it,i)=>{const e=eff(it);return{i,b:e[1],a:e[0],col:cv(ICOLS[i])};});
+  const rOf=o=>6.5+Math.min(7,Math.max(0,(o.a-0.6))*4);   // Punktgröße ~ Trennschärfe a
+  const baseX=midX+18,colW=24;
+  const placed=[];
+  [...items].sort((p,q)=>q.b-p.b).forEach(o=>{           // oben (hohes b) zuerst
+    o.yB=ty(o.b);o.r=rOf(o);o.slot=0;
+    while(placed.some(p=>p.slot===o.slot&&Math.abs(p.yB-o.yB)<(p.r+o.r+3)))o.slot++;
+    placed.push(o);
+  });
+  placed.forEach(o=>{
+    const near=Math.abs(o.b-tp)<=0.5,al=near?1:0.4,x=baseX+o.slot*colW;
+    // Niveau-Linie von der θ-Achse zum Item
+    ctx.strokeStyle=o.col;ctx.globalAlpha=al*0.4;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,o.yB);ctx.lineTo(x-o.r-1,o.yB);ctx.stroke();
+    // farbiger Tick auf der θ-Achse
+    ctx.globalAlpha=al;ctx.lineWidth=2.6;
+    ctx.beginPath();ctx.moveTo(pad.l,o.yB);ctx.lineTo(pad.l+8,o.yB);ctx.stroke();
+    // Glow-Halo bei nahe θ
+    if(near){ctx.globalAlpha=1;ctx.fillStyle=`color-mix(in srgb,${o.col} 26%,transparent)`;
+      ctx.beginPath();ctx.arc(x,o.yB,o.r+4.5,0,Math.PI*2);ctx.fill();}
+    // Item-Punkt (Größe ~ a)
+    ctx.globalAlpha=al;ctx.fillStyle=o.col;
+    ctx.beginPath();ctx.arc(x,o.yB,o.r,0,Math.PI*2);ctx.fill();
+    if(near){ctx.strokeStyle=paper;ctx.lineWidth=1.8;ctx.stroke();}
+    ctx.fillStyle=paper;ctx.font=`bold ${Math.max(11,Math.round(o.r*1.2))}px 'DM Mono',monospace`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(o.i+1,x,o.yB+0.5);
+    ctx.globalAlpha=1;
+  });
+
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.globalAlpha=.55;ctx.strokeRect(pad.l,pad.t,cW,cH);ctx.globalAlpha=1;
+}
+
+// ── Formel-Text ─────────────────────────────────────────────────────────────
+function getFormelText(){
+  const a=ST.a1pl.toFixed(2);
+  switch(ST.model){
+    case'rasch':return`<strong>Rasch model</strong> — a = 1 by axiom, c = 0, d = 1<br>
+<code>P(θ) = 1 / (1 + exp(−(θ − bᵢ)))</code>
+All items have a = 1 — not because the data demand it, but as an axiomatic measurement precondition. Inflection point at θ = b: P = 0.5. <strong>Specific objectivity:</strong> b is sample-independent.`;
+    case'pl1':return`<strong>1PL model</strong> — a estimated from data (shared), c = 0, d = 1<br>
+<code>P(θ) = 1 / (1 + exp(−a · (θ − bᵢ)))   with  a = ${a}  (all items)</code>
+All items share the same discrimination — but a is estimated from the data (here: ${a}). Parallelism of the curves is a model assumption, not an axiom. <strong>No claim to specific objectivity.</strong>`;
+    case'pl2':return`<strong>2PL model</strong> — a item-specific, c = 0, d = 1<br>
+<code>P(θ) = 1 / (1 + exp(−aᵢ · (θ − bᵢ)))</code>
+Items may discriminate to different degrees. Steeper curve = higher discrimination = more information at θ ≈ b. The standard model in personality assessment.`;
+    case'pl3':return`<strong>3PL model</strong> — a and c item-specific, d = 1<br>
+<code>P(θ) = cᵢ + (1 − cᵢ) / (1 + exp(−aᵢ · (θ − bᵢ)))</code>
+The lower asymptote c models guessing probability (typical for multiple-choice). At θ = b, P = (c+1)/2. c = 0.25 corresponds to guessing among 4 options. Standard in school achievement tests.`;
+    case'pl4':return`<strong>4PL model</strong> — all parameters item-specific<br>
+<code>P(θ) = cᵢ + (dᵢ − cᵢ) / (1 + exp(−aᵢ · (θ − bᵢ)))</code>
+The upper asymptote d < 1 models careless errors of very able persons. At θ = b, P = (c+d)/2. Rarely used in practice — d needs many high-ability observations.`;
+  }
+  return'';
+}
+
+// ── Slider bauen ─────────────────────────────────────────────────────────────
+function buildSliders(){
+  const div=document.getElementById('par-sliders');
+  div.innerHTML='';
+  const it=ST.items[ST.selItem];
+  const mk=(id,name,min,max,step,val,cb,dis=false)=>{
+    const w=document.createElement('div');
+    w.className='slider-row';
+    if(dis)w.style.opacity='.42';
+    w.innerHTML=`<div class="slider-lbl"><span class="slider-name">${name}</span>
+      <span class="slider-val" id="sv-${id}">${typeof val==='string'?val:val.toFixed(2)}</span></div>
+      <input type="range" id="sl-${id}" min="${min}" max="${max}" step="${step}" value="${typeof val==='number'?val:0}" ${dis?'disabled':''}>`;
+    div.appendChild(w);
+    if(!dis){
+      w.querySelector('input').addEventListener('input',function(){
+        const v=+this.value;
+        document.getElementById(`sv-${id}`).textContent=v.toFixed(2);
+        cb(v);updateAll();
+      });
+    }
+  };
+  switch(ST.model){
+    case'rasch':
+      {const w=document.createElement('div');w.className='slider-row';w.style.opacity='.42';
+       w.innerHTML=`<div class="slider-lbl"><span class="slider-name">a</span><span class="slider-val">1.00 (fixed)</span></div>`;div.appendChild(w);}
+      mk('b','b — difficulty',-4,4,.1,it.b,v=>it.b=v);break;
+    case'pl1':
+      mk('a1pl','a — shared (all items)',.3,3,.05,ST.a1pl,v=>ST.a1pl=v);
+      mk('b','b — difficulty',-4,4,.1,it.b,v=>it.b=v);break;
+    case'pl2':
+      mk('a','a — discrimination',.3,3,.05,it.a,v=>it.a=v);
+      mk('b','b — difficulty',-4,4,.1,it.b,v=>it.b=v);break;
+    case'pl3':
+      mk('a','a — discrimination',.3,3,.05,it.a,v=>it.a=v);
+      mk('b','b — difficulty',-4,4,.1,it.b,v=>it.b=v);
+      mk('c','c — guessing (lower asympt.)',0,.5,.01,it.c,v=>it.c=v);break;
+    default:
+      mk('a','a — discrimination',.3,3,.05,it.a,v=>it.a=v);
+      mk('b','b — difficulty',-4,4,.1,it.b,v=>it.b=v);
+      mk('c','c — guessing',0,.5,.01,it.c,v=>it.c=v);
+      mk('d','d — upper asympt.',.5,1,.01,it.d,v=>it.d=v);break;
+  }
+}
+
+// ── Item-Buttons ──────────────────────────────────────────────────────────────
+function buildItemBtns(){
+  const wrap=document.getElementById('item-row');
+  wrap.innerHTML='';
+  ST.items.forEach((it,i)=>{
+    const col=cv(ICOLS[i]);
+    const b=document.createElement('button');
+    b.className='ibtn'+(i===ST.selItem?' sel':'');
+    b.textContent=it.label;
+    b.style.borderColor=col;
+    b.style.color=i===ST.selItem?'var(--bg)':col;
+    if(i===ST.selItem)b.style.background=col;
+    b.onclick=()=>{ST.selItem=i;buildItemBtns();buildSliders();};
+    wrap.appendChild(b);
+  });
+}
+
+// ── Response-Checkboxen ───────────────────────────────────────────────────────
+function buildRespRow(){
+  const wrap=document.getElementById('resp-row');
+  wrap.innerHTML='';
+  ST.items.forEach((it,i)=>{
+    const col=cv(ICOLS[i]);
+    const d=document.createElement('div');
+    d.className='resp-item';
+    d.innerHTML=`<span style="color:${col}">${i+1}</span>
+      <input type="checkbox" ${ST.responses[i]?'checked':''}>`;
+    d.querySelector('input').onchange=e=>{
+      ST.responses[i]=e.target.checked?1:0;
+      updateThetaEst();
+    };
+    wrap.appendChild(d);
+  });
+}
+
+// ── Prob-Grid ─────────────────────────────────────────────────────────────────
+function updateProbGrid(){
+  const div=document.getElementById('prob-grid');
+  div.innerHTML='';
+  ST.items.forEach((it,i)=>{
+    const p=icc(ST.thetaPerson,...eff(it));
+    const col=cv(ICOLS[i]);
+    const row=document.createElement('div');
+    row.className='prow';
+    row.innerHTML=`<span style="color:${col}">${it.label}</span><span style="color:${col}">${(p*100).toFixed(0)}%</span>`;
+    div.appendChild(row);
+  });
+}
+
+// ── Param-Tabelle ─────────────────────────────────────────────────────────────
+function updateParTable(){
+  const tb=document.getElementById('par-tbody');
+  tb.innerHTML='';
+  const m=ST.model;
+  ST.items.forEach((it,i)=>{
+    const[a,b,c,d]=eff(it);
+    const p=icc(ST.thetaPerson,a,b,c,d);
+    const info=itemInfo(ST.thetaPerson,a,b,c,d);
+    const col=cv(ICOLS[i]);
+    const aStr=m==='rasch'?'1 (fix)':m==='pl1'?ST.a1pl.toFixed(2):a.toFixed(2);
+    const cStr=(m==='rasch'||m==='pl1'||m==='pl2')?'—':c.toFixed(2);
+    const dStr=m==='pl4'?d.toFixed(2):'—';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="color:${col}">${it.label} — ${it.sub}</td>
+      <td>${aStr}</td><td>${b.toFixed(2)}</td><td>${cStr}</td><td>${dStr}</td>
+      <td>${(p*100).toFixed(0)}%</td><td>${info.toFixed(2)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+// ── θ̂ schätzen ────────────────────────────────────────────────────────────────
+function updateThetaEst(){
+  const{th,note}=estimateTheta();
+  document.getElementById('theta-est').innerHTML=fixDiacritics(isFinite(th)?`θ̂ = ${th.toFixed(2)}`:'θ̂ = ±∞');
+  document.getElementById('theta-est-note').textContent=note;
+  const clamped=isFinite(th)?Math.max(-4,Math.min(4,th)):th>0?4:-4;
+  ST.thetaPerson=Math.round(clamped*10)/10;
+  document.getElementById('sl-theta').value=ST.thetaPerson;
+  document.getElementById('v-theta').textContent=ST.thetaPerson.toFixed(1);
+  redraw();
+}
+
+// ── Modell wechseln ────────────────────────────────────────────────────────────
+function selectModel(m){
+  ST.model=m;
+  ['rasch','pl1','pl2','pl3','pl4'].forEach(x=>{
+    const btn=document.getElementById('mbtn-'+x);
+    btn.classList.toggle('act',x===m);
+    if(x==='rasch')btn.classList.toggle('rasch-act',m==='rasch');
+  });
+  buildSliders();
+  updateAll();
+}
+
+// ── Reset ─────────────────────────────────────────────────────────────────────
+function resetItems(){
+  ST.items=DEF.map(d=>({...d}));
+  ST.a1pl=1.4;
+  buildItemBtns();buildSliders();updateAll();
+}
+
+// ── updateAll ─────────────────────────────────────────────────────────────────
+function updateAll(){
+  drawICC();drawTIF();drawWright();
+  updateProbGrid();updateParTable();updateThetaEst();
+  document.getElementById('erklaer-formula').innerHTML=getFormelText();
+  const mNames=['rasch','pl1','pl2','pl3','pl4'];
+  const mLabels=['Rasch','1PL','2PL','3PL','4PL'];
+  document.getElementById('icc-note').textContent=
+    `${mLabels[mNames.indexOf(ST.model)]} model · selected item: ${ST.items[ST.selItem].label} (${ST.items[ST.selItem].sub}) · teal line = θ = ${ST.thetaPerson.toFixed(1)}`;
+}
+function redraw(){
+  drawICC();drawTIF();drawWright();
+  updateProbGrid();updateParTable();
+  document.getElementById('erklaer-formula').innerHTML=getFormelText();
+  document.getElementById('icc-note').textContent=
+    document.getElementById('icc-note').textContent.replace(/θ = [-\d.]+$/,`θ = ${ST.thetaPerson.toFixed(1)}`);
+}
+
+// ── Lernkarten ─────────────────────────────────────────────────────────────────
+const LK=[
+  {h:'What Does θ (Theta) Measure?',
+   b:'θ is the <strong>latent ability</strong> — e.g. reading competence — not directly observable, but inferred from the response pattern. Typically scaled N(0,1): θ = 0 = average. Unlike the CTT sum score, θ is <strong>sample-independent</strong> — the same ability theoretically yields the same θ value on easier and harder tests.'},
+  {h:'What Does b — Difficulty — Mean?',
+   b:'b is the <strong>inflection point of the ICC</strong>. For the 2PL, P(θ=b) = 0.5. For the 3PL/4PL, P(θ=b) = (c+d)/2. High b values → difficult item. Crucially, b and θ lie on <strong>the same scale</strong>. An item with b = 1.5 is exactly matched to persons with θ ≈ 1.5.'},
+  {h:'What Does a — Discrimination — Mean?',
+   b:'a determines the <strong>steepness of the ICC</strong>. High a → steep curve → item discriminates well between similar ability levels → lots of information. Typical: a ∈ [0.5, 2.5]. Below 0.3, an item is barely informative. In the Rasch model, a ≡ 1 by axiom. In the 1PL, a shared a is estimated.'},
+  {h:'Rasch vs. 1PL — Where Is the Difference?',
+   b:'<strong>Mathematically:</strong> both have a constant across all items.<br><strong>Philosophically:</strong> in the <strong>Rasch model</strong>, a = 1 by axiom — a measurement ideal, not a fit to the data. If items don\'t fit, they are removed. In the <strong>1PL</strong>, a is estimated from the data — the model is fitted.<br><em>Rasch fits the data to the model — 1PL fits the model to the data.</em>'},
+  {h:'What Does the Test Information Function Show?',
+   b:'I(θ) indicates how <strong>precisely the test measures at each ability level</strong>. SE(θ) = 1/√I(θ). A test measures best where many items with b ≈ θ and high a are present. For selection decisions (e.g. gifted-student selection), high information is needed in the upper θ range — which requires difficult items to be present.'},
+  {h:'What Is the Wright Map?',
+   b:'The Wright Map shows <strong>people (θ) and items (b) on the same scale</strong>. Items with b ≈ θ are most informative. If all items are too easy (b ≪ θ), the test measures poorly for that person. The Wright Map is the central diagnostic tool for test evaluation — it immediately shows where a test measures well and where it measures poorly.'},
+];
+
+function buildLCards(){
+  const grid=document.getElementById('lcard-grid');
+  LK.forEach(({h,b})=>{
+    const d=document.createElement('div');
+    d.className='lcard';
+    d.innerHTML=`<div class="lcard-h">${h}</div><div class="lcard-body">${b}</div>`;
+    grid.appendChild(d);
+  });
+}
+
+// ── Theme / Help ───────────────────────────────────────────────────────────────
+function toggleTheme(){
+  const doc=document.documentElement;
+  const dark=doc.getAttribute('data-theme')==='dark';
+  doc.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('btn-theme').textContent=dark?'🌙 Dark':'☀ Light';
+  updateAll();
+}
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+function init(){
+  buildItemBtns();
+  buildSliders();
+  buildRespRow();
+  buildLCards();
+  selectModel('pl2');
+}
+window.addEventListener('load',()=>{
+  requestAnimationFrame(()=>requestAnimationFrame(init));
+  document.querySelectorAll('.help-p,.help-formula,.theta-est').forEach(el=>{el.innerHTML=fixDiacritics(el.innerHTML);});
+});
+let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(updateAll,60);});
+</script>
+</body>
+</html>

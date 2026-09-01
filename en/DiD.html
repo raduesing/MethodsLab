@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Difference-in-Differences — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.preset-btn{font-family:'DM Mono',monospace;font-size:.74rem;padding:.28rem .6rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .15s;white-space:normal;width:100%;text-align:left;display:block;margin-bottom:.28rem;line-height:1.4}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.preset-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.regen-btn{font-family:'DM Mono',monospace;font-size:.76rem;padding:.28rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .12s;width:100%;text-align:left;margin-top:.35rem}
+.regen-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.3rem 0 .55rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+#cv-did{width:100%;display:block}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.erklaer{background:var(--panel);border-left:3px solid var(--accent);
+  padding:.7rem .9rem;margin-bottom:.85rem;font-family:'DM Mono',monospace;
+  font-size:.77rem;color:var(--ink2);line-height:1.9}
+.erklaer strong{color:var(--ink)}
+.formula-line{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+.formula-line.hi{color:var(--a5);border-color:var(--a5)}
+.res-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.83rem;margin-bottom:.85rem}
+.res-table th{font-size:.71rem;letter-spacing:.06em;color:var(--ink3);padding:.3rem .55rem;
+  border-bottom:2px solid var(--grid);text-align:left}
+.res-table th:not(:first-child){text-align:right}
+.res-table td{padding:.34rem .55rem;border-bottom:1px solid var(--grid);vertical-align:middle}
+.res-table td.num{text-align:right;font-weight:600}
+.res-table tr.row-ctrl td{color:var(--a2)}
+.res-table tr.row-treat td{color:var(--a3)}
+.res-table tr.row-did td{color:var(--a5);font-weight:700;border-top:2px solid var(--grid)}
+.res-table tr.row-did3 td{color:var(--a5);font-weight:700;background:color-mix(in srgb,var(--a5) 6%,transparent)}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:.7rem}
+.stat-box{background:var(--panel);border:1px solid var(--grid);padding:.52rem .65rem}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink3);margin-bottom:.18rem}
+.stat-val{font-family:'DM Mono',monospace;font-size:1.0rem;font-weight:600;color:var(--ink)}
+.stat-val.sig{color:var(--a3)}
+.stat-val.ns{color:var(--ink3)}
+.badge{display:inline-block;font-family:'DM Mono',monospace;font-size:.75rem;
+  padding:.22rem .65rem;letter-spacing:.04em;margin:.25rem 0}
+.badge-sig{background:rgba(90,138,42,.12);border:1px solid var(--a3);color:var(--a3)}
+.badge-ns{background:rgba(90,80,66,.10);border:1px solid var(--ink3);color:var(--ink3)}
+.badge-warn{background:rgba(184,92,0,.12);border:1px solid var(--a5);color:var(--a5)}
+.cv-toolbar{display:flex;align-items:center;gap:.5rem;margin-bottom:.45rem}
+/* help overlay */
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:640px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;
+  border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;
+  border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);
+  padding:.3rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.35rem 0 .55rem}
+.hint{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);line-height:1.65;
+  border-top:1px solid var(--grid);padding-top:.4rem}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+/* Learn cards */
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+@media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Difference-in-<em>Differences</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- Help Overlay -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Difference-in-Differences — Help</div>
+    <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+
+    <div class="help-sh">Example</div>
+    <p class="help-p">A school district introduces a support program (daily tutoring) starting in school year 2, in some of its schools — the treatment group. The remaining schools serve as the control group. Outcome Y: standardized achievement test. Goal: how large is the causal effect of the program?</p>
+    <p class="help-p">A naive before-after comparison fails: students would have improved even without the program (maturation, general curriculum effects). DiD solves the problem with a <strong>control group</strong> — it shows how much students would have developed without the intervention.</p>
+
+    <div class="help-sh">Regression Model &amp; Why β₃ = DiD</div>
+    <p class="help-p">The DiD model is:</p>
+    <span class="help-formula">Y = α + β₁·Post + β₂·Treat + β₃·(Post × Treat) + ε</span>
+    <p class="help-p">The four expected values from it:</p>
+    <span class="help-formula">E[Y | control, before]  = α<br>
+E[Y | control, after]   = α + β₁           → Δ_C = β₁<br>
+E[Y | treatment, before]= α + β₂<br>
+E[Y | treatment, after] = α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</span>
+    <p class="help-p">Difference of differences: DiD = Δ_T − Δ_C = (β₁ + β₃) − β₁ = <strong>β₃</strong></p>
+    <p class="help-p">β₃ is the coefficient of the interaction term (Post × Treat). It measures exactly the additional change in the treatment group beyond the general time trend β₁. The selection bias β₂ (time-constant group difference) cancels out completely in the double difference — that is the central strength of DiD.</p>
+
+    <div class="help-sh">What DiD Estimates — the ATT</div>
+    <p class="help-p">The DiD estimator β̂₃ identifies the <strong>Average Treatment Effect on the Treated (ATT)</strong> — the causal effect of the program for exactly the units that were actually treated (here: the treatment schools).</p>
+    <p class="help-p">ATT ≠ ATE (the average treatment effect across all units): if treatment schools differ systematically from control schools (selection bias, β₂ ≠ 0), the effect may not generalize to all schools — but it is still valid for the treated schools themselves. That is both the strength and the limitation of DiD.</p>
+
+    <div class="help-sh">Counterfactual Scenario — What Would Have Happened Otherwise?</div>
+    <p class="help-p">A <strong>counterfactual scenario</strong> answers a hypothetical question: how would the treatment group have developed if it had <em>not</em> been treated? By definition this situation does not exist in the data — every school was either in the program or not.</p>
+    <p class="help-p">In the DiD plot, the <strong>dashed green line</strong> is the counterfactual scenario: it shows how the treatment schools would presumably have developed — namely parallel to the control group. This line starts at the same point as the treatment group and implies where it would have ended up had it changed exactly like the control group. The DiD effect β̂₃ is exactly the gap between the actually observed after-value of the treatment group and this counterfactual value.</p>
+    <p class="help-p">The <strong>parallel-trends argument</strong> makes the counterfactual assumption explicit: without intervention, both groups would have changed by the same amount. If that's plausible, the counterfactual is meaningfully reconstructed — and β̂₃ is causally interpretable.</p>
+    <p class="help-p">→ The <a href="Causal_Teaching.html" target="_blank" rel="noopener" style="color:var(--a2);text-decoration:underline">Causal Teaching tool</a> shows counterfactual potential outcomes in the Rubin framework (Y(0), Y(1)) and explains why you can never observe both at once — the fundamental problem of causal inference.</p>
+
+    <div class="help-sh">Selection Bias — and Why DiD Is Robust</div>
+    <p class="help-p">β₂ measures the time-constant difference between the treatment and control groups <em>before</em> the intervention. If, say, schools with more motivated students join the program (self-selection), their baseline values differ (β₂ ≠ 0).</p>
+    <p class="help-p">DiD corrects this automatically: β₂ cancels out in the double difference — even with a large β₂, β̂₃ remains unbiased. The "selection bias" scenario and the combination scenario illustrate this.</p>
+
+    <div class="help-sh">Naive Comparisons — Why They Fail</div>
+    <p class="help-p">In the combination scenario (β₁ = 1.5, β₂ = 1.5, β₃ = 3), you can see why two seemingly naive comparisons are nonetheless wrong:</p>
+    <p class="help-p"><strong>① G1<sub>t1</sub> − G0<sub>t1</sub></strong> (cross-section at the after time point): overestimates the ATT because the group difference β₂ (selection, time-constant) is included.</p>
+    <p class="help-p"><strong>② G1<sub>t1</sub> − G1<sub>t0</sub></strong> (before-after within the treatment group only): overestimates the ATT because the general time trend β₁ is included — the group would have improved even without the program.</p>
+    <p class="help-p">DiD corrects both biases simultaneously: β₂ cancels out in the double difference, and so does β₁. Both orange arrows ① ② in the plot show how far off the naive comparisons are.</p>
+
+    <div class="help-sh">Parallel-Trends Assumption</div>
+    <p class="help-p">DiD requires that, without intervention, both groups would have changed by the <em>same amount</em>. This assumption is not directly testable, but can be indirectly assessed via pre-period comparisons (placebo tests). The PT-violation slider allows manual exploration of this theoretical threat.</p>
+
+    <div class="help-sh">Limitations &amp; Robustness</div>
+    <p class="help-p"><strong>Anticipation effects:</strong> if the treatment group already changes its behavior before the program starts, the before-measurement is contaminated.<br>
+    <strong>Spillover:</strong> if the control group indirectly benefits from the intervention, β₃ is underestimated.<br>
+    <strong>Event study:</strong> in practice, DiD is estimated for several pre- and post-periods to check parallel trends and reveal dynamic effects.</p>
+  </div>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Regression Coefficients</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">β₁ · Post (time trend)</span>
+        <span class="slider-val" id="v-b1">0.40</span>
+      </div>
+      <input type="range" id="s-b1" min="-0.5" max="2" step="0.05" value="0.4" oninput="onSl()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">β₂ · Treat (selection t=0)</span>
+        <span class="slider-val" id="v-b2">0.00</span>
+      </div>
+      <input type="range" id="s-b2" min="-2.5" max="2.5" step="0.05" value="0" oninput="onSl()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">β₃ · Post×Treat (DiD effect)</span>
+        <span class="slider-val" id="v-b3">1.20</span>
+      </div>
+      <input type="range" id="s-b3" min="-2" max="3" step="0.05" value="1.2" oninput="onSl()">
+    </div>
+    <div class="slider-row" style="border-top:1px solid var(--grid);padding-top:.5rem;margin-top:.3rem">
+      <div class="slider-lbl">
+        <span class="slider-name" style="color:var(--a5)">PT violation (hist.)</span>
+        <span class="slider-val" id="v-pt" style="color:var(--a5)">0.00</span>
+      </div>
+      <input type="range" id="s-pt" min="-1.5" max="1.5" step="0.05" value="0" oninput="onSl()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">σ · noise</span>
+        <span class="slider-val" id="v-sigma">0.80</span>
+      </div>
+      <input type="range" id="s-sigma" min="0.1" max="2" step="0.05" value="0.8" oninput="onSl()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">n · per cell</span>
+        <span class="slider-val" id="v-n">60</span>
+      </div>
+      <input type="range" id="s-n" min="10" max="200" step="5" value="60" oninput="onSl()">
+    </div>
+    <button class="regen-btn" onclick="newSeed()">⟳ New sample</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Scenarios</div>
+    <button class="preset-btn" id="pre-clean" onclick="setPreset('clean')">Clear DiD Effect</button>
+    <button class="preset-btn" id="pre-sel" onclick="setPreset('sel')">Selection Bias — DiD Robust</button>
+    <button class="preset-btn" id="pre-combo" onclick="setPreset('combo')">Naive Comparisons — Combination</button>
+    <button class="preset-btn" id="pre-null" onclick="setPreset('null')">No Effect (Null Case)</button>
+  </div>
+
+  <div class="scard">
+    <div class="hint">
+      <strong style="color:var(--a3)">β₂ ≠ 0</strong>: selection — groups differ even before the intervention. DiD corrects for β₂ automatically.<br><br>
+      <strong style="color:var(--a1)">① ②</strong>: visible in the combination scenario — naive comparisons overestimate the ATT.<br><br>
+      <strong style="color:var(--a5)">PT violation ≠ 0</strong>: theoretical threat — an external confounder acting differentially on the treatment group. Not directly testable; slider for exploration.
+    </div>
+  </div>
+
+</div><!-- /sidebar -->
+
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Running Example</div>
+    <div class="story-vars">
+      <span class="sv">Post</span><span class="sd">Time point: 0 = school year before the program, 1 = school year after</span>
+      <span class="sv">Treat</span><span class="sd">Group: 0 = control schools, 1 = treatment schools (support program)</span>
+      <span class="sv">Y</span><span class="sd">Outcome: standardized achievement test (z-standardized)</span>
+      <span class="sv">β₁</span><span class="sd">General time trend — how much do students improve anyway?</span>
+      <span class="sv">β₂</span><span class="sd">Time-constant group difference (selection bias) — corrected by DiD</span>
+      <span class="sv">β₃</span><span class="sd">Interaction term Post×Treat — exactly the DiD estimator, causally interpretable</span>
+    </div>
+    <div class="story-q">What causal effect does the support program have — and how does DiD separate this effect from general learning gains and selection differences?</div>
+  </div>
+
+  <div class="cv-toolbar">
+    <div class="sec-h" style="margin:0;border:none;padding:0;flex:1">DiD Plot — Before / After</div>
+    <button class="tbtn" id="btn-ylock" onclick="toggleYLock()">⊡ Fix Y axis</button>
+  </div>
+  <canvas id="cv-did" height="400"></canvas>
+
+  <div class="erklaer" style="margin-top:.8rem">
+    <strong>Why is β₃ exactly the DiD estimator?</strong>
+    <span class="formula-line">Y = α + β₁·Post + β₂·Treat + β₃·(Post×Treat) + ε</span>
+    Δ_control = β₁ &nbsp;·&nbsp; Δ_treatment = β₁ + β₃ &nbsp;·&nbsp; <strong>DiD = Δ_T − Δ_C = β₃</strong><br>
+    β₁ (time trend) and β₂ (selection) cancel out in the double difference. <strong>β₃ = interaction term = DiD = ATT</strong> — the causal effect for the treated units.
+  </div>
+
+  <div class="sec-h">2 × 2 — Cell Means</div>
+  <table class="res-table">
+    <thead>
+      <tr><th>Group</th><th>Before (Post=0)</th><th>After (Post=1)</th><th>Δ (After − Before)</th></tr>
+    </thead>
+    <tbody>
+      <tr class="row-ctrl">
+        <td>Control group</td>
+        <td class="num" id="td-c0">—</td>
+        <td class="num" id="td-c1">—</td>
+        <td class="num" id="td-dc">—</td>
+      </tr>
+      <tr class="row-treat">
+        <td>Treatment group</td>
+        <td class="num" id="td-t0">—</td>
+        <td class="num" id="td-t1">—</td>
+        <td class="num" id="td-dt">—</td>
+      </tr>
+      <tr class="row-did">
+        <td><strong>DiD = Δ_T − Δ_C = β̂₃</strong></td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num" id="td-did">—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="sec-h">Regression Output — OLS</div>
+  <table class="res-table">
+    <thead>
+      <tr><th>Coefficient</th><th>True value</th><th>β̂</th><th>SE</th><th>t</th><th>p</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>α · Intercept</td>
+        <td class="num">0.00</td>
+        <td class="num" id="rg-a">—</td>
+        <td class="num" id="rg-sea">—</td>
+        <td class="num" id="rg-ta">—</td>
+        <td class="num" id="rg-pa">—</td>
+      </tr>
+      <tr class="row-ctrl">
+        <td>β₁ · Post</td>
+        <td class="num" id="rg-b1t">—</td>
+        <td class="num" id="rg-b1">—</td>
+        <td class="num" id="rg-se1">—</td>
+        <td class="num" id="rg-t1">—</td>
+        <td class="num" id="rg-p1">—</td>
+      </tr>
+      <tr class="row-treat">
+        <td>β₂ · Treat</td>
+        <td class="num" id="rg-b2t">—</td>
+        <td class="num" id="rg-b2">—</td>
+        <td class="num" id="rg-se2">—</td>
+        <td class="num" id="rg-t2">—</td>
+        <td class="num" id="rg-p2">—</td>
+      </tr>
+      <tr class="row-did3">
+        <td><strong>β₃ · Post×Treat (DiD)</strong></td>
+        <td class="num" id="rg-b3t">—</td>
+        <td class="num" id="rg-b3">—</td>
+        <td class="num" id="rg-se3">—</td>
+        <td class="num" id="rg-t3">—</td>
+        <td class="num" id="rg-p3">—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div id="st-badge"></div>
+  <div id="st-note" style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);margin-top:.4rem;line-height:1.75"></div>
+
+  <div class="learn-section">
+    <div class="sec-h">Concepts</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">What Is Difference-in-Differences?</div>
+        <div class="lcard-body">DiD compares the <strong>change</strong> (before → after) in the treatment group with the change in the control group. The <strong>double difference</strong> isolates the causal effect: <code>Y = β₀ + β₁·Post + β₂·Treat + β₃·(Post×Treat)</code>. The interaction coefficient <strong>β₃</strong> is the DiD estimator.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Why the Double Difference Works</div>
+        <div class="lcard-body">In the double difference, the general time trend <strong>β₁</strong> (both groups improve anyway) and the time-constant group difference <strong>β₂</strong> (selection) <strong>cancel out</strong>. What's left is only <strong>β₃</strong> — the part of the change that occurred <em>additionally</em> in the treatment group.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">What DiD Estimates: the ATT</div>
+        <div class="lcard-body">β₃ identifies the <strong>Average Treatment Effect on the Treated (ATT)</strong> — the causal effect for exactly the treated units. This is not necessarily the ATE (the effect across <em>all</em> units): if the treatment and control groups differ systematically (β₂ ≠ 0), the effect is valid for the treated, but not necessarily generalizable.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Parallel-Trends Assumption</div>
+        <div class="lcard-body">The central identification assumption: <strong>without</strong> treatment, both groups would have changed by the <em>same amount</em>. It is counterfactual and not directly testable — but can be made plausible via several pre-periods (event study). If violated, <span class="gl-hat">β</span>₃ contains a bias and is no longer causally interpretable.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Why Naive Comparisons Fail</div>
+        <div class="lcard-body"><strong>① Cross-section, after only</strong> (treatment − control): overestimates, because the selection difference β₂ is included. <strong>② Before-after within the treatment group only:</strong> overestimates, because the general time trend β₁ is included — the group would have improved even without the program. DiD corrects <em>both</em> biases at once.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Context &amp; Related Tools</div>
+        <div class="lcard-body">DiD is a <strong>quasi-experimental</strong> method for panel data: it uses a control group as a counterfactual, instead of adjusting for variables. Related: the confounding/backdoor thinking of causal inference and other designs without randomization. <a class="xlink" href="Causal_Teaching.html" target="_blank" rel="noopener">→ Causal Inference</a> · <a class="xlink" href="RDD.html" target="_blank" rel="noopener">→ Regression Discontinuity</a> · <a class="xlink" href="PSM.html" target="_blank" rel="noopener">→ Propensity Score Matching</a></div>
+      </div>
+      <div class="lcard" style="grid-column:1/-1">
+        <div class="lcard-h">The Same Thing as a Moderation</div>
+        <div class="lcard-body">Mathematically, DiD is <strong>nothing other than a moderation analysis</strong>: the model <code>Y = β₀ + β₁·Post + β₂·Treat + β₃·(Post×Treat)</code> is exactly an interaction model <code>Y = b₀ + b₁·X + b₂·W + b₃·(X·W)</code> with two binary predictors. <strong>Treat moderates the effect of time</strong> (and vice versa), and β₃ is the interaction = moderation coefficient. The two "differences" are the <em>simple slopes</em> of the two groups, and their difference is the DiD estimator. It is the same OLS regression — only the framing differs: econometrics calls it DiD, psychology calls it moderation. Once you see it, you never have to think of them separately again. <a class="xlink" href="Moderationsanalyse.html" target="_blank" rel="noopener">→ Moderation Analysis</a></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
+// ── State ──────────────────────────────────────────────────────────────────────
+const ST = {
+  b1:0.4, b2:0, b3:1.2, pt:0, sigma:0.8, n:60,
+  seed:42, data:null, yFixed:null, showNaive:false
+};
+
+// ── PRNG ───────────────────────────────────────────────────────────────────────
+function mulberry32(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};}
+function makeRng(seed){
+  const r=mulberry32(seed);
+  return ()=>{let u,v;do{u=r()*2-1;v=r()*2-1;}while(u*u+v*v>1||u*u+v*v===0);return u*Math.sqrt(-2*Math.log(u*u+v*v)/(u*u+v*v));};
+}
+
+// ── Data generation ────────────────────────────────────────────────────────────
+// Y = 0 + β₁·Post + β₂·Treat + (β₃+pt)·(Post×Treat) + ε
+// (DiD estimates β₃+pt when pt≠0, bias = pt)
+function generate(){
+  const rng=makeRng(ST.seed);
+  const pts=[];
+  for(let i=0;i<ST.n;i++) pts.push({g:0,t:0,y:rng()*ST.sigma});
+  for(let i=0;i<ST.n;i++) pts.push({g:0,t:1,y:ST.b1+rng()*ST.sigma});
+  for(let i=0;i<ST.n;i++) pts.push({g:1,t:0,y:ST.b2+rng()*ST.sigma});
+  for(let i=0;i<ST.n;i++) pts.push({g:1,t:1,y:ST.b1+ST.b2+ST.b3+ST.pt+rng()*ST.sigma});
+  ST.data=pts;
+}
+
+// ── Cell means & OLS (analytical for balanced 2×2) ────────────────────────────
+function cellMeans(){
+  const f=(g,t)=>ST.data.filter(d=>d.g===g&&d.t===t).map(d=>d.y);
+  const m=a=>a.reduce((s,v)=>s+v,0)/a.length;
+  const C0=f(0,0),C1=f(0,1),T0=f(1,0),T1=f(1,1);
+  const mc0=m(C0),mc1=m(C1),mt0=m(T0),mt1=m(T1);
+  const resid=[...C0.map(v=>(v-mc0)**2),...C1.map(v=>(v-mc1)**2),
+               ...T0.map(v=>(v-mt0)**2),...T1.map(v=>(v-mt1)**2)];
+  const sigHat=Math.sqrt(resid.reduce((s,v)=>s+v,0)/(4*(ST.n-1)));
+  return{mc0,mc1,mt0,mt1,sigHat};
+}
+
+function computeOLS(){
+  const{mc0,mc1,mt0,mt1,sigHat}=cellMeans();
+  const aHat=mc0, b1Hat=mc1-mc0, b2Hat=mt0-mc0, b3Hat=(mt1-mt0)-(mc1-mc0);
+  const n=ST.n;
+  const seA=sigHat/Math.sqrt(n);
+  const se1=sigHat*Math.sqrt(2/n);
+  const se2=sigHat*Math.sqrt(2/n);
+  const se3=sigHat*2/Math.sqrt(n);
+  return{mc0,mc1,mt0,mt1,sigHat,aHat,b1Hat,b2Hat,b3Hat,seA,se1,se2,se3};
+}
+
+// ── Normal CDF ─────────────────────────────────────────────────────────────────
+function Φ(z){
+  const t=1/(1+0.2316419*Math.abs(z));
+  const p=1-0.3989423*Math.exp(-z*z/2)*(t*(0.319381530+t*(-0.356563782+t*(1.781477937+t*(-1.821255978+t*1.330274429)))));
+  return z<0?1-p:p;
+}
+function pFmt(p){return p<0.001?'<.001':p.toFixed(3);}
+function tfmt(t){return t.toFixed(2);}
+
+// ── Update tables & stats ──────────────────────────────────────────────────────
+function updateTables(){
+  const o=computeOLS();
+  const f=v=>v.toFixed(2);
+  const pm=v=>(v>=0?'+':'')+f(v);
+  // 2×2 table
+  document.getElementById('td-c0').textContent=f(o.mc0);
+  document.getElementById('td-c1').textContent=f(o.mc1);
+  document.getElementById('td-dc').textContent=pm(o.mc1-o.mc0);
+  document.getElementById('td-t0').textContent=f(o.mt0);
+  document.getElementById('td-t1').textContent=f(o.mt1);
+  document.getElementById('td-dt').textContent=pm(o.mt1-o.mt0);
+  document.getElementById('td-did').textContent=pm(o.b3Hat);
+  // regression table — estId/tvId match HTML element IDs exactly
+  const rows=[
+    {estId:'rg-a',  tvId:null,     suf:'a', true_v:0,     est:o.aHat,  se:o.seA},
+    {estId:'rg-b1', tvId:'rg-b1t', suf:'1', true_v:ST.b1, est:o.b1Hat, se:o.se1},
+    {estId:'rg-b2', tvId:'rg-b2t', suf:'2', true_v:ST.b2, est:o.b2Hat, se:o.se2},
+    {estId:'rg-b3', tvId:'rg-b3t', suf:'3', true_v:ST.b3, est:o.b3Hat, se:o.se3},
+  ];
+  rows.forEach(r=>{
+    const t=r.est/r.se;
+    const p=2*(1-Φ(Math.abs(t)));
+    const estEl=document.getElementById(r.estId);
+    if(estEl) estEl.textContent=f(r.est);
+    if(r.tvId){
+      const tvEl=document.getElementById(r.tvId);
+      if(tvEl) tvEl.textContent=r.suf==='3'&&Math.abs(ST.pt)>0.05?f(r.true_v)+' (+PT)':f(r.true_v);
+    }
+    const seEl=document.getElementById('rg-se'+r.suf);
+    if(seEl) seEl.textContent=f(r.se);
+    const tEl=document.getElementById('rg-t'+r.suf);
+    if(tEl) tEl.textContent=tfmt(t);
+    const pEl=document.getElementById('rg-p'+r.suf);
+    if(pEl){pEl.textContent=pFmt(p);pEl.style.color=p<0.05?'var(--a3)':'var(--ink3)';}
+  });
+  // badge & note
+  const t3=o.b3Hat/o.se3;
+  const p3=2*(1-Φ(Math.abs(t3)));
+  const badge=document.getElementById('st-badge');
+  const note=document.getElementById('st-note');
+  if(Math.abs(ST.pt)>0.05){
+    badge.innerHTML=`<span class="badge badge-warn">PT violation active — β̂₃ = ${f(o.b3Hat)} contains bias ${ST.pt>0?'+':''}${f(ST.pt)} · true β₃ = ${f(ST.b3)}</span>`;
+    note.innerHTML=`DiD estimates β₃ + PT_violation = ${f(ST.b3)} + ${f(ST.pt)} = ${f(ST.b3+ST.pt)} ≈ ${f(o.b3Hat)}. The bias arises because the PT assumption is violated.`;
+  } else if(ST.showNaive){
+    const nc1=o.mt1-o.mc1, nc2=o.mt1-o.mt0;
+    badge.innerHTML=p3<0.05
+      ?`<span class="badge badge-sig">β̂₃ = ${f(o.b3Hat)} — correct ATT estimate despite selection &amp; time trend</span>`
+      :`<span class="badge badge-ns">Not significant (p=${pFmt(p3)})</span>`;
+    note.innerHTML=`<strong style="color:var(--a1)">① G1<sub>t1</sub>−G0<sub>t1</sub> = ${nc1>=0?'+':''}${f(nc1)}</strong> → too large: includes β₂ (selection = ${f(ST.b2)})<br>`+
+      `<strong style="color:var(--a4)">② G1<sub>t1</sub>−G1<sub>t0</sub> = ${nc2>=0?'+':''}${f(nc2)}</strong> → too large: includes β₁ (time trend = ${f(ST.b1)})<br>`+
+      `<strong style="color:var(--a5)">DiD β̂₃ = ${f(o.b3Hat)}</strong> → corrects both biases — matches the true ATT = ${f(ST.b3)}`;
+  } else {
+    badge.innerHTML=p3<0.05
+      ?`<span class="badge badge-sig">Significant (p${p3<0.001?'<.001':'='+pFmt(p3)}) · β̂₃ = ${f(o.b3Hat)} ≈ true β₃ = ${f(ST.b3)}</span>`
+      :`<span class="badge badge-ns">Not significant (p=${pFmt(p3)}) · true β₃ = ${f(ST.b3)}</span>`;
+    note.innerHTML=`β̂₃ = ${f(o.b3Hat)} | SE = ${f(o.se3)} | σ̂ = ${o.sigHat.toFixed(2)} | n = ${ST.n} per cell | true β₂ (selection) = ${f(ST.b2)} → corrected by DiD`;
+  }
+  [badge,note].forEach(el=>{el.innerHTML=fixDiacritics(el.innerHTML);});
+}
+
+// ── Canvas ─────────────────────────────────────────────────────────────────────
+function cv(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
+
+function drawDiD(){
+  const canvas=document.getElementById('cv-did');
+  const W=canvas.clientWidth; canvas.width=W; const H=canvas.height;
+  const ctx=canvas.getContext('2d');
+  const pad={l:60,r:ST.showNaive?200:20,t:24,b:44};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+
+  const a1=cv('--a1'),a2=cv('--a2'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5');
+  const ink=cv('--ink'),ink2=cv('--ink2'),ink3=cv('--ink3');
+  const grid=cv('--grid'),bg=cv('--bg'),paper=cv('--paper');
+
+  ctx.clearRect(0,0,W,H);
+
+  const o=computeOLS();
+  const{mc0,mc1,mt0,mt1}=o;
+  const cfT1=mt0+(mc1-mc0); // counterfactual: T_pre + Δ_Control
+  const trueCfT1=mt0+(mc1-mc0)+ST.pt; // true counterfactual (incl. PT viol)
+
+  // y range
+  const allY=[mc0,mc1,mt0,mt1,cfT1,trueCfT1];
+  const rawY=ST.data.map(d=>d.y);
+  let yMin,yMax;
+  if(ST.yFixed){yMin=ST.yFixed.min;yMax=ST.yFixed.max;}
+  else{
+    yMin=Math.min(...allY,...rawY)-0.35;
+    yMax=Math.max(...allY,...rawY)+0.35;
+  }
+  const xPre=pad.l+cW*0.27, xPost=pad.l+cW*0.73;
+  const sy=v=>pad.t+cH*(1-(v-yMin)/(yMax-yMin));
+  const clamp=v=>Math.max(pad.t,Math.min(pad.t+cH,v));
+
+  // grid lines
+  const nGrid=5;
+  for(let i=0;i<=nGrid;i++){
+    const yv=yMin+(yMax-yMin)*i/nGrid;
+    ctx.strokeStyle=grid;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,clamp(sy(yv)));ctx.lineTo(pad.l+cW,clamp(sy(yv)));ctx.stroke();
+    ctx.fillStyle=ink3;ctx.font='11px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(yv.toFixed(1),pad.l-5,clamp(sy(yv))+4);
+  }
+
+  // axes
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+cH);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);ctx.lineTo(pad.l+cW,pad.t+cH);ctx.stroke();
+
+  // x-axis labels
+  ctx.fillStyle=ink3;ctx.font='12px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Before  (Post=0)',xPre,H-10);
+  ctx.fillText('After  (Post=1)',xPost,H-10);
+
+  // y-axis label
+  ctx.fillStyle=ink2;ctx.font='bold 12px DM Mono,monospace';ctx.textAlign='center';
+  ctx.save();ctx.translate(13,pad.t+cH/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Achievement test Y (z)',0,0);ctx.restore();
+
+  // scatter dots
+  const jRng=mulberry32(ST.seed+7777);
+  ctx.globalAlpha=0.22;
+  ST.data.forEach(d=>{
+    const jit=(jRng()-0.5)*38;
+    ctx.fillStyle=d.g===0?a2:a3;
+    const xc=d.t===0?xPre:xPost;
+    const yc=clamp(sy(d.y));
+    ctx.beginPath();ctx.arc(xc+jit,yc,2.5,0,2*Math.PI);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+
+  // ── Lines ──────────────────────────────────────────────────────────────────
+  // Control line (solid blue)
+  ctx.strokeStyle=a2;ctx.lineWidth=2.5;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(xPre,clamp(sy(mc0)));ctx.lineTo(xPost,clamp(sy(mc1)));ctx.stroke();
+
+  // Counterfactual (dashed green, parallel to control from T_pre)
+  ctx.strokeStyle=a3;ctx.lineWidth=2;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(xPre,clamp(sy(mt0)));ctx.lineTo(xPost,clamp(sy(cfT1)));ctx.stroke();
+  ctx.setLineDash([]);
+
+  // True counterfactual when PT violated (dashed orange)
+  if(Math.abs(ST.pt)>0.05){
+    ctx.strokeStyle=a5;ctx.lineWidth=1.8;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(xPre,clamp(sy(mt0)));ctx.lineTo(xPost,clamp(sy(trueCfT1)));ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Treatment observed (solid green)
+  ctx.strokeStyle=a3;ctx.lineWidth=2.5;ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(xPre,clamp(sy(mt0)));ctx.lineTo(xPost,clamp(sy(mt1)));ctx.stroke();
+
+  // ── Group mean dots ────────────────────────────────────────────────────────
+  const dot=(x,y,col,r=6.5)=>{
+    const yc=clamp(sy(y));
+    ctx.beginPath();ctx.arc(x,yc,r,0,2*Math.PI);
+    ctx.fillStyle=col;ctx.fill();
+    ctx.strokeStyle=bg;ctx.lineWidth=1.8;ctx.stroke();
+  };
+  dot(xPre,mc0,a2); dot(xPost,mc1,a2);
+  dot(xPre,mt0,a3); dot(xPost,mt1,a3);
+  // counterfactual dot (smaller, open)
+  ctx.beginPath();ctx.arc(xPost,clamp(sy(cfT1)),4,0,2*Math.PI);
+  ctx.fillStyle=bg;ctx.strokeStyle=a3;ctx.lineWidth=2;ctx.fill();ctx.stroke();
+
+  // ── β₂ bracket (selection bias at t=0) ───────────────────────────────────
+  if(Math.abs(ST.b2)>0.05){
+    const bx=xPre-22;
+    const ay0=clamp(sy(mc0)), ay1=clamp(sy(mt0));
+    const as=4;
+    ctx.strokeStyle=a3;ctx.fillStyle=a3;ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(bx,ay0);ctx.lineTo(bx,ay1);ctx.stroke();
+    [[ay0,1],[ay1,-1]].forEach(([y,d])=>{
+      ctx.beginPath();ctx.moveTo(bx,y);ctx.lineTo(bx-as,y+d*6);ctx.lineTo(bx+as,y+d*6);ctx.closePath();ctx.fill();
+    });
+    ctx.globalAlpha=0.25;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(bx,ay0);ctx.lineTo(xPre,ay0);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx,ay1);ctx.lineTo(xPre,ay1);ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;
+    ctx.fillStyle=a3;ctx.font='bold 10px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText('β₂='+o.b2Hat.toFixed(2),bx-5,(ay0+ay1)/2+4);
+  }
+
+  // ── DiD arrow (β₃ bracket at post, between CF and observed T) ─────────────
+  const did=mt1-cfT1; // = observed - assumed CF
+  if(Math.abs(did)>0.03){
+    const ax=xPost+26;
+    const ay1=clamp(sy(cfT1)), ay2=clamp(sy(mt1));
+    const as=5;
+    ctx.strokeStyle=a5;ctx.fillStyle=a5;ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(ax,ay1);ctx.lineTo(ax,ay2);ctx.stroke();
+    [[ay2,1],[ay1,-1]].forEach(([y,d])=>{
+      ctx.beginPath();ctx.moveTo(ax,y);ctx.lineTo(ax-as,y+d*7);ctx.lineTo(ax+as,y+d*7);ctx.closePath();ctx.fill();
+    });
+    ctx.globalAlpha=0.25;ctx.strokeStyle=a5;ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(xPost,ay1);ctx.lineTo(ax,ay1);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(xPost,ay2);ctx.lineTo(ax,ay2);ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;
+    ctx.fillStyle=a5;ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='left';
+    const lbl=Math.abs(ST.pt)>0.05
+      ?`β̂₃=${did>=0?'+':''}${did.toFixed(2)} (bias!)`
+      :`β̂₃=${did>=0?'+':''}${did.toFixed(2)}`;
+    ctx.fillText(lbl,ax+6,(ay1+ay2)/2+4);
+  }
+
+  // ── Naive comparison brackets (showNaive only) ─────────────────────────────
+  if(ST.showNaive){
+    const as=4;
+    const drawNaiveBracket=(nx,y1,y2,col,lbl)=>{
+      ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1.8;
+      ctx.beginPath();ctx.moveTo(nx,y1);ctx.lineTo(nx,y2);ctx.stroke();
+      [[y2,1],[y1,-1]].forEach(([y,d])=>{
+        ctx.beginPath();ctx.moveTo(nx,y);ctx.lineTo(nx-as,y+d*6);ctx.lineTo(nx+as,y+d*6);ctx.closePath();ctx.fill();
+      });
+      ctx.fillStyle=col;ctx.font='bold 10px DM Mono,monospace';ctx.textAlign='left';
+      ctx.fillText(lbl,nx+5,(y1+y2)/2+4);
+    };
+    // Naive 1: G1_t1 − G0_t1 (cross-section at Post=1: different groups)
+    const n1x=xPost+110;
+    const n1y1=clamp(sy(mc1)), n1y2=clamp(sy(mt1));
+    ctx.globalAlpha=0.3;ctx.strokeStyle=a1;ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(xPost,n1y1);ctx.lineTo(n1x,n1y1);ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;
+    drawNaiveBracket(n1x,n1y1,n1y2,a1,`①${(mt1-mc1)>=0?'+':''}${(mt1-mc1).toFixed(2)}`);
+    // Naive 2: G1_t1 − G1_t0 (before-after within the treatment group only)
+    // Leader line from xPre (T₀ point) to n2x — makes clear T₀ is the anchor point
+    const n2x=xPost+170;
+    const n2y1=clamp(sy(mt0)), n2y2=clamp(sy(mt1));
+    ctx.globalAlpha=0.25;ctx.strokeStyle=a4;ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(xPre,n2y1);ctx.lineTo(n2x,n2y1);ctx.stroke();
+    ctx.setLineDash([]);ctx.globalAlpha=1;
+    drawNaiveBracket(n2x,n2y1,n2y2,a4,`②${(mt1-mt0)>=0?'+':''}${(mt1-mt0).toFixed(2)}`);
+  }
+
+  // ── Legend box ─────────────────────────────────────────────────────────────
+  const items=[
+    {col:a2, dash:false, lbl:'Control group'},
+    {col:a3, dash:false, lbl:'Treatment (obs.)'},
+    {col:a3, dash:true,  lbl:'Counterfactual (CF)'},
+    {col:a5, dash:false, lbl:'β̂₃ DiD effect'},
+  ];
+  if(Math.abs(ST.pt)>0.05) items.push({col:a5,dash:true,lbl:'True CF (PT viol.)'});
+  if(Math.abs(ST.b2)>0.05) items.push({col:a3,dash:false,lbl:'β₂ selection'});
+  if(ST.showNaive){
+    items.push({col:a1,dash:false,lbl:'① Naive: G1t1−G0t1'});
+    items.push({col:a4,dash:false,lbl:'② Naive: G1t1−G1t0'});
+  }
+
+  const lgW=168, lgItemH=16, lgPad=8;
+  const lgH=items.length*lgItemH+lgPad*1.8;
+  const lgX=pad.l+8, lgY=pad.t+8;
+  ctx.fillStyle=paper;ctx.globalAlpha=0.88;
+  ctx.fillRect(lgX,lgY,lgW,lgH);
+  ctx.globalAlpha=1;ctx.strokeStyle=grid;ctx.lineWidth=1;
+  ctx.strokeRect(lgX,lgY,lgW,lgH);
+
+  items.forEach((item,i)=>{
+    const y=lgY+lgPad+i*lgItemH+lgItemH/2;
+    ctx.strokeStyle=item.col;ctx.lineWidth=1.8;
+    if(item.dash) ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(lgX+7,y);ctx.lineTo(lgX+28,y);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=ink2;ctx.font='10px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText(item.lbl,lgX+34,y+4);
+  });
+}
+
+// ── Recompute & redraw ─────────────────────────────────────────────────────────
+function recompute(){generate();drawDiD();updateTables();}
+
+function onSl(){
+  ST.b1=parseFloat(document.getElementById('s-b1').value);
+  ST.b2=parseFloat(document.getElementById('s-b2').value);
+  ST.b3=parseFloat(document.getElementById('s-b3').value);
+  ST.pt=parseFloat(document.getElementById('s-pt').value);
+  ST.sigma=parseFloat(document.getElementById('s-sigma').value);
+  ST.n=parseInt(document.getElementById('s-n').value);
+  document.getElementById('v-b1').textContent=ST.b1.toFixed(2);
+  document.getElementById('v-b2').textContent=ST.b2.toFixed(2);
+  document.getElementById('v-b3').textContent=ST.b3.toFixed(2);
+  document.getElementById('v-pt').textContent=ST.pt.toFixed(2);
+  document.getElementById('v-sigma').textContent=ST.sigma.toFixed(2);
+  document.getElementById('v-n').textContent=ST.n;
+  clearPresets();
+  recompute();
+}
+
+function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
+
+// ── Presets ────────────────────────────────────────────────────────────────────
+function clearPresets(){document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));}
+function setPreset(key){
+  clearPresets();
+  document.getElementById('pre-'+key).classList.add('active');
+  const P={
+    clean: {b1:0.40, b2:0.00, b3:1.20, pt:0.00, sigma:0.80, n:60},
+    sel:   {b1:0.40, b2:-1.50,b3:1.20, pt:0.00, sigma:0.80, n:60},
+    combo: {b1:1.50, b2:1.50, b3:3.00, pt:0.00, sigma:0.80, n:60},
+    null:  {b1:0.40, b2:0.00, b3:0.00, pt:0.00, sigma:0.80, n:60},
+  };
+  const p=P[key];
+  ST.showNaive=(key==='combo');
+  Object.assign(ST,p);
+  ['b1','b2','b3','pt','sigma','n'].forEach(k=>{
+    const el=document.getElementById('s-'+k);
+    if(el) el.value=p[k];
+    const vEl=document.getElementById('v-'+k);
+    if(vEl) vEl.textContent=k==='n'?p[k]:p[k].toFixed(2);
+  });
+  recompute();
+}
+
+// ── Y-axis lock ────────────────────────────────────────────────────────────────
+function toggleYLock(){
+  const btn=document.getElementById('btn-ylock');
+  if(ST.yFixed){
+    ST.yFixed=null;
+    btn.textContent='⊡ Fix Y axis';
+    btn.classList.remove('active');
+  } else {
+    const o=computeOLS();
+    const{mc0,mc1,mt0,mt1}=o;
+    const cfT1=mt0+(mc1-mc0);
+    const rawY=ST.data.map(d=>d.y);
+    ST.yFixed={
+      min:Math.min(mc0,mc1,mt0,mt1,cfT1,...rawY)-0.35,
+      max:Math.max(mc0,mc1,mt0,mt1,cfT1,...rawY)+0.35
+    };
+    btn.textContent='⊠ Y axis fixed';
+    btn.classList.add('active');
+  }
+  drawDiD();
+}
+
+// ── Theme & Help ────────────────────────────────────────────────────────────────
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('btn-theme').textContent=dark?'🌙 Dark':'☀ Light';
+  drawDiD();
+}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  setPreset('clean');
+  document.querySelectorAll('th,td,.help-p,.help-formula,.hint').forEach(el=>{el.innerHTML=fixDiacritics(el.innerHTML);});
+});
+window.addEventListener('resize',()=>drawDiD());
+</script>
+</body>
+</html>

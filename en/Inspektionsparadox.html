@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inspection Paradox — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+.gk{text-transform:none!important;font-style:normal}
+.circ{font-size:2em;font-weight:600;vertical-align:-.18em;line-height:1;display:inline-block}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.5rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.16rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+input[type=range].acc-s::-webkit-slider-thumb{background:var(--a5)}
+
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
+.arrive-btns{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.7rem}
+.arrive-btns .mbtn{padding:.45rem 1rem}
+.mbtn{font-family:'DM Mono',monospace;font-size:.71rem;padding:.45rem .3rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center;line-height:1.25}
+.mbtn:hover{border-color:var(--accent);color:var(--accent)}
+.mbtn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.mbtn.full{grid-column:1 / -1}
+.hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
+
+.conv-table{width:100%;border-collapse:collapse;border:1.5px solid var(--border);font-family:'DM Mono',monospace;font-size:.71rem}
+.conv-table th{font-size:.6rem;text-transform:uppercase;letter-spacing:.02em;color:var(--ink3);
+  font-weight:600;text-align:right;padding:.28rem .35rem;background:var(--grid);border:1px solid var(--border)}
+.conv-table th:first-child{text-align:left}
+.conv-table td{padding:.3rem .35rem;text-align:right;border:1px solid var(--grid)}
+.conv-table td:first-child{text-align:left;color:var(--ink2)}
+.conv-table tr.you{background:color-mix(in srgb,var(--a5) 10%,transparent)}
+.conv-table tr.you td{color:var(--a5);font-weight:600}
+.conv-table tr.true td{color:var(--ink)}
+.conv-note{margin-top:.35rem;color:var(--ink3)}
+
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+
+.pred{background:var(--paper);border:1.5px solid var(--border);padding:.8rem .95rem;margin-bottom:.85rem}
+.pred-q{font-size:.92rem;margin-bottom:.6rem}
+.pred-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem}
+.pred-btn{font-family:'DM Mono',monospace;font-size:.74rem;padding:.5rem .3rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center}
+.pred-btn:hover{border-color:var(--a5);color:var(--a5)}
+.pred-btn.sel{border-color:var(--a5);background:var(--a5);color:var(--bg)}
+.pred-fb{font-family:'DM Mono',monospace;font-size:.8rem;line-height:1.6;margin-top:.6rem;display:none}
+.pred-fb.show{display:block}
+.pred-fb.right{color:var(--a3)} .pred-fb.wrong{color:var(--a1)}
+
+.verdict{font-family:'DM Mono',monospace;font-size:.88rem;font-weight:500;padding:.7rem .95rem;margin-bottom:1rem;
+  border:1.5px solid;text-align:center;letter-spacing:.01em;line-height:1.6;
+  color:var(--a5);border-color:var(--a5);background:color-mix(in srgb,var(--a5) 12%,transparent)}
+
+.lock-card{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--ink3);padding:1.1rem 1rem;
+  border:1.5px dashed var(--border);background:var(--panel);text-align:center;line-height:1.7;margin-bottom:1rem}
+#reveal-wrap.locked{display:none}
+
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:1rem}
+.metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:.64rem;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.3rem;line-height:1.3}
+.metric-val{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:500;line-height:1}
+.metric-sub{font-family:'DM Mono',monospace;font-size:.64rem;color:var(--ink3);margin-top:.25rem;line-height:1.4}
+
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block}
+.plot-box .hint{border-top:1px solid var(--grid)}
+
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard-grid .lcard:last-child{grid-column:1/-1}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{display:block;background:var(--panel);border:1px solid var(--grid);padding:.35rem .55rem;
+  margin:.4rem 0;font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);white-space:pre-wrap;line-height:1.6}
+.lcard-body table{width:100%;border-collapse:collapse;border:1.5px solid var(--border);margin:.5rem 0;font-family:'DM Mono',monospace;font-size:.74rem}
+.lcard-body th{font-size:.64rem;text-transform:uppercase;letter-spacing:.02em;color:var(--ink3);font-weight:600;
+  text-align:right;padding:.28rem .4rem;background:var(--grid);border:1px solid var(--border)}
+.lcard-body th:first-child,.lcard-body td:first-child{text-align:left}
+.lcard-body td{padding:.28rem .4rem;text-align:right;border:1px solid var(--grid);color:var(--ink2)}
+.xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+@media(max-width:900px){.metric-grid{grid-template-columns:1fr 1fr}.lcard-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Inspection Paradox — <em>why you almost always land in the long interval</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a5)">Irregularity of Intervals</div>
+    <div class="slider-row" style="margin-bottom:.2rem">
+      <div class="slider-lbl"><span class="slider-name">Spread (CV)</span><span class="slider-val" id="v-spread">0.60</span></div>
+      <input type="range" class="acc-s" id="s-spread" min="0" max="1" step="0.05" value="0.6">
+    </div>
+    <div class="hint" style="border-top:none;padding-top:.3rem;margin-bottom:0">0 = exact schedule (all gaps equal, no paradox). 1 = fully random (Poisson) — maximum effect.</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Number of Buses</div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">n</span><span class="slider-val" id="v-n">14</span></div>
+      <input type="range" id="s-n" min="6" max="30" step="1" value="14">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Schedule</div>
+    <button class="mbtn full" onclick="regen()">🎲 New schedule situation</button>
+    <div class="hint" style="margin-bottom:0">Mean scheduled gap fixed at <strong>10&nbsp;min</strong>; only the distribution of the gaps changes.</div>
+  </div>
+
+</div><!-- #sidebar -->
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">🚌 What's This About</div>
+    A bus runs on average every <strong>10&nbsp;minutes</strong> — sometimes after 4, sometimes after 18&nbsp;minutes. The operator proudly
+    says: "mean gap 10&nbsp;min, so mean wait time 5&nbsp;min." But as a passenger, you arrive at the stop at a
+    <em>random</em> time, and it feels like you're <em>always</em> waiting longer. <strong>Who's right — the
+    operator or you?</strong>
+  </div>
+
+  <div class="pred" id="pred">
+    <div class="pred-q"><strong>Your prediction:</strong> The gap you land in is, on average, …</div>
+    <div class="pred-row">
+      <button class="pred-btn" onclick="predict('short')">shorter than 10&nbsp;min</button>
+      <button class="pred-btn" onclick="predict('equal')">about 10&nbsp;min</button>
+      <button class="pred-btn" onclick="predict('long')">longer than 10&nbsp;min</button>
+    </div>
+    <div class="pred-fb" id="pred-fb"></div>
+  </div>
+
+  <div class="lock-card" id="reveal-locked">🔒 Guess first, then reveal — pick a prediction above to see the verdict, metrics, and frequency chart.</div>
+
+  <div class="plot-box">
+    <div class="plot-title"><span class="circ">①</span> The Schedule as a Timeline — Where Do Arrivals Land?</div>
+    <canvas id="cv-line" height="150"></canvas>
+    <div class="hint" id="hint-line">Vertical strokes = buses, bands in between = gaps (longer = wider). Triangles = your random arrivals; the most recently hit gap is highlighted.</div>
+  </div>
+
+  <div id="reveal-wrap" class="locked">
+    <div class="verdict" id="verdict">—</div>
+
+    <div class="plot-box">
+      <div class="plot-title"><span class="circ">②</span> Try It Yourself — Arrive Randomly</div>
+      <div class="hint" style="border-top:none;padding-top:0;margin-top:0;margin-bottom:.6rem">Arrive at the stop at a random time repeatedly and watch how "your average" converges to the true expected value with every throw.</div>
+      <div class="arrive-btns">
+        <button class="mbtn" onclick="arrive(1)">🚶 1×</button>
+        <button class="mbtn" onclick="arrive(200)">🚶 200×</button>
+        <button class="mbtn" onclick="resetDarts()">⟲ Reset</button>
+      </div>
+      <div id="dart-last">No arrival yet. Arrive at the stop at a random time — which gap do you land in?</div>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric">
+        <div class="metric-lbl">Scheduled gap E[L]<br>(operator)</div>
+        <div class="metric-val" id="m-mean" style="color:var(--a2)">—</div>
+        <div class="metric-sub">mean of all gaps</div>
+      </div>
+      <div class="metric">
+        <div class="metric-lbl">Experienced gap<br>(passenger)</div>
+        <div class="metric-val" id="m-exp" style="color:var(--a5)">—</div>
+        <div class="metric-sub">E[L²]/E[L]</div>
+      </div>
+      <div class="metric">
+        <div class="metric-lbl">Naive wait time</div>
+        <div class="metric-val" id="m-wn">—</div>
+        <div class="metric-sub">E[L]/2</div>
+      </div>
+      <div class="metric">
+        <div class="metric-lbl">Real wait time</div>
+        <div class="metric-val" id="m-we" style="color:var(--a1)">—</div>
+        <div class="metric-sub">E[L²]/(2·E[L])</div>
+      </div>
+    </div>
+
+    <div class="plot-box">
+      <div class="plot-title"><span class="circ">③</span> Distribution of Gaps: Counted vs. Experienced</div>
+      <canvas id="cv-hist" height="270"></canvas>
+      <div class="hint">Blue = every gap counts <strong>once</strong> (operator's view). Orange = every gap weighted by its <strong>length</strong> (passenger's view) — the same gaps, but shifted right. Vertical lines = the two means.</div>
+    </div>
+  </div>
+
+  <div class="sec-h">Concepts</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">①</span> The Symbols — What Stands for What?</div>
+      <div class="lcard-body">The formulas below always use the same few quantities. <strong>L₁, L₂, … Lₙ</strong> are
+        the individual gaps between buses (n of them). <strong>T = L₁+L₂+…+Lₙ</strong> is the total schedule time.
+        <strong>E[L]</strong> is the plain ordinary mean of all gaps — what the operator calls the "scheduled gap."
+        <strong>E[L²]</strong> is the mean of the <em>squared</em> gaps — it shows up shortly because long gaps
+        weigh in disproportionately. <strong>Var(L) = E[L²] − E[L]²</strong> measures how much the
+        gaps vary. That's all we need — everything below builds only on these four quantities.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">②</span> Which Gap Do You Even Land In?</div>
+      <div class="lcard-body">You arrive at a <em>random point in time</em> between 0 and T — not at a random
+        gap number. A gap of length L takes up the share <strong>L/T</strong> of the total schedule time, so:
+        <code>P(you land in this gap) = L/T</code>
+        A 12-minute gap is thus hit six times as often as a 2-minute gap — even though the operator counts
+        both exactly the same when computing their mean (each once).</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">③</span> Where in the Gap Do You Land?</div>
+      <div class="lcard-body">Suppose you've landed in a gap of length L — <em>where</em> exactly within it is
+        uniformly distributed. Sometimes you're right at the start (nearly the whole gap's wait), sometimes right
+        before the next bus (almost none). Averaged over many arrivals in equal-length gaps, the remaining wait time
+        is <strong>L/2</strong> on average. If you land at minute 8 of 12, say, you only wait 4 minutes — that
+        doesn't contradict L/2 = 6, it's simply one single throw from exactly this spread.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">④</span> Both Effects Combined — the Formula</div>
+      <div class="lcard-body">The wait time weights every gap by its hit probability from <span class="circ">②</span> and multiplies
+        by the mean remaining wait from <span class="circ">③</span>:
+        <code>E[wait time] = Σᵢ (Lᵢ/T) · (Lᵢ/2) = E[L²] / (2·E[L])</code>
+        The "experienced gap" arises the same way — instead of weighting every gap by 1 like the operator does, you
+        weight it by its own length:
+        <code>E[experienced gap] = Σᵢ Lᵢ·(Lᵢ/T) = E[L²]/E[L] = E[L] + Var(L)/E[L]</code>
+        The last rearrangement shows directly: with no spread (Var = 0), the whole effect vanishes.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">⑤</span> More Spread ⇒ Bigger Effect</div>
+      <div class="lcard-body">The surcharge in the formula above is exactly <strong>Var(L)/E[L]</strong>. With an exact
+        schedule (Var = 0), there's no paradox. With purely random (Poisson) arrivals, Var = E[L]² — then the experienced
+        gap is <strong>twice</strong> as long as E[L], and the wait time equals the <em>entire</em> mean gap
+        instead of half.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">⑥</span> Worked Example</div>
+      <div class="lcard-body">Four gaps: 2, 4, 6, 12 minutes (sum T = 24, operator's mean E[L] = 6 min).
+        <table>
+          <thead><tr><th>Gap L</th><th>Share of n</th><th>Hit prob. L/T</th><th>Mean rest L/2</th></tr></thead>
+          <tbody>
+            <tr><td>2 min</td><td>25 %</td><td>8 %</td><td>1 min</td></tr>
+            <tr><td>4 min</td><td>25 %</td><td>17 %</td><td>2 min</td></tr>
+            <tr><td>6 min</td><td>25 %</td><td>25 %</td><td>3 min</td></tr>
+            <tr><td>12 min</td><td>25 %</td><td><strong>50 %</strong></td><td>6 min</td></tr>
+          </tbody>
+        </table>
+        The operator counts every gap equally ("share of n" column). But you hit them ∝ length ("hit prob." column) — the
+        12-min gap in <strong>half</strong> of all cases, even though it's only 1 of 4 gaps. Experienced gap:
+        E[L²]/E[L] = (4+16+36+144)/4 / 6 = 50/6 ≈ <strong>8.3 min</strong>. Real wait time: E[L²]/(2·E[L]) = 50/12 ≈
+        <strong>4.2 min</strong> instead of a naive 3 min — not because you always wait until the very end in the 12-min gap
+        (there, too, the average is only 6 min), but because you land there so often in the first place.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">Related Phenomena &amp; Tools</div>
+      <div class="lcard-body">The same math shows up wherever states are observed proportional to their duration or size,
+        instead of counted individually and equally: the <strong>class-size paradox</strong> (students experience larger
+        courses on average than the university reports — because more students sit in large courses), servers, restaurants,
+        or highways that seem constantly busy, and <strong>length-biased sampling</strong> in survival/screening studies
+        (cases "present" on a given cutoff date have overlong courses — correctable by weighting with 1/L if the
+        bias is known). Closely related: the <strong>friendship paradox</strong> — the same formula E[k²]/E[k], just for
+        network contacts instead of time intervals.
+        <a class="xlink" href="Friendship_Paradox.html" target="_blank">→ Friendship Paradox</a>
+        <a class="xlink" href="Survivorship_Bias.html" target="_blank">→ Survivorship Bias</a></div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Inspection Paradox — Background
+      <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    </div>
+
+    <div class="help-sh">The idea in one sentence</div>
+    <p class="help-p">Anyone who samples an interval by a random <strong>point in time</strong> (rather than by a random <em>index</em>)
+      hits long intervals more often — because they take up more room on the timeline. The observed interval is
+      therefore systematically longer than the average one.</p>
+
+    <div class="help-sh">The math (length-biased sampling)</div>
+    <span class="help-formula">Gaps L₁…Lₙ,   total time T = Σ Lᵢ
+P(land in gap i) = Lᵢ / T          (∝ length!)
+experienced gap = Σ Lᵢ·(Lᵢ/T) = ΣLᵢ²/ΣLᵢ = E[L²]/E[L]
+            = E[L] + Var(L)/E[L]   ≥  E[L]</span>
+    <p class="help-p">The surcharge is <strong>Var(L)/E[L]</strong>: no spread → no effect; lots of spread → large effect.
+      For a length-weighted density, f*(ℓ) = ℓ·f(ℓ)/E[L].</p>
+
+    <div class="help-sh">The wait time (residual time)</div>
+    <span class="help-formula">Within the hit gap you arrive uniformly
+⇒ remaining wait | gap L = L/2
+E[wait time] = Σ (Lᵢ/T)·(Lᵢ/2) = E[L²]/(2·E[L])
+naively expected: E[L]/2   →   difference = Var(L)/(2·E[L])</span>
+    <p class="help-p">For <strong>Poisson</strong> arrivals (exponential gaps, Var = E[L]²), the experienced gap is 2·E[L] and
+      the mean wait time is E[L] — the entire mean gap, not half. This is the famous "memorylessness."</p>
+
+    <div class="help-sh">Where it shows up</div>
+    <p class="help-p"><strong>Waiting-time paradox</strong> (buses, elevators), <strong>class-size paradox</strong> (students experience
+      larger courses), <strong>survival/length bias</strong> in screening and cohort studies (cases "present" on a given cutoff date
+      have overlong courses), server/venue occupancy. Related to the <strong>friendship paradox</strong> and the
+      <strong>renewal-reward theorem</strong> of renewal theory.</p>
+
+    <div class="help-sh">What the tool shows</div>
+    <p class="help-p">It generates n gaps with a mean scheduled interval of 10 and adjustable spread (CV). Timeline <span class="circ">①</span> shows the
+      gaps and your random arrivals (∝ length). After predicting, you can "arrive" yourself under <span class="circ">②</span>
+      multiple times — the table shows the last throw as well as your cumulative average compared to the true
+      expected value. Histogram <span class="circ">③</span> compares the <em>counted</em> with the <em>length-weighted</em>
+      distribution. The tiles show E[L], E[L²]/E[L], and both wait times. "Arrive 200×" confirms by simulation that the
+      experienced average converges to E[L²]/E[L].</p>
+
+    <div class="help-sh">References</div>
+    <p class="help-p">Feller, W. (1971). <em>An Introduction to Probability Theory and Its Applications, Vol. II.</em><br>
+      Cox, D. R. (1962). <em>Renewal Theory.</em> Methuen.<br>
+      Stein, C. (1985) &amp; Pal, Szabó (2020) on size-biased sampling; Hemenway (1982), "Why your friends have more friends than you."</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const MEAN=10;
+let seed=7, spread=0.6, n=14, GAPS=[], BUS=[], T=0, darts=[], expSum=0, waitSum=0, expN=0, lastIdx=-1, guess=null, predicted=false;
+let lastGapLen=null, lastPos=null, lastWait=null;
+
+function genGaps(){
+  const rng=mulberry32(seed);
+  GAPS=[];
+  for(let i=0;i<n;i++){
+    const e=-Math.log(1-rng()*0.999999);      // Exp(1)
+    GAPS.push(MEAN*((1-spread)+spread*e));
+  }
+  BUS=[0]; let t=0; GAPS.forEach(g=>{t+=g;BUS.push(t);}); T=t;
+  darts=[]; expSum=0; waitSum=0; expN=0; lastIdx=-1; lastGapLen=null; lastPos=null; lastWait=null;
+}
+function stats(){
+  const m=GAPS.reduce((a,b)=>a+b,0)/n;
+  const m2=GAPS.reduce((a,b)=>a+b*b,0)/n;
+  const exp=m2/m, vr=m2-m*m;
+  return {m,exp,vr,waitN:m/2,waitR:exp/2};
+}
+
+// ── sampling ──
+function arrive(k){
+  for(let j=0;j<k;j++){
+    const rng=Math.random();
+    const u=rng*T;
+    // locate gap
+    let idx=0; while(idx<n-1 && u>BUS[idx+1]) idx++;
+    const pos=u-BUS[idx], rest=BUS[idx+1]-u;
+    expSum+=GAPS[idx]; waitSum+=rest; expN++; lastIdx=idx;
+    lastGapLen=GAPS[idx]; lastPos=pos; lastWait=rest;
+    if(k===1) darts.push(u); else if(j>=k-40) darts.push(u);
+  }
+  if(darts.length>60) darts=darts.slice(-60);
+  update();
+}
+function resetDarts(){ darts=[]; expSum=0; waitSum=0; expN=0; lastIdx=-1; lastGapLen=null; lastPos=null; lastWait=null; update(); }
+function regen(){ seed=(seed*1103515245+12345)&0x7fffffff; genGaps(); guess=null; resetPred(); update(); }
+
+function predict(g){
+  guess=g;
+  document.querySelectorAll('.pred-btn').forEach((b,i)=>b.classList.toggle('sel',['short','equal','long'][i]===g));
+  const fb=document.getElementById('pred-fb');
+  fb.className='pred-fb show '+(g==='long'?'right':'wrong');
+  fb.innerHTML = (g==='long'
+    ? '✓ Correct! A random time falls into long gaps more often — the experienced gap is E[L²]/E[L] ≥ E[L].'
+    : (g==='equal'
+      ? '✗ Close but not quite: it would only be 10 with an <em>exact</em> schedule (spread 0). As soon as gaps vary, the experienced gap is longer.'
+      : '✗ The other way around: you land more often in the <em>long</em> gaps, never systematically in the short ones — the average is above 10.'))
+    + ' <br><strong>Resolution:</strong> the operator and the passenger are <em>both</em> right — that\'s the inspection paradox: a random time is more likely to fall in a long gap, because long gaps take up more of the timeline. Revealed below ↓';
+  if(!predicted){
+    predicted=true;
+    document.getElementById('reveal-locked').style.display='none';
+    document.getElementById('reveal-wrap').classList.remove('locked');
+  }
+  update();
+}
+function resetPred(){ guess=null; document.querySelectorAll('.pred-btn').forEach(b=>b.classList.remove('sel')); document.getElementById('pred-fb').className='pred-fb'; }
+
+// ══════════════════════════════════════════════════════════════════════
+function cv(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
+
+function drawLine(){
+  const c=document.getElementById('cv-line'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d');
+  const ink=cv('--ink'),ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),panel=cv('--panel'),bg=cv('--bg'),a2=cv('--a2'),a5=cv('--a5'),a1=cv('--a1');
+  ctx.clearRect(0,0,W,H);
+  const padL=14,padR=14,yT=58,yB=104;
+  const x0=padL,x1=W-padR;
+  const X=t=>x0+t/T*(x1-x0);
+  // gap bands
+  for(let i=0;i<n;i++){
+    const xa=X(BUS[i]), xb=X(BUS[i+1]);
+    const hl=(i===lastIdx);
+    ctx.fillStyle = hl ? a5 : (i%2? grid : panel);
+    if(hl) ctx.globalAlpha=.5;
+    ctx.fillRect(xa,yT,xb-xa,yB-yT);
+    ctx.globalAlpha=1;
+    // gap length label for wider bands
+    if(xb-xa>26){
+      ctx.fillStyle=hl?a5:ink3; ctx.font='10px DM Mono,monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(GAPS[i].toFixed(0),(xa+xb)/2,(yT+yB)/2);
+    }
+  }
+  // bus ticks
+  for(let i=0;i<BUS.length;i++){
+    const x=X(BUS[i]);
+    ctx.strokeStyle=ink2; ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(x,yT-6);ctx.lineTo(x,yB+6);ctx.stroke();
+  }
+  // darts
+  darts.forEach((u,j)=>{
+    const x=X(u); const fresh=(j===darts.length-1);
+    ctx.fillStyle=fresh?a1:ink3; ctx.globalAlpha=fresh?1:.5;
+    ctx.beginPath();ctx.moveTo(x,yT-10);ctx.lineTo(x-5,yT-20);ctx.lineTo(x+5,yT-20);ctx.closePath();ctx.fill();
+    ctx.globalAlpha=1;
+  });
+  // captions
+  ctx.fillStyle=ink2; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+  ctx.fillText('🚌 buses',padL,yB+26);
+  ctx.fillStyle=a1; ctx.textAlign='right';
+  ctx.fillText('▲ your arrivals',x1,yT-26);
+}
+
+function drawHist(){
+  const c=document.getElementById('cv-hist'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d');
+  const ink=cv('--ink'),ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),a2=cv('--a2'),a5=cv('--a5');
+  ctx.clearRect(0,0,W,H);
+  const padL=18,padR=14,padT=16,padB=40;
+  const x0=padL,x1=W-padR,y0=padT,y1=H-padB;
+  const st=stats();
+  const maxG=Math.max(...GAPS), binMax=Math.ceil(maxG/5)*5, nb=12, bw=binMax/nb;
+  const cntA=new Array(nb).fill(0), wB=new Array(nb).fill(0);
+  GAPS.forEach(g=>{ let b=Math.min(nb-1,Math.floor(g/bw)); cntA[b]+=1/n; wB[b]+=g/T; });
+  const ymax=Math.max(...cntA,...wB)*1.15||1;
+  const X=v=>x0+v/binMax*(x1-x0);
+  const Y=p=>y1-p/ymax*(y1-y0);
+  // axis
+  ctx.strokeStyle=ink3; ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.moveTo(x0,y1);ctx.lineTo(x1,y1);ctx.stroke();
+  // x ticks
+  ctx.fillStyle=ink3; ctx.font='10px DM Mono,monospace'; ctx.textAlign='center'; ctx.textBaseline='top';
+  for(let v=0;v<=binMax;v+=Math.max(5,Math.round(binMax/6/5)*5)){ ctx.fillText(v,X(v),y1+6); }
+  ctx.fillText('Gap length (min)',(x0+x1)/2,y1+22);
+  // bars (side by side per bin)
+  for(let b=0;b<nb;b++){
+    const xa=X(b*bw), xb=X((b+1)*bw), w=(xb-xa)*0.40;
+    ctx.fillStyle=a2; ctx.fillRect(xa+ (xb-xa)*0.08, Y(cntA[b]), w, y1-Y(cntA[b]));
+    ctx.fillStyle=a5; ctx.fillRect(xa+ (xb-xa)*0.52, Y(wB[b]), w, y1-Y(wB[b]));
+  }
+  // mean lines
+  function vline(val,col,txt,dy){
+    ctx.strokeStyle=col; ctx.lineWidth=1.8; ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(X(val),y0-2);ctx.lineTo(X(val),y1);ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=col; ctx.font='bold 11px DM Mono,monospace'; ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillText(txt+' '+val.toFixed(1),X(val),y0+dy);
+  }
+  vline(st.m,a2,'E[L]',0);
+  vline(st.exp,a5,'E[L²]/E[L]',14);
+  // legend
+  ctx.textAlign='left'; ctx.textBaseline='middle'; ctx.font='10px DM Mono,monospace';
+  ctx.fillStyle=a2; ctx.fillRect(x1-176,y0+2,10,10); ctx.fillStyle=ink2; ctx.fillText('counted (operator)',x1-162,y0+7);
+  ctx.fillStyle=a5; ctx.fillRect(x1-176,y0+18,10,10); ctx.fillStyle=ink2; ctx.fillText('experienced (passenger)',x1-162,y0+23);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+function update(){
+  const st=stats();
+  document.getElementById('m-mean').textContent=st.m.toFixed(1);
+  document.getElementById('m-exp').textContent=st.exp.toFixed(1);
+  document.getElementById('m-wn').textContent=st.waitN.toFixed(1);
+  document.getElementById('m-we').textContent=st.waitR.toFixed(1);
+
+  const ratio=(st.exp/st.m);
+  document.getElementById('verdict').innerHTML = spread<0.02
+    ? `Exact schedule: all gaps ≈ ${st.m.toFixed(1)} min → experienced gap = scheduled gap, no paradox.`
+    : `Experienced gap <b>${st.exp.toFixed(1)} min</b> vs. scheduled gap <b>${st.m.toFixed(1)} min</b> — ${ratio.toFixed(2)}× as much. Surcharge = Var/E[L] = <b>${(st.exp-st.m).toFixed(1)} min</b>. Your real wait time: <b>${st.waitR.toFixed(1)}</b> instead of a naive ${st.waitN.toFixed(1)} min.`;
+
+  if(lastGapLen===null){
+    document.getElementById('dart-last').innerHTML = 'No arrival yet. Arrive at the stop at a random time — which gap do you land in?';
+  } else {
+    let rows = `<tr><td>Last arrival</td><td>${lastGapLen.toFixed(1)} min</td><td>${lastPos.toFixed(1)} min</td><td style="color:var(--a1);font-weight:600">${lastWait.toFixed(1)} min</td></tr>`;
+    if(predicted){
+      rows += `<tr class="you"><td>Your average (N=${expN})</td><td>${(expSum/expN).toFixed(2)} min</td><td>–</td><td>${(waitSum/expN).toFixed(2)} min</td></tr>`;
+      rows += `<tr class="true"><td>True expected value</td><td>${st.exp.toFixed(2)} min</td><td>–</td><td>${st.waitR.toFixed(2)} min</td></tr>`;
+    }
+    document.getElementById('dart-last').innerHTML =
+      `<table class="conv-table"><thead><tr><th></th><th>Gap</th><th>Position</th><th>Rest / mean wait</th></tr></thead><tbody>${rows}</tbody></table>`
+      + (predicted ? `<div class="conv-note">A single throw can be close or far off — over many throws ("your average") it converges to the expected value (law of large numbers). Click "1×" or "200×" repeatedly to watch it happen.</div>` : '');
+  }
+
+  drawLine();
+  if(predicted) drawHist();
+}
+
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+
+document.getElementById('s-spread').addEventListener('input',function(){
+  spread=parseFloat(this.value); document.getElementById('v-spread').textContent=spread.toFixed(2); genGaps(); update();});
+document.getElementById('s-n').addEventListener('input',function(){
+  n=parseInt(this.value); document.getElementById('v-n').textContent=n; genGaps(); update();});
+
+// init
+genGaps(); update();
+window.addEventListener('resize',()=>{if(window._rt)clearTimeout(window._rt);window._rt=setTimeout(update,120);});
+</script>
+</body>
+</html>

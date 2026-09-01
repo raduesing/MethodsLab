@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diagnostic Validity — Test &amp; Criterion</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.toggle-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem}
+.toggle-row label{font-family:'DM Mono',monospace;font-size:.85rem;color:var(--ink2);cursor:pointer}
+input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--accent)}
+.regen-btn{font-family:'DM Mono',monospace;font-size:.78rem;padding:.32rem 0;width:100%;
+  border:1.5px solid var(--a6);background:transparent;cursor:pointer;color:var(--a6);
+  letter-spacing:.04em;transition:all .15s;margin-top:.35rem}
+.regen-btn:hover{background:var(--a6);color:var(--bg)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.1rem 0 .5rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+/* Main layout */
+.main-layout{display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start}
+#cv-scatter{display:block;cursor:crosshair}
+/* VFT */
+.vft-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.82rem}
+.vft-table th{font-size:.71rem;letter-spacing:.05em;color:var(--ink3);padding:.3rem .45rem;text-align:center;border:1px solid var(--grid)}
+.vft-table td{padding:.38rem .45rem;border:1px solid var(--grid);text-align:center;font-weight:500}
+.row-head{color:var(--ink2);font-size:.75rem;font-weight:400;background:var(--panel);text-align:left !important}
+.cell-tp{color:var(--a3)}
+.cell-tn{color:var(--a2)}
+.cell-fp{color:var(--a5)}
+.cell-fn{color:var(--a1)}
+.cell-sum{color:var(--ink2);font-size:.8rem;font-weight:400}
+:root .cell-tp{background:rgba(80,160,40,.13)}
+:root .cell-tn{background:rgba(42,110,138,.13)}
+:root .cell-fp{background:rgba(185,92,0,.11)}
+:root .cell-fn{background:rgba(200,74,42,.11)}
+[data-theme="dark"] .cell-tp{background:rgba(128,203,82,.10)}
+[data-theme="dark"] .cell-tn{background:rgba(74,176,216,.10)}
+[data-theme="dark"] .cell-fp{background:rgba(224,120,48,.10)}
+[data-theme="dark"] .cell-fn{background:rgba(232,97,74,.10)}
+.cell-lbl{display:block;font-size:.73rem;font-weight:700;line-height:1.2;margin-bottom:.04rem}
+.cell-sub{display:block;font-size:.63rem;font-weight:400;opacity:.65;line-height:1.2;margin-bottom:.18rem}
+.cell-num{display:block;font-size:1rem;font-weight:600}
+/* Kennwerte */
+.kw-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.8rem}
+.kw-table th{font-size:.71rem;letter-spacing:.06em;color:var(--ink3);padding:.26rem .45rem;
+  border-bottom:1px solid var(--grid);text-align:left}
+.kw-table td{padding:.28rem .45rem;border-bottom:1px solid var(--grid);vertical-align:middle}
+.kw-table td:last-child{text-align:right;font-weight:600;color:var(--accent);white-space:nowrap}
+.kw-formula{color:var(--ink3);font-size:.73rem}
+.kw-calc{color:var(--ink2);font-size:.73rem}
+.kw-hi td:last-child{color:var(--a5) !important}
+/* help */
+.help-panel{background:var(--panel);border:1px solid var(--grid);padding:.8rem 1rem;margin-top:.8rem;display:none}
+.help-panel.open{display:block}
+.help-panel p{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75;margin-bottom:.5rem}
+.help-panel p:last-child{margin-bottom:0}
+.help-panel strong{color:var(--ink)}
+.help-formula{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--grid);
+  padding:.35rem .7rem;margin:.3rem 0;color:var(--a2)}
+/* seed display */
+.seed-note{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.3rem;text-align:center}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula2{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+/* Learn cards */
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+@media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Diagnostic <em>Validity</em> — Test &amp; Criterion</h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Sample &amp; Validity</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">r (validity)</span><span class="slider-val" id="val-r">0.50</span></div>
+      <input type="range" id="sl-r" min="-0.99" max="0.99" step="0.01" value="0.50" oninput="onDistSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">N</span><span class="slider-val" id="val-n">200</span></div>
+      <input type="range" id="sl-n" min="20" max="500" step="10" value="200" oninput="onDistSlider()">
+    </div>
+    <button class="regen-btn" onclick="onRegen()">↺ Regenerate</button>
+    <div class="seed-note" id="seed-note">seed: 1</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a4)">Cut-Off Values</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Test (X)</span><span class="slider-val" id="val-cutx">0.5</span></div>
+      <input type="range" id="sl-cutx" min="-3" max="3" step="0.1" value="0.5" oninput="onCutSlider()">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">Criterion (Y)</span><span class="slider-val" id="val-cuty">0.5</span></div>
+      <input type="range" id="sl-cuty" min="-3" max="3" step="0.1" value="0.5" oninput="onCutSlider()">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Display</div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tog-ellipse" checked onchange="draw()">
+      <label for="tog-ellipse">95% confidence ellipse</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tog-color" checked onchange="draw()">
+      <label for="tog-color">Color points by category</label>
+    </div>
+    <div class="toggle-row">
+      <input type="checkbox" id="tog-shade" checked onchange="draw()">
+      <label for="tog-shade">Shade quadrants</label>
+    </div>
+  </div>
+
+
+</div>
+
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Running Example</div>
+    <div class="story-vars">
+      <span class="sv">X</span><span class="sd">Test score — e.g. depression scale (PHQ-9, z-standardized)</span>
+      <span class="sv">Y</span><span class="sd">Criterion — clinical diagnosis by structured interview (z-standardized)</span>
+      <span class="sv">r</span><span class="sd">Validity = correlation between test and criterion (r=0.50)</span>
+      <span class="sv">Cut-Off X</span><span class="sd">PHQ threshold for a positive screening result</span>
+      <span class="sv">Cut-Off Y</span><span class="sd">Criterion threshold: above this, someone is considered "clinically affected"</span>
+    </div>
+    <div class="story-q">What does a positive PHQ-9 finding actually get you? Validity r describes test quality — but PPV and NPV determine how usable the result is in this specific situation. Base rate, cut-off, and validity together determine the practical utility.</div>
+  </div>
+
+  <div class="main-layout">
+
+    <div>
+      <canvas id="cv-scatter"></canvas>
+    </div>
+
+    <div>
+      <div class="sec-h" style="margin-top:0">Confusion Matrix</div>
+      <table class="vft-table">
+        <thead>
+          <tr><th></th><th>Test +</th><th>Test −</th><th>Σ</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-head">Crit. +</td>
+            <td class="cell-tp"><span class="cell-lbl">TP</span><span class="cell-sub">true positive</span><span id="c-tp" class="cell-num">—</span></td>
+            <td class="cell-fn"><span class="cell-lbl">FN</span><span class="cell-sub">false negative</span><span id="c-fn" class="cell-num">—</span></td>
+            <td class="cell-sum" id="c-pos">—</td>
+          </tr>
+          <tr>
+            <td class="row-head">Crit. −</td>
+            <td class="cell-fp"><span class="cell-lbl">FP</span><span class="cell-sub">false positive</span><span id="c-fp" class="cell-num">—</span></td>
+            <td class="cell-tn"><span class="cell-lbl">TN</span><span class="cell-sub">true negative</span><span id="c-tn" class="cell-num">—</span></td>
+            <td class="cell-sum" id="c-neg">—</td>
+          </tr>
+          <tr>
+            <td class="row-head">Σ</td>
+            <td class="cell-sum" id="c-tpos">—</td>
+            <td class="cell-sum" id="c-tneg">—</td>
+            <td class="cell-sum" id="c-n">—</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sec-h">Metrics</div>
+      <table class="kw-table">
+        <thead>
+          <tr><th>Metric</th><th>Formula</th><th>Calculation</th><th>Value</th></tr>
+        </thead>
+        <tbody id="kw-body"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="learn-section">
+    <div class="sec-h">Concepts</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">Three Kinds of Validity</div>
+        <div class="lcard-body">Validity asks: does the test measure what it's supposed to measure? A distinction is drawn between <strong>construct validity</strong> (does the test capture the theoretical construct?), <strong>criterion validity</strong> (does it predict an external criterion — concurrently or predictively?), and <strong>content validity</strong> (do the items representatively cover the trait?). This tool shows <strong>criterion validity</strong>: the relationship between test score X and a criterion Y.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Validity r &amp; Variance Explained</div>
+        <div class="lcard-body">Validity is operationalized here as the correlation <strong>r</strong> between test and criterion. <code>r²</code> is the proportion of shared variance — at r = 0.50, that's 25%. The 95% confidence ellipse shows how tight the relationship is: the narrower it is, the higher r. Good diagnostic tests typically fall around r = 0.40–0.70; r = 1 (perfect prediction) does not occur in practice.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Test Property vs. Situational Utility</div>
+        <div class="lcard-body"><strong>Sensitivity</strong> (TP/(TP+FN)) and <strong>specificity</strong> (TN/(TN+FP)) are properties of the test — prevalence-independent and transferable to other populations. <strong>PPV</strong> and <strong>NPV</strong>, by contrast, answer the clinical question <em>for this specific person</em>: how likely is the condition really present given a positive (PPV) or negative (NPV) finding? They depend on the base rate.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">The Base Rate Decides</div>
+        <div class="lcard-body"><code>PPV = TP/(TP+FP)</code> drops drastically when the condition is <strong>rare</strong>: at low prevalence, the denominator is full of unaffected people, a small percentage of whom are false-positive — and the few true cases get lost among them. A highly valid test can still have a disappointingly low PPV for a rare condition. Move the criterion cut-off to change the base rate. <a class="xlink" href="Sens_Spez.html" target="_blank" rel="noopener">→ Sensitivity &amp; Specificity</a></div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Likelihood Ratios</div>
+        <div class="lcard-body"><code>LR+ = Sens/(1−Spec)</code> and <code>LR− = (1−Sens)/Spec</code> are prevalence-independent measures of result strength. Via the Bayes formula, they translate pre-test into post-test probability: <code>post-odds = pre-odds · LR</code>. Rule of thumb: LR+ &gt; 10 shifts the diagnosis strongly toward "affected", LR− &lt; 0.1 largely rules it out.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Utility &amp; Taylor-Russell</div>
+        <div class="lcard-body">Validity is necessary but not sufficient — only together with base rate and cut-off does <strong>utility</strong> (a secondary quality criterion) emerge. In selection contexts (personnel, therapy slots), PPV is called the <strong>success rate</strong>: the proportion of those selected who meet the criterion — mathematically identical (TP/(TP+FP)), just a different field of application. The Taylor-Russell tables formalize this from validity, selection rate, and base rate. <a class="xlink" href="Taylor_Russell.html" target="_blank" rel="noopener">→ Taylor-Russell Tables</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Hilfe-Overlay -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Diagnostic Validity — Help</div>
+    <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+
+    <div class="help-sh">Example</div>
+    <p class="help-p">A depression questionnaire (PHQ-9, z-standardized: X) is compared with the result of a clinical interview (criterion Y). The correlation r=0.50 describes the validity. Both cut-off values split the scatterplot into four quadrants — TP, TN, FP, FN. The central utility metric is <strong>PPV = TP/(TP+FP)</strong>: of everyone who tests positive — how many are actually affected?</p>
+
+    <div class="help-sh">Validity r &amp; Scatterplot</div>
+    <p class="help-p">The correlation r determines how tight the relationship is between test (X) and criterion (Y). At r=0: the point cloud is circular — no diagnostic utility. At r=1: all points on a line — perfect prediction.</p>
+    <p class="help-p">In the example: r=0.50 means the PHQ-9 explains about 25% of the variance in the criterion (r²=0.25). Good diagnostic tests typically have r=0.40–0.70.</p>
+
+    <div class="help-sh">Cut-Off Lines &amp; Confusion Matrix</div>
+    <p class="help-p">The vertical line (X = test cut-off) and horizontal line (Y = criterion cut-off) define four groups:</p>
+    <span class="help-formula2">TP: affected (Y &gt; Cut_Y) + tested positive (X &gt; Cut_X)</span>
+    <span class="help-formula2">FP: unaffected (Y ≤ Cut_Y) + tested positive → false alarm</span>
+    <span class="help-formula2">FN: affected + tested negative → missed diagnosis</span>
+    <span class="help-formula2">TN: unaffected + tested negative → correctly excluded</span>
+    <p class="help-p">In the example: moving the test cut-off to the left raises sensitivity (more TP), but also FP. The cut-off lines can be dragged directly on the canvas.</p>
+
+    <div class="help-sh">Diagnostic Metrics — PPV &amp; NPV in Focus</div>
+    <p class="help-p">Sensitivity and specificity describe how well the test <em>itself</em> works — prevalence-independent, a property of the test. In everyday clinical and diagnostic practice, though, a different question is central: <strong>what does this specific result tell me about this specific person?</strong> PPV and NPV answer that question.</p>
+    <p class="help-p"><strong>PPV</strong> (positive predictive value) = TP/(TP+FP): if someone tests positive — how likely is it that a condition is actually present? <strong>NPV</strong> (negative predictive value) = TN/(TN+FN): if someone tests negative — how certain can one be that no condition is present?</p>
+    <span class="help-formula2">PPV = (Sens · prevalence) / (Sens · prev + (1−Spec) · (1−prev))</span>
+    <p class="help-p">Both values depend strongly on the <strong>base rate (prevalence)</strong>. For rare conditions, PPV stays low even with a good test — the denominator is full of unaffected people, a small proportion of whom are still false-positive. In the example: if depression prevalence is 10% instead of 50%, PPV drops drastically at the same sens and spec.</p>
+    <p class="help-p"><strong>Sensitivity</strong> = TP/(TP+FN) and <strong>specificity</strong> = TN/(TN+FP) are the foundation: prevalence-independent and transferable across populations. Via LR, they determine how strongly a test result changes the pre-test probability.</p>
+    <p class="help-p"><strong>LR+</strong> = Sens/(1−Spec), <strong>LR−</strong> = (1−Sens)/Spec: prevalence-independent measures of result strength; directly usable to convert pre- into post-test probability (Bayes formula).</p>
+
+    <div class="help-sh">Utility as a Secondary Quality Criterion</div>
+    <p class="help-p">In psychological assessment, alongside the primary quality criteria (objectivity, reliability, validity), <strong>secondary quality criteria</strong> are also required — among them <strong>utility</strong>. It asks: is it worth using this test in this situation — does it improve decisions relative to the status quo?</p>
+    <p class="help-p">PPV and NPV are the direct operationalizations of utility in the diagnostic context: a test is useful if a positive finding substantially raises the probability of a condition (high PPV) and a negative finding substantially lowers it (high NPV). Validity r is a necessary but not sufficient condition — base rate and cut-off determine how much utility r delivers under real conditions.</p>
+
+    <div class="help-sh">Relationship r → Metrics</div>
+    <p class="help-p">As r rises, the point clouds move apart — sensitivity and specificity improve simultaneously, and so do PPV and NPV (at the same base rate). As r falls, sensitivity and specificity become a zero-sum game: any improvement in one comes at the cost of the other — and PPV/NPV stagnate or worsen depending on the cut-off choice.</p>
+
+    <div class="help-sh">Taylor-Russell Tables — a Preview</div>
+    <p class="help-p">For selection contexts (personnel, therapy slots, support programs), the <strong>Taylor-Russell tables</strong> (1939) formalize the relationship between utility, validity, and boundary conditions. They connect three quantities:</p>
+    <ul style="margin:.35rem 0 .6rem 1.1rem;font-size:.8rem;font-family:'DM Mono',monospace;color:var(--ink2);line-height:1.8">
+      <li><strong>Validity r</strong> — how strongly does the test predict the criterion?</li>
+      <li><strong>Base rate BR</strong> — how many would succeed/qualify even without the test?</li>
+      <li><strong>Selection ratio SR</strong> — what proportion of applicants is selected?</li>
+    </ul>
+    <p class="help-p">From these three quantities the <strong>success rate</strong> emerges: the proportion of those selected who are actually qualified. This shows when a test with moderate validity (r=0.30) has substantial utility under favorable conditions (low SR, medium BR) — and when a test with high validity delivers little (e.g. when almost everyone would be selected anyway). The interactive <a href="Taylor_Russell.html" target="_blank" rel="noopener" style="color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)">Taylor-Russell tool</a> displays this success rate as a table and a nomogram with a target crosshair.</p>
+    <p class="help-p"><strong>Success rate = PPV</strong> — mathematically the same thing, different language: in clinical diagnostics, the proportion of true positives among everyone who tests positive is called PPV; in aptitude assessment and personnel psychology, the proportion of qualified people among everyone selected is called the success rate. The formula is identical: TP/(TP+FP). The term changes with the field of application — the concept stays the same.</p>
+  </div>
+</div>
+
+<script>
+// ── PRNG (mulberry32) ────────────────────────────────────────────
+function mulberry32(a){
+  return function(){
+    a|=0; a=a+0x6D2B79F5|0;
+    var t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return((t^t>>>14)>>>0)/4294967296;
+  };
+}
+function makeRandn(seed){
+  const rng=mulberry32(seed);
+  return function(){
+    const u1=Math.max(rng(),1e-10), u2=rng();
+    return Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+  };
+}
+
+// ── STATE ───────────────────────────────────────────────────────
+const ST={r:0.50, N:200, cutX:0.5, cutY:0.5, seed:1};
+let dataX=[], dataY=[];
+
+// ── DATA GENERATION ─────────────────────────────────────────────
+function generateData(){
+  const randn=makeRandn(ST.seed);
+  const sq=Math.sqrt(Math.max(0,1-ST.r*ST.r));
+  dataX=[]; dataY=[];
+  for(let i=0;i<ST.N;i++){
+    const z1=randn(), z2=randn();
+    dataX.push(z1);
+    dataY.push(ST.r*z1+sq*z2);
+  }
+}
+
+// ── STATS ───────────────────────────────────────────────────────
+function computeStats(){
+  let tp=0,fp=0,tn=0,fn=0;
+  for(let i=0;i<ST.N;i++){
+    const xp=dataX[i]>ST.cutX, yp=dataY[i]>ST.cutY;
+    if(xp&&yp) tp++;
+    else if(xp&&!yp) fp++;
+    else if(!xp&&!yp) tn++;
+    else fn++;
+  }
+  const sens=tp/(tp+fn)||0;
+  const spec=tn/(tn+fp)||0;
+  const ppv =tp/(tp+fp)||0;
+  const npv =tn/(tn+fn)||0;
+  const lrp =spec<1?sens/(1-spec):Infinity;
+  const lrm =spec>0?(1-sens)/spec:Infinity;
+  const acc =(tp+tn)/ST.N;
+  const j   =sens+spec-1;
+  const dor =(fp>0&&fn>0)?(tp*tn)/(fp*fn):Infinity;
+  const rr  =ppv/((1-npv)||0.0001);
+  return{tp,fp,tn,fn,sens,spec,ppv,npv,lrp,lrm,acc,j,dor,rr};
+}
+
+// ── UPDATE DOM ──────────────────────────────────────────────────
+function updateStats(){
+  const r=computeStats();
+  document.getElementById('c-tp').textContent=r.tp;
+  document.getElementById('c-fn').textContent=r.fn;
+  document.getElementById('c-fp').textContent=r.fp;
+  document.getElementById('c-tn').textContent=r.tn;
+  document.getElementById('c-pos').textContent=r.tp+r.fn;
+  document.getElementById('c-neg').textContent=r.fp+r.tn;
+  document.getElementById('c-tpos').textContent=r.tp+r.fp;
+  document.getElementById('c-tneg').textContent=r.fn+r.tn;
+  document.getElementById('c-n').textContent=ST.N;
+
+  const fmt=v=>isFinite(v)?v.toFixed(2):'∞';
+  const fmtp=v=>(v*100).toFixed(1)+'%';
+  const rows=[
+    {n:'Sensitivity',  f:'TP/(TP+FN)',       c:`${r.tp}/(${r.tp+r.fn})`,                           v:fmtp(r.sens), hi:true},
+    {n:'Specificity',  f:'TN/(TN+FP)',       c:`${r.tn}/(${r.tn+r.fp})`,                           v:fmtp(r.spec), hi:true},
+    {n:'PPV',          f:'TP/(TP+FP)',        c:`${r.tp}/(${r.tp+r.fp})`,                           v:fmtp(r.ppv)},
+    {n:'NPV',          f:'TN/(TN+FN)',        c:`${r.tn}/(${r.tn+r.fn})`,                           v:fmtp(r.npv)},
+    {n:'LR+',          f:'Sens/(1−Spec)',     c:`${r.sens.toFixed(3)}/${(1-r.spec).toFixed(3)}`,    v:fmt(r.lrp)},
+    {n:'LR−',          f:'(1−Sens)/Spec',     c:`${(1-r.sens).toFixed(3)}/${r.spec.toFixed(3)}`,    v:fmt(r.lrm)},
+    {n:'Accuracy',     f:'(TP+TN)/N',         c:`${r.tp+r.tn}/${ST.N}`,                             v:fmtp(r.acc)},
+    {n:'Youden J',     f:'Sens+Spec−1',       c:`${r.sens.toFixed(3)}+${r.spec.toFixed(3)}−1`,      v:fmt(r.j)},
+    {n:'Diagn. OR',    f:'(TP·TN)/(FP·FN)',  c:`(${r.tp}·${r.tn})/(${r.fp}·${r.fn})`,             v:fmt(r.dor)},
+    {n:'Rel. Risk',    f:'PPV/(1−NPV)',       c:`${r.ppv.toFixed(3)}/${(1-r.npv).toFixed(3)}`,      v:fmt(r.rr)},
+  ];
+  const tb=document.getElementById('kw-body');
+  tb.innerHTML='';
+  rows.forEach(row=>{
+    const tr=document.createElement('tr');
+    if(row.hi) tr.className='kw-hi';
+    tr.innerHTML=`<td>${row.n}</td><td class="kw-formula">${row.f}</td><td class="kw-calc">${row.c}</td><td>${row.v}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+// ── CANVAS ──────────────────────────────────────────────────────
+const cv=document.getElementById('cv-scatter');
+const ctx=cv.getContext('2d');
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+
+const AXMIN=-3.6, AXMAX=3.6;
+
+function draw(){
+  const W=cv.width, H=cv.height;
+  const ink=css('--ink'), ink2=css('--ink2'), ink3=css('--ink3');
+  const paper=css('--paper'), grid=css('--grid');
+  const a1=css('--a1'), a2=css('--a2'), a3=css('--a3'), a4=css('--a4');
+  const a5=css('--a5'), a6=css('--a6');
+
+  const pad={l:44,r:16,top:16,bot:38};
+  const plotW=W-pad.l-pad.r, plotH=H-pad.top-pad.bot;
+  const plotBot=pad.top+plotH;
+
+  const xS=v=>(v-AXMIN)/(AXMAX-AXMIN)*plotW+pad.l;
+  const yS=v=>plotBot-(v-AXMIN)/(AXMAX-AXMIN)*plotH;
+
+  // Background
+  ctx.fillStyle=paper; ctx.fillRect(0,0,W,H);
+
+  // Quadrant shading
+  if(document.getElementById('tog-shade').checked){
+    const cx=xS(ST.cutX), cy=yS(ST.cutY);
+    // TP: top-right (green)
+    ctx.fillStyle=a3+'18';
+    ctx.fillRect(cx,pad.top,pad.l+plotW-cx,cy-pad.top);
+    // FN: top-left (red)
+    ctx.fillStyle=a1+'12';
+    ctx.fillRect(pad.l,pad.top,cx-pad.l,cy-pad.top);
+    // FP: bottom-right (orange)
+    ctx.fillStyle=a5+'14';
+    ctx.fillRect(cx,cy,pad.l+plotW-cx,plotBot-cy);
+    // TN: bottom-left (blue)
+    ctx.fillStyle=a2+'12';
+    ctx.fillRect(pad.l,cy,cx-pad.l,plotBot-cy);
+  }
+
+  // Grid lines
+  ctx.strokeStyle=grid; ctx.lineWidth=1; ctx.setLineDash([2,3]);
+  [-2,-1,0,1,2].forEach(v=>{
+    ctx.beginPath(); ctx.moveTo(xS(v),pad.top); ctx.lineTo(xS(v),plotBot); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l,yS(v)); ctx.lineTo(pad.l+plotW,yS(v)); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  // Axes border
+  ctx.strokeStyle=ink3; ctx.lineWidth=1;
+  ctx.strokeRect(pad.l,pad.top,plotW,plotH);
+
+  // Points
+  const colorPts=document.getElementById('tog-color').checked;
+  const ptR=Math.max(2, Math.round(W/160));
+  for(let i=0;i<ST.N;i++){
+    const xp=dataX[i]>ST.cutX, yp=dataY[i]>ST.cutY;
+    let col;
+    if(colorPts){
+      if(xp&&yp)       col=a3;
+      else if(xp&&!yp) col=a5;
+      else if(!xp&&!yp)col=a2;
+      else              col=a1;
+    } else {
+      col=ink2;
+    }
+    ctx.fillStyle=col+'cc';
+    ctx.beginPath();
+    ctx.arc(xS(dataX[i]),yS(dataY[i]),ptR,0,2*Math.PI);
+    ctx.fill();
+  }
+
+  // 95% Confidence Ellipse (theoretical)
+  if(document.getElementById('tog-ellipse').checked && Math.abs(ST.r)<0.9999){
+    const chi=Math.sqrt(5.991);
+    const sqr=Math.sqrt(Math.max(0,1-ST.r*ST.r));
+    ctx.beginPath();
+    for(let i=0;i<=360;i++){
+      const t=(i/360)*2*Math.PI;
+      const ex=chi*Math.cos(t);
+      const ey=chi*(ST.r*Math.cos(t)+sqr*Math.sin(t));
+      i===0?ctx.moveTo(xS(ex),yS(ey)):ctx.lineTo(xS(ex),yS(ey));
+    }
+    ctx.closePath();
+    ctx.strokeStyle=ink; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // label
+    ctx.fillStyle=ink3; ctx.font=`11px 'DM Mono',monospace`; ctx.textAlign='left';
+    ctx.fillText('95% ellipse', xS(chi*0.7)+4, yS(chi*(ST.r*0.7+sqr*0.72))-5);
+  }
+
+  // Cut-Off lines
+  // X (test) — vertical, a4 purple
+  const pxC=xS(ST.cutX);
+  ctx.save();
+  ctx.strokeStyle=a4; ctx.lineWidth=2; ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(pxC,pad.top); ctx.lineTo(pxC,plotBot); ctx.stroke();
+  ctx.fillStyle=a4; ctx.font=`bold 12px 'DM Mono',monospace`; ctx.textAlign='center';
+  ctx.fillText(`x = ${ST.cutX.toFixed(1)}`, pxC, plotBot+26);
+  ctx.restore();
+
+  // Y (criterion) — horizontal, a5 orange
+  const pyC=yS(ST.cutY);
+  ctx.save();
+  ctx.strokeStyle=a5; ctx.lineWidth=2; ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(pad.l,pyC); ctx.lineTo(pad.l+plotW,pyC); ctx.stroke();
+  ctx.save();
+  ctx.translate(pad.l-10, pyC);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillStyle=a5; ctx.font=`bold 12px 'DM Mono',monospace`; ctx.textAlign='center';
+  ctx.fillText(`y = ${ST.cutY.toFixed(1)}`, 0, 0);
+  ctx.restore();
+  ctx.restore();
+
+  // Quadrant count labels
+  const r=computeStats();
+  const cx=xS(ST.cutX), cy=yS(ST.cutY);
+  function qLabel(label, count, color, px, py, anchor){
+    ctx.fillStyle=color;
+    ctx.font=`bold 13px 'DM Mono',monospace`;
+    ctx.textAlign=anchor;
+    ctx.fillText(`${label}: ${count}`, px, py);
+  }
+  const mg=10;
+  qLabel('TP', r.tp, a3, cx+mg, pad.top+20, 'left');
+  qLabel('FN', r.fn, a1, cx-mg, pad.top+20, 'right');
+  qLabel('FP', r.fp, a5, cx+mg, plotBot-mg, 'left');
+  qLabel('TN', r.tn, a2, cx-mg, plotBot-mg, 'right');
+
+  // Axis ticks + labels
+  ctx.fillStyle=ink2; ctx.font=`12px 'DM Mono',monospace`; ctx.textAlign='center';
+  [-3,-2,-1,0,1,2,3].forEach(v=>{
+    ctx.beginPath(); ctx.strokeStyle=ink3; ctx.lineWidth=1;
+    ctx.moveTo(xS(v),plotBot); ctx.lineTo(xS(v),plotBot+4); ctx.stroke();
+    ctx.fillText(v, xS(v), plotBot+16);
+    ctx.beginPath(); ctx.moveTo(pad.l,yS(v)); ctx.lineTo(pad.l-4,yS(v)); ctx.stroke();
+    ctx.textAlign='right'; ctx.fillText(v, pad.l-6, yS(v)+4); ctx.textAlign='center';
+  });
+
+  // Axis titles
+  ctx.fillStyle=ink2; ctx.font=`13px 'DM Mono',monospace`; ctx.textAlign='center';
+  ctx.fillText('Test score (z)', pad.l+plotW/2, H-2);
+  ctx.save();
+  ctx.translate(13, pad.top+plotH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Criterion (z)', 0, 0);
+  ctx.restore();
+
+  // r label top-right inside plot
+  ctx.fillStyle=ink3; ctx.font=`12px 'DM Mono',monospace`; ctx.textAlign='right';
+  ctx.fillText(`r = ${ST.r.toFixed(2)}  N = ${ST.N}`, pad.l+plotW-6, pad.top+14);
+}
+
+// ── RESIZE ──────────────────────────────────────────────────────
+function resize(){
+  const mainEl=document.getElementById('main');
+  const availW=mainEl.clientWidth-48;
+  const sq=Math.min(Math.max(458,Math.round(availW*0.77)),829);
+  cv.width=sq; cv.height=sq;
+}
+
+// ── DRAG CUT-OFFS ────────────────────────────────────────────────
+let dragState=null; // 'x' | 'y' | null
+
+function pxToX(clientX){
+  const rect=cv.getBoundingClientRect();
+  const px=clientX-rect.left-44;
+  return AXMIN+px/(cv.width-60)*(AXMAX-AXMIN);
+}
+function pyToY(clientY){
+  const rect=cv.getBoundingClientRect();
+  const py=clientY-rect.top-16;
+  const plotH=cv.height-54;
+  return AXMAX-py/plotH*(AXMAX-AXMIN);
+}
+function nearLine(clientX,clientY){
+  const valX=pxToX(clientX), valY=pyToY(clientY);
+  const range=AXMAX-AXMIN;
+  const dX=Math.abs(valX-ST.cutX), dY=Math.abs(valY-ST.cutY);
+  if(dX<range*0.025 && dX<=dY) return 'x';
+  if(dY<range*0.025) return 'y';
+  return null;
+}
+
+cv.addEventListener('mousedown',e=>{dragState=nearLine(e.clientX,e.clientY);});
+cv.addEventListener('mousemove',e=>{
+  if(!dragState){
+    const near=nearLine(e.clientX,e.clientY);
+    cv.style.cursor=near==='x'?'ew-resize':near==='y'?'ns-resize':'crosshair';
+    return;
+  }
+  if(dragState==='x'){
+    ST.cutX=Math.max(-3,Math.min(3,Math.round(pxToX(e.clientX)*10)/10));
+    document.getElementById('sl-cutx').value=ST.cutX;
+    document.getElementById('val-cutx').textContent=ST.cutX.toFixed(1);
+  } else {
+    ST.cutY=Math.max(-3,Math.min(3,Math.round(pyToY(e.clientY)*10)/10));
+    document.getElementById('sl-cuty').value=ST.cutY;
+    document.getElementById('val-cuty').textContent=ST.cutY.toFixed(1);
+  }
+  updateStats(); draw();
+});
+cv.addEventListener('mouseup',()=>{dragState=null;});
+cv.addEventListener('mouseleave',()=>{dragState=null;});
+
+// ── EVENT HANDLERS ───────────────────────────────────────────────
+function onDistSlider(){
+  ST.r  =+document.getElementById('sl-r').value;
+  ST.N  =+document.getElementById('sl-n').value;
+  document.getElementById('val-r').textContent=ST.r.toFixed(2);
+  document.getElementById('val-n').textContent=ST.N;
+  generateData(); updateStats(); draw();
+}
+function onCutSlider(){
+  ST.cutX=+document.getElementById('sl-cutx').value;
+  ST.cutY=+document.getElementById('sl-cuty').value;
+  document.getElementById('val-cutx').textContent=ST.cutX.toFixed(1);
+  document.getElementById('val-cuty').textContent=ST.cutY.toFixed(1);
+  updateStats(); draw();
+}
+function onRegen(){
+  ST.seed++;
+  document.getElementById('seed-note').textContent=`seed: ${ST.seed}`;
+  generateData(); updateStats(); draw();
+}
+
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  draw();
+}
+function toggleHelp(){
+  document.getElementById('help-overlay').classList.toggle('open');
+}
+
+// ── INIT ────────────────────────────────────────────────────────
+window.addEventListener('resize',()=>{resize();draw();});
+resize();
+generateData();
+updateStats();
+draw();
+</script>
+</body>
+</html>

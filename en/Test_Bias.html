@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test Bias &amp; Fairness — Diagnostics</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a4);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+.preset-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.3rem .65rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;width:100%;text-align:left;
+  display:block;margin-bottom:.3rem}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+.preset-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.seed-btn{font-family:'DM Mono',monospace;font-size:.76rem;padding:.28rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .12s;width:100%;text-align:left;margin-top:.3rem}
+.seed-btn:hover{border-color:var(--accent);color:var(--accent)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+#cv-scatter{width:100%;display:block}
+.mod-header{font-family:'DM Mono',monospace;font-size:.82rem;padding:.65rem .85rem;
+  background:var(--panel);border:1px solid var(--grid);cursor:pointer;
+  display:flex;align-items:center;gap:.65rem;margin-bottom:0;user-select:none;
+  letter-spacing:.03em;transition:background .12s;margin-top:.7rem}
+.mod-header:hover{background:var(--grid)}
+.mod-header.open{border-bottom:none}
+.mod-icon{font-size:.68rem;color:var(--accent);width:12px;display:inline-block;flex-shrink:0}
+.mod-body{border:1px solid var(--grid);border-top:none;padding:.9rem 1rem 1rem;
+  background:var(--bg);display:none}
+.mod-body.open{display:block}
+.erklaer{background:var(--panel);border-left:3px solid var(--accent);
+  padding:.7rem .9rem;margin-bottom:.85rem;font-family:'DM Mono',monospace;
+  font-size:.78rem;color:var(--ink2);line-height:1.85}
+.erklaer strong{color:var(--ink)}
+.erklaer-h{font-family:'DM Mono',monospace;font-size:.71rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.formula-line{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+.reg-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.82rem;margin-bottom:.8rem}
+.reg-table th{font-size:.71rem;letter-spacing:.06em;color:var(--ink3);padding:.3rem .5rem;
+  border-bottom:2px solid var(--grid);text-align:left}
+.reg-table td{padding:.34rem .5rem;border-bottom:1px solid var(--grid);vertical-align:middle}
+.reg-table td.num{text-align:right;font-weight:600}
+.ftest-row{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.75rem}
+.ftest-box{background:var(--panel);border:1px solid var(--grid);padding:.6rem .75rem}
+.ftest-label{font-family:'DM Mono',monospace;font-size:.71rem;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--ink3);margin-bottom:.3rem;line-height:1.5}
+.ftest-val{font-family:'DM Mono',monospace;font-size:.95rem;font-weight:600;color:var(--ink);margin-bottom:.15rem}
+.ftest-p{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2)}
+.badge{display:inline-block;font-family:'DM Mono',monospace;font-size:.75rem;
+  padding:.22rem .65rem;letter-spacing:.06em;margin:.3rem 0}
+.badge-ok{background:rgba(90,138,42,.12);border:1px solid var(--a3);color:var(--a3)}
+.badge-warn{background:rgba(201,74,42,.12);border:1px solid var(--a1);color:var(--a1)}
+[data-theme="dark"] .badge-ok{background:rgba(128,203,82,.10)}
+[data-theme="dark"] .badge-warn{background:rgba(232,97,74,.10)}
+.interp-box{font-family:'DM Mono',monospace;font-size:.79rem;line-height:1.8;
+  background:var(--panel);border:1px solid var(--grid);padding:.55rem .8rem;margin-top:.5rem}
+.kw-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.8rem}
+.air-bar-wrap{background:var(--grid);height:7px;border-radius:4px;margin:.35rem 0 .6rem;position:relative;overflow:visible}
+.air-bar-fill{height:100%;border-radius:4px;transition:width .2s}
+.air-thresh{position:absolute;top:-4px;width:2px;height:15px;background:var(--a1);left:80%}
+/* Sticky plot */
+.plot-sticky{position:sticky;top:0;z-index:20;background:var(--bg);padding-bottom:.5rem;margin-bottom:.2rem;border-bottom:1px solid var(--grid)}
+/* Table alignment fix */
+.reg-table th:not(:first-child){text-align:right}
+.reg-table colgroup col:first-child{width:38%}
+.reg-table colgroup col{width:15%}
+/* Help button */
+.help-btn{font-family:'DM Mono',monospace;font-size:.7rem;padding:.18rem .5rem;
+  border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);
+  transition:all .12s;letter-spacing:.04em;flex-shrink:0}
+.help-btn:hover{background:var(--a1);color:var(--bg)}
+/* Help modal */
+#help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;display:none}
+#help-overlay.open{display:block}
+#help-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;
+  background:var(--paper);border:1px solid var(--border);padding:1.3rem 1.5rem 1.2rem;
+  max-width:580px;width:92%;max-height:82vh;overflow-y:auto;
+  box-shadow:0 10px 40px rgba(0,0,0,.4);display:none}
+#help-modal.open{display:block}
+#help-modal h2{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:.8rem;padding-bottom:.5rem;
+  border-bottom:1px solid var(--grid)}
+#help-modal h3{font-family:'DM Mono',monospace;font-size:.74rem;letter-spacing:.06em;
+  color:var(--accent);margin:.9rem 0 .35rem;text-transform:uppercase}
+#help-modal p,#help-modal li{font-family:'DM Mono',monospace;font-size:.79rem;
+  color:var(--ink2);line-height:1.85;margin-bottom:.4rem}
+#help-modal ul{padding-left:1rem;margin:.3rem 0 .5rem}
+#help-modal .ref{font-size:.72rem;color:var(--ink3);margin-top:.9rem;border-top:1px solid var(--grid);padding-top:.6rem}
+#help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2)}
+#help-close:hover{background:var(--ink);color:var(--bg)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a4);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a4);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.num-sym{font-size:1.45em;line-height:1;vertical-align:baseline}
+.gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
+.gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
+.gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+/* Learn cards */
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.xlink{color:var(--a4);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a4)}
+@media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Test <em>Bias</em> &amp; Fairness — Cleary Model</h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="openHelp(0)">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- Help modal -->
+<div id="help-overlay" onclick="closeHelp()"></div>
+<div id="help-modal">
+  <button id="help-close" onclick="closeHelp()">✕ Close</button>
+  <h2 id="help-title"></h2>
+  <div id="help-body"></div>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Scenarios</div>
+    <button class="preset-btn" id="pre-none" onclick="setPreset('none')">⊡ No Bias</button>
+    <button class="preset-btn" id="pre-fig1" onclick="setPreset('fig1')"><span class="num-sym">①</span> Test Bias</button>
+    <button class="preset-btn" id="pre-fig2" onclick="setPreset('fig2')"><span class="num-sym">②</span> Criterion Bias</button>
+    <button class="preset-btn" id="pre-fig3" onclick="setPreset('fig3')"><span class="num-sym">③</span> Adverse Impact</button>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a1)">Group A (Reference)</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">μ_X_A</span><span class="slider-val" id="val-muXA">0.00</span></div>
+      <input type="range" id="sl-muXA" min="-3" max="3" step="0.1" value="0" oninput="onSl('muXA',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">α_A</span><span class="slider-val" id="val-alphaA">0.00</span></div>
+      <input type="range" id="sl-alphaA" min="-3" max="3" step="0.05" value="0" oninput="onSl('alphaA',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">β_A</span><span class="slider-val" id="val-betaA">0.50</span></div>
+      <input type="range" id="sl-betaA" min="-2" max="2" step="0.05" value="0.5" oninput="onSl('betaA',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n_A</span><span class="slider-val" id="val-nA">100</span></div>
+      <input type="range" id="sl-nA" min="20" max="300" step="10" value="100" oninput="onSl('nA',this)">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a2)">Group B (Focal)</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">μ_X_B</span><span class="slider-val" id="val-muXB">0.00</span></div>
+      <input type="range" id="sl-muXB" min="-3" max="3" step="0.1" value="0" oninput="onSl('muXB',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">α_B</span><span class="slider-val" id="val-alphaB">0.00</span></div>
+      <input type="range" id="sl-alphaB" min="-3" max="3" step="0.05" value="0" oninput="onSl('alphaB',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">β_B</span><span class="slider-val" id="val-betaB">0.50</span></div>
+      <input type="range" id="sl-betaB" min="-2" max="2" step="0.05" value="0.5" oninput="onSl('betaB',this)">
+    </div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">n_B</span><span class="slider-val" id="val-nB">100</span></div>
+      <input type="range" id="sl-nB" min="20" max="300" step="10" value="100" oninput="onSl('nB',this)">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Simulation</div>
+    <div class="slider-row">
+      <div class="slider-lbl"><span class="slider-name">σ (residual)</span><span class="slider-val" id="val-sigma">0.87</span></div>
+      <input type="range" id="sl-sigma" min="0.1" max="1.5" step="0.05" value="0.87" oninput="onSl('sigma',this)">
+    </div>
+    <button class="seed-btn" onclick="newSeed()">⟳ New Sample</button>
+  </div>
+
+</div><!-- /sidebar -->
+
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Running Example</div>
+    <div class="story-vars">
+      <span class="sv">X</span><span class="sd">Predictor: selection-test score (cognitive aptitude measure, z-standardized)</span>
+      <span class="sv">Y</span><span class="sd">Criterion: job performance (supervisor rating, z-standardized)</span>
+      <span class="sv">Group A</span><span class="sd">Reference group (majority group, e.g. group without an immigrant background)</span>
+      <span class="sv">Group B</span><span class="sd">Focal group (minority group, e.g. group with an immigrant background)</span>
+    </div>
+    <div class="story-q">Is the selection test equally valid for both groups — or does it systematically produce wrong performance predictions for one group? And even if it's fair: can different selection rates still result?</div>
+  </div>
+
+  <div class="plot-sticky">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.45rem">
+      <div class="sec-h" style="margin:0;border:none;padding:0"><span class="num-sym">①</span> Scatterplot</div>
+      <div style="display:flex;gap:.45rem;align-items:center">
+        <button class="tbtn" id="btn-ellipse" onclick="toggleEllipses()" title="Show/hide 95% confidence ellipses">⊡ Ellipses</button>
+        <button class="tbtn" id="btn-proj" onclick="toggleProjections()" title="Projection lines of the group means onto the X and Y axes">⊡ Projections</button>
+        <button class="tbtn" id="btn-ylock" onclick="toggleYLock()" title="Fix the Y-axis across scenarios">⊡ Fix Y-axis</button>
+      </div>
+    </div>
+    <canvas id="cv-scatter" height="408"></canvas>
+  </div>
+
+  <!-- MODULE 1 -->
+  <div class="mod-header" id="hd1" onclick="toggleMod(1)" style="justify-content:space-between">
+    <span style="display:flex;align-items:center;gap:.65rem">
+      <span class="mod-icon" id="ic1">▶</span>
+      Module 1 — Cleary Test: Differential Prediction
+    </span>
+    <button class="help-btn" onclick="event.stopPropagation();openHelp(1)">? Help</button>
+  </div>
+  <div class="mod-body" id="bd1">
+    <div class="erklaer">
+      <div class="erklaer-h">Cleary (1968) — Definition of Test Bias</div>
+      A test is considered <strong>biased</strong> if the regression equation for the overall sample
+      produces systematically wrong predictions for one group. Cleary tests this with a
+      hierarchical regression model in three steps:<br><br>
+      <span class="formula-line">M1: Ŷ = b₀ + b₁·X &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(shared regression line)</span>
+      <span class="formula-line">M2: Ŷ = b₀ + b₁·X + b₂·G &nbsp;&nbsp;&nbsp;&nbsp;(same slope, different intercepts)</span>
+      <span class="formula-line">M3: Ŷ = b₀ + b₁·X + b₂·G + b₃·(X×G) &nbsp;(different slopes)</span>
+      M2 vs. M1 tests <strong>intercept differences</strong> (intercept bias).<br>
+      M3 vs. M2 tests <strong>slope differences</strong> (slope bias).
+    </div>
+    <div id="mod1-content"></div>
+  </div>
+
+  <!-- MODULE 2 -->
+  <div class="mod-header" id="hd2" onclick="toggleMod(2)" style="justify-content:space-between">
+    <span style="display:flex;align-items:center;gap:.65rem">
+      <span class="mod-icon" id="ic2">▶</span>
+      Module 2 — Meade &amp; Fetzer (2009): What's Behind It?
+    </span>
+    <button class="help-btn" onclick="event.stopPropagation();openHelp(2)">? Help</button>
+  </div>
+  <div class="mod-body" id="bd2">
+    <div class="erklaer">
+      <div class="erklaer-h">Differential Prediction ≠ Test Bias</div>
+      A significant intercept difference (M2 vs. M1) can have four different causes.
+      Only one of them is genuine test bias in Cleary's sense.<br><br>
+      <strong>Source 1 — Test bias:</strong> the test measures the construct differently for the two groups — group B scores lower on X even though their real Y performance is comparable. d_X large, d_Y small. <em>Effect:</em> qualified people from B are systematically screened out; the test underestimates their actual capability.<br>
+      <strong>Source 2 — Criterion bias:</strong> the criterion Y (e.g. supervisor rating) rates one group better or worse, independent of their actual performance. d_X ≈ 0, d_Y large. <em>Effect:</em> the test itself is fair — but the validation target is biased. Selection based on this criterion cements the disadvantage.<br>
+      <strong>Source 3 — Missing variables:</strong> additional predictors (e.g. length of training, socioeconomic status) would explain the intercept difference. <em>Effect:</em> the apparent bias disappears after controlling for them — action: extend the model.<br>
+      <strong>Source 4 — Sampling error:</strong> random deviations, especially with small n. <em>Effect:</em> no systematic bias; replication settles the question.<br><br>
+      <strong>Diagnosis:</strong> the standardized mean differences d_X and d_Y point to the most likely source (cf. Meade &amp; Fetzer, 2009, Fig. 1–3).
+    </div>
+    <div id="mod2-content"></div>
+  </div>
+
+  <!-- MODULE 3 -->
+  <div class="mod-header" id="hd3" onclick="toggleMod(3)" style="justify-content:space-between">
+    <span style="display:flex;align-items:center;gap:.65rem">
+      <span class="mod-icon" id="ic3">▶</span>
+      Module 3 — Adverse Impact &amp; the 4/5 Rule
+    </span>
+    <button class="help-btn" onclick="event.stopPropagation();openHelp(3)">? Help</button>
+  </div>
+  <div class="mod-body" id="bd3">
+    <div class="erklaer">
+      <div class="erklaer-h">Adverse Impact</div>
+      <strong>Adverse impact</strong> is present when one group is selected considerably less often
+      than another in a selection decision — even if the test itself is fair.
+      The US Uniform Guidelines (1978) formulate the <strong>4/5 rule</strong>:
+      the selection rate of the disadvantaged group should be at least 80% of the rate
+      of the favored group.<br><br>
+      <span class="formula-line">AIR = selection rate_B / selection rate_A</span>
+      Adverse impact ≠ test bias. A fair test can produce adverse impact
+      when real group differences exist on the predictor.
+    </div>
+    <div class="slider-row" style="margin-bottom:.75rem">
+      <div class="slider-lbl"><span class="slider-name">Cut-Off</span><span class="slider-val" id="val-cutoff">0.0</span></div>
+      <input type="range" id="sl-cutoff" min="-3" max="3" step="0.1" value="0" oninput="onCutoff(this)">
+    </div>
+    <div id="mod3-stats"></div>
+  </div>
+
+  <div class="learn-section">
+    <div class="sec-h">Concepts</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">Test Bias per Cleary (1968)</div>
+        <div class="lcard-body">A test is <strong>biased</strong> if the shared regression of criterion (Y) on predictor (X) yields <em>systematically wrong</em> predictions for one group — <strong>differential prediction</strong>. It's tested whether the intercept and slope of the regression line are equal for the reference (A) and focal (B) groups. If they are, the test is fair in Cleary's sense.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Intercept vs. Slope Bias</div>
+        <div class="lcard-body"><strong>Intercept difference:</strong> one group is consistently over- or under-predicted (parallel but offset lines). <strong>Slope difference:</strong> the test predicts the criterion less well for one group (differing validity). Module 1 tests both hierarchically via F-test (intercept: M2 vs. M1; slope: M3 vs. M2).</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Diagnosing the Cause (Meade &amp; Fetzer)</div>
+        <div class="lcard-body">The standardized mean differences <code>d_X</code> (predictor) and <code>d_Y</code> (criterion) point to the source: <strong>d_X large, d_Y small</strong> → test bias; <strong>both large &amp; proportional</strong> → adverse impact without bias; <strong>only d_Y</strong> → criterion bias; <strong>both small</strong> → no problem. Four patterns, only one is genuine bias per Cleary.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Adverse Impact &amp; the 4/5 Rule</div>
+        <div class="lcard-body"><strong>Adverse impact</strong> concerns the <em>selection outcomes</em>, not test quality: <code>AIR = selection rate_B / selection rate_A</code>. If the AIR falls below <strong>0.80</strong> (four-fifths rule, US EEOC), that counts as a legal indicator of disadvantage. It's about hit rates between groups, not prediction error.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Test Bias ≠ Adverse Impact</div>
+        <div class="lcard-body">The central point: a <strong>fair</strong> test (identical regression for both groups) can <em>still</em> produce adverse impact — namely when the groups have different predictor means. Bias is a <strong>prediction</strong> problem, adverse impact a <strong>distribution/selection</strong> problem. The two must not be confused.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Context &amp; Related Tools</div>
+        <div class="lcard-body">Differential prediction at the <em>test level</em> has a counterpart at the <em>item level</em>: Differential Item Functioning. The underlying validity concept and the selection utility are explored in depth in the validity tools. <a class="xlink" href="DIF.html" target="_blank" rel="noopener">→ Differential Item Functioning</a> · <a class="xlink" href="Diagnostische_Validitaet.html" target="_blank" rel="noopener">→ Diagnostic Validity</a> · <a class="xlink" href="Taylor_Russell.html" target="_blank" rel="noopener">→ Taylor-Russell</a></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+function fixDiacritics(s){
+  return s
+    .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
+    .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
+// ─── State ─────────────────────────────────────────────────────────────────
+const ST = {
+  muXA:0, alphaA:0, betaA:0.5, nA:100,
+  muXB:0, alphaB:0, betaB:0.5, nB:100,
+  sigma:0.87, sigmaX:1,
+  cutoff:0, seed:42,
+  mod1:false, mod2:false, mod3:false,
+  data:null, xRange:null, fixedYRange:null, showEllipses:false, showProjections:false
+};
+
+// ─── PRNG / Data ───────────────────────────────────────────────────────────
+function mulberry32(a){
+  return function(){
+    a|=0; a=a+0x6D2B79F5|0;
+    var t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return((t^t>>>14)>>>0)/4294967296;
+  };
+}
+
+function genData(){
+  const rand=mulberry32(ST.seed);
+  const gauss=()=>{
+    const u1=Math.max(rand(),1e-15), u2=rand();
+    return Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+  };
+  const ptsA=[],ptsB=[];
+  for(let i=0;i<ST.nA;i++){
+    const x=ST.muXA+ST.sigmaX*gauss();
+    ptsA.push({x, y:ST.alphaA+ST.betaA*x+ST.sigma*gauss(), g:0});
+  }
+  for(let i=0;i<ST.nB;i++){
+    const x=ST.muXB+ST.sigmaX*gauss();
+    ptsB.push({x, y:ST.alphaB+ST.betaB*x+ST.sigma*gauss(), g:1});
+  }
+  return{ptsA, ptsB, all:[...ptsA,...ptsB]};
+}
+
+// ─── OLS & MLR ─────────────────────────────────────────────────────────────
+function ols(pts){
+  const n=pts.length;
+  const mx=pts.reduce((s,p)=>s+p.x,0)/n;
+  const my=pts.reduce((s,p)=>s+p.y,0)/n;
+  const sxx=pts.reduce((s,p)=>s+(p.x-mx)**2,0);
+  const sxy=pts.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0);
+  const b=sxx===0?0:sxy/sxx, a=my-b*mx;
+  const yhat=pts.map(p=>a+b*p.x);
+  const sse=pts.reduce((s,p,i)=>s+(p.y-yhat[i])**2,0);
+  const sst=pts.reduce((s,p)=>s+(p.y-my)**2,0);
+  return{a,b,r2:sst===0?0:1-sse/sst,mx,my,sse,n};
+}
+
+function matSolve(A,bv){
+  const n=bv.length;
+  const M=A.map((row,i)=>[...row,bv[i]]);
+  for(let col=0;col<n;col++){
+    let mr=col;
+    for(let r=col+1;r<n;r++) if(Math.abs(M[r][col])>Math.abs(M[mr][col])) mr=r;
+    [M[col],M[mr]]=[M[mr],M[col]];
+    for(let r=col+1;r<n;r++){
+      const f=M[col][col]===0?0:M[r][col]/M[col][col];
+      for(let k=col;k<=n;k++) M[r][k]-=f*M[col][k];
+    }
+  }
+  const x=new Array(n).fill(0);
+  for(let i=n-1;i>=0;i--){
+    x[i]=M[i][n];
+    for(let k=i+1;k<n;k++) x[i]-=M[i][k]*x[k];
+    x[i]/=M[i][i]||1e-30;
+  }
+  return x;
+}
+
+function mlr(pts,getX){
+  const n=pts.length, X=pts.map(getX), p=X[0].length;
+  const XtX=Array.from({length:p},()=>new Array(p).fill(0));
+  const Xty=new Array(p).fill(0);
+  for(let i=0;i<n;i++){
+    for(let j=0;j<p;j++){
+      Xty[j]+=X[i][j]*pts[i].y;
+      for(let k=0;k<p;k++) XtX[j][k]+=X[i][j]*X[i][k];
+    }
+  }
+  const beta=matSolve(XtX,Xty);
+  const yhat=pts.map((_,i)=>X[i].reduce((s,v,j)=>s+v*beta[j],0));
+  const ybar=pts.reduce((s,p)=>s+p.y,0)/n;
+  const sse=pts.reduce((s,p,i)=>s+(p.y-yhat[i])**2,0);
+  const sst=pts.reduce((s,p)=>s+(p.y-ybar)**2,0);
+  return{beta,sse,r2:sst===0?0:1-sse/sst,n};
+}
+
+// ─── p-values ──────────────────────────────────────────────────────────────
+function lgamma(z){
+  const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,
+           771.32342877765313,-176.61502916214059,12.507343278686905,
+           -0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(z<0.5) return Math.log(Math.PI)-Math.log(Math.sin(Math.PI*z))-lgamma(1-z);
+  z--;
+  let x=c[0];
+  for(let i=1;i<9;i++) x+=c[i]/(z+i);
+  const t=z+7.5;
+  return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x);
+}
+
+function betainc(x,a,b){
+  if(x<=0) return 0; if(x>=1) return 1;
+  const lbeta=lgamma(a)+lgamma(b)-lgamma(a+b);
+  const front=Math.exp(Math.log(x)*a+Math.log(1-x)*b-lbeta)/a;
+  let f=1,c=1,d=1-(a+b)*x/(a+1);
+  if(Math.abs(d)<1e-30) d=1e-30;
+  d=1/d; f=d;
+  for(let m=1;m<=200;m++){
+    let aa=m*(b-m)*x/((a+2*m-1)*(a+2*m));
+    d=1+aa*d; if(Math.abs(d)<1e-30) d=1e-30;
+    c=1+aa/c; if(Math.abs(c)<1e-30) c=1e-30;
+    d=1/d; f*=c*d;
+    aa=-(a+m)*(a+b+m)*x/((a+2*m)*(a+2*m+1));
+    d=1+aa*d; if(Math.abs(d)<1e-30) d=1e-30;
+    c=1+aa/c; if(Math.abs(c)<1e-30) c=1e-30;
+    d=1/d; const del=c*d; f*=del;
+    if(Math.abs(del-1)<1e-10) break;
+  }
+  if(x<(a+1)/(a+b+2)) return front*f;
+  return 1-betainc(1-x,b,a);
+}
+
+function fPVal(F,df1,df2){
+  if(!isFinite(F)||F<=0) return 1;
+  return betainc(df2/(df2+df1*F), df2/2, df1/2);
+}
+
+function cohensD(pts1,pts2,key){
+  const m1=pts1.reduce((s,p)=>s+p[key],0)/pts1.length;
+  const m2=pts2.reduce((s,p)=>s+p[key],0)/pts2.length;
+  const v1=pts1.reduce((s,p)=>s+(p[key]-m1)**2,0)/(pts1.length-1);
+  const v2=pts2.reduce((s,p)=>s+(p[key]-m2)**2,0)/(pts2.length-1);
+  const sp=Math.sqrt(((pts1.length-1)*v1+(pts2.length-1)*v2)/(pts1.length+pts2.length-2));
+  return sp===0?0:(m1-m2)/sp;
+}
+
+// ─── Canvas ────────────────────────────────────────────────────────────────
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+
+function drawScatter(){
+  const cv=document.getElementById('cv-scatter');
+  const W=cv.offsetWidth; if(!W) return;
+  cv.width=W;
+  const H=cv.height;
+  const ctx=cv.getContext('2d');
+  const {ptsA,ptsB,all}=ST.data;
+
+  const pad={l:58,r:18,t:22,b:52};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+
+  const allX=all.map(p=>p.x), allY=all.map(p=>p.y);
+  const xPad=(Math.max(...allX)-Math.min(...allX))*.12||0.3;
+  const xL=Math.min(...allX)-xPad, xR=Math.max(...allX)+xPad;
+  let yB,yT;
+  if(ST.fixedYRange){
+    yB=ST.fixedYRange.yB; yT=ST.fixedYRange.yT;
+  } else {
+    const yPad=(Math.max(...allY)-Math.min(...allY))*.12||0.3;
+    yB=Math.min(...allY)-yPad; yT=Math.max(...allY)+yPad;
+  }
+  ST.xRange={xL,xR,yB,yT,pad,cW,cH};
+
+  const sx=x=>pad.l+(x-xL)/(xR-xL)*cW;
+  const sy=y=>pad.t+(1-(y-yB)/(yT-yB))*cH;
+
+  const ink=css('--ink'),ink2=css('--ink2'),ink3=css('--ink3');
+  const grid=css('--grid'),bg=css('--bg');
+  const a1=css('--a1'),a2=css('--a2'),a4=css('--a4');
+
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  // Grid — nice x ticks centered on 0
+  ctx.strokeStyle=grid; ctx.lineWidth=1;
+  const xSpan=xR-xL;
+  const xStep=[0.25,0.5,1,2].find(s=>xSpan/s<=9)||2;
+  const xDec=xStep<1?2:xStep<1.5?1:0;
+  const xFirst=Math.ceil((xL+1e-9)/xStep)*xStep;
+  for(let v=xFirst;v<=xR+1e-9;v+=xStep){
+    const xv=Math.round(v/xStep)*xStep;
+    ctx.beginPath(); ctx.moveTo(sx(xv),pad.t); ctx.lineTo(sx(xv),pad.t+cH); ctx.stroke();
+    ctx.fillStyle=ink3; ctx.font='12px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText(xv.toFixed(xDec),sx(xv),pad.t+cH+16);
+  }
+  for(let i=0;i<=5;i++){
+    const y=yB+(yT-yB)*i/5;
+    ctx.beginPath(); ctx.moveTo(pad.l,sy(y)); ctx.lineTo(pad.l+cW,sy(y)); ctx.stroke();
+    ctx.fillStyle=ink3; ctx.font='12px DM Mono,monospace'; ctx.textAlign='right';
+    ctx.fillText(y.toFixed(1),pad.l-6,sy(y)+4);
+  }
+
+  // Axis labels
+  ctx.fillStyle=ink2; ctx.textAlign='center'; ctx.font='bold 13px DM Mono,monospace';
+  ctx.fillText('Test Score / Predictor X (z)',pad.l+cW/2,H-5);
+  ctx.save(); ctx.translate(13,pad.t+cH/2); ctx.rotate(-Math.PI/2);
+  ctx.fillText('Criterion Y (z)',0,0); ctx.restore();
+
+  // Confidence ellipses (95%)
+  if(ST.showEllipses){
+    const drawEllipse=(pts,color)=>{
+      const n=pts.length; if(n<4) return;
+      const mx=pts.reduce((s,p)=>s+p.x,0)/n;
+      const my=pts.reduce((s,p)=>s+p.y,0)/n;
+      const sxx=pts.reduce((s,p)=>s+(p.x-mx)**2,0)/(n-1);
+      const syy=pts.reduce((s,p)=>s+(p.y-my)**2,0)/(n-1);
+      const sxy=pts.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0)/(n-1);
+      const tr=sxx+syy, dt=sxx*syy-sxy*sxy;
+      const disc=Math.sqrt(Math.max(0,(tr/2)**2-dt));
+      const lam1=tr/2+disc, lam2=Math.max(0,tr/2-disc);
+      let cos1,sin1;
+      if(Math.abs(sxy)<1e-10){cos1=(sxx>=syy?1:0);sin1=(sxx>=syy?0:1);}
+      else{const len=Math.sqrt((lam1-sxx)**2+sxy**2);cos1=sxy/len;sin1=(lam1-sxx)/len;}
+      const sc95=Math.sqrt(5.991); // chi2(2, 0.95)
+      const a=sc95*Math.sqrt(lam1), b=sc95*Math.sqrt(lam2);
+      ctx.beginPath();
+      for(let i=0;i<=72;i++){
+        const t=2*Math.PI*i/72;
+        const dx=a*Math.cos(t)*cos1-b*Math.sin(t)*sin1;
+        const dy=a*Math.cos(t)*sin1+b*Math.sin(t)*cos1;
+        i===0?ctx.moveTo(sx(mx+dx),sy(my+dy)):ctx.lineTo(sx(mx+dx),sy(my+dy));
+      }
+      ctx.closePath();
+      ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash([5,3]);ctx.stroke();ctx.setLineDash([]);
+      ctx.globalAlpha=0.07;ctx.fillStyle=color;ctx.fill();ctx.globalAlpha=1;
+    };
+    drawEllipse(ptsA,a1);
+    drawEllipse(ptsB,a2);
+  }
+
+  // Projection lines from group centroids to axes
+  if(ST.showProjections){
+    const drawProj=(pts,color)=>{
+      const n=pts.length; if(!n) return;
+      const mx=pts.reduce((s,p)=>s+p.x,0)/n;
+      const my=pts.reduce((s,p)=>s+p.y,0)/n;
+      ctx.save();
+      ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.setLineDash([3,4]);
+      // vertical: bottom of plot up to centroid
+      ctx.beginPath(); ctx.moveTo(sx(mx),pad.t+cH); ctx.lineTo(sx(mx),sy(my)); ctx.stroke();
+      // horizontal: left edge to centroid
+      ctx.beginPath(); ctx.moveTo(pad.l,sy(my)); ctx.lineTo(sx(mx),sy(my)); ctx.stroke();
+      ctx.setLineDash([]);
+      // tick labels on axes
+      ctx.fillStyle=color; ctx.font='bold 11px DM Mono,monospace';
+      ctx.textAlign='center';
+      ctx.fillText(mx.toFixed(2),sx(mx),pad.t+cH+28);
+      ctx.textAlign='right';
+      ctx.fillText(my.toFixed(2),pad.l-4,sy(my)+4);
+      // centroid marker
+      ctx.globalAlpha=0.85;
+      ctx.beginPath(); ctx.arc(sx(mx),sy(my),4.5,0,2*Math.PI);
+      ctx.fillStyle=color; ctx.fill();
+      ctx.restore();
+    };
+    drawProj(ptsA,a1);
+    drawProj(ptsB,a2);
+  }
+
+  // Dots
+  ctx.globalAlpha=0.45;
+  for(const p of ptsA){ctx.beginPath();ctx.arc(sx(p.x),sy(p.y),3.2,0,2*Math.PI);ctx.fillStyle=a1;ctx.fill();}
+  for(const p of ptsB){ctx.beginPath();ctx.arc(sx(p.x),sy(p.y),3.2,0,2*Math.PI);ctx.fillStyle=a2;ctx.fill();}
+  ctx.globalAlpha=1;
+
+  // Regression lines
+  const olsA=ols(ptsA), olsB=ols(ptsB), olsAll=ols(all);
+  const drawLine=(a,b,color,dash,lw)=>{
+    ctx.beginPath();
+    ctx.moveTo(sx(xL),sy(a+b*xL));
+    ctx.lineTo(sx(xR),sy(a+b*xR));
+    ctx.strokeStyle=color; ctx.lineWidth=lw||2; ctx.setLineDash(dash||[]);
+    ctx.stroke(); ctx.setLineDash([]);
+  };
+  drawLine(olsAll.a,olsAll.b,ink2,[7,5],1.5);
+  drawLine(olsA.a,olsA.b,a1,[],2.5);
+  drawLine(olsB.a,olsB.b,a2,[],2.5);
+
+  // Cutoff line (Module 3)
+  if(ST.mod3){
+    const cx=sx(ST.cutoff);
+    ctx.beginPath(); ctx.moveTo(cx,pad.t); ctx.lineTo(cx,pad.t+cH);
+    ctx.strokeStyle=a4; ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=a4; ctx.font='11px DM Mono,monospace'; ctx.textAlign='left';
+    const lx=cx+5 < pad.l+cW-70 ? cx+5 : cx-75;
+    ctx.fillText('Cut-Off='+ST.cutoff.toFixed(1),lx,pad.t+14);
+  }
+
+  // Legend (top-right)
+  const lx=pad.l+cW, ly=pad.t+12;
+  ctx.font='bold 11px DM Mono,monospace'; ctx.textAlign='right';
+  ctx.fillStyle=a1;   ctx.fillText('● Group A',lx,ly);
+  ctx.fillStyle=a2;   ctx.fillText('● Group B',lx,ly+16);
+  ctx.fillStyle=ink2; ctx.fillText('-- Overall',lx,ly+32);
+}
+
+// ─── Module 1: Cleary ──────────────────────────────────────────────────────
+function updateMod1(){
+  const {ptsA,ptsB,all}=ST.data;
+  const N=all.length;
+  const olsA=ols(ptsA), olsB=ols(ptsB);
+  const m1=mlr(all,p=>[1,p.x]);
+  const m2=mlr(all,p=>[1,p.x,p.g]);
+  const m3=mlr(all,p=>[1,p.x,p.g,p.x*p.g]);
+
+  const F_int=(m1.sse-m2.sse)/1/(m2.sse/(N-3));
+  const F_slp=(m2.sse-m3.sse)/1/(m3.sse/(N-4));
+  const p_int=fPVal(F_int,1,N-3);
+  const p_slp=fPVal(F_slp,1,N-4);
+
+  const f3=(v)=>isFinite(v)?v.toFixed(3):'—';
+  const fp=(p)=>{if(!isFinite(p))return'—';if(p<.001)return'&lt; .001';return p.toFixed(3);};
+  const sig=p=>p<.05;
+  const vcolor=s=>s?'var(--a1)':'var(--a3)';
+
+  document.getElementById('mod1-content').innerHTML=fixDiacritics(`
+    <table class="reg-table">
+      <colgroup><col style="width:36%"><col style="width:16%"><col style="width:16%"><col style="width:16%"><col style="width:16%"></colgroup>
+      <tr>
+        <th>Group</th><th style="text-align:right">α̂</th><th style="text-align:right">β̂</th><th style="text-align:right">R²</th><th style="text-align:right">n</th>
+      </tr>
+      <tr>
+        <td style="color:var(--a1)">A (Reference)</td>
+        <td class="num">${f3(olsA.a)}</td><td class="num">${f3(olsA.b)}</td>
+        <td class="num">${f3(olsA.r2)}</td><td class="num">${olsA.n}</td>
+      </tr>
+      <tr>
+        <td style="color:var(--a2)">B (Focal)</td>
+        <td class="num">${f3(olsB.a)}</td><td class="num">${f3(olsB.b)}</td>
+        <td class="num">${f3(olsB.r2)}</td><td class="num">${olsB.n}</td>
+      </tr>
+      <tr style="color:var(--ink3)">
+        <td>Overall (M1)</td>
+        <td class="num">${f3(m1.beta[0])}</td><td class="num">${f3(m1.beta[1])}</td>
+        <td class="num">${f3(m1.r2)}</td><td class="num">${N}</td>
+      </tr>
+    </table>
+    <div class="ftest-row">
+      <div class="ftest-box">
+        <div class="ftest-label">Intercept Bias<br>(M2 vs. M1)</div>
+        <div class="ftest-val" style="color:${vcolor(sig(p_int))}">
+          F(1,${N-3}) = ${f3(F_int)}</div>
+        <div class="ftest-p">p = ${fp(p_int)} ${sig(p_int)?'<strong style="color:var(--a1)">✱</strong>':''}</div>
+      </div>
+      <div class="ftest-box">
+        <div class="ftest-label">Slope Difference<br>(M3 vs. M2)</div>
+        <div class="ftest-val" style="color:${vcolor(sig(p_slp))}">
+          F(1,${N-4}) = ${f3(F_slp)}</div>
+        <div class="ftest-p">p = ${fp(p_slp)} ${sig(p_slp)?'<strong style="color:var(--a1)">✱</strong>':''}</div>
+      </div>
+    </div>
+    ${(sig(p_int)||sig(p_slp))
+      ?'<span class="badge badge-warn">Differential prediction detected (p &lt; .05)</span>'
+      :'<span class="badge badge-ok">No differential prediction (p ≥ .05)</span>'
+    }
+    ${sig(p_int)&&!sig(p_slp)
+      ?'<div class="interp-box" style="color:var(--ink2)">Intercept differs under a shared slope — possible test bias or another source (→ Module 2).</div>'
+      :''
+    }
+    ${sig(p_slp)
+      ?'<div class="interp-box" style="color:var(--ink2)">Slope difference: the predictive power of the test differs between the groups.</div>'
+      :''
+    }
+  `);
+}
+
+// ─── Module 2: Meade & Fetzer ──────────────────────────────────────────────
+function updateMod2(){
+  const {ptsA,ptsB,all}=ST.data;
+
+  const dX=cohensD(ptsA,ptsB,'x');
+  const dY=cohensD(ptsA,ptsB,'y');
+  const adX=Math.abs(dX), adY=Math.abs(dY);
+  const THR=0.2;
+  const dxBig=adX>=THR, dyBig=adY>=THR;
+
+  // Pooled r_YX
+  const mx=all.reduce((s,p)=>s+p.x,0)/all.length;
+  const my=all.reduce((s,p)=>s+p.y,0)/all.length;
+  const sxx=all.reduce((s,p)=>s+(p.x-mx)**2,0);
+  const syy=all.reduce((s,p)=>s+(p.y-my)**2,0);
+  const sxy=all.reduce((s,p)=>s+(p.x-mx)*(p.y-my),0);
+  const ryx=sxx===0||syy===0?0:sxy/Math.sqrt(sxx*syy);
+
+  // Meade & Fetzer Eq. 4: expected dY given dX
+  const inner=ryx*dX/Math.sqrt(dX*dX+4);
+  const dY_exp=Math.abs(inner)>=1?Infinity:2*inner/Math.sqrt(Math.max(1e-15,1-inner*inner));
+
+  // Active cell
+  const cell=(cDxBig,cDyBig)=>{
+    const active=cDxBig===dxBig&&cDyBig===dyBig;
+    return`<div style="background:${active?'var(--accent)':'var(--bg)'};
+      color:${active?'var(--bg)':'var(--ink2)'};
+      padding:.5rem .55rem;text-align:center;font-size:.76rem;line-height:1.5;
+      ${active?'font-weight:700;':''}">${
+      cDxBig&&cDyBig?'Adverse Impact<br>(Fig. 3)':
+      cDxBig&&!cDyBig?'Test Bias<br>(Fig. 1)':
+      !cDxBig&&cDyBig?'Criterion<br>Bias (Fig. 2)':
+      'No Bias<br>No AI'
+    }${active?'<br><span style="font-size:.9rem">◉</span>':''}</div>`;
+  };
+
+  const f3=v=>isFinite(v)?v.toFixed(3):'—';
+  const mag=d=>Math.abs(d)<0.2?'small':Math.abs(d)<0.5?'medium':Math.abs(d)<0.8?'large':'very large';
+
+  let interp='', col='var(--ink2)';
+  if(!dxBig&&!dyBig){interp='No meaningful group differences. No indication of bias or adverse impact.';col='var(--a3)';}
+  else if(dxBig&&!dyBig){interp='d_X large, d_Y small: test-bias pattern (Meade & Fetzer, Fig. 1). The groups differ on the predictor but not on the criterion — the test may be measuring the construct with different quality across groups.';col='var(--a1)';}
+  else if(!dxBig&&dyBig){interp='d_X small, d_Y large: criterion-bias pattern (Fig. 2). Same predictor values, different criterion values — possibly missing covariates or an unfair criterion.';col='var(--a5)';}
+  else{interp='d_X and d_Y both large: adverse-impact pattern (Fig. 3). Group differences on predictor and criterion are proportional — a shared regression model fits both groups.';col='var(--a2)';}
+
+  document.getElementById('mod2-content').innerHTML=fixDiacritics(`
+    <div class="kw-grid">
+      <div class="ftest-box">
+        <div class="ftest-label" style="color:var(--a1)">d_X (predictor)</div>
+        <div class="ftest-val" style="color:${adX>=THR?'var(--a5)':'var(--a3)'}">${f3(dX)}</div>
+        <div class="ftest-p">${mag(dX)}</div>
+      </div>
+      <div class="ftest-box">
+        <div class="ftest-label" style="color:var(--a1)">d_Y (criterion)</div>
+        <div class="ftest-val" style="color:${adY>=THR?'var(--a5)':'var(--a3)'}">${f3(dY)}</div>
+        <div class="ftest-p">${mag(dY)}</div>
+      </div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);margin-bottom:.7rem">
+      r_YX (pooled) = ${f3(ryx)} &nbsp;|&nbsp; exp. d̂_Y | d_X = ${isFinite(dY_exp)?f3(dY_exp):'∞'}
+      <span style="color:var(--ink3);font-size:.72rem;margin-left:.5rem">(Meade & Fetzer, Eq. 4)</span>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);
+      letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem">
+      Classification Scheme (Meade &amp; Fetzer, 2009)
+    </div>
+    <div style="display:grid;grid-template-columns:100px 1fr 1fr;gap:1px;
+      background:var(--grid);margin-bottom:.75rem;font-family:'DM Mono',monospace">
+      <div style="background:var(--panel);padding:.4rem .5rem"></div>
+      <div style="background:var(--panel);padding:.4rem .5rem;text-align:center;
+        font-size:.71rem;color:var(--ink3)">d_Y small<br><span style="color:var(--ink3);font-size:.67rem">(|d_Y| &lt; .2)</span></div>
+      <div style="background:var(--panel);padding:.4rem .5rem;text-align:center;
+        font-size:.71rem;color:var(--ink3)">d_Y large<br><span style="color:var(--ink3);font-size:.67rem">(|d_Y| ≥ .2)</span></div>
+      <div style="background:var(--panel);padding:.4rem .5rem;font-size:.71rem;color:var(--ink3)">
+        d_X small<br><span style="font-size:.67rem">(|d_X| &lt; .2)</span></div>
+      ${cell(false,false)}${cell(false,true)}
+      <div style="background:var(--panel);padding:.4rem .5rem;font-size:.71rem;color:var(--ink3)">
+        d_X large<br><span style="font-size:.67rem">(|d_X| ≥ .2)</span></div>
+      ${cell(true,false)}${cell(true,true)}
+    </div>
+    <div class="interp-box" style="color:${col}">${interp}</div>
+  `);
+}
+
+// ─── Module 3: Adverse Impact ──────────────────────────────────────────────
+function updateMod3(){
+  const {ptsA,ptsB}=ST.data;
+  const cut=ST.cutoff;
+  const selA=ptsA.filter(p=>p.x>=cut).length/ptsA.length;
+  const selB=ptsB.filter(p=>p.x>=cut).length/ptsB.length;
+  const AIR=selA===0?NaN:selB/selA;
+  const rule45=isFinite(AIR)&&AIR<0.8;
+  const barPct=Math.min(100,Math.max(0,(isFinite(AIR)?AIR:0)*100));
+
+  const pct=v=>(v*100).toFixed(1)+'%';
+  const fr=v=>isFinite(v)?v.toFixed(3):'—';
+
+  document.getElementById('mod3-stats').innerHTML=`
+    <div class="kw-grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="ftest-box">
+        <div class="ftest-label" style="color:var(--a1)">SR Group A</div>
+        <div class="ftest-val">${pct(selA)}</div>
+        <div class="ftest-p">${ptsA.filter(p=>p.x>=cut).length} / ${ptsA.length}</div>
+      </div>
+      <div class="ftest-box">
+        <div class="ftest-label" style="color:var(--a2)">SR Group B</div>
+        <div class="ftest-val">${pct(selB)}</div>
+        <div class="ftest-p">${ptsB.filter(p=>p.x>=cut).length} / ${ptsB.length}</div>
+      </div>
+      <div class="ftest-box">
+        <div class="ftest-label">AIR</div>
+        <div class="ftest-val" style="color:${rule45?'var(--a1)':'var(--a3)'}">${fr(AIR)}</div>
+        <div class="ftest-p">SR_B / SR_A</div>
+      </div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.71rem;color:var(--ink3);margin-bottom:.3rem;letter-spacing:.04em">
+      AIR scale &nbsp;(4/5 threshold = 0.80 &nbsp;▼)
+    </div>
+    <div class="air-bar-wrap">
+      <div class="air-bar-fill" style="width:${barPct}%;background:${rule45?'var(--a1)':'var(--a3)'}"></div>
+      <div class="air-thresh"></div>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.69rem;color:var(--ink3);
+      display:flex;justify-content:space-between;margin-bottom:.5rem">
+      <span>0</span><span>0.80</span><span>1.0+</span>
+    </div>
+    ${rule45
+      ?'<span class="badge badge-warn">Adverse impact: AIR &lt; 0.80 (4/5 rule violated)</span>'
+      :'<span class="badge badge-ok">No adverse impact per the 4/5 rule (AIR ≥ 0.80)</span>'
+    }
+  `;
+}
+
+// ─── Presets ───────────────────────────────────────────────────────────────
+const PRESETS={
+  // No group difference: same X, same α, same β
+  none:{muXA:0,alphaA:0,betaA:0.5,nA:100, muXB:0,alphaB:0,betaB:0.5,nB:100, sigma:0.87, cutoff:0},
+  // Test bias (Cleary Fig.1): X_B << X_A but E[Y] identical → αB compensates
+  // E[Y|A]=0+0.5*0=0;  E[Y|B]=0.5+0.5*(−1.0)=0  — same criterion, lower predictor → bias
+  fig1:{muXA:0,alphaA:0,betaA:0.5,nA:100, muXB:-1.0,alphaB:0.5,betaB:0.5,nB:100, sigma:0.87, cutoff:0},
+  // Criterion bias (Cleary Fig.2): same X, different Y intercepts (biased criterion)
+  fig2:{muXA:0,alphaA:0.6,betaA:0.5,nA:100, muXB:0,alphaB:-0.6,betaB:0.5,nB:100, sigma:0.87, cutoff:0},
+  // Adverse impact, no bias (Cleary Fig.3): different X mean, same regression
+  fig3:{muXA:0,alphaA:0,betaA:0.5,nA:100, muXB:-1.0,alphaB:0,betaB:0.5,nB:100, sigma:0.87, cutoff:0},
+};
+
+function setPreset(name){
+  const p=PRESETS[name]; if(!p) return;
+  Object.assign(ST,p);
+  const keys=['muXA','alphaA','betaA','nA','muXB','alphaB','betaB','nB','sigma'];
+  for(const k of keys){
+    const sl=document.getElementById('sl-'+k);
+    if(sl){sl.value=ST[k]; fmtLabel(k);}
+  }
+  document.getElementById('sl-cutoff').value=ST.cutoff;
+  document.getElementById('val-cutoff').textContent=ST.cutoff.toFixed(1);
+  ['none','fig1','fig2','fig3'].forEach(id=>{
+    document.getElementById('pre-'+id).classList.toggle('active',id===name);
+  });
+  recompute();
+}
+
+// ─── Event handlers ────────────────────────────────────────────────────────
+function onSl(key,el){
+  ST[key]=parseFloat(el.value);
+  fmtLabel(key);
+  ['none','fig1','fig2','fig3'].forEach(id=>document.getElementById('pre-'+id).classList.remove('active'));
+  recompute();
+}
+
+function fmtLabel(key){
+  const el=document.getElementById('val-'+key); if(!el) return;
+  const v=ST[key];
+  if(key==='betaA'||key==='betaB') el.textContent=v.toFixed(2);
+  else if(key==='muXA'||key==='muXB') el.textContent=v.toFixed(2);
+  else if(key==='alphaA'||key==='alphaB'||key==='sigma') el.textContent=v.toFixed(2);
+  else el.textContent=Math.round(v);
+}
+
+function toggleEllipses(){
+  ST.showEllipses=!ST.showEllipses;
+  const btn=document.getElementById('btn-ellipse');
+  btn.classList.toggle('active',ST.showEllipses);
+  btn.textContent=ST.showEllipses?'⊠ Ellipses':'⊡ Ellipses';
+  drawScatter();
+}
+
+function toggleProjections(){
+  ST.showProjections=!ST.showProjections;
+  const btn=document.getElementById('btn-proj');
+  btn.classList.toggle('active',ST.showProjections);
+  btn.textContent=ST.showProjections?'⊠ Projections':'⊡ Projections';
+  drawScatter();
+}
+
+function toggleYLock(){
+  const btn=document.getElementById('btn-ylock');
+  if(ST.fixedYRange){
+    ST.fixedYRange=null;
+    btn.classList.remove('active');
+    btn.textContent='⊡ Fix Y-axis';
+  } else {
+    if(!ST.xRange) return;
+    ST.fixedYRange={yB:ST.xRange.yB, yT:ST.xRange.yT};
+    btn.classList.add('active');
+    btn.textContent='⊠ Y-axis fixed';
+  }
+  drawScatter();
+}
+
+function onCutoff(el){
+  ST.cutoff=parseFloat(el.value);
+  document.getElementById('val-cutoff').textContent=ST.cutoff.toFixed(1);
+  drawScatter();
+  if(ST.mod3) updateMod3();
+}
+
+function newSeed(){
+  ST.seed=Math.floor(Math.random()*999999);
+  recompute();
+}
+
+// ─── Help System ───────────────────────────────────────────────────────────
+const HELP_CONTENT={
+  0:{
+    title:'Test Bias & Fairness — Overview',
+    body:`
+<h3>Example</h3>
+<p>A selection test (X = cognitive aptitude measure, z-standardized) is meant to predict job performance (Y = supervisor rating, z-standardized). What's tested: does the regression equation hold equally for group A (reference) and group B (focal group)? If the lines diverge, the test is biased in Cleary's (1968) sense.</p>
+<h3>Test Bias per Cleary (1968)</h3>
+<p>A test is considered <strong>unbiased</strong> if it produces the same prediction equation for all groups: equal intercept (b₀) and equal slope (b₁). Bias is present when the regression line systematically over- or underestimates — independent of mean differences on X or Y.</p>
+<p>In the example: scenario <span class="num-sym">①</span> — group B scores lower on X but the same on Y → the shared line underestimates group B's job performance → classic test bias.</p>
+<h3>The Three Test Steps</h3>
+<ul>
+  <li><strong>Module 1 (Cleary test):</strong> F-tests for intercept difference (M2 vs. M1) and slope difference (M3 vs. M2). Both non-significant → no measurable bias.</li>
+  <li><strong>Module 2 (Meade &amp; Fetzer):</strong> diagnoses the cause via standardized mean differences d_X and d_Y. Distinguishes four types of cause: test bias, criterion bias, adverse impact, no bias.</li>
+  <li><strong>Module 3 (Adverse Impact):</strong> 4/5 rule: AIR = selection rate_B / selection rate_A. Below 0.80 → adverse impact. Important: a fair test can still produce AI if the groups have different X means.</li>
+</ul>
+<h3>Test Bias ≠ Adverse Impact</h3>
+<p>This is the most important conceptual distinction: in example scenario <span class="num-sym">③</span> (adverse impact), the groups have different X means but identical regression lines — the test is <em>fair</em> in Cleary's sense, but produces different selection rates. Adverse impact is an empirical-legal concept; test bias is a psychometric one.</p>`
+  },
+  1:{
+    title:'Module 1 — Cleary Test: Differential Prediction',
+    body:`
+<h3>What Does the Model Test?</h3>
+<p>The Cleary test checks whether a test produces <strong>different regression lines</strong> for different groups. Per Cleary (1968), a test is considered biased if the prediction equation yields systematically wrong forecasts for one group.</p>
+<h3>The Three Models</h3>
+<ul>
+  <li><strong>M1</strong> – shared regression line for everyone: Ŷ = b₀ + b₁·X</li>
+  <li><strong>M2</strong> – same slope, different intercepts (group-specific intercept)</li>
+  <li><strong>M3</strong> – different slopes and intercepts (full interaction)</li>
+</ul>
+<h3>What Signals What?</h3>
+<ul>
+  <li><strong>F-test M2 vs. M1 significant</strong> → intercept bias: the groups differ systematically in intercept. The test over- (or under-) predicts one group's criterion performance.</li>
+  <li><strong>F-test M3 vs. M2 significant</strong> → slope bias: the predictive power of the test differs between groups (differential validity).</li>
+  <li><strong>Both non-significant</strong> → no indication of differential prediction.</li>
+</ul>
+<h3>Scenarios in the Scatterplot</h3>
+<ul>
+  <li><strong>⊡ No Bias:</strong> both groups' regression lines lie on top of each other — the test predicts equally well for both groups.</li>
+  <li><strong><span class="num-sym">①</span> Test Bias:</strong> group B scores lower on X but the same on Y → group B's regression line sits higher; the shared line underestimates their performance. <em>Detection:</em> significant intercept bias (M2 vs. M1), d_X large, d_Y small. <em>Effect:</em> qualified people from B are systematically disadvantaged — the test doesn't correctly reflect their real capability.</li>
+  <li><strong><span class="num-sym">②</span> Criterion Bias:</strong> equal X means but different Y levels → parallel, offset lines. <em>Detection:</em> significant intercept bias, d_X ≈ 0, d_Y large. <em>What it means:</em> the criterion itself (e.g. supervisor rating) rates group B differently — independent of their actual performance. The test is fair in Cleary's sense; the validation target is biased. <em>Effect:</em> selecting on this criterion perpetuates B's disadvantage even though the test measures correctly.</li>
+  <li><strong><span class="num-sym">③</span> Adverse Impact:</strong> group B has lower X values, but the lines are identical → no test bias. <em>Detection:</em> F-tests non-significant, d_X large, d_Y large (proportional). <em>Effect:</em> even though the test is fair, people from B are selected less often. The cause is not in the test but in real differences on the predictor — remedies must target that (support programs, access to preparation), not the test itself.</li>
+</ul>
+<h3>Important Notes</h3>
+<p>Statistical significance depends heavily on n. With large samples, even practically meaningless differences become significant. Always report effect size (Δb₀, Δb₁). The test decision concerns <em>differential prediction</em>, not directly test fairness in the broader sense.</p>
+<p class="ref">References: Cleary, T. A. (1968). <em>Educational and Psychological Measurement, 28</em>, 115–124. · Bartlett, C. J., Bobko, P., Mosier, S. B., &amp; Hannan, R. (1978). <em>Personnel Psychology, 31</em>, 233–248. · Linn, R. L. (1984). <em>Journal of Educational Measurement, 21</em>, 5–32.</p>`
+  },
+  2:{
+    title:'Module 2 — Meade & Fetzer (2009): Diagnosing the Cause',
+    body:`
+<h3>Why Isn't the Cleary Test Alone Enough?</h3>
+<p>A significant intercept difference (M2 vs. M1) can have <strong>four different causes</strong>. Only one is genuine test bias in Cleary's sense. Meade &amp; Fetzer (2009) propose using the standardized mean differences d_X and d_Y for diagnosis.</p>
+<h3>The Classification Scheme</h3>
+<ul>
+  <li><strong>d_X large, d_Y small</strong> (Fig. 1 — test bias): the groups differ on the predictor but barely on the criterion. The test assesses the underlying construct with different quality for the two groups.</li>
+  <li><strong>d_X small, d_Y large</strong> (Fig. 2 — criterion bias): equal predictor values but different criterion performance. The criterion itself may be biased, or important third variables are missing.</li>
+  <li><strong>d_X large, d_Y large</strong> (Fig. 3 — adverse impact): both quantities are elevated proportionally. The shared regression fits both groups well — no test bias, but different selection rates are possible.</li>
+  <li><strong>d_X small, d_Y small</strong>: no meaningful bias, no adverse impact.</li>
+</ul>
+<h3>Expected d_Y</h3>
+<p>Meade &amp; Fetzer derive the expected criterion difference from d_X and the pooled correlation r_YX (Eq. 4). If d_Y is markedly smaller than expected, that points to test bias; if d_Y is larger than expected, to criterion bias or missing variables.</p>
+<h3>Threshold</h3>
+<p>The cutoff used is |d| ≥ 0.20 (corresponding to a small-to-medium effect per Cohen). This value is conservative; with large n, even smaller d values can be meaningful.</p>
+<p class="ref">References: Meade, A. W., &amp; Fetzer, M. (2009). <em>Journal of Personnel Psychology, 8</em>, 1–13. · Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). LEA.</p>`
+  },
+  3:{
+    title:'Module 3 — Adverse Impact & the 4/5 Rule',
+    body:`
+<h3>What Is Adverse Impact?</h3>
+<p>Adverse impact (AI) is present when a protected group is selected considerably less often than a comparison group in a selection decision — <strong>regardless of whether the test itself is fair</strong>. AI is a legal and ethical concept, not a psychometric one.</p>
+<h3>The 4/5 Rule (80% Rule)</h3>
+<p>The US <em>Uniform Guidelines on Employee Selection Procedures</em> (EEOC, 1978) define: AI is present when the selection rate of the disadvantaged group is less than 80% of the selection rate of the favored group.</p>
+<ul>
+  <li><strong>AIR = selection rate_B / selection rate_A</strong></li>
+  <li>AIR &lt; 0.80 → adverse impact (4/5 rule violated)</li>
+  <li>AIR ≥ 0.80 → no adverse impact per the Uniform Guidelines</li>
+</ul>
+<h3>Adjusting the Cut-Off</h3>
+<p>Move the cut-off slider to see how different thresholds change the selection rates and the AIR. At a low cut-off, both groups are almost entirely selected (AIR → 1). At a very high cut-off, the rates can diverge sharply.</p>
+<h3>Important Distinctions</h3>
+<ul>
+  <li><strong>AI ≠ Test Bias:</strong> a fair test (equal regression lines) can produce substantial AI when the groups have different means on the predictor (scenario ③).</li>
+  <li><strong>No AI Despite Bias Is Possible:</strong> if the groups have similar predictor values but different regression lines, there may be no AI even though the test is biased.</li>
+  <li><strong>The 4/5 rule is not an absolute cutoff</strong>, but a rule of thumb. Courts also consider sample size and practical significance.</li>
+</ul>
+<p class="ref">References: EEOC et al. (1978). <em>Uniform guidelines on employee selection procedures</em>. Federal Register, 43, 38290–38315. · Roth, P. L., Bobko, P., &amp; Switzer, F. S. (2006). <em>Personnel Psychology, 59</em>, 565–598. · Sackett, P. R., &amp; Wilk, S. L. (1994). <em>American Psychologist, 49</em>, 929–954.</p>`
+  }
+};
+
+function openHelp(n){
+  document.getElementById('help-title').textContent=HELP_CONTENT[n].title;
+  document.getElementById('help-body').innerHTML=HELP_CONTENT[n].body;
+  document.getElementById('help-modal').classList.add('open');
+  document.getElementById('help-overlay').classList.add('open');
+}
+function closeHelp(){
+  document.getElementById('help-modal').classList.remove('open');
+  document.getElementById('help-overlay').classList.remove('open');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape') closeHelp();});
+
+function toggleMod(n){
+  ST['mod'+n]=!ST['mod'+n];
+  const open=ST['mod'+n];
+  document.getElementById('bd'+n).classList.toggle('open',open);
+  document.getElementById('hd'+n).classList.toggle('open',open);
+  document.getElementById('ic'+n).textContent=open?'▼':'▶';
+  if(open){
+    if(n===1) updateMod1();
+    if(n===2) updateMod2();
+    if(n===3) updateMod3();
+  }
+  drawScatter();
+}
+
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
+  drawScatter();
+}
+
+function recompute(){
+  ST.data=genData();
+  drawScatter();
+  if(ST.mod1) updateMod1();
+  if(ST.mod2) updateMod2();
+  if(ST.mod3) updateMod3();
+}
+
+window.addEventListener('resize',()=>drawScatter());
+
+// Init
+setPreset('none');
+</script>
+</body>
+</html>

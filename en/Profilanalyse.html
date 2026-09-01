@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Profile Analysis — Diagnostics</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
+  --accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.slider-row{margin-bottom:.55rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--ink)}
+.slider-val{font-family:'DM Mono',monospace;font-size:.88rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+select{font-family:'DM Mono',monospace;font-size:.82rem;background:var(--bg);color:var(--ink);
+  border:1px solid var(--border);padding:.3rem .5rem;width:100%;cursor:pointer;margin-bottom:.3rem}
+select:focus{outline:1px solid var(--accent)}
+.pcount-row{display:flex;gap:.5rem;margin-top:.3rem}
+.pcount-btn{font-family:'DM Mono',monospace;font-size:.8rem;padding:.28rem 0;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;flex:1;text-align:center}
+.pcount-btn.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.sec-h:first-child{margin-top:0}
+/* Profile section */
+.profile-section{display:grid;grid-template-columns:1fr 272px;gap:1.2rem;align-items:start}
+#cv-profile{width:100%;display:block}
+/* Data table */
+.data-table-wrap{overflow-y:auto;max-height:460px}
+.data-table-wrap::-webkit-scrollbar{width:4px}
+.data-table-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.dt{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.82rem}
+.dt thead th{font-size:.72rem;letter-spacing:.06em;padding:.3rem .4rem;
+  border-bottom:2px solid var(--grid);text-align:center;
+  position:sticky;top:0;background:var(--paper);z-index:1}
+.dt thead th:first-child{text-align:left;color:var(--ink3)}
+.dt td{padding:.28rem .42rem;border-bottom:1px solid var(--grid);text-align:center;vertical-align:middle}
+.dt td:first-child{text-align:left;font-size:.78rem}
+.dt td[contenteditable]{cursor:text;outline:none;transition:background .1s}
+.dt td[contenteditable]:focus{background:var(--panel);outline:1px solid var(--accent)}
+.dt td[contenteditable].invalid{color:var(--a1)!important;outline:1px solid var(--a1)!important}
+/* Stats */
+.stats-row{display:grid;gap:1rem;margin-bottom:.5rem}
+.stats-row.n1{grid-template-columns:1fr}
+.stats-row.n2{grid-template-columns:1fr 1fr}
+.stats-row.n3{grid-template-columns:1fr 1fr 1fr}
+.stat-block{background:var(--panel);border:1px solid var(--grid);padding:.6rem .8rem}
+.stat-block-title{font-family:'DM Mono',monospace;font-size:.73rem;letter-spacing:.1em;text-transform:uppercase;
+  padding-bottom:.4rem;margin-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.pair-blocks{display:grid;gap:1rem}
+.pair-blocks.n1{grid-template-columns:1fr}
+.pair-blocks.n2{grid-template-columns:1fr 1fr}
+.pair-blocks.n3{grid-template-columns:1fr 1fr 1fr}
+/* kw-table: 4 columns */
+.kw-table{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.79rem}
+.kw-table thead th{font-size:.68rem;letter-spacing:.06em;color:var(--ink3);padding:.24rem .38rem;
+  border-bottom:1px solid var(--grid);text-align:left;white-space:nowrap}
+.kw-table thead th:nth-child(3),.kw-table thead th:nth-child(4){text-align:right}
+.kw-table tbody td{padding:.28rem .38rem;border-bottom:1px solid var(--grid);vertical-align:top;line-height:1.5}
+.kw-table tbody td:first-child{color:var(--ink);white-space:nowrap;font-size:.8rem}
+.kw-table tbody td:nth-child(2){color:var(--ink3);font-size:.72rem}
+.kw-table tbody td:nth-child(3){color:var(--ink2);font-size:.71rem;text-align:right;word-break:break-word}
+.kw-table tbody td:nth-child(4){text-align:right;font-weight:600;color:var(--accent);white-space:nowrap;font-size:.82rem}
+/* help */
+.help-panel{background:var(--panel);border:1px solid var(--grid);padding:.8rem 1rem;margin-top:.8rem;display:none}
+.help-panel.open{display:block}
+.help-panel p{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);line-height:1.75;margin-bottom:.5rem}
+.help-panel p:last-child{margin-bottom:0}
+.help-panel strong{color:var(--ink)}
+.help-formula{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--grid);
+  padding:.32rem .65rem;margin:.28rem 0;color:var(--a2)}
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.8rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--a2);margin-bottom:.45rem}
+.story-vars{display:grid;grid-template-columns:auto 1fr;gap:.18rem .55rem;margin-bottom:.45rem;
+  align-items:baseline}
+.sv{font-family:'DM Mono',monospace;font-size:.85rem;font-weight:600;color:var(--ink)}
+.sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
+.story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
+  line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+.help-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:none;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--grid);max-width:660px;
+  margin:2.5rem auto;padding:1.5rem 1.8rem 2rem;position:relative}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--a1);margin-bottom:1.1rem}
+.help-close{position:absolute;top:.9rem;right:1rem;font-family:'DM Mono',monospace;
+  font-size:.8rem;border:1.5px solid var(--border);background:transparent;
+  color:var(--ink2);cursor:pointer;padding:.22rem .6rem;letter-spacing:.05em}
+.help-close:hover{border-color:var(--a1);color:var(--a1)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .45rem;
+  padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-p{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink2);
+  line-height:1.85;margin-bottom:.55rem}
+.help-formula2{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
+  font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+/* Learn cards */
+.learn-section{margin-top:1.8rem}
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
+.xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+@media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Profile Analysis — <em>Diagnostic Profile Comparisons</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Attributes</div>
+    <div class="slider-row">
+      <div class="slider-lbl">
+        <span class="slider-name">Count n</span>
+        <span class="slider-val" id="val-n">7</span>
+      </div>
+      <input type="range" id="sl-n" min="3" max="12" step="1" value="7" oninput="onNChange(+this.value)">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Norm Scale</div>
+    <select id="sel-scale" onchange="onScaleChange(this.value)">
+      <option value="iq">IQ (M=100, SD=15)</option>
+      <option value="t">T (M=50, SD=10)</option>
+      <option value="sw">Standard score (M=100, SD=10)</option>
+      <option value="z">z (M=0, SD=1)</option>
+      <option value="stan" selected>Stanine (M=5, SD=2)</option>
+      <option value="wp">Scaled score (M=10, SD=3)</option>
+      <option value="custom">— Custom scaling —</option>
+    </select>
+    <div id="custom-scale-row" style="display:none;margin-top:.4rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.12rem">Mean μ</div>
+          <input type="number" id="inp-mu" value="100" step="1"
+            oninput="onCustomScaleChange()"
+            style="font-family:'DM Mono',monospace;font-size:.82rem;background:var(--bg);color:var(--ink);border:1px solid var(--border);padding:.28rem .4rem;width:100%;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.12rem">SD σ</div>
+          <input type="number" id="inp-sd" value="15" min="0.01" step="1"
+            oninput="onCustomScaleChange()"
+            style="font-family:'DM Mono',monospace;font-size:.82rem;background:var(--bg);color:var(--ink);border:1px solid var(--border);padding:.28rem .4rem;width:100%;outline:none;box-sizing:border-box">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Profiles</div>
+    <div class="pcount-row">
+      <button class="pcount-btn active" id="pbt-2" onclick="onProfileCount(2)">2 Profiles</button>
+      <button class="pcount-btn" id="pbt-3" onclick="onProfileCount(3)">3 Profiles</button>
+    </div>
+  </div>
+
+
+</div>
+
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">Running Example</div>
+    <div class="story-vars">
+      <span class="sv">Person A</span><span class="sd">Patient after neuropsychological assessment (stanine profile, 7 subtests)</span>
+      <span class="sv">Person B</span><span class="sd">Norm sample (or profile from prior assessment / retest)</span>
+      <span class="sv">Attributes</span><span class="sd">e.g. working memory, processing speed, verbal comprehension …</span>
+      <span class="sv">Scale</span><span class="sd">Stanine (M=5, SD=2) — or switch to IQ, T, z, scaled scores</span>
+    </div>
+    <div class="story-q">How similar are two test-score profiles — and where does a difference come from: overall level, the spread of the subtest values, or the shape of the profile? Different metrics answer these questions differently.</div>
+  </div>
+
+  <div class="sec-h" style="margin-top:0"><span class="circ">①</span> Profile Plot</div>
+  <div class="profile-section">
+    <canvas id="cv-profile" height="390"></canvas>
+    <div class="data-table-wrap">
+      <table id="data-table" class="dt">
+        <thead id="dt-head"></thead>
+        <tbody id="dt-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec-h"><span class="circ">②</span> Profile Statistics</div>
+  <div id="per-profile-stats" class="stats-row n2"></div>
+
+  <div class="sec-h"><span class="circ">③</span> Profile Comparison</div>
+  <div id="pairwise-stats" class="pair-blocks n1"></div>
+
+  <div class="learn-section">
+    <div class="sec-h">Concepts</div>
+    <div class="lcard-grid">
+      <div class="lcard">
+        <div class="lcard-h">Elevation, Scatter, Shape</div>
+        <div class="lcard-body">Every profile decomposes into three <em>independent</em> components (Cronbach &amp; Gleser 1953): <strong>elevation</strong> = mean level, <strong>scatter S²</strong> = variability of the subtest values around one's own level, <strong>shape</strong> = pattern of peaks/troughs independent of level and scatter. A profile difference can stem from just one of these components — the metrics below weight them differently.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">D² — the Total Distance, Decomposed</div>
+        <div class="lcard-body">The squared Euclidean distance measures the overall difference and decomposes <strong>additively</strong> into the three components: <code>D² = k·ΔM̄² + k·ΔS² + 2k·S₁S₂(1−r)</code> (level + scatter + shape portion). This shows not just <em>that</em> two profiles differ, but <em>in what way</em>. D² = 0 → identical profiles.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Why Simple Correlation Is Deceptive</div>
+        <div class="lcard-body">The ordinary Pearson correlation across the subtests measures only <strong>shape</strong>: two profiles with an identical pattern but a constant level gap get r ≈ 1 — even though the person is consistently weaker throughout. In clinical diagnostics this is often misleading; that's why special profile metrics exist that <strong>also account for level</strong>.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Cattell &amp; McCrae Indices</div>
+        <div class="lcard-body"><strong>rₚ (Cattell 1949)</strong> is a distance-based profile correlation: <code>rₚ = (2Eₖ − d²<sub>z</sub>)/(2Eₖ + d²<sub>z</sub>)</code> — unlike simple r, it responds to level differences (drops when A is generally below norm), but depends on k and scatter. <strong>Iₚₐ / rₚₐ (McCrae 1993)</strong> are normed (≈ 0 at chance similarity) and allow high shape similarity even with a level difference present.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">ICC_de (Griffin &amp; Gonzalez)</div>
+        <div class="lcard-body">Pearson correlation on a <strong>double-entered</strong> dataset (column 1 = [P₁;P₂], column 2 = [P₂;P₁]). This makes ICC_de <strong>the most sensitive</strong> to level differences — suitable when the absolute level fully matters, e.g. in retest or progress comparisons after therapy. Conceptually the intraclass correlation at the profile level.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Which Metric, When?</div>
+        <div class="lcard-body"><strong>D²:</strong> a global, decomposable distance measure — shows the source of the difference. <strong>rₚ (Cattell):</strong> established in clinical diagnostics, but k-/scatter-dependent. <strong>Iₚₐ/rₚₐ (McCrae):</strong> clear zero reference and norming. <strong>ICC_de:</strong> when level differences should fully count. Closely related to the intraclass correlation and reliability logic. <a class="xlink" href="ICC_Lab.html" target="_blank" rel="noopener">→ ICC Lab</a> · <a class="xlink" href="KTT_Grundlagen.html" target="_blank" rel="noopener">→ CTT Foundations</a></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- Hilfe-Overlay -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Profile Analysis — Help</div>
+    <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+
+    <div class="help-sh">Example</div>
+    <p class="help-p">Person A is a patient after neuropsychological assessment, Person B is the norm-sample profile (or a pretest profile). Both show stanine scores on 7 subtests (e.g. working memory, processing speed, verbal comprehension). Question: How similar are the profiles — and where does a difference come from?</p>
+
+    <div class="help-sh">Elevation, Scatter, Shape</div>
+    <p class="help-p">Every profile can be decomposed into three independent components (Cronbach &amp; Gleser, 1953):</p>
+    <p class="help-p"><strong>Elevation M̄</strong> = mean level = (1/k)·Σxᵢ. A difference in elevation → Person A scores overall higher or lower than B.</p>
+    <p class="help-p"><strong>Scatter S²</strong> = variability of the subtest values around one's own level = (1/k)·Σ(xᵢ−M̄)². High scatter = uneven profile.</p>
+    <p class="help-p"><strong>Shape / scatter pattern</strong> = pattern of peaks/troughs, independent of level and scatter. Two profiles can have the same elevation and scatter but completely different shapes.</p>
+    <p class="help-p">In the example: if A is uniformly 1 stanine point below B (a pure level difference), shape metrics should still show high similarity.</p>
+
+    <div class="help-sh">D² after Cronbach &amp; Gleser (1953)</div>
+    <p class="help-p">The squared Euclidean distance D² measures the overall difference between two profiles and decomposes additively into the three components:</p>
+    <span class="help-formula2">D² = k·ΔM̄² + k·ΔS² + 2k·S₁·S₂·(1−r)</span>
+    <p class="help-p">In the example: D²=0 → identical profiles. D²=7 (with k=7 attributes) corresponds to an average difference of 1 scale point per attribute. Each component's contribution shows what drives the main difference.</p>
+
+    <div class="help-sh">rₚ after Cattell (1949)</div>
+    <p class="help-p">Profile correlation on z-standardized values. Eₖ = expected value of the χ² distribution with k degrees of freedom (median via Wilson-Hilferty). Level differences enter via d²_z.</p>
+    <span class="help-formula2">rₚ = (2Eₖ − d²_z) / (2Eₖ + d²_z)</span>
+    <p class="help-p">rₚ is sensitive to level differences (unlike simple correlation). In the example: if A is generally below norm (M̄_A&lt;M̄_B), rₚ drops even if the profile shape is identical.</p>
+
+    <div class="help-sh">Iₚₐ / rₚₐ after McCrae (1993)</div>
+    <p class="help-p">Iₚₐ measures profile similarity on z-standardized values, normed so that Iₚₐ≈0 at chance similarity. Mᵢ = (zA,i+zB,i)/2 is the mean z score per attribute.</p>
+    <span class="help-formula2">Iₚₐ = (k + 2ΣMᵢ² − d²_z) / √(10k)</span>
+    <p class="help-p">rₚₐ transforms Iₚₐ into a correlational index ∈ (−1, 1]:</p>
+    <span class="help-formula2">rₚₐ = Iₚₐ / √((k−2) + Iₚₐ²)</span>
+    <p class="help-p">In the example: rₚₐ ≈ 0.90 = high shape similarity is possible even with a level difference present.</p>
+
+    <div class="help-sh">ICC_de after Griffin &amp; Gonzalez (1995)</div>
+    <p class="help-p">Pearson correlation on a double-entered dataset: column 1 = [P₁; P₂], column 2 = [P₂; P₁]. Sensitive to level differences because the symmetrization increases the variance when the profiles sit at different levels.</p>
+    <span class="help-formula2">ICC_de = (MSB − MSW) / (MSB + MSW)</span>
+    <p class="help-p">In the example: pure shape similarity (same scatter, same elevation) → ICC_de = high Pearson r on the doubled dataset. A level difference pulls ICC_de down more than rₚₐ.</p>
+
+    <div class="help-sh">Which Metric, When?</div>
+    <p class="help-p">D² works well as a global distance measure — easy to interpret, decomposes into components. rₚ (Cattell) is established in clinical diagnostics, but depends on k and scatter. Iₚₐ / rₚₐ (McCrae) have a clearer zero reference and norming. ICC_de (Griffin) is especially suitable when level differences should be fully accounted for — e.g. in a retest comparison after therapy.</p>
+  </div>
+</div>
+
+<script>
+/* ── Scales ── */
+const SCALES = {
+  iq:   {label:'IQ',      mu:100, sd:15, min:55,  max:145, step:1,    dec:0},
+  t:    {label:'T',       mu:50,  sd:10, min:20,  max:80,  step:0.5,  dec:1},
+  sw:   {label:'SS',      mu:100, sd:10, min:70,  max:130, step:0.5,  dec:1},
+  z:    {label:'z',       mu:0,   sd:1,  min:-3,  max:3,   step:0.01, dec:2},
+  stan: {label:'Stanine', mu:5,   sd:2,  min:1,   max:9,   step:0.5,  dec:1},
+  wp:   {label:'SC',      mu:10,  sd:3,  min:1,   max:19,  step:0.5,  dec:1},
+};
+
+/* Eigene Skalierung – mu/sd werden zur Laufzeit gesetzt */
+const CUSTOM_SCALE = {
+  label: 'Custom', mu: 100, sd: 15,
+  get min()  { return this.mu - 4 * this.sd; },
+  get max()  { return this.mu + 4 * this.sd; },
+  get step() { return this.sd >= 5 ? 0.5 : this.sd >= 1 ? 0.1 : 0.01; },
+  get dec()  { return this.sd >= 5 ? 0 : this.sd >= 1 ? 1 : 2; },
+};
+function getScale(key) { return key === 'custom' ? CUSTOM_SCALE : SCALES[key]; }
+
+/* P1=a1, P2=a2, P3=a3  (dark and light hex for canvas) */
+const P_DARK  = ['#e8614a','#4ab0d8','#80cb52'];
+const P_LIGHT = ['#c94a2a','#2a6e8a','#5a8a2a'];
+const P_CSS   = ['var(--a1)','var(--a2)','var(--a3)'];
+const P_LABEL = ['P₁','P₂','P₃'];
+
+/* ── State ── */
+const ST = {
+  n: 7,
+  scale: 'stan',
+  nP: 2,
+  /* 3 profiles × 12 slots; always use first ST.n values */
+  data: [
+    [3, 5, 3, 4, 2, 1, 3, 5, 5, 5, 5, 5],
+    [5, 8, 5, 6.5, 3.5, 2, 5, 5, 5, 5, 5, 5],
+    [5, 7, 5, 6,   4,   3, 5, 5, 5, 5, 5, 5],
+  ],
+  names: ['T₁','T₂','T₃','T₄','T₅','T₆','T₇','T₈','T₉','T₁₀','T₁₁','T₁₂'],
+};
+
+/* ── Math ── */
+const arr  = (p) => ST.data[p].slice(0, ST.n);
+const sumA = (a) => a.reduce((s,x) => s+x, 0);
+const mean = (a) => sumA(a) / a.length;
+const varP = (a) => { const m=mean(a); return a.reduce((s,x) => s+(x-m)**2, 0) / a.length; };
+const sdP  = (a) => Math.sqrt(varP(a));
+const covP = (a,b) => { const ma=mean(a),mb=mean(b); return a.reduce((s,x,i) => s+(x-ma)*(b[i]-mb), 0)/a.length; };
+const pearson = (a,b) => { const sa=sdP(a),sb=sdP(b); return (sa&&sb) ? covP(a,b)/(sa*sb) : 0; };
+const d2 = (a,b) => a.reduce((s,x,i) => s+(x-b[i])**2, 0);
+
+function iccDE(x, y) {
+  /* Griffin & Gonzalez (1995): Pearson on doubled dataset
+     col1 = [P₁; P₂],  col2 = [P₂; P₁] */
+  return pearson([...x, ...y], [...y, ...x]);
+}
+
+/* Median of chi-square(k) via Wilson-Hilferty approximation */
+function chi2Median(k) {
+  return k * Math.pow(1 - 2/(9*k), 3);
+}
+
+/* z-standardize a profile using the current scale's mu/sd */
+function zScale(a) {
+  const sc = getScale(ST.scale);
+  return a.map(x => (x - sc.mu) / sc.sd);
+}
+
+/* Cattell (1949) — McCrae (1993) paper, on z-standardized profiles:
+   d²_z = Σ(zA_i − zB_i)²
+   Ek   = median(χ²_k)          [where k = number of profile elements]
+   rp   = (2·Ek − d²_z) / (2·Ek + d²_z) */
+function cattellRp(a, b) {
+  const za = zScale(a), zb = zScale(b);
+  const D2z = d2(za, zb);
+  const Ek  = chi2Median(a.length);
+  const den = 2*Ek + D2z;
+  return den === 0 ? 0 : (2*Ek - D2z) / den;
+}
+
+/* McCrae (1993) — on z-standardized profiles:
+   M_i  = (zA_i + zB_i) / 2
+   M_sq = Σ M_i²
+   d²_z = Σ(zA_i − zB_i)²
+   Ipa  = (k + 2·M_sq − d²_z) / √(10k)
+   rpa  = Ipa / √((k−2) + Ipa²)          */
+function mcraeIpa(a, b) {
+  const za = zScale(a), zb = zScale(b);
+  const k   = a.length;
+  const Msq = za.reduce((s, z, i) => s + ((z + zb[i])/2)**2, 0);
+  const D2z = d2(za, zb);
+  return (k + 2*Msq - D2z) / Math.sqrt(10*k);
+}
+
+function mcraeRpa(ipa, k) {
+  const inner = (k - 2) + ipa*ipa;
+  return inner <= 0 ? 0 : ipa / Math.sqrt(inner);
+}
+
+function fmt(v, dec) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  return (+v).toFixed(dec ?? getScale(ST.scale).dec);
+}
+
+function fmtList(a, dec, maxShow=6) {
+  const d = dec ?? getScale(ST.scale).dec;
+  const strs = a.map(x => fmt(x, d));
+  if (a.length <= maxShow) return strs.join(', ');
+  return strs.slice(0,3).join(', ') + ', …, ' + strs[strs.length-1];
+}
+
+/* ── Theme ── */
+function toggleTheme() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = dark ? '🌙 Dark' : '☀ Light';
+  drawProfile();
+}
+function toggleHelp() {
+  document.getElementById('help-overlay').classList.toggle('open');
+}
+
+/* ── Controls ── */
+function onNChange(val) {
+  ST.n = val;
+  document.getElementById('val-n').textContent = val;
+  buildTable();
+  update();
+}
+
+function onScaleChange(val) {
+  const customRow = document.getElementById('custom-scale-row');
+  const old = getScale(ST.scale);
+  if(val === 'custom'){
+    // Eigene Skalierung vorbelegen mit Werten der aktuellen Skala
+    CUSTOM_SCALE.mu = old.mu;
+    CUSTOM_SCALE.sd = old.sd;
+    document.getElementById('inp-mu').value = old.mu;
+    document.getElementById('inp-sd').value  = old.sd;
+    customRow.style.display = '';
+  } else {
+    customRow.style.display = 'none';
+  }
+  const nw = getScale(val);
+  for (let p=0; p<3; p++) {
+    for (let k=0; k<12; k++) {
+      const z = (ST.data[p][k] - old.mu) / old.sd;
+      let v = nw.mu + z * nw.sd;
+      v = Math.max(nw.min, Math.min(nw.max, v));
+      v = Math.round(v / nw.step) * nw.step;
+      ST.data[p][k] = +v.toFixed(nw.dec);
+    }
+  }
+  ST.scale = val;
+  buildTable();
+  update();
+}
+
+function onCustomScaleChange() {
+  const mu = parseFloat(document.getElementById('inp-mu').value);
+  const sd = parseFloat(document.getElementById('inp-sd').value);
+  if(isNaN(mu) || isNaN(sd) || sd <= 0) return;
+  CUSTOM_SCALE.mu = mu;
+  CUSTOM_SCALE.sd = sd;
+  buildTable();
+  update();
+}
+
+function onProfileCount(n) {
+  ST.nP = n;
+  document.getElementById('pbt-2').classList.toggle('active', n===2);
+  document.getElementById('pbt-3').classList.toggle('active', n===3);
+  buildTable();
+  update();
+}
+
+/* ── Table ── */
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function buildTable() {
+  const sc = getScale(ST.scale);
+  /* header */
+  let th = '<tr><th style="color:var(--ink3)">Attribute</th>';
+  for (let p=0; p<ST.nP; p++) th += `<th style="color:${P_CSS[p]}">${P_LABEL[p]}</th>`;
+  th += '</tr>';
+  document.getElementById('dt-head').innerHTML = th;
+  /* rows */
+  let rows = '';
+  for (let k=0; k<ST.n; k++) {
+    rows += '<tr>';
+    rows += `<td contenteditable="true" data-k="${k}" data-type="name"
+      onblur="onNameEdit(${k},this)"
+      onkeydown="onKeyDown(event)">${escHtml(ST.names[k])}</td>`;
+    for (let p=0; p<ST.nP; p++) {
+      rows += `<td contenteditable="true" style="color:${P_CSS[p]}"
+        data-p="${p}" data-k="${k}"
+        oninput="validateCell(this,'${ST.scale}')"
+        onblur="onValEdit(${p},${k},this)"
+        onkeydown="onKeyDown(event)">${fmt(ST.data[p][k], sc.dec)}</td>`;
+    }
+    rows += '</tr>';
+  }
+  document.getElementById('dt-body').innerHTML = rows;
+}
+
+function onKeyDown(e) {
+  if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); }
+}
+
+function onNameEdit(k, el) {
+  const t = el.textContent.trim();
+  ST.names[k] = t || 'T'+(k+1);
+  if (!t) el.textContent = ST.names[k];
+  drawProfile();
+  renderPerProfile(); /* update stat block titles */
+}
+
+function validateCell(el, scaleKey) {
+  const sc = getScale(scaleKey);
+  const v = parseFloat(el.textContent);
+  el.classList.toggle('invalid', isNaN(v) || v < sc.min || v > sc.max);
+}
+
+function onValEdit(p, k, el) {
+  const sc = getScale(ST.scale);
+  let v = parseFloat(el.textContent);
+  if (isNaN(v)) v = sc.mu;
+  v = Math.max(sc.min, Math.min(sc.max, v));
+  v = Math.round(v / sc.step) * sc.step;
+  v = +v.toFixed(sc.dec);
+  ST.data[p][k] = v;
+  el.textContent = fmt(v, sc.dec);
+  el.classList.remove('invalid');
+  update();
+}
+
+/* ── Canvas ── */
+function drawProfile() {
+  const cv = document.getElementById('cv-profile');
+  const W  = cv.parentElement.clientWidth;
+  if (!W) return;
+  cv.width = W;
+  const H   = cv.height;
+  const ctx = cv.getContext('2d');
+  const sc  = getScale(ST.scale);
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const cs   = getComputedStyle(document.documentElement);
+  const g    = v => cs.getPropertyValue(v).trim();
+  const colBg   = g('--bg');
+  const colGrid = g('--grid');
+  const colInk  = g('--ink');
+  const colInk2 = g('--ink2');
+  const colInk3 = g('--ink3');
+  const colP    = dark ? P_DARK : P_LIGHT;
+
+  const ml=70, mr=18, mt=22, mb=50;
+  const pw = W - ml - mr;
+  const ph = H - mt - mb;
+
+  const vx = i => ml + (ST.n > 1 ? (i/(ST.n-1))*pw : pw/2);
+  const vy = v => mt + (1 - (v - sc.min)/(sc.max - sc.min)) * ph;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = colBg;
+  ctx.fillRect(0, 0, W, H);
+
+  /* horizontal reference lines at mu ± k*sigma */
+  const gridSteps = [];
+  for (let d=-3; d<=3; d++) {
+    const gv = sc.mu + d*sc.sd;
+    if (gv >= sc.min && gv <= sc.max) gridSteps.push({v:gv, d});
+  }
+
+  gridSteps.forEach(({v, d}) => {
+    const y = vy(v);
+    ctx.strokeStyle = d===0 ? colInk3 : colGrid;
+    ctx.lineWidth = d===0 ? 0.8 : 0.5;
+    ctx.setLineDash(d===0 ? [] : [3,4]);
+    ctx.beginPath(); ctx.moveTo(ml,y); ctx.lineTo(ml+pw,y); ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  /* axes */
+  ctx.strokeStyle = colInk2;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(ml, mt); ctx.lineTo(ml, mt+ph); ctx.lineTo(ml+pw, mt+ph);
+  ctx.stroke();
+
+  /* y-axis labels */
+  ctx.textAlign = 'right';
+  gridSteps.forEach(({v, d}) => {
+    const y = vy(v);
+    /* value */
+    ctx.fillStyle = d===0 ? colInk : colInk2;
+    ctx.font = d===0 ? `bold 14px 'DM Mono',monospace` : `13px 'DM Mono',monospace`;
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(fmt(v, sc.dec), ml-7, y+3);
+    /* sigma label */
+    ctx.fillStyle = colInk3;
+    ctx.font = `11px 'DM Mono',monospace`;
+    ctx.textBaseline = 'top';
+    const lbl = d===0 ? 'μ' : (d>0?'+':'')+d+'σ';
+    ctx.fillText(lbl, ml-7, y+3);
+  });
+
+  /* x-axis labels */
+  ctx.fillStyle = colInk2;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  ctx.font = `14px 'DM Mono',monospace`;
+  for (let k=0; k<ST.n; k++) {
+    const x = vx(k);
+    /* tick */
+    ctx.strokeStyle = colInk3;
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(x, mt+ph); ctx.lineTo(x, mt+ph+4); ctx.stroke();
+    /* label (truncate long names) */
+    const lbl = ST.names[k].length > 5 ? ST.names[k].slice(0,5) : ST.names[k];
+    ctx.fillStyle = colInk2;
+    ctx.fillText(lbl, x, mt+ph+7);
+  }
+
+  /* profiles (draw back to front) */
+  for (let p=ST.nP-1; p>=0; p--) {
+    const a = arr(p);
+    /* line */
+    ctx.strokeStyle = colP[p];
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    a.forEach((v,k) => { k===0 ? ctx.moveTo(vx(k),vy(v)) : ctx.lineTo(vx(k),vy(v)); });
+    ctx.stroke();
+    /* dots */
+    a.forEach((v,k) => {
+      ctx.beginPath();
+      ctx.arc(vx(k), vy(v), 4.5, 0, 2*Math.PI);
+      ctx.fillStyle = colP[p];
+      ctx.fill();
+      ctx.strokeStyle = colBg;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    });
+  }
+
+  /* legend */
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.font = `bold 12px 'DM Mono',monospace`;
+  let lx = ml + 6;
+  for (let p=0; p<ST.nP; p++) {
+    ctx.beginPath();
+    ctx.arc(lx+5, mt+13, 5, 0, 2*Math.PI);
+    ctx.fillStyle = colP[p];
+    ctx.fill();
+    ctx.strokeStyle = colBg; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle = colInk;
+    ctx.fillText(P_LABEL[p], lx+14, mt+13);
+    lx += 48;
+  }
+}
+
+/* ── Stats ── */
+function update() {
+  drawProfile();
+  renderPerProfile();
+  renderPairwise();
+}
+
+function renderPerProfile() {
+  const sc = getScale(ST.scale);
+  const d  = sc.dec;
+  const container = document.getElementById('per-profile-stats');
+  container.className = `stats-row n${ST.nP}`;
+
+  let html = '';
+  for (let p=0; p<ST.nP; p++) {
+    const a = arr(p);
+    const m  = mean(a);
+    const s2 = varP(a);
+    const s  = sdP(a);
+    /* compact sum string */
+    const sumStr = a.length <= 6
+      ? a.map(x=>fmt(x,d)).join('+')
+      : a.slice(0,3).map(x=>fmt(x,d)).join('+')+'+…+'+fmt(a[a.length-1],d);
+
+    html += `<div class="stat-block">
+      <div class="stat-block-title" style="color:${P_CSS[p]}">${P_LABEL[p]} — Profile Statistics</div>
+      <table class="kw-table">
+        <thead><tr>
+          <th>Metric</th><th>Formula</th>
+          <th>Calculation</th><th>Result</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>Elevation M̄</td>
+            <td>(1/n)·Σ xₖ</td>
+            <td>(${sumStr})/${ST.n}</td>
+            <td>${fmt(m,d)}</td>
+          </tr>
+          <tr>
+            <td>Scatter S²</td>
+            <td>(1/n)·Σ(xₖ−M̄)²</td>
+            <td>M̄=${fmt(m,d)}, n=${ST.n}</td>
+            <td>${fmt(s2,2)}</td>
+          </tr>
+          <tr>
+            <td>SD S</td>
+            <td>√S²</td>
+            <td>√${fmt(s2,2)}</td>
+            <td>${fmt(s,2)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+  }
+  container.innerHTML = html;
+}
+
+function renderPairwise() {
+  const sc = getScale(ST.scale);
+  const d  = sc.dec;
+  const container = document.getElementById('pairwise-stats');
+
+  /* generate all ordered pairs */
+  const pairs = [];
+  for (let i=0; i<ST.nP; i++) for (let j=i+1; j<ST.nP; j++) pairs.push([i,j]);
+  const nc = pairs.length === 3 ? 'n3' : pairs.length === 2 ? 'n2' : 'n1';
+  container.className = `pair-blocks ${nc}`;
+
+  let html = '';
+  pairs.forEach(([i,j]) => {
+    const a = arr(i), b = arr(j);
+    const n = a.length;
+
+    const ma=mean(a), mb=mean(b);
+    const sa=sdP(a),  sb=sdP(b);
+    const s2a=varP(a),s2b=varP(b);
+    const r = pearson(a, b);
+    const D2 = d2(a, b);
+    const D  = Math.sqrt(D2);
+
+    /* D² decomposition */
+    const elevComp  = n * (ma-mb)**2;
+    const scatComp  = n * (sa-sb)**2;
+    const shapeComp = 2*n*sa*sb*(1-r);
+
+    /* Cattell rp — on z-scores */
+    const za  = zScale(a), zb = zScale(b);
+    const D2z = d2(za, zb);
+    const Ek  = chi2Median(n);
+    const rp  = cattellRp(a, b);
+
+    /* McCrae Ipa / rpa — on z-scores */
+    const Msq = za.reduce((s, z, i) => s + ((z + zb[i])/2)**2, 0);
+    const ipa = mcraeIpa(a, b);
+    const rpa = mcraeRpa(ipa, n);
+
+    /* ICC_de */
+    const icc = iccDE(a, b);
+
+    /* direct D² sum string */
+    const d2direct = a.length <= 5
+      ? a.map((x,k)=>`(${fmt(x,d)}−${fmt(b[k],d)})²`).join('+')
+      : a.slice(0,3).map((x,k)=>`(${fmt(x,d)}−${fmt(b[k],d)})²`).join('+')+'+…';
+
+    html += `<div class="stat-block">
+      <div class="stat-block-title">
+        <span style="color:${P_CSS[i]}">${P_LABEL[i]}</span>
+        <span style="color:var(--ink3)"> vs </span>
+        <span style="color:${P_CSS[j]}">${P_LABEL[j]}</span>
+        <span style="color:var(--ink3)"> — Profile Comparison</span>
+      </div>
+      <table class="kw-table">
+        <thead><tr>
+          <th>Metric</th><th>Formula</th>
+          <th>Calculation</th><th>Result</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td>ΔElevation</td>
+            <td>M̄₁ − M̄₂</td>
+            <td>${fmt(ma,d)} − ${fmt(mb,d)}</td>
+            <td>${fmt(ma-mb,d)}</td>
+          </tr>
+          <tr>
+            <td>ΔScatter</td>
+            <td>S₁ − S₂</td>
+            <td>${fmt(sa,2)} − ${fmt(sb,2)}</td>
+            <td>${fmt(sa-sb,2)}</td>
+          </tr>
+          <tr>
+            <td>Shape r</td>
+            <td>Pearson(P₁,P₂)</td>
+            <td>Cov/${fmt(sa,2)}·${fmt(sb,2)}</td>
+            <td>${fmt(r,3)}</td>
+          </tr>
+          <tr>
+            <td>D² (C&amp;G 1953)</td>
+            <td>Σ(xₖ₁−xₖ₂)²</td>
+            <td>${d2direct}</td>
+            <td>${fmt(D2,2)}</td>
+          </tr>
+          <tr>
+            <td>D² Decomposition</td>
+            <td>n·ΔM̄² + n·ΔS² + 2n·S₁S₂(1−r)</td>
+            <td>${fmt(elevComp,2)} + ${fmt(scatComp,2)} + ${fmt(shapeComp,2)}</td>
+            <td>${fmt(elevComp+scatComp+shapeComp,2)}</td>
+          </tr>
+          <tr>
+            <td>D</td>
+            <td>√D²</td>
+            <td>√${fmt(D2,2)}</td>
+            <td>${fmt(D,2)}</td>
+          </tr>
+          <tr>
+            <td>rₚ (Cattell 1949)</td>
+            <td>(2Eₖ − d²_z) / (2Eₖ + d²_z)</td>
+            <td>Eₖ=${fmt(Ek,3)}, d²_z=${fmt(D2z,3)}</td>
+            <td>${fmt(rp,3)}</td>
+          </tr>
+          <tr>
+            <td>Iₚₐ (McCrae 1993)</td>
+            <td>(k + 2ΣM² − d²_z) / √(10k)</td>
+            <td>ΣM²=${fmt(Msq,3)}, d²_z=${fmt(D2z,3)}, √(10·${n})=${fmt(Math.sqrt(10*n),3)}</td>
+            <td>${fmt(ipa,3)}</td>
+          </tr>
+          <tr>
+            <td>rₚₐ</td>
+            <td>Iₚₐ / √((k−2) + Iₚₐ²)</td>
+            <td>${fmt(ipa,3)} / √(${n-2} + ${fmt(ipa*ipa,3)})</td>
+            <td>${fmt(rpa,3)}</td>
+          </tr>
+          <tr>
+            <td>ICC_de (G&amp;G 1995)</td>
+            <td>r([P₁;P₂], [P₂;P₁])</td>
+            <td>Pearson on doubled dataset</td>
+            <td>${fmt(icc,3)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+/* ── Init ── */
+window.addEventListener('load', () => {
+  buildTable();
+  requestAnimationFrame(() => {
+    update();
+    /* observe canvas parent for width changes */
+    const cvParent = document.getElementById('cv-profile').parentElement;
+    new ResizeObserver(() => drawProfile()).observe(cvParent);
+  });
+});
+</script>
+</body>
+</html>

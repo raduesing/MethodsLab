@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reliability: α vs. ω — MethodsLab</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);--topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:18px}
+body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;min-height:100vh}
+.gk{text-transform:none!important;font-style:normal}
+
+#topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+
+#app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
+#sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
+#sidebar::-webkit-scrollbar{width:5px}
+#sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#main{overflow-y:scroll;height:100%;padding:1.2rem 1.5rem 3rem}
+
+.scard{background:var(--panel);border:1px solid var(--grid);padding:.75rem .85rem;margin-bottom:.7rem}
+.scard-title{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+
+.slider-row{margin-bottom:.5rem}
+.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.16rem}
+.slider-name{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink)}
+.slider-name em{color:var(--ink3);font-style:normal;font-size:.7rem}
+.slider-val{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--accent);font-weight:500}
+input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:12px;height:12px;background:var(--ink);border-radius:50%;cursor:pointer}
+input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
+input[type=range].acc-g::-webkit-slider-thumb{background:var(--a4)}
+input[type=range].acc-s::-webkit-slider-thumb{background:var(--a6)}
+
+.btn-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem}
+.mbtn{font-family:'DM Mono',monospace;font-size:.71rem;padding:.36rem .25rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;text-align:center;line-height:1.25}
+.mbtn:hover{border-color:var(--accent);color:var(--accent)}
+.mbtn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+
+.sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink3);margin:1.4rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
+.sec-h:first-child{margin-top:0}
+.cnum{font-size:2em;font-weight:600;vertical-align:-0.18em;color:var(--accent);margin-right:.25em;letter-spacing:0}
+
+.story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
+  padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a2);margin-bottom:.45rem}
+.story-box strong{color:var(--ink)} .story-box em{font-style:italic;color:var(--ink)}
+
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1rem}
+.metric{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem;border-top:3px solid var(--grid)}
+.metric.m-a{border-top-color:var(--a5)} .metric.m-wt{border-top-color:var(--a3)} .metric.m-wh{border-top-color:var(--a4)}
+.metric-lbl{font-family:'DM Mono',monospace;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.3rem;line-height:1.3}
+.metric-val{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;line-height:1}
+.metric-sub{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);margin-top:.25rem;line-height:1.4}
+
+.verdict{font-family:'DM Mono',monospace;font-size:.86rem;font-weight:500;padding:.6rem .9rem;margin-bottom:1rem;
+  border:1.5px solid;text-align:center;line-height:1.55}
+.v-tau{color:var(--a3);border-color:var(--a3);background:color-mix(in srgb,var(--a3) 12%,transparent)}
+.v-con{color:var(--a5);border-color:var(--a5);background:color-mix(in srgb,var(--a5) 12%,transparent)}
+.v-mul{color:var(--a1);border-color:var(--a1);background:color-mix(in srgb,var(--a1) 12%,transparent)}
+
+.plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
+.plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:.45rem;padding-bottom:.28rem;border-bottom:1px solid var(--grid)}
+canvas{width:100%;display:block}
+.hint{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--grid);padding-top:.4rem;margin-top:.4rem}
+
+.lcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.4rem}
+.lcard{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1rem}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--a2);letter-spacing:.07em;
+  text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
+.lcard-body{font-size:.83rem;line-height:1.75;color:var(--ink2)}
+.lcard-body strong{color:var(--ink)}
+.xlink{display:inline-block;margin-top:.5rem;font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.xlink:hover{background:var(--a4);color:var(--bg)}
+
+.help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
+.help-overlay.open{display:block}
+.help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
+  max-width:680px;width:93%;padding:1.4rem 1.6rem 1.8rem;box-shadow:0 12px 48px rgba(0,0,0,.4)}
+.help-box-h{font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:.7rem;padding-bottom:.5rem;border-bottom:1px solid var(--grid)}
+.help-close{float:right;font-family:'DM Mono',monospace;font-size:.78rem;padding:.2rem .6rem;
+  border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);margin-top:-.2rem}
+.help-close:hover{background:var(--ink);color:var(--bg)}
+.help-sh{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin:1rem 0 .35rem;padding-bottom:.25rem;border-bottom:1px solid var(--grid)}
+.help-sh:first-of-type{margin-top:.1rem}
+.help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
+.help-p strong{color:var(--ink)}
+.help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>Reliability: <em>Cronbach's α vs. McDonald's ω</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
+  <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="app">
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════════════ -->
+<div id="sidebar">
+
+  <div class="scard">
+    <div class="scard-title">Scenario</div>
+    <div class="btn-row">
+      <button class="mbtn" id="sc-tau" onclick="preset('tau')">Tau-equiv&shy;alent</button>
+      <button class="mbtn active" id="sc-con" onclick="preset('con')">Congen&shy;eric</button>
+      <button class="mbtn" id="sc-mul" onclick="preset('mul')">Multi&shy;dimensional</button>
+    </div>
+    <div class="hint" style="border-top:none;padding-top:.4rem;margin-bottom:0" id="sc-desc">Unequal loadings → α underestimates ω.</div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title">Items</div>
+    <div class="slider-row" style="margin-bottom:0">
+      <div class="slider-lbl"><span class="slider-name">k <em>(2 groups of k/2)</em></span><span class="slider-val" id="v-k">6</span></div>
+      <input type="range" id="s-k" min="4" max="8" step="2" value="6">
+    </div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a4)">General-Factor Loadings <span class="gk">λ</span><sub>g</sub></div>
+    <div id="lg-wrap"></div>
+  </div>
+
+  <div class="scard">
+    <div class="scard-title" style="color:var(--a6)">Group Factors <span class="gk">λ</span><sub>s</sub></div>
+    <div class="slider-row" style="margin-bottom:.3rem">
+      <div class="slider-lbl"><span class="slider-name">Strength <span class="gk">λ</span><sub>s</sub></span><span class="slider-val" style="color:var(--a6)" id="v-ls">0.00</span></div>
+      <input type="range" class="acc-s" id="s-ls" min="0" max="0.6" step="0.02" value="0">
+    </div>
+    <div class="hint" style="border-top:none;padding-top:.2rem;margin-bottom:0">0 = unidimensional. &gt;0 = two group factors (items 1…k/2 vs. rest) → multidimensionality.</div>
+  </div>
+
+</div><!-- #sidebar -->
+
+<!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <div class="story-box">
+    <div class="story-lbl">📋 What This Is About</div>
+    <strong>Cronbach's α</strong> is the most-reported reliability coefficient — and the most frequently misused.
+    It requires <strong>tau-equivalence</strong> (equal loadings) and <strong>unidimensionality</strong>. If these are
+    violated, α can <em>underestimate</em> reliability (unequal loadings) or <em>feign</em> unidimensionality
+    (multidimensionality) — exactly as with the 8-item cognitive test (V1–V4 verbal, S1–S4 spatial):
+    two factors, but a single α. <strong>McDonald's ω</strong> is the more robust alternative — in two
+    variants: ω<sub>total</sub> and ω<sub>hierarchical</sub>. This tool shows when each number misleads.
+    <em>Prerequisite: the measurement models (parallel/tau/congeneric).</em>
+    <div style="margin-top:.6rem">
+      <a class="xlink" href="KTT_Grundlagen.html" target="_blank">← CTT Foundations: reliability as a proportion of variance</a>
+    </div>
+  </div>
+
+  <div class="sec-h"><span class="cnum">①</span>The Three Coefficients</div>
+  <div class="metric-grid">
+    <div class="metric m-a">
+      <div class="metric-lbl">Cronbach's <span class="gk">α</span></div>
+      <div class="metric-val" id="m-alpha" style="color:var(--a5)">—</div>
+      <div class="metric-sub">requires tau-equiv. &amp; 1 dim.</div>
+    </div>
+    <div class="metric m-wt">
+      <div class="metric-lbl"><span class="gk">ω</span><sub>total</sub></div>
+      <div class="metric-val" id="m-wt" style="color:var(--a3)">—</div>
+      <div class="metric-sub">total shared variance</div>
+    </div>
+    <div class="metric m-wh">
+      <div class="metric-lbl"><span class="gk">ω</span><sub>hierarchical</sub></div>
+      <div class="metric-val" id="m-wh" style="color:var(--a4)">—</div>
+      <div class="metric-sub">general factor only</div>
+    </div>
+  </div>
+  <div class="verdict" id="verdict">—</div>
+
+  <div class="sec-h"><span class="cnum">②</span>Variance Decomposition of the Sum Score</div>
+  <div class="plot-box">
+    <div class="plot-title">What Does the Total Score's Variance Consist of? — and Where Do <span class="gk">α</span>, <span class="gk">ω<sub>t</sub></span>, <span class="gk">ω<sub>h</sub></span> Sit</div>
+    <canvas id="cv-var" height="150"></canvas>
+    <div class="hint" id="hint-var"></div>
+  </div>
+
+  <div class="sec-h"><span class="cnum">③</span>Split-Half — <span class="gk">α</span> ≈ Mean of All Test Halvings</div>
+  <div class="plot-box">
+    <div class="plot-title">Distribution of All Possible Split-Half Reliabilities (Spearman-Brown Corrected)</div>
+    <canvas id="cv-split" height="250"></canvas>
+    <div class="hint" id="hint-split"></div>
+  </div>
+
+  <div class="sec-h">Concepts</div>
+  <div class="lcard-grid">
+    <div class="lcard">
+      <div class="lcard-h">When <span class="gk">α</span> Underestimates</div>
+      <div class="lcard-body">With <strong>unequal loadings</strong> (congeneric), α — as an unweighted
+        sum score — treats all items the same and wastes information: α &lt; ω<sub>total</sub>. α is then a
+        <strong>lower bound</strong> on the true reliability. Solution: report ω<sub>total</sub>.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">When <span class="gk">α</span> Deceives</div>
+      <div class="lcard-body">With <strong>multidimensionality</strong> (strong group factors), α and ω<sub>total</sub>
+        also count the group variance as "reliable." A high α then suggests a homogeneity that doesn't exist.
+        <strong>ω<sub>hierarchical</sub></strong> shows how much really goes to the <em>single</em> general factor —
+        often alarmingly little.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h"><span class="gk">α</span> = Mean of the Split-Halves</div>
+      <div class="lcard-body">Split-half divides the test into two halves and correlates them (Spearman-Brown corrected).
+        The result depends on <em>how</em> you split. Cronbach's α is exactly the <strong>mean over all
+        possible halvings</strong> — panel ③ makes this visible.</div>
+    </div>
+    <div class="lcard">
+      <div class="lcard-h">KR-20 &amp; Practice</div>
+      <div class="lcard-body">For dichotomous (0/1) items, <strong>KR-20</strong> is nothing other than Cronbach's α.
+        The methodological literature (Revelle, McDonald, Flora) recommends reporting <strong>ω</strong> by default and,
+        when unidimensionality is in doubt, additionally <strong>ω<sub>h</sub></strong>.</div>
+    </div>
+    <div class="lcard" style="grid-column:1/-1">
+      <div class="lcard-h">The Measurement Chain</div>
+      <div class="lcard-body">This tool stands at the end of the chain: <strong>CTT Foundations</strong> (what is reliability) →
+        <strong>Factor Analysis</strong> (estimate loadings from data) → <strong>Measurement Models</strong> (which
+        assumption: parallel/tau/congeneric) → <strong>here</strong> (which coefficient is correct). The loadings ω
+        computes with come directly from a factor model.
+        <br><a class="xlink" href="KTT_Grundlagen.html" target="_blank">→ CTT Foundations</a>
+        <a class="xlink" href="Faktoranalyse.html" target="_blank">→ Factor Analysis</a>
+        <a class="xlink" href="Messmodelle.html" target="_blank">→ Measurement Models</a></div>
+    </div>
+  </div>
+
+</div><!-- #main -->
+</div><!-- #app -->
+
+<!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
+<div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
+  <div class="help-box">
+    <div class="help-box-h">Reliability <span class="gk">α</span> vs. <span class="gk">ω</span> — Background
+      <button class="help-close" onclick="toggleHelp()">✕ Close</button>
+    </div>
+
+    <div class="help-sh">The Model</div>
+    <p class="help-p">The items measure a <strong>general factor</strong> (the actual construct) with loading
+      λ<sub>g,i</sub>. Optionally there are two <strong>group factors</strong> (items 1…k/2 and the rest) with loading
+      λ<sub>s</sub> — standing in for multidimensionality / content clusters / correlated errors. Items are standardized
+      (Var = 1), so θ<sub>i</sub> = 1 − λ<sub>g,i</sub>² − λ<sub>s</sub>².</p>
+
+    <div class="help-sh">The Three Coefficients</div>
+    <span class="help-formula">Var(S)  = variance of the sum score = ΣΣ Cov(X_i,X_j)
+ω_total = [ (Σλg)² + Σ_groups(Σλs)² ] / Var(S)
+ω_hier  = (Σλg)² / Var(S)
+α       = k/(k−1) · ( 1 − Σ Var(X_i) / Var(S) )</span>
+    <p class="help-p"><strong>ω<sub>total</sub></strong> = the proportion of variance attributable to <em>all</em>
+      common factors (general + group) = total reliability. <strong>ω<sub>hierarchical</sub></strong> = the proportion
+      attributable to the <em>general factor alone</em> — the measure of how much a single sum score can carry.
+      <strong>α</strong> only uses item variances and covariances, without knowing the factor structure.</p>
+
+    <div class="help-sh">Three Scenarios</div>
+    <p class="help-p"><strong style="color:var(--a3)">Tau-equivalent</strong> (equal λg, λs = 0): α = ω<sub>t</sub> = ω<sub>h</sub>.
+      Here α is exactly correct.<br>
+      <strong style="color:var(--a5)">Congeneric</strong> (unequal λg, λs = 0): α &lt; ω<sub>t</sub> = ω<sub>h</sub>.
+      α <em>underestimates</em> — the more unequal the loadings, the larger the gap.<br>
+      <strong style="color:var(--a1)">Multidimensional</strong> (λs &gt; 0): ω<sub>h</sub> &lt;&lt; ω<sub>t</sub>.
+      α and ω<sub>t</sub> stay high, but only a small part is attributable to the general factor — a high α
+      <em>feigns</em> unidimensionality.</p>
+
+    <div class="help-sh">Why <span class="gk">α</span> Does Not Mean Unidimensionality</div>
+    <p class="help-p">A common misconception: "high α = homogeneous, unidimensional scale." Wrong — α already rises with
+      the number of items and with any positive correlations, regardless of where they come from. Several correlated
+      subdimensions drive α upward even though the scale is <em>not</em> unidimensional. Only ω<sub>h</sub> (or an
+      explicit factor analysis) reveals this.</p>
+
+    <div class="help-sh">Split-Half (Panel ③)</div>
+    <p class="help-p">Splitting the test into two halves and correcting the half-correlation via Spearman-Brown
+      (r<sub>sh</sub> = 2r/(1+r)) gives a split-half measure — but its value depends on the split chosen.
+      Cronbach's α is the <strong>average over all possible halvings</strong>. The histogram shows this
+      distribution; α (orange) sits at its center, ω<sub>t</sub> (green) usually above it.</p>
+
+    <div class="help-sh">Recommendation</div>
+    <p class="help-p">Report <strong>ω<sub>total</sub></strong> instead of α by default (or in addition). If
+      multidimensionality is suspected, report <strong>ω<sub>hierarchical</sub></strong> and check the factor
+      structure. α isn't "forbidden," but under tau-equivalence it's a special case of ω and otherwise
+      misleading.</p>
+
+    <div class="help-sh">Literature</div>
+    <p class="help-p">Cronbach, L. J. (1951). Coefficient alpha and the internal structure of tests. <em>Psychometrika, 16</em>, 297–334.<br>
+      McDonald, R. P. (1999). <em>Test Theory: A Unified Treatment.</em> Erlbaum.<br>
+      Revelle, W. &amp; Zinbarg, R. E. (2009). Coefficients alpha, beta, omega, and the glb. <em>Psychometrika, 74</em>, 145–154.<br>
+      Flora, D. B. (2020). Your coefficient alpha is probably wrong. <em>AMPPS, 3</em>(4), 484–501.</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════
+const ST = { k:6, lg:[], ls:0 };
+
+const PRESETS = {
+  tau: k => ({ lg:Array(k).fill(0.60), ls:0 }),
+  con: k => ({ lg:from([0.40,0.55,0.70,0.45,0.65,0.80,0.50,0.75],k), ls:0 }),
+  mul: k => ({ lg:Array(k).fill(0.50), ls:0.45 })
+};
+function from(arr,k){const r=[];for(let i=0;i<k;i++)r.push(arr[i%arr.length]);return r;}
+const SC_DESC = {
+  tau:'Equal loadings, unidimensional → α = ω (α is exact).',
+  con:'Unequal loadings → α underestimates ω<sub>total</sub>.',
+  mul:'Strong group factors → ω<sub>h</sub> ≪ ω<sub>t</sub>: α feigns unidimensionality.'
+};
+
+// ══════════════════════════════════════════════════════════════════════
+// MATH
+// ══════════════════════════════════════════════════════════════════════
+function groupOf(i){ return i < ST.k/2 ? 0 : 1; }
+function theta(i){ return Math.max(0.05, 1 - ST.lg[i]*ST.lg[i] - ST.ls*ST.ls); }
+function vari(i){ return ST.lg[i]*ST.lg[i] + ST.ls*ST.ls + theta(i); }
+function covMat(){
+  const k=ST.k, C=[];
+  for(let i=0;i<k;i++){C.push([]);for(let j=0;j<k;j++){
+    C[i][j] = i===j ? vari(i) : ST.lg[i]*ST.lg[j] + (groupOf(i)===groupOf(j)? ST.ls*ST.ls : 0);
+  }}
+  return C;
+}
+function compute(){
+  const k=ST.k, C=covMat();
+  let VarS=0; for(let i=0;i<k;i++)for(let j=0;j<k;j++)VarS+=C[i][j];
+  let sumVar=0; for(let i=0;i<k;i++)sumVar+=C[i][i];
+  const sumLg=ST.lg.reduce((a,b)=>a+b,0);
+  const genVar=sumLg*sumLg;
+  // group factor contributions
+  let grpVar=0;
+  for(let g=0;g<2;g++){let s=0;for(let i=0;i<k;i++)if(groupOf(i)===g)s+=ST.ls;grpVar+=s*s;}
+  const errVar=VarS-genVar-grpVar;
+  const alpha=k/(k-1)*(1-sumVar/VarS);
+  const wt=(genVar+grpVar)/VarS;
+  const wh=genVar/VarS;
+  return {C,VarS,alpha,wt,wh,genVar,grpVar,errVar};
+}
+
+// all balanced split-halves (item 0 fixed in A), Spearman-Brown corrected
+function splitHalves(){
+  const k=ST.k, C=covMat(), half=k/2, res=[];
+  const rest=[]; for(let i=1;i<k;i++)rest.push(i);
+  const combos=choose(rest, half-1);
+  for(const cc of combos){
+    const A=new Set([0,...cc]);
+    let vA=0,vB=0,cAB=0;
+    for(let i=0;i<k;i++)for(let j=0;j<k;j++){
+      const ai=A.has(i), aj=A.has(j);
+      if(ai&&aj)vA+=C[i][j]; else if(!ai&&!aj)vB+=C[i][j]; else cAB+=C[i][j];
+    }
+    cAB/=2; // counted both (i,j) and (j,i) across the divide
+    const r=cAB/Math.sqrt(vA*vB);
+    res.push(2*r/(1+r));
+  }
+  return res;
+}
+function choose(arr,m){
+  const out=[]; const n=arr.length;
+  (function rec(start,acc){
+    if(acc.length===m){out.push(acc.slice());return;}
+    for(let i=start;i<n;i++){acc.push(arr[i]);rec(i+1,acc);acc.pop();}
+  })(0,[]);
+  return out;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAW
+// ══════════════════════════════════════════════════════════════════════
+function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+
+function drawVar(R){
+  const c=document.getElementById('cv-var'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d');
+  const a1=cv('--a1'),a3=cv('--a3'),a4=cv('--a4'),a5=cv('--a5'),a6=cv('--a6'),ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),bg=cv('--bg'),paper=cv('--paper');
+  ctx.clearRect(0,0,W,H);
+  const ml=20,mr=20,mt=40,cH=34,cW=W-ml-mr;
+  const barY=mt;
+  const pGen=R.genVar/R.VarS, pGrp=R.grpVar/R.VarS, pErr=R.errVar/R.VarS;
+  const seg=[[pGen,a4,'General factor'],[pGrp,a6,'Group factors'],[pErr,a1,'Error']];
+  let x=ml;
+  seg.forEach(s=>{
+    const w=cW*s[0];
+    if(w>0.5){ctx.fillStyle=s[1];ctx.globalAlpha=.85;ctx.fillRect(x,barY,w,cH);ctx.globalAlpha=1;
+      if(w>46){ctx.fillStyle=bg;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';ctx.fillText((s[0]*100).toFixed(0)+'%',x+w/2,barY+cH/2+5);}}
+    x+=w;
+  });
+  ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.strokeRect(ml,barY,cW,cH);
+  // markers for ω_h (gen end), ω_t (gen+grp end), α
+  const toX=p=>ml+cW*p;
+  const mark=(p,col,lbl,yoff)=>{
+    const px=toX(p);
+    ctx.strokeStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px,barY-6);ctx.lineTo(px,barY+cH+6);ctx.stroke();
+    ctx.fillStyle=col;ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(lbl,px,barY+cH+6+yoff);
+  };
+  mark(R.wh,a4,'ω_h='+R.wh.toFixed(2),16);
+  mark(R.wt,a3,'ω_t='+R.wt.toFixed(2),16);
+  // alpha marker above bar
+  const ax=toX(R.alpha);
+  ctx.strokeStyle=a5;ctx.lineWidth=2;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(ax,barY-22);ctx.lineTo(ax,barY+cH);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=a5;ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('α='+R.alpha.toFixed(2),ax,barY-26);
+
+  document.getElementById('hint-var').innerHTML=
+    `The sum score consists of <b style="color:var(--a4)">general factor</b> (= ω<sub>h</sub>), `+
+    `<b style="color:var(--a6)">group factors</b>, and <b style="color:var(--a1)">error</b>. `+
+    `ω<sub>t</sub> = general+group (shared variance), ω<sub>h</sub> = general only. `+
+    `α (orange) sits <em>below</em> ω<sub>t</sub> for congeneric data, and <em>above</em> ω<sub>h</sub> under multidimensionality.`;
+}
+
+function drawSplit(R){
+  const sh=splitHalves();
+  const c=document.getElementById('cv-split'); const W=c.clientWidth; c.width=W; const H=c.height;
+  const ctx=c.getContext('2d');
+  const a1=cv('--a1'),a3=cv('--a3'),a5=cv('--a5'),a6=cv('--a6'),ink2=cv('--ink2'),ink3=cv('--ink3'),grid=cv('--grid'),bg=cv('--bg');
+  ctx.clearRect(0,0,W,H);
+  const ml=46,mr=18,mt=18,mb=42,cW=W-ml-mr,cH=H-mt-mb;
+  let lo=Math.min(...sh,R.alpha,R.wt), hi=Math.max(...sh,R.alpha,R.wt);
+  lo=Math.floor((lo-0.02)*20)/20; hi=Math.ceil((hi+0.02)*20)/20;
+  if(hi-lo<0.1){hi=lo+0.1;}
+  const nb=14, bins=Array(nb).fill(0);
+  sh.forEach(v=>{let b=Math.floor((v-lo)/(hi-lo)*nb);b=Math.max(0,Math.min(nb-1,b));bins[b]++;});
+  const ymax=Math.max(...bins,1);
+  const toX=v=>ml+cW*(v-lo)/(hi-lo);
+  const toY=n=>mt+cH*(1-n/ymax);
+  // grid x
+  ctx.font='13px DM Mono,monospace';
+  for(let t=0;t<=5;t++){const v=lo+(hi-lo)*t/5;const px=toX(v);
+    ctx.strokeStyle=grid;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(px,mt);ctx.lineTo(px,mt+cH);ctx.stroke();
+    ctx.fillStyle=ink3;ctx.textAlign='center';ctx.fillText(v.toFixed(2),px,mt+cH+16);}
+  // bars
+  const bw=cW/nb;
+  for(let b=0;b<nb;b++){if(bins[b]===0)continue;
+    const x=ml+b*bw, y=toY(bins[b]);
+    ctx.fillStyle=a6;ctx.globalAlpha=.55;ctx.fillRect(x+1,y,bw-2,mt+cH-y);ctx.globalAlpha=1;
+    ctx.strokeStyle=a6;ctx.lineWidth=1;ctx.strokeRect(x+1,y,bw-2,mt+cH-y);}
+  // axis
+  ctx.strokeStyle=ink3;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ml,mt+cH);ctx.lineTo(ml+cW,mt+cH);ctx.stroke();
+  ctx.fillStyle=ink2;ctx.font='13px DM Mono,monospace';ctx.textAlign='center';
+  ctx.fillText('Split-Half Reliability (Spearman-Brown)',ml+cW/2,H-4);
+  ctx.save();ctx.translate(14,mt+cH/2);ctx.rotate(-Math.PI/2);ctx.fillText('Number of Splits',0,0);ctx.restore();
+  // markers α and ω_t
+  const vline=(v,col,lbl,up)=>{const px=toX(v);
+    ctx.strokeStyle=col;ctx.lineWidth=2.2;ctx.setLineDash([5,3]);ctx.beginPath();ctx.moveTo(px,mt);ctx.lineTo(px,mt+cH);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=col;ctx.font='bold 13px DM Mono,monospace';ctx.textAlign='center';ctx.fillText(lbl,px,mt+(up?-3:11));};
+  vline(R.alpha,a5,'α='+R.alpha.toFixed(3),true);
+  vline(R.wt,a3,'ω_t='+R.wt.toFixed(3),false);
+  const mean=sh.reduce((a,b)=>a+b,0)/sh.length;
+  document.getElementById('hint-split').innerHTML=
+    `${sh.length} possible halvings · mean = <strong>${mean.toFixed(3)}</strong> ≈ α = <strong>${R.alpha.toFixed(3)}</strong>. `+
+    `The individual splits vary depending on the division — α summarizes them, ω<sub>t</sub> (green) uses the factor structure and usually sits higher.`;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// UPDATE
+// ══════════════════════════════════════════════════════════════════════
+function update(){
+  const R=compute();
+  document.getElementById('m-alpha').textContent=R.alpha.toFixed(3);
+  document.getElementById('m-wt').textContent=R.wt.toFixed(3);
+  document.getElementById('m-wh').textContent=R.wh.toFixed(3);
+  // verdict
+  const tol=0.012;
+  const lgEq=ST.lg.every(v=>Math.abs(v-ST.lg[0])<tol);
+  const multi=ST.ls>0.08;
+  const v=document.getElementById('verdict');
+  if(multi){
+    v.className='verdict v-mul';
+    v.innerHTML=`<strong>Multidimensional:</strong> ω<sub>h</sub>=${R.wh.toFixed(2)} ≪ ω<sub>t</sub>=${R.wt.toFixed(2)}. `+
+      `α=${R.alpha.toFixed(2)} looks high, but only ${(R.wh*100).toFixed(0)}% of the variance is attributable to the general factor — α feigns unidimensionality.`;
+  } else if(lgEq){
+    v.className='verdict v-tau';
+    v.innerHTML=`<strong>Tau-equivalent:</strong> α = ω<sub>t</sub> = ω<sub>h</sub> = ${R.alpha.toFixed(3)}. Here α is exactly correct.`;
+  } else {
+    v.className='verdict v-con';
+    v.innerHTML=`<strong>Congeneric:</strong> α=${R.alpha.toFixed(3)} &lt; ω<sub>t</sub>=${R.wt.toFixed(3)} `+
+      `(gap ${(R.wt-R.alpha).toFixed(3)}). α underestimates — report ω.`;
+  }
+  drawVar(R); drawSplit(R);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════════════════════════════════════
+function buildSliders(){
+  const w=document.getElementById('lg-wrap'); w.innerHTML='';
+  for(let i=0;i<ST.k;i++){
+    w.insertAdjacentHTML('beforeend',`
+      <div class="slider-row">
+        <div class="slider-lbl"><span class="slider-name"><span class="gk">λ</span><sub>g${i+1}</sub> <em>${i<ST.k/2?'(A)':'(B)'}</em></span><span class="slider-val" style="color:var(--a4)" id="vg-${i}">${ST.lg[i].toFixed(2)}</span></div>
+        <input type="range" class="acc-g" id="sg-${i}" min="0.2" max="0.9" step="0.01" value="${ST.lg[i]}">
+      </div>`);
+    document.getElementById('sg-'+i).addEventListener('input',function(){
+      ST.lg[i]=parseFloat(this.value); document.getElementById('vg-'+i).textContent=ST.lg[i].toFixed(2);
+      clearPreset(); update();
+    });
+  }
+}
+function clearPreset(){ ['tau','con','mul'].forEach(k=>document.getElementById('sc-'+k).classList.remove('active')); }
+
+function preset(name){
+  const p=PRESETS[name](ST.k); ST.lg=p.lg.slice(); ST.ls=p.ls;
+  ['tau','con','mul'].forEach(k=>document.getElementById('sc-'+k).classList.toggle('active',k===name));
+  document.getElementById('sc-desc').innerHTML=SC_DESC[name];
+  document.getElementById('s-ls').value=ST.ls; document.getElementById('v-ls').textContent=ST.ls.toFixed(2);
+  buildSliders(); update();
+}
+document.getElementById('s-k').addEventListener('input',function(){
+  ST.k=parseInt(this.value); document.getElementById('v-k').textContent=ST.k;
+  const def=PRESETS.con(8);
+  while(ST.lg.length<ST.k)ST.lg.push(def.lg[ST.lg.length]);
+  ST.lg=ST.lg.slice(0,ST.k);
+  buildSliders(); update();
+});
+document.getElementById('s-ls').addEventListener('input',function(){
+  ST.ls=parseFloat(this.value); document.getElementById('v-ls').textContent=ST.ls.toFixed(2);
+  clearPreset(); update();
+});
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
+function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+
+// init
+(function(){const p=PRESETS.con(ST.k);ST.lg=p.lg.slice();ST.ls=p.ls;})();
+buildSliders();
+update();
+window.addEventListener('resize',()=>{if(window._rt)clearTimeout(window._rt);window._rt=setTimeout(update,120);});
+</script>
+</body>
+</html>
