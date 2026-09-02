@@ -668,6 +668,12 @@ function lavaanCode(allowCross,allowPhi){
 // DRAW — 2-factor path diagram
 // ══════════════════════════════════════════════════════════════════════
 function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function drawArrowHead(ctx,tipX,tipY,ang,size,color){
+  ctx.beginPath();ctx.moveTo(tipX,tipY);
+  ctx.lineTo(tipX-size*Math.cos(ang-0.42),tipY-size*Math.sin(ang-0.42));
+  ctx.lineTo(tipX-size*Math.cos(ang+0.42),tipY-size*Math.sin(ang+0.42));
+  ctx.closePath();ctx.fillStyle=color;ctx.fill();
+}
 function drawPath(state){
   const c=document.getElementById('cv-path'); const W=c.clientWidth; c.width=W; const H=c.height;
   const ctx=c.getContext('2d');
@@ -687,8 +693,7 @@ function drawPath(state){
       ctx.strokeStyle=ink2; ctx.lineWidth=1+Math.min(1.4,Math.abs(lamArr[i]))*2.2;
       ctx.beginPath();ctx.moveTo(fx,fy+fry);ctx.lineTo(cx,iy);ctx.stroke();
       const ang=Math.atan2(iy-(fy+fry),cx-fx);
-      ctx.beginPath();ctx.moveTo(cx,iy);ctx.lineTo(cx-7*Math.cos(ang-0.4),iy-7*Math.sin(ang-0.4));
-      ctx.lineTo(cx-7*Math.cos(ang+0.4),iy-7*Math.sin(ang+0.4));ctx.closePath();ctx.fillStyle=ink2;ctx.fill();
+      drawArrowHead(ctx,cx,iy,ang,12,ink2);
       const lx=fx+(cx-fx)*0.55, ly=fy+fry+(iy-(fy+fry))*0.55;
       ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(lx-25,ly-9,50,18);ctx.globalAlpha=1;
       ctx.fillStyle=col;ctx.font='bold '+fS(12)+'px DM Mono,monospace';ctx.textAlign='center';
@@ -702,7 +707,7 @@ function drawPath(state){
   allCx.forEach((cx,i)=>{
     ctx.strokeStyle=a1;ctx.lineWidth=1.4;
     ctx.beginPath();ctx.moveTo(cx,ey-er);ctx.lineTo(cx,iy+ih);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(cx,iy+ih);ctx.lineTo(cx-5,iy+ih+7);ctx.lineTo(cx+5,iy+ih+7);ctx.closePath();ctx.fillStyle=a1;ctx.fill();
+    ctx.beginPath();ctx.moveTo(cx,iy+ih);ctx.lineTo(cx-8,iy+ih+11);ctx.lineTo(cx+8,iy+ih+11);ctx.closePath();ctx.fillStyle=a1;ctx.fill();
     ctx.beginPath();ctx.arc(cx,ey,er,0,2*Math.PI);ctx.fillStyle=bg;ctx.fill();ctx.strokeStyle=a1;ctx.lineWidth=1.6;ctx.stroke();
     ctx.fillStyle=a1;ctx.font=fS(11)+'px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('e'+(i+1),cx,ey+4);
     ctx.fillText('θ='+state.params.theta[i].toFixed(2),cx,ey+er+fS(14));
@@ -721,26 +726,33 @@ function drawPath(state){
     ctx.font=fS(11)+'px DM Mono,monospace';ctx.fillText('Var=1',fx,fy+13);
   });
 
-  // correlation arc
+  // correlation arc — undirected, so both ends get an arrowhead (single-headed arrows elsewhere = directed)
   const midY=fy-fry-20*s;
-  ctx.strokeStyle= ALLOW_PHI? a6 : ink3; ctx.lineWidth=2;
+  const phiCol = ALLOW_PHI? a6 : ink3;
+  const p0={x:f1x+frx*0.6, y:fy-fry*0.8}, p1={x:f2x-frx*0.6, y:fy-fry*0.8}, cp={x:W/2, y:midY};
+  ctx.strokeStyle= phiCol; ctx.lineWidth=2;
   if(!ALLOW_PHI) ctx.setLineDash([4,4]);
   ctx.beginPath();
-  ctx.moveTo(f1x+frx*0.6, fy-fry*0.8);
-  ctx.quadraticCurveTo(W/2, midY, f2x-frx*0.6, fy-fry*0.8);
+  ctx.moveTo(p0.x, p0.y);
+  ctx.quadraticCurveTo(cp.x, cp.y, p1.x, p1.y);
   ctx.stroke(); ctx.setLineDash([]);
+  drawArrowHead(ctx,p0.x,p0.y,Math.atan2(p0.y-cp.y,p0.x-cp.x),12,phiCol);
+  drawArrowHead(ctx,p1.x,p1.y,Math.atan2(p1.y-cp.y,p1.x-cp.x),12,phiCol);
   ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(W/2-42,midY-11,84,20);ctx.globalAlpha=1;
-  ctx.fillStyle= ALLOW_PHI? a6 : ink3;
+  ctx.fillStyle= phiCol;
   ctx.font='bold '+fS(12)+'px DM Mono,monospace';ctx.textAlign='center';
   ctx.fillText(ALLOW_PHI? 'φ='+state.params.phi.toFixed(2) : 'Φ fix = 0', W/2, midY+4);
 
-  // S1 cross-loading F1 -> S1
+  // S1 cross-loading F1 -> S1 — directed, single arrowhead at the target
   const s1x=cxsS[0];
   if(ALLOW_CROSS || state.crossS1>0.02){
-    ctx.strokeStyle = ALLOW_CROSS? a4 : a1; ctx.lineWidth=1.6;
+    const crossCol = ALLOW_CROSS? a4 : a1;
+    const csx0=f1x, csy0=fy+fry*0.3, csx1=s1x, csy1=iy+ih*0.3;
+    ctx.strokeStyle = crossCol; ctx.lineWidth=1.6;
     if(!ALLOW_CROSS) ctx.setLineDash([3,4]);
-    ctx.beginPath();ctx.moveTo(f1x,fy+fry*0.3);ctx.lineTo(s1x,iy+ih*0.3);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(csx0,csy0);ctx.lineTo(csx1,csy1);ctx.stroke();
     ctx.setLineDash([]);
+    drawArrowHead(ctx,csx1,csy1,Math.atan2(csy1-csy0,csx1-csx0),12,crossCol);
     const clx=f1x+(s1x-f1x)*0.68, cly=(fy+fry*0.3)+((iy+ih*0.3)-(fy+fry*0.3))*0.68;
     const label = ALLOW_CROSS? 'λx='+state.params.crossS1.toFixed(2) : 'wahr .'+Math.round(state.crossS1*100)+', Modell fix=0';
     ctx.font=fS(11)+'px DM Mono,monospace';

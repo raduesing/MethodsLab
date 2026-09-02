@@ -769,16 +769,19 @@ function lavaanCode(mediation,allowFull){
 // DRAW — path diagram (2 or 3 constructs, directed structural arrows)
 // ══════════════════════════════════════════════════════════════════════
 function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function drawArrowHead(ctx,tipX,tipY,ang,size,color){
+  ctx.beginPath();ctx.moveTo(tipX,tipY);
+  ctx.lineTo(tipX-size*Math.cos(ang-0.42),tipY-size*Math.sin(ang-0.42));
+  ctx.lineTo(tipX-size*Math.cos(ang+0.42),tipY-size*Math.sin(ang+0.42));
+  ctx.closePath();ctx.fillStyle=color;ctx.fill();
+}
 function drawArrow(ctx,x1,y1,x2,y2,color,width,dashed,label,labelColor,paper){
   ctx.strokeStyle=color; ctx.lineWidth=width;
   if(dashed) ctx.setLineDash([5,4]);
   ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
   ctx.setLineDash([]);
   const ang=Math.atan2(y2-y1,x2-x1);
-  ctx.beginPath();ctx.moveTo(x2,y2);
-  ctx.lineTo(x2-9*Math.cos(ang-0.35),y2-9*Math.sin(ang-0.35));
-  ctx.lineTo(x2-9*Math.cos(ang+0.35),y2-9*Math.sin(ang+0.35));
-  ctx.closePath();ctx.fillStyle=color;ctx.fill();
+  drawArrowHead(ctx,x2,y2,ang,14,color);
   if(label){
     const lx=x1+(x2-x1)*0.5, ly=y1+(y2-y1)*0.5;
     ctx.font='bold 13px DM Mono,monospace';
@@ -821,12 +824,11 @@ function drawPath(state){
       ctx.strokeStyle=ink2; ctx.lineWidth=1+Math.min(1.4,Math.abs(con.lamSlice[i]))*2.2;
       ctx.beginPath();ctx.moveTo(con.fx,fy+fry);ctx.lineTo(cx,iy);ctx.stroke();
       const ang=Math.atan2(iy-(fy+fry),cx-con.fx);
-      ctx.beginPath();ctx.moveTo(cx,iy);ctx.lineTo(cx-7*Math.cos(ang-0.4),iy-7*Math.sin(ang-0.4));
-      ctx.lineTo(cx-7*Math.cos(ang+0.4),iy-7*Math.sin(ang+0.4));ctx.closePath();ctx.fillStyle=ink2;ctx.fill();
+      drawArrowHead(ctx,cx,iy,ang,12,ink2);
 
       ctx.strokeStyle=a1;ctx.lineWidth=1.4;
       ctx.beginPath();ctx.moveTo(cx,ey-er);ctx.lineTo(cx,iy+ih);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(cx,iy+ih);ctx.lineTo(cx-5,iy+ih+7);ctx.lineTo(cx+5,iy+ih+7);ctx.closePath();ctx.fillStyle=a1;ctx.fill();
+      ctx.beginPath();ctx.moveTo(cx,iy+ih);ctx.lineTo(cx-8,iy+ih+11);ctx.lineTo(cx+8,iy+ih+11);ctx.closePath();ctx.fillStyle=a1;ctx.fill();
       ctx.beginPath();ctx.arc(cx,ey,er,0,2*Math.PI);ctx.fillStyle=bg;ctx.fill();ctx.strokeStyle=a1;ctx.lineWidth=1.6;ctx.stroke();
       ctx.fillStyle=a1;ctx.font=fS(10)+'px DM Mono,monospace';ctx.textAlign='center';
       ctx.fillText('θ='+con.thetaSlice[i].toFixed(2),cx,ey+er+fS(13));
@@ -854,27 +856,25 @@ function drawPath(state){
       'a='+state.params.a.toFixed(2), a6, paper);
     drawArrow(ctx, M.fx+frx*1.05, fy-6*s, Y.fx-frx*1.05, fy-6*s, a6, 2.2, false,
       'b='+state.params.b.toFixed(2), a6, paper);
-    // direct path c', drawn as a lower curve beneath the item boxes
-    const curveY=ey+er+fS(34);
+    // direct path c', drawn as an upper curve arcing over the M construct (kept off the
+    // item/error area below, which is already crowded with the theta labels)
     const cpFixed = ALLOW_FULL;
     const cpVal = cpFixed? state.cp : state.params.cp;
     const col = cpFixed? ink3 : a1;
+    const cCtrl={x:W/2, y:fy-fry-20*s};
+    const cStart={x:X.fx+frx*0.6, y:fy-fry*0.8}, cEnd={x:Y.fx-frx*0.6, y:fy-fry*0.8};
     ctx.strokeStyle=col; ctx.lineWidth=2;
     if(cpFixed) ctx.setLineDash([5,4]);
     ctx.beginPath();
-    ctx.moveTo(X.fx, ey+er+8*s);
-    ctx.quadraticCurveTo(W/2, curveY+18*s, Y.fx, ey+er+8*s);
+    ctx.moveTo(cStart.x, cStart.y);
+    ctx.quadraticCurveTo(cCtrl.x, cCtrl.y, cEnd.x, cEnd.y);
     ctx.stroke(); ctx.setLineDash([]);
-    const ang=Math.atan2(8,(Y.fx-X.fx)*0.15);
-    ctx.beginPath();ctx.moveTo(Y.fx,ey+er+8*s);
-    ctx.lineTo(Y.fx-10,ey+er+8*s-6);
-    ctx.lineTo(Y.fx-4,ey+er+8*s+8);
-    ctx.closePath();ctx.fillStyle=col;ctx.fill();
+    drawArrowHead(ctx,cEnd.x,cEnd.y,Math.atan2(cEnd.y-cCtrl.y,cEnd.x-cCtrl.x),13,col);
     const label = cpFixed? "c' fix = 0" : "c'="+cpVal.toFixed(2);
     ctx.font='bold 13px DM Mono,monospace';
     const tw=ctx.measureText(label).width+12;
-    ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(W/2-tw/2,curveY+18*s-10,tw,20);ctx.globalAlpha=1;
-    ctx.fillStyle=col;ctx.textAlign='center';ctx.fillText(label,W/2,curveY+18*s+5);
+    ctx.fillStyle=paper;ctx.globalAlpha=.92;ctx.fillRect(W/2-tw/2,cCtrl.y-10,tw,20);ctx.globalAlpha=1;
+    ctx.fillStyle=col;ctx.textAlign='center';ctx.fillText(label,W/2,cCtrl.y+5);
   }
 }
 
