@@ -199,17 +199,17 @@ canvas{display:block;width:100%}
       <button class="scen-btn act" data-lam="70" data-cross="10" data-phi="0"
               onclick="setScen(this)">
         <span><span class="circ">①</span> Orthogonal &nbsp;&mdash;&nbsp; <span class="gk">φ</span> = 0</span>
-        <span class="scen-sub">Unabhängige Faktoren &mdash; kein g &mdash; <span class="gk">ω</span><sub>h</sub> = 0</span>
+        <span class="scen-sub">Unabhängige Faktoren &mdash; g nur durch Kreuzladung &mdash; <span class="gk">ω</span><sub>h</sub> &asymp; .37</span>
       </button>
       <button class="scen-btn" data-lam="70" data-cross="10" data-phi="40"
               onclick="setScen(this)">
         <span><span class="circ">②</span> Oblique &nbsp;&mdash;&nbsp; <span class="gk">φ</span> = .40</span>
-        <span class="scen-sub">Moderate Faktorkorrelation &mdash; <span class="gk">ω</span><sub>h</sub> &asymp; .51</span>
+        <span class="scen-sub">Moderate Faktorkorrelation &mdash; <span class="gk">ω</span><sub>h</sub> &asymp; .68</span>
       </button>
       <button class="scen-btn" data-lam="70" data-cross="10" data-phi="70"
               onclick="setScen(this)">
         <span><span class="circ">③</span> Stark oblique &nbsp;&mdash;&nbsp; <span class="gk">φ</span> = .70</span>
-        <span class="scen-sub">Nahezu unidimensional &mdash; <span class="gk">ω</span><sub>h</sub> &asymp; .75</span>
+        <span class="scen-sub">Nahezu unidimensional &mdash; <span class="gk">ω</span><sub>h</sub> &asymp; .82</span>
       </button>
     </div>
   </div>
@@ -231,10 +231,10 @@ canvas{display:block;width:100%}
 
   <div class="erklaer">
     <strong>Beispiel:</strong> 300 Personen bearbeiten 8 kognitive Tests. <em>V1–V4</em> = Verbale Fähigkeiten, <em>S1–S4</em> = Räumliches Denken. Die Szenarien variieren <strong><span class="gk">φ</span> (Faktorkorrelation)</strong>:<br>
-    <em>① <span class="gk">φ</span>=0</em>: unabhängige Faktoren, kein g &rarr; <span class="gk">ω</span><sub>h</sub> = 0<br>
-    <em>② <span class="gk">φ</span>=.40</em>: moderate Faktorkorrelation &rarr; <span class="gk">ω</span><sub>h</sub> &asymp; .51<br>
-    <em>③ <span class="gk">φ</span>=.70</em>: stark oblique, fast unidimensional &rarr; <span class="gk">ω</span><sub>h</sub> &asymp; .75<br>
-    &rarr; <em><span class="gk">ω</span><sub>h</sub> wächst mit <span class="gk">φ</span> — direktes Maß für Unidimensionalität.</em>
+    <em>① <span class="gk">φ</span>=0</em>: unabhängige Faktoren, g nur durch die Kreuzladung &rarr; <span class="gk">ω</span><sub>h</sub> &asymp; .37<br>
+    <em>② <span class="gk">φ</span>=.40</em>: moderate Faktorkorrelation &rarr; <span class="gk">ω</span><sub>h</sub> &asymp; .68<br>
+    <em>③ <span class="gk">φ</span>=.70</em>: stark oblique, fast unidimensional &rarr; <span class="gk">ω</span><sub>h</sub> &asymp; .82<br>
+    &rarr; <em><span class="gk">ω</span><sub>h</sub> wächst mit <span class="gk">φ</span> und mit der Kreuzladung — direktes Maß für Unidimensionalität.</em>
   </div>
 
 </div><!-- /sidebar -->
@@ -356,7 +356,7 @@ canvas{display:block;width:100%}
     </div>
     <div class="lcard">
       <div class="lcard-h"><span class="circ">⑥</span> Omega total &amp; hierarchisch</div>
-      <div class="lcard-body"><strong>Omega total</strong> berücksichtigt alle Faktoren und ist eine bessere untere Schranke der Reliabilität als Alpha. <strong>Omega hierarchisch</strong> (Schmid-Leiman) misst nur den Anteil eines übergeordneten Generalfaktors — es steigt mit phi und ist 0 bei orthogonalen Faktoren (kein g). Hohe phi → mehr gemeinsame Varianz → omegas hierarchisch steigt.</div>
+      <div class="lcard-body"><strong>Omega total</strong> berücksichtigt alle Faktoren und ist eine bessere untere Schranke der Reliabilität als Alpha. <strong>Omega hierarchisch</strong> (Schmid-Leiman) misst nur den Anteil eines übergeordneten Generalfaktors — es steigt sowohl mit phi als auch mit der Kreuzladung und ist nur 0, wenn beide 0 sind (dann wirklich zwei getrennte Faktoren ohne jede gemeinsame Varianz).</div>
     </div>
   </div>
 
@@ -392,8 +392,8 @@ canvas{display:block;width:100%}
     <code class="help-formula">sigma²_X = 8 + 24·r_within + 32·r_between &nbsp;(Varianz des Gesamtscores)</code>
     <code class="help-formula">Alpha = (8/7)·(sigma²_X − 8) / sigma²_X</code>
     <code class="help-formula">Omega_total = 1 − 8·(1 − r_within) / sigma²_X</code>
-    <code class="help-formula">Omega_hier = 64·(lambda+lambda_x)²·phi / sigma²_X &nbsp;(Schmid-Leiman)</code>
-    <p class="help-p"><strong>Omega hierarchisch</strong> basiert auf der Schmid-Leiman-Orthogonalisierung: Bei obliquen Faktoren mit Korrelation phi können die gemeinsamen Varianzanteile auf einen höhergeordneten Generalfaktor g zurückgeführt werden. Die g-Ladung pro Item beträgt (lambda + lambda_x)·sqrt(phi). Omega hierarchisch = 0 wenn phi = 0 (keine korrelierenden Faktoren, kein g).</p>
+    <code class="help-formula">Omega_hier = 64·r_between / sigma²_X &nbsp;(Schmid-Leiman)</code>
+    <p class="help-p"><strong>Omega hierarchisch</strong> basiert auf der Schmid-Leiman-Orthogonalisierung: Die Ladung jedes Items auf einen übergeordneten Generalfaktor g beträgt sqrt(r_between) — denn mit orthogonalen Gruppenfaktoren gilt für zwei Items aus verschiedenen Gruppen Cov = g² exakt, egal ob die gemeinsame Varianz über phi (korrelierte Faktoren), über Kreuzladungen oder über beides entsteht. Omega hierarchisch = 0 nur, wenn r_between = 0 ist (weder phi noch Kreuzladung erzeugen gemeinsame Varianz).</p>
 
     <div class="help-sh">Biplot & Korrelationsmatrix</div>
     <p class="help-p">Der Biplot zeigt jedes Item als Punkt im F1/F2-Koordinatensystem. Items nahe (1,0) laden hoch auf F1; nahe (0,1) hoch auf F2. Nach Varimax-Rotation clustern Items nahe den Achsen (Einfachstruktur). Bei Oblique werden die Faktorachsen im Winkel arccos(phi) dargestellt.</p>
@@ -588,8 +588,10 @@ function computeFA(){
   const alpha =(8/7)*(sigX2-8)/sigX2;
   // Omega total = 1 - sum(u²)/sigX2
   const omegaT=1-8*(1-h2val)/sigX2;
-  // Omega hierarchical (Schmid-Leiman): g-loading = (lam+cross)*sqrt(phi)
-  const omegaH=64*(lam+cross)*(lam+cross)*phi/sigX2;
+  // Omega hierarchical (Schmid-Leiman, exact bifactor form): g-loading = sqrt(r_between) per item,
+  // since with orthogonal group factors Cov(V_i,S_j)=g² exactly. (lam+cross)*sqrt(phi) only
+  // matches this when cross=0 — it misses the general factor cross-loadings create even at phi=0.
+  const omegaH=64*r_between/sigX2;
 
   return{R,Rr,eigVals,eigValsRr,unrotated,rotLoads,h2,u2,phi,lam,cross,alpha,omegaT,omegaH};
 }
@@ -801,12 +803,12 @@ function renderReliability(alpha,omegaT,omegaH,phi){
   document.getElementById('val-wh').textContent=omegaH<0.001?'0.000':omegaH.toFixed(3);
   // Unidimensionality interpretation of omega_h (innerHTML for Greek)
   let note='';
-  if(phi<0.01){
-    note='<strong>φ = 0:</strong> Die Faktoren F1 und F2 sind orthogonal — kein Generalfaktor g. ω<sub>h</sub> = 0: Ein Gesamtscore ist <em>nicht</em> eindimensional begründet. α und ω<sub>t</sub> messen interne Konsistenz, sagen aber nichts über Unidimensionalität.';
+  if(omegaH<0.001){
+    note='<strong>Kein Generalfaktor:</strong> Weder Faktorkorrelation (φ = '+phi.toFixed(2)+') noch Kreuzladung erzeugen hier gemeinsame Varianz zwischen den beiden Item-Gruppen. ω<sub>h</sub> = 0: Ein Gesamtscore ist <em>nicht</em> eindimensional begründet. α und ω<sub>t</sub> messen interne Konsistenz, sagen aber nichts über Unidimensionalität.';
   } else if(omegaH/omegaT>0.91){
-    note='<strong>Nahezu unidimensional (φ = '+phi.toFixed(2)+'):</strong> Alle drei Maße nähern sich einander an. ω<sub>h</sub> = '+omegaH.toFixed(3)+' — der größte Teil der Varianz geht auf einen übergeordneten Generalfaktor g zurück. Bei φ → 1 gilt α = ω<sub>t</sub> = ω<sub>h</sub>: echte Unidimensionalität.';
+    note='<strong>Nahezu unidimensional:</strong> Alle drei Maße nähern sich einander an. ω<sub>h</sub> = '+omegaH.toFixed(3)+' — der größte Teil der Varianz geht auf einen übergeordneten Generalfaktor g zurück (durch φ, Kreuzladung oder beides). Bei vollständiger Überlappung gilt α = ω<sub>t</sub> = ω<sub>h</sub>: echte Unidimensionalität.';
   } else {
-    note='<strong>Oblique Faktoren (φ = '+phi.toFixed(2)+'):</strong> Es gibt einen Generalfaktor g. ω<sub>h</sub> = '+omegaH.toFixed(3)+' wächst mit φ und misst den g-Varianzanteil — direktes Maß für Unidimensionalität. α = '+alpha.toFixed(3)+' bleibt dabei nahezu konstant und erkennt die Unidimensionalitätsänderung nicht.';
+    note='<strong>Zwei verbundene Faktoren (φ = '+phi.toFixed(2)+'):</strong> Es gibt einen Generalfaktor g. ω<sub>h</sub> = '+omegaH.toFixed(3)+' wächst mit φ und mit der Kreuzladung und misst den g-Varianzanteil — direktes Maß für Unidimensionalität. α = '+alpha.toFixed(3)+' bleibt dabei nahezu konstant und erkennt Unidimensionalitätsänderungen kaum.';
   }
   document.getElementById('reli-note').innerHTML=note;
 }

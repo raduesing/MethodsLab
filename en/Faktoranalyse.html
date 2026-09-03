@@ -199,17 +199,17 @@ canvas{display:block;width:100%}
       <button class="scen-btn act" data-lam="70" data-cross="10" data-phi="0"
               onclick="setScen(this)">
         <span><span class="circ">①</span> Orthogonal &nbsp;&mdash;&nbsp; <span class="gk">φ</span> = 0</span>
-        <span class="scen-sub">Independent factors &mdash; no g &mdash; <span class="gk">ω</span><sub>h</sub> = 0</span>
+        <span class="scen-sub">Independent factors &mdash; g only via cross-loading &mdash; <span class="gk">ω</span><sub>h</sub> &asymp; .37</span>
       </button>
       <button class="scen-btn" data-lam="70" data-cross="10" data-phi="40"
               onclick="setScen(this)">
         <span><span class="circ">②</span> Oblique &nbsp;&mdash;&nbsp; <span class="gk">φ</span> = .40</span>
-        <span class="scen-sub">Moderate factor correlation &mdash; <span class="gk">ω</span><sub>h</sub> &asymp; .51</span>
+        <span class="scen-sub">Moderate factor correlation &mdash; <span class="gk">ω</span><sub>h</sub> &asymp; .68</span>
       </button>
       <button class="scen-btn" data-lam="70" data-cross="10" data-phi="70"
               onclick="setScen(this)">
         <span><span class="circ">③</span> Strongly oblique &nbsp;&mdash;&nbsp; <span class="gk">φ</span> = .70</span>
-        <span class="scen-sub">Nearly unidimensional &mdash; <span class="gk">ω</span><sub>h</sub> &asymp; .75</span>
+        <span class="scen-sub">Nearly unidimensional &mdash; <span class="gk">ω</span><sub>h</sub> &asymp; .82</span>
       </button>
     </div>
   </div>
@@ -231,10 +231,10 @@ canvas{display:block;width:100%}
 
   <div class="erklaer">
     <strong>Example:</strong> 300 people complete 8 cognitive tests. <em>V1–V4</em> = verbal ability, <em>S1–S4</em> = spatial reasoning. The scenarios vary <strong><span class="gk">φ</span> (factor correlation)</strong>:<br>
-    <em>① <span class="gk">φ</span>=0</em>: independent factors, no g &rarr; <span class="gk">ω</span><sub>h</sub> = 0<br>
-    <em>② <span class="gk">φ</span>=.40</em>: moderate factor correlation &rarr; <span class="gk">ω</span><sub>h</sub> &asymp; .51<br>
-    <em>③ <span class="gk">φ</span>=.70</em>: strongly oblique, nearly unidimensional &rarr; <span class="gk">ω</span><sub>h</sub> &asymp; .75<br>
-    &rarr; <em><span class="gk">ω</span><sub>h</sub> grows with <span class="gk">φ</span> — a direct measure of unidimensionality.</em>
+    <em>① <span class="gk">φ</span>=0</em>: independent factors, g only via the cross-loading &rarr; <span class="gk">ω</span><sub>h</sub> &asymp; .37<br>
+    <em>② <span class="gk">φ</span>=.40</em>: moderate factor correlation &rarr; <span class="gk">ω</span><sub>h</sub> &asymp; .68<br>
+    <em>③ <span class="gk">φ</span>=.70</em>: strongly oblique, nearly unidimensional &rarr; <span class="gk">ω</span><sub>h</sub> &asymp; .82<br>
+    &rarr; <em><span class="gk">ω</span><sub>h</sub> grows with <span class="gk">φ</span> and with the cross-loading — a direct measure of unidimensionality.</em>
   </div>
 
 </div><!-- /sidebar -->
@@ -356,7 +356,7 @@ canvas{display:block;width:100%}
     </div>
     <div class="lcard">
       <div class="lcard-h"><span class="circ">⑥</span> Omega Total &amp; Hierarchical</div>
-      <div class="lcard-body"><strong>Omega total</strong> accounts for all factors and is a better lower bound on reliability than alpha. <strong>Omega hierarchical</strong> (Schmid-Leiman) measures only the share of a higher-order general factor — it rises with phi and is 0 for orthogonal factors (no g). High phi → more shared variance → omega hierarchical rises.</div>
+      <div class="lcard-body"><strong>Omega total</strong> accounts for all factors and is a better lower bound on reliability than alpha. <strong>Omega hierarchical</strong> (Schmid-Leiman) measures only the share of a higher-order general factor — it rises with both phi and the cross-loading, and is 0 only when both are 0 (truly two separate factors with no shared variance at all).</div>
     </div>
   </div>
 
@@ -392,8 +392,8 @@ canvas{display:block;width:100%}
     <code class="help-formula">sigma²_X = 8 + 24·r_within + 32·r_between &nbsp;(variance of the total score)</code>
     <code class="help-formula">Alpha = (8/7)·(sigma²_X − 8) / sigma²_X</code>
     <code class="help-formula">Omega_total = 1 − 8·(1 − r_within) / sigma²_X</code>
-    <code class="help-formula">Omega_hier = 64·(lambda+lambda_x)²·phi / sigma²_X &nbsp;(Schmid-Leiman)</code>
-    <p class="help-p"><strong>Omega hierarchical</strong> is based on the Schmid-Leiman orthogonalization: for oblique factors with correlation phi, the shared variance components can be traced back to a higher-order general factor g. The g-loading per item is (lambda + lambda_x)·sqrt(phi). Omega hierarchical = 0 when phi = 0 (no correlated factors, no g).</p>
+    <code class="help-formula">Omega_hier = 64·r_between / sigma²_X &nbsp;(Schmid-Leiman)</code>
+    <p class="help-p"><strong>Omega hierarchical</strong> is based on the Schmid-Leiman orthogonalization: each item's loading on a higher-order general factor g equals sqrt(r_between) — because with orthogonal group factors, two items from different groups have Cov = g² exactly, regardless of whether the shared variance comes from phi (correlated factors), from cross-loadings, or from both. Omega hierarchical = 0 only when r_between = 0 (neither phi nor cross-loading creates shared variance).</p>
 
     <div class="help-sh">Biplot &amp; Correlation Matrix</div>
     <p class="help-p">The biplot shows each item as a point in the F1/F2 coordinate system. Items near (1,0) load highly on F1; near (0,1) highly on F2. After varimax rotation, items cluster near the axes (simple structure). Under oblique rotation, the factor axes are drawn at an angle of arccos(phi).</p>
@@ -588,8 +588,10 @@ function computeFA(){
   const alpha =(8/7)*(sigX2-8)/sigX2;
   // Omega total = 1 - sum(u²)/sigX2
   const omegaT=1-8*(1-h2val)/sigX2;
-  // Omega hierarchical (Schmid-Leiman): g-loading = (lam+cross)*sqrt(phi)
-  const omegaH=64*(lam+cross)*(lam+cross)*phi/sigX2;
+  // Omega hierarchical (Schmid-Leiman, exact bifactor form): g-loading = sqrt(r_between) per item,
+  // since with orthogonal group factors Cov(V_i,S_j)=g² exactly. (lam+cross)*sqrt(phi) only
+  // matches this when cross=0 — it misses the general factor cross-loadings create even at phi=0.
+  const omegaH=64*r_between/sigX2;
 
   return{R,Rr,eigVals,eigValsRr,unrotated,rotLoads,h2,u2,phi,lam,cross,alpha,omegaT,omegaH};
 }
@@ -801,12 +803,12 @@ function renderReliability(alpha,omegaT,omegaH,phi){
   document.getElementById('val-wh').textContent=omegaH<0.001?'0.000':omegaH.toFixed(3);
   // Unidimensionality interpretation of omega_h (innerHTML for Greek)
   let note='';
-  if(phi<0.01){
-    note='<strong>φ = 0:</strong> factors F1 and F2 are orthogonal — no general factor g. ω<sub>h</sub> = 0: a total score is <em>not</em> justified as unidimensional. α and ω<sub>t</sub> measure internal consistency but say nothing about unidimensionality.';
+  if(omegaH<0.001){
+    note='<strong>No general factor:</strong> neither the factor correlation (φ = '+phi.toFixed(2)+') nor the cross-loading create any shared variance between the two item groups here. ω<sub>h</sub> = 0: a total score is <em>not</em> justified as unidimensional. α and ω<sub>t</sub> measure internal consistency but say nothing about unidimensionality.';
   } else if(omegaH/omegaT>0.91){
-    note='<strong>Nearly unidimensional (φ = '+phi.toFixed(2)+'):</strong> all three measures converge. ω<sub>h</sub> = '+omegaH.toFixed(3)+' — most of the variance is attributable to a higher-order general factor g. As φ → 1, α = ω<sub>t</sub> = ω<sub>h</sub>: genuine unidimensionality.';
+    note='<strong>Nearly unidimensional:</strong> all three measures converge. ω<sub>h</sub> = '+omegaH.toFixed(3)+' — most of the variance is attributable to a higher-order general factor g (via φ, cross-loading, or both). Once fully overlapping, α = ω<sub>t</sub> = ω<sub>h</sub>: genuine unidimensionality.';
   } else {
-    note='<strong>Oblique factors (φ = '+phi.toFixed(2)+'):</strong> there is a general factor g. ω<sub>h</sub> = '+omegaH.toFixed(3)+' grows with φ and measures the g-variance share — a direct measure of unidimensionality. α = '+alpha.toFixed(3)+' stays nearly constant and does not detect the change in unidimensionality.';
+    note='<strong>Two connected factors (φ = '+phi.toFixed(2)+'):</strong> there is a general factor g. ω<sub>h</sub> = '+omegaH.toFixed(3)+' grows with φ and with the cross-loading, and measures the g-variance share — a direct measure of unidimensionality. α = '+alpha.toFixed(3)+' stays nearly constant and barely detects changes in unidimensionality.';
   }
   document.getElementById('reli-note').innerHTML=note;
 }
