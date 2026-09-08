@@ -46,6 +46,8 @@ a:hover{text-decoration:underline}
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 .tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 .tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
@@ -274,7 +276,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 <!-- ══ MODULE 1: POOLING-VERGLEICH ══════════════════════════════════ -->
 <div id="mod1" class="mod-panel active">
   <div class="mod-h">Why Multilevel? — <em>Complete, No &amp; Partial Pooling</em></div>
-  <div class="mod-sub">Does one shared line across all 50 students suffice — <strong>Complete Pooling</strong>? Or must each class be treated strictly separately — <strong>No Pooling</strong>? Or a middle ground — <strong>Partial Pooling</strong>?</div>
+  <div class="mod-sub">Does one shared line across all 50 students suffice — <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-partial-pooling" target="_blank" rel="noopener" title="Partial pooling is the estimation strategy in hierarchical models: group-specific parameters are estimated neither completely separately (no pooling) nor completely aggregated (complete pooling), but modeled as coming from a shared distribution.">Complete Pooling</a></strong>? Or must each class be treated strictly separately — <strong>No Pooling</strong>? Or a middle ground — <strong>Partial Pooling</strong>?</div>
 
   <div class="cv-row" style="align-items:flex-start">
     <!-- Canvas -->
@@ -382,11 +384,11 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
         <p><strong>Partial Pooling happens twice — remember the principle, not two methods</strong><br>
         Both of the following modes are Partial Pooling: an estimate is <em>shrunk</em> toward its grand mean, weighted by how much of its own evidence the group has (see accordion below). The only difference is <em>which</em> estimate gets shrunk — just the intercept, or intercept and slope together. No Pooling provides the unshrunk starting point in both cases.</p>
         <p><strong>… intercept only (group colors, solid) → activate</strong><br>
-        The group intercepts are shrunk toward the grand mean, but all groups share the same slope γ₁₀ (Random Intercepts) — the lines are therefore <em>parallel</em>. The blue dashed line shows the fixed effect (γ₀₀ + γ₁₀·X). Correct standard errors, information sharing between groups.</p>
+        The group intercepts are shrunk toward the grand mean, but all groups share the same slope γ₁₀ (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-random-intercept" target="_blank" rel="noopener" title="A random intercept is the special case of a random effect in which only the intercept varies between groups, not the slopes.">Random Intercepts</a>) — the lines are therefore <em>parallel</em>. The blue dashed line shows the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-fixed-effects" target="_blank" rel="noopener" title="Fixed effects are model parameters estimated as constant for the entire population — as opposed to random effects, which vary by group.">fixed effect</a> (γ₀₀ + γ₁₀·X). Correct standard errors, information sharing between groups.</p>
         <p><strong>… intercept + slope (group colors, dashed) → activate</strong><br>
-        In addition to the intercept, the slope per group is now also shrunk (Random Slopes) — the lines are no longer parallel. Closer to No Pooling ↑ when τ₁ is large, closer to the parallel RI lines ↑ when τ₁ is small. Activate both modes at once: the same starting points (intercepts), but tilted differently.</p>
+        In addition to the intercept, the slope per group is now also shrunk (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-random-slope" target="_blank" rel="noopener" title="A random slope, in addition to a random intercept, lets the effect of a predictor also vary between groups.">Random Slopes</a>) — the lines are no longer parallel. Closer to No Pooling ↑ when τ₁ is large, closer to the parallel RI lines ↑ when τ₁ is small. Activate both modes at once: the same starting points (intercepts), but tilted differently.</p>
         <p><strong>What to observe</strong><br>
-        · <em>High ICC:</em> CP and NP lines lie far apart. PP/RS lie in between.<br>
+        · <em>High <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc" target="_blank" rel="noopener" title="The Intraclass Correlation Coefficient measures what proportion of the total variance of an outcome is attributable to group differences: ICC = τ₀² / (τ₀² + σ²).">ICC</a>:</em> CP and NP lines lie far apart. PP/RS lie in between.<br>
         · <em>Small groups:</em> NP lines fluctuate strongly, PP/RS lines stay stable.<br>
         · <em>Simpson:</em> the CP line shows a negative trend, NP/PP show a positive within effect. Module&nbsp;④ explains why.</p>
       </div>
@@ -405,7 +407,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
         <div class="erklaer" style="margin-bottom:0">
           The partial-pooling intercept of group j is a weighted average of the no-pooling estimate and the grand mean:<br>
           <strong>α̂_j<sup>PP</sup> = λ_j · α̂_j<sup>NP</sup> + (1–λ_j) · γ̂₀₀</strong><br>
-          where the shrinkage factor <strong>λ_j = τ₀² / (τ₀² + σ²/n_j)</strong>.<br><br>
+          where the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage refers to the phenomenon that group-level estimates in hierarchical models are systematically pulled toward the grand mean, rather than each group being estimated independently.">shrinkage factor</a> <strong>λ_j = τ₀² / (τ₀² + σ²/n_j)</strong>.<br><br>
           λ → 1 (no shrinkage): large groups (n_j↑) or large between-variance (τ₀²↑) — the group has enough of its own evidence.<br>
           λ → 0 (strong shrinkage): small groups or dominant within-variance — the prior (grand mean) dominates.
         </div>
@@ -416,7 +418,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 
 <!-- ══ MODULE 2: SHRINKAGE & ICC ═════════════════════════════════════ -->
 <div id="mod2" class="mod-panel">
-  <div class="mod-h">Shrinkage &amp; <em>ICC</em></div>
+  <div class="mod-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage refers to the phenomenon that group-level estimates in hierarchical models are systematically pulled toward the grand mean, rather than each group being estimated independently.">Shrinkage</a> &amp; <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc" target="_blank" rel="noopener" title="The Intraclass Correlation Coefficient measures what proportion of the total variance of an outcome is attributable to group differences: ICC = τ₀² / (τ₀² + σ²).">ICC</a></em></div>
   <div class="mod-sub">How strongly are group intercepts pulled toward the grand mean? Slide τ₀ and σ and watch the effect live.</div>
 
   <div class="cv-row" style="align-items:flex-start">
@@ -502,7 +504,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
       <div class="info-box" style="flex:1">
         <div class="info-box-h">Tutorial — Understanding Shrinkage &amp; ICC</div>
         <p><strong>Caterpillar plot (top)</strong><br>
-        Each class has a point (◆ = Partial Pooling, ○ = No Pooling) and a 95% CI. The dashed line is γ̂₀₀ (grand mean). Observe: PP points always lie <em>closer</em> to the dashed line than NP points — that's shrinkage.</p>
+        Each class has a point (◆ = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-partial-pooling" target="_blank" rel="noopener" title="Partial pooling is the estimation strategy in hierarchical models: group-specific parameters are estimated neither completely separately (no pooling) nor completely aggregated (complete pooling), but modeled as coming from a shared distribution.">Partial Pooling</a>, ○ = No Pooling) and a 95% CI. The dashed line is γ̂₀₀ (grand mean). Observe: PP points always lie <em>closer</em> to the dashed line than NP points — that's shrinkage.</p>
         <p><strong>Shrinkage diagram (bottom)</strong><br>
         Arrows show the shift NP → PP. The factor λ is shown at the arrow: λ = 1.0 means no shrinkage (the class has enough of its own evidence), λ = 0.2 means strong shrinkage (grand mean dominates). <strong>Note:</strong> λ is identical for all classes of equal size — yet the arrows look different lengths. That's because λ only sets the <em>proportion</em> of shrinkage (aPP = λ·aNP + (1−λ)·γ̂₀₀); the <em>absolute</em> arrow length additionally depends on how far the raw NP value was from γ̂₀₀ in the first place. A class with an extreme NP value (like K3) is pulled by the same proportion, but by considerably more in absolute points, than a class near the mean.</p>
         <p><strong>Slider τ₀ (between-SD)</strong><br>
@@ -521,7 +523,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 
 <!-- ══ MODULE 3: RANDOM SLOPES ═══════════════════════════════════════ -->
 <div id="mod3" class="mod-panel">
-  <div class="mod-h">Random Slopes — <em>Effect Heterogeneity Between Classes</em></div>
+  <div class="mod-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-random-slope" target="_blank" rel="noopener" title="A random slope, in addition to a random intercept, lets the effect of a predictor also vary between groups.">Random Slopes</a> — <em>Effect Heterogeneity Between Classes</em></div>
   <div class="mod-sub">Does study time have the same effect in every class? τ₁ lets slopes vary, ρ controls the intercept-slope correlation.</div>
 
   <div class="cv-row" style="align-items:flex-start">
@@ -615,7 +617,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
       </button>
       <div class="acc-body">
         <div class="erklaer" style="margin-bottom:0">
-          Random Intercepts:<br>
+          <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-random-intercept" target="_blank" rel="noopener" title="A random intercept is the special case of a random effect in which only the intercept varies between groups, not the slopes.">Random Intercepts</a>:<br>
           <code>lmer(Y ~ X + (1 | Class), data=df)</code><br><br>
           Random Slopes (correlated):<br>
           <code>lmer(Y ~ X + (1 + X | Class), data=df)</code><br><br>
@@ -631,7 +633,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 
 <!-- ══ MODULE 4: SIMPSON-PARADOXON ═══════════════════════════════════ -->
 <div id="mod4" class="mod-panel">
-  <div class="mod-h">Simpson's Paradox — <em>the Aggregation Error</em></div>
+  <div class="mod-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-simpsons-paradox" target="_blank" rel="noopener" title="Simpson's Paradox occurs when a statistical association that points in one direction within several subgroups reverses once the data are aggregated across all groups.">Simpson's Paradox</a> — <em>the Aggregation Error</em></div>
   <div class="mod-sub">The overall OLS trend can contradict the within-group trend — a classic case of confounded group structure.</div>
 
   <div class="cv-row" style="align-items:flex-start">
@@ -722,9 +724,9 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
         · Group spacing ↓: classes overlap in X, between-variance drops → less Simpson effect.<br>
         · β_W → negative: the within effect is negative too — no longer a paradox, just a genuinely poor study-time effect.</p>
         <p><strong>Connection to fixed effects</strong><br>
-        In econometrics: the fixed-effects model (within-group demeaning) likewise estimates only within effects. LMM (partial pooling) sits in between: it accounts for within effects but also allows level-2 predictors (modeling between effects explicitly).</p>
+        In econometrics: the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-fixed-effects" target="_blank" rel="noopener" title="In panel-data models in econometrics, 'fixed effects' designates an estimation method in which individual means are subtracted to eliminate all time-stable confounders.">fixed-effects model</a> (within-group demeaning) likewise estimates only within effects. LMM (partial pooling) sits in between: it accounts for within effects but also allows level-2 predictors (modeling between effects explicitly).</p>
         <p><strong>Reference line "Fixed Effect / Grand Mean"</strong><br>
-        Activate the line below the scenarios to see the correctly specified within effect (slope β_W, anchored at the grand mean) directly alongside the misleading OLS-overall line — the contrast this module is really about: <strong>OLS overall</strong> in this plot <em>is</em> Complete Pooling (the same global line, ignoring the group structure entirely), just under a different name.</p>
+        Activate the line below the scenarios to see the correctly specified within effect (slope β_W, anchored at the grand mean) directly alongside the misleading OLS-overall line — the contrast this module is really about: <strong>OLS overall</strong> in this plot <em>is</em> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-partial-pooling" target="_blank" rel="noopener" title="Partial pooling is the estimation strategy in hierarchical models: group-specific parameters are estimated neither completely separately (no pooling) nor completely aggregated (complete pooling), but modeled as coming from a shared distribution.">Complete Pooling</a> (the same global line, ignoring the group structure entirely), just under a different name.</p>
       </div>
 
     </div><!-- /rechtes Panel -->
@@ -740,7 +742,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
       <div class="acc-body">
         <div class="erklaer" style="margin-bottom:0">
           <strong>UC Berkeley (1973):</strong> women had lower admission rates in aggregate. Stratified by department: equal or better in most departments. Women applied more often to competitive departments.<br><br>
-          <strong>Kidney stone treatment:</strong> treatment A looks worse than B. Stratified by stone size: A is better in both groups. B was preferred for easier cases — confounding by indication.
+          <strong>Kidney stone treatment:</strong> treatment A looks worse than B. Stratified by stone size: A is better in both groups. B was preferred for easier cases — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Confounding arises when a third variable C is a common cause of both the treatment X and the outcome Y: C → X and C → Y.">confounding</a> by indication.
         </div>
       </div>
     </div>
@@ -752,7 +754,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
   <div class="mod-h">Extreme Shrinkage — <em>When Pooling Really Helps</em></div>
 
   <div class="story-box"><div class="story-lbl">📋 Standalone Example — Extreme Shrinkage</div>
-  20 school classes of varying size — from n_j=3 to n_j=40 students — take the same test. A small class of just 3 students shows a strikingly high (or low) mean. Is this a genuine difference — or just chance, because extreme means occur much more easily with so few observations? Exactly this argument (illustrated, among others, by Gelman &amp; Hill, 2007, using baseball batting averages and cancer rates per county) is the core of Partial Pooling: small, extreme estimates are <em>a priori</em> less plausible than moderate ones — so they're shrunk more strongly toward the grand mean, which on average leads to better predictions.</div>
+  20 school classes of varying size — from n_j=3 to n_j=40 students — take the same test. A small class of just 3 students shows a strikingly high (or low) mean. Is this a genuine difference — or just chance, because extreme means occur much more easily with so few observations? Exactly this argument (illustrated, among others, by Gelman &amp; Hill, 2007, using baseball batting averages and cancer rates per county) is the core of <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-partial-pooling" target="_blank" rel="noopener" title="Partial pooling is the estimation strategy in hierarchical models: group-specific parameters are estimated neither completely separately (no pooling) nor completely aggregated (complete pooling), but modeled as coming from a shared distribution.">Partial Pooling</a>: small, extreme estimates are <em>a priori</em> less plausible than moderate ones — so they're shrunk more strongly toward the grand mean, which on average leads to better predictions.</div>
 
   <div class="cv-row" style="align-items:flex-start">
     <!-- Canvas -->
@@ -814,7 +816,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 
         <!-- Formel -->
         <div class="formula-card">
-          <div class="fc-level">Empirical Bayes estimate of the group mean</div>
+          <div class="fc-level"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage refers to the phenomenon that group-level estimates in hierarchical models are systematically pulled toward the grand mean — formally an empirical Bayes estimator / James-Stein estimator.">Empirical Bayes estimate</a> of the group mean</div>
           <div style="margin-bottom:.18rem">ŷ_j = λ_j·ȳ_j + (1−λ_j)·γ̂</div>
           <div style="font-size:.66rem;color:var(--ink3)">λ_j = τ̂² / (τ̂² + σ²/n_j) — the same formula as in Module ②, here without a slope, just for group means</div>
         </div>
@@ -861,35 +863,35 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
   <div class="lcard-grid">
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">①</span> ICC — Intraclass Correlation</div>
+      <div class="lcard-h"><span class="circ">①</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc" target="_blank" rel="noopener" title="The Intraclass Correlation Coefficient measures what proportion of the total variance of an outcome is attributable to group differences: ICC = τ₀² / (τ₀² + σ²).">ICC</a> — Intraclass Correlation</div>
       <div class="lcard-body">
         The ICC (Intraclass Correlation Coefficient) measures the share of the total variance that lies <strong>between groups</strong>: <code>ICC = τ₀² / (τ₀² + σ²)</code>. ICC = 0 means groups aren't any more similar than random samples — OLS suffices. ICC &gt; 0.10–0.20 means a strong cluster structure: individuals within a group are more similar to each other. Then OLS leads to <strong>standard errors that are too small</strong> and incorrect inference. Rule of thumb: consider LMM above ICC &gt; 0.05; LMM is essential above ICC &gt; 0.10.
       </div>
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">②</span> Complete · No · Partial Pooling</div>
+      <div class="lcard-h"><span class="circ">②</span> Complete · No · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-partial-pooling" target="_blank" rel="noopener" title="Partial pooling is the estimation strategy in hierarchical models: group-specific parameters are estimated neither completely separately (no pooling) nor completely aggregated (complete pooling), but modeled as coming from a shared distribution.">Partial Pooling</a></div>
       <div class="lcard-body">
         <strong>Complete Pooling</strong> ignores groups — one global OLS line, SE underestimated. <strong>No Pooling</strong> is modeled as a group × predictor interaction (2J parameters) — stable only with large n_j and small J, no information sharing. <strong>Partial Pooling</strong> (LMM) is the compromise: group intercepts (Random Intercepts) or also slopes (Random Slopes) are <em>shrunk</em> toward the grand mean (Empirical Bayes). Strength of shrinkage: λ = τ₀²/(τ₀²+σ²/n_j). Small groups get adjusted more strongly. Result: a regularized estimator with better out-of-sample prediction and correct SE.
       </div>
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">③</span> Shrinkage &amp; Empirical Bayes</div>
+      <div class="lcard-h"><span class="circ">③</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage refers to the phenomenon that group-level estimates in hierarchical models are systematically pulled toward the grand mean, rather than each group being estimated independently.">Shrinkage</a> &amp; Empirical Bayes</div>
       <div class="lcard-body">
         Partial Pooling is equivalent to <strong>Empirical Bayes</strong>: group intercepts are treated as randomly drawn from N(0,τ₀²). Shrinkage factor λ_j = τ₀²/(τ₀²+σ²/n_j). At τ₀²&nbsp;↑ or n_j&nbsp;↑, λ → 1 (little shrinkage). For small groups or small τ₀², λ → 0 (strong shrinkage). The caterpillar plot shows shrunk intercepts with CI. Groups far from the grand mean have wider CIs and less shrinkage — because they bring more of their own evidence.
       </div>
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">④</span> Random Slopes</div>
+      <div class="lcard-h"><span class="circ">④</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-random-slope" target="_blank" rel="noopener" title="A random slope, in addition to a random intercept, lets the effect of a predictor also vary between groups.">Random Slopes</a></div>
       <div class="lcard-body">
         A <strong>random-intercept model</strong> assumes all groups have the same slope. <strong>Random-slope models</strong> allow this effect to vary: τ₁ = SD of the slope distribution. The correlation parameter ρ between u₀j and u₁j matters substantively: ρ &gt; 0 (fan-out) = high groups benefit more; ρ &lt; 0 (compensation) = low groups benefit more. In lme4: <code>lmer(Y ~ X + (1 + X | Group), data = df)</code>. With small J and small n_j, ρ may be poorly identified → try the <code>||</code> syntax.
       </div>
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">⑤</span> Simpson's Paradox &amp; Within/Between</div>
+      <div class="lcard-h"><span class="circ">⑤</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-simpsons-paradox" target="_blank" rel="noopener" title="Simpson's Paradox occurs when a statistical association that points in one direction within several subgroups reverses once the data are aggregated across all groups.">Simpson's Paradox</a> &amp; Within/Between</div>
       <div class="lcard-body">
         The aggregated OLS estimator mixes <strong>within effects</strong> (causally interesting) with <strong>between effects</strong> (often confounded). <strong>Simpson's paradox</strong> arises when the two effects have opposite signs and between-variance in X dominates. LMM's fixed slope γ₁₀ estimates the within effect, adjusted for group differences. Historical examples: UC Berkeley admissions (1973), kidney stone treatment. Anyone relying on OLS alone may draw causally wrong conclusions.
       </div>
@@ -936,14 +938,14 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 
       <h3>Terms</h3>
       <ul>
-        <li><strong>ICC</strong>: τ₀² / (τ₀² + σ²) — share of between-variance in total variance.</li>
+        <li><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc" target="_blank" rel="noopener" title="The Intraclass Correlation Coefficient measures what proportion of the total variance of an outcome is attributable to group differences.">ICC</a></strong>: τ₀² / (τ₀² + σ²) — share of between-variance in total variance.</li>
         <li><strong>γ₀₀</strong>: grand intercept (fixed effect) — overall mean across all groups.</li>
         <li><strong>γ₁₀</strong>: fixed slope — shared within-group effect of X on Y.</li>
-        <li><strong>u₀j</strong>: random intercept of group j — deviation from the grand mean.</li>
-        <li><strong>u₁j</strong>: random slope of group j — deviation from the fixed slope.</li>
+        <li><strong>u₀j</strong>: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-random-intercept" target="_blank" rel="noopener" title="A random intercept is the special case of a random effect in which only the intercept varies between groups, not the slopes.">random intercept</a> of group j — deviation from the grand mean.</li>
+        <li><strong>u₁j</strong>: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-random-slope" target="_blank" rel="noopener" title="A random slope, in addition to a random intercept, lets the effect of a predictor also vary between groups.">random slope</a> of group j — deviation from the fixed slope.</li>
         <li><strong>τ₀ / τ₁</strong>: SD of the random-intercept / -slope distribution between groups.</li>
         <li><strong>σ</strong>: residual SD (within-group error).</li>
-        <li><strong>λ</strong>: shrinkage factor = τ₀² / (τ₀² + σ²/n_j).</li>
+        <li><strong>λ</strong>: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage refers to the phenomenon that group-level estimates in hierarchical models are systematically pulled toward the grand mean.">shrinkage</a> factor = τ₀² / (τ₀² + σ²/n_j).</li>
       </ul>
 
       <details class="details-box">

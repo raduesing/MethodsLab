@@ -28,6 +28,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover{background:var(--ink);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 .tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 #app{display:grid;grid-template-columns:272px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
@@ -130,7 +132,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
     <p class="help-p">Eine Psychologin untersucht, ob ein 8-wöchiges Achtsamkeitstraining das Wohlbefinden steigert. <strong style="color:var(--ink)">Between:</strong> Trainingsgruppe vs. Warteliste-Kontrollgruppe, je n Personen. <strong style="color:var(--ink)">Within:</strong> dieselben Personen vor (Prä) und nach (Post) dem Training, mit Prä-Post-Korrelation r. Alle Mittelwerte, Streuungen, n (und r) sind frei einstellbar — die Zahlen im Beispiel sind ein plausibler Startpunkt, keine feste Vorgabe.</p>
     <div class="help-h3">Was zeigt der Plot?</div>
     <p class="help-p">Die beiden Kurven sind die <strong style="color:var(--ink)">angenommenen Populationsverteilungen</strong> der beiden Gruppen auf der tatsächlichen Messwert-Skala (x-Achse) — mit ihren jeweils eingestellten Mittelwerten und Streuungen. Eine schmalere, höhere Kurve hat eine kleinere Streuung; das ist keine Verzerrung, sondern korrekt: die Fläche unter jeder Kurve ist immer gleich groß (=&nbsp;100% dieser Gruppe). Die <strong style="color:var(--ink)">grau schattierte Fläche</strong> ist der Bereich, in dem sich beide Verteilungen überschneiden — je mehr Überlappung, desto schwerer lässt sich anhand eines einzelnen Werts erkennen, aus welcher Gruppe eine Person stammt. Der <strong style="color:var(--ink)">Pfeil</strong> zeigt den rohen Mittelwertsunterschied auf der Originalskala; die Zahl <code>d</code> daneben ist derselbe Unterschied, standardisiert an einer Streuung (siehe unten) — deshalb ohne Einheit und über Studien hinweg vergleichbar.</p>
-    <div class="help-h3">Cohen's d im Detail</div>
+    <div class="help-h3"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cohens-d" target="_blank" rel="noopener" title="Cohen's d ist die bekannteste standardisierte Effektgröße für Mittelwertunterschiede: d = (M₁ − M₂) / SD_pooled.">Cohen's d</a> im Detail</div>
     <p class="help-p">d&nbsp;=&nbsp;(M₁&nbsp;−&nbsp;M₂)&nbsp;/&nbsp;SD. Das Vorzeichen zeigt die Richtung (hier: positiv&nbsp;=&nbsp;Zunahme), der Betrag die Größe. Cohens (1988) informelle Konvention: |d|&nbsp;≈&nbsp;0.2 klein, 0.5 mittel, 0.8 groß — als grobe Orientierung gedacht, nicht als feste Schwelle; die praktische Bedeutsamkeit hängt immer vom Feld und der Fragestellung ab.</p>
     <div class="help-h3">Warum mehrere Standardisierungen bei Messwiederholung?</div>
     <p class="help-p">Bei unabhängigen Gruppen gibt es einen naheliegenden Nenner: die gepoolte Streuung beider Gruppen. Bei Messwiederholung dagegen ist unklar, <em>wessen</em> Streuung standardisiert werden soll. Drei Konventionen haben sich etabliert:</p>
@@ -146,14 +148,14 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
     <code>nag (Nakagawa &amp; Cuthill 2007)</code> — eigene df-Zählung, empfohlen speziell für Messwiederholungen.<br>
     <code>Bon (Bonett 2015)</code> — Bon&nbsp;=&nbsp;√((n−2)/(n−1)); basiert auf Varianz-Unbiasedness statt auf dem Erwartungswert von d, tendenziell konservativer.</p>
     <p class="help-p">Bei n&nbsp;≥&nbsp;40 unterscheiden sich die drei kaum; bei sehr kleinem n (z.&nbsp;B. &lt;&nbsp;15) können sie spürbar auseinanderfallen — probiere es mit dem n-Regler aus.</p>
-    <div class="help-h3">Cohen's U₃ und CLES</div>
+    <div class="help-h3"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cohens-u3" target="_blank" rel="noopener" title="Cohen's U3 gibt an, welcher Prozentsatz der Kontrollgruppe unterhalb des Mittelwerts der Behandlungsgruppe liegt: U3 = Φ(d).">Cohen's U₃</a> und <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cles" target="_blank" rel="noopener" title="CLES gibt die Wahrscheinlichkeit an, dass eine zufällig aus Gruppe A gezogene Person einen höheren Wert hat als eine zufällig aus Gruppe B gezogene Person: CLES = P(X_A > X_B).">CLES</a></div>
     <p class="help-p">Beide übersetzen d in eine Wahrscheinlichkeit und sind oft leichter zu kommunizieren als d selbst.</p>
     <p class="help-p"><code>U₃&nbsp;=&nbsp;Φ(d)</code> — der Anteil der Vergleichsgruppe (M₁), den der Mittelwert der anderen Gruppe (M₂) übertrifft (bei d&nbsp;=&nbsp;0.5 also 69.1%).<br>
     <code>CLES&nbsp;=&nbsp;Φ(d/√2)</code> — die Wahrscheinlichkeit, dass eine zufällig gezogene Person aus Gruppe&nbsp;2 einen höheren Wert hat als eine zufällig gezogene Person aus Gruppe&nbsp;1.</p>
     <div class="help-h3">Weitere Umrechnungen</div>
     <p class="help-p"><code>r&nbsp;=&nbsp;d/√(d²+4)</code> — punktbiseriale Korrelation zwischen Gruppenzugehörigkeit und Messwert.<br>
     <code>r²</code> bzw. <code>η²</code> — Anteil der durch die Gruppierung aufgeklärten Varianz.<br>
-    <code>OR&nbsp;=&nbsp;exp(d·π/√3)</code> — Odds Ratio unter Normalverteilungsannahme, verbreitet in Medizin und Epidemiologie.</p>
+    <code>OR&nbsp;=&nbsp;exp(d·π/√3)</code> — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="Das Odds Ratio (OR) vergleicht die Chancen (Odds) eines Ereignisses zwischen zwei Gruppen: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)).">Odds Ratio</a> unter Normalverteilungsannahme, verbreitet in Medizin und Epidemiologie.</p>
     <p class="help-p"><strong style="color:var(--ink)">Vorzeichen:</strong> r, OR, U₃ und CLES folgen alle demselben Vorzeichen wie d. Ist d negativ (M₂&nbsp;&lt;&nbsp;M₁, hier: eine Abnahme), fallen U₃ und CLES unter 50&nbsp;%, OR unter 1, und r wird negativ — das ist kein Fehler, sondern zeigt konsistent dieselbe Richtung wie d an. Nur r² und η² sind vorzeichenunabhängig, weil sie aufgeklärte Varianz (quadrierte Größen) ausdrücken. Ob man Effektgrößen mit Vorzeichen berichtet oder den Betrag nimmt, ist selbst eine Konvention: das Vorzeichen sollte stehen bleiben, wenn die Richtung inhaltlich informativ ist (z.&nbsp;B. Zu- vs. Abnahme) — nur beim reinen Abgleich mit den klein/mittel/groß-Schwellen (die per Definition Beträge sind) wird auf den Betrag geschaut.</p>
     <div class="help-h3">Für die eigene Studie</div>
     <p class="help-p">Dieses Tutorial arbeitet mit einem festen (aber frei einstellbaren) Beispiel und zeigt keine Konfidenzintervalle. Für exakte Berechnungen mit eigenen Daten — CSV-Upload, Konfidenzintervalle nach Bonett, Rosenthal und exakter nichtzentraler t-Verteilung — siehe den <a href="Effektgroessen_Rechner.html">Effektgrößen-Rechner</a>.</p>
@@ -205,7 +207,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 <div id="main">
 
   <div class="p-intro">
-    <strong>Was ist eine Effektgröße?</strong> Ein p-Wert sagt nur, ob ein Unterschied von Null verschieden ist — nichts über seine praktische Bedeutsamkeit. Eine Effektgröße drückt aus, <em>wie groß</em> ein Unterschied ist, unabhängig von der verwendeten Skala und der Stichprobengröße. Die gebräuchlichste Effektgröße für Mittelwertsvergleiche ist <strong>Cohen's d</strong>: die Differenz zweier Mittelwerte, standardisiert an einer Streuung. d&nbsp;=&nbsp;0.5 heißt: die beiden Verteilungen liegen im Mittel eine halbe Standardabweichung auseinander — egal ob es um Testpunkte oder Körpergröße geht. Das macht Effekte über Studien und Maße hinweg vergleichbar.
+    <strong>Was ist eine Effektgröße?</strong> Ein <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="Der p-Wert ist die Wahrscheinlichkeit, unter der Annahme, dass H₀ zutrifft, ein Ergebnis zu beobachten, das mindestens so extrem ist wie das tatsächlich beobachtete.">p-Wert</a> sagt nur, ob ein Unterschied von Null verschieden ist — nichts über seine praktische Bedeutsamkeit. Eine Effektgröße drückt aus, <em>wie groß</em> ein Unterschied ist, unabhängig von der verwendeten Skala und der Stichprobengröße. Die gebräuchlichste Effektgröße für Mittelwertsvergleiche ist <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cohens-d" target="_blank" rel="noopener" title="Cohen's d ist die bekannteste standardisierte Effektgröße für Mittelwertunterschiede: d = (M₁ − M₂) / SD_pooled.">Cohen's d</a></strong>: die Differenz zweier Mittelwerte, standardisiert an einer Streuung. d&nbsp;=&nbsp;0.5 heißt: die beiden Verteilungen liegen im Mittel eine halbe Standardabweichung auseinander — egal ob es um Testpunkte oder Körpergröße geht. Das macht Effekte über Studien und Maße hinweg vergleichbar.
   </div>
 
   <div class="story-box" id="example-box"></div>
@@ -284,11 +286,11 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
         <div class="lcard-body">Bon&nbsp;=&nbsp;√((n−2)/(n−1)) (Bonett 2015). Beruht nicht auf dem Erwartungswert von d, sondern auf Varianz-Unbiasedness — einer anderen statistischen Zielgröße. Tendenziell etwas konservativer als j oder nag. Wird typischerweise bei <strong>Within-Designs</strong> herangezogen, wo sie neben j und nag als dritte Korrekturoption angeboten wird (siehe Tabellen oben).</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Cohen's U₃</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cohens-u3" target="_blank" rel="noopener" title="Cohen's U3 gibt an, welcher Prozentsatz der Kontrollgruppe unterhalb des Mittelwerts der Behandlungsgruppe liegt: U3 = Φ(d).">Cohen's U₃</a></div>
         <div class="lcard-body">U₃&nbsp;=&nbsp;Φ(d): der Anteil der Referenzgruppe, den der Mittelwert der anderen Gruppe übertrifft. Bei d&nbsp;=&nbsp;0 liegt U₃ bei 50%, bei d&nbsp;=&nbsp;0.8 (großer Effekt) bei rund 78.8%. Leicht als "wie viel Prozent der Kontrollgruppe liegen unter dem Trainings-Mittelwert?" zu vermitteln.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">CLES — Common Language Effect Size</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cles" target="_blank" rel="noopener" title="CLES gibt die Wahrscheinlichkeit an, dass eine zufällig aus Gruppe A gezogene Person einen höheren Wert hat als eine zufällig aus Gruppe B gezogene Person: CLES = P(X_A > X_B).">CLES</a> — Common Language Effect Size</div>
         <div class="lcard-body">CLES&nbsp;=&nbsp;Φ(d/√2) (McGraw &amp; Wong 1992): die Wahrscheinlichkeit, dass eine zufällig gezogene Person aus der einen Gruppe einen höheren Wert hat als eine zufällig gezogene Person aus der anderen. Anders als U₃ vergleicht CLES zwei einzelne Personen statt eine Person mit einer ganzen Verteilung.</div>
       </div>
       <div class="lcard">
@@ -296,7 +298,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
         <div class="lcard-body">d lässt sich als punktbiseriale Korrelation r zwischen Gruppenzugehörigkeit und Messwert ausdrücken. r² (bzw. η² bei mehr als zwei Gruppen) ist der Anteil der durch die Gruppierung aufgeklärten Varianz — dasselbe Konzept wie bei linearer Regression, nur mit einer binären statt kontinuierlichen Prädiktorvariable.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Odds Ratio</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="Das Odds Ratio (OR) vergleicht die Chancen (Odds) eines Ereignisses zwischen zwei Gruppen: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)).">Odds Ratio</a></div>
         <div class="lcard-body">OR&nbsp;=&nbsp;exp(d·π/√3) approximiert die Umrechnung zwischen Cohen's d und dem Chancenverhältnis unter der Annahme, dass eine zugrundeliegende Normalverteilung logistisch dichotomisiert wurde. Verbreitet in Medizin und Epidemiologie, wo Ergebnisse oft ohnehin als Odds Ratios berichtet werden.</div>
       </div>
       <div class="lcard">
