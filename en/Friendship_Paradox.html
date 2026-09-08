@@ -102,12 +102,14 @@ canvas{width:100%;display:block;cursor:pointer}
 .help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <h1>Friendship Paradox — <em>how many friends do your friends actually have?</em></h1>
+  <h1><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-friendship-paradox" target="_blank" rel="noopener" title="The friendship paradox (Feld, 1991) states that in almost every social network, the friends of an average person have more friends, on average, than the person themself.">Friendship Paradox</a> — <em>how many friends do your friends actually have?</em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
@@ -117,7 +119,7 @@ canvas{width:100%;display:block;cursor:pointer}
 <div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
 <div class="help-box">
   <button class="help-close" onclick="toggleHelp()">✕ Close</button>
-  <div class="help-box-h">Friendship Paradox — Help</div>
+  <div class="help-box-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-friendship-paradox" target="_blank" rel="noopener" title="The friendship paradox (Feld, 1991) states that in almost every social network, the friends of an average person have more friends, on average, than the person themself.">Friendship Paradox</a> — Help</div>
 
   <div class="help-sh">The claim</div>
   <p class="help-p">"Your friends have more friends than you do, on average." Sounds like self-doubt, but it's a mathematical fact for almost every social network (Feld 1991). Click a person in the tool: usually, their friends have more friends on average than they do themselves.</p>
@@ -131,7 +133,7 @@ canvas{width:100%;display:block;cursor:pointer}
   <p class="help-p">Because Var(k) ≥ 0, <strong>E[friend] ≥ E[person]</strong> — equal only if everyone has the same number of friends. The more unequal the network (bigger differences in friend counts ⇒ bigger Var), the bigger the gap. Slide "connectivity" up and watch the difference.</p>
 
   <div class="help-sh">Size-biased sampling</div>
-  <p class="help-p">The core is <em>size-biased counting</em>: counting over friendships weights every person by their friend count. Same pattern as the <em>inspection paradox</em> (you land in long intervals) or "courses feel bigger than average."</p>
+  <p class="help-p">The core is <em>size-biased counting</em>: counting over friendships weights every person by their friend count. Same pattern as the <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-inspektionsparadox" target="_blank" rel="noopener" title="The inspection paradox describes the phenomenon that observing a process at a random point in time systematically captures longer intervals than the true average.">inspection paradox</a></em> (you land in long intervals) or "courses feel bigger than average."</p>
 
   <div class="help-sh">Everyday life &amp; usefulness</div>
   <p class="help-p">"Your followers have more followers." The gym always looks packed. Useful: "vaccinate/monitor random <em>friends</em> of random people" hits more central nodes on average — a cheap strategy without global network knowledge.</p>
@@ -213,12 +215,12 @@ canvas{width:100%;display:block;cursor:pointer}
   <div class="lcard-grid">
     <div class="lcard"><div class="lcard-h">Why "more"?</div><div class="lcard-body">If you ask <strong>random people</strong>, each has the same chance of being picked. If instead you go over <strong>friendships</strong> ("people's friends"), every person gets counted as many times as they have friends. Well-connected people appear on <strong>many</strong> lists and thus keep showing up — they pull the "friends" average up. That's why almost everyone feels their friends are more popular than they are.</div></div>
     <div class="lcard"><div class="lcard-h">The formula</div><div class="lcard-body">E[friend] = E[k²]/E[k] = E[k] + Var(k)/E[k] ≥ E[k]. Equality only if <strong>everyone</strong> has the same number of friends. More inequality ⇒ bigger gap.</div></div>
-    <div class="lcard"><div class="lcard-h">Size-biased sampling</div><div class="lcard-body">Counting over friendships weights every person by their friend count. Same principle as the <strong>inspection paradox</strong> and class-size bias.</div></div>
+    <div class="lcard"><div class="lcard-h">Size-biased sampling</div><div class="lcard-body">Counting over friendships weights every person by their friend count. Same principle as the <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-inspektionsparadox" target="_blank" rel="noopener" title="The inspection paradox describes the phenomenon that observing a process at a random point in time systematically captures longer intervals than the true average.">inspection paradox</a></strong> and class-size bias.</div></div>
     <div class="lcard"><div class="lcard-h">What's it useful for?</div><div class="lcard-body">"Monitor random friends of random people" hits more central nodes on average — a cheap early-detection/vaccination strategy without global network knowledge.
       <a class="xlink" href="Regression_zur_Mitte.html">→ related effects</a></div></div>
   </div>
 
-  <div class="lcard funfact"><div class="lcard-h">🦾 Fun Fact: Almost Everyone Has "Above-Average Arms"</div><div class="lcard-body">Practically every human has <strong>2 arms</strong> — a small few have only one or none due to accident or birth. The <strong>average</strong> is thus just <strong>under 2</strong> (e.g. 1.999). Result: over 99% of people have <strong>more</strong> arms than average. In the friendship paradox, it's exactly the opposite: there, most people have <strong>fewer</strong> friends than "the average of their friends."<br><br><em style="color:var(--ink3)">A similar aha-moment, but a different mechanism:</em> in the arms example, it's purely due to the <strong>skew</strong> of the distribution (median ≠ mean). The friendship paradox additionally arises from <strong>size-biased sampling over edges</strong> — well-connected people get counted multiple times.</div></div>
+  <div class="lcard funfact"><div class="lcard-h">🦾 Fun Fact: Almost Everyone Has "Above-Average Arms"</div><div class="lcard-body">Practically every human has <strong>2 arms</strong> — a small few have only one or none due to accident or birth. The <strong>average</strong> is thus just <strong>under 2</strong> (e.g. 1.999). Result: over 99% of people have <strong>more</strong> arms than average. In the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-friendship-paradox" target="_blank" rel="noopener" title="The friendship paradox (Feld, 1991) states that in almost every social network, the friends of an average person have more friends, on average, than the person themself.">friendship paradox</a>, it's exactly the opposite: there, most people have <strong>fewer</strong> friends than "the average of their friends."<br><br><em style="color:var(--ink3)">A similar aha-moment, but a different mechanism:</em> in the arms example, it's purely due to the <strong>skew</strong> of the distribution (median ≠ mean). The friendship paradox additionally arises from <strong>size-biased sampling over edges</strong> — well-connected people get counted multiple times.</div></div>
 
 </div><!-- #main -->
 </div><!-- #app -->

@@ -102,12 +102,14 @@ canvas{width:100%;display:block;cursor:pointer}
 .help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <h1>Friendship Paradox — <em>wie viele Freunde haben eigentlich deine Freunde?</em></h1>
+  <h1><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-friendship-paradox" target="_blank" rel="noopener" title="Der Friendship Paradox (Feld, 1991) besagt, dass in fast jedem sozialen Netzwerk die Freunde einer durchschnittlichen Person im Mittel mehr Freunde haben als die Person selbst.">Friendship Paradox</a> — <em>wie viele Freunde haben eigentlich deine Freunde?</em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
@@ -117,7 +119,7 @@ canvas{width:100%;display:block;cursor:pointer}
 <div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
 <div class="help-box">
   <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
-  <div class="help-box-h">Friendship Paradox — Hilfe</div>
+  <div class="help-box-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-friendship-paradox" target="_blank" rel="noopener" title="Der Friendship Paradox (Feld, 1991) besagt, dass in fast jedem sozialen Netzwerk die Freunde einer durchschnittlichen Person im Mittel mehr Freunde haben als die Person selbst.">Friendship Paradox</a> — Hilfe</div>
 
   <div class="help-sh">Die Behauptung</div>
   <p class="help-p">„Deine Freunde haben im Schnitt mehr Freunde als du." Klingt nach Selbstzweifel, ist aber ein mathematischer Fakt für fast jedes soziale Netzwerk (Feld 1991). Klick im Tool eine Person an: meistens haben ihre Freunde im Schnitt mehr Freunde als sie selbst.</p>
@@ -131,7 +133,7 @@ canvas{width:100%;display:block;cursor:pointer}
   <p class="help-p">Weil Var(k) ≥ 0, ist <strong>E[Freund] ≥ E[Person]</strong> — gleich nur, wenn alle gleich viele Freunde haben. Je ungleicher das Netz (größere Unterschiede in der Freundeszahl ⇒ größere Var), desto größer die Lücke. Schiebe „Vernetzung" hoch und beobachte die Differenz.</p>
 
   <div class="help-sh">Size-biased Sampling</div>
-  <p class="help-p">Der Kern ist <em>größenverzerrtes Zählen</em>: über Freundschaften gewichtet man jede Person mit ihrer Freundeszahl. Dasselbe Muster wie der <em>Inspection Paradox</em> (man landet in langen Intervallen) oder „Kurse wirken größer als der Schnitt".</p>
+  <p class="help-p">Der Kern ist <em>größenverzerrtes Zählen</em>: über Freundschaften gewichtet man jede Person mit ihrer Freundeszahl. Dasselbe Muster wie der <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-inspektionsparadox" target="_blank" rel="noopener" title="Das Inspektionsparadox beschreibt das Phänomen, dass die Beobachtung eines Prozesses zu einem zufälligen Zeitpunkt systematisch längere Intervalle erfasst als der tatsächliche Durchschnitt.">Inspection Paradox</a></em> (man landet in langen Intervallen) oder „Kurse wirken größer als der Schnitt".</p>
 
   <div class="help-sh">Alltag &amp; Nutzen</div>
   <p class="help-p">„Deine Follower haben mehr Follower." Das Fitnessstudio wirkt immer voll. Nützlich: „Impfe/beobachte zufällige <em>Freunde</em> von Zufallspersonen" trifft im Mittel zentralere Knoten — eine günstige Strategie ohne globale Netzwerkkenntnis.</p>
@@ -213,12 +215,12 @@ canvas{width:100%;display:block;cursor:pointer}
   <div class="lcard-grid">
     <div class="lcard"><div class="lcard-h">Warum „mehr"?</div><div class="lcard-body">Fragt man <strong>zufällige Personen</strong>, hat jede dieselbe Chance, gezogen zu werden. Geht man stattdessen über <strong>Freundschaften</strong> („die Freunde der Leute"), wird jede Person so oft gezählt, wie sie Freunde hat. Gut vernetzte Personen stehen auf <strong>vielen</strong> Listen und tauchen darum immer wieder auf — sie ziehen den Schnitt der „Freunde" nach oben. Deshalb haben fast alle das Gefühl, ihre Freunde seien beliebter als sie selbst.</div></div>
     <div class="lcard"><div class="lcard-h">Die Formel</div><div class="lcard-body">E[Freund] = E[k²]/E[k] = E[k] + Var(k)/E[k] ≥ E[k]. Gleichheit nur, wenn <strong>alle</strong> gleich viele Freunde haben. Mehr Ungleichheit ⇒ größere Lücke.</div></div>
-    <div class="lcard"><div class="lcard-h">Size-biased Sampling</div><div class="lcard-body">Über Freundschaften gewichtet man jede Person mit ihrer Freundeszahl. Dasselbe Prinzip wie der <strong>Inspection Paradox</strong> und die Klassengröße-Verzerrung.</div></div>
+    <div class="lcard"><div class="lcard-h">Size-biased Sampling</div><div class="lcard-body">Über Freundschaften gewichtet man jede Person mit ihrer Freundeszahl. Dasselbe Prinzip wie der <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-inspektionsparadox" target="_blank" rel="noopener" title="Das Inspektionsparadox beschreibt das Phänomen, dass die Beobachtung eines Prozesses zu einem zufälligen Zeitpunkt systematisch längere Intervalle erfasst als der tatsächliche Durchschnitt.">Inspection Paradox</a></strong> und die Klassengröße-Verzerrung.</div></div>
     <div class="lcard"><div class="lcard-h">Wozu nützlich?</div><div class="lcard-body">„Beobachte zufällige Freunde von Zufallspersonen" trifft im Mittel zentralere Knoten — eine günstige Früherkennungs-/Impfstrategie ohne globale Netzwerkkenntnis.
       <a class="xlink" href="Regression_zur_Mitte.html">→ verwandte Effekte</a></div></div>
   </div>
 
-  <div class="lcard funfact"><div class="lcard-h">🦾 Fun Fact: fast alle haben „überdurchschnittlich viele Arme"</div><div class="lcard-body">Praktisch jeder Mensch hat <strong>2 Arme</strong> — ein paar wenige haben durch Unfall oder Geburt nur einen oder keinen. Der <strong>Durchschnitt</strong> liegt damit knapp <strong>unter 2</strong> (z. B. 1,999). Ergebnis: Über 99 % der Menschen haben <strong>mehr</strong> Arme als der Durchschnitt. Beim Freundschaftsparadox ist es genau andersherum: Dort haben die meisten <strong>weniger</strong> Freunde als „der Schnitt ihrer Freunde".<br><br><em style="color:var(--ink3)">Ähnliches Aha-Gefühl, aber anderer Mechanismus:</em> Beim Arm-Beispiel liegt es allein an der <strong>Schiefe</strong> der Verteilung (Median ≠ Mittelwert). Das Freundschaftsparadox kommt zusätzlich durch das <strong>size-biased Sampling über Kanten</strong> zustande — gut Vernetzte werden mehrfach gezählt.</div></div>
+  <div class="lcard funfact"><div class="lcard-h">🦾 Fun Fact: fast alle haben „überdurchschnittlich viele Arme"</div><div class="lcard-body">Praktisch jeder Mensch hat <strong>2 Arme</strong> — ein paar wenige haben durch Unfall oder Geburt nur einen oder keinen. Der <strong>Durchschnitt</strong> liegt damit knapp <strong>unter 2</strong> (z. B. 1,999). Ergebnis: Über 99 % der Menschen haben <strong>mehr</strong> Arme als der Durchschnitt. Beim <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-friendship-paradox" target="_blank" rel="noopener" title="Der Friendship Paradox (Feld, 1991) besagt, dass in fast jedem sozialen Netzwerk die Freunde einer durchschnittlichen Person im Mittel mehr Freunde haben als die Person selbst.">Freundschaftsparadox</a> ist es genau andersherum: Dort haben die meisten <strong>weniger</strong> Freunde als „der Schnitt ihrer Freunde".<br><br><em style="color:var(--ink3)">Ähnliches Aha-Gefühl, aber anderer Mechanismus:</em> Beim Arm-Beispiel liegt es allein an der <strong>Schiefe</strong> der Verteilung (Median ≠ Mittelwert). Das Freundschaftsparadox kommt zusätzlich durch das <strong>size-biased Sampling über Kanten</strong> zustande — gut Vernetzte werden mehrfach gezählt.</div></div>
 
 </div><!-- #main -->
 </div><!-- #app -->

@@ -97,12 +97,14 @@ canvas{width:100%;display:block}
 .help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <h1>Law of Small Numbers — <em>why the "record towns" are tiny</em></h1>
+  <h1><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-gesetz-kleiner-zahlen" target="_blank" rel="noopener" title="The law of small numbers (Tversky & Kahneman, 1971) describes the widespread misconception that even small samples reliably reflect the properties of the population.">Law of Small Numbers</a> — <em>why the "record towns" are tiny</em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
@@ -112,17 +114,17 @@ canvas{width:100%;display:block}
 <div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
 <div class="help-box">
   <button class="help-close" onclick="toggleHelp()">✕ Close</button>
-  <div class="help-box-h">Law of Small Numbers — Help</div>
+  <div class="help-box-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-gesetz-kleiner-zahlen" target="_blank" rel="noopener" title="The law of small numbers (Tversky & Kahneman, 1971) describes the widespread misconception that even small samples reliably reflect the properties of the population.">Law of Small Numbers</a> — Help</div>
 
   <div class="help-sh">What's this about</div>
   <p class="help-p">A rate (here: proportion of left-handers) is exactly the same in <em>every</em> town — say, 10%. But the measured proportion fluctuates randomly from town to town. <strong>The key question:</strong> which towns have the <em>highest</em> and <em>lowest</em> rate? Answer: almost always the <strong>small</strong> ones — at <em>both</em> ends.</p>
 
   <div class="help-sh">The mechanism</div>
-  <p class="help-p">The standard error of a proportion shrinks with the square root of sample size:</p>
+  <p class="help-p">The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardfehler" target="_blank" rel="noopener" title="The standard error (SE) is the standard deviation of the sampling distribution of an estimator.">standard error</a> of a proportion shrinks with the square root of sample size:</p>
   <code class="help-formula">SE = √( p·(1−p) / n )</code>
   <p class="help-p">Small towns (small n) have a large SE → their measured values scatter widely around the true rate. Large towns sit almost exactly at p. That's why both the top performers and the bottom performers come from small towns — not because anything special happens there, but because <strong>small samples fluctuate more</strong>.</p>
 
-  <div class="help-sh">The funnel plot</div>
+  <div class="help-sh">The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-funnel-plot" target="_blank" rel="noopener" title="A funnel plot plots a measured value against a measure of precision (usually sample size n or standard error), with a funnel-shaped ±2-SE region around the true value.">funnel plot</a></div>
   <p class="help-p">Rate (y) against population (x, logarithmic). The "funnel" is the ±2-SE boundary: wide on the left (small towns), narrow on the right (large towns). The points fill the funnel — the most extreme ones sit far to the left. This exact shape is called a <em>funnel plot</em> and is also used to detect publication bias.</p>
 
   <div class="help-sh">Famous example (Kahneman)</div>
@@ -199,13 +201,13 @@ canvas{width:100%;display:block}
 
   <div class="sec-h">Concepts</div>
   <div class="lcard-grid">
-    <div class="lcard"><div class="lcard-h">Law of small numbers</div><div class="lcard-body">We expect small samples to be as "well-behaved" as large ones — but they aren't. Small n fluctuates a lot (SE ∝ 1/√n), so small units show up at <strong>both</strong> extremes.</div></div>
-    <div class="lcard"><div class="lcard-h">The mechanism: standard error</div><div class="lcard-body">The standard error of a proportion shrinks with the square root of sample size:
+    <div class="lcard"><div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-gesetz-kleiner-zahlen" target="_blank" rel="noopener" title="The law of small numbers (Tversky & Kahneman, 1971) describes the widespread misconception that even small samples reliably reflect the properties of the population.">Law of small numbers</a></div><div class="lcard-body">We expect small samples to be as "well-behaved" as large ones — but they aren't. Small n fluctuates a lot (SE ∝ 1/√n), so small units show up at <strong>both</strong> extremes.</div></div>
+    <div class="lcard"><div class="lcard-h">The mechanism: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardfehler" target="_blank" rel="noopener" title="The standard error (SE) is the standard deviation of the sampling distribution of an estimator.">standard error</a></div><div class="lcard-body">The standard error of a proportion shrinks with the square root of sample size:
       <code>SE = √( p·(1−p) / n )</code>
       Small towns (small n) have a large SE → their measured rate scatters widely around the true rate p. Large towns (large n) sit almost exactly at p. <strong>This</strong> is the real reason both the highest and the lowest measured rate come from small towns — not because anything special happens there, but because small samples fluctuate more randomly.</div></div>
     <div class="lcard"><div class="lcard-h">Why both ends?</div><div class="lcard-body">The spread is symmetric: a small town can randomly land very high <em>or</em> very low. That's why both the top performers <strong>and</strong> the bottom performers are small — a telltale pattern.</div></div>
-    <div class="lcard"><div class="lcard-h">Funnel plot</div><div class="lcard-body">Value against sample size, with a ±2-SE funnel. Points outside the funnel are genuine outliers; the funnel shape itself exposes pure size effects. Also standard for detecting bias in meta-analyses.</div></div>
-    <div class="lcard"><div class="lcard-h">Remedy: shrinkage</div><div class="lcard-body">Pull small units' values toward the overall mean (empirical Bayes / multilevel) — extreme random outliers get dampened. That's <strong>regression to the mean</strong> in action.
+    <div class="lcard"><div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-funnel-plot" target="_blank" rel="noopener" title="A funnel plot plots a measured value against a measure of precision (usually sample size n or standard error), with a funnel-shaped ±2-SE region around the true value.">Funnel plot</a></div><div class="lcard-body">Value against sample size, with a ±2-SE funnel. Points outside the funnel are genuine outliers; the funnel shape itself exposes pure size effects. Also standard for detecting bias in meta-analyses.</div></div>
+    <div class="lcard"><div class="lcard-h">Remedy: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage refers to the phenomenon that group-level estimates in hierarchical/mixed models (partial pooling) are systematically pulled toward the grand mean.">shrinkage</a></div><div class="lcard-body">Pull small units' values toward the overall mean (empirical Bayes / multilevel) — extreme random outliers get dampened. That's <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-regression-zur-mitte" target="_blank" rel="noopener" title="Regression to the mean describes the statistical phenomenon that extreme measurements are, on average, closer to the population mean when repeated.">regression to the mean</a></strong> in action.
       <a class="xlink" href="Regression_zur_Mitte.html">→ Regression to the Mean</a></div></div>
   </div>
 

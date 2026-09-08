@@ -97,12 +97,14 @@ canvas{width:100%;display:block}
 .help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <h1>Gesetz der kleinen Zahlen — <em>warum die „Rekord-Gemeinden" winzig sind</em></h1>
+  <h1><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-gesetz-kleiner-zahlen" target="_blank" rel="noopener" title="Das Gesetz der kleinen Zahlen (Tversky & Kahneman, 1971) beschreibt die verbreitete Fehlannahme, dass auch kleine Stichproben die Eigenschaften der Grundgesamtheit zuverlässig widerspiegeln.">Gesetz der kleinen Zahlen</a> — <em>warum die „Rekord-Gemeinden" winzig sind</em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
@@ -112,17 +114,17 @@ canvas{width:100%;display:block}
 <div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
 <div class="help-box">
   <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
-  <div class="help-box-h">Gesetz der kleinen Zahlen — Hilfe</div>
+  <div class="help-box-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-gesetz-kleiner-zahlen" target="_blank" rel="noopener" title="Das Gesetz der kleinen Zahlen (Tversky & Kahneman, 1971) beschreibt die verbreitete Fehlannahme, dass auch kleine Stichproben die Eigenschaften der Grundgesamtheit zuverlässig widerspiegeln.">Gesetz der kleinen Zahlen</a> — Hilfe</div>
 
   <div class="help-sh">Worum geht's</div>
   <p class="help-p">Eine Quote (hier: Anteil Linkshänder) ist in <em>allen</em> Gemeinden gleich groß — sagen wir 10 %. Der gemessene Anteil schwankt aber zufällig von Gemeinde zu Gemeinde. <strong>Die entscheidende Frage:</strong> Welche Gemeinden haben die <em>höchste</em> und die <em>niedrigste</em> Quote? Antwort: fast immer die <strong>kleinen</strong> — und zwar an <em>beiden</em> Enden.</p>
 
   <div class="help-sh">Der Mechanismus</div>
-  <p class="help-p">Der Standardfehler eines Anteils sinkt mit der Wurzel der Stichprobengröße:</p>
+  <p class="help-p">Der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-standardfehler" target="_blank" rel="noopener" title="Der Standardfehler (SE) ist die Standardabweichung der Stichprobenverteilung eines Schätzers.">Standardfehler</a> eines Anteils sinkt mit der Wurzel der Stichprobengröße:</p>
   <code class="help-formula">SE = √( p·(1−p) / n )</code>
   <p class="help-p">Kleine Gemeinden (kleines n) haben einen großen SE → ihre Messwerte streuen weit um die wahre Quote. Große Gemeinden liegen fast exakt bei p. Deshalb stammen sowohl die Spitzenreiter als auch die Schlusslichter aus den kleinen Gemeinden — nicht weil dort etwas Besonderes passiert, sondern weil <strong>kleine Stichproben stärker schwanken</strong>.</p>
 
-  <div class="help-sh">Der Funnel-Plot</div>
+  <div class="help-sh">Der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-funnel-plot" target="_blank" rel="noopener" title="Ein Funnel-Plot trägt einen gemessenen Wert gegen ein Präzisionsmaß auf (meist Stichprobengröße n oder Standardfehler), mit einem trichterförmigen ±2-SE-Bereich um den wahren Wert.">Funnel-Plot</a></div>
   <p class="help-p">Quote (y) gegen Einwohnerzahl (x, logarithmisch). Der „Trichter" sind die ±2-SE-Grenzen: links (kleine Gemeinden) weit, rechts (große Gemeinden) eng. Die Punkte füllen den Trichter aus — die extremsten liegen ganz links. Genau diese Form heißt <em>Funnel-Plot</em> und dient auch zur Aufdeckung von Publikationsbias.</p>
 
   <div class="help-sh">Berühmtes Beispiel (Kahneman)</div>
@@ -199,13 +201,13 @@ canvas{width:100%;display:block}
 
   <div class="sec-h">Konzepte</div>
   <div class="lcard-grid">
-    <div class="lcard"><div class="lcard-h">Gesetz der kleinen Zahlen</div><div class="lcard-body">Wir erwarten, dass kleine Stichproben so „brav" sind wie große — sind sie aber nicht. Kleine n schwanken stark (SE ∝ 1/√n), daher tauchen sie an <strong>beiden</strong> Extremen auf.</div></div>
-    <div class="lcard"><div class="lcard-h">Der Mechanismus: Standardfehler</div><div class="lcard-body">Der Standardfehler eines Anteils sinkt mit der Wurzel der Stichprobengröße:
+    <div class="lcard"><div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-gesetz-kleiner-zahlen" target="_blank" rel="noopener" title="Das Gesetz der kleinen Zahlen (Tversky & Kahneman, 1971) beschreibt die verbreitete Fehlannahme, dass auch kleine Stichproben die Eigenschaften der Grundgesamtheit zuverlässig widerspiegeln.">Gesetz der kleinen Zahlen</a></div><div class="lcard-body">Wir erwarten, dass kleine Stichproben so „brav" sind wie große — sind sie aber nicht. Kleine n schwanken stark (SE ∝ 1/√n), daher tauchen sie an <strong>beiden</strong> Extremen auf.</div></div>
+    <div class="lcard"><div class="lcard-h">Der Mechanismus: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-standardfehler" target="_blank" rel="noopener" title="Der Standardfehler (SE) ist die Standardabweichung der Stichprobenverteilung eines Schätzers.">Standardfehler</a></div><div class="lcard-body">Der Standardfehler eines Anteils sinkt mit der Wurzel der Stichprobengröße:
       <code>SE = √( p·(1−p) / n )</code>
       Kleine Gemeinden (kleines n) haben einen großen SE → ihre gemessene Quote streut weit um die wahre Quote p. Große Gemeinden (großes n) liegen fast exakt bei p. <strong>Das</strong> ist der eigentliche Grund, warum sowohl die höchste als auch die niedrigste gemessene Quote aus kleinen Gemeinden stammt — nicht weil dort etwas Besonderes passiert, sondern weil kleine Stichproben stärker zufällig schwanken.</div></div>
     <div class="lcard"><div class="lcard-h">Warum beide Enden?</div><div class="lcard-body">Die Streuung ist symmetrisch: eine kleine Gemeinde kann zufällig sehr hoch <em>oder</em> sehr niedrig liegen. Deshalb sind Spitzenreiter <strong>und</strong> Schlusslichter klein — ein verräterisches Muster.</div></div>
-    <div class="lcard"><div class="lcard-h">Funnel-Plot</div><div class="lcard-body">Wert gegen Stichprobengröße, mit ±2-SE-Trichter. Punkte außerhalb des Trichters sind echte Auffälligkeiten; die Trichterform selbst entlarvt reine Größeneffekte. Auch Standard zur Bias-Diagnose in Meta-Analysen.</div></div>
-    <div class="lcard"><div class="lcard-h">Gegenmittel: Shrinkage</div><div class="lcard-body">Werte kleiner Einheiten Richtung Gesamtmittel ziehen (Empirical Bayes / Multilevel) — extreme Zufalls-Ausreißer werden gedämpft. Das ist <strong>Regression zur Mitte</strong> in Aktion.
+    <div class="lcard"><div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-funnel-plot" target="_blank" rel="noopener" title="Ein Funnel-Plot trägt einen gemessenen Wert gegen ein Präzisionsmaß auf (meist Stichprobengröße n oder Standardfehler), mit einem trichterförmigen ±2-SE-Bereich um den wahren Wert.">Funnel-Plot</a></div><div class="lcard-body">Wert gegen Stichprobengröße, mit ±2-SE-Trichter. Punkte außerhalb des Trichters sind echte Auffälligkeiten; die Trichterform selbst entlarvt reine Größeneffekte. Auch Standard zur Bias-Diagnose in Meta-Analysen.</div></div>
+    <div class="lcard"><div class="lcard-h">Gegenmittel: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage bezeichnet das Phänomen, dass gruppenspezifische Schätzer in hierarchischen/gemischten Modellen (Partial Pooling) systematisch zum Gesamtmittelwert hin geschrumpft werden.">Shrinkage</a></div><div class="lcard-body">Werte kleiner Einheiten Richtung Gesamtmittel ziehen (Empirical Bayes / Multilevel) — extreme Zufalls-Ausreißer werden gedämpft. Das ist <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-regression-zur-mitte" target="_blank" rel="noopener" title="Regression zur Mitte beschreibt das statistische Phänomen, dass extreme Messwerte bei Wiederholung im Mittel näher am Populationsmittelwert liegen.">Regression zur Mitte</a></strong> in Aktion.
       <a class="xlink" href="Regression_zur_Mitte.html">→ Regression zur Mitte</a></div></div>
   </div>
 

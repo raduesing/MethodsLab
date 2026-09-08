@@ -149,12 +149,14 @@ canvas{width:100%;display:block}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
   font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
 @media(max-width:900px){.metric-grid{grid-template-columns:1fr 1fr}.lcard-grid{grid-template-columns:1fr}}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <h1>Inspection Paradox — <em>why you almost always land in the long interval</em></h1>
+  <h1><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-inspektionsparadox" target="_blank" rel="noopener" title="The inspection paradox (also waiting-time paradox or length-biased sampling) describes the phenomenon that observing a process at a random point in time systematically captures longer intervals than the true average.">Inspection Paradox</a> — <em>why you almost always land in the long interval</em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
@@ -345,7 +347,7 @@ canvas{width:100%;display:block}
 <!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
 <div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
   <div class="help-box">
-    <div class="help-box-h">Inspection Paradox — Background
+    <div class="help-box-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-inspektionsparadox" target="_blank" rel="noopener" title="The inspection paradox (also waiting-time paradox or length-biased sampling) describes the phenomenon that observing a process at a random point in time systematically captures longer intervals than the true average.">Inspection Paradox</a> — Background
       <button class="help-close" onclick="toggleHelp()">✕ Close</button>
     </div>
 

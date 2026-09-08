@@ -105,12 +105,14 @@ canvas{width:100%;display:block;cursor:pointer}
 .help-sh:first-of-type{margin-top:.1rem}
 .help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
 .help-p strong{color:var(--ink)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <h1>Survivorship Bias — <em>wohin mit der Panzerung?</em></h1>
+  <h1><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-survivorship-bias" target="_blank" rel="noopener" title="Survivorship Bias (Überlebensverzerrung) entsteht, wenn eine Stichprobe systematisch nur aus den „Überlebenden" eines Selektionsprozesses besteht, während die Fälle, die den Prozess nicht überstanden haben, komplett aus den Daten verschwinden.">Survivorship Bias</a> — <em>wohin mit der Panzerung?</em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
@@ -120,7 +122,7 @@ canvas{width:100%;display:block;cursor:pointer}
 <div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
 <div class="help-box">
   <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
-  <div class="help-box-h">Survivorship Bias — Hilfe</div>
+  <div class="help-box-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-survivorship-bias" target="_blank" rel="noopener" title="Survivorship Bias (Überlebensverzerrung) entsteht, wenn eine Stichprobe systematisch nur aus den „Überlebenden" eines Selektionsprozesses besteht, während die Fälle, die den Prozess nicht überstanden haben, komplett aus den Daten verschwinden.">Survivorship Bias</a> — Hilfe</div>
 
   <div class="help-sh">Die Geschichte (Abraham Wald, 1943)</div>
   <p class="help-p">Im Zweiten Weltkrieg untersuchte die US-Luftwaffe zurückgekehrte Bomber und kartierte ihre Einschusslöcher. Der naheliegende Schluss: dort panzern, wo die meisten Löcher sind (Tragflächen, Rumpf). Der Statistiker <strong>Abraham Wald</strong> widersprach: Panzert dort, wo die Rückkehrer <em>kaum</em> Löcher haben — Cockpit, Triebwerke, Tanks. Denn Maschinen, die dort getroffen wurden, sind <em>gar nicht zurückgekommen</em>. Sie fehlen im Datensatz.</p>
@@ -136,7 +138,7 @@ canvas{width:100%;display:block;cursor:pointer}
   <p class="help-p"><strong>1.</strong> Sieh dir die Rückkehrer an. <strong>2.</strong> Klicke im Bild die Zonen an, die du panzern würdest. <strong>3.</strong> Klick <strong>▸ Auflösen</strong> — die abgeschossenen Maschinen (die fehlenden Daten) werden eingeblendet, und deine Wahl wird bewertet. <strong>Tödlichkeit</strong> regelt, wie sicher ein kritischer Treffer zum Absturz führt.</p>
 
   <div class="help-sh">Alltag</div>
-  <p class="help-p">„Erfolgreiche Studienabbrecher", „dieser Fonds schlägt den Markt seit 10 Jahren" (die Pleitefonds sieht man nicht), „alte Gebäude/Bands/Produkte waren besser gebaut" — überall, wo nur die Überlebenden in die Stichprobe kommen, droht Survivorship Bias. Verwandt mit Selektions- und Collider-Verzerrung.</p>
+  <p class="help-p">„Erfolgreiche Studienabbrecher", „dieser Fonds schlägt den Markt seit 10 Jahren" (die Pleitefonds sieht man nicht), „alte Gebäude/Bands/Produkte waren besser gebaut" — überall, wo nur die Überlebenden in die Stichprobe kommen, droht Survivorship Bias. Verwandt mit <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-selektion-bias" target="_blank" rel="noopener" title="Selektionsbias entsteht, wenn die Auswahl von Einheiten in eine Studie oder in eine Behandlungsgruppe systematisch mit dem Outcome zusammenhängt.">Selektions-</a> und <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-collider" target="_blank" rel="noopener" title="Ein Collider ist ein Knoten in einem DAG, auf den mindestens zwei gerichtete Kanten zeigen: A → C ← B.">Collider</a>-Verzerrung.</p>
 
   <div class="help-sh">Literatur</div>
   <p class="help-p">Wald, A. (1943). A method of estimating plane vulnerability based on damage of survivors. Statistical Research Group, Columbia University (CRC 432). · Mangel, M. &amp; Samaniego, F. J. (1984). Abraham Wald's work on aircraft survivability. <em>JASA, 79</em>(386), 259–267.</p>
@@ -200,7 +202,7 @@ canvas{width:100%;display:block;cursor:pointer}
   <div class="sec-h">Konzepte</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">Was ist Survivorship Bias?</div>
+      <div class="lcard-h">Was ist <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-survivorship-bias" target="_blank" rel="noopener" title="Survivorship Bias (Überlebensverzerrung) entsteht, wenn eine Stichprobe systematisch nur aus den „Überlebenden" eines Selektionsprozesses besteht, während die Fälle, die den Prozess nicht überstanden haben, komplett aus den Daten verschwinden.">Survivorship Bias</a>?</div>
       <div class="lcard-body">Eine Verzerrung, die entsteht, wenn nur die <strong>Überlebenden</strong> (Erfolgreichen, Zurückgekehrten) in die Stichprobe gelangen. Die Verlierer fehlen — und mit ihnen oft die entscheidende Information.</div>
     </div>
     <div class="lcard">
@@ -209,7 +211,7 @@ canvas{width:100%;display:block;cursor:pointer}
     </div>
     <div class="lcard">
       <div class="lcard-h">Selektion auf das Ergebnis</div>
-      <div class="lcard-body">Die Stichprobe wird nach dem <strong>Outcome</strong> (Überleben) gefiltert. Das ist dasselbe Muster wie Collider-/Selektionsverzerrung: Konditionieren auf „zurückgekehrt" verzerrt den Zusammenhang zwischen Trefferort und Häufigkeit.</div>
+      <div class="lcard-body">Die Stichprobe wird nach dem <strong>Outcome</strong> (Überleben) gefiltert. Das ist dasselbe Muster wie <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-collider" target="_blank" rel="noopener" title="Ein Collider ist ein Knoten in einem DAG, auf den mindestens zwei gerichtete Kanten zeigen: A → C ← B.">Collider</a>-/<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-selektion-bias" target="_blank" rel="noopener" title="Selektionsbias entsteht, wenn die Auswahl von Einheiten in eine Studie oder in eine Behandlungsgruppe systematisch mit dem Outcome zusammenhängt.">Selektionsverzerrung</a>: Konditionieren auf „zurückgekehrt" verzerrt den Zusammenhang zwischen Trefferort und Häufigkeit.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h">Im Alltag</div>

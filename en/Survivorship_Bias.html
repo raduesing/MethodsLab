@@ -105,12 +105,14 @@ canvas{width:100%;display:block;cursor:pointer}
 .help-sh:first-of-type{margin-top:.1rem}
 .help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
 .help-p strong{color:var(--ink)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <h1>Survivorship Bias — <em>where to put the armor?</em></h1>
+  <h1><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-survivorship-bias" target="_blank" rel="noopener" title="Survivorship bias arises when a sample systematically consists only of the survivors of a selection process, while the cases that did not survive the process disappear entirely from the data.">Survivorship Bias</a> — <em>where to put the armor?</em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
@@ -120,7 +122,7 @@ canvas{width:100%;display:block;cursor:pointer}
 <div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
 <div class="help-box">
   <button class="help-close" onclick="toggleHelp()">✕ Close</button>
-  <div class="help-box-h">Survivorship Bias — Help</div>
+  <div class="help-box-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-survivorship-bias" target="_blank" rel="noopener" title="Survivorship bias arises when a sample systematically consists only of the survivors of a selection process, while the cases that did not survive the process disappear entirely from the data.">Survivorship Bias</a> — Help</div>
 
   <div class="help-sh">The story (Abraham Wald, 1943)</div>
   <p class="help-p">In World War II, the US Air Force examined returning bombers and mapped their bullet holes. The obvious conclusion: armor where most of the holes are (wings, fuselage). Statistician <strong>Abraham Wald</strong> disagreed: armor where the returning planes have <em>almost no</em> holes — cockpit, engines, fuel tanks. Because planes hit there <em>never came back</em>. They're missing from the dataset.</p>
@@ -136,7 +138,7 @@ canvas{width:100%;display:block;cursor:pointer}
   <p class="help-p"><strong>1.</strong> Look at the returning planes. <strong>2.</strong> Click the zones in the image that you would armor. <strong>3.</strong> Click <strong>▸ Reveal</strong> — the shot-down planes (the missing data) appear, and your choice is evaluated. <strong>Lethality</strong> controls how reliably a critical hit causes a crash.</p>
 
   <div class="help-sh">Everyday life</div>
-  <p class="help-p">"Successful dropouts," "this fund has beaten the market for 10 years" (you don't see the funds that went bust), "old buildings/bands/products were built better" — wherever only the survivors make it into the sample, survivorship bias threatens. Related to selection and collider bias.</p>
+  <p class="help-p">"Successful dropouts," "this fund has beaten the market for 10 years" (you don't see the funds that went bust), "old buildings/bands/products were built better" — wherever only the survivors make it into the sample, survivorship bias threatens. Related to <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-selektion-bias" target="_blank" rel="noopener" title="Selection bias arises when the selection of units into a study or treatment group is systematically associated with the outcome.">selection</a> and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-collider" target="_blank" rel="noopener" title="A collider is a variable C in a DAG that has arrows from two or more other variables pointing into it: A → C ← B.">collider</a> bias.</p>
 
   <div class="help-sh">References</div>
   <p class="help-p">Wald, A. (1943). A method of estimating plane vulnerability based on damage of survivors. Statistical Research Group, Columbia University (CRC 432). · Mangel, M. &amp; Samaniego, F. J. (1984). Abraham Wald's work on aircraft survivability. <em>JASA, 79</em>(386), 259–267.</p>
@@ -200,7 +202,7 @@ canvas{width:100%;display:block;cursor:pointer}
   <div class="sec-h">Concepts</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">What is survivorship bias?</div>
+      <div class="lcard-h">What is <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-survivorship-bias" target="_blank" rel="noopener" title="Survivorship bias arises when a sample systematically consists only of the survivors of a selection process, while the cases that did not survive the process disappear entirely from the data.">survivorship bias</a>?</div>
       <div class="lcard-body">A bias that arises when only the <strong>survivors</strong> (successes, returners) make it into the sample. The losers are missing — and with them, often the crucial information.</div>
     </div>
     <div class="lcard">
@@ -209,7 +211,7 @@ canvas{width:100%;display:block;cursor:pointer}
     </div>
     <div class="lcard">
       <div class="lcard-h">Selection on the outcome</div>
-      <div class="lcard-body">The sample is filtered by the <strong>outcome</strong> (survival). That's the same pattern as collider/selection bias: conditioning on "returned" biases the relationship between hit location and frequency.</div>
+      <div class="lcard-body">The sample is filtered by the <strong>outcome</strong> (survival). That's the same pattern as <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-collider" target="_blank" rel="noopener" title="A collider is a variable C in a DAG that has arrows from two or more other variables pointing into it: A → C ← B.">collider</a>/<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-selektion-bias" target="_blank" rel="noopener" title="Selection bias arises when the selection of units into a study or treatment group is systematically associated with the outcome.">selection</a> bias: conditioning on "returned" biases the relationship between hit location and frequency.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h">In everyday life</div>
