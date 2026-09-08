@@ -27,6 +27,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover{background:var(--ink);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a4)}
 #app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
@@ -115,7 +117,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <body>
 
 <div id="topbar">
-  <h1>Mediation <em>Analysis</em> — Hayes/PROCESS Model 4</h1>
+  <h1><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mediationsanalyse" target="_blank" rel="noopener" title="Mediation analysis decomposes the total effect of a treatment T on an outcome Y into the direct effect and the indirect effect via a mediator M.">Mediation <em>Analysis</em></a> — Hayes/PROCESS Model 4</h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
   <button class="tbtn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Help</button>
@@ -243,7 +245,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
   <div class="kw-grid">
     <div class="kw-box">
-      <div class="kw-label">a·b — Indirect Effect</div>
+      <div class="kw-label">a·b — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-indirekter-effekt" target="_blank" rel="noopener" title="The indirect effect measures how much of the total effect of X on Y is mediated through M: indirect = a · b.">Indirect Effect</a></div>
       <div class="kw-val" id="kw-ab">—</div>
       <div class="kw-sub" id="kw-ab-pop">Pop: —</div>
     </div>
@@ -325,7 +327,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);margin-bottom:.8rem">
       Sobel: SE = √(b²·SE_a² + a²·SE_b²) &nbsp;·&nbsp; Aroian: SE = √(b²·SE_a² + a²·SE_b² + SE_a²·SE_b²)
     </div>
-    <div class="erklaer-h">Bootstrap Confidence Interval</div>
+    <div class="erklaer-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-bootstrap" target="_blank" rel="noopener" title="Bootstrap is a resampling method for estimating the sampling distribution of a statistic without parametric assumptions.">Bootstrap</a> Confidence Interval</div>
     <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);margin-bottom:.4rem">
       Percentile method · 5000 iterations · on request only (Hayes, 2022, 3rd ed., Ch. 4)
     </div>
@@ -338,7 +340,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="lcard-grid">
       <div class="lcard">
         <div class="lcard-h">What is mediation?</div>
-        <div class="lcard-body">A mediator M explains the <strong>mechanism</strong> through which X affects Y. X influences M (path a), M influences Y (path b). The indirect effect <strong>a·b</strong> quantifies this process. Hayes (2022) calls this the simplest mediation model — PROCESS Model 4.</div>
+        <div class="lcard-body">A <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mediator" target="_blank" rel="noopener" title="A mediator M is a variable that lies on the causal path between treatment T and outcome Y: T → M → Y.">mediator</a> M explains the <strong>mechanism</strong> through which X affects Y. X influences M (path a), M influences Y (path b). The indirect effect <strong>a·b</strong> quantifies this process. Hayes (2022) calls this the simplest mediation model — PROCESS Model 4.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Direct vs. indirect effect</div>
@@ -346,11 +348,11 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Mediation, confounding &amp; suppression</div>
-        <div class="lcard-body">MacKinnon, Krull &amp; Lockwood (2000, <em>Prevention Science</em>) show: <strong>mediation, confounding and suppression are mathematically equivalent</strong> — the same equations, different causal interpretations. Under <strong>suppression</strong>, a and b have opposite signs: a·b is negative, so |c′| &gt; |c| — the direct effect overestimates the total effect. This is visible in Scenario D: X and Y correlate more weakly than X's direct effect on Y, because M suppresses part of the X effect. Whether M is a mediator, confounder or suppressor is decided by <em>causal theory</em>, not by the data.</div>
+        <div class="lcard-body">MacKinnon, Krull &amp; Lockwood (2000, <em>Prevention Science</em>) show: <strong>mediation, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Confounding arises when a third variable C is a common cause of both the treatment X and the outcome Y: C → X and C → Y.">confounding</a> and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-suppression" target="_blank" rel="noopener" title="Suppression occurs when adding a predictor Z increases the magnitude of another predictor's coefficient, even though Z itself correlates little or not at all with the outcome Y.">suppression</a> are mathematically equivalent</strong> — the same equations, different causal interpretations. Under <strong>suppression</strong>, a and b have opposite signs: a·b is negative, so |c′| &gt; |c| — the direct effect overestimates the total effect. This is visible in Scenario D: X and Y correlate more weakly than X's direct effect on Y, because M suppresses part of the X effect. Whether M is a mediator, confounder or suppressor is decided by <em>causal theory</em>, not by the data.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Sobel test &amp; limitation</div>
-        <div class="lcard-body">The <strong>Sobel test</strong> (1982) tests H₀: a·b = 0 via <code>z = ab/SE</code> with <code>SE = √(b²SE_a² + a²SE_b²)</code>. The product of two normally distributed random variables is <em>not</em> normally distributed — it follows a product distribution that is typically <strong>skewed and leptokurtic</strong>. The Sobel test therefore often underestimates significance at small n (too conservative) and can fail to correctly control the α error for certain parameter combinations. The <strong>Aroian test</strong> adds the term SE_a²·SE_b² and is somewhat more accurate, but suffers from the same underlying problem.</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-sobel-test" target="_blank" rel="noopener" title="The Sobel test checks whether the indirect effect a·b is significantly different from zero by computing an approximated standard error of the product a·b.">Sobel test</a> &amp; limitation</div>
+        <div class="lcard-body">The <strong>Sobel test</strong> (1982) tests H₀: a·b = 0 via <code>z = ab/SE</code> with <code>SE = √(b²SE_a² + a²SE_b²)</code>. The product of two normally distributed random variables is <em>not</em> normally distributed — it follows a product distribution that is typically <strong>skewed and leptokurtic</strong>. The Sobel test therefore often underestimates significance at small n (too conservative) and can fail to correctly control the α error for certain parameter combinations. The <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-aroian-test" target="_blank" rel="noopener" title="The Aroian test is a modification of the Sobel test for testing the significance of the indirect effect a·b, adding an extra term to the standard-error formula.">Aroian test</a></strong> adds the term SE_a²·SE_b² and is somewhat more accurate, but suffers from the same underlying problem.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Why bootstrap is better</div>
@@ -358,7 +360,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Causal mediation analysis</div>
-        <div class="lcard-body">Regression mediation describes a pattern but does not prove causation. A finding of a·b ≠ 0 can arise because M truly mediates — or because a third variable jointly influences M and Y (confounding). Causal claims require two conditions: <strong>(1)</strong> all confounders between X and Y are controlled (ideally: X is randomized). <strong>(2)</strong> all confounders between M and Y are measured — this is the harder condition and often unattainable in practice. <strong>DAGs</strong> make visible which variables could even qualify as confounders. The <strong>potential-outcomes framework</strong> (PO) precisely defines what "causal indirect effect" means: how does Y change if the path through M is interrupted? <strong>IPW</strong> estimates this effect, provided the assumptions hold (Imai et al., 2010; VanderWeele, 2015). Whether the assumptions hold is a theoretical decision — not an empirical one.<br><br><strong>Related tools:</strong> <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Golem_Builder.html" target="_blank" rel="noopener">DAGs (Golem Builder)</a> and <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/GComp_Builder.html" target="_blank" rel="noopener">G-Computation (GComp Builder)</a> in the Bayes Thinking Lab, as well as <a href="../Causal_Teaching.html" target="_blank" rel="noopener">Causal Inference — Foundations</a> and <a href="../PSM.html" target="_blank" rel="noopener">Propensity Score Matching / Weighting</a> here in Methods Lab.</div>
+        <div class="lcard-body">Regression mediation describes a pattern but does not prove causation. A finding of a·b ≠ 0 can arise because M truly mediates — or because a third variable jointly influences M and Y (confounding). Causal claims require two conditions: <strong>(1)</strong> all confounders between X and Y are controlled (ideally: X is randomized). <strong>(2)</strong> all confounders between M and Y are measured — this is the harder condition and often unattainable in practice. <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dag" target="_blank" rel="noopener" title="A Directed Acyclic Graph (DAG) is a directed graph without cycles that makes causal assumptions about a system of variables explicit and testable.">DAGs</a></strong> make visible which variables could even qualify as confounders. The <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-po" target="_blank" rel="noopener" title="The potential-outcomes framework formalizes causal claims via the notation Yᵗ: the outcome a unit would show if it had received treatment t.">potential-outcomes framework</a></strong> (PO) precisely defines what "causal indirect effect" means: how does Y change if the path through M is interrupted? <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ipw" target="_blank" rel="noopener" title="Inverse Probability Weighting weights each observation by the inverse of its probability of receiving the treatment it actually received: w = 1 / P(T=t | X).">IPW</a></strong> estimates this effect, provided the assumptions hold (Imai et al., 2010; VanderWeele, 2015). Whether the assumptions hold is a theoretical decision — not an empirical one.<br><br><strong>Related tools:</strong> <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Golem_Builder.html" target="_blank" rel="noopener">DAGs (Golem Builder)</a> and <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/GComp_Builder.html" target="_blank" rel="noopener">G-Computation (GComp Builder)</a> in the Bayes Thinking Lab, as well as <a href="../Causal_Teaching.html" target="_blank" rel="noopener">Causal Inference — Foundations</a> and <a href="../PSM.html" target="_blank" rel="noopener">Propensity Score Matching / Weighting</a> here in Methods Lab.</div>
       </div>
     </div>
   </div>
@@ -369,7 +371,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
   <div class="help-box">
     <div class="help-box-h">
-      <span>Mediation <em>Analysis</em> — Help</span>
+      <span><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mediationsanalyse" target="_blank" rel="noopener" title="Mediation analysis decomposes the total effect of a treatment T on an outcome Y into the direct effect and the indirect effect via a mediator M.">Mediation <em>Analysis</em></a> — Help</span>
       <button class="help-close" onclick="toggleHelp()">✕ Close</button>
     </div>
 
@@ -378,7 +380,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
     <div class="help-sh">Model structure (Hayes Model 4)</div>
     <p class="help-p">A mediation analysis decomposes the total effect of X on Y into two paths:</p>
-    <div class="help-formula">Indirect effect: a·b &nbsp;(X→M→Y)</div>
+    <div class="help-formula"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-indirekter-effekt" target="_blank" rel="noopener" title="The indirect effect measures how much of the total effect of X on Y is mediated through M: indirect = a · b.">Indirect effect</a>: a·b &nbsp;(X→M→Y)</div>
     <div class="help-formula">Direct effect: c′ &nbsp;(X→Y, with M held constant)</div>
     <div class="help-formula">Total effect: c = c′ + a·b</div>
     <p class="help-p">c corresponds exactly to the bivariate regression coefficient from the simple regression Y ~ X (with M omitted from the model).</p>
@@ -387,14 +389,14 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <p class="help-p"><strong>A — No mediation:</strong> a·b ≈ 0, because a or b is zero. X affects Y directly, but not through M.<br>
     <strong>B — Full mediation:</strong> c′ ≈ 0, the entire effect runs through M. Without M in the model, c ≠ 0 — but once M is controlled for, it vanishes.<br>
     <strong>C — Partial mediation:</strong> both a·b and c′ are nonzero. The most common case in practice.<br>
-    <strong>D — Suppression:</strong> a and b have opposite signs, so a·b is negative. Since c = c′ + a·b, the total effect turns out smaller than the direct one: |c| &lt; |c′|. Under strong suppression, c can be near zero even though c′ is substantial.</p>
+    <strong>D — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-suppression" target="_blank" rel="noopener" title="Suppression occurs when adding a predictor Z increases the magnitude of another predictor's coefficient, even though Z itself correlates little or not at all with the outcome Y.">Suppression</a>:</strong> a and b have opposite signs, so a·b is negative. Since c = c′ + a·b, the total effect turns out smaller than the direct one: |c| &lt; |c′|. Under strong suppression, c can be near zero even though c′ is substantial.</p>
 
-    <div class="help-sh">Sobel test vs. bootstrap</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-sobel-test" target="_blank" rel="noopener" title="The Sobel test checks whether the indirect effect a·b is significantly different from zero by computing an approximated standard error of the product a·b.">Sobel test</a> vs. bootstrap</div>
     <p class="help-p">The <strong>Sobel test</strong> assumes that a·b is approximately normally distributed. That only holds at large n — at small sample sizes, the product distribution is skewed and leptokurtic, which makes the test too conservative.</p>
-    <p class="help-p">The <strong>bootstrap CI</strong> (Preacher & Hayes, 2008) makes no distributional assumption: 5000 resamples approximate the actual shape of the a·b distribution. In simulations it has better power <em>and</em> more correct α control — especially at n &lt; 100 or with asymmetric effects.</p>
+    <p class="help-p">The <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-bootstrap" target="_blank" rel="noopener" title="Bootstrap is a resampling method for estimating the sampling distribution of a statistic without parametric assumptions.">bootstrap CI</a></strong> (Preacher & Hayes, 2008) makes no distributional assumption: 5000 resamples approximate the actual shape of the a·b distribution. In simulations it has better power <em>and</em> more correct α control — especially at n &lt; 100 or with asymmetric effects.</p>
 
     <div class="help-sh">Causality</div>
-    <p class="help-p">A significant a·b does not prove causation. Causal claims require <strong>(1)</strong> all confounders between X and Y and <strong>(2)</strong> all confounders between M and Y to be controlled. Condition 2 is rarely attainable in observational studies. DAGs help identify the necessary control variables.</p>
+    <p class="help-p">A significant a·b does not prove causation. Causal claims require <strong>(1)</strong> all <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Confounding arises when a third variable C is a common cause of both the treatment X and the outcome Y: C → X and C → Y.">confounders</a> between X and Y and <strong>(2)</strong> all confounders between M and Y to be controlled. Condition 2 is rarely attainable in observational studies. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dag" target="_blank" rel="noopener" title="A Directed Acyclic Graph (DAG) is a directed graph without cycles that makes causal assumptions about a system of variables explicit and testable.">DAGs</a> help identify the necessary control variables.</p>
   </div>
 </div>
 

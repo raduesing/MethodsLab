@@ -29,6 +29,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a6)}
 #app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
@@ -171,7 +173,7 @@ canvas{display:block;width:100%}
       <span class="sv">X₂</span><span class="sd">Intelligenz (IQ-Score, standardisiert) — Kontrollvariable</span>
       <span class="sv">Y</span><span class="sd">Klausurleistung (Punkte, 0–100)</span>
     </div>
-    <div class="story-q">Wie stark korreliert Lernzeit mit Klausurleistung, wenn man Intelligenzunterschiede herausrechnet? Geht der Effekt auf eigenständige Lernbereitschaft zurück — oder ist er nur ein Artefakt, weil Klügere zufällig auch mehr lernen? (Szenario D — Reziproke Suppression — wechselt zu einem anderen Beispiel: Dominanz &amp; Empathie als Prädiktoren von Führungserfolg.)</div>
+    <div class="story-q">Wie stark korreliert Lernzeit mit Klausurleistung, wenn man Intelligenzunterschiede herausrechnet? Geht der Effekt auf eigenständige Lernbereitschaft zurück — oder ist er nur ein Artefakt, weil Klügere zufällig auch mehr lernen? (Szenario D — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reziproke-suppression" target="_blank" rel="noopener" title="Reziproke Suppression liegt vor, wenn zwei Prädiktoren jeweils positiv mit dem Outcome korrelieren, selbst aber negativ miteinander korrelieren — beide partiellen Koeffizienten werden dadurch größer als ihre bivariaten Korrelationen.">Reziproke Suppression</a> — wechselt zu einem anderen Beispiel: Dominanz &amp; Empathie als Prädiktoren von Führungserfolg.)</div>
   </div>
 
   <div class="sec-h" style="margin-top:0">Konzept</div>
@@ -201,7 +203,7 @@ canvas{display:block;width:100%}
       </div>
     </div>
     <div>
-      <div class="sec-h">Ballantine-Diagramm — Varianzzerlegung</div>
+      <div class="sec-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ballantine-diagramm" target="_blank" rel="noopener" title="Das Ballantine-Diagramm stellt die Varianz von Y sowie die Varianzen der Prädiktoren als überlappende Kreise dar, wobei die Überlappungsflächen gemeinsam erklärte Varianz (R²-Anteile) repräsentieren.">Ballantine-Diagramm</a> — Varianzzerlegung</div>
       <div class="cv-panel" style="padding:.75rem 1rem 1rem">
         <canvas id="cv-venn" height="770"></canvas>
       </div>
@@ -232,7 +234,7 @@ canvas{display:block;width:100%}
     <div class="lcard-grid">
       <div class="lcard">
         <div class="lcard-h">Bivariat, Semi- &amp; Partialkorrelation</div>
-        <div class="lcard-body">Drei Stufen der Kontrolle: Die <strong>bivariate r</strong> misst den Zusammenhang von X₁ und Y ohne jede Kontrolle. Die <strong>Semipartialkorrelation</strong> entfernt X₂'s Einfluss nur aus X₁ — Y bleibt roh. Sie ist die Quadratwurzel von ΔR² und misst den <em>einzigartigen Beitrag</em> von X₁ zur Y-Varianz. Die <strong>Partialkorrelation</strong> entfernt X₂ aus beiden: Sie misst die Stärke des X₁-Y-Zusammenhangs <em>innerhalb</em> der Ebene, die X₂ nicht erklärt.</div>
+        <div class="lcard-body">Drei Stufen der Kontrolle: Die <strong>bivariate r</strong> misst den Zusammenhang von X₁ und Y ohne jede Kontrolle. Die <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-semipartialkorrelation" target="_blank" rel="noopener" title="Die Semi-Partialkorrelation misst die Korrelation zwischen Y und dem um Z bereinigten Anteil von X — nur eine der beiden Variablen wird bereinigt, ihr Quadrat entspricht ΔR².">Semipartialkorrelation</a></strong> entfernt X₂'s Einfluss nur aus X₁ — Y bleibt roh. Sie ist die Quadratwurzel von ΔR² und misst den <em>einzigartigen Beitrag</em> von X₁ zur Y-Varianz. Die <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-partialkorrelation" target="_blank" rel="noopener" title="Die Partialkorrelation misst den linearen Zusammenhang zwischen X und Y, nachdem der lineare Einfluss einer Kontrollvariablen Z aus BEIDEN Variablen X und Y herausgerechnet wurde.">Partialkorrelation</a></strong> entfernt X₂ aus beiden: Sie misst die Stärke des X₁-Y-Zusammenhangs <em>innerhalb</em> der Ebene, die X₂ nicht erklärt.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Residualisierung — was passiert geometrisch?</div>
@@ -240,7 +242,7 @@ canvas{display:block;width:100%}
       </div>
       <div class="lcard">
         <div class="lcard-h">Das Ballantine-Diagramm</div>
-        <div class="lcard-body">Drei überlappende Kreise (X₁, X₂, Y) visualisieren die R²-Zerlegung. Die <strong>blaue Zone b</strong> = ΔR²(X₁) = Semipartial² — einzigartiger X₁-Anteil. Die <strong>grüne Zone d</strong> = ΔR²(X₂). Die <strong>lila Zone c</strong> = geteilte Varianz, die beiden Prädiktoren zugleich zugeordnet werden könnte. <strong>c kann negativ werden</strong> (Suppression) — dann bricht das Venn-Diagramm geometrisch zusammen, die Werte bleiben aber gültig. Grauer Bereich a = unerklärte Y-Varianz (1−R²).</div>
+        <div class="lcard-body">Drei überlappende Kreise (X₁, X₂, Y) visualisieren die R²-Zerlegung. Die <strong>blaue Zone b</strong> = ΔR²(X₁) = Semipartial² — einzigartiger X₁-Anteil. Die <strong>grüne Zone d</strong> = ΔR²(X₂). Die <strong>lila Zone c</strong> = geteilte Varianz, die beiden Prädiktoren zugleich zugeordnet werden könnte. <strong>c kann negativ werden</strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-suppression" target="_blank" rel="noopener" title="Suppression liegt vor, wenn die Aufnahme eines Prädiktors Z den Regressionskoeffizienten eines anderen Prädiktors X betragsmäßig vergrößert, obwohl Z selbst kaum mit dem Outcome Y korreliert.">Suppression</a>) — dann bricht das Venn-Diagramm geometrisch zusammen, die Werte bleiben aber gültig. Grauer Bereich a = unerklärte Y-Varianz (1−R²).</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Suppression — drei Varianten</div>
@@ -251,8 +253,8 @@ canvas{display:block;width:100%}
         <div class="lcard-body">Kennzeichen: ρ(X₁,Y) &gt; 0, ρ(X₂,Y) &gt; 0, aber ρ(X₁,X₂) &lt; 0. Beide Prädiktoren korrelieren positiv mit Y, sind aber untereinander negativ korreliert — jeder enthält Störvarianz des anderen. Folge: β₁_multipel &gt; β₁_einfach <em>und</em> β₂_multipel &gt; β₂_einfach. Beispiel (Szenario D): Dominanz (X₁, r=.30) und Empathie (X₂, r=.25) korrelieren beide positiv mit Führungserfolg, aber negativ miteinander (r=−.30). Kontrolliert man jeweils die andere Variable, steigen beide β-Gewichte — das gegenseitige Unterdrücken wird aufgehoben.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Kollinearität &amp; ΔR²</div>
-        <div class="lcard-body">Hohe Kollinearität (ρ(X₁,X₂) groß) führt zu kleinen ΔR²-Werten für beide Prädiktoren, auch wenn beide bivariat stark mit Y korrelieren. Die Prädiktoren „konkurrieren" um denselben Y-Varianzanteil. In der multiplen Regression: große SE, instabile β-Koeffizienten, VIF → 1/(1−R²_j) steigt. Szenario B zeigt: bivariat r=0.6, aber ΔR²(X₁)≈0.04. <strong>Semipartialkorrelation quadriert</strong> gibt den einzigartigen Beitrag direkt — das ist die ehrlichste Effektgröße in der multiplen Regression.</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-multikollinearitaet" target="_blank" rel="noopener" title="Multikollinearität bezeichnet eine starke lineare Abhängigkeit zwischen zwei oder mehr Prädiktoren in einem Regressionsmodell.">Kollinearität</a> &amp; ΔR²</div>
+        <div class="lcard-body">Hohe Kollinearität (ρ(X₁,X₂) groß) führt zu kleinen ΔR²-Werten für beide Prädiktoren, auch wenn beide bivariat stark mit Y korrelieren. Die Prädiktoren „konkurrieren" um denselben Y-Varianzanteil. In der multiplen Regression: große SE, instabile β-Koeffizienten, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-vif" target="_blank" rel="noopener" title="Der Variance Inflation Factor (VIF) quantifiziert das Ausmaß der Multikollinearität für jeden Prädiktor: VIFᵢ = 1/(1 − R²ᵢ).">VIF</a> → 1/(1−R²_j) steigt. Szenario B zeigt: bivariat r=0.6, aber ΔR²(X₁)≈0.04. <strong>Semipartialkorrelation quadriert</strong> gibt den einzigartigen Beitrag direkt — das ist die ehrlichste Effektgröße in der multiplen Regression.</div>
       </div>
     </div>
   </div>
@@ -310,7 +312,7 @@ canvas{display:block;width:100%}
       Lernzeit-Effekt unabhängig von IQ. Er ist deutlich kleiner als die bivariate r.
     </p>
 
-    <div class="help-sh">Ballantine-Diagramm — Varianzzerlegung</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ballantine-diagramm" target="_blank" rel="noopener" title="Das Ballantine-Diagramm stellt die Varianz von Y sowie die Varianzen der Prädiktoren als überlappende Kreise dar, wobei die Überlappungsflächen gemeinsam erklärte Varianz (R²-Anteile) repräsentieren.">Ballantine-Diagramm</a> — Varianzzerlegung</div>
     <p class="help-p">
       Drei überlappende Kreise (X₁, X₂, Y) zeigen, wie R² sich aufteilt:
     </p>
@@ -324,7 +326,7 @@ canvas{display:block;width:100%}
       einzigartigen Anteil, wenn IQ bereits im Modell ist.
     </p>
 
-    <div class="help-sh">Suppression (Szenario C)</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-suppression" target="_blank" rel="noopener" title="Suppression liegt vor, wenn die Aufnahme eines Prädiktors Z den Regressionskoeffizienten eines anderen Prädiktors X betragsmäßig vergrößert, obwohl Z selbst kaum mit dem Outcome Y korreliert.">Suppression</a> (Szenario C)</div>
     <p class="help-p">
       Formal: c &lt; 0 (geteilte Varianz negativ) — geometrisch nicht als Schnittmenge darstellbar,
       rechnerisch aber gültig. Erkennungszeichen:
@@ -346,7 +348,7 @@ canvas{display:block;width:100%}
       Allen drei Varianten gemein: β₁_multipel &gt; β₁_einfach und c &lt; 0 im Ballantine-Diagramm.
     </p>
     <p class="help-p">
-      <strong>Fall 1 — Klassische Suppression (McNemar 1945) — Szenario C:</strong><br>
+      <strong>Fall 1 — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-klassische-suppression" target="_blank" rel="noopener" title="Klassische Suppression (McNemar, 1945) liegt vor, wenn ein Prädiktor Z selbst kaum mit dem Outcome Y korreliert, aber substanziell mit dem Prädiktor X korreliert ist — Z filtert dadurch reine Störvarianz aus X.">Klassische Suppression</a> (McNemar 1945) — Szenario C:</strong><br>
       ρ(X₁,Y) &gt; 0, ρ(X₂,Y) ≈ 0, ρ(X₁,X₂) &gt; 0. X₂ korreliert kaum mit Y, aber mit X₁ —
       es steckt Störvarianz in X₁, die Y-irrelevant ist. Kontrolle von X₂ entfernt diesen Rauschanteil
       und legt den echten X₁-Y-Effekt frei.
@@ -357,14 +359,14 @@ canvas{display:block;width:100%}
       und leistungsirrelevant. Kontrolliert man IQ, steigt r_partial &gt; r_bivariat.
     </p>
     <p class="help-p">
-      <strong>Fall 2 — Negative/Net Suppression:</strong><br>
+      <strong>Fall 2 — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-negative-suppression" target="_blank" rel="noopener" title="Negative Suppression (auch Net Suppression) liegt vor, wenn der partielle Regressionskoeffizient ein anderes Vorzeichen trägt als die bivariate Korrelation — der Effekt kehrt sich durch Aufnahme von Z scheinbar um.">Negative/Net Suppression</a>:</strong><br>
       Alle Korrelationen positiv, aber ρ(X₂,Y) &lt; ρ(X₁,X₂) · ρ(X₁,Y). Gradueller Übergang
       zu Fall 1 — X₂ hat einen kleinen positiven Effekt auf Y, erklärt aber mehr Varianz in X₁
       als in Y. Kein eigenes Szenario im Tool; tritt auf, wenn man in Szenario C ρ₂y leicht
       von 0 wegschiebt.
     </p>
     <p class="help-p">
-      <strong>Fall 3 — Reziproke Suppression / Komplementarität (Conger 1974) — Szenario D:</strong><br>
+      <strong>Fall 3 — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reziproke-suppression" target="_blank" rel="noopener" title="Reziproke Suppression liegt vor, wenn zwei Prädiktoren jeweils positiv mit dem Outcome korrelieren, selbst aber negativ miteinander korrelieren — beide partiellen Koeffizienten werden dadurch größer als ihre bivariaten Korrelationen.">Reziproke Suppression / Komplementarität</a> (Conger 1974) — Szenario D:</strong><br>
       ρ(X₁,Y) &gt; 0, ρ(X₂,Y) &gt; 0, aber ρ(X₁,X₂) &lt; 0. Beide Prädiktoren korrelieren
       positiv mit Y, sind aber negativ untereinander korreliert. Jeder Prädiktor enthält Störvarianz
       des anderen — beide supprimieren sich gegenseitig. Folge: β₁_multipel &gt; β₁_einfach
@@ -386,14 +388,14 @@ canvas{display:block;width:100%}
       wird. Symmetrisch gilt dasselbe für Empathie: β₂_multipel ≈ .34 &gt; .25.
     </p>
 
-    <div class="help-sh">Kollinearität &amp; Wahl der Kennzahl</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-multikollinearitaet" target="_blank" rel="noopener" title="Multikollinearität bezeichnet eine starke lineare Abhängigkeit zwischen zwei oder mehr Prädiktoren in einem Regressionsmodell.">Kollinearität</a> &amp; Wahl der Kennzahl</div>
     <p class="help-p">
       Hohe Kollinearität (ρ(X₁,X₂) groß) → kleine ΔR²-Werte, große SE, instabile β.
-      VIF = 1/(1 − R²_j) quantifiziert die Aufblähung der Standardfehler.
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-vif" target="_blank" rel="noopener" title="Der Variance Inflation Factor (VIF) quantifiziert das Ausmaß der Multikollinearität für jeden Prädiktor: VIFᵢ = 1/(1 − R²ᵢ).">VIF</a> = 1/(1 − R²_j) quantifiziert die Aufblähung der Standardfehler.
       Szenario B zeigt: bivariat r = 0.60, aber ΔR²(X₁) ≈ 0.04 — ein kollinearer Prädiktor
       erklärt bivariat viel, trägt aber kaum einzigartig bei.
     </p>
-    <div class="help-sh" style="margin-top:.7rem">Semipartial vs. Partialkorrelation — wann welche?</div>
+    <div class="help-sh" style="margin-top:.7rem">Semipartial vs. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-partialkorrelation" target="_blank" rel="noopener" title="Die Partialkorrelation misst den linearen Zusammenhang zwischen X und Y, nachdem der lineare Einfluss einer Kontrollvariablen Z aus BEIDEN Variablen X und Y herausgerechnet wurde.">Partialkorrelation</a> — wann welche?</div>
     <p class="help-p">
       Der entscheidende Unterschied liegt in der <strong>Bezugsgröße</strong>:
     </p>
@@ -414,7 +416,7 @@ canvas{display:block;width:100%}
     </p>
     <p class="help-p">
       <strong>Wann r_partial dennoch sinnvoll ist:</strong>
-      Wenn X₂ als harte Baseline-Kovariate gilt, deren Y-Varianz konzeptuell „nicht interessiert" —
+      Wenn X₂ als harte Baseline-<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-kovariate" target="_blank" rel="noopener" title="Eine Kovariate ist eine zusätzliche Variable im Regressionsmodell, die nicht der primäre Prädiktor ist, aber zur Kontrolle ihres Einflusses auf das Outcome einbezogen wird.">Kovariate</a> gilt, deren Y-Varianz konzeptuell „nicht interessiert" —
       z. B. T1-Messwert als Baseline in einem Längsschnitt. Dann fragt man: „Wie stark hängen
       X₁ und Y <em>innerhalb</em> der X₂-bereinigten Ebene zusammen?" — und r_partial beantwortet
       genau das. Auch für reine Signifikanztests hat r_partial leicht mehr Power, weil der Nenner

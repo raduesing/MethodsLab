@@ -180,6 +180,8 @@ input[type=range]::-moz-range-thumb{
 .btn.primary:hover{background:color-mix(in srgb,var(--a2) 12%,transparent)}
 .btn.accent1{border-color:var(--a1);color:var(--a1)}
 .btn.accent1:hover{background:color-mix(in srgb,var(--a1) 10%,transparent)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 .btn-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.85rem}
 
 /* ── Scenario Buttons (Module 4) ───────────────────────────────── */
@@ -574,18 +576,18 @@ input[type=range]::-moz-range-thumb{
       <div class="info-box" style="flex:1">
         <div class="info-box-h">Tutorial — Das Least-Squares-Prinzip</div>
         <p><strong>Was Sie sehen</strong><br>
-        30 simulierte Studierende: Lernzeit X₁ (h/Woche) → Klausurnote Y (Punkte). Die <em>orangene Gerade</em> ist Ihre Schätzlinie — ziehbar über zwei runde Anker am linken und rechten Rand. Schalten Sie <em>● Residuals</em> ein: grüne Striche = positive Residuen (Punkt liegt über der Gerade), rote Striche = negative Residuen (Punkt liegt darunter). Ein <strong>Residuum</strong> eᵢ = yᵢ − ŷᵢ ist die Abweichung des beobachteten vom vorhergesagten Wert.</p>
+        30 simulierte Studierende: Lernzeit X₁ (h/Woche) → Klausurnote Y (Punkte). Die <em>orangene Gerade</em> ist Ihre Schätzlinie — ziehbar über zwei runde Anker am linken und rechten Rand. Schalten Sie <em>● Residuals</em> ein: grüne Striche = positive Residuen (Punkt liegt über der Gerade), rote Striche = negative Residuen (Punkt liegt darunter). Ein <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-residuen" target="_blank" rel="noopener" title="Residuen sind die Differenzen zwischen den beobachteten Werten yᵢ und den vom Modell vorhergesagten Werten ŷᵢ: eᵢ = yᵢ − ŷᵢ.">Residuum</a></strong> eᵢ = yᵢ − ŷᵢ ist die Abweichung des beobachteten vom vorhergesagten Wert.</p>
         <p><strong>Was tun</strong><br>
         Ziehen Sie die Anker, bis Ihre RSS (orangener Balken, absoluter Wert) möglichst klein wird. Klicken Sie dann <em>◎ OLS zeigen</em> — die blaue OLS-Gerade erscheint. Der zweite Balken zeigt deren RSS. Vergleich: Wie nah kamen Sie ans Minimum?</p>
-        <p><strong>Was ist RSS? (Residual Sum of Squares)</strong><br>
-        RSS = Σeᵢ² = Σ(yᵢ − ŷᵢ)². OLS findet analytisch exakt das b₀ und b₁, für das RSS global minimal ist — eindeutig und beweisbar. Kein Ausprobieren: b₁ = Cov(X,Y)/Var(X), b₀ = ȳ − b₁·x̄.</p>
+        <p><strong>Was ist <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rss" target="_blank" rel="noopener" title="Die RSS ist die Summe der quadrierten Differenzen zwischen beobachteten und vorhergesagten Werten: RSS = Σ(yᵢ − ŷᵢ)². Sie ist das zentrale Optimierungskriterium der OLS-Schätzung.">RSS</a>? (Residual Sum of Squares)</strong><br>
+        RSS = Σeᵢ² = Σ(yᵢ − ŷᵢ)². <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS ist das Standardverfahren zur Schätzung linearer Regressionskoeffizienten: Es minimiert die Summe der quadrierten Residuen RSS = Σ(yᵢ − ŷᵢ)².">OLS</a> findet analytisch exakt das b₀ und b₁, für das RSS global minimal ist — eindeutig und beweisbar. Kein Ausprobieren: b₁ = Cov(X,Y)/Var(X), b₀ = ȳ − b₁·x̄.</p>
         <p><strong>Warum Quadrate, nicht Beträge?</strong><br>
         (1) Für jede OLS-Gerade gilt Σeᵢ = 0 — positive und negative Residuen heben sich trivialerweise auf. (2) Das Quadrieren bestraft große Residuen überproportional: ein Residuum von 10 kostet 100, nicht 10. (3) Das Quadrat liefert eine differenzierbare Funktion → geschlossene, eindeutige Lösung.</p>
         <p><strong>Was beobachten?</strong><br>
         · Falsche Steigung → RSS steigt schneller als falscher Achsenabschnitt.<br>
         · Punkte am X-Rand (hohe <em>Hebelwirkung</em>) drehen b₁ stark, wenn sie weit von der Geraden abweichen.<br>
         · Probieren Sie absichtlich schlechte Geraden (steil, flach, negativ) — der RSS-Wert explodiert.<br>
-        · <strong>Gauss-Markov:</strong> Unter den 5 OLS-Annahmen (→ Modul <span class="circ">③</span>) ist OLS der <em>BLUE</em> — Best Linear Unbiased Estimator. Kein anderer linearer unverzerrter Schätzer hat kleinere Varianz.</p>
+        · <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-gauss-markov" target="_blank" rel="noopener" title="Das Gauss-Markov-Theorem besagt: Unter fünf klassischen Annahmen ist der OLS-Schätzer BLUE — Best Linear Unbiased Estimator.">Gauss-Markov</a>:</strong> Unter den 5 OLS-Annahmen (→ Modul <span class="circ">③</span>) ist OLS der <em>BLUE</em> — Best Linear Unbiased Estimator. Kein anderer linearer unverzerrter Schätzer hat kleinere Varianz.</p>
       </div>
 
     </div><!-- rechtes Panel -->
@@ -700,7 +702,7 @@ input[type=range]::-moz-range-thumb{
         <p><strong>b₁ = <span id="m2-info-b1">—</span> — Steigung (unstandardisiert)</strong><br>
         Pro +1 h Lernzeit steigt die <em>erwartete</em> Note um <span id="m2-info-b1b">—</span> Punkte. Einheit: Punkte/Stunde. Interpretation: deskriptiv, <em>kein Kausaleffekt</em>. b₁ ist skalenabhängig — ein b₁ aus einer anderen Studie mit anderen Skalen ist nicht direkt vergleichbar.<br>
         Das Steigungsdreieck im Canvas zeigt konkret: <strong>+3 h Lernzeit → +<span id="m2-slope-tri">—</span> Punkte</strong> (= 3 · b₁).</p>
-        <p><strong>β = <span id="m2-info-beta">—</span> — standardisierter Koeffizient</strong><br>
+        <p><strong>β = <span id="m2-info-beta">—</span> — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-standardisierter-koeffizient" target="_blank" rel="noopener" title="Der standardisierte Regressionskoeffizient β entsteht durch z-Standardisierung: β = b · (SD_X / SD_Y). Bivariat gilt stets β = r.">standardisierter Koeffizient</a></strong><br>
         Pro +1 SD in X₁ steigt Y um β SD. Bivariat gilt immer β = r (Pearson-Korrelation) — prüfen Sie das in der Koeffizientenzelle! β erlaubt den Vergleich von Prädiktoren unterschiedlicher Skalen <em>innerhalb</em> einer Studie, aber <em>nicht</em> zwischen Studien (abhängig von SD(X) und SD(Y)).<br>
         <em>Wichtig:</em> β gibt nicht direkt die Wichtigkeit oder den kausalen Einfluss eines Prädiktors an — bei korrelierten Prädiktoren kann β stark vom partiellen Effekt abweichen (→ Modul <span class="circ">④</span>).</p>
         <p><strong>b₀ = <span id="m2-info-b0">—</span> — Achsenabschnitt</strong><br>
@@ -735,7 +737,7 @@ input[type=range]::-moz-range-thumb{
           <strong style="color:var(--ink)">b₁ (unstandardisiert)</strong> berichtet man, wenn
           die Einheit inhaltlich bedeutsam ist: „+1 h Lernzeit → +<span id="m2-b1-acc">—</span> Punkte".
           Voraussetzung: Leser kennen die Skala.<br><br>
-          <strong style="color:var(--ink)">β (standardisiert)</strong> erlaubt den Vergleich von
+          <strong style="color:var(--ink)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-standardisierter-koeffizient" target="_blank" rel="noopener" title="Der standardisierte Regressionskoeffizient β entsteht durch z-Standardisierung: β = b · (SD_X / SD_Y). Bivariat gilt stets β = r.">β (standardisiert)</a></strong> erlaubt den Vergleich von
           Prädiktoren verschiedener Skalen <em>innerhalb</em> einer Studie.
           Achtung: β variiert mit SD(X) und SD(Y) — Vergleiche zwischen Studien sind
           <em>nicht</em> zulässig.<br><br>
@@ -824,13 +826,13 @@ input[type=range]::-moz-range-thumb{
         <div class="info-box-h">Tutorial — Varianzzerlegung &amp; Modellgüte</div>
         <p><strong>Was Sie sehen — drei Modi (TSS = SSM + RSS)</strong><br>
         <em>TSS</em> (graue Striche): Abstände aller Punkte vom Mittelwert ȳ — die Gesamtstreuung in Y, unabhängig vom Modell. <em>SSM</em> (grüne Striche): Abstände des Modells (Regressionsgerade) vom Mittelwert ȳ — der Anteil, den das Modell gegenüber „nur ȳ als Vorhersage" erklärt. <em>RSS</em> (rote Striche): Abstände der Punkte vom Modell — die Residuen, also was unerklärt bleibt. Der Balken links zeigt das SSM : RSS-Verhältnis. Wechseln Sie die Modi über die Schaltflächen.</p>
-        <p><strong>TSS = <span id="m3-info-sst">—</span> — Total Sum of Squares</strong><br>
+        <p><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-tss" target="_blank" rel="noopener" title="Die TSS ist die Summe der quadrierten Abweichungen aller beobachteten Y-Werte von ihrem Mittelwert: TSS = Σ(yᵢ − ȳ)².">TSS</a> = <span id="m3-info-sst">—</span> — Total Sum of Squares</strong><br>
         TSS = Σ(yᵢ − ȳ)². Gesamtvarianz in Y — wie stark schwanken die Noten generell? TSS hängt <em>nicht</em> vom Modell ab. Es ist die Ausgangslage, die erklärt werden soll.</p>
-        <p><strong>SSM = <span id="m3-info-ssr">—</span> (<span id="m3-info-ssr-pct">—</span>% von TSS) — Sum of Squares Model</strong><br>
+        <p><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ssm" target="_blank" rel="noopener" title="Die SSM ist die Summe der quadrierten Differenzen zwischen den vorhergesagten Werten ŷᵢ und dem Gesamtmittelwert ȳ: SSM = Σ(ŷᵢ − ȳ)².">SSM</a> = <span id="m3-info-ssr">—</span> (<span id="m3-info-ssr-pct">—</span>% von TSS) — Sum of Squares Model</strong><br>
         SSM = Σ(ŷᵢ − ȳ)². Der vom Modell erklärte Anteil — der Abstand der Regressionsgeraden vom Mittelwert ȳ an der Stelle jedes Datenpunktes (ein Beitrag pro Beobachtung), also die Verbesserung gegenüber „nur ȳ". Je größer SSM relativ zu TSS, desto besser der Fit. OLS <em>maximiert</em> SSM (äquivalent zum Minimieren von RSS).</p>
-        <p><strong>RSS = <span id="m3-info-sse">—</span> (<span id="m3-info-sse-pct">—</span>% von TSS) — Residual Sum of Squares</strong><br>
+        <p><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rss" target="_blank" rel="noopener" title="Die RSS ist die Summe der quadrierten Differenzen zwischen beobachteten und vorhergesagten Werten: RSS = Σ(yᵢ − ŷᵢ)². Sie ist das zentrale Optimierungskriterium der OLS-Schätzung.">RSS</a> = <span id="m3-info-sse">—</span> (<span id="m3-info-sse-pct">—</span>% von TSS) — Residual Sum of Squares</strong><br>
         RSS = Σeᵢ² = Σ(yᵢ − ŷᵢ)² — quadrierte Summe aller Residuen, das was das Modell nicht erklärt. TSS = SSM + RSS ist mathematisch exakt. RSS = 0 wäre perfekter Fit — in der Praxis unmöglich und nicht wünschenswert (Überanpassung).</p>
-        <p><strong>R² und f² (Cohens Effektgröße)</strong><br>
+        <p><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-r2" target="_blank" rel="noopener" title="Das Bestimmtheitsmaß R² gibt den Anteil der Gesamtvarianz von Y an, der durch das Modell erklärt wird: R² = 1 − RSS/TSS.">R²</a> und <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cohens-f2" target="_blank" rel="noopener" title="Cohens f² ist ein Effektgrößenmaß für Regression und ANOVA: f² = R²/(1−R²). Konventionen (Cohen, 1988): klein ≥ .02, mittel ≥ .15, groß ≥ .35.">f²</a> (Cohens Effektgröße)</strong><br>
         R² = SSM/TSS (→ Kennwerte links): Anteil erklärter Varianz. <em>Achtung:</em> R² steigt immer mit jedem weiteren Prädiktor — auch nutzlosen! Adjusted R² korrigiert mit einem Strafterm pro Prädiktor.<br>
         f² = R²/(1−R²) = SSM/RSS = <span id="m3-info-f2">—</span> → <span id="m3-info-f2-lbl">—</span> Effekt. f² ist das Verhältnis von erklärter zu nicht erklärter Varianz. Cohen (1988): .02 klein · .15 mittel · .35 groß.<br>
         <em>Modellvergleiche:</em> AIC und BIC penalisieren Komplexität stärker als adj. R² — empfehlenswert bei mehreren konkurrierenden Modellen.</p>
@@ -869,7 +871,7 @@ input[type=range]::-moz-range-thumb{
             <div style="font-family:'DM Mono',monospace;font-size:.79rem;
               color:var(--ink2);line-height:1.85">
               <strong style="color:var(--ink)">Unabhängigkeit:</strong>
-              Beobachtungen sind unabhängig (keine Autokorrelation, kein Clustering).
+              Beobachtungen sind unabhängig (keine <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-autokorrelation-residuen" target="_blank" rel="noopener" title="Autokorrelation der Residuen liegt vor, wenn aufeinanderfolgende Beobachtungen derselben Einheit über Zeit oder Raum korrelierte Restfehler haben, auch nach Kontrolle für alle Prädiktoren.">Autokorrelation</a>, kein Clustering).
               Verletzung bei Längsschnitt- oder Nested-Daten → gemischte Modelle notwendig.
               <em>Lernende in derselben Schulklasse sind nicht unabhängig.</em>
             </div>
@@ -879,14 +881,14 @@ input[type=range]::-moz-range-thumb{
             <span class="circ" style="color:var(--a2);flex-shrink:0">③</span>
             <div style="font-family:'DM Mono',monospace;font-size:.79rem;
               color:var(--ink2);line-height:1.85">
-              <strong style="color:var(--ink)">Homoskedastizität:</strong>
+              <strong style="color:var(--ink)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-homoskedastizitaet" target="_blank" rel="noopener" title="Homoskedastizität: Die Varianz der Residuen ist konstant über alle Ausprägungen der Prädiktoren. Ihre Verletzung heißt Heteroskedastizität.">Homoskedastizität</a>:</strong>
               Varianz der Residuen ist konstant über alle X-Werte — kein Streufächer.
               Verletzung: heteroskedastizitätsrobuste Standardfehler
-              (<strong>HC3</strong> — sandwich-basierte, leverage-korrigierte Kovarianzschätzung,
-              robust auch bei kleinen Stichproben) oder <strong>WLS</strong>
+              (<strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-hc3" target="_blank" rel="noopener" title="Heteroskedastizitätskonsistente (HC) Standardfehler korrigieren die Standardfehler der OLS-Koeffizienten für Heteroskedastizität, ohne die Punktschätzer selbst zu verändern.">HC3</a></strong> — sandwich-basierte, leverage-korrigierte Kovarianzschätzung,
+              robust auch bei kleinen Stichproben) oder <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-wls" target="_blank" rel="noopener" title="Weighted Least Squares erweitert OLS, indem jede Beobachtung invers proportional zu ihrer geschätzten Fehlervarianz gewichtet wird.">WLS</a></strong>
               (Weighted Least Squares — gewichtet jede Beobachtung invers zu ihrer geschätzten
               Varianz, statt nur die Standardfehler nachträglich zu korrigieren).
-              Anscombe-Datensatz III zeigt klassische Verletzung.
+              <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-anscombe-quartet" target="_blank" rel="noopener" title="Anscombes Quartett besteht aus vier konstruierten Datensätzen mit nahezu identischen Kennwerten, die aber bei grafischer Darstellung dramatisch unterschiedliche Muster zeigen.">Anscombe</a>-Datensatz III zeigt klassische Verletzung.
             </div>
           </div>
 
@@ -896,8 +898,8 @@ input[type=range]::-moz-range-thumb{
               color:var(--ink2);line-height:1.85">
               <strong style="color:var(--ink)">Normalverteilung der Residuen:</strong>
               Nur für <em>Inferenzstatistik</em> (t-Tests, CIs) nötig — nicht für die
-              OLS-Schätzung selbst (Gauss-Markov-Theorem!). Bei n ≥ 30 greift
-              der zentrale Grenzwertsatz: leichte Verletzungen unkritisch.
+              OLS-Schätzung selbst (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-gauss-markov" target="_blank" rel="noopener" title="Das Gauss-Markov-Theorem besagt: Unter fünf klassischen Annahmen ist der OLS-Schätzer BLUE — Best Linear Unbiased Estimator.">Gauss-Markov-Theorem</a>!). Bei n ≥ 30 greift
+              der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-zentraler-grenzwertsatz" target="_blank" rel="noopener" title="Der Zentrale Grenzwertsatz besagt, dass sich die Stichprobenverteilung des Mittelwerts einer hinreichend großen Anzahl unabhängiger Zufallsvariablen einer Normalverteilung annähert.">zentrale Grenzwertsatz</a>: leichte Verletzungen unkritisch.
             </div>
           </div>
 
@@ -905,10 +907,10 @@ input[type=range]::-moz-range-thumb{
             <span class="circ" style="color:var(--a2);flex-shrink:0">⑤</span>
             <div style="font-family:'DM Mono',monospace;font-size:.79rem;
               color:var(--ink2);line-height:1.85">
-              <strong style="color:var(--ink)">Keine perfekte Multikollinearität</strong>
+              <strong style="color:var(--ink)">Keine perfekte <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-multikollinearitaet" target="_blank" rel="noopener" title="Multikollinearität bezeichnet eine starke lineare Abhängigkeit zwischen zwei oder mehr Prädiktoren in einem Regressionsmodell.">Multikollinearität</a></strong>
               (multiple Regression): Sind zwei Prädiktoren perfekt korreliert, ist
               (<strong>X</strong>ᵀ<strong>X</strong>) nicht invertierbar.
-              Hohe (nicht-perfekte) Kollinearität bläht Standardfehler auf → VIF &gt; 10 kritisch.
+              Hohe (nicht-perfekte) Kollinearität bläht Standardfehler auf → <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-vif" target="_blank" rel="noopener" title="Der Variance Inflation Factor (VIF) quantifiziert das Ausmaß der Multikollinearität für jeden Prädiktor: VIFᵢ = 1/(1 − R²ᵢ).">VIF</a> &gt; 10 kritisch.
               Siehe Modul <span class="circ">④</span>.
             </div>
           </div>
@@ -1014,7 +1016,7 @@ input[type=range]::-moz-range-thumb{
         <p><strong>Warum multiple Regression?</strong><br>
         X₁ (Lernzeit) und X₂ (Schlaf) korrelieren mit r₁₂ = <strong><span id="m4-info-r12">—</span></strong>. Das bivariate Modell Y ~ X₁ misst nicht den reinen X₁-Effekt — b₁ enthält auch den Einfluss von X₂, da X₂ mit X₁ verflochten ist. Das multiple Modell löst das: es hält X₂ statistisch konstant.</p>
         <p><strong>Die Koeffizienten lesen (Tabelle links)</strong><br>
-        <em>Bivariat b₁:</em> Steigung aus Y ~ X₁ allein — enthält Konfundierung durch X₂.<br>
+        <em>Bivariat b₁:</em> Steigung aus Y ~ X₁ allein — enthält <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Eine Konfundierungsvariable ist eine Variable, die sowohl mit dem Prädiktor als auch mit dem Outcome assoziiert ist und nicht auf dem kausalen Pfad dazwischen liegt.">Konfundierung</a> durch X₂.<br>
         <em>Partiell b₁:</em> Steigung aus Y ~ X₁ + X₂ — bereinigt um X₂. Das ist der Wert, den die Regressionsfläche in X₁-Richtung hat.<br>
         <em>Δb₁:</em> Die Differenz quantifiziert die Konfundierung. Bei r₁₂ = 0 ist Δb₁ = 0.</p>
 
@@ -1037,7 +1039,7 @@ input[type=range]::-moz-range-thumb{
 
   <!-- Erklärer unten -->
   <div class="erklaer" style="margin-top:.9rem">
-    <strong>AVP-Prinzip:</strong> Ein Added Variable Plot (<em>Partialregression</em>) macht den
+    <strong>AVP-Prinzip:</strong> Ein <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-added-variable-plot" target="_blank" rel="noopener" title="Ein Added Variable Plot visualisiert den partiellen Effekt eines Prädiktors, kontrolliert für andere Prädiktoren — die Steigung entspricht exakt dem partiellen Regressionskoeffizienten aus dem vollen multiplen Modell.">Added Variable Plot</a> (<em>Partialregression</em>) macht den
     <em>partiellen</em> Effekt von X₁ auf Y sichtbar — bereinigt um X₂. Dazu wird X₂ sowohl aus
     Y (<em>e(Y|X₂)</em>) als auch aus X₁ (<em>e(X₁|X₂)</em>) herausgerechnet. Die Steigung der
     Regressionslinie durch die Residualvektoren <strong>entspricht exakt</strong> dem partiellen
@@ -1055,7 +1057,7 @@ input[type=range]::-moz-range-thumb{
     <div class="lcard">
       <div class="lcard-h"><span class="circ">①</span> OLS-Kriterium</div>
       <div class="lcard-body">
-        OLS minimiert die <strong>Summe der quadrierten Residuen</strong>:
+        <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS ist das Standardverfahren zur Schätzung linearer Regressionskoeffizienten: Es minimiert die Summe der quadrierten Residuen RSS = Σ(yᵢ − ŷᵢ)².">OLS</a> minimiert die <strong>Summe der quadrierten Residuen</strong>:
         <code>min Σ(yᵢ − ŷᵢ)²</code>.
         Das Quadrieren hat zwei Gründe: Vorzeichen werden neutralisiert,
         und große Residuen werden überproportional stärker bestraft als kleine.
@@ -1085,7 +1087,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">④</span> R² und adj. R²</div>
+      <div class="lcard-h"><span class="circ">④</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-r2" target="_blank" rel="noopener" title="Das Bestimmtheitsmaß R² gibt den Anteil der Gesamtvarianz von Y an, der durch das Modell erklärt wird: R² = 1 − RSS/TSS. Das korrigierte R² (adj. R²) berücksichtigt die Anzahl der Prädiktoren.">R² und adj. R²</a></div>
       <div class="lcard-body">
         <code>R² = SSM/SST ∈ [0, 1]</code> — Anteil erklärter Varianz.
         R² steigt mit jedem hinzugefügten Prädiktor, auch nutzlosen.
@@ -1099,7 +1101,7 @@ input[type=range]::-moz-range-thumb{
       <div class="lcard-h"><span class="circ">⑤</span> Partial Slope</div>
       <div class="lcard-body">
         b₁ im multiplen Modell ist <strong>nicht</strong> derselbe wie im bivariaten Modell —
-        er ist der Slope im <em>Added Variable Plot</em> (AVP):
+        er ist der Slope im <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-added-variable-plot" target="_blank" rel="noopener" title="Ein Added Variable Plot visualisiert den partiellen Effekt eines Prädiktors, kontrolliert für andere Prädiktoren — die Steigung entspricht exakt dem partiellen Regressionskoeffizienten aus dem vollen multiplen Modell.">Added Variable Plot</a></em> (AVP):
         Regression von <code>e(Y|X₂)</code> auf <code>e(X₁|X₂)</code>.
         Dieser Wert entspricht dem <em>Partial Slope</em>: Effekt von X₁ auf Y,
         nachdem der gemeinsame Anteil von X₂ aus beiden herausgerechnet wurde.
@@ -1109,7 +1111,7 @@ input[type=range]::-moz-range-thumb{
     <div class="lcard">
       <div class="lcard-h"><span class="circ">⑥</span> Standardisierung β</div>
       <div class="lcard-body">
-        <code>β = b · (SD_X / SD_Y)</code> — der standardisierte Regressionskoeffizient.
+        <code>β = b · (SD_X / SD_Y)</code> — der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-standardisierter-koeffizient" target="_blank" rel="noopener" title="Der standardisierte Regressionskoeffizient β entsteht durch z-Standardisierung: β = b · (SD_X / SD_Y). Bivariat gilt stets β = r.">standardisierte Regressionskoeffizient</a>.
         β gibt an, um wie viele <strong>Standardabweichungen</strong> Y steigt,
         wenn X um eine SD steigt. Erlaubt Vergleich von Prädiktoren
         mit verschiedenen Skalen, aber nur <em>innerhalb</em> einer Stichprobe.
@@ -1129,11 +1131,11 @@ input[type=range]::-moz-range-thumb{
     <div class="ml-modal-body">
 
       <h3>Was ist OLS?</h3>
-      <p><em>Ordinary Least Squares</em> (OLS) ist das Standardverfahren zur Schätzung
+      <p><em>Ordinary Least Squares</em> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS ist das Standardverfahren zur Schätzung linearer Regressionskoeffizienten: Es minimiert die Summe der quadrierten Residuen RSS = Σ(yᵢ − ŷᵢ)².">OLS</a>) ist das Standardverfahren zur Schätzung
       linearer Regressionsmodelle. Es findet diejenigen Koeffizienten b₀ und b₁, die die
       <strong>Summe der quadrierten Residuen</strong> minimieren:
       <code>min Σ(yᵢ − ŷᵢ)² = min Σ(yᵢ − b₀ − b₁·xᵢ)²</code>.
-      Die Lösung folgt aus den <em>Normalgleichungen</em>:</p>
+      Die Lösung folgt aus den <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-normalgleichungen" target="_blank" rel="noopener" title="Die Normalgleichungen sind das Gleichungssystem, das entsteht, wenn man die partiellen Ableitungen der OLS-Zielfunktion (RSS) nach jedem Koeffizienten gleich null setzt: XᵀXβ = Xᵀy.">Normalgleichungen</a>:</p>
       <ul>
         <li><code>b₁ = Σ(xᵢ−x̄)(yᵢ−ȳ) / Σ(xᵢ−x̄)²</code></li>
         <li><code>b₀ = ȳ − b₁·x̄</code></li>
@@ -1154,19 +1156,19 @@ input[type=range]::-moz-range-thumb{
       wenn alle anderen Prädiktoren konstant gehalten werden."
       Das „ceteris paribus" ist entscheidend — im multiplen Modell ist b₁ ein
       <em>partieller</em> Effekt, kein marginaler Roheffekt.</p>
-      <p><strong>β</strong> (standardisiert): Vergleich von Prädiktoren unterschiedlicher Skalen.
+      <p><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-standardisierter-koeffizient" target="_blank" rel="noopener" title="Der standardisierte Regressionskoeffizient β entsteht durch z-Standardisierung: β = b · (SD_X / SD_Y). Bivariat gilt stets β = r.">β</a></strong> (standardisiert): Vergleich von Prädiktoren unterschiedlicher Skalen.
       Vorsicht: β ist stichprobenspezifisch und darf nicht zwischen Studien verglichen werden.</p>
 
       <h3>R² und Modellgüte</h3>
-      <p><code>R² = SSM/TSS = 1 − RSS/TSS</code>. Im bivariaten Fall gilt <code>R² = r²</code>.
-      R² steigt mit jedem Prädiktor, auch bei zufälligen Variablen (<em>Freedman's Paradox</em>).
+      <p><code><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-r2" target="_blank" rel="noopener" title="Das Bestimmtheitsmaß R² gibt den Anteil der Gesamtvarianz von Y an, der durch das Modell erklärt wird: R² = 1 − RSS/TSS.">R²</a> = SSM/TSS = 1 − RSS/TSS</code>. Im bivariaten Fall gilt <code>R² = r²</code>.
+      R² steigt mit jedem Prädiktor, auch bei zufälligen Variablen (<em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-freedman-paradox" target="_blank" rel="noopener" title="Freedmans Paradox zeigt: Bei zweistufiger Prädiktorauswahl (screenen, dann fitten) kann das Modell ein aufgeblähtes R² zeigen, obwohl keiner der Prädiktoren tatsächlich mit Y zusammenhängt.">Freedman's Paradox</a></em>).
       Adjusted R² korrigiert für die Anzahl der Prädiktoren k:</p>
       <p><code>adj.R² = 1 − (1−R²)·(n−1)/(n−k−1)</code></p>
 
       <h3>Effektgröße f² und SESOI</h3>
-      <p><code>f² = R²/(1−R²)</code> — Effektgröße für multiple Regression.
+      <p><code><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cohens-f2" target="_blank" rel="noopener" title="Cohens f² ist ein Effektgrößenmaß für Regression und ANOVA: f² = R²/(1−R²). Konventionen (Cohen, 1988): klein ≥ .02, mittel ≥ .15, groß ≥ .35.">f² = R²/(1−R²)</a></code> — Effektgröße für multiple Regression.
       Konventionen (Cohen 1988): klein ≥ .02, mittel ≥ .15, groß ≥ .35.
-      Besser als Konventionen: <em>SESOI</em> — den kleinsten inhaltlich
+      Besser als Konventionen: <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-sesoi" target="_blank" rel="noopener" title="Die SESOI ist der kleinste Effekt, den man als inhaltlich bedeutsam erachtet — festgelegt vor der Datenerhebung anhand fachlicher Überlegung, nicht statistischer Konventionen.">SESOI</a></em> — den kleinsten inhaltlich
       bedeutsamen Effekt vor der Studie definieren. → Siehe
       <a href="Power_Stichprobe.html">Power &amp; Stichprobengröße</a>.</p>
 
@@ -1174,8 +1176,8 @@ input[type=range]::-moz-range-thumb{
       <ul>
         <li><strong>Nichtlinearität</strong> — Residual-vs-Fitted-Plot zeigt Muster</li>
         <li><strong>Heteroskedastizität</strong> — Streufächer in Residualplot</li>
-        <li><strong>Ausreißer/Leverage</strong> — Einzelne Punkte bestimmen die Gerade (→ Anscombe)</li>
-        <li><strong>Multikollinearität</strong> — Hohe r(X₁,X₂) bläht Standardfehler auf; VIF > 10 kritisch</li>
+        <li><strong>Ausreißer/Leverage</strong> — Einzelne Punkte bestimmen die Gerade (→ <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-anscombe-quartet" target="_blank" rel="noopener" title="Anscombes Quartett besteht aus vier konstruierten Datensätzen mit nahezu identischen Kennwerten, die aber bei grafischer Darstellung dramatisch unterschiedliche Muster zeigen.">Anscombe</a>)</li>
+        <li><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-multikollinearitaet" target="_blank" rel="noopener" title="Multikollinearität bezeichnet eine starke lineare Abhängigkeit zwischen zwei oder mehr Prädiktoren in einem Regressionsmodell.">Multikollinearität</a></strong> — Hohe r(X₁,X₂) bläht Standardfehler auf; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-vif" target="_blank" rel="noopener" title="Der Variance Inflation Factor (VIF) quantifiziert das Ausmaß der Multikollinearität für jeden Prädiktor: VIFᵢ = 1/(1 − R²ᵢ).">VIF</a> > 10 kritisch</li>
         <li><strong>Messfehler</strong> — Attenuation von b₁ → <a href="Messfehler_Attenuierung.html">Messfehler-Tool</a></li>
       </ul>
 

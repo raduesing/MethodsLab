@@ -29,6 +29,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a6)}
 #app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
@@ -171,7 +173,7 @@ canvas{display:block;width:100%}
       <span class="sv">X₂</span><span class="sd">Intelligence (IQ score, standardized) — control variable</span>
       <span class="sv">Y</span><span class="sd">Exam performance (points, 0–100)</span>
     </div>
-    <div class="story-q">How strongly does study time correlate with exam performance once differences in intelligence are partialled out? Does the effect reflect genuine willingness to study — or is it just an artifact of smarter people happening to study more too? (Scenario D — Reciprocal Suppression — switches to a different example: dominance &amp; empathy as predictors of leadership success.)</div>
+    <div class="story-q">How strongly does study time correlate with exam performance once differences in intelligence are partialled out? Does the effect reflect genuine willingness to study — or is it just an artifact of smarter people happening to study more too? (Scenario D — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reziproke-suppression" target="_blank" rel="noopener" title="Reciprocal suppression occurs when two predictors each correlate positively with the outcome but negatively with each other — both partial coefficients become larger than their bivariate correlations.">Reciprocal Suppression</a> — switches to a different example: dominance &amp; empathy as predictors of leadership success.)</div>
   </div>
 
   <div class="sec-h" style="margin-top:0">Concept</div>
@@ -201,7 +203,7 @@ canvas{display:block;width:100%}
       </div>
     </div>
     <div>
-      <div class="sec-h">Ballantine diagram — variance decomposition</div>
+      <div class="sec-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ballantine-diagramm" target="_blank" rel="noopener" title="The Ballantine diagram depicts the variance of Y and the variances of the predictors as overlapping circles, where the overlapping areas represent jointly explained variance (shares of R²).">Ballantine diagram</a> — variance decomposition</div>
       <div class="cv-panel" style="padding:.75rem 1rem 1rem">
         <canvas id="cv-venn" height="770"></canvas>
       </div>
@@ -232,7 +234,7 @@ canvas{display:block;width:100%}
     <div class="lcard-grid">
       <div class="lcard">
         <div class="lcard-h">Bivariate, semi- &amp; partial correlation</div>
-        <div class="lcard-body">Three levels of control: the <strong>bivariate r</strong> measures the relationship between X₁ and Y with no control at all. The <strong>semipartial correlation</strong> removes X₂'s influence only from X₁ — Y stays raw. It is the square root of ΔR² and measures the <em>unique contribution</em> of X₁ to the Y variance. The <strong>partial correlation</strong> removes X₂ from both: it measures the strength of the X₁–Y relationship <em>within</em> the plane that X₂ does not explain.</div>
+        <div class="lcard-body">Three levels of control: the <strong>bivariate r</strong> measures the relationship between X₁ and Y with no control at all. The <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-semipartialkorrelation" target="_blank" rel="noopener" title="The semi-partial correlation measures the correlation between Y and the Z-adjusted part of X — only one of the two variables is adjusted, and its square equals ΔR².">semipartial correlation</a></strong> removes X₂'s influence only from X₁ — Y stays raw. It is the square root of ΔR² and measures the <em>unique contribution</em> of X₁ to the Y variance. The <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-partialkorrelation" target="_blank" rel="noopener" title="The partial correlation measures the linear association between X and Y after the linear influence of a control variable Z has been removed from BOTH X and Y.">partial correlation</a></strong> removes X₂ from both: it measures the strength of the X₁–Y relationship <em>within</em> the plane that X₂ does not explain.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Residualization — what happens geometrically?</div>
@@ -240,7 +242,7 @@ canvas{display:block;width:100%}
       </div>
       <div class="lcard">
         <div class="lcard-h">The Ballantine diagram</div>
-        <div class="lcard-body">Three overlapping circles (X₁, X₂, Y) visualize the R² decomposition. The <strong>blue zone b</strong> = ΔR²(X₁) = semipartial² — the unique X₁ share. The <strong>green zone d</strong> = ΔR²(X₂). The <strong>purple zone c</strong> = shared variance that could be attributed to either predictor. <strong>c can become negative</strong> (suppression) — then the Venn diagram breaks down geometrically, but the values remain valid. The gray area a = unexplained Y variance (1−R²).</div>
+        <div class="lcard-body">Three overlapping circles (X₁, X₂, Y) visualize the R² decomposition. The <strong>blue zone b</strong> = ΔR²(X₁) = semipartial² — the unique X₁ share. The <strong>green zone d</strong> = ΔR²(X₂). The <strong>purple zone c</strong> = shared variance that could be attributed to either predictor. <strong>c can become negative</strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-suppression" target="_blank" rel="noopener" title="Suppression occurs when adding a predictor Z increases the magnitude of another predictor's coefficient, even though Z itself correlates little or not at all with the outcome Y.">suppression</a>) — then the Venn diagram breaks down geometrically, but the values remain valid. The gray area a = unexplained Y variance (1−R²).</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Suppression — three variants</div>
@@ -251,8 +253,8 @@ canvas{display:block;width:100%}
         <div class="lcard-body">Signature: ρ(X₁,Y) &gt; 0, ρ(X₂,Y) &gt; 0, but ρ(X₁,X₂) &lt; 0. Both predictors correlate positively with Y but are negatively correlated with each other — each contains confounding variance from the other. Consequence: β₁_multiple &gt; β₁_simple <em>and</em> β₂_multiple &gt; β₂_simple. Example (Scenario D): dominance (X₁, r=.30) and empathy (X₂, r=.25) both correlate positively with leadership success, but negatively with each other (r=−.30). Controlling for the other variable in each case, both β weights increase — the mutual suppression is lifted.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Collinearity &amp; ΔR²</div>
-        <div class="lcard-body">High collinearity (large ρ(X₁,X₂)) leads to small ΔR² values for both predictors, even when both correlate strongly with Y bivariately. The predictors "compete" for the same share of Y variance. In multiple regression: large SE, unstable β coefficients, VIF → 1/(1−R²_j) rises. Scenario B shows: bivariate r=0.6, but ΔR²(X₁)≈0.04. <strong>Squared semipartial correlation</strong> gives the unique contribution directly — the most honest effect size in multiple regression.</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-multikollinearitaet" target="_blank" rel="noopener" title="Multicollinearity refers to a strong linear dependency between two or more predictors in a regression model.">Collinearity</a> &amp; ΔR²</div>
+        <div class="lcard-body">High collinearity (large ρ(X₁,X₂)) leads to small ΔR² values for both predictors, even when both correlate strongly with Y bivariately. The predictors "compete" for the same share of Y variance. In multiple regression: large SE, unstable β coefficients, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-vif" target="_blank" rel="noopener" title="The Variance Inflation Factor (VIF) quantifies the degree of multicollinearity for each predictor: VIFᵢ = 1/(1 − R²ᵢ).">VIF</a> → 1/(1−R²_j) rises. Scenario B shows: bivariate r=0.6, but ΔR²(X₁)≈0.04. <strong>Squared semipartial correlation</strong> gives the unique contribution directly — the most honest effect size in multiple regression.</div>
       </div>
     </div>
   </div>
@@ -310,7 +312,7 @@ canvas{display:block;width:100%}
       study-time effect independent of IQ. It's noticeably smaller than the bivariate r.
     </p>
 
-    <div class="help-sh">Ballantine diagram — variance decomposition</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ballantine-diagramm" target="_blank" rel="noopener" title="The Ballantine diagram depicts the variance of Y and the variances of the predictors as overlapping circles, where the overlapping areas represent jointly explained variance (shares of R²).">Ballantine diagram</a> — variance decomposition</div>
     <p class="help-p">
       Three overlapping circles (X₁, X₂, Y) show how R² splits up:
     </p>
@@ -324,7 +326,7 @@ canvas{display:block;width:100%}
       unique share once IQ is already in the model.
     </p>
 
-    <div class="help-sh">Suppression (Scenario C)</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-suppression" target="_blank" rel="noopener" title="Suppression occurs when adding a predictor Z increases the magnitude of another predictor's coefficient, even though Z itself correlates little or not at all with the outcome Y.">Suppression</a> (Scenario C)</div>
     <p class="help-p">
       Formally: c &lt; 0 (shared variance negative) — not representable geometrically as an intersection,
       but numerically valid. Tell-tale signs:
@@ -346,7 +348,7 @@ canvas{display:block;width:100%}
       Common to all three variants: β₁_multiple &gt; β₁_simple and c &lt; 0 in the Ballantine diagram.
     </p>
     <p class="help-p">
-      <strong>Case 1 — classical suppression (McNemar 1945) — Scenario C:</strong><br>
+      <strong>Case 1 — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-klassische-suppression" target="_blank" rel="noopener" title="Classical suppression (McNemar, 1945) occurs when a predictor Z itself barely correlates with the outcome Y, but correlates substantially with predictor X — Z filters out pure nuisance variance from X.">classical suppression</a> (McNemar 1945) — Scenario C:</strong><br>
       ρ(X₁,Y) &gt; 0, ρ(X₂,Y) ≈ 0, ρ(X₁,X₂) &gt; 0. X₂ barely correlates with Y, but does with X₁ —
       there's confounding variance in X₁ that is irrelevant to Y. Controlling for X₂ removes this
       noise component and exposes the genuine X₁–Y effect.
@@ -357,14 +359,14 @@ canvas{display:block;width:100%}
       and irrelevant to performance. Controlling for IQ, r_partial &gt; r_bivariate rises.
     </p>
     <p class="help-p">
-      <strong>Case 2 — negative/net suppression:</strong><br>
+      <strong>Case 2 — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-negative-suppression" target="_blank" rel="noopener" title="Negative suppression (also net suppression) occurs when the partial regression coefficient carries a different sign than the bivariate correlation — the effect appears to reverse once Z is added.">negative/net suppression</a>:</strong><br>
       All correlations positive, but ρ(X₂,Y) &lt; ρ(X₁,X₂) · ρ(X₁,Y). A gradual transition
       to case 1 — X₂ has a small positive effect on Y, but explains more variance in X₁
       than in Y. No dedicated scenario in the tool; occurs if you nudge ρ₂y slightly
       away from 0 in Scenario C.
     </p>
     <p class="help-p">
-      <strong>Case 3 — reciprocal suppression / complementarity (Conger 1974) — Scenario D:</strong><br>
+      <strong>Case 3 — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reziproke-suppression" target="_blank" rel="noopener" title="Reciprocal suppression occurs when two predictors each correlate positively with the outcome but negatively with each other — both partial coefficients become larger than their bivariate correlations.">reciprocal suppression / complementarity</a> (Conger 1974) — Scenario D:</strong><br>
       ρ(X₁,Y) &gt; 0, ρ(X₂,Y) &gt; 0, but ρ(X₁,X₂) &lt; 0. Both predictors correlate
       positively with Y but are negatively correlated with each other. Each predictor contains
       confounding variance from the other — both suppress each other. Consequence: β₁_multiple &gt; β₁_simple
@@ -386,14 +388,14 @@ canvas{display:block;width:100%}
       partialled out. Symmetrically, the same holds for empathy: β₂_multiple ≈ .34 &gt; .25.
     </p>
 
-    <div class="help-sh">Collinearity &amp; choice of metric</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-multikollinearitaet" target="_blank" rel="noopener" title="Multicollinearity refers to a strong linear dependency between two or more predictors in a regression model.">Collinearity</a> &amp; choice of metric</div>
     <p class="help-p">
       High collinearity (large ρ(X₁,X₂)) → small ΔR² values, large SE, unstable β.
-      VIF = 1/(1 − R²_j) quantifies the inflation of standard errors.
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-vif" target="_blank" rel="noopener" title="The Variance Inflation Factor (VIF) quantifies the degree of multicollinearity for each predictor: VIFᵢ = 1/(1 − R²ᵢ).">VIF</a> = 1/(1 − R²_j) quantifies the inflation of standard errors.
       Scenario B shows: bivariate r = 0.60, but ΔR²(X₁) ≈ 0.04 — a collinear predictor
       explains a lot bivariately, but contributes barely anything uniquely.
     </p>
-    <div class="help-sh" style="margin-top:.7rem">Semipartial vs. partial correlation — which one, when?</div>
+    <div class="help-sh" style="margin-top:.7rem">Semipartial vs. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-partialkorrelation" target="_blank" rel="noopener" title="The partial correlation measures the linear association between X and Y after the linear influence of a control variable Z has been removed from BOTH X and Y.">partial correlation</a> — which one, when?</div>
     <p class="help-p">
       The crucial difference lies in the <strong>reference quantity</strong>:
     </p>
@@ -414,7 +416,7 @@ canvas{display:block;width:100%}
     </p>
     <p class="help-p">
       <strong>When r_partial is nonetheless useful:</strong>
-      when X₂ counts as a hard baseline covariate whose Y variance is conceptually "not of interest" —
+      when X₂ counts as a hard baseline <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-kovariate" target="_blank" rel="noopener" title="A covariate is an additional variable in the regression model that is not the primary predictor, but is included to adjust for its influence on the outcome.">covariate</a> whose Y variance is conceptually "not of interest" —
       e.g. a T1 score as a baseline in a longitudinal design. Then the question is: "how strongly are
       X₁ and Y related <em>within</em> the X₂-adjusted plane?" — and r_partial answers exactly that.
       For pure significance testing, r_partial also has slightly more power, because the denominator
