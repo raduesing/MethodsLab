@@ -25,6 +25,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
   padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem}
 #topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
 #topbar h1 em{color:var(--accent);font-style:italic}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
@@ -230,7 +232,7 @@ canvas{width:100%;display:block}
   <!-- Section 2 -->
   <div class="sec-h"><span class="circ">②</span> The power landscape — n × d × power</div>
   <div class="plot-box">
-    <div class="plot-title">Heatmap: power as a function of n and Cohen's d</div>
+    <div class="plot-title">Heatmap: power as a function of n and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cohens-d" target="_blank" rel="noopener" title="Cohen's d is the most widely used standardized effect size for mean differences: d = (M₁ − M₂) / SD_pooled.">Cohen's d</a></div>
     <canvas id="cv-heat" height="406"></canvas>
     <div class="hint" id="hint-heat"></div>
   </div>
@@ -251,7 +253,7 @@ canvas{width:100%;display:block}
   <div class="sec-h">Flashcards</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">Power is a function</div>
+      <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-power" target="_blank" rel="noopener" title="The power of a statistical test is the probability of correctly detecting a truly existing effect as significant: Power = 1 − β.">Power</a> is a function</div>
       <div class="lcard-body">Every conceivable true δ has a different power. The often-cited "80% power" applies only for exactly one assumed δ — and you never know that value for certain before the study.</div>
     </div>
     <div class="lcard">
@@ -263,7 +265,7 @@ canvas{width:100%;display:block}
       <div class="lcard-body">Cohen (1988) derived d = 0.2/0.5/0.8 from the behavioral-science studies of his time — as a <strong>stopgap for when no domain knowledge is available</strong>. In medicine, d = 0.1 can be clinically meaningful; in basic research, d = 0.8 can be trivial. <em>The relevant ES is always context-specific.</em></div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">MDES from substantive context</div>
+      <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mdes" target="_blank" rel="noopener" title="The MDES (Minimum Detectable Effect Size) is the smallest true effect that can reliably be detected as significant given a fixed sample size n, significance level α, and target power.">MDES</a> from substantive context</div>
       <div class="lcard-body">The MDES (Minimum Detectable Effect Size) should come from clinical/practical relevance, not from statistical conventions. Ask: <em>"What effect would be small enough to ignore?"</em></div>
     </div>
     <div class="lcard" style="grid-column:1/-1">
@@ -285,7 +287,7 @@ canvas{width:100%;display:block}
     <div class="help-sh">Example</div>
     <p class="help-p">A clinician is planning an RCT for an antidepressant. From the literature they expect <strong>Cohen's d = 0.50</strong> on the HAM-D scale. With n = 64 per group and α = 0.05 (two-tailed), the planned power comes out to about 80%. A pilot study, however, points to d ≈ 0.30 — <em>Section 3</em> shows what that means for the actual power.</p>
 
-    <div class="help-sh">What is statistical power?</div>
+    <div class="help-sh">What is statistical <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-power" target="_blank" rel="noopener" title="The power of a statistical test is the probability of correctly detecting a truly existing effect as significant: Power = 1 − β.">power</a>?</div>
     <p class="help-p">Power (1−β) is the probability of detecting a true effect — that is, correctly rejecting H₀ when H₁ holds. Power depends on four quantities: effect size δ, sample size n, significance level α, and test direction.</p>
     <span class="help-formula">Power = P(reject H₀ | H₁ true) = 1 − β</span>
 
@@ -297,10 +299,10 @@ canvas{width:100%;display:block}
 Power ≈ Φ(|d| · √n    − z_{α/2})   [two-tailed, 1 group]</span>
     <p class="help-p">Φ = standard normal distribution (cumulative), z_{α/2} = quantile for α/2. The approximation is very accurate for n ≥ 20.</p>
 
-    <div class="help-sh">Cohen's d and its limits</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cohens-d" target="_blank" rel="noopener" title="Cohen's d is the most widely used standardized effect size for mean differences: d = (M₁ − M₂) / SD_pooled.">Cohen's d</a> and its limits</div>
     <p class="help-p">Standardized effect size: d = (μ₁ − μ₂) / σ. The <strong>small/medium/large (0.2/0.5/0.8)</strong> conventions are historical rules of thumb from 1960s–70s behavioral research — not universal standards. Cohen himself warned against adopting them uncritically. In medicine, d = 0.1 can be clinically meaningful (blood-pressure reduction × millions of patients); in basic research, d = 0.8 can be trivial.</p>
 
-    <div class="help-sh">SESOI — how do you determine the relevant effect size?</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-sesoi" target="_blank" rel="noopener" title="The Smallest Effect Size Of Interest (SESOI) is the smallest effect a researcher considers practically or theoretically meaningful, defined before data collection based on substantive reasoning.">SESOI</a> — how do you determine the relevant effect size?</div>
     <p class="help-p">The core problem of sample-size planning isn't the computation — it's the substantive question: <strong>What effect do I want to reliably detect?</strong> Lakens (2022) suggests anchoring planning on the <strong>SESOI</strong> — the <em>Smallest Effect Size of Interest</em>: the smallest effect that would still be practically or clinically meaningful.</p>
     <p class="help-p">The SESOI is fundamentally different from the question "what did earlier studies find?" — because published effect sizes are systematically overestimated by selection bias and publication bias (the winner's curse). Anyone who bases their planning on the mean published d risks an inflated effect expectation and therefore chronic underpowering.</p>
     <p class="help-p"><strong>Four ways to determine the SESOI:</strong></p>
@@ -317,7 +319,7 @@ Power ≈ Φ(|d| · √n    − z_{α/2})   [two-tailed, 1 group]</span>
     <p class="help-p"><strong>α (Type I error):</strong> probability of incorrectly rejecting H₀.<br>
     <strong>β (Type II error):</strong> probability of missing a real effect. Power = 1−β.<br>
     <strong>NCP (non-centrality parameter):</strong> δ · √(n/2) — indicates how far H₁ is from H₀ (in SD units of the test statistic).<br>
-    <strong>MDES (Minimum Detectable Effect Size):</strong> smallest effect that can be detected with given n and α at target power. Readable from Section 3.<br>
+    <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mdes" target="_blank" rel="noopener" title="The MDES (Minimum Detectable Effect Size) is the smallest true effect that can reliably be detected as significant given a fixed sample size n, significance level α, and target power.">MDES (Minimum Detectable Effect Size)</a>:</strong> smallest effect that can be detected with given n and α at target power. Readable from Section 3.<br>
     <strong>SESOI (Smallest Effect Size of Interest):</strong> the smallest effect that would still be substantively practically or clinically relevant. Planning should ensure MDES ≤ SESOI.<br>
     <strong>Post-hoc power:</strong> power computed <em>after</em> the study using the observed d — circular and uninformative, because it just reflects the p-value back at you.</p>
   </div>

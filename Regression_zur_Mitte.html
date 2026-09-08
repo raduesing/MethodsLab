@@ -96,6 +96,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a4)}
 </style>
 </head>
 <body>
@@ -111,7 +113,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div class="help-overlay" id="help-overlay">
   <div class="help-panel">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
-      <h2>Hilfe — Regression zur Mitte</h2>
+      <h2>Hilfe — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-regression-zur-mitte" target="_blank" rel="noopener" title="Regression zur Mitte beschreibt das statistische Phänomen, dass extreme Messwerte bei Wiederholung im Mittel näher am Populationsmittelwert liegen.">Regression zur Mitte</a></h2>
       <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
     </div>
     <div class="help-h3">Was zeigt dieses Tool?</div>
@@ -123,9 +125,9 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <p class="help-p"><code>E[Y | X = x] = μ + r · (x − μ)</code></p>
     <p class="help-p">Der Regressionseffekt beträgt <code>(1 − r) · (x − μ)</code> — proportional zur Extremheit und zu (1−r). Bei r = 1 (perfekte Messung) gibt es keinen Effekt. Je größer die Messunsicherheit, desto stärker die Regression zur Mitte.</p>
     <div class="help-h3">Warum ist das wichtig?</div>
-    <p class="help-p">Regression zur Mitte kann eine echte Behandlungswirkung vortäuschen. In Pre-Post-Studien ohne Kontrollgruppe ist unklar, ob Verbesserungen auf die Intervention zurückgehen oder auf diesen statistischen Artefakt. Randomisierte Kontrollgruppen sind das einzige Mittel dagegen — sie zeigen denselben RTM-Effekt, sodass der Unterschied die bereinigte Intervention schätzt.</p>
+    <p class="help-p">Regression zur Mitte kann eine echte Behandlungswirkung vortäuschen. In Pre-Post-Studien ohne Kontrollgruppe ist unklar, ob Verbesserungen auf die Intervention zurückgehen oder auf diesen statistischen Artefakt. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rct" target="_blank" rel="noopener" title="Ein randomisiertes Experiment (RCT) weist Untersuchungseinheiten per Zufall einer Treatment- oder Kontrollbedingung zu.">Randomisierte Kontrollgruppen</a> sind das einzige Mittel dagegen — sie zeigen denselben RTM-Effekt, sodass der Unterschied die bereinigte Intervention schätzt.</p>
     <div class="help-h3">Bedienung</div>
-    <p class="help-p"><strong style="color:var(--ink)">Szenarien A–D</strong>: vordefinierte Beispiele zum Vergleich. <strong style="color:var(--ink)">r</strong>: Reliabilität / Korrelation zwischen T1 und T2 — der zentrale Parameter. <strong style="color:var(--ink)">Schwellenwert</strong>: ab welchem Wert Personen selektiert werden. <strong style="color:var(--ink)">Rote Punkte</strong>: Hochselektierte (≥ Schwelle), <strong style="color:var(--ink)">blaue Punkte</strong>: Niedrigselektierte (spiegelbildlich). <strong style="color:var(--ink)">Orange Linie</strong>: E[Y|X] — die theoretische Regressionsgerade. <strong style="color:var(--ink)">Gestrichelt</strong>: Y = X (keine Veränderung).</p>
+    <p class="help-p"><strong style="color:var(--ink)">Szenarien A–D</strong>: vordefinierte Beispiele zum Vergleich. <strong style="color:var(--ink)">r</strong>: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert.">Reliabilität</a> / Korrelation zwischen T1 und T2 — der zentrale Parameter. <strong style="color:var(--ink)">Schwellenwert</strong>: ab welchem Wert Personen selektiert werden. <strong style="color:var(--ink)">Rote Punkte</strong>: Hochselektierte (≥ Schwelle), <strong style="color:var(--ink)">blaue Punkte</strong>: Niedrigselektierte (spiegelbildlich). <strong style="color:var(--ink)">Orange Linie</strong>: E[Y|X] — die theoretische Regressionsgerade. <strong style="color:var(--ink)">Gestrichelt</strong>: Y = X (keine Veränderung).</p>
   </div>
 </div>
 
@@ -206,7 +208,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <span style="color:var(--ink3)"> = (1 − </span>
       <span style="color:var(--a5)">r</span>
       <span style="color:var(--ink3)">) · (x − μ)</span>
-      <span style="color:var(--ink3);font-size:.78rem;margin-left:1.2rem">(Regression zur Mitte)</span>
+      <span style="color:var(--ink3);font-size:.78rem;margin-left:1.2rem">(<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-regression-zur-mitte" target="_blank" rel="noopener" title="Regression zur Mitte beschreibt das statistische Phänomen, dass extreme Messwerte bei Wiederholung im Mittel näher am Populationsmittelwert liegen.">Regression zur Mitte</a>)</span>
     </div>
     <div style="font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink3);margin-top:.45rem;
       padding-top:.4rem;border-top:1px solid var(--grid)">
@@ -265,12 +267,12 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
         <div class="lcard-body">Francis Galton beobachtete, dass Kinder sehr großer Eltern zwar größer als der Durchschnitt sind — aber im Schnitt <strong>kleiner als ihre Eltern</strong>. Kinder sehr kleiner Eltern waren kleiner als der Durchschnitt, aber größer als ihre Eltern. Er nannte es <em>"regression toward mediocrity"</em>. Der Begriff "Regressionsgerade" ist ein direktes Erbe dieser Beobachtung.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Reliabilität r als Schlüsselfaktor</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert.">Reliabilität</a> r als Schlüsselfaktor</div>
         <div class="lcard-body">Der Regressionseffekt beträgt <code>(1 − r) · (x − μ)</code>. Bei <code>r = 1.0</code>: kein Effekt. Bei <code>r = 0.7</code>: 30% des Abstands zum Mittelwert verschwinden. Bei <code>r = 0.4</code>: 60% verschwinden. Reliabilität ist der einzige steuerbare Faktor — präzisere Messung reduziert den RTM-Effekt.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Kontrollgruppe als Lösung</div>
-        <div class="lcard-body">Die einzige Möglichkeit, echte Intervention von RTM zu trennen, ist eine <strong>randomisierte Kontrollgruppe</strong>. Beide Gruppen zeigen denselben RTM-Effekt. Der <em>Unterschied</em> zwischen ihnen schätzt den bereinigten Interventionseffekt. Ohne Kontrollgruppe ist ein Pre-Post-Ergebnis schlicht nicht interpretierbar.</div>
+        <div class="lcard-body">Die einzige Möglichkeit, echte Intervention von RTM zu trennen, ist eine <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rct" target="_blank" rel="noopener" title="Ein randomisiertes Experiment (RCT) weist Untersuchungseinheiten per Zufall einer Treatment- oder Kontrollbedingung zu.">randomisierte Kontrollgruppe</a></strong>. Beide Gruppen zeigen denselben RTM-Effekt. Der <em>Unterschied</em> zwischen ihnen schätzt den bereinigten Interventionseffekt. Ohne Kontrollgruppe ist ein Pre-Post-Ergebnis schlicht nicht interpretierbar.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Bidirektionalität</div>

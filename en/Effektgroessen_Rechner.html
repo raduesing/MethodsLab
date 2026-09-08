@@ -131,6 +131,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -158,12 +160,12 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
     <code>d<sub>rm</sub></code> — d<sub>z</sub> · √(2(1−r)) (Becker 1988): equals d<sub>av</sub> under variance homogeneity, equals d<sub>z</sub> at r=.5.<br>
     <code>d<sub>av</sub></code> — average SD as denominator (Lakens 2013); no r in the denominator.</p>
     <div class="help-h3">d_av and comparability with between designs</div>
-    <p class="help-p"><strong style="color:var(--ink)">d<sub>av</sub> is the most comparable to between designs.</strong> Since the pre-post correlation doesn't enter the denominator, d<sub>av</sub> is — ceteris paribus — identical to Cohen's d from an independent-groups comparison. This allows a direct comparison across designs: a within-d<sub>av</sub> of 0.5 means the same as a between-d<sub>s</sub> of 0.5. d<sub>z</sub> and d<sub>rm</sub>, by contrast, depend on r and are design-specific.</p>
+    <p class="help-p"><strong style="color:var(--ink)">d<sub>av</sub> is the most comparable to between designs.</strong> Since the pre-post correlation doesn't enter the denominator, d<sub>av</sub> is — ceteris paribus — identical to <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cohens-d" target="_blank" rel="noopener" title="Cohen's d is the most widely used standardized effect size for mean differences: d = (M₁ − M₂) / SD_pooled.">Cohen's d</a> from an independent-groups comparison. This allows a direct comparison across designs: a within-d<sub>av</sub> of 0.5 means the same as a between-d<sub>s</sub> of 0.5. d<sub>z</sub> and d<sub>rm</sub>, by contrast, depend on r and are design-specific.</p>
     <div class="help-h3">Corrections for small samples</div>
     <p class="help-p"><code>j (Hedges)</code> — 1 − 3/(4(n−1)−1); the most common.<br>
     <code>nag (Nakagawa)</code> — 1 − 3/(4(2n−2)−1); recommended for within designs.<br>
     <code>Bon (Bonett)</code> — √((n−2)/(n−1)); based on variance unbiasedness.</p>
-    <div class="help-h3">Confidence intervals</div>
+    <div class="help-h3"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-konfidenzintervall" target="_blank" rel="noopener" title="A 95% confidence interval is an interval that, when the estimation method is applied repeatedly, contains the true parameter value in 95% of cases.">Confidence intervals</a></div>
     <p class="help-p"><strong style="color:var(--ink)">Bonett (2015) approx:</strong> z-based (Equations 8, 9, 16). Available for d<sub>z</sub>, d<sub>rm</sub>, d<sub>av</sub>.<br>
     <strong style="color:var(--ink)">Rosenthal (1994) approx:</strong> t-based, only for d<sub>rm</sub> — same SE as Bonett there, but crit_t instead of crit_z. No Rosenthal CI is defined in the original literature for d<sub>z</sub> and d<sub>av</sub>.<br>
     <strong style="color:var(--ink)">NCT (exact):</strong> noncentral t-distribution via direct numerical integration (Simpson's rule) of the definition T=(Z+ncp)/√(V/df); CDF inversion by bisection yields the ncp bounds. Accurate for arbitrary df, including non-integer ones (e.g. Welch df).</p>
