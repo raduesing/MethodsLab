@@ -109,12 +109,14 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <h1>Range Restriction <em>— Varianzeinschränkung &amp; Korrelationsattenuation</em></h1>
+  <h1>Range Restriction <em>— Varianzeinschränkung &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation bezeichnet die systematische Unterschätzung der wahren Korrelation zwischen zwei Konstrukten durch Messfehler in den Indikatoren.">Korrelationsattenuation</a></em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
@@ -123,7 +125,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div class="help-overlay" id="help-overlay">
   <div class="help-panel">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
-      <h2>Hilfe — Range Restriction (Varianzeinschränkung)</h2>
+      <h2>Hilfe — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-range-restriction" target="_blank" rel="noopener" title="Range Restriction (Varianzeinschränkung) bezeichnet die systematische Unterschätzung einer Korrelation, die entsteht, wenn eine Stichprobe nur einen eingeschränkten Teil des Wertebereichs einer Variable abdeckt.">Range Restriction</a> (Varianzeinschränkung)</h2>
       <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
     </div>
     <div class="help-h3">Macht / macht NICHT</div>
@@ -292,7 +294,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="sec-h">Konzepte</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">Was ist Range Restriction?</div>
+        <div class="lcard-h">Was ist <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-range-restriction" target="_blank" rel="noopener" title="Range Restriction (Varianzeinschränkung) bezeichnet die systematische Unterschätzung einer Korrelation, die entsteht, wenn eine Stichprobe nur einen eingeschränkten Teil des Wertebereichs einer Variable abdeckt.">Range Restriction</a>?</div>
         <div class="lcard-body">Wird eine Stichprobe so gewonnen, dass nur ein Teil des Wertebereichs einer Variable vertreten ist, spricht man von <strong>Varianzeinschränkung</strong>. Weil die Korrelation die <em>gemeinsame</em> standardisierte Variation misst, sinkt sie, sobald die Streuung des Prädiktors gekappt wird. Der beobachtete Zusammenhang <strong>unterschätzt</strong> dann den wahren — ein häufiger Grund, warum Tests, Auswahlverfahren oder Prädiktoren scheinbar „nicht funktionieren".</div>
       </div>
       <div class="lcard">
@@ -317,7 +319,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Abgrenzung: Berkson's Paradox</div>
-        <div class="lcard-body"><strong>Gemeinsam:</strong> beide sind Selektionseffekte — eine nach einem Kriterium ausgewählte Teilgruppe verzerrt die beobachtete Korrelation, man sieht nie die ganze Population. <strong>Unterschied:</strong> Bei Range Restriction selektiert man <em>direkt auf den Prädiktor X</em> → r wird gedämpft (oder bei Extremgruppen aufgebläht), aber die Regressionssteigung b<sub>Y·X</sub> bleibt erwartungstreu. Bei <strong>Berkson</strong> selektiert man auf einen <em>Collider Z</em> (gemeinsame Wirkung X→Z←Y) → es entsteht eine <em>Schein</em>korrelation aus dem Nichts, und auch die Steigung wird verzerrt. Kurz: hier ein <strong>Varianz</strong>problem (mit Thorndike korrigierbar), dort ein <strong>Struktur</strong>problem (Collider niemals kontrollieren). Die Brücke ist die <em>indirekte</em> Range Restriction (Fall III, Selektion auf eine Drittvariable). <a href="Berksons_Paradox.html" target="_blank" rel="noopener" style="color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)">→ Berkson's Paradox &amp; Collider Bias</a></div>
+        <div class="lcard-body"><strong>Gemeinsam:</strong> beide sind Selektionseffekte — eine nach einem Kriterium ausgewählte Teilgruppe verzerrt die beobachtete Korrelation, man sieht nie die ganze Population. <strong>Unterschied:</strong> Bei Range Restriction selektiert man <em>direkt auf den Prädiktor X</em> → r wird gedämpft (oder bei Extremgruppen aufgebläht), aber die Regressionssteigung b<sub>Y·X</sub> bleibt erwartungstreu. Bei <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-berksons-paradox" target="_blank" rel="noopener" title="Berkson's Paradox (Joseph Berkson, 1946) beschreibt eine Form des Selektionsbias, die entsteht, wenn man auf eine gemeinsame Wirkung (einen Collider) konditioniert.">Berkson</a></strong> selektiert man auf einen <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-collider" target="_blank" rel="noopener" title="Ein Collider ist ein Knoten in einem DAG, auf den mindestens zwei gerichtete Kanten zeigen: A → C ← B.">Collider</a> Z</em> (gemeinsame Wirkung X→Z←Y) → es entsteht eine <em>Schein</em>korrelation aus dem Nichts, und auch die Steigung wird verzerrt. Kurz: hier ein <strong>Varianz</strong>problem (mit Thorndike korrigierbar), dort ein <strong>Struktur</strong>problem (Collider niemals kontrollieren). Die Brücke ist die <em>indirekte</em> Range Restriction (Fall III, Selektion auf eine Drittvariable). <a href="Berksons_Paradox.html" target="_blank" rel="noopener" style="color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)">→ Berkson's Paradox &amp; Collider Bias</a></div>
       </div>
     </div>
   </div>

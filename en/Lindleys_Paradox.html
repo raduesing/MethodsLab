@@ -115,6 +115,8 @@ canvas{width:100%;display:block}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -184,7 +186,7 @@ canvas{width:100%;display:block}
   <div class="story-box">
     <div class="story-lbl">📋 The Puzzle</div>
     A test against the point null hypothesis <strong>H₀: θ = 0</strong> on <strong>n = 50,000</strong> people yields <em>p ≈ .05</em> —
-    so <strong>significant</strong>, H₀ is rejected. Yet the <strong>Bayes factor</strong> says: the data are <em>many times
+    so <strong>significant</strong>, H₀ is rejected. Yet the <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-bayes-faktor" target="_blank" rel="noopener" title="The Bayes Factor is the ratio of the marginal likelihoods of two models: BF₁₂ = p(Data | M₁) / p(Data | M₂).">Bayes factor</a></strong> says: the data are <em>many times
     more probable under H₀</em> than under H₁. Frequentist and Bayesian reach <strong>opposite conclusions</strong> —
     from the <em>same</em> data. Who's right, and why?
   </div>
@@ -231,7 +233,7 @@ canvas{width:100%;display:block}
   <div class="sec-h">Concepts</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">What exactly is the paradox?</div>
+      <div class="lcard-h">What exactly is the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-lindleys-paradox" target="_blank" rel="noopener" title="Lindley's Paradox (Lindley, 1957) refers to the situation where a frequentist test declares a result significant (p < α) at a sufficiently large sample size n, while the Bayes Factor simultaneously provides strong evidence for the null hypothesis H₀.">paradox</a>?</div>
       <div class="lcard-body">At a <strong>fixed significance level</strong>, a just-significant result (p = .05) can become
         <strong>ever-stronger evidence for H₀</strong> as n grows. The frequentist rejects H₀, the Bayesian
         supports it — both from the same data. Lindley (1957) proved this formally.</div>
@@ -277,14 +279,14 @@ canvas{width:100%;display:block}
         <strong>constant at 1 − α/2</strong> (e.g. 0.975) and the flat-prior CrI would always exclude 0 <em>narrowly</em> → both behave
         like the <strong>p-value</strong> and do <em>not</em> show the paradox. Reason: pd and CrI are <strong>estimation</strong> measures
         ("where does <span class="gk">θ</span> lie?") without a point null and thus without an Occam factor. Only the <strong>Bayes factor</strong>
-        (a point-null comparison) or a <strong>ROPE</strong> — where the CrI, shrinking with n, falls entirely <em>inside</em> the region
+        (a point-null comparison) or a <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rope" target="_blank" rel="noopener" title="The Region of Practical Equivalence is a researcher-defined interval around a reference value (usually 0) that declares parameter values as practically negligible.">ROPE</a></strong> — where the CrI, shrinking with n, falls entirely <em>inside</em> the region
         of practical equivalence — resolve the paradox toward H₀. In short: the Lindley paradox is a phenomenon of
         <strong>point-null model comparison</strong>, not of Bayesian estimation.</div>
     </div>
     <div class="lcard" style="grid-column:1/-1">
       <div class="lcard-h">Resolution &amp; connection to the Bayes Thinking Lab</div>
       <div class="lcard-body">The paradox is not a calculation error — it shows that <strong>the p-value and the Bayes factor
-        answer different questions.</strong> The p-value: "How surprising are the data <em>under H₀</em>?" The Bayes factor:
+        answer different questions.</strong> The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="The p-value is the probability, assuming the null hypothesis H₀ is true, of observing a result at least as extreme as the one actually observed.">p-value</a>: "How surprising are the data <em>under H₀</em>?" The Bayes factor:
         "Which hypothesis predicts the data <em>better</em>?" At large n with a point null, the two diverge.
         For a deeper dive into priors, Bayes factors, and ROPE decisions, see the sister project:
         <br><a class="xlink" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/" target="_blank">→ Bayes Thinking Lab</a></div>
@@ -297,7 +299,7 @@ canvas{width:100%;display:block}
 <!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
 <div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
   <div class="help-box">
-    <div class="help-box-h">Lindley's Paradox — Background
+    <div class="help-box-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-lindleys-paradox" target="_blank" rel="noopener" title="Lindley's Paradox (Lindley, 1957) refers to the situation where a frequentist test declares a result significant (p < α) at a sufficiently large sample size n, while the Bayes Factor simultaneously provides strong evidence for the null hypothesis H₀.">Lindley's Paradox</a> — Background
       <button class="help-close" onclick="toggleHelp()">✕ Close</button>
     </div>
 
@@ -306,12 +308,12 @@ canvas{width:100%;display:block}
       mean x̄ from n observations, standardized as <strong>z = (x̄ − μ₀)·√n / σ</strong>. All effects are
       expressed in σ units (σ = 1); the observed effect is <strong>δ = (x̄ − μ₀)/σ</strong>, so z = δ·√n.</p>
 
-    <div class="help-sh">Frequentist: the p-value</div>
+    <div class="help-sh">Frequentist: the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="The p-value is the probability, assuming the null hypothesis H₀ is true, of observing a result at least as extreme as the one actually observed.">p-value</a></div>
     <span class="help-formula">p = 2·(1 − Φ(|z|))        (two-sided)</span>
     <p class="help-p">H₀ is rejected when p &lt; α. For fixed δ &gt; 0, z = δ√n grows with n — eventually <em>any</em>
       effect, no matter how tiny, becomes significant. Significance is thus strongly dependent on n.</p>
 
-    <div class="help-sh">Bayesian: the Bayes factor</div>
+    <div class="help-sh">Bayesian: the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-bayes-faktor" target="_blank" rel="noopener" title="The Bayes Factor is the ratio of the marginal likelihoods of two models: BF₁₂ = p(Data | M₁) / p(Data | M₂).">Bayes factor</a></div>
     <p class="help-p">H₀: θ = 0 (point null) against H₁: θ ~ N(0, τ²). The Bayes factor compares how well each hypothesis
       <em>predicts</em> the data (marginal likelihood). For this normal-normal model:</p>
     <span class="help-formula">BF₀₁ = √(1 + n·τ²) · exp( −½ · z² · n·τ²/(1 + n·τ²) )</span>

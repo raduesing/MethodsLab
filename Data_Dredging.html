@@ -134,12 +134,14 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
 .help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <h1>Data Dredging — <em>such lange genug, dann findest du etwas</em></h1>
+  <h1><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-data-dredging" target="_blank" rel="noopener" title="Data Dredging (auch p-Hacking oder Fishing Expedition) bezeichnet das ungeplante Durchsuchen eines Datensatzes nach statistisch signifikanten Zusammenhängen, ohne vorab festgelegte Hypothese.">Data Dredging</a> — <em>such lange genug, dann findest du etwas</em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
@@ -152,14 +154,14 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
   <div class="help-box-h">Data Dredging & Scheinwerfer-Paradoxon — Hilfe</div>
 
   <div class="help-sh">Worum geht's</div>
-  <p class="help-p">Wer einen großen Datensatz nach signifikanten Zusammenhängen <em>durchsucht</em> („data dredging", „p-hacking", „fishing expedition"), findet zwangsläufig welche — selbst wenn überhaupt kein wahrer Effekt existiert. Jeder Test hat bei α = 5 % eine 5-%-Chance auf einen Fehlalarm. Bei vielen Tests wird mindestens ein Treffer fast sicher.</p>
+  <p class="help-p">Wer einen großen Datensatz nach signifikanten Zusammenhängen <em>durchsucht</em> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-data-dredging" target="_blank" rel="noopener" title="Data Dredging (auch p-Hacking oder Fishing Expedition) bezeichnet das ungeplante Durchsuchen eines Datensatzes nach statistisch signifikanten Zusammenhängen, ohne vorab festgelegte Hypothese.">„data dredging", „p-hacking", „fishing expedition"</a>), findet zwangsläufig welche — selbst wenn überhaupt kein wahrer Effekt existiert. Jeder Test hat bei α = 5 % eine 5-%-Chance auf einen Fehlalarm. Bei vielen Tests wird mindestens ein Treffer fast sicher.</p>
 
   <div class="help-sh">Multiple Vergleiche</div>
   <p class="help-p">Bei m unabhängigen Tests unter der Nullhypothese ist die Wahrscheinlichkeit für <em>mindestens einen</em> Fehlalarm:</p>
   <code class="help-formula">P(≥ 1 falsch-positiv) = 1 − (1 − α)^m</code>
-  <p class="help-p">Bei α = .05 und m = 20 sind das bereits 64 %. Erwartet werden α·m Fehlalarme. <strong>Bonferroni</strong> korrigiert, indem es die Schwelle verschärft: α' = α/m. <strong>HARKing</strong> (Hypothesizing After Results are Known): zu einem zufälligen Treffer wird <em>im Nachhinein</em> eine plausibel klingende Theorie erfunden.</p>
+  <p class="help-p">Bei α = .05 und m = 20 sind das bereits 64 %. Erwartet werden α·m Fehlalarme. <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-bonferroni" target="_blank" rel="noopener" title="Die Bonferroni-Korrektur kontrolliert die familywise Fehlerrate durch Verschärfung des Signifikanzniveaus: statt α wird für jeden Einzeltest α' = α/m verwendet.">Bonferroni</a></strong> korrigiert, indem es die Schwelle verschärft: α' = α/m. <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-harking" target="_blank" rel="noopener" title="HARKing (Hypothesizing After the Results are Known) bezeichnet die Praxis, nach einem zufällig signifikanten Befund im Nachhinein eine plausibel klingende Theorie zu formulieren und diese so darzustellen, als wäre sie von Anfang an die getestete Hypothese gewesen.">HARKing</a></strong> (Hypothesizing After Results are Known): zu einem zufälligen Treffer wird <em>im Nachhinein</em> eine plausibel klingende Theorie erfunden.</p>
 
-  <div class="help-sh">Stepwise-Regression (Freedman's Paradox)</div>
+  <div class="help-sh">Stepwise-Regression (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-freedman-paradox" target="_blank" rel="noopener" title="Freedmans Paradox (Freedman, 1983) zeigt: Bei einem zweistufigen Auswahlverfahren kann das resultierende Modell ein aufgeblähtes R² und scheinbar signifikante F-Tests zeigen, obwohl keiner der Prädiktoren tatsächlich mit Y zusammenhängt.">Freedman's Paradox</a>)</div>
   <p class="help-p">Regressiert man eine Zielgröße auf viele <em>reine Rausch-Prädiktoren</em> und behält die „signifikanten", erhält man ein Modell mit beeindruckendem R² — das auf <strong>neuen Daten zusammenbricht</strong>. Die Auswahl hat sich an Zufallsmuster angepasst (Freedman 1983). Der Modus zeigt R² im Trainingsset vs. in frischen Daten.</p>
 
   <div class="help-sh">Was tun?</div>
@@ -228,7 +230,7 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
     <div class="formula" id="formula-d">—</div>
     <div class="sec-h"><span class="circ">②</span> Alle Tests (rot = „signifikant")</div>
     <div class="dredge-grid" id="dredge-grid"></div>
-    <div class="sec-h"><span class="circ">③</span> HARKing — aus Rauschen eine Geschichte machen</div>
+    <div class="sec-h"><span class="circ">③</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-harking" target="_blank" rel="noopener" title="HARKing (Hypothesizing After the Results are Known) bezeichnet die Praxis, nach einem zufällig signifikanten Befund im Nachhinein eine plausibel klingende Theorie zu formulieren und diese so darzustellen, als wäre sie von Anfang an die getestete Hypothese gewesen.">HARKing</a> — aus Rauschen eine Geschichte machen</div>
     <button class="reset-btn" id="btn-hark" style="border-color:var(--a4);color:var(--a4);width:auto;padding:.45rem 1rem">🎣 Schlagzeilen erfinden</button>
     <div class="hark hide" id="hark-box"></div>
   </div>
@@ -262,9 +264,9 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
   <div class="sec-h">Konzepte</div>
   <div class="lcard-grid">
     <div class="lcard"><div class="lcard-h">Multiple Vergleiche</div><div class="lcard-body">Jeder Test hat bei α=.05 eine 5-%-Fehlalarm-Chance. Bei m Tests: P(≥1)=1−(1−α)<sup>m</sup>. Schon bei m=14 über 50 %. „Such lange genug, dann findest du etwas."</div></div>
-    <div class="lcard"><div class="lcard-h">HARKing</div><div class="lcard-body">Hypothesizing After the Results are Known: erst das Zufallsergebnis, dann die „Theorie" dazu. Klingt plausibel, ist aber zirkulär — die Hypothese wurde aus genau den Daten geboren, die sie belegen soll.</div></div>
-    <div class="lcard"><div class="lcard-h">Freedman's Paradox</div><div class="lcard-body">Schrittweise Variablenauswahl auf Rauschen liefert „signifikante" Prädiktoren und ein hohes R² — das auf neuen Daten verschwindet. Überanpassung an Zufallsmuster (Freedman 1983).</div></div>
-    <div class="lcard"><div class="lcard-h">Gegenmittel</div><div class="lcard-body">Präregistrieren, für multiples Testen korrigieren (Bonferroni/FDR), explorativ ≠ konfirmatorisch, und an unabhängigen Daten <strong>replizieren</strong>. Dieselbe Falle lauert bei Modifikationsindizes im
+    <div class="lcard"><div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-harking" target="_blank" rel="noopener" title="HARKing (Hypothesizing After the Results are Known) bezeichnet die Praxis, nach einem zufällig signifikanten Befund im Nachhinein eine plausibel klingende Theorie zu formulieren und diese so darzustellen, als wäre sie von Anfang an die getestete Hypothese gewesen.">HARKing</a></div><div class="lcard-body">Hypothesizing After the Results are Known: erst das Zufallsergebnis, dann die „Theorie" dazu. Klingt plausibel, ist aber zirkulär — die Hypothese wurde aus genau den Daten geboren, die sie belegen soll.</div></div>
+    <div class="lcard"><div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-freedman-paradox" target="_blank" rel="noopener" title="Freedmans Paradox (Freedman, 1983) zeigt: Bei einem zweistufigen Auswahlverfahren kann das resultierende Modell ein aufgeblähtes R² und scheinbar signifikante F-Tests zeigen, obwohl keiner der Prädiktoren tatsächlich mit Y zusammenhängt.">Freedman's Paradox</a></div><div class="lcard-body">Schrittweise Variablenauswahl auf Rauschen liefert „signifikante" Prädiktoren und ein hohes R² — das auf neuen Daten verschwindet. Überanpassung an Zufallsmuster (Freedman 1983).</div></div>
+    <div class="lcard"><div class="lcard-h">Gegenmittel</div><div class="lcard-body">Präregistrieren, für multiples Testen korrigieren (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-bonferroni" target="_blank" rel="noopener" title="Die Bonferroni-Korrektur kontrolliert die familywise Fehlerrate durch Verschärfung des Signifikanzniveaus: statt α wird für jeden Einzeltest α' = α/m verwendet.">Bonferroni</a>/FDR), explorativ ≠ konfirmatorisch, und an unabhängigen Daten <strong>replizieren</strong>. Dieselbe Falle lauert bei Modifikationsindizes im
       <a class="xlink" href="Strukturgleichungsmodell.html">Strukturgleichungsmodell (SEM)</a>, wenn man das Modell post-hoc datengetrieben statt theoriegeleitet anpasst.
       <a class="xlink" href="Lindleys_Paradox.html">→ Lindley's Paradox</a></div></div>
   </div>
@@ -404,7 +406,7 @@ function renderStep(){
     vd.textContent='Diesmal wurde keine der '+R.m+' Rausch-Variablen „signifikant" — würfle neu oder erhöhe k.';
   } else {
     vd.className='verdict v-bad';
-    vd.innerHTML='Die Auswahl „findet" <strong>'+sel.length+' von '+R.m+'</strong> Prädiktoren und erklärt im Training <strong>'+Math.round(r2train*100)+' %</strong> der Varianz — auf neuen Daten bleiben davon <strong>'+Math.round(r2new*100)+' %</strong>. Das „Modell" hat sich an Zufallsmuster angepasst (Freedman\'s Paradox).';
+    vd.innerHTML='Die Auswahl „findet" <strong>'+sel.length+' von '+R.m+'</strong> Prädiktoren und erklärt im Training <strong>'+Math.round(r2train*100)+' %</strong> der Varianz — auf neuen Daten bleiben davon <strong>'+Math.round(r2new*100)+' %</strong>. Das „Modell" hat sich an Zufallsmuster angepasst (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-freedman-paradox" target="_blank" rel="noopener" title="Freedmans Paradox (Freedman, 1983) zeigt: Bei einem zweistufigen Auswahlverfahren kann das resultierende Modell ein aufgeblähtes R² und scheinbar signifikante F-Tests zeigen, obwohl keiner der Prädiktoren tatsächlich mit Y zusammenhängt.">Freedman\'s Paradox</a>).';
   }
   const b=document.getElementById('step-bars'); b.innerHTML='';
   const note=document.getElementById('step-note');

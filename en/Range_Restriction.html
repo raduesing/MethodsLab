@@ -109,12 +109,14 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
 
 <div id="topbar">
-  <h1>Range Restriction <em>— Variance Restriction &amp; Correlation Attenuation</em></h1>
+  <h1>Range Restriction <em>— Variance Restriction &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation refers to the systematic underestimation of the true correlation between two constructs due to measurement error in the indicators.">Correlation Attenuation</a></em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
@@ -123,7 +125,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div class="help-overlay" id="help-overlay">
   <div class="help-panel">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
-      <h2>Help — Range Restriction</h2>
+      <h2>Help — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-range-restriction" target="_blank" rel="noopener" title="Range restriction refers to the systematic underestimation of a correlation that occurs when a sample covers only a restricted portion of a variable's range.">Range Restriction</a></h2>
       <button class="help-close" onclick="toggleHelp()">✕ Close</button>
     </div>
     <div class="help-h3">Does / does NOT</div>
@@ -292,7 +294,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="sec-h">Concepts</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">What is range restriction?</div>
+        <div class="lcard-h">What is <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-range-restriction" target="_blank" rel="noopener" title="Range restriction refers to the systematic underestimation of a correlation that occurs when a sample covers only a restricted portion of a variable's range.">range restriction</a>?</div>
         <div class="lcard-body">When a sample is obtained such that only part of a variable's value range is represented, this is called <strong>range restriction</strong>. Because correlation measures <em>shared</em> standardized variation, it drops as soon as the predictor's spread is capped. The observed relationship then <strong>underestimates</strong> the true one — a common reason why tests, selection procedures, or predictors seem "not to work."</div>
       </div>
       <div class="lcard">
@@ -317,7 +319,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Distinguishing it from Berkson's paradox</div>
-        <div class="lcard-body"><strong>In common:</strong> both are selection effects — a subgroup selected on some criterion biases the observed correlation, and you never see the whole population. <strong>Difference:</strong> in range restriction, you select <em>directly on the predictor X</em> → r is dampened (or inflated for extreme groups), but the regression slope b<sub>Y·X</sub> stays unbiased. In <strong>Berkson</strong>, you select on a <em>collider Z</em> (a common effect X→Z←Y) → a <em>spurious</em> correlation arises out of nowhere, and the slope is biased too. In short: here a <strong>variance</strong> problem (correctable with Thorndike), there a <strong>structural</strong> problem (never control for a collider). The bridge between them is <em>indirect</em> range restriction (Case III, selection on a third variable). <a href="Berksons_Paradox.html" target="_blank" rel="noopener" style="color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)">→ Berkson's Paradox &amp; Collider Bias</a></div>
+        <div class="lcard-body"><strong>In common:</strong> both are selection effects — a subgroup selected on some criterion biases the observed correlation, and you never see the whole population. <strong>Difference:</strong> in range restriction, you select <em>directly on the predictor X</em> → r is dampened (or inflated for extreme groups), but the regression slope b<sub>Y·X</sub> stays unbiased. In <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-berksons-paradox" target="_blank" rel="noopener" title="Berkson's Paradox (Joseph Berkson, 1946) describes a form of selection bias that arises when one conditions on a common effect (a collider).">Berkson</a></strong>, you select on a <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-collider" target="_blank" rel="noopener" title="A collider is a variable C in a DAG that has arrows from two or more other variables pointing into it: A → C ← B.">collider</a> Z</em> (a common effect X→Z←Y) → a <em>spurious</em> correlation arises out of nowhere, and the slope is biased too. In short: here a <strong>variance</strong> problem (correctable with Thorndike), there a <strong>structural</strong> problem (never control for a collider). The bridge between them is <em>indirect</em> range restriction (Case III, selection on a third variable). <a href="Berksons_Paradox.html" target="_blank" rel="noopener" style="color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)">→ Berkson's Paradox &amp; Collider Bias</a></div>
       </div>
     </div>
   </div>

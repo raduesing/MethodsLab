@@ -115,6 +115,8 @@ canvas{width:100%;display:block}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -184,7 +186,7 @@ canvas{width:100%;display:block}
   <div class="story-box">
     <div class="story-lbl">📋 Das Rätsel</div>
     Ein Test gegen die Punkt-Nullhypothese <strong>H₀: θ = 0</strong> an <strong>n = 50 000</strong> Personen ergibt <em>p ≈ .05</em> —
-    also <strong>signifikant</strong>, H₀ wird abgelehnt. Doch der <strong>Bayes-Faktor</strong> sagt: Die Daten sind <em>vielfach
+    also <strong>signifikant</strong>, H₀ wird abgelehnt. Doch der <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-bayes-faktor" target="_blank" rel="noopener" title="Der Bayes-Faktor ist das Verhältnis der marginalen Likelihoods zweier Modelle: BF₁₂ = p(D | M₁) / p(D | M₂).">Bayes-Faktor</a></strong> sagt: Die Daten sind <em>vielfach
     wahrscheinlicher unter H₀</em> als unter H₁. Frequentist und Bayesianer kommen zum <strong>gegenteiligen Schluss</strong> —
     aus <em>denselben</em> Daten. Wer hat recht, und warum?
   </div>
@@ -231,7 +233,7 @@ canvas{width:100%;display:block}
   <div class="sec-h">Konzepte</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">Worin besteht das Paradox?</div>
+      <div class="lcard-h">Worin besteht das <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-lindleys-paradox" target="_blank" rel="noopener" title="Lindley's Paradox (Lindley, 1957) bezeichnet die Situation, dass ein frequentistischer Test bei ausreichend großer Stichprobe n ein Ergebnis als signifikant ausweist (p < α), während der Bayes-Faktor gleichzeitig starke Evidenz für die Nullhypothese H₀ liefert.">Paradox</a>?</div>
       <div class="lcard-body">Bei <strong>festem Signifikanzniveau</strong> kann ein gerade-signifikantes Ergebnis (p = .05) mit
         wachsendem n zu <strong>immer stärkerer Evidenz für H₀</strong> werden. Der Frequentist lehnt H₀ ab, der Bayesianer
         stützt sie — beide aus denselben Daten. Lindley (1957) zeigte das formal.</div>
@@ -277,14 +279,14 @@ canvas{width:100%;display:block}
         <strong>konstant bei 1 − α/2</strong> (z. B. 0.975) und das flat-prior-CrI schlösse die 0 stets <em>knapp</em> aus → beide verhalten
         sich wie der <strong>p-Wert</strong> und zeigen das Paradox <em>nicht</em>. Grund: pd und CrI sind <strong>Schätz</strong>-Maße
         („wo liegt <span class="gk">θ</span>?") ohne Punkt-Null und damit ohne Occam-Faktor. Erst der <strong>Bayes-Faktor</strong>
-        (Punkt-Null-Vergleich) oder ein <strong>ROPE</strong> — bei dem das mit n schrumpfende CrI komplett <em>in</em> die Region
+        (Punkt-Null-Vergleich) oder ein <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rope" target="_blank" rel="noopener" title="Die Region of Practical Equivalence ist ein vom Forscher festgelegtes Intervall um einen Referenzwert (meist 0), das Parameterwerte als praktisch bedeutungslos deklariert.">ROPE</a></strong> — bei dem das mit n schrumpfende CrI komplett <em>in</em> die Region
         praktischer Äquivalenz fällt — lösen das Paradox Richtung H₀ auf. Kurz: das Lindley-Paradox ist ein Phänomen des
         <strong>Punkt-Null-Modellvergleichs</strong>, nicht der Bayes-Schätzung.</div>
     </div>
     <div class="lcard" style="grid-column:1/-1">
       <div class="lcard-h">Auflösung &amp; Bezug zum Bayes Thinking Lab</div>
       <div class="lcard-body">Das Paradox ist kein Rechenfehler, sondern zeigt: <strong>p-Wert und Bayes-Faktor beantworten
-        verschiedene Fragen.</strong> Der p-Wert: „Wie überraschend sind die Daten <em>unter H₀</em>?" Der Bayes-Faktor:
+        verschiedene Fragen.</strong> Der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="Der p-Wert ist die Wahrscheinlichkeit, unter der Annahme, dass die Nullhypothese H₀ zutrifft, ein Ergebnis zu beobachten, das mindestens so extrem ist wie das tatsächlich beobachtete.">p-Wert</a>: „Wie überraschend sind die Daten <em>unter H₀</em>?" Der Bayes-Faktor:
         „Welche Hypothese sagt die Daten <em>besser</em> voraus?" Bei großem n und einer Punkt-Null divergieren beide.
         Tiefer in Priors, Bayes-Faktoren und ROPE-Entscheidungen geht das Schwesterprojekt:
         <br><a class="xlink" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/" target="_blank">→ Bayes Thinking Lab</a></div>
@@ -297,7 +299,7 @@ canvas{width:100%;display:block}
 <!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
 <div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
   <div class="help-box">
-    <div class="help-box-h">Lindley's Paradox — Hintergrund
+    <div class="help-box-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-lindleys-paradox" target="_blank" rel="noopener" title="Lindley's Paradox (Lindley, 1957) bezeichnet die Situation, dass ein frequentistischer Test bei ausreichend großer Stichprobe n ein Ergebnis als signifikant ausweist (p < α), während der Bayes-Faktor gleichzeitig starke Evidenz für die Nullhypothese H₀ liefert.">Lindley's Paradox</a> — Hintergrund
       <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
     </div>
 
@@ -306,12 +308,12 @@ canvas{width:100%;display:block}
       Stichprobenmittelwert x̄ aus n Beobachtungen, standardisiert als <strong>z = (x̄ − μ₀)·√n / σ</strong>. Alle Effekte sind
       in σ-Einheiten ausgedrückt (σ = 1), der beobachtete Effekt ist <strong>δ = (x̄ − μ₀)/σ</strong>, also z = δ·√n.</p>
 
-    <div class="help-sh">Frequentistisch: der p-Wert</div>
+    <div class="help-sh">Frequentistisch: der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="Der p-Wert ist die Wahrscheinlichkeit, unter der Annahme, dass die Nullhypothese H₀ zutrifft, ein Ergebnis zu beobachten, das mindestens so extrem ist wie das tatsächlich beobachtete.">p-Wert</a></div>
     <span class="help-formula">p = 2·(1 − Φ(|z|))        (zweiseitig)</span>
     <p class="help-p">H₀ wird abgelehnt, wenn p &lt; α. Für festes δ &gt; 0 wächst z = δ√n mit n — irgendwann wird <em>jeder</em>
       noch so winzige Effekt signifikant. Signifikanz ist also stark von n abhängig.</p>
 
-    <div class="help-sh">Bayesianisch: der Bayes-Faktor</div>
+    <div class="help-sh">Bayesianisch: der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-bayes-faktor" target="_blank" rel="noopener" title="Der Bayes-Faktor ist das Verhältnis der marginalen Likelihoods zweier Modelle: BF₁₂ = p(D | M₁) / p(D | M₂).">Bayes-Faktor</a></div>
     <p class="help-p">H₀: θ = 0 (Punkt-Null) gegen H₁: θ ~ N(0, τ²). Der Bayes-Faktor vergleicht, wie gut jede Hypothese die
       Daten <em>vorhersagt</em> (marginale Likelihood). Für dieses Normal-Normal-Modell:</p>
     <span class="help-formula">BF₀₁ = √(1 + n·τ²) · exp( −½ · z² · n·τ²/(1 + n·τ²) )</span>
