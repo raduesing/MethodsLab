@@ -98,6 +98,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a4)}
 </style>
 </head>
 <body>
@@ -112,7 +114,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div class="help-overlay" id="help-overlay">
   <div class="help-panel">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
-      <h2>Help — Measurement-Error Attenuation</h2>
+      <h2>Help — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation refers to the systematic underestimation of the true correlation between two constructs due to measurement error in the indicators.">Measurement-Error Attenuation</a></h2>
       <button class="help-close" onclick="toggleHelp()">✕ Close</button>
     </div>
     <div class="help-h3">What does this tool show?</div>
@@ -126,7 +128,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <p class="help-p"><strong style="color:var(--a4)">Left (purple):</strong> Latent true scores X* and Y* — what the world would look like if measurement were error-free. Regression line with slope ρ_true.<br>
     <strong style="color:var(--a2)">Right (blue):</strong> Observed, error-laden measurements X and Y. The point cloud is wider, the regression line (blue) flatter. The dashed purple line shows the true slope for comparison.</p>
     <div class="help-h3">Controls</div>
-    <p class="help-p"><strong style="color:var(--ink)">ρ_true:</strong> true latent correlation. <strong style="color:var(--ink)">r_xx / r_yy:</strong> reliability of the two measurement instruments (1.0 = perfect). <strong style="color:var(--ink)">Scenarios A–D</strong> illustrate different constellations.</p>
+    <p class="help-p"><strong style="color:var(--ink)">ρ_true:</strong> true latent correlation. <strong style="color:var(--ink)">r_xx / r_yy:</strong> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions.">reliability</a> of the two measurement instruments (1.0 = perfect). <strong style="color:var(--ink)">Scenarios A–D</strong> illustrate different constellations.</p>
   </div>
 </div>
 
@@ -268,7 +270,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="sec-h">Concepts</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">What is attenuation?</div>
+        <div class="lcard-h">What is <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation refers to the systematic underestimation of the true correlation between two constructs due to measurement error in the indicators.">attenuation</a>?</div>
         <div class="lcard-body">Measurement error in X or Y systematically reduces the observed correlation. The formula <code>r_obs = ρ · √(r_xx · r_yy)</code> shows: only when both instruments are perfectly reliable (r_xx = r_yy = 1.0) does r_obs = ρ_true hold. Any measurement imprecision pulls the observed value closer to zero. Attenuation is always conservative — it <strong>never overestimates</strong>.</div>
       </div>
       <div class="lcard">
@@ -285,14 +287,14 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Consequences for research practice</div>
-        <div class="lcard-body">Raw (uncorrected) correlations from primary studies are systematically too small. This has consequences for: <strong>theoretical conclusions</strong> (the true relationship is stronger than it appears), <strong>criterion validity</strong> of tests (predictors look weaker), and <strong>power analyses</strong> (expected effects too small → planned sample sizes too large). Without correction, theory gets built on attenuated findings.</div>
+        <div class="lcard-body">Raw (uncorrected) correlations from primary studies are systematically too small. This has consequences for: <strong>theoretical conclusions</strong> (the true relationship is stronger than it appears), <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-kriteriumsvaliditaet" target="_blank" rel="noopener" title="Criterion validity is the degree to which test scores correlate with a relevant external criterion — an independent, practically meaningful measure of what the test is supposed to predict.">criterion validity</a></strong> of tests (predictors look weaker), and <strong>power analyses</strong> (expected effects too small → planned sample sizes too large). Without correction, theory gets built on attenuated findings.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Limits &amp; instability at small N</div>
-        <div class="lcard-body">Disattenuated values &gt; 1.0 are mathematically impossible and arise from two sources: (1) misestimated reliabilities, or (2) sampling fluctuation of the empirical correlation. At <strong>N &lt; 200</strong>, the latter is the bigger problem — r_obs fluctuates so much that the corrected value frequently exceeds the true correlation (Zimmerman &amp; Williams, 1997; Revelle &amp; Condon, 2019). Kraemer (2005, <em>Psych. Methods</em>) recommends <strong>confidence sets</strong> instead of point estimates; bootstrap CIs are more stable than delta methods. Rule of thumb: <strong>N ≥ 200</strong> for reliable disattenuation. The correction requires <strong>parallel measurements</strong>; for heterogeneous items, Cronbach's α underestimates reliability — McDonald's ω is more reliable.</div>
+        <div class="lcard-body">Disattenuated values &gt; 1.0 are mathematically impossible and arise from two sources: (1) misestimated reliabilities, or (2) sampling fluctuation of the empirical correlation. At <strong>N &lt; 200</strong>, the latter is the bigger problem — r_obs fluctuates so much that the corrected value frequently exceeds the true correlation (Zimmerman &amp; Williams, 1997; Revelle &amp; Condon, 2019). Kraemer (2005, <em>Psych. Methods</em>) recommends <strong>confidence sets</strong> instead of point estimates; bootstrap CIs are more stable than delta methods. Rule of thumb: <strong>N ≥ 200</strong> for reliable disattenuation. The correction requires <strong>parallel measurements</strong>; for heterogeneous items, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cronbach" target="_blank" rel="noopener" title="Cronbach's Alpha is the most widely used measure of the internal consistency of a scale — the degree to which multiple items measure the same latent construct.">Cronbach's α</a> underestimates reliability — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-omega" target="_blank" rel="noopener" title="McDonald's Omega is a factor-analytically grounded reliability measure that is more robust than Cronbach's Alpha because it does not assume tau-equivalence.">McDonald's ω</a> is more reliable.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Which reliability to use?</div>
+        <div class="lcard-h">Which <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions.">reliability</a> to use?</div>
         <div class="lcard-body">Hunter &amp; Schmidt (2004) recommend a clear hierarchy: <strong>(1) Your own sample reliability</strong> — but only if N &gt; 200, otherwise estimation error destabilizes the disattenuation. <strong>(2) Norm reliability from test manuals</strong> — more stable due to larger norming samples, valid if your sample resembles the norming population. <strong>(3) Meta-analytic mean</strong> — only in explicit meta-analyses. <br><br>Rule of practice: at N &lt; 200, prefer manual reliability — the variance-bias trade-off clearly favors more stable external estimates. Different populations (e.g. clinical vs. non-clinical) often have systematically different reliabilities, though — so it should always be reported which reliability came from where.</div>
       </div>
     </div>

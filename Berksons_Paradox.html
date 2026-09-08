@@ -103,6 +103,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a4)}
 </style>
 </head>
 <body>
@@ -117,7 +119,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div class="help-overlay" id="help-overlay">
   <div class="help-panel">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
-      <h2>Hilfe — Berkson's Paradox &amp; Collider Bias</h2>
+      <h2>Hilfe — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-berksons-paradox" target="_blank" rel="noopener" title="Berkson's Paradox (Joseph Berkson, 1946) beschreibt eine Form des Selektionsbias, die entsteht, wenn man auf eine gemeinsame Wirkung (einen Collider) konditioniert.">Berkson's Paradox</a> &amp; Collider Bias</h2>
       <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
     </div>
     <div class="help-h3">Was zeigt dieses Tool?</div>
@@ -125,8 +127,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="help-h3">Das laufende Beispiel</div>
     <p class="help-p">Eine Personalabteilung bewertet Bewerber anhand von <strong style="color:var(--a2)">Talent</strong> (X, IQ-Test) und <strong style="color:var(--a3)">Fleiß</strong> (Y, Selbstbericht). In der Bevölkerung sind Talent und Fleiß unkorreliert (ρ = 0). Der <strong style="color:var(--a5)">Berufserfolg</strong> Z hängt von beiden ab: Z = X + Y + Rauschen. Betrachtet man nur die beruflich Erfolgreichsten und Erfolglosesten, erscheint plötzlich eine negative Korrelation: wer hochtalentiert ist, schien weniger fleißig zu sein — und umgekehrt.</p>
     <div class="help-h3">Der Mechanismus (Warum?)</div>
-    <p class="help-p">Die Selektion auf Z schränkt den Werteraum ein: Personen im oberen Z-Bereich müssen hohe X- oder Y-Werte haben. Wer niedrige X hat, muss hohe Y haben — und umgekehrt. Innerhalb des selektierten Bandes erzwingt die Summe X + Y ≈ konstant eine negative Abhängigkeit. Im DAG nennt man Z einen <strong style="color:var(--ink)">Collider</strong> — er hat zwei eingehende Pfeile (X → Z ← Y). Konditionieren auf einen Collider öffnet einen Scheinpfad zwischen X und Y.</p>
-    <div class="help-h3">Das DAG</div>
+    <p class="help-p">Die Selektion auf Z schränkt den Werteraum ein: Personen im oberen Z-Bereich müssen hohe X- oder Y-Werte haben. Wer niedrige X hat, muss hohe Y haben — und umgekehrt. Innerhalb des selektierten Bandes erzwingt die Summe X + Y ≈ konstant eine negative Abhängigkeit. Im DAG nennt man Z einen <strong style="color:var(--ink)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-collider" target="_blank" rel="noopener" title="Ein Collider ist ein Knoten in einem DAG, auf den mindestens zwei gerichtete Kanten zeigen: A → C ← B.">Collider</a></strong> — er hat zwei eingehende Pfeile (X → Z ← Y). Konditionieren auf einen Collider öffnet einen Scheinpfad zwischen X und Y.</p>
+    <div class="help-h3">Das <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-dag" target="_blank" rel="noopener" title="Ein Directed Acyclic Graph (DAG) ist ein gerichteter Graph ohne Zyklen, der kausale Annahmen über ein System von Variablen explizit und überprüfbar macht.">DAG</a></div>
     <p class="help-p"><code>X → Z ← Y</code> — Z ist der Collider. Die gestrichelte rote Linie zeigt die Konditionierung (Selektion auf extreme Z-Werte). Ohne Konditionierung: X ⊥ Y. Mit Konditionierung: X ⊥̸ Y.</p>
     <div class="help-h3">Die Visualisierung</div>
     <p class="help-p"><strong style="color:var(--ink)">Linkes Panel:</strong> Gesamtpopulation. Graue Punkte = nicht selektiert, rote Punkte = selektierte Extremgruppe. Die orangefarbenen diagonalen Linien zeigen die Selektionsgrenzen (Z = X + Y = Schwellenwert). Beachte: die Grenzlinien haben Steigung −1 — genau das ist der Grund für die negative Korrelation in der selektierten Gruppe.<br>
@@ -302,11 +304,11 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="sec-h">Konzepte</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">Was ist Berkson's Paradox?</div>
+        <div class="lcard-h">Was ist <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-berksons-paradox" target="_blank" rel="noopener" title="Berkson's Paradox (Joseph Berkson, 1946) beschreibt eine Form des Selektionsbias, die entsteht, wenn man auf eine gemeinsame Wirkung (einen Collider) konditioniert.">Berkson's Paradox</a>?</div>
         <div class="lcard-body">Joseph Berkson (1946) beschrieb es am Beispiel von Krankenhäusern: Zwei Krankheiten A und B sind in der Bevölkerung unkorreliert. Im Krankenhaus jedoch (wo Patienten selektiert werden, die <em>mindestens eine</em> Krankheit haben) erscheinen sie negativ korreliert — wer Krankheit A hat, braucht weniger oft Krankheit B als Einweisungsgrund. Das Paradox tritt immer auf, wenn man auf eine Variable konditioniert, die <strong>gemischte Ursachen</strong> hat.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Collider — der DAG-Begriff</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-collider" target="_blank" rel="noopener" title="Ein Collider ist ein Knoten in einem DAG, auf den mindestens zwei gerichtete Kanten zeigen: A → C ← B.">Collider</a> — der DAG-Begriff</div>
         <div class="lcard-body">In einem Directed Acyclic Graph (DAG) ist ein <strong>Collider</strong> ein Knoten, der zwei eingehende Pfeile hat: X → Z ← Y. Normalerweise blockt ein Collider den Informationsfluss zwischen X und Y (d-separation). Sobald man auf Z konditioniert — durch Selektion, Adjustment oder Stratifizierung — wird der Pfad X — Z — Y <strong>geöffnet</strong> und eine Scheinkorrelation entsteht. Das ist das Gegenteil von Konfundierung.</div>
       </div>
       <div class="lcard">
@@ -326,7 +328,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
         <div class="lcard-body">Mit Preset D (starke einseitige Selektion 10%) und dem ρ_XY-Slider auf +0.40 lässt sich zeigen: selbst wenn X und Y in der Bevölkerung <em>positiv</em> korreliert sind, kann starke Selektion auf Z die Richtung umkehren. Bei ausreichend engem Selektionsfenster und geringem Rauschen in Z wird der Berkson-Effekt stark genug, die ursprünglich positive Korrelation zu überwältigen — die selektierte Gruppe zeigt dann eine negative Korrelation.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Abgrenzung von Konfundierung</div>
+        <div class="lcard-h">Abgrenzung von <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Eine Konfundierungsvariable (Confounder) ist eine Variable, die sowohl mit dem Treatment T als auch mit dem Outcome Y assoziiert ist und nicht auf dem kausalen Pfad von T nach Y liegt.">Konfundierung</a></div>
         <div class="lcard-body">Konfundierung: eine gemeinsame <strong>Ursache</strong> U → X und U → Y erzeugt Scheinkorrelation; Kontrolle von U beseitigt sie. Collider Bias: eine gemeinsame <strong>Wirkung</strong> X → Z ← Y; Kontrolle von Z <em>erzeugt</em> Scheinkorrelation. Beide erzeugen Verzerrung, aber in entgegengesetzter Logik. In Regressionsmodellen ist deshalb "für alle verfügbaren Variablen kontrollieren" <strong>falsch</strong> — Collider sollten nie kontrolliert werden.</div>
       </div>
       <div class="lcard">
@@ -335,7 +337,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Erkennen und Vermeiden</div>
-        <div class="lcard-body">Schritte: (1) DAG zeichnen, bevor Analyse beginnt. (2) Alle Variablen als Konfounder, Mediatoren oder Collider klassifizieren. (3) Nur für Konfounder adjustieren — niemals für Collider. (4) Selektionsmechanismus der Stichprobe prüfen: hängt die Studienteilnahme von X und Y gleichzeitig ab? (5) Sensitivitätsanalysen mit anderen Selektionsmodellen. Literatur: Pearl (2009) <em>Causality</em>; Hernán &amp; Robins (2020) <em>Causal Inference</em>.</div>
+        <div class="lcard-body">Schritte: (1) <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-dag" target="_blank" rel="noopener" title="Ein Directed Acyclic Graph (DAG) ist ein gerichteter Graph ohne Zyklen, der kausale Annahmen über ein System von Variablen explizit und überprüfbar macht.">DAG</a> zeichnen, bevor Analyse beginnt. (2) Alle Variablen als Konfounder, Mediatoren oder Collider klassifizieren. (3) Nur für Konfounder adjustieren — niemals für Collider. (4) Selektionsmechanismus der Stichprobe prüfen: hängt die Studienteilnahme von X und Y gleichzeitig ab? (5) Sensitivitätsanalysen mit anderen Selektionsmodellen. Literatur: Pearl (2009) <em>Causality</em>; Hernán &amp; Robins (2020) <em>Causal Inference</em>.</div>
       </div>
     </div>
   </div>

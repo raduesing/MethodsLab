@@ -119,6 +119,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a6)}
 </style>
 </head>
 <body>
@@ -133,7 +135,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div class="help-overlay" id="help-overlay">
   <div class="help-panel">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
-      <h2>Help — Lord's Paradox</h2>
+      <h2>Help — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-lords-paradox" target="_blank" rel="noopener" title="Lord's Paradox (Frederick Lord, 1967) refers to an apparent contradiction that arises when two researchers analyze the same data with different, statistically valid methods and arrive at opposite conclusions.">Lord's Paradox</a></h2>
       <button class="help-close" onclick="toggleHelp()">✕ Close</button>
     </div>
     <div class="help-h3">What does this tool show?</div>
@@ -150,7 +152,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="help-h3">Controls</div>
     <p class="help-p"><strong style="color:var(--ink)">Δ starting level:</strong> difference in the pre-test (Course B minus Course A). <strong style="color:var(--ink)">True effect:</strong> additional improvement from the intensive course (beyond the semester's general improvement). <strong style="color:var(--ink)">ρ (pre-post corr.):</strong> the closer to 1, the more strongly the two methods agree. <strong style="color:var(--ink)">Scenarios:</strong> four preset situations showing different aspects of the paradox.</p>
     <div class="help-h3">Best practice: which tool when?</div>
-    <p class="help-p"><strong style="color:var(--ink)">RCT:</strong> ANCOVA is preferable (higher power, random baseline differences get corrected). <strong style="color:var(--ink)">Observational study:</strong> the choice depends on the estimand — which causal question is to be answered? A DAG is needed. Both methods can be legitimate — for different questions.</p>
+    <p class="help-p"><strong style="color:var(--ink)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rct" target="_blank" rel="noopener" title="A randomized controlled trial (RCT) assigns units of study to a treatment or control condition purely by chance.">RCT</a>:</strong> ANCOVA is preferable (higher power, random baseline differences get corrected). <strong style="color:var(--ink)">Observational study:</strong> the choice depends on the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-estimand" target="_blank" rel="noopener" title="The estimand is the theoretical target quantity one wants to estimate — the precisely defined question that the analysis is meant to answer.">estimand</a> — which causal question is to be answered? A <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dag" target="_blank" rel="noopener" title="A Directed Acyclic Graph (DAG) is a directed graph without cycles that makes causal assumptions about a system of variables explicit and testable.">DAG</a> is needed. Both methods can be legitimate — for different questions.</p>
   </div>
 </div>
 
@@ -419,8 +421,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="dcard" style="border-top:3px solid var(--a4)">
       <div class="dcard-h" style="color:var(--a4)">Prefer ANCOVA when:</div>
       <div class="dcard-body">
-        <strong>Randomized experiment (RCT)</strong> — baseline differences are random; ANCOVA notably increases statistical power without introducing bias. It's the modern standard (Vickers &amp; Altman 2001, EMA guidelines).<br><br>
-        <strong>Observational study with a clearly defined confounder</strong> — when Y₀ (pre) is the only relevant covariate and G is not caused by Y₀ (i.e. G ⊥ Y₀ | U in the DAG).<br><br>
+        <strong>Randomized experiment (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rct" target="_blank" rel="noopener" title="A randomized controlled trial (RCT) assigns units of study to a treatment or control condition purely by chance.">RCT</a>)</strong> — baseline differences are random; ANCOVA notably increases statistical power without introducing bias. It's the modern standard (Vickers &amp; Altman 2001, EMA guidelines).<br><br>
+        <strong>Observational study with a clearly defined <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Confounding arises when a third variable C is a common cause of both the treatment X and the outcome Y: C → X and C → Y.">confounder</a></strong> — when Y₀ (pre) is the only relevant covariate and G is not caused by Y₀ (i.e. G ⊥ Y₀ | U in the DAG).<br><br>
         The question is: <em>"What would the effect be if we had equal starting conditions?"</em>
       </div>
     </div>
@@ -441,16 +443,16 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="sec-h">Concepts</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">What is Lord's paradox?</div>
+        <div class="lcard-h">What is <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-lords-paradox" target="_blank" rel="noopener" title="Lord's Paradox (Frederick Lord, 1967) refers to an apparent contradiction that arises when two researchers analyze the same data with different, statistically valid methods and arrive at opposite conclusions.">Lord's paradox</a>?</div>
         <div class="lcard-body">Frederic Lord (1967) showed that two statisticians with the same dataset — both computing correctly — can reach opposite conclusions. Statistician A uses difference scores and finds no group effect. Statistician B uses ANCOVA and finds a significant effect. Both are right — because they're answering different questions.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Regression to the mean as the cause</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-regression-zur-mitte" target="_blank" rel="noopener" title="Regression to the mean describes the statistical phenomenon that extreme measurements are, on average, closer to the population mean when repeated.">Regression to the mean</a> as the cause</div>
         <div class="lcard-body">The mechanism behind the paradox is <strong>regression to the mean</strong>: whoever was extremely high or low on the pre-test moves toward the group mean on the post-test. Course B has a higher mean — its members regress toward a different center than Course A's. ANCOVA "sees" this difference at a fixed pre value; difference scores don't.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">The estimand decides</div>
-        <div class="lcard-body">An <strong>estimand</strong> is the precise definition of the quantity to be estimated. ATE (average treatment effect) asks about the average effect in the population — difference scores come close to this. CATE (conditional ATE) asks about the effect at a fixed Y₀ — ANCOVA estimates exactly that. Without a predefined estimand, the choice of method is arbitrary.</div>
+        <div class="lcard-h">The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-estimand" target="_blank" rel="noopener" title="The estimand is the theoretical target quantity one wants to estimate — the precisely defined question that the analysis is meant to answer.">estimand</a> decides</div>
+        <div class="lcard-body">An <strong>estimand</strong> is the precise definition of the quantity to be estimated. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ate" target="_blank" rel="noopener" title="The ATE is the average causal effect of a treatment computed across all units of the target population.">ATE</a> (average treatment effect) asks about the average effect in the population — difference scores come close to this. CATE (conditional ATE) asks about the effect at a fixed Y₀ — ANCOVA estimates exactly that. Without a predefined estimand, the choice of method is arbitrary.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">RCT: ANCOVA almost always better</div>
@@ -458,7 +460,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Observational studies: DAG first</div>
-        <div class="lcard-body">In observational studies, ANCOVA on Y₀ (pre) can backfire: if Y₀ is a <strong>mediator</strong> of the G effect (G → Y₀ → Y₁), we adjust along the causal path and underestimate the effect. If Y₀ is a <strong>collider</strong> (G → Y₀ ← U → Y₁), adjusting opens a backdoor path. A DAG clarifies which case applies.</div>
+        <div class="lcard-body">In observational studies, ANCOVA on Y₀ (pre) can backfire: if Y₀ is a <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mediator" target="_blank" rel="noopener" title="A mediator M is a variable on the causal path between treatment T and outcome Y: T → M → Y.">mediator</a></strong> of the G effect (G → Y₀ → Y₁), we adjust along the causal path and underestimate the effect. If Y₀ is a <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-collider" target="_blank" rel="noopener" title="A collider is a variable C in a DAG that has arrows from two or more other variables pointing into it: A → C ← B.">collider</a></strong> (G → Y₀ ← U → Y₁), adjusting opens a backdoor path. A DAG clarifies which case applies.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">The paradox's formula</div>

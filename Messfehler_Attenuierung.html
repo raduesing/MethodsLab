@@ -98,6 +98,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a4)}
 </style>
 </head>
 <body>
@@ -112,7 +114,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div class="help-overlay" id="help-overlay">
   <div class="help-panel">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
-      <h2>Hilfe — Messfehler-Attenuierung</h2>
+      <h2>Hilfe — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation bezeichnet die systematische Unterschätzung der wahren Korrelation zwischen zwei Konstrukten durch Messfehler in den Indikatoren.">Messfehler-Attenuierung</a></h2>
       <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
     </div>
     <div class="help-h3">Was zeigt dieses Tool?</div>
@@ -126,7 +128,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <p class="help-p"><strong style="color:var(--a4)">Links (lila):</strong> Latente wahre Werte X* und Y* — so würde die Welt aussehen, wenn Messung fehlerfrei wäre. Regressionsgerade mit Steigung ρ_true.<br>
     <strong style="color:var(--a2)">Rechts (blau):</strong> Beobachtete fehlerhafte Messwerte X und Y. Die Punktwolke ist breiter, die Regressionsgerade (blau) flacher. Die lila gestrichelte Linie zeigt zum Vergleich die wahre Steigung.</p>
     <div class="help-h3">Bedienung</div>
-    <p class="help-p"><strong style="color:var(--ink)">ρ_true:</strong> wahre latente Korrelation. <strong style="color:var(--ink)">r_xx / r_yy:</strong> Reliabilität der beiden Messinstrumente (1.0 = perfekt). <strong style="color:var(--ink)">Szenarien A–D</strong> illustrieren verschiedene Konstellationen.</p>
+    <p class="help-p"><strong style="color:var(--ink)">ρ_true:</strong> wahre latente Korrelation. <strong style="color:var(--ink)">r_xx / r_yy:</strong> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert.">Reliabilität</a> der beiden Messinstrumente (1.0 = perfekt). <strong style="color:var(--ink)">Szenarien A–D</strong> illustrieren verschiedene Konstellationen.</p>
   </div>
 </div>
 
@@ -268,7 +270,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="sec-h">Konzepte</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">Was ist Attenuierung?</div>
+        <div class="lcard-h">Was ist <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation bezeichnet die systematische Unterschätzung der wahren Korrelation zwischen zwei Konstrukten durch Messfehler in den Indikatoren.">Attenuierung</a>?</div>
         <div class="lcard-body">Messfehler in X oder Y reduziert die beobachtete Korrelation systematisch. Die Formel <code>r_obs = ρ · √(r_xx · r_yy)</code> zeigt: nur wenn beide Instrumente perfekt reliabel sind (r_xx = r_yy = 1.0), gilt r_obs = ρ_true. Jede Messungenauigkeit bringt den beobachteten Wert näher an Null. Attenuierung ist immer konservativ — sie <strong>unterschätzt nie nach oben</strong>.</div>
       </div>
       <div class="lcard">
@@ -285,14 +287,14 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Konsequenzen für Forschungspraxis</div>
-        <div class="lcard-body">Rohe (unkorrigierte) Korrelationen aus Primärstudien sind systematisch zu klein. Das hat Folgen für: <strong>theoretische Schlussfolgerungen</strong> (der wahre Zusammenhang ist stärker als gedacht), <strong>Kriteriumsvalidität</strong> von Tests (Prädiktoren erscheinen schwächer), und <strong>Power-Analysen</strong> (zu kleine erwartete Effekte → zu große geplante Stichproben). Ohne Korrektur wird Theorie auf attenuierten Befunden aufgebaut.</div>
+        <div class="lcard-body">Rohe (unkorrigierte) Korrelationen aus Primärstudien sind systematisch zu klein. Das hat Folgen für: <strong>theoretische Schlussfolgerungen</strong> (der wahre Zusammenhang ist stärker als gedacht), <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-kriteriumsvaliditaet" target="_blank" rel="noopener" title="Kriteriumsvalidität ist das Ausmaß, in dem Testwerte mit einem relevanten Außenkriterium korrelieren — einer unabhängigen, praktisch bedeutsamen Messung dessen, was der Test vorhersagen soll.">Kriteriumsvalidität</a></strong> von Tests (Prädiktoren erscheinen schwächer), und <strong>Power-Analysen</strong> (zu kleine erwartete Effekte → zu große geplante Stichproben). Ohne Korrektur wird Theorie auf attenuierten Befunden aufgebaut.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Grenzen &amp; Instabilität bei kleinem N</div>
-        <div class="lcard-body">Disattenuierte Werte &gt; 1.0 sind mathematisch unmöglich und entstehen aus zwei Quellen: (1) fehlerhafte Reliabilitätsschätzer, oder (2) Stichprobenschwankung der empirischen Korrelation. Bei <strong>N &lt; 200</strong> ist Letzteres das größere Problem — r_obs schwankt so stark, dass der korrigierte Wert die wahre Korrelation häufig überschreitet (Zimmerman &amp; Williams, 1997; Revelle &amp; Condon, 2019). Kraemer (2005, <em>Psych. Methods</em>) empfiehlt <strong>Konfidenzmengen</strong> (confidence sets) statt Punktschätzern; Bootstrap-KIs sind stabiler als Delta-Methoden. Faustregel: <strong>N ≥ 200</strong> für verlässliche Disattenuation. Die Korrektur setzt <strong>parallele Messungen</strong> voraus; bei heterogenen Items unterschätzt Cronbachs α die Reliabilität — McDonald's ω ist zuverlässiger.</div>
+        <div class="lcard-body">Disattenuierte Werte &gt; 1.0 sind mathematisch unmöglich und entstehen aus zwei Quellen: (1) fehlerhafte Reliabilitätsschätzer, oder (2) Stichprobenschwankung der empirischen Korrelation. Bei <strong>N &lt; 200</strong> ist Letzteres das größere Problem — r_obs schwankt so stark, dass der korrigierte Wert die wahre Korrelation häufig überschreitet (Zimmerman &amp; Williams, 1997; Revelle &amp; Condon, 2019). Kraemer (2005, <em>Psych. Methods</em>) empfiehlt <strong>Konfidenzmengen</strong> (confidence sets) statt Punktschätzern; Bootstrap-KIs sind stabiler als Delta-Methoden. Faustregel: <strong>N ≥ 200</strong> für verlässliche Disattenuation. Die Korrektur setzt <strong>parallele Messungen</strong> voraus; bei heterogenen Items unterschätzt <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cronbach" target="_blank" rel="noopener" title="Cronbach's Alpha ist das am häufigsten verwendete Maß für die interne Konsistenz einer Skala — also für den Grad, in dem mehrere Items dasselbe latente Konstrukt messen.">Cronbachs α</a> die Reliabilität — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-omega" target="_blank" rel="noopener" title="McDonald's Omega ist ein faktoranalytisch fundiertes Reliabilitätsmaß, das robuster als Cronbach's Alpha ist, weil es keine tau-Äquivalenz voraussetzt.">McDonald's ω</a> ist zuverlässiger.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Welche Reliabilität verwenden?</div>
+        <div class="lcard-h">Welche <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert.">Reliabilität</a> verwenden?</div>
         <div class="lcard-body">Hunter &amp; Schmidt (2004) empfehlen eine klare Hierarchie: <strong>(1) Eigene Stichprobenreliabilität</strong> — aber nur wenn N &gt; 200, da sonst der Schätzfehler die Disattenuation destabilisiert. <strong>(2) Normreliabilität aus Testmanualen</strong> — stabiler wegen größerer Normierungsstichproben, gültig wenn die eigene Stichprobe der Normierungspopulation ähnelt. <strong>(3) Meta-analytischer Mittelwert</strong> — nur bei expliziten Meta-Analysen. <br><br>Praxisregel: Bei N &lt; 200 lieber Manualreliabilität — der Varianz-Bias-Trade-off spricht eindeutig für stabilere externe Schätzer. Unterschiedliche Populationen (z.B. klinisch vs. nicht-klinisch) haben aber oft systematisch verschiedene Reliabilitäten — deshalb sollte immer berichtet werden, welche Reliabilität woher stammt.</div>
       </div>
     </div>

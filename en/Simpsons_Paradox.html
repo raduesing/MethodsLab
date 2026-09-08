@@ -121,6 +121,8 @@ canvas{width:100%;display:block}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -206,7 +208,7 @@ canvas{width:100%;display:block}
     Within every disease-severity group: <strong>higher dose → better recovery</strong> (the colored lines slope up).
     But more severe groups get a <em>higher</em> dose and recover <em>worse</em>. Ignore the groups, and the
     pooled line suddenly seems to say: <strong>higher dose → worse recovery</strong>. Same dataset, opposite
-    message — that's Simpson's paradox. It arises from a <strong>confounding variable</strong> (here: severity).
+    message — that's Simpson's paradox. It arises from a <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Confounding arises when a third variable C is a common cause of both the treatment X and the outcome Y: C → X and C → Y.">confounding variable</a></strong> (here: severity).
   </div>
 
   <div class="sec-h"><span class="circ">①</span> Sign Check</div>
@@ -239,7 +241,7 @@ canvas{width:100%;display:block}
   <div class="sec-h">Concepts</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">What is Simpson's paradox?</div>
+      <div class="lcard-h">What is <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-simpsons-paradox" target="_blank" rel="noopener" title="Simpson's Paradox occurs when a statistical association that points in one direction within several subgroups reverses once the data are aggregated across all groups.">Simpson's paradox</a>?</div>
       <div class="lcard-body">A relationship that points in one direction within <strong>every subgroup</strong> can
         <strong>reverse</strong> as soon as the groups are pooled together. The cause is almost always a
         <strong>confounding variable</strong> that relates to both the predictor and the outcome and is unevenly
@@ -252,14 +254,14 @@ canvas{width:100%;display:block}
         admission rates. The department was the confounder.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Ecological fallacy</div>
+      <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-oekologischer-fehlschluss" target="_blank" rel="noopener" title="The ecological fallacy is the error of drawing conclusions about the relationship between individuals directly from a relationship observed at the aggregate or group level (or vice versa).">Ecological fallacy</a></div>
       <div class="lcard-body">Inferring from the group level to the individual level (or vice versa) is not valid.
         Simpson's paradox is the extreme case: the <strong>aggregated</strong> trend states the <em>opposite</em>
         of the individual one. Which level is "correct" is decided by the <strong>causal question</strong>, not by statistics.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h">Connection to multilevel models</div>
-      <div class="lcard-body">This is exactly where <strong>partial pooling</strong> comes in: a multilevel model separates
+      <div class="lcard-body">This is exactly where <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-partial-pooling" target="_blank" rel="noopener" title="Partial pooling is the estimation strategy in hierarchical/mixed models: group-specific parameters are estimated neither completely separately nor completely aggregated, but modeled as coming from a shared superordinate distribution.">partial pooling</a></strong> comes in: a multilevel model separates
         the within- from the between-effect instead of blending both like pooled regression. Ignoring group structure
         (complete pooling) risks Simpson.
         <br><a class="xlink" href="MLM_interactive.html" target="_blank">→ To the multilevel tool</a></div>
@@ -272,7 +274,7 @@ canvas{width:100%;display:block}
 <!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
 <div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
   <div class="help-box">
-    <div class="help-box-h">Simpson's Paradox — Background
+    <div class="help-box-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-simpsons-paradox" target="_blank" rel="noopener" title="Simpson's Paradox occurs when a statistical association that points in one direction within several subgroups reverses once the data are aggregated across all groups.">Simpson's Paradox</a> — Background
       <button class="help-close" onclick="toggleHelp()">✕ Close</button>
     </div>
 
@@ -308,9 +310,9 @@ Cov_between = b_between · Var_between(x)</span>
 
     <div class="help-sh">What to do?</div>
     <p class="help-p">The solution isn't "always break it down" or "always pool," but to clarify the
-      <strong>causal structure</strong> (DAG): if the group variable is a <em>confounder</em>, you must adjust for it
-      (look within groups). If it's a <em>mediator</em> on the causal path, adjusting would wrongly explain the effect away.
-      A <strong>multilevel model</strong> (partial pooling) cleanly separates the within- and between-effect.</p>
+      <strong>causal structure</strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dag" target="_blank" rel="noopener" title="A Directed Acyclic Graph (DAG) is a directed graph without cycles that makes causal assumptions about a system of variables explicit and testable.">DAG</a>): if the group variable is a <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Confounding arises when a third variable C is a common cause of both the treatment X and the outcome Y: C → X and C → Y.">confounder</a></em>, you must adjust for it
+      (look within groups). If it's a <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mediator" target="_blank" rel="noopener" title="A mediator M is a variable on the causal path between treatment T and outcome Y: T → M → Y.">mediator</a></em> on the causal path, adjusting would wrongly explain the effect away.
+      A <strong>multilevel model</strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-partial-pooling" target="_blank" rel="noopener" title="Partial pooling is the estimation strategy in hierarchical/mixed models: group-specific parameters are estimated neither completely separately nor completely aggregated, but modeled as coming from a shared superordinate distribution.">partial pooling</a>) cleanly separates the within- and between-effect.</p>
 
     <div class="help-sh">References</div>
     <p class="help-p">Simpson, E. H. (1951). The interpretation of interaction in contingency tables. <em>JRSS B, 13</em>(2), 238–241.<br>

@@ -121,6 +121,8 @@ canvas{width:100%;display:block}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -206,7 +208,7 @@ canvas{width:100%;display:block}
     Innerhalb jeder Krankheitsschwere-Gruppe gilt: <strong>höhere Dosis → bessere Genesung</strong> (die farbigen Geraden steigen).
     Aber schwerere Gruppen bekommen <em>mehr</em> Dosis und genesen <em>schlechter</em>. Ignoriert man die Gruppen, scheint die
     gepoolte Gerade plötzlich zu sagen: <strong>mehr Dosis → schlechtere Genesung</strong>. Derselbe Datensatz, gegenteilige
-    Botschaft — das ist Simpson's Paradox. Es entsteht durch eine <strong>Konfundierungsvariable</strong> (hier: Schweregrad).
+    Botschaft — das ist Simpson's Paradox. Es entsteht durch eine <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Eine Konfundierungsvariable (Confounder) ist eine Variable, die sowohl mit dem Treatment T als auch mit dem Outcome Y assoziiert ist und nicht auf dem kausalen Pfad von T nach Y liegt.">Konfundierungsvariable</a></strong> (hier: Schweregrad).
   </div>
 
   <div class="sec-h"><span class="circ">①</span> Vorzeichen-Check</div>
@@ -239,7 +241,7 @@ canvas{width:100%;display:block}
   <div class="sec-h">Konzepte</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">Was ist Simpson's Paradox?</div>
+      <div class="lcard-h">Was ist <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-simpsons-paradox" target="_blank" rel="noopener" title="Das Simpson-Paradoxon tritt auf, wenn ein statistischer Zusammenhang, der in mehreren Teilgruppen in eine Richtung weist, sich umkehrt, sobald die Daten über alle Gruppen hinweg aggregiert werden.">Simpson's Paradox</a>?</div>
       <div class="lcard-body">Ein Zusammenhang, der in <strong>jeder Teilgruppe</strong> in eine Richtung zeigt, kann sich
         <strong>umkehren</strong>, sobald man die Gruppen zusammenwirft. Ursache ist fast immer eine <strong>Konfundierungsvariable</strong>,
         die sowohl mit dem Prädiktor als auch mit dem Outcome zusammenhängt und über die Gruppen ungleich verteilt ist.</div>
@@ -251,14 +253,14 @@ canvas{width:100%;display:block}
         Zulassungsquote. Der Fachbereich war der Confounder.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Ökologischer Fehlschluss</div>
+      <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-oekologischer-fehlschluss" target="_blank" rel="noopener" title="Der ökologische Fehlschluss bezeichnet den Fehler, von einem auf Aggregat- bzw. Gruppenebene beobachteten Zusammenhang unmittelbar auf die Beziehung zwischen den zugrunde liegenden Individuen zu schließen (oder umgekehrt).">Ökologischer Fehlschluss</a></div>
       <div class="lcard-body">Der Schluss von Gruppen- auf Individualebene (oder umgekehrt) ist nicht zulässig. Simpson's
         Paradox ist der Extremfall: Der <strong>aggregierte</strong> Trend sagt sogar das <em>Gegenteil</em> des
         individuellen aus. Welche Ebene „richtig" ist, entscheidet die <strong>kausale Frage</strong>, nicht die Statistik.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h">Bezug zu Multilevel-Modellen</div>
-      <div class="lcard-body">Genau hier setzt <strong>Partial Pooling</strong> an: Ein Multilevel-Modell trennt den
+      <div class="lcard-body">Genau hier setzt <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-partial-pooling" target="_blank" rel="noopener" title="Partial Pooling ist die Schätzstrategie in hierarchischen/gemischten Modellen: Gruppenspezifische Parameter werden weder vollständig getrennt noch vollständig zusammengefasst geschätzt, sondern als aus einer gemeinsamen übergeordneten Verteilung stammend modelliert.">Partial Pooling</a></strong> an: Ein Multilevel-Modell trennt den
         Within- vom Between-Effekt, statt beide zu vermischen wie die gepoolte Regression. Wer Gruppenstruktur ignoriert
         (Complete Pooling), riskiert Simpson.
         <br><a class="xlink" href="MLM_interactive.html" target="_blank">→ Zum Multilevel-Tool</a></div>
@@ -271,7 +273,7 @@ canvas{width:100%;display:block}
 <!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
 <div class="help-overlay" id="help-overlay" onclick="if(event.target===this)toggleHelp()">
   <div class="help-box">
-    <div class="help-box-h">Simpson's Paradox — Hintergrund
+    <div class="help-box-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-simpsons-paradox" target="_blank" rel="noopener" title="Das Simpson-Paradoxon tritt auf, wenn ein statistischer Zusammenhang, der in mehreren Teilgruppen in eine Richtung weist, sich umkehrt, sobald die Daten über alle Gruppen hinweg aggregiert werden.">Simpson's Paradox</a> — Hintergrund
       <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
     </div>
 
@@ -307,9 +309,9 @@ Cov_between = b_between · Var_between(x)</span>
 
     <div class="help-sh">Was tun?</div>
     <p class="help-p">Die Lösung ist nicht „immer aufschlüsseln" oder „immer poolen", sondern die <strong>kausale Struktur</strong>
-      zu klären (DAG): Ist die Gruppenvariable ein <em>Confounder</em>, muss man für sie adjustieren (within betrachten).
-      Ist sie ein <em>Mediator</em> auf dem Wirkpfad, würde Adjustieren den Effekt fälschlich wegrechnen. Ein
-      <strong>Multilevel-Modell</strong> (Partial Pooling) trennt Within- und Between-Effekt sauber.</p>
+      zu klären (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-dag" target="_blank" rel="noopener" title="Ein Directed Acyclic Graph (DAG) ist ein gerichteter Graph ohne Zyklen, der kausale Annahmen über ein System von Variablen explizit und überprüfbar macht.">DAG</a>): Ist die Gruppenvariable ein <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Eine Konfundierungsvariable (Confounder) ist eine Variable, die sowohl mit dem Treatment T als auch mit dem Outcome Y assoziiert ist und nicht auf dem kausalen Pfad von T nach Y liegt.">Confounder</a></em>, muss man für sie adjustieren (within betrachten).
+      Ist sie ein <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-mediator" target="_blank" rel="noopener" title="Ein Mediator M ist eine Variable, die auf dem kausalen Pfad zwischen Treatment T und Outcome Y liegt: T → M → Y.">Mediator</a></em> auf dem Wirkpfad, würde Adjustieren den Effekt fälschlich wegrechnen. Ein
+      <strong>Multilevel-Modell</strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-partial-pooling" target="_blank" rel="noopener" title="Partial Pooling ist die Schätzstrategie in hierarchischen/gemischten Modellen: Gruppenspezifische Parameter werden weder vollständig getrennt noch vollständig zusammengefasst geschätzt, sondern als aus einer gemeinsamen übergeordneten Verteilung stammend modelliert.">Partial Pooling</a>) trennt Within- und Between-Effekt sauber.</p>
 
     <div class="help-sh">Literatur</div>
     <p class="help-p">Simpson, E. H. (1951). The interpretation of interaction in contingency tables. <em>JRSS B, 13</em>(2), 238–241.<br>

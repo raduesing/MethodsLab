@@ -103,6 +103,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a4)}
 </style>
 </head>
 <body>
@@ -117,7 +119,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div class="help-overlay" id="help-overlay">
   <div class="help-panel">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem">
-      <h2>Help — Berkson's Paradox &amp; Collider Bias</h2>
+      <h2>Help — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-berksons-paradox" target="_blank" rel="noopener" title="Berkson's Paradox (Joseph Berkson, 1946) describes a form of selection bias that arises when one conditions on a common effect (a collider).">Berkson's Paradox</a> &amp; Collider Bias</h2>
       <button class="help-close" onclick="toggleHelp()">✕ Close</button>
     </div>
     <div class="help-h3">What does this tool show?</div>
@@ -125,8 +127,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="help-h3">The running example</div>
     <p class="help-p">An HR department rates applicants on <strong style="color:var(--a2)">talent</strong> (X, IQ test) and <strong style="color:var(--a3)">diligence</strong> (Y, self-report). In the population, talent and diligence are uncorrelated (ρ = 0). <strong style="color:var(--a5)">Career success</strong> Z depends on both: Z = X + Y + noise. Looking only at the most and least successful applicants, a negative correlation suddenly appears: highly talented people seem less diligent — and vice versa.</p>
     <div class="help-h3">The mechanism (why?)</div>
-    <p class="help-p">Selecting on Z restricts the value space: people in the upper Z range must have high X or high Y values. Whoever has low X must have high Y — and vice versa. Within the selected band, the sum X + Y ≈ constant forces a negative dependency. In DAG terms, Z is called a <strong style="color:var(--ink)">collider</strong> — it has two incoming arrows (X → Z ← Y). Conditioning on a collider opens a spurious path between X and Y.</p>
-    <div class="help-h3">The DAG</div>
+    <p class="help-p">Selecting on Z restricts the value space: people in the upper Z range must have high X or high Y values. Whoever has low X must have high Y — and vice versa. Within the selected band, the sum X + Y ≈ constant forces a negative dependency. In DAG terms, Z is called a <strong style="color:var(--ink)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-collider" target="_blank" rel="noopener" title="A collider is a variable C in a DAG that has arrows from two or more other variables pointing into it: A → C ← B.">collider</a></strong> — it has two incoming arrows (X → Z ← Y). Conditioning on a collider opens a spurious path between X and Y.</p>
+    <div class="help-h3">The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dag" target="_blank" rel="noopener" title="A Directed Acyclic Graph (DAG) is a directed graph without cycles that makes causal assumptions about a system of variables explicit and testable.">DAG</a></div>
     <p class="help-p"><code>X → Z ← Y</code> — Z is the collider. The dashed red line shows the conditioning (selection on extreme Z values). Without conditioning: X ⊥ Y. With conditioning: X ⊥̸ Y.</p>
     <div class="help-h3">The visualization</div>
     <p class="help-p"><strong style="color:var(--ink)">Left panel:</strong> Overall population. Gray points = not selected, red points = selected extreme group. The orange diagonal lines show the selection boundaries (Z = X + Y = threshold). Note: the boundary lines have slope −1 — that is exactly the reason for the negative correlation in the selected group.<br>
@@ -302,11 +304,11 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="sec-h">Concepts</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">What is Berkson's paradox?</div>
+        <div class="lcard-h">What is <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-berksons-paradox" target="_blank" rel="noopener" title="Berkson's Paradox (Joseph Berkson, 1946) describes a form of selection bias that arises when one conditions on a common effect (a collider).">Berkson's paradox</a>?</div>
         <div class="lcard-body">Joseph Berkson (1946) described it using hospitals as an example: two diseases A and B are uncorrelated in the population. In the hospital, however (where patients are selected who have <em>at least one</em> of the diseases), they appear negatively correlated — someone with disease A less often needs disease B as the reason for admission. The paradox occurs whenever you condition on a variable that has <strong>mixed causes</strong>.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Collider — the DAG term</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-collider" target="_blank" rel="noopener" title="A collider is a variable C in a DAG that has arrows from two or more other variables pointing into it: A → C ← B.">Collider</a> — the DAG term</div>
         <div class="lcard-body">In a directed acyclic graph (DAG), a <strong>collider</strong> is a node with two incoming arrows: X → Z ← Y. Normally a collider blocks the flow of information between X and Y (d-separation). As soon as you condition on Z — through selection, adjustment, or stratification — the path X — Z — Y is <strong>opened</strong> and a spurious correlation arises. This is the opposite of confounding.</div>
       </div>
       <div class="lcard">
@@ -326,7 +328,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
         <div class="lcard-body">With Preset D (strong one-sided selection, 10%) and the ρ_XY slider set to +0.40, you can show: even if X and Y are <em>positively</em> correlated in the population, strong selection on Z can reverse the direction. With a sufficiently narrow selection window and low noise in Z, the Berkson effect becomes strong enough to overwhelm the originally positive correlation — the selected group then shows a negative correlation.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Distinguishing it from confounding</div>
+        <div class="lcard-h">Distinguishing it from <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Confounding arises when a third variable C is a common cause of both the treatment X and the outcome Y: C → X and C → Y.">confounding</a></div>
         <div class="lcard-body">Confounding: a common <strong>cause</strong> U → X and U → Y creates a spurious correlation; controlling for U removes it. Collider bias: a common <strong>effect</strong> X → Z ← Y; controlling for Z <em>creates</em> a spurious correlation. Both produce bias, but by opposite logic. In regression models, "control for all available variables" is therefore <strong>wrong</strong> — colliders should never be controlled for.</div>
       </div>
       <div class="lcard">
@@ -335,7 +337,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Detecting and avoiding it</div>
-        <div class="lcard-body">Steps: (1) Draw a DAG before starting the analysis. (2) Classify every variable as a confounder, mediator, or collider. (3) Adjust only for confounders — never for colliders. (4) Check the sample's selection mechanism: does study participation depend on both X and Y at once? (5) Run sensitivity analyses with other selection models. References: Pearl (2009) <em>Causality</em>; Hernán &amp; Robins (2020) <em>Causal Inference</em>.</div>
+        <div class="lcard-body">Steps: (1) Draw a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dag" target="_blank" rel="noopener" title="A Directed Acyclic Graph (DAG) is a directed graph without cycles that makes causal assumptions about a system of variables explicit and testable.">DAG</a> before starting the analysis. (2) Classify every variable as a confounder, mediator, or collider. (3) Adjust only for confounders — never for colliders. (4) Check the sample's selection mechanism: does study participation depend on both X and Y at once? (5) Run sensitivity analyses with other selection models. References: Pearl (2009) <em>Causality</em>; Hernán &amp; Robins (2020) <em>Causal Inference</em>.</div>
       </div>
     </div>
   </div>
