@@ -108,6 +108,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   padding:.55rem .85rem;margin-bottom:.65rem;font-family:'DM Mono',monospace;
   font-size:.77rem;color:var(--ink2);line-height:1.85;display:none}
 .warn-box strong{color:var(--a1)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -128,22 +130,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <p class="help-p">In Beobachtungsstudien entscheiden Personen selbst, ob sie eine Behandlung T erhalten. Diese Selbstselektion führt dazu, dass Behandlungs- und Kontrollgruppe sich in beobachtbaren Merkmalen (Kovariaten X) unterscheiden, die auch das Outcome Y beeinflussen — das nennt man <strong>Konfundierung</strong>. Ein naiver Vergleich Y(T=1) − Y(T=0) schätzt nicht den Kausaleffekt, sondern mischt Effekt und Vorunterschied.</p>
   <p class="help-p">Beispiel: Erstsemester mit niedrigerem Abiturschnitt und geringerem SES nehmen häufiger am Mentoring-Programm teil. Naiv verglichen sieht das Programm wirkungslos aus — nicht weil es das ist, sondern weil die Teilnehmer schlechtere Ausgangsbedingungen hatten.</p>
 
-  <div class="help-sh">Was ist ein Propensity Score?</div>
+  <div class="help-sh">Was ist ein <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-propensity-score" target="_blank" rel="noopener" title="Der Propensity Score e(X) = P(T = 1 | X) ist die bedingte Wahrscheinlichkeit, das Treatment zu erhalten, gegeben die beobachteten Kovariaten X.">Propensity Score</a>?</div>
   <p class="help-p">Der <strong>Propensity Score (PS)</strong> ist die bedingte Wahrscheinlichkeit der Behandlung gegeben alle gemessenen Kovariaten:</p>
   <code class="help-formula">e(X) = P(T = 1 | X₁, X₂, ..., Xₖ)</code>
   <p class="help-p">Rosenbaum &amp; Rubin (1983): Wenn die Behandlung bedingt auf X unabhängig von den potenziellen Outcomes ist (Ignorabilität), dann ist sie auch bedingt auf den einzigen Skalar e(X) unabhängig. Statt k Kovariaten simultan zu balancieren, genügt es, auf den PS zu konditionieren. In der Praxis wird der PS via logistischer Regression geschätzt.</p>
 
   <div class="help-sh">Annahmen — Wann funktioniert PSM/IPW?</div>
-  <p class="help-p"><strong>1. Ignorabilität (CIA / Unconfoundedness):</strong> {Y(0), Y(1)} ⊥ T | X — bedingt auf die gemessenen Kovariaten ist die Behandlung quasi-zufällig. Diese Annahme ist nicht testbar. PSM/IPW eliminiert nur Bias durch gemessene Kovariaten; ungemessene Confounders (omitted variable bias) bleiben ein Risiko.</p>
-  <p class="help-p"><strong>2. Common Support (Positivity):</strong> 0 &lt; e(X) &lt; 1 für alle X. Jede Person muss theoretisch behandelt oder unbehandelt sein können. Verletzt, wenn ein Merkmal die Behandlung perfekt vorhersagt.</p>
-  <p class="help-p"><strong>3. SUTVA:</strong> Kein Spillover zwischen Einheiten; T ist eine klar definierte Intervention.</p>
+  <p class="help-p"><strong>1. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ignorability" target="_blank" rel="noopener" title="Ignorierbarkeit (strong ignorability, unconfoundedness) besagt, dass die Behandlungszuweisung T — nach Konditionierung auf beobachtete Kovariaten X — als quasi-zufällig behandelt werden kann.">Ignorabilität (CIA / Unconfoundedness)</a>:</strong> {Y(0), Y(1)} ⊥ T | X — bedingt auf die gemessenen Kovariaten ist die Behandlung quasi-zufällig. Diese Annahme ist nicht testbar. PSM/IPW eliminiert nur Bias durch gemessene Kovariaten; ungemessene Confounders (omitted variable bias) bleiben ein Risiko.</p>
+  <p class="help-p"><strong>2. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-common-support" target="_blank" rel="noopener" title="Common Support bezeichnet den Bereich der beobachteten Kovariaten X, in dem sowohl Treatment- als auch Kontrolleinheiten vorhanden sind — d.h. P(T=1|X=x) ∈ (0,1) für alle x in diesem Bereich.">Common Support (Positivity)</a>:</strong> 0 &lt; e(X) &lt; 1 für alle X. Jede Person muss theoretisch behandelt oder unbehandelt sein können. Verletzt, wenn ein Merkmal die Behandlung perfekt vorhersagt.</p>
+  <p class="help-p"><strong>3. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-sutva" target="_blank" rel="noopener" title="SUTVA (Stable Unit Treatment Value Assumption, Rubin 1980) ist eine grundlegende Annahme des Potenzielle-Ergebnisse-Frameworks und besteht aus zwei Teilannahmen: keine Interferenz und keine versteckten Treatmentvariationen.">SUTVA</a>:</strong> Kein Spillover zwischen Einheiten; T ist eine klar definierte Intervention.</p>
 
   <div class="help-sh">Propensity Score Matching (PSM)</div>
   <p class="help-p">Beim <strong>1:1 Nearest-Neighbor Matching</strong> wird jeder behandelten Person die Kontrollperson mit dem ähnlichsten PS zugeordnet. Das <strong>Caliper</strong> c begrenzt die maximale Distanz |e_i − e_j| ≤ c. Empfehlung: c = 0,2 · SD(logit(PS)) (Austin, 2011). Matching ohne Zurücklegen: jede Kontrollperson wird höchstens einmal verwendet.</p>
-  <p class="help-p">Matching schätzt den <strong>ATT (Average Treatment Effect on the Treated)</strong>: den Effekt bei denjenigen, die tatsächlich behandelt wurden. Behandelte ohne Match (außerhalb des Common Support) werden ausgeschlossen — das erhöht die interne Validität auf Kosten der Stichprobengröße.</p>
+  <p class="help-p">Matching schätzt den <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-att" target="_blank" rel="noopener" title="Der ATT misst den durchschnittlichen kausalen Effekt einer Behandlung, eingeschränkt auf jene Personen, die die Behandlung tatsächlich erhalten haben: E[Y¹ − Y⁰ | D = 1].">ATT (Average Treatment Effect on the Treated)</a></strong>: den Effekt bei denjenigen, die tatsächlich behandelt wurden. Behandelte ohne Match (außerhalb des Common Support) werden ausgeschlossen — das erhöht die interne Validität auf Kosten der Stichprobengröße.</p>
   <code class="help-formula">ATT (Matching) = (1/M) · Σᵢ [ Yᵢ(T=1) − Y_match(i)(T=0) ]</code>
 
-  <div class="help-sh">Inverse Probability Weighting (IPW / IPTW)</div>
+  <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ipw" target="_blank" rel="noopener" title="Inverse Probability Weighting gewichtet jede Beobachtung mit dem Kehrwert ihrer Wahrscheinlichkeit, das erhaltene Treatment zu bekommen: w = 1 / P(T=t | X).">Inverse Probability Weighting (IPW / IPTW)</a></div>
   <p class="help-p">Statt Personen zu matchen, erhält jede Person ein Gewicht, das den Selektionsmechanismus umkehrt. Für den <strong>ATT</strong>:</p>
   <code class="help-formula">Behandelte: w = 1     ·     Kontrollen: w = e(X) / (1 − e(X))</code>
   <p class="help-p">Kontrollpersonen mit hohem PS (die eigentlich hätten behandelt werden sollen) erhalten mehr Gewicht — sie sind bessere Kontrafaktual-Doppelgänger. Das Ergebnis ist ein pseudo-randomisierter Datensatz. IPW ist <strong>effizienter</strong> als Matching (nutzt alle Daten), aber sensitiver bei extremen PS-Werten nahe 0 oder 1, bei denen Gewichte explodieren können.</p>
@@ -156,7 +158,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="help-sh">Welche Methode wählen?</div>
   <p class="help-p"><strong>PSM:</strong> Intuitiv, transparent (einzelne Paare zeigbar), konservativ (nur Common Support). Verlust von Kontrollfällen. Gut, wenn eine klare Vergleichbarkeit der Paare wichtig ist.</p>
   <p class="help-p"><strong>IPW:</strong> Effizienter (alle Daten), flexibel (ATE oder ATT). Sensitiv gegenüber extremen PS-Werten. Gut bei kleiner Stichprobe oder schlechtem Common Support auf der Matching-Seite.</p>
-  <p class="help-p"><strong>Doubly Robust (DR):</strong> Kombiniert Outcome-Regression + IPW. Konsistent, wenn <em>entweder</em> PS-Modell <em>oder</em> Outcome-Modell korrekt ist. State of the Art in der angewandten Forschung (z.B. AIPW, TMLE).</p>
+  <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-doubly-robust" target="_blank" rel="noopener" title="Ein doppelt robuster (doubly robust) Schätzer kombiniert ein Propensity-Score-Modell mit einem Outcome-Modell so, dass der resultierende kausale Effektschätzer konsistent ist, wenn mindestens eines der beiden Modelle korrekt spezifiziert ist.">Doubly Robust (DR)</a>:</strong> Kombiniert Outcome-Regression + IPW. Konsistent, wenn <em>entweder</em> PS-Modell <em>oder</em> Outcome-Modell korrekt ist. State of the Art in der angewandten Forschung (z.B. AIPW, TMLE).</p>
   <p class="help-p"><strong>Achtung:</strong> Alle Methoden scheitern bei unbeobachteten Confoundern. Instrumentalvariablen, Regression Discontinuity oder Difference-in-Differences sind dann geeigneter.</p>
 
   <div class="help-sh">R-Pakete</div>
@@ -236,7 +238,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="phase-num">①</div>
     <div class="phase-text">
       <div class="phase-title">Das Problem — Selektionsbias &amp; Propensity Score</div>
-      <div class="phase-sub">Behandelte und Kontrollen unterscheiden sich in Vormerkmalen (X₁–X₃). Der Propensity Score e(X) = P(T=1|X) verdichtet alle Kovariaten zu einem Skalar — und zeigt, wo die Gruppen überlappen (<em>Common Support</em>). Bei IPW zeigt die helle Fläche die <em>gewichtete Pseudo-Population</em>: wie sich die Stichprobe durch die Gewichte verschiebt.</div>
+      <div class="phase-sub">Behandelte und Kontrollen unterscheiden sich in Vormerkmalen (X₁–X₃). Der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-propensity-score" target="_blank" rel="noopener" title="Der Propensity Score e(X) = P(T = 1 | X) ist die bedingte Wahrscheinlichkeit, das Treatment zu erhalten, gegeben die beobachteten Kovariaten X.">Propensity Score</a> e(X) = P(T=1|X) verdichtet alle Kovariaten zu einem Skalar — und zeigt, wo die Gruppen überlappen (<em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-common-support" target="_blank" rel="noopener" title="Common Support bezeichnet den Bereich der beobachteten Kovariaten X, in dem sowohl Treatment- als auch Kontrolleinheiten vorhanden sind — d.h. P(T=1|X=x) ∈ (0,1) für alle x in diesem Bereich.">Common Support</a></em>). Bei IPW zeigt die helle Fläche die <em>gewichtete Pseudo-Population</em>: wie sich die Stichprobe durch die Gewichte verschiebt.</div>
     </div>
   </div>
   <div class="erklaer" id="erklaer">Wird berechnet…</div>
@@ -278,23 +280,23 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="sec-h">Lernkarten</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">Was ist ein Propensity Score?</div>
-        <div class="lcard-body">e(X) = P(T=1|X) — die bedingte Behandlungswahrscheinlichkeit. Rosenbaum &amp; Rubin (1983): Wenn Y(0),Y(1) ⊥ T | X, dann auch Y(0),Y(1) ⊥ T | e(X). Mächtige Dimensionsreduktion: k Kovariaten → 1 Skalar. Wird meist via logistischer Regression geschätzt.</div>
+        <div class="lcard-h">Was ist ein <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-propensity-score" target="_blank" rel="noopener" title="Der Propensity Score e(X) = P(T = 1 | X) ist die bedingte Wahrscheinlichkeit, das Treatment zu erhalten, gegeben die beobachteten Kovariaten X.">Propensity Score</a>?</div>
+        <div class="lcard-body">e(X) = P(T=1|X) — die bedingte Behandlungswahrscheinlichkeit. Rosenbaum &amp; Rubin (1983): Wenn Y(0),Y(1) ⊥ T | X, dann auch Y(0),Y(1) ⊥ T | e(X). Mächtige Dimensionsreduktion: k Kovariaten → 1 Skalar. Wird meist via <a href="Logistische_Regression.html">logistische Regression</a> geschätzt.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Selektionsbias &amp; CIA</div>
-        <div class="lcard-body">PSM/IPW setzt <strong>Ignorabilität (CIA)</strong> voraus: bedingt auf X ist T unabhängig von Y(0),Y(1). Das eliminiert Bias durch <em>gemessene</em> Kovariaten. Ungemessene Confounder verursachen weiterhin Bias — PSM/IPW ist kein Allheilmittel.</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-selektion-bias" target="_blank" rel="noopener" title="Selektionsbias entsteht, wenn die Auswahl von Einheiten in eine Studie oder in eine Behandlungsgruppe systematisch mit dem Outcome zusammenhängt.">Selektionsbias</a> &amp; CIA</div>
+        <div class="lcard-body">PSM/IPW setzt <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ignorability" target="_blank" rel="noopener" title="Ignorierbarkeit (strong ignorability, unconfoundedness) besagt, dass die Behandlungszuweisung T — nach Konditionierung auf beobachtete Kovariaten X — als quasi-zufällig behandelt werden kann.">Ignorabilität (CIA)</a></strong> voraus: bedingt auf X ist T unabhängig von Y(0),Y(1). Das eliminiert Bias durch <em>gemessene</em> Kovariaten. Ungemessene Confounder verursachen weiterhin Bias — PSM/IPW ist kein Allheilmittel.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">1:1 Nearest-Neighbor Matching</div>
         <div class="lcard-body">Jeder behandelten Person wird die Kontrollperson mit dem nächsten PS zugeordnet (ohne Zurücklegen). Das Caliper c begrenzt die maximale Distanz. Empfehlung: c = 0,2 · SD(logit(PS)). Ohne Caliper: garantiert ein Match, aber evtl. schlechte Qualität.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Common Support</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-common-support" target="_blank" rel="noopener" title="Common Support bezeichnet den Bereich der beobachteten Kovariaten X, in dem sowohl Treatment- als auch Kontrolleinheiten vorhanden sind — d.h. P(T=1|X=x) ∈ (0,1) für alle x in diesem Bereich.">Common Support</a></div>
         <div class="lcard-body">Nur im Überlappungsbereich der PS-Verteilungen ist Schätzung valide. Behandelte mit PS ≈ 1 haben keine ähnlichen Kontrollen — sie werden beim Matching ausgeschlossen. Bei IPW bekommen diese Einheiten extreme Gewichte (w → ∞) — Clipping oder stabilisierte Gewichte nötig.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">IPW-Gewichte: ATE, ATT, ATU</div>
+        <div class="lcard-h">IPW-Gewichte: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ate" target="_blank" rel="noopener" title="Der ATE ist der durchschnittliche kausale Effekt einer Behandlung, berechnet über alle Einheiten der Zielpopulation.">ATE</a>, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-att" target="_blank" rel="noopener" title="Der ATT misst den durchschnittlichen kausalen Effekt einer Behandlung, eingeschränkt auf jene Personen, die die Behandlung tatsächlich erhalten haben: E[Y¹ − Y⁰ | D = 1].">ATT</a>, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-atu" target="_blank" rel="noopener" title="Der ATU (auch ATC) misst den durchschnittlichen kausalen Effekt einer Behandlung für Personen, die die Behandlung tatsächlich nicht erhalten haben: E[Y¹ − Y⁰ | D = 0].">ATU</a></div>
         <div class="lcard-body">Je nachdem, <em>wessen</em> Perspektive der Zielparameter einnimmt, werden unterschiedliche Gruppen reweightet: <strong>ATT</strong> (w<sub>T</sub>=1, w<sub>K</sub>=e/(1−e)) hält die Behandelten fest und formt die Kontrollen zu ihrem Gegenstück um. <strong>ATU</strong> macht es umgekehrt (w<sub>T</sub>=(1−e)/e, w<sub>K</sub>=1). <strong>ATE</strong> (w<sub>T</sub>=1/e, w<sub>K</sub>=1/(1−e)) reweightet beide Gruppen zur Gesamtpopulation. Unterschiedliche Gewichte → unterschiedliche Pseudo-Populationen (siehe Plot oben). Wann sich ATE, ATT und ATU auch <em>rechnerisch</em> unterscheiden (heterogene Effekte, HTEB) und wie man sie interpretiert, zeigt <a href="Causal_Teaching.html" target="_blank" rel="noopener">Kausale Inferenz — Grundlagen</a> im Detail.</div>
       </div>
       <div class="lcard">

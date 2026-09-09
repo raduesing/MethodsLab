@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logistic Regression — Methods Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Design Tokens ─────────────────────────────────────────────── */
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);
+  --topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+
+/* ── Reset & Base ──────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:18px}
+body{
+  font-family:'Fraunces',Georgia,serif;
+  background:var(--bg);color:var(--ink);
+  font-size:1rem;line-height:1.65;
+  height:100vh;overflow:hidden;
+}
+a{color:var(--a2);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Topbar ────────────────────────────────────────────────────── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  height:var(--topbar-h);
+  background:var(--paper);border-bottom:1px solid var(--grid);
+  display:flex;align-items:center;padding:0 1.2rem;gap:.8rem;
+}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+.tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
+#scroll{height:calc(100vh - var(--topbar-h));overflow-y:scroll;margin-top:var(--topbar-h)}
+
+/* ── Story Banner ──────────────────────────────────────────────── */
+#story{
+  background:var(--panel);border-bottom:1px solid var(--border);
+  padding:.65rem 1.4rem;
+  display:flex;align-items:center;flex-wrap:wrap;gap:.6rem 1.4rem;
+}
+.story-label{
+  font-family:'DM Mono',monospace;font-size:.7rem;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);
+}
+.story-vars{
+  display:flex;flex-wrap:wrap;gap:.5rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;
+}
+.sv{
+  padding:.12rem .5rem;border:1px solid var(--border);
+  background:var(--bg);color:var(--ink2);
+}
+.sv em{font-style:normal;color:var(--accent)}
+#seed-info{
+  font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);
+  margin-left:auto;
+}
+
+/* ── Module Tabs ───────────────────────────────────────────────── */
+#mod-tabs{
+  display:flex;border-bottom:1px solid var(--border);
+  background:var(--paper);position:sticky;top:0;z-index:100;
+  overflow-x:auto;
+}
+.mod-tab{
+  background:none;border:none;border-bottom:2px solid transparent;
+  font-family:'DM Mono',monospace;font-size:.78rem;
+  color:var(--ink3);padding:.7rem 1.2rem;
+  cursor:pointer;white-space:nowrap;
+  transition:color .15s,border-color .15s;
+  display:flex;align-items:center;gap:.4rem;
+}
+.mod-tab:hover{color:var(--ink)}
+.mod-tab.active{color:var(--a2);border-bottom-color:var(--a2)}
+.tab-num{font-size:1.5rem;line-height:1;vertical-align:-.1em}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+
+/* ── Module Panels ─────────────────────────────────────────────── */
+.mod-panel{display:none;padding:1.4rem 1.4rem 2rem}
+.mod-panel.active{display:block}
+.mod-h{
+  font-size:1.25rem;font-weight:600;color:var(--ink);
+  letter-spacing:-.01em;margin-bottom:.3rem;
+}
+.mod-h em{font-style:italic;color:var(--a2)}
+.mod-sub{
+  font-family:'DM Mono',monospace;font-size:.76rem;
+  color:var(--ink3);margin-bottom:1.2rem;
+  min-height:1.55rem;
+}
+
+/* ── Canvas Containers ─────────────────────────────────────────── */
+.cv-wrap{
+  background:var(--paper);border:1px solid var(--border);
+  display:inline-block;position:relative;
+}
+.cv-wrap canvas{display:block}
+.cv-row{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem}
+.cv-label{
+  font-family:'DM Mono',monospace;font-size:.68rem;
+  color:var(--ink3);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.08em;
+}
+
+/* ── Controls ──────────────────────────────────────────────────── */
+.ctrl-row{
+  display:flex;align-items:center;gap:.7rem;
+  margin-bottom:.55rem;flex-wrap:wrap;
+}
+.ctrl-row:last-child{margin-bottom:0}
+.ctrl-label{
+  font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);min-width:130px;
+}
+.ctrl-val{
+  font-family:'DM Mono',monospace;font-size:.78rem;
+  color:var(--a2);min-width:52px;
+}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  height:4px;background:var(--border);outline:none;
+  flex:1;min-width:120px;max-width:260px;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;
+  background:var(--a2);cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:14px;height:14px;background:var(--a2);border:none;cursor:pointer;
+}
+.btn{
+  background:none;border:1px solid var(--border);
+  color:var(--ink2);font-family:'DM Mono',monospace;font-size:.75rem;
+  padding:.3rem .75rem;cursor:pointer;
+  transition:border-color .15s,color .15s,background .15s;
+}
+.btn:hover{border-color:var(--a2);color:var(--a2)}
+.btn.primary{border-color:var(--a2);color:var(--a2);background:color-mix(in srgb,var(--a2) 10%,transparent)}
+.btn.accent1{border-color:var(--a1);color:var(--a1)}
+.btn.accent1:hover{background:color-mix(in srgb,var(--a1) 10%,transparent)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
+.btn-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.85rem}
+
+.scen-btn{
+  font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.28rem .7rem;cursor:pointer;
+  border:1px solid var(--border);color:var(--ink3);background:none;
+  transition:all .15s;
+}
+.scen-btn:hover,.scen-btn.active{
+  border-color:var(--a2);color:var(--a2);
+  background:color-mix(in srgb,var(--a2) 8%,transparent);
+}
+
+/* ── Explainer Box ─────────────────────────────────────────────── */
+.erklaer{
+  background:var(--panel);border-left:3px solid var(--accent);
+  padding:.8rem 1rem;margin-bottom:.85rem;max-width:1000px;
+  font-family:'DM Mono',monospace;font-size:.80rem;
+  color:var(--ink2);line-height:1.95;
+}
+.erklaer strong{color:var(--ink)}
+
+/* ── Coefficient Grid ──────────────────────────────────────────── */
+.coef-grid{display:grid;gap:.35rem;margin-bottom:.85rem}
+.coef-grid.g2{grid-template-columns:repeat(2,1fr)}
+.coef-grid.g3{grid-template-columns:repeat(3,1fr)}
+.coef-cell{background:var(--panel);border:1px solid var(--border);padding:.6rem .85rem}
+.coef-cell-lbl{
+  font-family:'DM Mono',monospace;font-size:.66rem;
+  color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:.15rem;
+}
+.coef-cell-val{font-family:'DM Mono',monospace;font-size:1.05rem;color:var(--a2);font-weight:500}
+.coef-cell-val.warn{color:var(--a1)}
+
+/* ── Pipeline (Module 2A) ──────────────────────────────────────── */
+.pipe-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem;flex-wrap:wrap}
+.pipe-box{
+  flex:1;min-width:110px;background:var(--panel);border:1px solid var(--border);
+  padding:.55rem .7rem;text-align:center;
+}
+.pipe-box-lbl{font-family:'DM Mono',monospace;font-size:.63rem;color:var(--ink3);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem}
+.pipe-box-val{font-family:'DM Mono',monospace;font-size:1.15rem;color:var(--a2);font-weight:600}
+.pipe-arrow{font-family:'DM Mono',monospace;color:var(--ink3);text-align:center;flex-shrink:0;font-size:.85rem;min-width:70px}
+.pipe-arrow small{display:block;font-size:.6rem;color:var(--ink3)}
+
+/* ── Number-line ruler (Module 2A) ──────────────────────────────── */
+.ruler{margin-bottom:.75rem}
+.ruler-lbl{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--ink3);margin-bottom:.25rem;
+  display:flex;justify-content:space-between}
+.ruler-track{position:relative;height:8px;background:var(--border);margin:0 4px}
+.ruler-marker{position:absolute;top:50%;width:10px;height:10px;border-radius:50%;
+  background:var(--a2);transform:translate(-50%,-50%);transition:left .1s}
+
+/* ── Simple percentage bar rows (Module 2B / 3) ──────────────────*/
+.bar-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem}
+.bar-row-lbl{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink2);width:112px;flex-shrink:0}
+.bar-track{flex:1;height:15px;background:var(--border);position:relative;overflow:hidden}
+.bar-fill{height:100%;transition:width .2s}
+.bar-row-val{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink2);width:56px;text-align:right;flex-shrink:0}
+
+/* ── Legend ────────────────────────────────────────────────────── */
+.legend{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:.7rem;font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink2)}
+.legend-item{display:flex;align-items:center;gap:.35rem}
+.legend-swatch{width:11px;height:11px;flex-shrink:0;display:inline-block}
+
+/* ── Small-multiples comparison stack (Module 3) — vertical, X axes align ── */
+.cmp-stack{display:flex;flex-direction:column;gap:.6rem}
+.cmp-item .cv-wrap{display:block;width:100%}
+.cmp-item .cv-wrap canvas{max-width:100%;height:auto;display:block}
+.cmp-title{font-family:'DM Mono',monospace;font-size:.68rem;margin-bottom:.3rem;
+  text-transform:uppercase;letter-spacing:.06em}
+
+/* ── Accordion ─────────────────────────────────────────────────── */
+.acc-wrap{margin-bottom:.85rem;max-width:1000px}
+.acc-item{border:1px solid var(--border);margin-bottom:.4rem}
+.acc-trigger{
+  width:100%;text-align:left;background:var(--panel);border:none;
+  font-family:'DM Mono',monospace;font-size:.78rem;
+  color:var(--ink2);padding:.65rem 1rem;cursor:pointer;
+  display:flex;align-items:center;gap:.6rem;transition:color .15s;
+}
+.acc-trigger:hover{color:var(--ink)}
+.acc-trigger.open{color:var(--a2)}
+.acc-arrow{font-size:.7rem;color:var(--ink3);transition:transform .2s;flex-shrink:0;margin-left:auto}
+.acc-trigger.open .acc-arrow{transform:rotate(90deg)}
+.acc-body{display:none;padding:.8rem 1rem;border-top:1px solid var(--border)}
+.acc-body.open{display:block}
+
+/* ── Flashcards ────────────────────────────────────────────────── */
+#lernkarten{padding:1.4rem 1.4rem 2.5rem;border-top:1px solid var(--border);background:var(--bg)}
+.lk-head{font-family:'DM Mono',monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--ink3);margin-bottom:1rem}
+.lcard-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.85rem}
+.lcard{background:var(--panel);border:1px solid var(--border);padding:1rem 1.1rem}
+.lcard:last-child{grid-column:1/-1}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--a2);margin-bottom:.55rem}
+.lcard-body{font-size:.875rem;color:var(--ink2);line-height:1.7}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.82em;color:var(--a2)}
+
+/* ── Help Modal ────────────────────────────────────────────────── */
+.ml-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.58);
+  align-items:flex-start;justify-content:center;padding-top:60px;overflow-y:auto}
+.ml-modal.open{display:flex}
+.ml-modal-box{background:var(--paper);border:1px solid var(--border);padding:2rem 2.4rem;
+  max-width:620px;width:90%;margin-bottom:2rem;font-family:'DM Mono',monospace;position:relative}
+.ml-modal-close{position:absolute;top:.75rem;right:.75rem;background:none;border:none;font-size:1.1rem;
+  cursor:pointer;color:var(--ink2);line-height:1}
+.ml-modal-close:hover{color:var(--ink)}
+.ml-modal-eyebrow{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a1);margin-bottom:1rem}
+.ml-modal-body h3{font-family:'Fraunces',serif;font-size:1rem;color:var(--ink);margin:1.2rem 0 .4rem}
+.ml-modal-body p,.ml-modal-body li{font-size:.8rem;color:var(--ink2);line-height:1.9}
+.ml-modal-body ul{padding-left:1.2rem;margin:.3rem 0 .6rem}
+.ml-modal-body code{font-family:'DM Mono',monospace;font-size:.9em;color:var(--a2)}
+.ml-modal-body a{color:var(--a2)}
+.details-box{border:1px solid var(--border);margin:.6rem 0}
+.details-box summary{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);
+  padding:.5rem .8rem;cursor:pointer;list-style:none}
+.details-box summary::-webkit-details-marker{display:none}
+.details-box[open] summary{color:var(--a2);border-bottom:1px solid var(--border)}
+.details-box .details-inner{padding:.7rem .8rem}
+
+/* ── Info-Box ──────────────────────────────────────────────────── */
+.info-box{
+  background:color-mix(in srgb,var(--a2) 5%,var(--panel));
+  border:1px solid var(--border);border-left:3px solid var(--a2);
+  padding:.85rem 1rem;font-family:'DM Mono',monospace;font-size:.77rem;
+  color:var(--ink2);line-height:1.9;
+}
+.info-box-h{font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:var(--a2);
+  margin-bottom:.6rem;padding-bottom:.38rem;border-bottom:1px solid var(--border)}
+.info-box p{margin-bottom:.5rem}
+.info-box p:last-child{margin-bottom:0}
+.info-box strong{color:var(--ink)}
+.info-box em{font-style:italic;color:var(--a2)}
+
+/* ── Scrollbar ─────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border)}
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media(max-width:600px){
+  .lcard-grid{grid-template-columns:1fr}
+  .lcard:last-child{grid-column:auto}
+  .coef-grid.g3{grid-template-columns:repeat(2,1fr)}
+  #mod-tabs{font-size:.7rem}
+  .pipe-row{flex-direction:column;align-items:stretch}
+  .pipe-arrow{min-width:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ══════════════════════════════════════════════════════ -->
+<div id="topbar">
+  <h1>Logistic <em>Regression</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
+  <button class="tbtn" id="btn-neue-daten" onclick="neueDaten()">↻ New Data</button>
+  <div class="tb-sep"></div>
+  <button class="tbtn tbtn-red" onclick="openModal('help-modal')">? Help</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="scroll">
+<!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
+<div id="story">
+  <span class="story-label">Example</span>
+  <div class="story-vars">
+    <span class="sv">N ≈ 250 people · smoking-cessation study</span>
+    <span class="sv">X₁ = <em>age</em> (years)</span>
+    <span class="sv">X₂ = <em>cigarettes/day</em> (before intervention)</span>
+    <span class="sv">Y = <em>relapse</em> after 12 months (0/1)</span>
+  </div>
+  <span id="seed-info">Seed: —</span>
+</div>
+
+<!-- ══ MODULE TABS ═════════════════════════════════════════════════ -->
+<div id="mod-tabs">
+  <button class="mod-tab active" data-mod="1" onclick="showMod(1)">
+    <span class="tab-num">①</span> LPM vs. Logit
+  </button>
+  <button class="mod-tab" data-mod="2" onclick="showMod(2)">
+    <span class="tab-num">②</span> Odds &amp; Logits
+  </button>
+  <button class="mod-tab" data-mod="3" onclick="showMod(3)">
+    <span class="tab-num">③</span> Marginal Effects
+  </button>
+  <button class="mod-tab" data-mod="4" onclick="showMod(4)">
+    <span class="tab-num">④</span> Multiple Predictors
+  </button>
+</div>
+
+<!-- ══ MODULE 1 ════════════════════════════════════════════════════ -->
+<div id="mod1" class="mod-panel active">
+  <div class="mod-h">Why not <em>OLS</em>?</div>
+  <div class="mod-sub">The linear probability model (LPM) predicts values outside [0,1] — the S-curve solves the problem</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.35rem">
+        <div class="cv-label" style="margin-bottom:0">Age → P(Relapse) — outcome jittered (can only be 0 or 1)</div>
+        <button class="btn" onclick="neueDaten()">↻ New Data</button>
+      </div>
+      <div class="cv-wrap">
+        <canvas id="cv-lpm" width="860" height="560"></canvas>
+      </div>
+    </div>
+
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="btn accent1 active" id="btn-m1-lpm" onclick="toggleM1('lpm')">📏 LPM (linear)</button>
+          <button class="btn" id="btn-m1-log" onclick="toggleM1('log')">◔ Logistic</button>
+        </div>
+
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">New case: Age</span>
+          <input type="range" id="m1-age" min="12" max="92" step="1" value="88" oninput="onM1AgeInput()">
+          <span class="ctrl-val" id="m1-age-val">88</span>
+        </div>
+
+        <div class="coef-grid g2">
+          <div class="coef-cell" style="border-color:var(--a5)">
+            <div class="coef-cell-lbl" style="color:var(--a5)">LPM: P(Relapse)</div>
+            <div class="coef-cell-val" id="m1-p-lpm" style="color:var(--a5)">—</div>
+          </div>
+          <div class="coef-cell" style="border-color:var(--a2)">
+            <div class="coef-cell-lbl" style="color:var(--a2)">Logistic: P(Relapse)</div>
+            <div class="coef-cell-val" id="m1-p-log" style="color:var(--a2)">—</div>
+          </div>
+        </div>
+
+        <div class="erklaer" style="margin-bottom:0" id="m1-warn">—</div>
+
+        <div class="erklaer" style="margin-bottom:0">
+          <strong>Fitted models (same data):</strong><br>
+          LPM: P&#770; = <span id="m1-lpm-b0" style="color:var(--a5)">—</span> + <span id="m1-lpm-b1" style="color:var(--a5)">—</span>·Age<br>
+          Logit: logit(P&#770;) = <span id="m1-log-b0" style="color:var(--a2)">—</span> + <span id="m1-log-b1" style="color:var(--a2)">—</span>·Age
+        </div>
+
+      </div>
+
+      <div class="info-box" style="flex:1">
+        <div class="info-box-h">Tutorial — Why not OLS?</div>
+        <p><strong>What you see</strong><br>
+        Every person either relapsed (Y=1, top) or did not (Y=0, bottom) — the points are only "jittered" vertically for readability, but in reality there are only these two values. Both curves are fit to <em>the same</em> simulated data: the orange line is an ordinary OLS model (<em>Linear Probability Model</em>, LPM) — <code>lm(Relapse ~ Age)</code>. The blue S-curve is the logistic regression — <code>glm(Relapse ~ Age, family = binomial)</code>.</p>
+        <p><strong>The LPM's problem</strong><br>
+        A straight line knows no bounds. Drag the slider to a high or low age — the red/orange hatched zone marks where the LPM predicts a <strong>probability outside [0,1]</strong>. A "P(Relapse) = 1.14" or "= −0.08" is not a valid value for a probability — the model is simply misspecified at that point.</p>
+        <p><strong>The solution: the S-curve</strong><br>
+        The logistic function is constructed so that it <em>by definition</em> can never fall below 0 or rise above 1 — it only approaches these bounds asymptotically, never reaching them. That makes every prediction an automatically plausible probability, no matter how extreme the X value.</p>
+        <p><strong>What to do</strong><br>
+        Click <em>↻ New Data</em> for a fresh random sample — the basic finding stays stable: the LPM violates its own range as soon as you move away from the center of the data. Logistic regression never does. Onward to Module <span class="circ">②</span>: how does the S-shape actually come about?</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="erklaer" style="margin-top:.9rem">
+    <strong>Core idea:</strong> Instead of predicting Y directly and linearly, logistic regression transforms the probability P(Y=1) — via <em>odds</em> and the <em>logit</em> — into a quantity that is unbounded (−∞ to +∞). <strong>There</strong>, ordinary linear modeling is fine. The back-transformation (Module <span class="circ">②</span>) automatically produces the S-shape and thereby valid probabilities.
+  </div>
+</div>
+
+<!-- ══ MODULE 2 ════════════════════════════════════════════════════ -->
+<div id="mod2" class="mod-panel">
+  <div class="mod-h">From <em>Probability</em> to Logit — and back</div>
+  <div class="mod-sub">The transformation chain P → Odds → Logit — and why exponentiating coefficients yields odds ratios</div>
+
+  <div class="two-col" style="display:grid;grid-template-columns:1.1fr .9fr;gap:1.2rem;margin-bottom:1rem">
+    <!-- Part A: Pipeline -->
+    <div>
+      <div class="cv-label">Part A — The transformation chain (freely adjustable P)</div>
+      <div class="erklaer" style="margin-bottom:.7rem">
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">P(Y=1)</span>
+          <input type="range" id="m2-p" min="1" max="99" step="1" value="70" oninput="drawMod2()">
+          <span class="ctrl-val" id="m2-p-val">.70</span>
+        </div>
+      </div>
+
+      <div class="pipe-row">
+        <div class="pipe-box" style="border-color:var(--ink3)">
+          <div class="pipe-box-lbl">Probability P</div>
+          <div class="pipe-box-val" id="m2-box-p" style="color:var(--ink)">—</div>
+        </div>
+        <div class="pipe-arrow">→<small>Odds = P/(1−P)</small></div>
+        <div class="pipe-box" style="border-color:var(--a5)">
+          <div class="pipe-box-lbl" style="color:var(--a5)">Odds</div>
+          <div class="pipe-box-val" id="m2-box-odds" style="color:var(--a5)">—</div>
+        </div>
+        <div class="pipe-arrow">→<small>Logit = ln(Odds)</small></div>
+        <div class="pipe-box" style="border-color:var(--a2)">
+          <div class="pipe-box-lbl" style="color:var(--a2)">Logit</div>
+          <div class="pipe-box-val" id="m2-box-logit" style="color:var(--a2)">—</div>
+        </div>
+      </div>
+
+      <div class="ruler">
+        <div class="ruler-lbl"><span>P: 0</span><span>Range [0, 1]</span><span>1</span></div>
+        <div class="ruler-track"><div class="ruler-marker" id="m2-ruler-p" style="background:var(--ink3)"></div></div>
+      </div>
+      <div class="ruler">
+        <div class="ruler-lbl"><span>Odds: 0</span><span>Range [0, ∞) — log-scaled</span><span>∞</span></div>
+        <div class="ruler-track"><div class="ruler-marker" id="m2-ruler-odds" style="background:var(--a5)"></div></div>
+      </div>
+      <div class="ruler">
+        <div class="ruler-lbl"><span>Logit: −6</span><span>Range (−∞, +∞)</span><span>+6</span></div>
+        <div class="ruler-track"><div class="ruler-marker" id="m2-ruler-logit" style="background:var(--a2)"></div></div>
+      </div>
+
+      <div class="erklaer" style="margin-top:.8rem;margin-bottom:0">
+        <strong>Why three steps?</strong> P is bounded to [0,1] — unsuitable as a linear target. Odds = P/(1−P) relaxes the upper bound (0 to ∞), but the lower bound remains. Only the logarithm of the odds is <strong>completely unbounded</strong> — exactly what a linear model b₀ + b₁·X needs as a target.
+      </div>
+    </div>
+
+    <!-- Part B: OR example -->
+    <div>
+      <div class="cv-label">Part B — Worked example: Relapse ~ Sex</div>
+      <div class="erklaer" style="margin-bottom:.7rem">
+        Fitted model (glm, family=binomial): <code>logit(Relapse) = −0.672 + 0.518 · male</code>
+        <span style="color:var(--ink3)">(female = 0 coded, reference)</span>
+      </div>
+
+      <div class="btn-row" style="margin-bottom:.7rem">
+        <button class="scen-btn active" id="btn-m2-w" onclick="setM2Sex(0)">♀ female (X=0)</button>
+        <button class="scen-btn" id="btn-m2-m" onclick="setM2Sex(1)">♂ male (X=1)</button>
+      </div>
+
+      <div class="erklaer" style="margin-bottom:.7rem" id="m2b-steps">—</div>
+
+      <div style="margin-bottom:.6rem">
+        <div class="bar-row">
+          <div class="bar-row-lbl">♀ female</div>
+          <div class="bar-track"><div class="bar-fill" id="m2b-bar-w" style="width:33.8%;background:var(--ink3)"></div></div>
+          <div class="bar-row-val">33.8%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-row-lbl">♂ male</div>
+          <div class="bar-track"><div class="bar-fill" id="m2b-bar-m" style="width:46.2%;background:var(--a2)"></div></div>
+          <div class="bar-row-val">46.2%</div>
+        </div>
+      </div>
+
+      <div class="erklaer" style="margin-bottom:0">
+        <strong>OR = e<sup>0.518</sup> ≈ 1.68</strong> — men have a 1.68-fold higher <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="Das Odds Ratio (OR) vergleicht die Chancen (Odds) eines Ereignisses zwischen zwei Gruppen: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)).">chance</a></em> (odds) of relapse than women. On the <strong>probability scale</strong>, though, that's "only" +12.4 percentage points (33.8%&nbsp;→&nbsp;46.2%). <strong>68% higher odds ≠ 68% higher probability</strong> — that difference is the core of Module <span class="circ">③</span>.
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-wrap">
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        📐 Derivation — why does e<sup>b₁</sup> give exactly the odds ratio?
+        <span class="acc-arrow">▶</span>
+      </button>
+      <div class="acc-body">
+        <div style="font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:2">
+          logit(Y=1|X=0) = b₀ &nbsp;→&nbsp; logit(P⁰)<br>
+          logit(Y=1|X=1) = b₀ + b₁ &nbsp;→&nbsp; logit(P¹)<br>
+          b₁ = logit(P¹) − logit(P⁰) = ln[ (P¹/(1−P¹)) / (P⁰/(1−P⁰)) ]<br>
+          ⇒ e<sup>b₁</sup> = (P¹/(1−P¹)) / (P⁰/(1−P⁰)) = Odds(X=1) / Odds(X=0) = <strong style="color:var(--ink)">OR</strong><br><br>
+          The logit coefficient is thus a <em>difference</em> of log-odds. A difference of logarithms exponentiates to a <em>ratio</em> — which is why e<sup>b</sup> always yields a <strong>ratio</strong> (odds ratio), never an additive difference.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODULE 3 ════════════════════════════════════════════════════ -->
+<div id="mod3" class="mod-panel">
+  <div class="mod-h">Marginal Effects on the <em>Probability Scale</em></div>
+  <div class="mod-sub">The same step Δ on the X axis — a constant difference in the logit, a constant ratio in the odds, but a changing difference in the probability</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <div>
+      <div class="cv-label">Cigarettes/day → Logit / Odds / Probability — logit(P) = −2.5 + 0.06 · cigarettes — points A and B = A+Δ marked</div>
+      <div class="cmp-stack">
+        <div class="cmp-item">
+          <div class="cmp-title" style="color:var(--a2)">① Logit — linear</div>
+          <div class="cv-wrap"><canvas id="cv-me-logit" width="860" height="230"></canvas></div>
+        </div>
+        <div class="cmp-item">
+          <div class="cmp-title" style="color:var(--a5)">② Odds — exponential</div>
+          <div class="cv-wrap"><canvas id="cv-me-odds" width="860" height="230"></canvas></div>
+        </div>
+        <div class="cmp-item">
+          <div class="cmp-title" style="color:var(--a3)">③ Probability — S-curve</div>
+          <div class="cv-wrap"><canvas id="cv-me-prob" width="860" height="230"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.65rem">
+
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Point A</span>
+          <input type="range" id="m3-a" min="0" max="55" step="1" value="15" oninput="drawMod3()">
+          <span class="ctrl-val" id="m3-a-val">15</span>
+        </div>
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Step size Δ</span>
+          <input type="range" id="m3-delta" min="5" max="30" step="1" value="15" oninput="onM3DeltaInput()">
+          <span class="ctrl-val" id="m3-delta-val">15</span>
+        </div>
+
+        <div class="coef-cell" style="border-color:var(--a2)">
+          <div class="coef-cell-lbl" style="color:var(--a2)">① ΔLogit = b₁·Δ</div>
+          <div class="coef-cell-val" id="m3-dlogit" style="color:var(--a2)">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--ink3);margin-top:.15rem">constant — independent of A</div>
+        </div>
+        <div class="coef-cell" style="border-color:var(--a5)">
+          <div class="coef-cell-lbl" style="color:var(--a5)">② OR = e^(b₁·Δ)</div>
+          <div class="coef-cell-val" id="m3-or" style="color:var(--a5)">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--ink3);margin-top:.15rem">constant — independent of A</div>
+        </div>
+        <div class="coef-cell" style="border-color:var(--a3)">
+          <div class="coef-cell-lbl" style="color:var(--a3)">③ ΔP = P(B) − P(A)</div>
+          <div class="coef-cell-val" id="m3-dp" style="color:var(--a3)">—</div>
+          <div style="font-family:'DM Mono',monospace;font-size:.64rem;color:var(--ink3);margin-top:.15rem" id="m3-dp-note">—</div>
+        </div>
+
+      </div>
+
+      <div class="info-box" style="flex:1">
+        <div class="info-box-h">Tutorial — Marginal Effects</div>
+      <p><strong>What you see</strong><br>
+      The same two points A and B = A+Δ, plotted simultaneously on three scales of the same model logit(P) = −2.5 + 0.06·cigarettes. The <em>Point A</em> slider shifts both points together along the X axis, <em>Step size Δ</em> changes the distance between them.</p>
+      <p><strong>Slide Point A back and forth while Δ stays fixed</strong><br>
+      Panel ① (Logit) and the "ΔLogit" number <strong>never</strong> change — the line has the same slope b₁ everywhere. Panel ② (Odds) and "OR" also <strong>never</strong> change — the same step Δ in the predictor always means the same <em>factor</em> on the odds scale. But Panel ③ (Probability) and "ΔP" change <strong>substantially</strong>, depending on where A currently sits.</p>
+      <p><strong>Why?</strong><br>
+      Logit differences are additive (b₁·Δ is a constant), odds ratios are multiplicative (e^(b₁·Δ) is a constant) — but probability is a <em>curved</em> function of the logit. The same additive/multiplicative step sometimes lands on the steep middle of the S-curve (large ΔP), sometimes on a flat edge (small ΔP).</p>
+      <p><strong>Why isn't one number enough?</strong><br>
+      A single OR or logit coefficient describes the relationship <em>completely on the logit scale</em> — but nobody thinks in logits. Once you convert back to the probability scale (which people have intuition for), the effect is <strong>no longer constant</strong>. Only a curve — not a single coefficient — shows where the predictor matters a lot and where it barely matters. That's why Module <span class="circ">④</span> always plots instead of just tabulating.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-wrap" style="margin-top:.9rem">
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this);drawMod3Deriv()">
+        📐 Deep dive — the limiting case Δ → 0 (the derivative dP/dX)
+        <span class="acc-arrow">▶</span>
+      </button>
+      <div class="acc-body">
+        <div class="cv-row" style="align-items:flex-start">
+          <div>
+            <div class="cv-label">Instantaneous (marginal) effect at point A</div>
+            <div class="cv-wrap"><canvas id="cv-me-deriv" width="500" height="320"></canvas></div>
+          </div>
+          <div class="erklaer" style="flex:1;margin-bottom:0">
+            Let Δ shrink toward 0, and the ΔP secant from above becomes the <em>tangent</em> to the S-curve at A — the instantaneous rate of change <code>dP/dX = b₁ · P·(1−P)</code>. This curve is a downward-opening parabola in P: maximal at P=0.5 (value 0.25), zero at P=0 or P=1. It summarizes what the three panels above already show: the same logit coefficient b₁ has the largest effect on the probability in the middle of the S-curve and almost none at its edges.
+            Software (e.g. the R package <code>marginaleffects</code>, Stata's <code>margins</code>) usually reports either the <em>Average Marginal Effect</em> (the mean of dP/dX across all observed X) or the <em>Marginal Effect at the Mean</em> (dP/dX evaluated at X&#772;) as a compromise number for this curve.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ MODULE 4 ════════════════════════════════════════════════════ -->
+<div id="mod4" class="mod-panel">
+  <div class="mod-h">Multiple Predictors — <em>why plot?</em></div>
+  <div class="mod-sub">Categorical and continuous predictors together in the model, converted back to probabilities with 95% CI</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <div>
+      <div class="cv-label" id="m4-cv-label">Sex × Status — predicted P(Relapse), 95% CI from refitted model</div>
+      <div class="cv-wrap">
+        <canvas id="cv-multi" width="860" height="560"></canvas>
+      </div>
+    </div>
+
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="btn primary" id="btn-m4-cat" onclick="setM4View('cat')">Sex × Status</button>
+          <button class="btn" id="btn-m4-cont" onclick="setM4View('cont')">Status × Cigarettes</button>
+        </div>
+
+        <div id="m4-sliders-cat" style="display:flex;flex-direction:column;gap:.3rem">
+          <div class="ctrl-row" style="margin-bottom:0"><span class="ctrl-label">b₀ (baseline)</span><input type="range" id="m4c-b0" min="-3" max="1" step="0.05" value="-0.909" oninput="onM4CoefInput()"><span class="ctrl-val" id="m4c-b0-val">−0.91</span></div>
+          <div class="ctrl-row" style="margin-bottom:0"><span class="ctrl-label">Effect: male</span><input type="range" id="m4c-sex" min="-2" max="2" step="0.05" value="0.541" oninput="onM4CoefInput()"><span class="ctrl-val" id="m4c-sex-val">+0.54</span></div>
+          <div class="ctrl-row" style="margin-bottom:0"><span class="ctrl-label">Effect: status middle</span><input type="range" id="m4c-mittel" min="-2" max="2" step="0.05" value="-0.036" oninput="onM4CoefInput()"><span class="ctrl-val" id="m4c-mittel-val">−0.04</span></div>
+          <div class="ctrl-row" style="margin-bottom:0"><span class="ctrl-label">Effect: status low</span><input type="range" id="m4c-niedrig" min="-2" max="2" step="0.05" value="0.689" oninput="onM4CoefInput()"><span class="ctrl-val" id="m4c-niedrig-val">+0.69</span></div>
+          <div class="ctrl-row" style="margin-bottom:0"><span class="ctrl-label" title="Additionally changes the sex effect within the 'low' group — bars diverge or converge">Interaction m×low</span><input type="range" id="m4c-inter" min="-2" max="2" step="0.05" value="0" oninput="onM4CoefInput()"><span class="ctrl-val" id="m4c-inter-val">0.00</span></div>
+          <button class="btn" style="align-self:flex-start" onclick="resetM4Coef('cat')">↺ Lecture values</button>
+        </div>
+
+        <div id="m4-sliders-cont" style="display:none;flex-direction:column;gap:.3rem">
+          <div class="ctrl-row" style="margin-bottom:0"><span class="ctrl-label">b₀ (baseline)</span><input type="range" id="m4k-b0" min="-4" max="1" step="0.05" value="-1.729" oninput="onM4CoefInput()"><span class="ctrl-val" id="m4k-b0-val">−1.73</span></div>
+          <div class="ctrl-row" style="margin-bottom:0"><span class="ctrl-label">Effect: status middle</span><input type="range" id="m4k-mittel" min="-2" max="2" step="0.05" value="-0.057" oninput="onM4CoefInput()"><span class="ctrl-val" id="m4k-mittel-val">−0.06</span></div>
+          <div class="ctrl-row" style="margin-bottom:0"><span class="ctrl-label">Effect: status low</span><input type="range" id="m4k-niedrig" min="-2" max="2" step="0.05" value="0.438" oninput="onM4CoefInput()"><span class="ctrl-val" id="m4k-niedrig-val">+0.44</span></div>
+          <div class="ctrl-row" style="margin-bottom:0"><span class="ctrl-label">Effect: cigarettes (slope)</span><input type="range" id="m4k-zig" min="-0.02" max="0.15" step="0.005" value="0.051" oninput="onM4CoefInput()"><span class="ctrl-val" id="m4k-zig-val">0.051</span></div>
+          <div class="ctrl-row" style="margin-bottom:0"><span class="ctrl-label" title="Additionally changes the cigarette slope within the 'low' group — rotates that curve relative to the others">Interaction cig.×low</span><input type="range" id="m4k-inter" min="-0.05" max="0.05" step="0.002" value="0" oninput="onM4CoefInput()"><span class="ctrl-val" id="m4k-inter-val">0.000</span></div>
+          <button class="btn" style="align-self:flex-start" onclick="resetM4Coef('cont')">↺ Lecture values</button>
+        </div>
+
+        <div class="legend" id="m4-legend"></div>
+
+        <div class="erklaer" style="margin-bottom:0" id="m4-model">—</div>
+
+        <div class="erklaer" style="margin-bottom:0" id="m4-note">—</div>
+
+      </div>
+
+      <div class="info-box" style="flex:1">
+        <div class="info-box-h">Tutorial — Visualizing Multiple Predictors</div>
+        <p><strong>"Sex × Status" view</strong><br>
+        Two categorical predictors + interaction are barely intuitive to read as a coefficient table: six numbers (intercept, 2 main effects, plus interaction) on the logit scale. Converted back to probabilities, they become six bars with a 95% confidence interval — at a glance you can see which group carries the highest relapse risk and where the confidence intervals overlap (no reliable difference).</p>
+        <p><strong>"Status × Cigarettes" view</strong><br>
+        One categorical and one continuous predictor together: three S-curves (one per status level) over cigarette consumption, with a confidence band. This shows simultaneously the <em>effect</em> of the continuous predictor (curve shape, Module <span class="circ">③</span>) and the <em>offset</em> from the categorical variable (distance between curves) — something a coefficient table alone could never show together.</p>
+        <p><strong>Sliders: change the effects yourself</strong><br>
+        On the left you can freely set b₀, the main effects, and an <strong>interaction</strong> on the logit scale. Raise "Interaction m×low", for instance: the sex difference becomes larger or smaller within the "low" status group than in the other groups — the bars visibly diverge instead of staying parallel. In the second view, "Interaction cig.×low" rotates one S-curve's slope relative to the other two. <em>↺ Lecture values</em> resets the original values from the lecture.</p>
+        <p><strong>Where do the confidence intervals come from?</strong><br>
+        Not made up: for whatever effects are currently set, a synthetic but realistic dataset is simulated and <strong>refit live via Newton-Raphson (IRLS)</strong> — the same algorithm R's <code>glm()</code> uses. The CIs are genuine Wald confidence intervals from that fit's covariance matrix, not an illustration. The info box on the left shows both: the effects you set, and what a fit on the simulated data (with real sampling noise) recovers from them.</p>
+        <p><strong>Relation to the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-glm" target="_blank" rel="noopener" title="Das Generalisierte Lineare Modell erweitert die gewöhnliche lineare Regression auf nicht-normalverteilte Outcomes über eine Verteilungsfamilie, einen linearen Prädiktor und eine Link-Funktion.">GLM</a> framework</strong><br>
+        Logistic regression is a special case of the Generalized Linear Model: the same predictor structure (main effects, interactions, dummy coding) as in <a href="../OLS_Regression.html">OLS &amp; Multiple Regression</a> or <a href="../ANOVA.html">ANOVA</a> — just with a logit link instead of an identity link, and a binomial instead of a normal distribution. For classification quality (cutoff, sensitivity/specificity, ROC/AUC), see the dedicated <a href="../Sens_Spez.html">Sensitivity &amp; Specificity</a> tool. For logistic regression as a tool for confounding control, see <a href="../PSM.html">Propensity Score Matching</a>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FLASHCARDS ═══════════════════════════════════════════════════ -->
+<section id="lernkarten">
+  <div class="lk-head">Flashcards — Logistic Regression</div>
+  <div class="lcard-grid">
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">①</span> Why not OLS?</div>
+      <div class="lcard-body">
+        Modeling a binary Y (0/1) with ordinary OLS regression (a <em>Linear Probability
+        Model</em>) produces predictions outside [0,1] — not valid probabilities. Logistic
+        regression solves this with an S-shaped function that, by construction, can never
+        fall below 0 or rise above 1.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">②</span> P → Odds → Logit</div>
+      <div class="lcard-body">
+        <code>Odds = P/(1−P)</code> relaxes the upper bound, <code>Logit = ln(Odds)</code>
+        removes the lower bound too — only the logit is unbounded (−∞, +∞) and thus
+        suitable as a linear target: <code>logit(P) = b₀ + b₁·X</code>.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">③</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="Das Odds Ratio (OR) vergleicht die Chancen (Odds) eines Ereignisses zwischen zwei Gruppen: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)).">Odds Ratio</a></div>
+      <div class="lcard-body">
+        <code>OR = e<sup>b₁</sup></code> — differences of log-odds exponentiate to
+        <strong>ratios</strong>, not differences. OR = 1.68 means 68% higher odds,
+        <strong>not</strong> 68 percentage points higher probability. This mix-up is the
+        most common interpretation error in logistic regression.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">④</span> The marginal effect isn't constant</div>
+      <div class="lcard-body">
+        <code>dP/dX = b₁ · P·(1−P)</code> — the same logit coefficient b₁ produces a
+        differently sized effect on the probability depending on the current P: maximal
+        at P = 0.5, minimal at the extremes (P near 0 or 1).
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">⑤</span> That's why you always plot</div>
+      <div class="lcard-body">
+        Because the effect on the probability scale depends on where you sit on the
+        S-curve, a coefficient table alone is not enough. Predicted probabilities with
+        confidence intervals — as a curve or a bar chart — are the standard way to report
+        logistic models understandably.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">⑥</span> A special case of the GLM</div>
+      <div class="lcard-body">
+        Logistic regression = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-glm" target="_blank" rel="noopener" title="Das Generalisierte Lineare Modell erweitert die gewöhnliche lineare Regression auf nicht-normalverteilte Outcomes über eine Verteilungsfamilie, einen linearen Prädiktor und eine Link-Funktion.">GLM</a>
+        with a logit link and binomial distribution. The same predictor logic (main
+        effects, interactions, dummy coding) as in OLS still applies — only the
+        back-transformation onto the outcome's scale differs.
+      </div>
+    </div>
+
+  </div>
+</section>
+</div><!-- #scroll -->
+
+<!-- ══ HELP MODAL ═══════════════════════════════════════════════════ -->
+<div id="help-modal" class="ml-modal" onclick="if(event.target===this)closeModal('help-modal')">
+  <div class="ml-modal-box">
+    <button class="ml-modal-close" onclick="closeModal('help-modal')">✕</button>
+    <div class="ml-modal-eyebrow">? Help — Logistic Regression</div>
+    <div class="ml-modal-body">
+
+      <h3>Why logistic regression?</h3>
+      <p>When the dependent variable Y is <strong>binary</strong> (0/1, e.g. relapse
+      yes/no), ordinary OLS regression (a <em>Linear Probability Model</em>)
+      systematically violates its own range: it predicts probabilities below 0 or above
+      1. Logistic regression instead models the <em>logit</em> of P(Y=1) linearly:</p>
+      <p><code>logit(P) = ln( P / (1−P) ) = b₀ + b₁·X₁ + … + bₖ·Xₖ</code></p>
+      <p>Back-transformed, this yields an S-shaped function that gives a valid
+      probability for every X value:</p>
+      <p><code>P(Y=1) = 1 / (1 + e<sup>−(b₀+b₁·X)</sup>)</code></p>
+
+      <details class="details-box">
+        <summary>▸ Estimation: maximum likelihood / IRLS (for the curious)</summary>
+        <div class="details-inner" style="font-size:.78rem;color:var(--ink2);line-height:1.9">
+          Unlike OLS, logistic regression has no closed-form solution. It is estimated
+          via <em>maximum likelihood</em>, iteratively, using
+          <em>Iteratively Reweighted Least Squares</em> (IRLS, equivalent to
+          Newton-Raphson): at each step a weighted linear model is solved, with weights
+          w = P&#770;·(1−P&#770;) derived from the current estimate. This procedure actually
+          runs in JavaScript in Module <span class="circ">④</span> of this tool to
+          compute the confidence intervals shown there — the same algorithm used inside
+          R's <code>glm()</code>.
+        </div>
+      </details>
+
+      <h3>Interpreting coefficients</h3>
+      <p><strong>b₁</strong> (logit scale): "For each +1 unit of X, the logit of P(Y=1)
+      increases by b₁" — correct, but practically unintuitive, since nobody thinks in
+      logits.</p>
+      <p><strong>OR = e<sup>b₁</sup></strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="Das Odds Ratio (OR) vergleicht die Chancen (Odds) eines Ereignisses zwischen zwei Gruppen: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)).">odds ratio</a>): "For each +1 unit of X, the odds of Y=1 are
+      multiplied by the factor OR." <strong>Multiplicative, not additive</strong> — an OR
+      of 2 means "twice the odds," not "50 percentage points more."</p>
+      <p><strong>Predicted probability</strong>: the only quantity people can intuitively
+      picture. But it is <em>nonlinear</em> in X — hence Module <span class="circ">③</span>
+      of this tool.</p>
+
+      <h3>Why aren't marginal effects constant?</h3>
+      <p>The derivative of P with respect to X is <code>dP/dX = b₁ · P·(1−P)</code>. The
+      term P·(1−P) is a downward-opening parabola with a maximum at P=0.5 (value 0.25)
+      and zeros at P=0 and P=1. The same logit coefficient thus has almost no effect on
+      the probability near the extremes, but the largest effect in the middle. Software
+      usually reports the <em>Average Marginal Effect</em> (AME) as a compromise number.</p>
+
+      <h3>What logistic regression doesn't replace</h3>
+      <ul>
+        <li><strong>Classification quality</strong> (cutoff, sensitivity/specificity,
+        ROC/AUC) — its own topic, see
+        <a href="../Sens_Spez.html">Sensitivity &amp; Specificity</a></li>
+        <li><strong>More than two categories</strong> — for that, multinomial or ordinal
+        logistic regression (generalizations not covered here)</li>
+        <li><strong>Causality</strong> — even a perfectly specified model, logistic
+        regression remains an association method, see
+        <a href="../Causal_Teaching.html">Causal Inference</a></li>
+      </ul>
+
+      <h3>Related tools</h3>
+      <ul>
+        <li><a href="../OLS_Regression.html">OLS &amp; Multiple Regression</a> — the same
+        predictor logic with an identity instead of a logit link</li>
+        <li><a href="../ANOVA.html">ANOVA</a> — belongs to the GLM family just like
+        logistic regression</li>
+        <li><a href="../Sens_Spez.html">Sensitivity &amp; Specificity</a> — ROC curve,
+        AUC, cutoff choice for classification from a logistic model</li>
+        <li><a href="../PSM.html">Propensity Score Matching</a> — uses logistic
+        regression to estimate the propensity score</li>
+        <li><a href="../Moderationsanalyse.html">Moderation Analysis</a> — interaction
+        terms and simple slopes, analogous to Module <span class="circ">④</span></li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ JAVASCRIPT ════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ── Seeded RNG (mulberry32) ──────────────────────────────────────── */
+function mulberry32(seed){
+  return function(){
+    seed|=0; seed=seed+0x6D2B79F5|0;
+    let t=Math.imul(seed^seed>>>15,1|seed);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return((t^t>>>14)>>>0)/4294967296;
+  };
+}
+let rng=mulberry32(12345);
+
+/* ── Small helpers ─────────────────────────────────────────────────── */
+function invlogit(z){ return 1/(1+Math.exp(-z)); }
+function logit(p){ return Math.log(p/(1-p)); }
+function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
+function fmt(v,d=2){ return Number(v).toFixed(d); }
+function cssVar(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function makeScale(dMin,dMax,pxMin,pxMax){ return d=>pxMin+(d-dMin)/(dMax-dMin)*(pxMax-pxMin); }
+
+/* ── Small linear algebra for IRLS ────────────────────────────────── */
+function zerosVec(n){ return new Array(n).fill(0); }
+function solveLinSystem(A,b){
+  const n=A.length;
+  const M=A.map((row,i)=>[...row, b[i]]);
+  for(let col=0; col<n; col++){
+    let piv=col;
+    for(let r=col+1;r<n;r++) if(Math.abs(M[r][col])>Math.abs(M[piv][col])) piv=r;
+    const tmp=M[col];M[col]=M[piv];M[piv]=tmp;
+    const pv=M[col][col]||1e-12;
+    for(let c=col;c<=n;c++) M[col][c]/=pv;
+    for(let r=0;r<n;r++){
+      if(r===col)continue;
+      const f=M[r][col];
+      if(f===0)continue;
+      for(let c=col;c<=n;c++) M[r][c]-=f*M[col][c];
+    }
+  }
+  return M.map(row=>row[n]);
+}
+function invertMatrix(A){
+  const n=A.length;
+  const cols=[];
+  for(let j=0;j<n;j++){
+    const e=zerosVec(n); e[j]=1;
+    cols.push(solveLinSystem(A,e));
+  }
+  const inv=Array.from({length:n},()=>zerosVec(n));
+  for(let j=0;j<n;j++) for(let i=0;i<n;i++) inv[i][j]=cols[j][i];
+  return inv;
+}
+
+/* ── IRLS logistic regression: X = array of rows incl. intercept col ─ */
+function fitLogisticIRLS(X,y,maxIter=60,tol=1e-9){
+  const n=X.length, k=X[0].length;
+  let beta=zerosVec(k);
+  for(let iter=0;iter<maxIter;iter++){
+    const eta=X.map(row=>row.reduce((s,x,j)=>s+x*beta[j],0));
+    const p=eta.map(invlogit);
+    const grad=zerosVec(k);
+    for(let i=0;i<n;i++){ const d=y[i]-p[i]; for(let j=0;j<k;j++) grad[j]+=X[i][j]*d; }
+    const H=Array.from({length:k},()=>zerosVec(k));
+    for(let i=0;i<n;i++){
+      const w=Math.max(p[i]*(1-p[i]),1e-10);
+      const row=X[i];
+      for(let a=0;a<k;a++){ const wa=row[a]*w; for(let b=0;b<k;b++) H[a][b]+=wa*row[b]; }
+    }
+    for(let j=0;j<k;j++) H[j][j]+=1e-9;
+    const step=solveLinSystem(H,grad);
+    let maxDelta=0;
+    for(let j=0;j<k;j++){ beta[j]+=step[j]; maxDelta=Math.max(maxDelta,Math.abs(step[j])); }
+    if(maxDelta<tol) break;
+  }
+  const eta=X.map(row=>row.reduce((s,x,j)=>s+x*beta[j],0));
+  const p=eta.map(invlogit);
+  const H=Array.from({length:k},()=>zerosVec(k));
+  for(let i=0;i<n;i++){
+    const w=Math.max(p[i]*(1-p[i]),1e-10);
+    const row=X[i];
+    for(let a=0;a<k;a++){ const wa=row[a]*w; for(let b=0;b<k;b++) H[a][b]+=wa*row[b]; }
+  }
+  const cov=invertMatrix(H);
+  return {beta,cov};
+}
+/* predicted P with Wald CI via the delta method on the logit scale */
+function predictCI(beta,cov,xrow,z=1.96){
+  const k=xrow.length;
+  let eta=0; for(let j=0;j<k;j++) eta+=xrow[j]*beta[j];
+  let varEta=0;
+  for(let a=0;a<k;a++) for(let b=0;b<k;b++) varEta+=xrow[a]*cov[a][b]*xrow[b];
+  const se=Math.sqrt(Math.max(varEta,0));
+  return {p:invlogit(eta), lo:invlogit(eta-z*se), hi:invlogit(eta+z*se), eta, se};
+}
+
+/* ── Global state ──────────────────────────────────────────────────── */
+const ST={ activeModule:1, seed:12345, m1:{lpm:true,log:false}, m4view:'cat' };
+
+function neueDaten(){
+  ST.seed=Math.floor(Math.random()*99999)+1;
+  document.getElementById('seed-info').textContent='Seed: '+ST.seed;
+  initM1Data();
+  initM4Data();
+  draw();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MODULE 1 — LPM vs. Logistic
+   ══════════════════════════════════════════════════════════════════ */
+let M1=null; // {ages,y,lpm:{b0,b1},logi:{b0,b1}}
+
+function initM1Data(){
+  rng=mulberry32(ST.seed);
+  const n=250;
+  const b0T=-6, b1T=0.12; // true generating model — deliberately steep so the S-shape is clearly visible within the data range
+  const ages=[], y=[];
+  for(let i=0;i<n;i++){
+    const age=18+rng()*67; // 18..85
+    const p=invlogit(b0T+b1T*age);
+    ages.push(age);
+    y.push(rng()<p?1:0);
+  }
+  // LPM: closed-form OLS solution (bivariate)
+  const xbar=ages.reduce((a,b)=>a+b,0)/n, ybar=y.reduce((a,b)=>a+b,0)/n;
+  let sxy=0,sxx=0;
+  for(let i=0;i<n;i++){ sxy+=(ages[i]-xbar)*(y[i]-ybar); sxx+=(ages[i]-xbar)**2; }
+  const lpm_b1=sxy/sxx, lpm_b0=ybar-lpm_b1*xbar;
+  // Logistic: IRLS
+  const X=ages.map(a=>[1,a]);
+  const fit=fitLogisticIRLS(X,y);
+  M1={ages,y,lpm:{b0:lpm_b0,b1:lpm_b1},logi:{b0:fit.beta[0],b1:fit.beta[1]}};
+  document.getElementById('m1-lpm-b0').textContent=fmt(lpm_b0,3);
+  document.getElementById('m1-lpm-b1').textContent=fmt(lpm_b1,4);
+  document.getElementById('m1-log-b0').textContent=fmt(fit.beta[0],3);
+  document.getElementById('m1-log-b1').textContent=fmt(fit.beta[1],4);
+}
+
+function toggleM1(which){
+  ST.m1[which]=!ST.m1[which];
+  document.getElementById('btn-m1-lpm').classList.toggle('accent1',ST.m1.lpm);
+  document.getElementById('btn-m1-log').classList.toggle('primary',ST.m1.log);
+  drawMod1();
+}
+function onM1AgeInput(){
+  document.getElementById('m1-age-val').textContent=document.getElementById('m1-age').value;
+  drawMod1();
+}
+
+function m1Scales(W,H){
+  const pad={l:56,r:18,t:20,b:48};
+  const sx=makeScale(12,92,pad.l,W-pad.r);
+  const sy=makeScale(-0.3,1.3,H-pad.b,pad.t);
+  return {pad,sx,sy};
+}
+
+function drawMod1(){
+  const cv=document.getElementById('cv-lpm'); if(!cv||!M1)return;
+  const ctx=cv.getContext('2d'); const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const {pad,sx,sy}=m1Scales(W,H);
+  const ink=cssVar('--ink'),ink2=cssVar('--ink2'),ink3=cssVar('--ink3'),grid=cssVar('--grid');
+  const a1=cssVar('--a1'),a2=cssVar('--a2'),a5=cssVar('--a5');
+
+  // unplausible zone shading (y<0 or y>1)
+  ctx.fillStyle=hexA(a1,0.10);
+  ctx.fillRect(pad.l,pad.t,W-pad.l-pad.r,sy(1)-pad.t);
+  ctx.fillRect(pad.l,sy(0),W-pad.l-pad.r,(H-pad.b)-sy(0));
+
+  // axes/grid
+  const xt=[20,30,40,50,60,70,80,90], yt=[0,0.25,0.5,0.75,1];
+  drawAxes(ctx,pad,W,H,'Age (years)','P(Relapse)',xt,yt,sx,sy);
+  // 0/1 reference lines
+  ctx.strokeStyle=ink3; ctx.setLineDash([3,3]); ctx.lineWidth=1;
+  [0,1].forEach(v=>{ctx.beginPath();ctx.moveTo(pad.l,sy(v));ctx.lineTo(W-pad.r,sy(v));ctx.stroke();});
+  ctx.setLineDash([]);
+
+  // jittered scatter
+  ctx.globalAlpha=.55;
+  M1.ages.forEach((age,i)=>{
+    const jit=(rngJit(i)-0.5)*0.1;
+    const py=M1.y[i]===1?1+jit:0+jit;
+    ctx.fillStyle=M1.y[i]===1?a2:a1;
+    ctx.beginPath(); ctx.arc(sx(age),sy(py),2.6,0,7); ctx.fill();
+  });
+  ctx.globalAlpha=1;
+
+  // LPM line
+  if(ST.m1.lpm){
+    ctx.strokeStyle=a5; ctx.lineWidth=2.4; ctx.beginPath();
+    const x0=12,x1=92;
+    ctx.moveTo(sx(x0),sy(M1.lpm.b0+M1.lpm.b1*x0));
+    ctx.lineTo(sx(x1),sy(M1.lpm.b0+M1.lpm.b1*x1));
+    ctx.stroke();
+  }
+  // Logistic curve
+  if(ST.m1.log){
+    ctx.strokeStyle=a2; ctx.lineWidth=2.4; ctx.beginPath();
+    for(let x=12;x<=92;x+=1){
+      const p=invlogit(M1.logi.b0+M1.logi.b1*x);
+      if(x===12) ctx.moveTo(sx(x),sy(p)); else ctx.lineTo(sx(x),sy(p));
+    }
+    ctx.stroke();
+  }
+
+  // marker for "new case"
+  const age0=Number(document.getElementById('m1-age').value);
+  ctx.strokeStyle=ink; ctx.setLineDash([4,3]); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(sx(age0),pad.t); ctx.lineTo(sx(age0),H-pad.b); ctx.stroke();
+  ctx.setLineDash([]);
+
+  const pLPM=M1.lpm.b0+M1.lpm.b1*age0;
+  const pLOG=invlogit(M1.logi.b0+M1.logi.b1*age0);
+  if(ST.m1.lpm){
+    ctx.fillStyle=a5;
+    const yv=clamp(pLPM,-0.3,1.3);
+    ctx.beginPath(); ctx.arc(sx(age0),sy(yv),5,0,7); ctx.fill();
+  }
+  if(ST.m1.log){
+    ctx.fillStyle=a2;
+    ctx.beginPath(); ctx.arc(sx(age0),sy(pLOG),5,0,7); ctx.fill();
+  }
+
+  // readouts
+  const lpmEl=document.getElementById('m1-p-lpm'), logEl=document.getElementById('m1-p-log');
+  lpmEl.textContent=fmt(pLPM*100,1)+'%';
+  lpmEl.classList.toggle('warn',pLPM<0||pLPM>1);
+  logEl.textContent=fmt(pLOG*100,1)+'%';
+
+  const warnEl=document.getElementById('m1-warn');
+  if(pLPM<0||pLPM>1){
+    warnEl.innerHTML='<strong style="color:'+a1+'">⚠ Implausible:</strong> The LPM predicts P = '+fmt(pLPM*100,1)+'% here — outside [0,1]. The logistic curve stays valid at '+fmt(pLOG*100,1)+'%.';
+  } else {
+    warnEl.innerHTML='At Age = '+age0+', both models still fall within [0,1] — try a value near either end of the slider to make the LPM "tip over".';
+  }
+}
+function rngJit(i){ // deterministic pseudo-jitter per index, independent of redraw
+  const x=Math.sin(i*12.9898)*43758.5453; return x-Math.floor(x);
+}
+function hexA(hex,a){
+  // hex like #rrggbb -> rgba string
+  const h=hex.replace('#','');
+  const r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MODULE 2 — Odds & Logits
+   ══════════════════════════════════════════════════════════════════ */
+let M2SEX=0;
+function drawMod2(){
+  const pInt=Number(document.getElementById('m2-p').value);
+  const p=pInt/100;
+  document.getElementById('m2-p-val').textContent=fmt(p,2);
+  const odds=p/(1-p), lg=Math.log(odds);
+  document.getElementById('m2-box-p').textContent=fmt(p,2);
+  document.getElementById('m2-box-odds').textContent=fmt(odds,2);
+  document.getElementById('m2-box-logit').textContent=fmt(lg,2);
+
+  document.getElementById('m2-ruler-p').style.left=(p*100)+'%';
+  const oddsPct=clamp((Math.log10(Math.max(odds,0.01))+2)/4*100,0,100); // log-scale 0.01..100
+  document.getElementById('m2-ruler-odds').style.left=oddsPct+'%';
+  const lgPct=clamp((lg+6)/12*100,0,100);
+  document.getElementById('m2-ruler-logit').style.left=lgPct+'%';
+
+  drawMod2B();
+}
+function setM2Sex(s){
+  M2SEX=s;
+  document.getElementById('btn-m2-w').classList.toggle('active',s===0);
+  document.getElementById('btn-m2-m').classList.toggle('active',s===1);
+  drawMod2B();
+}
+function drawMod2B(){
+  const b0=-0.672, b1=0.518;
+  const lg=b0+b1*M2SEX, odds=Math.exp(lg), p=invlogit(lg);
+  const label=M2SEX===0?'female (X=0)':'male (X=1)';
+  document.getElementById('m2b-steps').innerHTML=
+    '<strong>'+label+':</strong><br>'+
+    'logit = −0.672 '+(M2SEX===1?'+ 0.518·1':'+ 0.518·0')+' = <strong style="color:var(--ink)">'+fmt(lg,3)+'</strong><br>'+
+    'Odds = e<sup>'+fmt(lg,3)+'</sup> = <strong style="color:var(--a5)">'+fmt(odds,3)+'</strong><br>'+
+    'P = Odds/(1+Odds) = <strong style="color:var(--a2)">'+fmt(p*100,1)+'%</strong>';
+  document.getElementById('m2b-bar-w').style.width='33.8%';
+  document.getElementById('m2b-bar-m').style.width='46.2%';
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MODULE 3 — Marginal Effects
+   ══════════════════════════════════════════════════════════════════ */
+const M3B0=-2.5, M3B1=0.06;
+function meFunc(x){ const p=invlogit(M3B0+M3B1*x); return M3B1*p*(1-p); }
+
+function m3PanelScales(W,H,yDomain){
+  const pad={l:50,r:14,t:18,b:38};
+  const sx=makeScale(0,70,pad.l,W-pad.r);
+  const sy=makeScale(yDomain[0],yDomain[1],H-pad.b,pad.t);
+  return {pad,sx,sy};
+}
+function drawM3Panel(cvId,fn,yDomain,yTicks,color,A,B,yLabel){
+  const cv=document.getElementById(cvId); if(!cv) return;
+  const ctx=cv.getContext('2d'); const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const {pad,sx,sy}=m3PanelScales(W,H,yDomain);
+  const ink=cssVar('--ink'),ink3=cssVar('--ink3');
+  drawAxes(ctx,pad,W,H,'Cigarettes/day',yLabel,[0,20,40,60],yTicks,sx,sy,13);
+
+  ctx.strokeStyle=color; ctx.lineWidth=2.2; ctx.beginPath();
+  for(let x=0;x<=70;x+=1){
+    const yv=clamp(fn(x),yDomain[0],yDomain[1]);
+    if(x===0) ctx.moveTo(sx(x),sy(yv)); else ctx.lineTo(sx(x),sy(yv));
+  }
+  ctx.stroke();
+
+  [[A,'A'],[B,'B']].forEach(([xp,lbl])=>{
+    const yp=clamp(fn(xp),yDomain[0],yDomain[1]);
+    ctx.strokeStyle=ink3; ctx.setLineDash([2,2]); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(sx(xp),pad.t); ctx.lineTo(sx(xp),sy(yp)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l,sy(yp)); ctx.lineTo(sx(xp),sy(yp)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=color; ctx.beginPath(); ctx.arc(sx(xp),sy(yp),4,0,7); ctx.fill();
+    ctx.fillStyle=ink; ctx.font="10px 'DM Mono',monospace"; ctx.textAlign='center';
+    ctx.fillText(lbl,sx(xp),Math.max(sy(yp)-8,pad.t+9));
+  });
+}
+
+function onM3DeltaInput(){
+  const delta=Number(document.getElementById('m3-delta').value);
+  document.getElementById('m3-delta-val').textContent=delta;
+  const aSlider=document.getElementById('m3-a');
+  aSlider.max=70-delta;
+  if(Number(aSlider.value)>70-delta) aSlider.value=70-delta;
+  drawMod3();
+}
+
+function drawMod3(){
+  const A=Number(document.getElementById('m3-a').value);
+  document.getElementById('m3-a-val').textContent=A;
+  const delta=Number(document.getElementById('m3-delta').value);
+  const B=A+delta;
+  const a2=cssVar('--a2'), a5=cssVar('--a5'), a3=cssVar('--a3');
+
+  const logitFn=x=>M3B0+M3B1*x;
+  const oddsFn=x=>Math.exp(M3B0+M3B1*x);
+  const probFn=x=>invlogit(M3B0+M3B1*x);
+
+  drawM3Panel('cv-me-logit',logitFn,[-4,3],[-4,-2,0,2],a2,A,B,'Logit');
+  drawM3Panel('cv-me-odds',oddsFn,[0,8],[0,2,4,6,8],a5,A,B,'Odds');
+  drawM3Panel('cv-me-prob',probFn,[0,1],[0,0.25,0.5,0.75,1],a3,A,B,'P(Relapse)');
+
+  const dLogit=M3B1*delta;
+  const or=Math.exp(dLogit);
+  const pA=probFn(A), pB=probFn(B);
+  const dP=(pB-pA)*100;
+  document.getElementById('m3-dlogit').textContent='+'+fmt(dLogit,3);
+  document.getElementById('m3-or').textContent=fmt(or,3)+'×';
+  document.getElementById('m3-dp').textContent=(dP>=0?'+':'')+fmt(dP,2)+' pp';
+
+  const mid=(pA+pB)/2;
+  const noteEl=document.getElementById('m3-dp-note');
+  if(mid>0.35 && mid<0.65) noteEl.textContent='large — A/B sit near P=0.5, the steepest part of the curve';
+  else noteEl.textContent='small — A/B sit near one edge of the curve (P near 0 or 1)';
+
+  drawMod3Deriv();
+}
+
+function drawMod3Deriv(){
+  const cv=document.getElementById('cv-me-deriv'); if(!cv) return;
+  const aEl=document.getElementById('m3-a'); if(!aEl) return;
+  const A=Number(aEl.value);
+  const ctx=cv.getContext('2d'); const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const pad={l:56,r:18,t:16,b:40};
+  const sx=makeScale(0,70,pad.l,W-pad.r);
+  const sy=makeScale(0,0.016,H-pad.b,pad.t);
+  const a4=cssVar('--a4'), ink3=cssVar('--ink3');
+  drawAxes(ctx,pad,W,H,'Cigarettes/day','dP/dX (marg. effect)',[0,10,20,30,40,50,60,70],[0,0.004,0.008,0.012,0.016],sx,sy,13);
+
+  ctx.strokeStyle=a4; ctx.lineWidth=2.2; ctx.beginPath();
+  for(let x=0;x<=70;x+=0.5){
+    const v=meFunc(x);
+    if(x===0) ctx.moveTo(sx(x),sy(v)); else ctx.lineTo(sx(x),sy(v));
+  }
+  ctx.stroke();
+
+  const yA=meFunc(A);
+  ctx.strokeStyle=ink3; ctx.setLineDash([3,3]); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(sx(A),pad.t); ctx.lineTo(sx(A),H-pad.b); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=a4; ctx.beginPath(); ctx.arc(sx(A),sy(yA),5,0,7); ctx.fill();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MODULE 4 — Multiple Predictors
+   ══════════════════════════════════════════════════════════════════ */
+let M4=null; // {cat:{fit,cellsDef}, cont:{fit,levels}}
+
+// Editable "true" effects (logit scale) — starting values from the lecture
+const M4Coef = {
+  cat:  {b0:-0.909, sex:0.541, mittel:-0.036, niedrig:0.689, inter:0},
+  cont: {b0:-1.729, mittel:-0.057, niedrig:0.438, zig:0.051, inter:0}
+};
+
+function initM4Data(){
+  rng=mulberry32(ST.seed+777);
+  // ── categorical view: Sex (0=f,1=m) x Status (high=ref,middle,low) ──
+  // + optional interaction male×low (5th design column)
+  const c=M4Coef.cat;
+  const cellsDef=[
+    {sex:0,status:'high',n:120},{sex:0,status:'middle',n:135},{sex:0,status:'low',n:105},
+    {sex:1,status:'high',n:135},{sex:1,status:'middle',n:120},{sex:1,status:'low',n:135},
+  ];
+  const Xc=[],yc=[];
+  cellsDef.forEach(cell=>{
+    const dm=cell.status==='middle'?1:0, dn=cell.status==='low'?1:0;
+    const inter=cell.sex*dn;
+    const lg=c.b0+c.sex*cell.sex+c.mittel*dm+c.niedrig*dn+c.inter*inter;
+    const p=invlogit(lg);
+    for(let i=0;i<cell.n;i++){ Xc.push([1,cell.sex,dm,dn,inter]); yc.push(rng()<p?1:0); }
+  });
+  const fitCat=fitLogisticIRLS(Xc,yc);
+  M4={cat:{fit:fitCat,cellsDef},cont:null};
+
+  // ── continuous view: Status (high=ref,middle,low) x cigarettes ──
+  // + optional interaction cigarettes×low (5th design column, rotates the low curve)
+  const k=M4Coef.cont;
+  const levels=['high','middle','low'];
+  const Xk=[],yk=[];
+  levels.forEach(lv=>{
+    const dm=lv==='middle'?1:0, dn=lv==='low'?1:0;
+    for(let i=0;i<300;i++){
+      const zig=rng()*70;
+      const inter=zig*dn;
+      const lg=k.b0+k.mittel*dm+k.niedrig*dn+k.zig*zig+k.inter*inter;
+      const p=invlogit(lg);
+      Xk.push([1,dm,dn,zig,inter]); yk.push(rng()<p?1:0);
+    }
+  });
+  const fitCont=fitLogisticIRLS(Xk,yk);
+  M4.cont={fit:fitCont,levels};
+}
+
+function onM4CoefInput(){
+  M4Coef.cat.b0=Number(document.getElementById('m4c-b0').value);
+  M4Coef.cat.sex=Number(document.getElementById('m4c-sex').value);
+  M4Coef.cat.mittel=Number(document.getElementById('m4c-mittel').value);
+  M4Coef.cat.niedrig=Number(document.getElementById('m4c-niedrig').value);
+  M4Coef.cat.inter=Number(document.getElementById('m4c-inter').value);
+  M4Coef.cont.b0=Number(document.getElementById('m4k-b0').value);
+  M4Coef.cont.mittel=Number(document.getElementById('m4k-mittel').value);
+  M4Coef.cont.niedrig=Number(document.getElementById('m4k-niedrig').value);
+  M4Coef.cont.zig=Number(document.getElementById('m4k-zig').value);
+  M4Coef.cont.inter=Number(document.getElementById('m4k-inter').value);
+  updateM4CoefLabels();
+  initM4Data();
+  drawMod4();
+}
+function updateM4CoefLabels(){
+  const set=(id,v,d)=>{ const el=document.getElementById(id); if(el) el.textContent=(v>=0?'+':'')+fmt(v,d); };
+  set('m4c-b0-val',M4Coef.cat.b0,2); set('m4c-sex-val',M4Coef.cat.sex,2); set('m4c-mittel-val',M4Coef.cat.mittel,2);
+  set('m4c-niedrig-val',M4Coef.cat.niedrig,2); set('m4c-inter-val',M4Coef.cat.inter,2);
+  set('m4k-b0-val',M4Coef.cont.b0,2); set('m4k-mittel-val',M4Coef.cont.mittel,2); set('m4k-niedrig-val',M4Coef.cont.niedrig,2);
+  set('m4k-zig-val',M4Coef.cont.zig,3); set('m4k-inter-val',M4Coef.cont.inter,3);
+}
+function resetM4Coef(view){
+  if(view==='cat'){
+    Object.assign(M4Coef.cat,{b0:-0.909,sex:0.541,mittel:-0.036,niedrig:0.689,inter:0});
+    document.getElementById('m4c-b0').value=-0.909; document.getElementById('m4c-sex').value=0.541;
+    document.getElementById('m4c-mittel').value=-0.036; document.getElementById('m4c-niedrig').value=0.689;
+    document.getElementById('m4c-inter').value=0;
+  } else {
+    Object.assign(M4Coef.cont,{b0:-1.729,mittel:-0.057,niedrig:0.438,zig:0.051,inter:0});
+    document.getElementById('m4k-b0').value=-1.729; document.getElementById('m4k-mittel').value=-0.057;
+    document.getElementById('m4k-niedrig').value=0.438; document.getElementById('m4k-zig').value=0.051;
+    document.getElementById('m4k-inter').value=0;
+  }
+  updateM4CoefLabels();
+  initM4Data();
+  drawMod4();
+}
+
+function setM4View(v){
+  ST.m4view=v;
+  document.getElementById('btn-m4-cat').classList.toggle('primary',v==='cat');
+  document.getElementById('btn-m4-cont').classList.toggle('primary',v==='cont');
+  document.getElementById('m4-sliders-cat').style.display=v==='cat'?'flex':'none';
+  document.getElementById('m4-sliders-cont').style.display=v==='cont'?'flex':'none';
+  document.getElementById('m4-cv-label').textContent = v==='cat'
+    ? 'Sex × Status — predicted P(Relapse), 95% CI from refitted model'
+    : 'Status × Cigarettes/day — predicted P(Relapse), 95% CI from refitted model';
+  drawMod4();
+}
+
+function drawMod4(){
+  if(!M4) return;
+  if(ST.m4view==='cat') drawMod4Cat(); else drawMod4Cont();
+}
+
+function drawMod4Cat(){
+  const cv=document.getElementById('cv-multi'); if(!cv)return;
+  const ctx=cv.getContext('2d'); const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const pad={l:56,r:18,t:20,b:64};
+  const ink2=cssVar('--ink2'),ink3=cssVar('--ink3'),a1=cssVar('--a1'),a2=cssVar('--a2'),a3=cssVar('--a3'),ink=cssVar('--ink');
+  const statusColor={high:a2,middle:a3,low:a1};
+
+  const groups=[{sex:0,label:'female'},{sex:1,label:'male'}];
+  const statuses=['high','middle','low'];
+
+  // Compute all predictions first so the Y axis can adapt to extreme slider values
+  const vals=[];
+  groups.forEach(g=>statuses.forEach(sch=>{
+    const dm=sch==='middle'?1:0, dn=sch==='low'?1:0;
+    vals.push(predictCI(M4.cat.fit.beta,M4.cat.fit.cov,[1,g.sex,dm,dn,g.sex*dn]));
+  }));
+  const maxHi=Math.max(0.8,...vals.map(v=>v.hi));
+  const yMax=Math.min(1,Math.ceil((maxHi+0.03)*10)/10);
+  const yTicks=[]; for(let t=0;t<=yMax+1e-9;t+=0.2) yTicks.push(Math.round(t*10)/10);
+  const sy=makeScale(0,yMax,H-pad.b,pad.t);
+
+  drawAxes(ctx,pad,W,H,'', 'P(Relapse)', [], yTicks,x=>0,sy);
+
+  const groupW=(W-pad.l-pad.r)/groups.length;
+  const barW=groupW/(statuses.length+1.2);
+
+  groups.forEach((g,gi)=>{
+    const gx0=pad.l+gi*groupW;
+    statuses.forEach((sch,si)=>{
+      const {p,lo,hi}=vals[gi*statuses.length+si];
+      const bx=gx0+barW*0.6+si*barW;
+      const bw=barW*0.82;
+      ctx.fillStyle=statusColor[sch];
+      ctx.fillRect(bx,sy(p),bw,(H-pad.b)-sy(p));
+      // CI whisker
+      ctx.strokeStyle=ink; ctx.lineWidth=1.4;
+      ctx.beginPath(); ctx.moveTo(bx+bw/2,sy(lo)); ctx.lineTo(bx+bw/2,sy(hi)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bx+bw/2-4,sy(lo)); ctx.lineTo(bx+bw/2+4,sy(lo)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bx+bw/2-4,sy(hi)); ctx.lineTo(bx+bw/2+4,sy(hi)); ctx.stroke();
+      // value label
+      ctx.fillStyle=ink; ctx.font="11px 'DM Mono',monospace"; ctx.textAlign='center';
+      ctx.fillText(fmt(p*100,0)+'%',bx+bw/2,sy(p)-8);
+    });
+    // group label
+    ctx.fillStyle=ink2; ctx.font="13px 'DM Mono',monospace"; ctx.textAlign='center';
+    ctx.fillText(g.label,gx0+groupW/2,H-pad.b+22);
+  });
+
+  document.getElementById('m4-legend').innerHTML=statuses.map(s=>
+    `<span class="legend-item"><span class="legend-swatch" style="background:${statusColor[s]}"></span>Status: ${s}</span>`
+  ).join('');
+
+  document.getElementById('m4-model').innerHTML=
+    '<strong>Effects you set (logit):</strong> b₀='+fmt(M4Coef.cat.b0,3)+' · male='+fmt(M4Coef.cat.sex,3)+
+    ' · middle='+fmt(M4Coef.cat.mittel,3)+' · low='+fmt(M4Coef.cat.niedrig,3)+' · interaction='+fmt(M4Coef.cat.inter,3)+
+    '<br><span style="color:var(--ink3)">Live refit from simulated data (n≈750): b₀='+fmt(M4.cat.fit.beta[0],3)+
+    ' · male='+fmt(M4.cat.fit.beta[1],3)+' · middle='+fmt(M4.cat.fit.beta[2],3)+
+    ' · low='+fmt(M4.cat.fit.beta[3],3)+' · interaction='+fmt(M4.cat.fit.beta[4],3)+'</span>';
+  document.getElementById('m4-note').textContent=
+    'Bars = predicted P(Relapse) per combination, error bars = 95% Wald CI. Overlapping CIs (e.g. high vs. middle) indicate no reliable difference.';
+}
+
+function drawMod4Cont(){
+  const cv=document.getElementById('cv-multi'); if(!cv)return;
+  const ctx=cv.getContext('2d'); const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const pad={l:56,r:18,t:20,b:48};
+  const sx=makeScale(0,70,pad.l,W-pad.r);
+  const sy=makeScale(0,1,H-pad.b,pad.t);
+  const a1=cssVar('--a1'),a2=cssVar('--a2'),a3=cssVar('--a3');
+  const statusColor={high:a2,middle:a3,low:a1};
+
+  drawAxes(ctx,pad,W,H,'Cigarettes/day','P(Relapse)',[0,10,20,30,40,50,60,70],[0,0.25,0.5,0.75,1],sx,sy);
+
+  M4.cont.levels.forEach(lv=>{
+    const dm=lv==='middle'?1:0, dn=lv==='low'?1:0;
+    // CI ribbon
+    ctx.beginPath();
+    const pts=[];
+    for(let x=0;x<=70;x+=2){ pts.push({x,...predictCI(M4.cont.fit.beta,M4.cont.fit.cov,[1,dm,dn,x,x*dn])}); }
+    pts.forEach((pt,i)=>{ if(i===0) ctx.moveTo(sx(pt.x),sy(pt.hi)); else ctx.lineTo(sx(pt.x),sy(pt.hi)); });
+    for(let i=pts.length-1;i>=0;i--) ctx.lineTo(sx(pts[i].x),sy(pts[i].lo));
+    ctx.closePath();
+    ctx.fillStyle=hexA(statusColor[lv],0.15);
+    ctx.fill();
+    // mean curve
+    ctx.strokeStyle=statusColor[lv]; ctx.lineWidth=2.2; ctx.beginPath();
+    pts.forEach((pt,i)=>{ if(i===0) ctx.moveTo(sx(pt.x),sy(pt.p)); else ctx.lineTo(sx(pt.x),sy(pt.p)); });
+    ctx.stroke();
+  });
+
+  document.getElementById('m4-legend').innerHTML=M4.cont.levels.map(s=>
+    `<span class="legend-item"><span class="legend-swatch" style="background:${statusColor[s]}"></span>Status: ${s}</span>`
+  ).join('');
+
+  document.getElementById('m4-model').innerHTML=
+    '<strong>Effects you set (logit):</strong> b₀='+fmt(M4Coef.cont.b0,3)+' · middle='+fmt(M4Coef.cont.mittel,3)+
+    ' · low='+fmt(M4Coef.cont.niedrig,3)+' · cigarettes='+fmt(M4Coef.cont.zig,3)+' · interaction='+fmt(M4Coef.cont.inter,3)+
+    '<br><span style="color:var(--ink3)">Live refit from simulated data (n≈900): b₀='+fmt(M4.cont.fit.beta[0],3)+
+    ' · middle='+fmt(M4.cont.fit.beta[1],3)+' · low='+fmt(M4.cont.fit.beta[2],3)+
+    ' · cigarettes='+fmt(M4.cont.fit.beta[3],3)+' · interaction='+fmt(M4.cont.fit.beta[4],3)+'</span>';
+  document.getElementById('m4-note').textContent=
+    'Three S-curves with a 95% confidence band. The curve shape shows the (non-constant) effect of cigarettes/day, the vertical offset between curves the effect of status, the interaction a different slope for the low curve — all at once, which a coefficient table alone cannot show.';
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Shared axis/UI helper functions
+   ══════════════════════════════════════════════════════════════════ */
+function drawAxes(ctx,pad,W,H,xLabel,yLabel,xTicks,yTicks,xScale,yScale,fontSize=13){
+  const ink=cssVar('--ink'),ink3=cssVar('--ink3'),grid=cssVar('--grid');
+  ctx.font=`${fontSize}px DM Mono,monospace`;
+  ctx.textBaseline='middle';
+  ctx.strokeStyle=grid;ctx.lineWidth=.6;
+  xTicks.forEach(v=>{const px=xScale(v);ctx.beginPath();ctx.moveTo(px,pad.t);ctx.lineTo(px,H-pad.b);ctx.stroke()});
+  yTicks.forEach(v=>{const py=yScale(v);ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(W-pad.r,py);ctx.stroke()});
+  ctx.fillStyle=ink3;ctx.textAlign='center';
+  xTicks.forEach(v=>{ctx.fillText(v,xScale(v),H-pad.b+15)});
+  ctx.textAlign='right';
+  yTicks.forEach(v=>{ctx.fillText(v,pad.l-6,yScale(v))});
+  ctx.fillStyle=ink;ctx.font=`bold ${fontSize+1}px DM Mono,monospace`;
+  ctx.textAlign='center';ctx.textBaseline='bottom';
+  if(xLabel) ctx.fillText(xLabel,pad.l+(W-pad.l-pad.r)/2,H-2);
+  if(yLabel){
+    ctx.save();ctx.translate(14,pad.t+(H-pad.t-pad.b)/2);ctx.rotate(-Math.PI/2);
+    ctx.textBaseline='top';ctx.fillText(yLabel,0,0);ctx.restore();
+  }
+}
+
+function showMod(n){
+  document.querySelectorAll('.mod-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.mod-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('mod'+n).classList.add('active');
+  document.querySelector(`.mod-tab[data-mod="${n}"]`).classList.add('active');
+  ST.activeModule=n;
+  const scrollEl=document.getElementById('scroll'); if(scrollEl) scrollEl.scrollTop=0;
+  draw();
+}
+function draw(){
+  if(ST.activeModule===1) drawMod1();
+  else if(ST.activeModule===2) drawMod2();
+  else if(ST.activeModule===3) drawMod3();
+  else if(ST.activeModule===4) drawMod4();
+}
+
+function toggleTheme(){
+  const h=document.documentElement;
+  const isDark=h.getAttribute('data-theme')==='dark';
+  const nt=isDark?'light':'dark';
+  h.setAttribute('data-theme',nt);
+  document.getElementById('btn-theme').textContent=nt==='dark'?'☀ Light':'🌙 Dark';
+  localStorage.setItem('ml-theme',nt);
+  draw();
+}
+(function(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.getElementById('btn-theme').textContent=isDark?'☀ Light':'🌙 Dark';
+})();
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')document.querySelectorAll('.ml-modal.open').forEach(m=>m.classList.remove('open'));
+});
+
+function toggleAcc(trigger){
+  trigger.classList.toggle('open');
+  const body=trigger.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+/* ── Start ────────────────────────────────────────────────────────── */
+document.getElementById('seed-info').textContent='Seed: '+ST.seed;
+initM1Data();
+initM4Data();
+draw();
+drawMod2();
+</script>
+</body>
+</html>
