@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Single Case Designs — Methods Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Design Tokens ─────────────────────────────────────────────── */
+:root{
+  --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;--accent:var(--a2);
+  --topbar-h:54px;
+}
+[data-theme="dark"]{
+  --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --grid:#1e242e;--panel:#171d28;--border:#2a3040;
+}
+
+/* ── Reset & Base ──────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:18px}
+body{
+  font-family:'Fraunces',Georgia,serif;
+  background:var(--bg);color:var(--ink);
+  font-size:1rem;line-height:1.65;
+  height:100vh;overflow:hidden;
+}
+a{color:var(--a2);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Topbar ────────────────────────────────────────────────────── */
+#topbar{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  height:var(--topbar-h);
+  background:var(--paper);border-bottom:1px solid var(--grid);
+  display:flex;align-items:center;padding:0 1.2rem;gap:.8rem;
+}
+#topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
+#topbar h1 em{color:var(--accent);font-style:italic}
+.tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+.tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
+.tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
+.tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+.tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
+#scroll{height:calc(100vh - var(--topbar-h));overflow-y:scroll;margin-top:var(--topbar-h)}
+
+/* ── Story Banner ──────────────────────────────────────────────── */
+#story{
+  background:var(--panel);border-bottom:1px solid var(--border);
+  padding:.65rem 1.4rem;
+  display:flex;align-items:center;flex-wrap:wrap;gap:.6rem 1.4rem;
+}
+.story-label{
+  font-family:'DM Mono',monospace;font-size:.7rem;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);
+}
+.story-vars{
+  display:flex;flex-wrap:wrap;gap:.5rem;
+  font-family:'DM Mono',monospace;font-size:.76rem;
+}
+.sv{
+  padding:.12rem .5rem;border:1px solid var(--border);
+  background:var(--bg);color:var(--ink2);
+}
+.sv em{font-style:normal;color:var(--accent)}
+#seed-info{
+  font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);
+  margin-left:auto;
+}
+
+/* ── Module Tabs ───────────────────────────────────────────────── */
+#mod-tabs{
+  display:flex;border-bottom:1px solid var(--border);
+  background:var(--paper);position:sticky;top:0;z-index:100;
+  overflow-x:auto;
+}
+.mod-tab{
+  background:none;border:none;border-bottom:2px solid transparent;
+  font-family:'DM Mono',monospace;font-size:.78rem;
+  color:var(--ink3);padding:.7rem 1.2rem;
+  cursor:pointer;white-space:nowrap;
+  transition:color .15s,border-color .15s;
+  display:flex;align-items:center;gap:.4rem;
+}
+.mod-tab:hover{color:var(--ink)}
+.mod-tab.active{color:var(--a2);border-bottom-color:var(--a2)}
+.tab-num{font-size:1.5rem;line-height:1;vertical-align:-.1em}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+
+/* ── Module Panels ─────────────────────────────────────────────── */
+.mod-panel{display:none;padding:1.4rem 1.4rem 2rem}
+.mod-panel.active{display:block}
+.mod-h{
+  font-size:1.25rem;font-weight:600;color:var(--ink);
+  letter-spacing:-.01em;margin-bottom:.3rem;
+}
+.mod-h em{font-style:italic;color:var(--a2)}
+.mod-sub{
+  font-family:'DM Mono',monospace;font-size:.76rem;
+  color:var(--ink3);margin-bottom:1.2rem;
+  min-height:1.55rem;
+}
+
+/* ── Canvas Containers ─────────────────────────────────────────── */
+.cv-wrap{
+  background:var(--paper);border:1px solid var(--border);
+  display:inline-block;position:relative;
+}
+.cv-wrap canvas{display:block}
+.cv-row{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem}
+.cv-label{
+  font-family:'DM Mono',monospace;font-size:.68rem;
+  color:var(--ink3);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.08em;
+}
+
+/* ── Controls ──────────────────────────────────────────────────── */
+.ctrl-row{
+  display:flex;align-items:center;gap:.7rem;
+  margin-bottom:.55rem;flex-wrap:wrap;
+}
+.ctrl-row:last-child{margin-bottom:0}
+.ctrl-label{
+  font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);min-width:150px;
+}
+.ctrl-val{
+  font-family:'DM Mono',monospace;font-size:.78rem;
+  color:var(--a2);min-width:44px;
+}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  height:4px;background:var(--border);outline:none;
+  flex:1;min-width:110px;max-width:220px;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;
+  background:var(--a2);cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:14px;height:14px;background:var(--a2);border:none;cursor:pointer;
+}
+.btn{
+  background:none;border:1px solid var(--border);
+  color:var(--ink2);font-family:'DM Mono',monospace;font-size:.75rem;
+  padding:.3rem .75rem;cursor:pointer;
+  transition:border-color .15s,color .15s,background .15s;
+}
+.btn:hover{border-color:var(--a2);color:var(--a2)}
+.btn.primary{border-color:var(--a2);color:var(--a2);background:color-mix(in srgb,var(--a2) 10%,transparent)}
+.btn.accent1{border-color:var(--a1);color:var(--a1)}
+.btn.accent1:hover{background:color-mix(in srgb,var(--a1) 10%,transparent)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
+.btn-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:.85rem}
+
+.scen-btn{
+  font-family:'DM Mono',monospace;font-size:.73rem;
+  padding:.28rem .7rem;cursor:pointer;
+  border:1px solid var(--border);color:var(--ink3);background:none;
+  transition:all .15s;
+}
+.scen-btn:hover,.scen-btn.active{
+  border-color:var(--a2);color:var(--a2);
+  background:color-mix(in srgb,var(--a2) 8%,transparent);
+}
+
+/* ── Explainer Box ─────────────────────────────────────────────── */
+.erklaer{
+  background:var(--panel);border-left:3px solid var(--accent);
+  padding:.8rem 1rem;margin-bottom:.85rem;max-width:1000px;
+  font-family:'DM Mono',monospace;font-size:.80rem;
+  color:var(--ink2);line-height:1.95;
+}
+.erklaer strong{color:var(--ink)}
+
+/* ── Coefficient Grid ──────────────────────────────────────────── */
+.coef-grid{display:grid;gap:.35rem;margin-bottom:.85rem}
+.coef-grid.g2{grid-template-columns:repeat(2,1fr)}
+.coef-grid.g3{grid-template-columns:repeat(3,1fr)}
+.coef-grid.g4{grid-template-columns:repeat(4,1fr)}
+.coef-cell{background:var(--panel);border:1px solid var(--border);padding:.6rem .85rem}
+.coef-cell-lbl{
+  font-family:'DM Mono',monospace;font-size:.66rem;
+  color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;
+  margin-bottom:.15rem;
+}
+.coef-cell-val{font-family:'DM Mono',monospace;font-size:1.05rem;color:var(--a2);font-weight:500}
+.coef-cell-val.warn{color:var(--a1)}
+
+/* ── Small-multiples comparison stack (Module 3) ─────────────────── */
+.cmp-stack{display:flex;flex-direction:column;gap:.6rem}
+.cmp-item .cv-wrap{display:block;width:100%}
+.cmp-item .cv-wrap canvas{max-width:100%;height:auto;display:block}
+.cmp-title{font-family:'DM Mono',monospace;font-size:.68rem;margin-bottom:.3rem;
+  text-transform:uppercase;letter-spacing:.06em}
+
+/* ── Legend ────────────────────────────────────────────────────── */
+.legend{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:.7rem;font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink2)}
+.legend-item{display:flex;align-items:center;gap:.35rem}
+.legend-swatch{width:16px;height:0;border-top:2px solid;flex-shrink:0;display:inline-block}
+.legend-swatch.dashed{border-top-style:dashed}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;display:inline-block}
+
+/* ── Toggle Buttons (Module 4 criteria) ──────────────────────────── */
+.crit-btn{
+  font-family:'DM Mono',monospace;font-size:.72rem;
+  padding:.32rem .7rem;cursor:pointer;
+  border:1px solid var(--border);color:var(--ink3);background:none;
+  transition:all .15s;text-align:left;
+}
+.crit-btn.on{border-color:var(--a4);color:var(--a4);background:color-mix(in srgb,var(--a4) 10%,transparent)}
+
+/* ── Accordion ─────────────────────────────────────────────────── */
+.acc-wrap{margin-bottom:.85rem;max-width:1000px}
+.acc-item{border:1px solid var(--border);margin-bottom:.4rem}
+.acc-trigger{
+  width:100%;text-align:left;background:var(--panel);border:none;
+  font-family:'DM Mono',monospace;font-size:.78rem;
+  color:var(--ink2);padding:.65rem 1rem;cursor:pointer;
+  display:flex;align-items:center;gap:.6rem;transition:color .15s;
+}
+.acc-trigger:hover{color:var(--ink)}
+.acc-trigger.open{color:var(--a2)}
+.acc-arrow{font-size:.7rem;color:var(--ink3);transition:transform .2s;flex-shrink:0;margin-left:auto}
+.acc-trigger.open .acc-arrow{transform:rotate(90deg)}
+.acc-body{display:none;padding:.8rem 1rem;border-top:1px solid var(--border)}
+.acc-body.open{display:block}
+
+/* ── Flashcards ────────────────────────────────────────────────── */
+#lernkarten{padding:1.4rem 1.4rem 2.5rem;border-top:1px solid var(--border);background:var(--bg)}
+.lk-head{font-family:'DM Mono',monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--ink3);margin-bottom:1rem}
+.lcard-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.85rem}
+.lcard{background:var(--panel);border:1px solid var(--border);padding:1rem 1.1rem}
+.lcard:last-child{grid-column:1/-1}
+.lcard-h{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--a2);margin-bottom:.55rem}
+.lcard-body{font-size:.875rem;color:var(--ink2);line-height:1.7}
+.lcard-body strong{color:var(--ink)}
+.lcard-body code{font-family:'DM Mono',monospace;font-size:.82em;color:var(--a2)}
+
+/* ── Help Modal ────────────────────────────────────────────────── */
+.ml-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.58);
+  align-items:flex-start;justify-content:center;padding-top:60px;overflow-y:auto}
+.ml-modal.open{display:flex}
+.ml-modal-box{background:var(--paper);border:1px solid var(--border);padding:2rem 2.4rem;
+  max-width:620px;width:90%;margin-bottom:2rem;font-family:'DM Mono',monospace;position:relative}
+.ml-modal-close{position:absolute;top:.75rem;right:.75rem;background:none;border:none;font-size:1.1rem;
+  cursor:pointer;color:var(--ink2);line-height:1}
+.ml-modal-close:hover{color:var(--ink)}
+.ml-modal-eyebrow{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a1);margin-bottom:1rem}
+.ml-modal-body h3{font-family:'Fraunces',serif;font-size:1rem;color:var(--ink);margin:1.2rem 0 .4rem}
+.ml-modal-body p,.ml-modal-body li{font-size:.8rem;color:var(--ink2);line-height:1.9}
+.ml-modal-body ul{padding-left:1.2rem;margin:.3rem 0 .6rem}
+.ml-modal-body code{font-family:'DM Mono',monospace;font-size:.9em;color:var(--a2)}
+.ml-modal-body a{color:var(--a2)}
+.details-box{border:1px solid var(--border);margin:.6rem 0}
+.details-box summary{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink3);
+  padding:.5rem .8rem;cursor:pointer;list-style:none}
+.details-box summary::-webkit-details-marker{display:none}
+.details-box[open] summary{color:var(--a2);border-bottom:1px solid var(--border)}
+.details-box .details-inner{padding:.7rem .8rem}
+
+/* ── Info-Box ──────────────────────────────────────────────────── */
+.info-box{
+  background:color-mix(in srgb,var(--a2) 5%,var(--panel));
+  border:1px solid var(--border);border-left:3px solid var(--a2);
+  padding:.85rem 1rem;font-family:'DM Mono',monospace;font-size:.77rem;
+  color:var(--ink2);line-height:1.9;
+}
+.info-box-h{font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:var(--a2);
+  margin-bottom:.6rem;padding-bottom:.38rem;border-bottom:1px solid var(--border)}
+.info-box p{margin-bottom:.5rem}
+.info-box p:last-child{margin-bottom:0}
+.info-box strong{color:var(--ink)}
+.info-box em{font-style:italic;color:var(--a2)}
+
+/* ── Scrollbar ─────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border)}
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media(max-width:600px){
+  .lcard-grid{grid-template-columns:1fr}
+  .lcard:last-child{grid-column:auto}
+  .coef-grid.g3,.coef-grid.g4{grid-template-columns:repeat(2,1fr)}
+  #mod-tabs{font-size:.7rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ══════════════════════════════════════════════════════ -->
+<div id="topbar">
+  <h1>Single Case <em>Designs</em></h1>
+  <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
+  <button class="tbtn" id="btn-neue-daten" onclick="neueDaten()">↻ New Data</button>
+  <div class="tb-sep"></div>
+  <button class="tbtn tbtn-red" onclick="openModal('help-modal')">? Help</button>
+  <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<div id="scroll">
+<!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
+<div id="story">
+  <span class="story-label">Example</span>
+  <div class="story-vars">
+    <span class="sv">N = 1 <em>(single case)</em></span>
+    <span class="sv">Target behavior: <em>disruptive classroom behavior</em> (% of intervals)</span>
+    <span class="sv">Data collection: <em>continuous</em>, 1 measurement per class period (session)</span>
+  </div>
+  <span id="seed-info">Seed: —</span>
+</div>
+
+<!-- ══ MODULE TABS ═════════════════════════════════════════════════ -->
+<div id="mod-tabs">
+  <button class="mod-tab active" data-mod="1" onclick="showMod(1)">
+    <span class="tab-num">①</span> Baseline
+  </button>
+  <button class="mod-tab" data-mod="2" onclick="showMod(2)">
+    <span class="tab-num">②</span> AB / ABAB
+  </button>
+  <button class="mod-tab" data-mod="3" onclick="showMod(3)">
+    <span class="tab-num">③</span> Multiple Baseline
+  </button>
+  <button class="mod-tab" data-mod="4" onclick="showMod(4)">
+    <span class="tab-num">④</span> Evaluation
+  </button>
+</div>
+
+<!-- ══ MODULE 1 ════════════════════════════════════════════════════ -->
+<div id="mod1" class="mod-panel active">
+  <div class="mod-h">Baseline: <em>Description &amp; Prediction</em></div>
+  <div class="mod-sub">The baseline describes the current level — and predicts how it would continue without intervention</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.35rem">
+        <div class="cv-label" style="margin-bottom:0">Session → Disruptive behavior (% of intervals)</div>
+        <button class="btn" onclick="neueDaten()">↻ New Data</button>
+      </div>
+      <div class="cv-wrap">
+        <canvas id="cv-m1" width="860" height="380"></canvas>
+      </div>
+      <div class="legend" style="margin-top:.5rem">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--a2)"></span>Baseline (A) — observed</span>
+        <span class="legend-item"><span class="legend-swatch dashed" style="border-color:var(--ink3)"></span>Projection (no intervention effect)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--a1)"></span>Actual data with intervention</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.65rem">
+
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Baseline trend</span>
+          <input type="range" id="m1-trend" min="-3" max="3" step="0.5" value="0" oninput="drawMod1()">
+          <span class="ctrl-val" id="m1-trend-val">0</span>
+        </div>
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Baseline variability</span>
+          <input type="range" id="m1-sd" min="2" max="15" step="1" value="6" oninput="drawMod1()">
+          <span class="ctrl-val" id="m1-sd-val">6</span>
+        </div>
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Intervention effect</span>
+          <input type="range" id="m1-effect" min="-40" max="10" step="2" value="-20" oninput="drawMod1()">
+          <span class="ctrl-val" id="m1-effect-val">−20</span>
+        </div>
+
+        <div class="coef-grid g2">
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">Predicted (B)</div>
+            <div class="coef-cell-val" id="m1-pred" style="color:var(--ink3)">—</div>
+          </div>
+          <div class="coef-cell">
+            <div class="coef-cell-lbl">Actual (B)</div>
+            <div class="coef-cell-val" id="m1-actual" style="color:var(--a1)">—</div>
+          </div>
+        </div>
+
+        <div class="erklaer" style="margin-bottom:0" id="m1-detect">—</div>
+
+      </div>
+
+      <div class="info-box" style="flex:1">
+        <div class="info-box-h">Tutorial — Baseline: Description &amp; Prediction</div>
+        <p><strong>What you see</strong><br>
+        10 baseline sessions (Phase A, blue) — then two continuations of the same time span: the <em>projection</em> (dashed), which simply extends the baseline trend, and the <em>actual data</em> (red), which would result if the set intervention effect also acts on top of it.</p>
+        <p><strong>Two functions of the baseline (Kazdin, 2017)</strong><br>
+        <strong>Descriptive:</strong> the baseline describes the current level of the target behavior. <strong>Predictive:</strong> it forecasts how the behavior would continue <em>without</em> intervention — that's the dashed line. Only the comparison "actual vs. predicted" allows a statement about the intervention's effect.</p>
+        <p><strong>Trend and stability are decisive</strong><br>
+        Drag <em>Baseline trend</em>: a trend already pointing in the desired direction makes it harder to detect an additional intervention effect — the prediction is already heading there. Drag <em>Baseline variability</em> up: with strong noise, a small effect disappears into the "static" of baseline fluctuation.</p>
+        <p><strong>Detectability</strong><br>
+        Bottom right expresses the difference between the actual and predicted level relative to baseline variability — the same logic as Cohen's d (<a href="../Effektgroessen.html">→ Effect Sizes</a>): the same intervention effect is easy to spot against a stable baseline, but barely distinguishable from random fluctuation against an unstable one.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="erklaer" style="margin-top:.9rem">
+    <strong>3 requirements for an analyzable SCD (Kazdin, 2017):</strong>
+    <strong>Continuous measurement</strong> — multiple observations over time, before and during the intervention.
+    <strong>Baseline measurement</strong> — a data-collection period before the intervention (descriptive + predictive, see above).
+    <strong>Stability of performance</strong> — as little trend and variability in the baseline as possible, so a deviation is interpretable at all.
+  </div>
+</div>
+
+<!-- ══ MODULE 2 ════════════════════════════════════════════════════ -->
+<div id="mod2" class="mod-panel">
+  <div class="mod-h">AB, ABA &amp; ABAB — <em>Reversal Designs</em></div>
+  <div class="mod-sub">Repeated reversal of baseline and intervention as causal evidence — and what's missing when the reversal doesn't occur</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <div>
+      <div class="cv-label">Session → Disruptive behavior (% of intervals) — phase sequence</div>
+      <div class="cv-wrap">
+        <canvas id="cv-m2" width="860" height="380"></canvas>
+      </div>
+      <div class="legend" style="margin-top:.5rem">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--a2)"></span>Phase A (baseline)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--a1)"></span>Phase B (intervention)</span>
+        <span class="legend-item"><span class="legend-swatch dashed" style="border-color:var(--ink3)"></span>Prediction from the previous same-type phase</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.65rem">
+
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="scen-btn" id="btn-m2-AB" onclick="setM2Design('AB')">AB</button>
+          <button class="scen-btn" id="btn-m2-ABA" onclick="setM2Design('ABA')">ABA</button>
+          <button class="scen-btn active" id="btn-m2-ABAB" onclick="setM2Design('ABAB')">ABAB</button>
+          <button class="scen-btn" id="btn-m2-BABA" onclick="setM2Design('BABA')">BABA</button>
+        </div>
+
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Intervention effect</span>
+          <input type="range" id="m2-effect" min="-40" max="10" step="2" value="-25" oninput="drawMod2()">
+          <span class="ctrl-val" id="m2-effect-val">−25</span>
+        </div>
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Variability</span>
+          <input type="range" id="m2-sd" min="2" max="15" step="1" value="6" oninput="drawMod2()">
+          <span class="ctrl-val" id="m2-sd-val">6</span>
+        </div>
+
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="btn primary" id="btn-m2-reversal" onclick="toggleM2Reversal()">↺ Reversal: Yes</button>
+        </div>
+
+        <div class="erklaer" style="margin-bottom:0" id="m2-interpret">—</div>
+
+      </div>
+
+      <div class="info-box" style="flex:1">
+        <div class="info-box-h">Tutorial — Reversal Designs</div>
+        <p><strong>What you see</strong><br>
+        Choose a design: <strong>AB</strong> (just one baseline, then intervention — <em>not recommended</em>, since any coincidentally time-matched third variable could explain the "effect"), <strong>ABA</strong> (return to baseline tests the prediction), <strong>ABAB</strong> (an additional second intervention phase replicates the effect), or <strong>BABA</strong> (starting with intervention).</p>
+        <p><strong>The logic of reversal</strong><br>
+        Every new phase gets a dashed <em>prediction line</em> from the last same-type phase (e.g. A₂ from A₁, B₂ from B₁). If a new phase matches this prediction, that argues against an intervention effect; if it deviates systematically, that's evidence that the intervention controls the behavior.</p>
+        <p><strong>The reversal switch</strong><br>
+        Turn <em>↺ Reversal</em> off: the second (and any further) A phase does <strong>not</strong> fully return to the original baseline. This matches Kazdin's (2017) two scenarios: if the reversal occurs, the causal evidence is strong — but the client's behavior deliberately worsens again, which can be ethically delicate. If the reversal does <strong>not</strong> occur, the causal conclusion is weaker (alternative explanations aren't ruled out) — but that isn't necessarily a contradiction either: some behavior simply persists after successful training.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODULE 3 ════════════════════════════════════════════════════ -->
+<div id="mod3" class="mod-panel">
+  <div class="mod-h">Multiple-Baseline Design</div>
+  <div class="mod-sub">Staggered introduction of the same intervention across three people — replication instead of returning to baseline</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <div>
+      <div class="cv-label">Session → Disruptive behavior (% of intervals) — staggered intervention onset</div>
+      <div class="cmp-stack" id="m3-stack">
+        <div class="cmp-item">
+          <div class="cmp-title" style="color:var(--a2)">Student 1</div>
+          <div class="cv-wrap"><canvas id="cv-m3-1" width="860" height="150"></canvas></div>
+        </div>
+        <div class="cmp-item">
+          <div class="cmp-title" style="color:var(--a5)">Student 2</div>
+          <div class="cv-wrap"><canvas id="cv-m3-2" width="860" height="150"></canvas></div>
+        </div>
+        <div class="cmp-item">
+          <div class="cmp-title" style="color:var(--a3)">Student 3</div>
+          <div class="cv-wrap"><canvas id="cv-m3-3" width="860" height="150"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.65rem">
+
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Offset between onsets</span>
+          <input type="range" id="m3-stagger" min="2" max="8" step="1" value="5" oninput="drawMod3()">
+          <span class="ctrl-val" id="m3-stagger-val">5</span>
+        </div>
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Intervention effect</span>
+          <input type="range" id="m3-effect" min="-40" max="10" step="2" value="-25" oninput="drawMod3()">
+          <span class="ctrl-val" id="m3-effect-val">−25</span>
+        </div>
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Variability</span>
+          <input type="range" id="m3-sd" min="2" max="15" step="1" value="6" oninput="drawMod3()">
+          <span class="ctrl-val" id="m3-sd-val">6</span>
+        </div>
+
+        <div class="btn-row" style="margin-bottom:0">
+          <button class="btn" id="btn-m3-confound" onclick="toggleM3Confound()">⚡ External event: Off</button>
+        </div>
+
+        <div class="erklaer" style="margin-bottom:0" id="m3-interpret">—</div>
+
+      </div>
+
+      <div class="info-box" style="flex:1">
+        <div class="info-box-h">Tutorial — Multiple-Baseline Design</div>
+        <p><strong>What you see</strong><br>
+        The same intervention is introduced for three students at <em>different</em> points in time (controlled via <em>offset</em>). Each person stays in baseline until it's "their turn" — there is <strong>never</strong> a need to return to the original baseline, unlike ABAB.</p>
+        <p><strong>Why is this causally informative?</strong><br>
+        If the behavior changes <em>only</em> after each individual's own intervention start — staggered in time, equally strongly for all three people — then no single third variable acting at one fixed point in time can be the cause. The staggered replication <em>is</em> the control condition.</p>
+        <p><strong>Test the counter-case</strong><br>
+        Activate <em>⚡ External event</em>: a confound (e.g. a teacher change, school holidays) acts on <strong>all three people at the same time</strong>, regardless of each individual's intervention onset. The result is immediately visible: a jump that occurs at the exact same session for all three trajectories instead of staggered — a clear warning sign that the intervention isn't the (sole) cause, but a shared external factor is.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODULE 4 ════════════════════════════════════════════════════ -->
+<div id="mod4" class="mod-panel">
+  <div class="mod-h">Evaluation: <em>Visual &amp; Quantitative</em></div>
+  <div class="mod-sub">Visual inspection is the primary method in SCD — indices like PND and Tau-U supplement it</div>
+
+  <div class="cv-row" style="align-items:flex-start">
+    <div>
+      <div class="cv-label">Session → Disruptive behavior (% of intervals)</div>
+      <div class="cv-wrap">
+        <canvas id="cv-m4" width="860" height="380"></canvas>
+      </div>
+      <div class="btn-row" style="margin-top:.6rem;margin-bottom:0">
+        <button class="crit-btn" id="btn-crit-mean" onclick="toggleCrit('mean')">① Change in mean</button>
+        <button class="crit-btn" id="btn-crit-trend" onclick="toggleCrit('trend')">② Change in trend</button>
+        <button class="crit-btn" id="btn-crit-level" onclick="toggleCrit('level')">③ Change in level</button>
+        <button class="crit-btn" id="btn-crit-latency" onclick="toggleCrit('latency')">④ Latency of change</button>
+      </div>
+    </div>
+
+    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.65rem">
+
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Intervention effect</span>
+          <input type="range" id="m4-effect" min="-40" max="10" step="2" value="-25" oninput="drawMod4()">
+          <span class="ctrl-val" id="m4-effect-val">−25</span>
+        </div>
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Trend in Phase B</span>
+          <input type="range" id="m4-trendb" min="-3" max="3" step="0.5" value="0" oninput="drawMod4()">
+          <span class="ctrl-val" id="m4-trendb-val">0</span>
+        </div>
+        <div class="ctrl-row" style="margin-bottom:0">
+          <span class="ctrl-label">Variability</span>
+          <input type="range" id="m4-sd" min="2" max="15" step="1" value="6" oninput="drawMod4()">
+          <span class="ctrl-val" id="m4-sd-val">6</span>
+        </div>
+
+        <div class="erklaer" style="margin-bottom:0" id="m4-crit-readout">Select a criterion above.</div>
+
+      </div>
+
+      <div class="info-box" style="flex:1">
+        <div class="info-box-h">Tutorial — Evaluation</div>
+        <p><strong>Four visual criteria (Kazdin, 2017)</strong><br>
+        <strong>① Mean:</strong> Do the phase means differ? <strong>② Trend:</strong> Does the rise/fall of the data change from A to B? <strong>③ Level:</strong> Is there a "break" right at the phase transition (last A value vs. first B value), independent of the mean? <strong>④ Latency:</strong> How quickly after the intervention starts does the change appear? Click the four buttons above to mark each criterion individually on the graph.</p>
+        <p><strong>Why not just the mean?</strong><br>
+        An example: drag <em>Trend in Phase B</em> to a high value with intervention effect = 0. The means of A and B can stay nearly identical — yet the behavior visibly <em>changes</em> within B. Pure mean comparisons (as in the classic group comparison) can miss that; that's why a single index isn't enough for SCD.</p>
+        <p><strong>Beyond visual inspection: PND &amp; Tau-U</strong><br>
+        <strong>PND</strong> (Percentage of Non-overlapping Data): the share of B values that exceed the most extreme A value in the desired direction — simple, but wasteful with information, using only a single baseline point.
+        <strong>Tau-U</strong> (Parker, Vannest, Davis &amp; Sauber, 2011): compares <em>all</em> A–B pairs (related to Kendall's Tau and Non-overlap of All Pairs, NAP) and thus uses the entire baseline, not just its extreme. Values near ±1 mean (almost) complete non-overlap in the respective direction, values near 0 mean strong overlap.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="erklaer" style="margin-top:.9rem">
+    <div class="ctrl-row" style="margin-bottom:.6rem">
+      <span class="ctrl-label" style="min-width:auto">Desired direction:</span>
+      <button class="scen-btn active" id="btn-dir-down" onclick="setM4Dir('down')">Decrease (behavior ↓)</button>
+      <button class="scen-btn" id="btn-dir-up" onclick="setM4Dir('up')">Increase (target behavior ↑)</button>
+    </div>
+    <div class="coef-grid g4" style="margin-bottom:0">
+      <div class="coef-cell">
+        <div class="coef-cell-lbl">Mean difference</div>
+        <div class="coef-cell-val" id="m4-dmean">—</div>
+      </div>
+      <div class="coef-cell">
+        <div class="coef-cell-lbl">PND</div>
+        <div class="coef-cell-val" id="m4-pnd">—</div>
+      </div>
+      <div class="coef-cell">
+        <div class="coef-cell-lbl">NAP</div>
+        <div class="coef-cell-val" id="m4-nap">—</div>
+      </div>
+      <div class="coef-cell">
+        <div class="coef-cell-lbl">Tau-U (A vs. B)</div>
+        <div class="coef-cell-val" id="m4-tau">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc-wrap" style="margin-top:.9rem">
+    <div class="acc-item">
+      <button class="acc-trigger" onclick="toggleAcc(this)">
+        📐 How are PND, NAP and Tau-U calculated?
+        <span class="acc-arrow">▶</span>
+      </button>
+      <div class="acc-body">
+        <div style="font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:2">
+          <strong style="color:var(--ink)">PND</strong> = share of B values that exceed the most extreme A value in the desired direction (e.g. for a desired decrease: share of B values &lt; min(A)).<br>
+          <strong style="color:var(--ink)">NAP</strong> (Non-overlap of All Pairs): for each of the n<sub>A</sub>·n<sub>B</sub> pairs (a,b), score 1 point if b shows an improvement over a, 0.5 points for a tie, 0 points for a decline. NAP = sum / (n<sub>A</sub>·n<sub>B</sub>) ∈ [0,1].<br>
+          <strong style="color:var(--ink)">Tau-U</strong> (A-vs-B non-overlap only, without trend correction) = 2·NAP − 1 ∈ [−1,1]. Equivalent to Kendall's S/(n<sub>A</sub>·n<sub>B</sub>), where S = (number of improving pairs) − (number of declining pairs). The full Tau-U family (Parker et al., 2011) can additionally remove an undesired baseline trend — that's not implemented here.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FLASHCARDS ═══════════════════════════════════════════════════ -->
+<section id="lernkarten">
+  <div class="lk-head">Flashcards — Single Case Designs</div>
+  <div class="lcard-grid">
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">①</span> Baseline: descriptive + predictive</div>
+      <div class="lcard-body">
+        The baseline describes the current level (descriptive) and extends it to predict what would happen
+        without intervention (predictive). Only the deviation from this prediction is evidence for an
+        intervention effect — not the absolute values in Phase B alone.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">②</span> Trend &amp; Stability</div>
+      <div class="lcard-body">
+        A baseline should be as free of trend and fluctuation as possible. A trend already pointing in the
+        desired direction makes it harder to demonstrate an additional effect; high variability makes any
+        deviation hard to distinguish from random noise.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">③</span> Why not just AB?</div>
+      <div class="lcard-body">
+        A simple AB design is not recommended: any third variable that happens to coincide with the
+        intervention is an equally plausible explanation. ABA/ABAB (return to baseline) or multiple-baseline
+        designs (staggered replication) systematically rule that out.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">④</span> Reversal designs vs. multiple baseline</div>
+      <div class="lcard-body">
+        ABAB designs require a <strong>return</strong> to baseline — causally strong, but sometimes ethically
+        delicate (the target behavior deliberately worsens again) or impossible (irreversible learning
+        effects). Multiple-baseline designs show the same causal logic via <strong>staggered
+        replication</strong> across multiple people/behaviors/settings — with no step backward at all.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">⑤</span> Four visual criteria</div>
+      <div class="lcard-body">
+        Change in <strong>mean</strong>, in <strong>trend</strong>, in <strong>level</strong> (break at the
+        phase transition), and the <strong>latency</strong> of the change — four independent aspects of
+        visual inspection. An effect can be obvious on one criterion and unremarkable on another.
+      </div>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">⑥</span> PND, NAP &amp; Tau-U</div>
+      <div class="lcard-body">
+        <code>PND</code> compares B only to the most extreme A value — simple, but wasteful with
+        information. <code>NAP</code>/<code>Tau-U</code> (Parker et al., 2011) use all A–B pairs and are
+        today's more common indices for supplementing visual inspection — never meant to replace it.
+      </div>
+    </div>
+
+  </div>
+</section>
+</div><!-- #scroll -->
+
+<!-- ══ HELP MODAL ═══════════════════════════════════════════════════ -->
+<div id="help-modal" class="ml-modal" onclick="if(event.target===this)closeModal('help-modal')">
+  <div class="ml-modal-box">
+    <button class="ml-modal-close" onclick="closeModal('help-modal')">✕</button>
+    <div class="ml-modal-eyebrow">? Help — Single Case Designs</div>
+    <div class="ml-modal-body">
+
+      <h3>Why single case designs?</h3>
+      <p>Randomized group experiments are considered the gold standard but need many cases. <strong>Single
+      Case (Experimental Research) Designs (SCD)</strong> allow causal conclusions about interventions from a
+      single case (an individual, but also a class, school, company, or city). They are especially
+      appropriate when an intervention is new, resources are limited, or the question is specifically about
+      the change in <em>this one</em> unit.</p>
+
+      <h3>Three requirements for the design (Kazdin, 2017)</h3>
+      <ul>
+        <li><strong>Continuous measurement</strong> — many observations over time, not just pre/post</li>
+        <li><strong>Baseline measurement</strong> — a data-collection period before the intervention,
+        descriptive and predictive at once</li>
+        <li><strong>Stability of performance</strong> — little trend, little variability in the baseline</li>
+      </ul>
+
+      <h3>Designs</h3>
+      <p><strong>AB</strong> — one baseline, one intervention. Not recommended: no control for third
+      variables.</p>
+      <p><strong>ABA / ABAB</strong> (reversal design) — baseline, intervention, baseline again (,
+      intervention again). Each repetition tests the previous phase's prediction; a reversal of the effect
+      when the intervention is withdrawn is strong causal evidence.</p>
+      <p><strong>Multiple-baseline design</strong> — the same intervention is introduced in a staggered
+      fashion across several people, behaviors, or settings. If the behavior changes only after each
+      individual's own intervention onset, a shared external cause is unlikely — with no return to baseline
+      at all.</p>
+
+      <h3>Evaluation</h3>
+      <p>Primarily through <strong>visual inspection</strong>: change in mean, in trend, in level (break at
+      the phase transition), and the latency of the change. Quantitative indices have become established as
+      a supplement:</p>
+      <ul>
+        <li><strong>PND</strong> (Percentage of Non-overlapping Data) — share of B values beyond the most
+        extreme A value</li>
+        <li><strong>NAP</strong> (Non-overlap of All Pairs) and <strong>Tau-U</strong> (Parker, Vannest,
+        Davis &amp; Sauber, 2011, <em>Behavior Therapy</em>) — use all A–B pairs instead of just the extreme
+        value</li>
+      </ul>
+      <p>These indices don't replace visual inspection — they supplement it with a more objective,
+      reproducible number.</p>
+
+      <h3>Limitations</h3>
+      <p>The most frequently cited concern is <strong>external validity</strong>: results from one or a few
+      cases don't straightforwardly generalize to other people. SCD are precisely suited to situations where
+      the problem is rare enough that recruiting a larger, similar sample isn't practical anyway.</p>
+
+      <h3>Sources</h3>
+      <ul>
+        <li>Kazdin, A. E. (2017). <em>Single-Case Research Designs: Methods for Clinical and Applied
+        Settings</em> (2nd ed.). Oxford University Press.</li>
+        <li>Parker, R. I., Vannest, K. J., Davis, J. L., &amp; Sauber, S. B. (2011). Combining nonoverlap
+        and trend for single-case research: Tau-U. <em>Behavior Therapy, 42</em>(2), 284–299.</li>
+      </ul>
+
+      <h3>Related tools</h3>
+      <ul>
+        <li><a href="../Jacobson_Truax.html">Jacobson-Truax Analysis</a> — clinically significant change in
+        an individual case, pre/post instead of continuous measurement</li>
+        <li><a href="../Diagnostische_Intervalle.html">Diagnostic Intervals</a> — uncertainty around a
+        single test score</li>
+        <li><a href="../Regression_zur_Mitte.html">Regression to the Mean</a> — why extreme values often
+        turn out more moderate at a second measurement, even without a real effect</li>
+        <li><a href="../Causal_Teaching.html">Causal Inference</a> — foundations that also underlie SCD</li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ JAVASCRIPT ════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ── Seeded RNG (mulberry32) ──────────────────────────────────────── */
+function mulberry32(seed){
+  return function(){
+    seed|=0; seed=seed+0x6D2B79F5|0;
+    let t=Math.imul(seed^seed>>>15,1|seed);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return((t^t>>>14)>>>0)/4294967296;
+  };
+}
+let rng=mulberry32(12345);
+function gauss(){
+  const u=Math.max(1-rng(),1e-12), v=rng();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+
+/* ── Small helpers ─────────────────────────────────────────────────── */
+function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
+function fmt(v,d=1){ return Number(v).toFixed(d); }
+function cssVar(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function makeScale(dMin,dMax,pxMin,pxMax){ return d=>pxMin+(d-dMin)/(dMax-dMin)*(pxMax-pxMin); }
+function mean(arr){ return arr.reduce((a,b)=>a+b,0)/arr.length; }
+function linreg(xs,ys){
+  const n=xs.length, xbar=mean(xs), ybar=mean(ys);
+  let sxy=0,sxx=0;
+  for(let i=0;i<n;i++){ sxy+=(xs[i]-xbar)*(ys[i]-ybar); sxx+=(xs[i]-xbar)**2; }
+  const b1=sxx===0?0:sxy/sxx, b0=ybar-b1*xbar;
+  return {b0,b1};
+}
+function hexA(hex,a){
+  const h=hex.replace('#','');
+  const r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/* ── Overlap statistics: PND / NAP / Tau-U ────────────────────────── */
+function computeOverlap(A,B,dir){
+  // dir: 'down' = improvement is a lower value; 'up' = a higher value is better
+  const nA=A.length, nB=B.length;
+  const extreme = dir==='down' ? Math.min(...A) : Math.max(...A);
+  let beyond=0;
+  B.forEach(b=>{ if(dir==='down' ? b<extreme : b>extreme) beyond++; });
+  const pnd = 100*beyond/nB;
+
+  let score=0;
+  A.forEach(a=>B.forEach(b=>{
+    const better = dir==='down' ? (b<a) : (b>a);
+    const worse  = dir==='down' ? (b>a) : (b<a);
+    if(better) score+=1; else if(worse) score+=0; else score+=0.5;
+  }));
+  const nap = score/(nA*nB);
+  const tau = 2*nap-1;
+  return {pnd,nap,tau};
+}
+
+/* ── Global state ──────────────────────────────────────────────────── */
+const ST={ activeModule:1, seed:12345 };
+
+function neueDaten(){
+  ST.seed=Math.floor(Math.random()*99999)+1;
+  document.getElementById('seed-info').textContent='Seed: '+ST.seed;
+  draw();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MODULE 1 — Baseline: Description & Prediction
+   ══════════════════════════════════════════════════════════════════ */
+function m1Scales(W,H){
+  const pad={l:52,r:16,t:16,b:38};
+  const sx=makeScale(1,20,pad.l,W-pad.r);
+  const sy=makeScale(0,100,H-pad.b,pad.t);
+  return {pad,sx,sy};
+}
+function drawMod1(){
+  const cv=document.getElementById('cv-m1'); if(!cv) return;
+  const ctx=cv.getContext('2d'); const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const {pad,sx,sy}=m1Scales(W,H);
+  const ink=cssVar('--ink'),ink3=cssVar('--ink3'),a1=cssVar('--a1'),a2=cssVar('--a2');
+
+  const trend=Number(document.getElementById('m1-trend').value);
+  document.getElementById('m1-trend-val').textContent=(trend>=0?'+':'')+fmt(trend,1);
+  const sd=Number(document.getElementById('m1-sd').value);
+  document.getElementById('m1-sd-val').textContent=fmt(sd,0);
+  const effect=Number(document.getElementById('m1-effect').value);
+  document.getElementById('m1-effect-val').textContent=(effect>=0?'+':'')+fmt(effect,0);
+
+  rng=mulberry32(ST.seed);
+  const level=55;
+  const A=[]; // {t,y}
+  for(let t=1;t<=10;t++){
+    const y=clamp(level+trend*(t-5.5)+sd*gauss(),0,100);
+    A.push({t,y});
+  }
+  const fit=linreg(A.map(p=>p.t),A.map(p=>p.y));
+  const proj=[], actual=[];
+  for(let t=11;t<=20;t++){
+    const predMean=fit.b0+fit.b1*t;
+    proj.push({t,y:clamp(predMean,0,100)});
+    actual.push({t,y:clamp(predMean+effect+sd*gauss(),0,100)});
+  }
+
+  drawAxes(ctx,pad,W,H,'Session','Disruptive behavior (%)',[1,5,10,15,20],[0,25,50,75,100],sx,sy);
+
+  // Baseline
+  ctx.strokeStyle=a2; ctx.lineWidth=2; ctx.beginPath();
+  A.forEach((p,i)=>{ if(i===0) ctx.moveTo(sx(p.t),sy(p.y)); else ctx.lineTo(sx(p.t),sy(p.y)); });
+  ctx.stroke();
+  A.forEach(p=>{ ctx.fillStyle=a2; ctx.beginPath(); ctx.arc(sx(p.t),sy(p.y),3.2,0,7); ctx.fill(); });
+
+  // Projection (dashed)
+  ctx.strokeStyle=ink3; ctx.setLineDash([5,4]); ctx.lineWidth=1.8; ctx.beginPath();
+  ctx.moveTo(sx(A[A.length-1].t),sy(A[A.length-1].y));
+  proj.forEach(p=>ctx.lineTo(sx(p.t),sy(p.y)));
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // Actual with intervention
+  ctx.strokeStyle=a1; ctx.lineWidth=2; ctx.beginPath();
+  ctx.moveTo(sx(A[A.length-1].t),sy(A[A.length-1].y));
+  actual.forEach(p=>ctx.lineTo(sx(p.t),sy(p.y)));
+  ctx.stroke();
+  actual.forEach(p=>{ ctx.fillStyle=a1; ctx.beginPath(); ctx.arc(sx(p.t),sy(p.y),3.2,0,7); ctx.fill(); });
+
+  // phase boundary
+  ctx.strokeStyle=ink3; ctx.setLineDash([2,3]); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(sx(10.5),pad.t); ctx.lineTo(sx(10.5),H-pad.b); ctx.stroke();
+  ctx.setLineDash([]);
+
+  const predMeanB=mean(proj.map(p=>p.y));
+  const actualMeanB=mean(actual.map(p=>p.y));
+  document.getElementById('m1-pred').textContent=fmt(predMeanB,1)+'%';
+  document.getElementById('m1-actual').textContent=fmt(actualMeanB,1)+'%';
+
+  const d=Math.abs(actualMeanB-predMeanB)/Math.max(sd,1e-6);
+  const detectEl=document.getElementById('m1-detect');
+  let verdict = d<0.2 ? 'barely detectable' : d<0.8 ? 'detectable, but uncertain' : 'clearly detectable';
+  detectEl.innerHTML='<strong>Detectability</strong> (|Δ| / baseline SD, like Cohen\'s d): <strong style="color:var(--ink)">'+fmt(d,2)+'</strong> → '+verdict+'.';
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MODULE 2 — AB / ABA / ABAB / BABA
+   ══════════════════════════════════════════════════════════════════ */
+let M2={design:'ABAB', reversal:true};
+function setM2Design(d){
+  M2.design=d;
+  ['AB','ABA','ABAB','BABA'].forEach(k=>document.getElementById('btn-m2-'+k).classList.toggle('active',k===d));
+  drawMod2();
+}
+function toggleM2Reversal(){
+  M2.reversal=!M2.reversal;
+  document.getElementById('btn-m2-reversal').textContent = M2.reversal ? '↺ Reversal: Yes' : '↺ Reversal: No';
+  document.getElementById('btn-m2-reversal').classList.toggle('primary',M2.reversal);
+  drawMod2();
+}
+function drawMod2(){
+  const cv=document.getElementById('cv-m2'); if(!cv) return;
+  const ctx=cv.getContext('2d'); const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const ink=cssVar('--ink'),ink2=cssVar('--ink2'),ink3=cssVar('--ink3'),a1=cssVar('--a1'),a2=cssVar('--a2');
+
+  const effect=Number(document.getElementById('m2-effect').value);
+  document.getElementById('m2-effect-val').textContent=(effect>=0?'+':'')+fmt(effect,0);
+  const sd=Number(document.getElementById('m2-sd').value);
+  document.getElementById('m2-sd-val').textContent=fmt(sd,0);
+
+  const level=55;
+  const letters=M2.design.split('');
+  const nPerPhase=8;
+  rng=mulberry32(ST.seed);
+
+  // count how many times each letter has occurred before (for partial reversal + prediction reference)
+  const seenCount={A:0,B:0};
+  const phases=[]; // {letter, points:[{t,y}], predMean}
+  let t=1;
+  const lastMeanByLetter={};
+  letters.forEach((letter,pi)=>{
+    seenCount[letter]++;
+    let targetLevel = letter==='A' ? level : level+effect;
+    if(letter==='A' && seenCount.A>1 && !M2.reversal){
+      // incomplete reversal: stays closer to the B level
+      targetLevel = level + 0.6*effect;
+    }
+    const pts=[];
+    for(let i=0;i<nPerPhase;i++){
+      pts.push({t, y:clamp(targetLevel+sd*gauss(),0,100)});
+      t++;
+    }
+    const predMean = lastMeanByLetter[letter]!==undefined ? lastMeanByLetter[letter] : null;
+    lastMeanByLetter[letter]=mean(pts.map(p=>p.y));
+    phases.push({letter,pts,predMean,idx:pi,occ:seenCount[letter]});
+  });
+  const totalN=t-1;
+
+  const pad={l:52,r:16,t:16,b:38};
+  const sx=makeScale(0.5,totalN+0.5,pad.l,W-pad.r);
+  const sy=makeScale(0,100,H-pad.b,pad.t);
+  drawAxes(ctx,pad,W,H,'Session','Disruptive behavior (%)',[1,10,20,30],[0,25,50,75,100],sx,sy);
+
+  // phase separators + labels
+  phases.forEach(ph=>{
+    const t0=ph.pts[0].t, t1=ph.pts[ph.pts.length-1].t;
+    if(t0>1){
+      ctx.strokeStyle=ink3; ctx.setLineDash([2,3]); ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(sx(t0-0.5),pad.t); ctx.lineTo(sx(t0-0.5),H-pad.b); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    const subscripts=['','₁','₂','₃','₄'];
+    ctx.fillStyle=ink2; ctx.font="bold 12px 'DM Mono',monospace"; ctx.textAlign='center';
+    ctx.fillText(ph.letter+(subscripts[ph.occ]||ph.occ), sx((t0+t1)/2), pad.t+12);
+  });
+
+  // prediction lines (dashed, per phase, based on previous same-letter phase mean)
+  phases.forEach(ph=>{
+    if(ph.predMean!==null){
+      const t0=ph.pts[0].t, t1=ph.pts[ph.pts.length-1].t;
+      ctx.strokeStyle=ink3; ctx.setLineDash([5,4]); ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.moveTo(sx(t0),sy(ph.predMean)); ctx.lineTo(sx(t1),sy(ph.predMean)); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  });
+
+  // data lines/points per phase
+  phases.forEach(ph=>{
+    const col = ph.letter==='A' ? a2 : a1;
+    ctx.strokeStyle=col; ctx.lineWidth=2; ctx.beginPath();
+    ph.pts.forEach((p,i)=>{ if(i===0) ctx.moveTo(sx(p.t),sy(p.y)); else ctx.lineTo(sx(p.t),sy(p.y)); });
+    ctx.stroke();
+    ph.pts.forEach(p=>{ ctx.fillStyle=col; ctx.beginPath(); ctx.arc(sx(p.t),sy(p.y),3,0,7); ctx.fill(); });
+  });
+  // connect phases with a thin line
+  ctx.strokeStyle=ink3; ctx.lineWidth=1; ctx.globalAlpha=.5; ctx.beginPath();
+  for(let i=0;i<phases.length-1;i++){
+    const p1=phases[i].pts[phases[i].pts.length-1], p2=phases[i+1].pts[0];
+    ctx.moveTo(sx(p1.t),sy(p1.y)); ctx.lineTo(sx(p2.t),sy(p2.y));
+  }
+  ctx.stroke(); ctx.globalAlpha=1;
+
+  // interpretation text
+  const interpEl=document.getElementById('m2-interpret');
+  const nA=letters.filter(l=>l==='A').length, nB=letters.filter(l=>l==='B').length;
+  let txt='';
+  if(M2.design==='AB'){
+    txt='Just one baseline and one intervention — any coincidentally time-matched third variable is just as plausible an explanation as the intervention itself.';
+  } else if(!M2.reversal && nA>1){
+    txt='<strong style="color:var(--a1)">No complete reversal:</strong> the second baseline phase does not return to the original level. The causal conclusion is weaker — but that need not be a contradiction: some learning effects simply persist.';
+  } else {
+    txt='<strong style="color:var(--a2)">Reversal occurs:</strong> the behavior returns to the original baseline in the second A phase and deviates again in every B phase — strong causal evidence that the intervention (not a third variable) causes the change.';
+  }
+  interpEl.innerHTML=txt;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MODULE 3 — Multiple-Baseline Design
+   ══════════════════════════════════════════════════════════════════ */
+let M3={confound:false};
+function toggleM3Confound(){
+  M3.confound=!M3.confound;
+  document.getElementById('btn-m3-confound').textContent = M3.confound ? '⚡ External event: On' : '⚡ External event: Off';
+  document.getElementById('btn-m3-confound').classList.toggle('accent1',M3.confound);
+  drawMod3();
+}
+function drawMod3(){
+  const stagger=Number(document.getElementById('m3-stagger').value);
+  document.getElementById('m3-stagger-val').textContent=fmt(stagger,0);
+  const effect=Number(document.getElementById('m3-effect').value);
+  document.getElementById('m3-effect-val').textContent=(effect>=0?'+':'')+fmt(effect,0);
+  const sd=Number(document.getElementById('m3-sd').value);
+  document.getElementById('m3-sd-val').textContent=fmt(sd,0);
+
+  const level=55;
+  const baseOnset=6;
+  const postLen=12;
+  const onsets=[0,1,2].map(i=>baseOnset+i*stagger);
+  const totalN=Math.max(...onsets)+postLen;
+  let confoundT=9; // fixed point in time, independent of the offset — but never exactly on an individual onset
+  while(onsets.includes(confoundT)) confoundT++;
+
+  rng=mulberry32(ST.seed);
+  const colors=[cssVar('--a2'),cssVar('--a5'),cssVar('--a3')];
+  const ink3=cssVar('--ink3');
+
+  for(let u=0;u<3;u++){
+    const onset=onsets[u];
+    const pts=[];
+    for(let t=1;t<=totalN;t++){
+      let y=level;
+      if(t>=onset) y+=effect;
+      if(M3.confound && t>=confoundT) y+=effect*0.7; // shared confound, independent of each unit's own onset
+      y=clamp(y+sd*gauss(),0,100);
+      pts.push({t,y});
+    }
+    drawM3Panel('cv-m3-'+(u+1),pts,onset,colors[u],ink3,totalN);
+  }
+
+  const interpEl=document.getElementById('m3-interpret');
+  if(M3.confound){
+    interpEl.innerHTML='<strong style="color:var(--a1)">Warning sign:</strong> at session '+confoundT+', all three trajectories change at once — regardless of each individually staggered intervention onset. That argues against the intervention as the sole cause and for a shared external factor.';
+  } else {
+    interpEl.innerHTML='The change occurs for each person exactly when <em>their</em> intervention begins — staggered in time. That largely rules out a shared, simultaneously acting third variable as the explanation.';
+  }
+}
+function drawM3Panel(cvId,pts,onset,color,ink3,totalN){
+  const cv=document.getElementById(cvId); if(!cv) return;
+  const ctx=cv.getContext('2d'); const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const pad={l:52,r:16,t:12,b:28};
+  const sx=makeScale(0.5,totalN+0.5,pad.l,W-pad.r);
+  const sy=makeScale(0,100,H-pad.b,pad.t);
+  drawAxes(ctx,pad,W,H,'Session','',[1,10,20,30],[0,50,100],sx,sy,11);
+
+  ctx.strokeStyle=ink3; ctx.setLineDash([4,3]); ctx.lineWidth=1.4;
+  ctx.beginPath(); ctx.moveTo(sx(onset-0.5),pad.t); ctx.lineTo(sx(onset-0.5),H-pad.b); ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.strokeStyle=color; ctx.lineWidth=2; ctx.beginPath();
+  pts.forEach((p,i)=>{ if(i===0) ctx.moveTo(sx(p.t),sy(p.y)); else ctx.lineTo(sx(p.t),sy(p.y)); });
+  ctx.stroke();
+  ctx.fillStyle=color;
+  pts.forEach(p=>{ ctx.beginPath(); ctx.arc(sx(p.t),sy(p.y),2.4,0,7); ctx.fill(); });
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MODULE 4 — Evaluation
+   ══════════════════════════════════════════════════════════════════ */
+let M4CRIT={mean:true,trend:false,level:false,latency:false};
+let M4DIR='down';
+function toggleCrit(k){
+  M4CRIT[k]=!M4CRIT[k];
+  document.getElementById('btn-crit-'+k).classList.toggle('on',M4CRIT[k]);
+  drawMod4();
+}
+function setM4Dir(d){
+  M4DIR=d;
+  document.getElementById('btn-dir-down').classList.toggle('active',d==='down');
+  document.getElementById('btn-dir-up').classList.toggle('active',d==='up');
+  drawMod4();
+}
+function drawMod4(){
+  const cv=document.getElementById('cv-m4'); if(!cv) return;
+  const ctx=cv.getContext('2d'); const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  const ink=cssVar('--ink'),ink2=cssVar('--ink2'),ink3=cssVar('--ink3'),a1=cssVar('--a1'),a2=cssVar('--a2'),a4=cssVar('--a4');
+
+  const effect=Number(document.getElementById('m4-effect').value);
+  document.getElementById('m4-effect-val').textContent=(effect>=0?'+':'')+fmt(effect,0);
+  const trendB=Number(document.getElementById('m4-trendb').value);
+  document.getElementById('m4-trendb-val').textContent=(trendB>=0?'+':'')+fmt(trendB,1);
+  const sd=Number(document.getElementById('m4-sd').value);
+  document.getElementById('m4-sd-val').textContent=fmt(sd,0);
+
+  rng=mulberry32(ST.seed);
+  const level=55, nA=10, nB=10;
+  const A=[]; for(let t=1;t<=nA;t++) A.push({t,y:clamp(level+sd*gauss(),0,100)});
+  const B=[]; for(let i=0;i<nB;i++){ const t=nA+1+i; B.push({t,y:clamp(level+effect+trendB*(i-nB/2+0.5)+sd*gauss(),0,100)}); }
+
+  const pad={l:52,r:16,t:16,b:38};
+  const sx=makeScale(1,nA+nB,pad.l,W-pad.r);
+  const sy=makeScale(0,100,H-pad.b,pad.t);
+  drawAxes(ctx,pad,W,H,'Session','Disruptive behavior (%)',[1,5,10,15,20],[0,25,50,75,100],sx,sy);
+
+  ctx.strokeStyle=ink3; ctx.setLineDash([2,3]); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(sx(nA+0.5),pad.t); ctx.lineTo(sx(nA+0.5),H-pad.b); ctx.stroke();
+  ctx.setLineDash([]);
+
+  [[A,a2],[B,a1]].forEach(([arr,col])=>{
+    ctx.strokeStyle=col; ctx.lineWidth=2; ctx.beginPath();
+    arr.forEach((p,i)=>{ if(i===0) ctx.moveTo(sx(p.t),sy(p.y)); else ctx.lineTo(sx(p.t),sy(p.y)); });
+    ctx.stroke();
+    arr.forEach(p=>{ ctx.fillStyle=col; ctx.beginPath(); ctx.arc(sx(p.t),sy(p.y),3.2,0,7); ctx.fill(); });
+  });
+
+  const meanA=mean(A.map(p=>p.y)), meanB=mean(B.map(p=>p.y));
+  let readout='';
+
+  if(M4CRIT.mean){
+    [[meanA,a2],[meanB,a1]].forEach(([m,col])=>{
+      ctx.strokeStyle=col; ctx.setLineDash([6,3]); ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.moveTo(sx(m===meanA?1:nA+0.5),sy(m)); ctx.lineTo(sx(m===meanA?nA+0.5:nA+nB),sy(m)); ctx.stroke();
+      ctx.setLineDash([]);
+    });
+    readout+='<strong>① Means:</strong> A = '+fmt(meanA,1)+'%, B = '+fmt(meanB,1)+'% (Δ = '+fmt(meanB-meanA,1)+' pp).<br>';
+  }
+  if(M4CRIT.trend){
+    const fitA=linreg(A.map(p=>p.t),A.map(p=>p.y)), fitB=linreg(B.map(p=>p.t),B.map(p=>p.y));
+    [[A,fitA,a2],[B,fitB,a1]].forEach(([arr,fit,col])=>{
+      const t0=arr[0].t,t1=arr[arr.length-1].t;
+      ctx.strokeStyle=col; ctx.lineWidth=1.6; ctx.globalAlpha=.7; ctx.beginPath();
+      ctx.moveTo(sx(t0),sy(fit.b0+fit.b1*t0)); ctx.lineTo(sx(t1),sy(fit.b0+fit.b1*t1)); ctx.stroke();
+      ctx.globalAlpha=1;
+    });
+    readout+='<strong>② Trend:</strong> slope A = '+fmt(fitA.b1,2)+' pp/session, slope B = '+fmt(fitB.b1,2)+' pp/session.<br>';
+  }
+  if(M4CRIT.level){
+    const lastA=A[A.length-1], firstB=B[0];
+    ctx.strokeStyle=a4; ctx.lineWidth=2; ctx.setLineDash([3,2]);
+    ctx.beginPath(); ctx.moveTo(sx(lastA.t),sy(lastA.y)); ctx.lineTo(sx(firstB.t),sy(firstB.y)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=a4;
+    [lastA,firstB].forEach(p=>{ ctx.beginPath(); ctx.arc(sx(p.t),sy(p.y),5,0,7); ctx.fill(); });
+    readout+='<strong>③ Level (break at transition):</strong> last A value = '+fmt(lastA.y,1)+'%, first B value = '+fmt(firstB.y,1)+'% (jump = '+fmt(firstB.y-lastA.y,1)+' pp).<br>';
+  }
+  if(M4CRIT.latency){
+    const threshold=(meanA+meanB)/2;
+    let crossIdx=B.findIndex(p=> M4DIR==='down' ? p.y<threshold : p.y>threshold);
+    if(crossIdx===-1) crossIdx=B.length-1;
+    const crossPt=B[crossIdx];
+    ctx.strokeStyle=ink3; ctx.setLineDash([2,2]); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(pad.l,sy(threshold)); ctx.lineTo(W-pad.r,sy(threshold)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=a4; ctx.beginPath(); ctx.arc(sx(crossPt.t),sy(crossPt.y),6,0,7); ctx.fill();
+    ctx.strokeStyle=a4; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(sx(crossPt.t),sy(crossPt.y),6,0,7); ctx.stroke();
+    readout+='<strong>④ Latency:</strong> '+(crossIdx+1)+' session(s) after intervention onset, the midpoint between the A and B means is first crossed.<br>';
+  }
+  document.getElementById('m4-crit-readout').innerHTML = readout || 'Select a criterion above.';
+
+  document.getElementById('m4-dmean').textContent=(meanB-meanA>=0?'+':'')+fmt(meanB-meanA,1)+' pp';
+  const ov=computeOverlap(A.map(p=>p.y),B.map(p=>p.y),M4DIR);
+  document.getElementById('m4-pnd').textContent=fmt(ov.pnd,0)+'%';
+  document.getElementById('m4-nap').textContent=fmt(ov.nap,2);
+  document.getElementById('m4-tau').textContent=(ov.tau>=0?'+':'')+fmt(ov.tau,2);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Shared axis/UI helper functions
+   ══════════════════════════════════════════════════════════════════ */
+function drawAxes(ctx,pad,W,H,xLabel,yLabel,xTicks,yTicks,xScale,yScale,fontSize=13){
+  const ink=cssVar('--ink'),ink3=cssVar('--ink3'),grid=cssVar('--grid');
+  ctx.font=`${fontSize}px DM Mono,monospace`;
+  ctx.textBaseline='middle';
+  ctx.strokeStyle=grid;ctx.lineWidth=.6;
+  xTicks.forEach(v=>{const px=xScale(v);ctx.beginPath();ctx.moveTo(px,pad.t);ctx.lineTo(px,H-pad.b);ctx.stroke()});
+  yTicks.forEach(v=>{const py=yScale(v);ctx.beginPath();ctx.moveTo(pad.l,py);ctx.lineTo(W-pad.r,py);ctx.stroke()});
+  ctx.fillStyle=ink3;ctx.textAlign='center';
+  xTicks.forEach(v=>{ctx.fillText(v,xScale(v),H-pad.b+15)});
+  ctx.textAlign='right';
+  yTicks.forEach(v=>{ctx.fillText(v,pad.l-6,yScale(v))});
+  ctx.fillStyle=ink;ctx.font=`bold ${fontSize+1}px DM Mono,monospace`;
+  ctx.textAlign='center';ctx.textBaseline='bottom';
+  if(xLabel) ctx.fillText(xLabel,pad.l+(W-pad.l-pad.r)/2,H-2);
+  if(yLabel){
+    ctx.save();ctx.translate(14,pad.t+(H-pad.t-pad.b)/2);ctx.rotate(-Math.PI/2);
+    ctx.textBaseline='top';ctx.fillText(yLabel,0,0);ctx.restore();
+  }
+}
+
+function showMod(n){
+  document.querySelectorAll('.mod-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.mod-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('mod'+n).classList.add('active');
+  document.querySelector(`.mod-tab[data-mod="${n}"]`).classList.add('active');
+  ST.activeModule=n;
+  const scrollEl=document.getElementById('scroll'); if(scrollEl) scrollEl.scrollTop=0;
+  draw();
+}
+function draw(){
+  if(ST.activeModule===1) drawMod1();
+  else if(ST.activeModule===2) drawMod2();
+  else if(ST.activeModule===3) drawMod3();
+  else if(ST.activeModule===4) drawMod4();
+}
+
+function toggleTheme(){
+  const h=document.documentElement;
+  const isDark=h.getAttribute('data-theme')==='dark';
+  const nt=isDark?'light':'dark';
+  h.setAttribute('data-theme',nt);
+  document.getElementById('btn-theme').textContent=nt==='dark'?'☀ Light':'🌙 Dark';
+  localStorage.setItem('ml-theme',nt);
+  draw();
+}
+(function(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.getElementById('btn-theme').textContent=isDark?'☀ Light':'🌙 Dark';
+})();
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')document.querySelectorAll('.ml-modal.open').forEach(m=>m.classList.remove('open'));
+});
+
+function toggleAcc(trigger){
+  trigger.classList.toggle('open');
+  const body=trigger.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+/* ── Start ────────────────────────────────────────────────────────── */
+document.getElementById('seed-info').textContent='Seed: '+ST.seed;
+document.getElementById('btn-crit-mean').classList.add('on');
+draw();
+</script>
+</body>
+</html>
