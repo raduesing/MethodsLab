@@ -115,6 +115,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   padding:.3rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.35rem 0 .55rem}
 .hint{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);line-height:1.65;
   border-top:1px solid var(--grid);padding-top:.4rem}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
 .gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
 .gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
 .gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
@@ -128,6 +129,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
 .xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -150,7 +153,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <p class="help-p">A school district introduces a support program (daily tutoring) starting in school year 2, in some of its schools — the treatment group. The remaining schools serve as the control group. Outcome Y: standardized achievement test. Goal: how large is the causal effect of the program?</p>
     <p class="help-p">A naive before-after comparison fails: students would have improved even without the program (maturation, general curriculum effects). DiD solves the problem with a <strong>control group</strong> — it shows how much students would have developed without the intervention.</p>
 
-    <div class="help-sh">Regression Model &amp; Why β₃ = DiD</div>
+    <div class="help-sh">Regression Model &amp; Why β₃ = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-did" target="_blank" rel="noopener" title="Difference-in-Differences (DiD) is a quasi-experimental design that compares changes over time in a treatment group with changes in a control group.">DiD</a></div>
     <p class="help-p">The DiD model is:</p>
     <span class="help-formula">Y = α + β₁·Post + β₂·Treat + β₃·(Post × Treat) + ε</span>
     <p class="help-p">The four expected values from it:</p>
@@ -161,9 +164,9 @@ E[Y | treatment, after] = α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</s
     <p class="help-p">Difference of differences: DiD = Δ_T − Δ_C = (β₁ + β₃) − β₁ = <strong>β₃</strong></p>
     <p class="help-p">β₃ is the coefficient of the interaction term (Post × Treat). It measures exactly the additional change in the treatment group beyond the general time trend β₁. The selection bias β₂ (time-constant group difference) cancels out completely in the double difference — that is the central strength of DiD.</p>
 
-    <div class="help-sh">What DiD Estimates — the ATT</div>
+    <div class="help-sh">What DiD Estimates — the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-att" target="_blank" rel="noopener" title="The ATT is the average causal effect of a treatment restricted to those who actually received it: ATT = E[Y¹ − Y⁰ | D=1].">ATT</a></div>
     <p class="help-p">The DiD estimator β̂₃ identifies the <strong>Average Treatment Effect on the Treated (ATT)</strong> — the causal effect of the program for exactly the units that were actually treated (here: the treatment schools).</p>
-    <p class="help-p">ATT ≠ ATE (the average treatment effect across all units): if treatment schools differ systematically from control schools (selection bias, β₂ ≠ 0), the effect may not generalize to all schools — but it is still valid for the treated schools themselves. That is both the strength and the limitation of DiD.</p>
+    <p class="help-p">ATT ≠ <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ate" target="_blank" rel="noopener" title="The ATE is the average causal effect of a treatment computed across all units of the target population.">ATE</a> (the average treatment effect across all units): if treatment schools differ systematically from control schools (selection bias, β₂ ≠ 0), the effect may not generalize to all schools — but it is still valid for the treated schools themselves. That is both the strength and the limitation of DiD.</p>
 
     <div class="help-sh">Counterfactual Scenario — What Would Have Happened Otherwise?</div>
     <p class="help-p">A <strong>counterfactual scenario</strong> answers a hypothetical question: how would the treatment group have developed if it had <em>not</em> been treated? By definition this situation does not exist in the data — every school was either in the program or not.</p>
@@ -171,17 +174,17 @@ E[Y | treatment, after] = α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</s
     <p class="help-p">The <strong>parallel-trends argument</strong> makes the counterfactual assumption explicit: without intervention, both groups would have changed by the same amount. If that's plausible, the counterfactual is meaningfully reconstructed — and β̂₃ is causally interpretable.</p>
     <p class="help-p">→ The <a href="Causal_Teaching.html" target="_blank" rel="noopener" style="color:var(--a2);text-decoration:underline">Causal Teaching tool</a> shows counterfactual potential outcomes in the Rubin framework (Y(0), Y(1)) and explains why you can never observe both at once — the fundamental problem of causal inference.</p>
 
-    <div class="help-sh">Selection Bias — and Why DiD Is Robust</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-selektion-bias" target="_blank" rel="noopener" title="Selection bias arises when the selection of units into a study or treatment group is systematically associated with the outcome.">Selection Bias</a> — and Why DiD Is Robust</div>
     <p class="help-p">β₂ measures the time-constant difference between the treatment and control groups <em>before</em> the intervention. If, say, schools with more motivated students join the program (self-selection), their baseline values differ (β₂ ≠ 0).</p>
     <p class="help-p">DiD corrects this automatically: β₂ cancels out in the double difference — even with a large β₂, β̂₃ remains unbiased. The "selection bias" scenario and the combination scenario illustrate this.</p>
 
     <div class="help-sh">Naive Comparisons — Why They Fail</div>
     <p class="help-p">In the combination scenario (β₁ = 1.5, β₂ = 1.5, β₃ = 3), you can see why two seemingly naive comparisons are nonetheless wrong:</p>
-    <p class="help-p"><strong>① G1<sub>t1</sub> − G0<sub>t1</sub></strong> (cross-section at the after time point): overestimates the ATT because the group difference β₂ (selection, time-constant) is included.</p>
-    <p class="help-p"><strong>② G1<sub>t1</sub> − G1<sub>t0</sub></strong> (before-after within the treatment group only): overestimates the ATT because the general time trend β₁ is included — the group would have improved even without the program.</p>
-    <p class="help-p">DiD corrects both biases simultaneously: β₂ cancels out in the double difference, and so does β₁. Both orange arrows ① ② in the plot show how far off the naive comparisons are.</p>
+    <p class="help-p"><strong><span class="circ">①</span> G1<sub>t1</sub> − G0<sub>t1</sub></strong> (cross-section at the after time point): overestimates the ATT because the group difference β₂ (selection, time-constant) is included.</p>
+    <p class="help-p"><strong><span class="circ">②</span> G1<sub>t1</sub> − G1<sub>t0</sub></strong> (before-after within the treatment group only): overestimates the ATT because the general time trend β₁ is included — the group would have improved even without the program.</p>
+    <p class="help-p">DiD corrects both biases simultaneously: β₂ cancels out in the double difference, and so does β₁. Both orange arrows <span class="circ">①</span> <span class="circ">②</span> in the plot show how far off the naive comparisons are.</p>
 
-    <div class="help-sh">Parallel-Trends Assumption</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-paralleltrend" target="_blank" rel="noopener" title="The parallel trends assumption (PTA) is the central identification assumption of the Difference-in-Differences (DiD) design: absent the intervention, the average outcomes of the treatment and control group would have evolved in parallel over time.">Parallel-Trends Assumption</a></div>
     <p class="help-p">DiD requires that, without intervention, both groups would have changed by the <em>same amount</em>. This assumption is not directly testable, but can be indirectly assessed via pre-period comparisons (placebo tests). The PT-violation slider allows manual exploration of this theoretical threat.</p>
 
     <div class="help-sh">Limitations &amp; Robustness</div>
@@ -252,7 +255,7 @@ E[Y | treatment, after] = α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</s
   <div class="scard">
     <div class="hint">
       <strong style="color:var(--a3)">β₂ ≠ 0</strong>: selection — groups differ even before the intervention. DiD corrects for β₂ automatically.<br><br>
-      <strong style="color:var(--a1)">① ②</strong>: visible in the combination scenario — naive comparisons overestimate the ATT.<br><br>
+      <strong style="color:var(--a1)"><span class="circ">①</span> <span class="circ">②</span></strong>: visible in the combination scenario — naive comparisons overestimate the ATT.<br><br>
       <strong style="color:var(--a5)">PT violation ≠ 0</strong>: theoretical threat — an external confounder acting differentially on the treatment group. Not directly testable; slider for exploration.
     </div>
   </div>
@@ -268,7 +271,7 @@ E[Y | treatment, after] = α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</s
       <span class="sv">Treat</span><span class="sd">Group: 0 = control schools, 1 = treatment schools (support program)</span>
       <span class="sv">Y</span><span class="sd">Outcome: standardized achievement test (z-standardized)</span>
       <span class="sv">β₁</span><span class="sd">General time trend — how much do students improve anyway?</span>
-      <span class="sv">β₂</span><span class="sd">Time-constant group difference (selection bias) — corrected by DiD</span>
+      <span class="sv">β₂</span><span class="sd">Time-constant group difference (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-selektion-bias" target="_blank" rel="noopener" title="Selection bias arises when the selection of units into a study or treatment group is systematically associated with the outcome.">selection bias</a>) — corrected by DiD</span>
       <span class="sv">β₃</span><span class="sd">Interaction term Post×Treat — exactly the DiD estimator, causally interpretable</span>
     </div>
     <div class="story-q">What causal effect does the support program have — and how does DiD separate this effect from general learning gains and selection differences?</div>
@@ -284,7 +287,7 @@ E[Y | treatment, after] = α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</s
     <strong>Why is β₃ exactly the DiD estimator?</strong>
     <span class="formula-line">Y = α + β₁·Post + β₂·Treat + β₃·(Post×Treat) + ε</span>
     Δ_control = β₁ &nbsp;·&nbsp; Δ_treatment = β₁ + β₃ &nbsp;·&nbsp; <strong>DiD = Δ_T − Δ_C = β₃</strong><br>
-    β₁ (time trend) and β₂ (selection) cancel out in the double difference. <strong>β₃ = interaction term = DiD = ATT</strong> — the causal effect for the treated units.
+    β₁ (time trend) and β₂ (selection) cancel out in the double difference. <strong>β₃ = interaction term = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-did" target="_blank" rel="noopener" title="Difference-in-Differences (DiD) is a quasi-experimental design that compares changes over time in a treatment group with changes in a control group.">DiD</a> = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-att" target="_blank" rel="noopener" title="The ATT is the average causal effect of a treatment restricted to those who actually received it: ATT = E[Y¹ − Y⁰ | D=1].">ATT</a></strong> — the causal effect for the treated units.
   </div>
 
   <div class="sec-h">2 × 2 — Cell Means</div>
@@ -362,7 +365,7 @@ E[Y | treatment, after] = α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</s
     <div class="sec-h">Concepts</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">What Is Difference-in-Differences?</div>
+        <div class="lcard-h">What Is <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-did" target="_blank" rel="noopener" title="Difference-in-Differences (DiD) is a quasi-experimental design that compares changes over time in a treatment group with changes in a control group.">Difference-in-Differences</a>?</div>
         <div class="lcard-body">DiD compares the <strong>change</strong> (before → after) in the treatment group with the change in the control group. The <strong>double difference</strong> isolates the causal effect: <code>Y = β₀ + β₁·Post + β₂·Treat + β₃·(Post×Treat)</code>. The interaction coefficient <strong>β₃</strong> is the DiD estimator.</div>
       </div>
       <div class="lcard">
@@ -370,16 +373,16 @@ E[Y | treatment, after] = α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</s
         <div class="lcard-body">In the double difference, the general time trend <strong>β₁</strong> (both groups improve anyway) and the time-constant group difference <strong>β₂</strong> (selection) <strong>cancel out</strong>. What's left is only <strong>β₃</strong> — the part of the change that occurred <em>additionally</em> in the treatment group.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">What DiD Estimates: the ATT</div>
-        <div class="lcard-body">β₃ identifies the <strong>Average Treatment Effect on the Treated (ATT)</strong> — the causal effect for exactly the treated units. This is not necessarily the ATE (the effect across <em>all</em> units): if the treatment and control groups differ systematically (β₂ ≠ 0), the effect is valid for the treated, but not necessarily generalizable.</div>
+        <div class="lcard-h">What DiD Estimates: the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-att" target="_blank" rel="noopener" title="The ATT is the average causal effect of a treatment restricted to those who actually received it: ATT = E[Y¹ − Y⁰ | D=1].">ATT</a></div>
+        <div class="lcard-body">β₃ identifies the <strong>Average Treatment Effect on the Treated (ATT)</strong> — the causal effect for exactly the treated units. This is not necessarily the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ate" target="_blank" rel="noopener" title="The ATE is the average causal effect of a treatment computed across all units of the target population.">ATE</a> (the effect across <em>all</em> units): if the treatment and control groups differ systematically (β₂ ≠ 0), the effect is valid for the treated, but not necessarily generalizable.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Parallel-Trends Assumption</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-paralleltrend" target="_blank" rel="noopener" title="The parallel trends assumption (PTA) is the central identification assumption of the Difference-in-Differences (DiD) design: absent the intervention, the average outcomes of the treatment and control group would have evolved in parallel over time.">Parallel-Trends Assumption</a></div>
         <div class="lcard-body">The central identification assumption: <strong>without</strong> treatment, both groups would have changed by the <em>same amount</em>. It is counterfactual and not directly testable — but can be made plausible via several pre-periods (event study). If violated, <span class="gl-hat">β</span>₃ contains a bias and is no longer causally interpretable.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Why Naive Comparisons Fail</div>
-        <div class="lcard-body"><strong>① Cross-section, after only</strong> (treatment − control): overestimates, because the selection difference β₂ is included. <strong>② Before-after within the treatment group only:</strong> overestimates, because the general time trend β₁ is included — the group would have improved even without the program. DiD corrects <em>both</em> biases at once.</div>
+        <div class="lcard-body"><strong><span class="circ">①</span> Cross-section, after only</strong> (treatment − control): overestimates, because the selection difference β₂ is included. <strong><span class="circ">②</span> Before-after within the treatment group only:</strong> overestimates, because the general time trend β₁ is included — the group would have improved even without the program. DiD corrects <em>both</em> biases at once.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Context &amp; Related Tools</div>
@@ -387,7 +390,7 @@ E[Y | treatment, after] = α + β₁ + β₂ + β₃ → Δ_T = β₁ + β₃</s
       </div>
       <div class="lcard" style="grid-column:1/-1">
         <div class="lcard-h">The Same Thing as a Moderation</div>
-        <div class="lcard-body">Mathematically, DiD is <strong>nothing other than a moderation analysis</strong>: the model <code>Y = β₀ + β₁·Post + β₂·Treat + β₃·(Post×Treat)</code> is exactly an interaction model <code>Y = b₀ + b₁·X + b₂·W + b₃·(X·W)</code> with two binary predictors. <strong>Treat moderates the effect of time</strong> (and vice versa), and β₃ is the interaction = moderation coefficient. The two "differences" are the <em>simple slopes</em> of the two groups, and their difference is the DiD estimator. It is the same OLS regression — only the framing differs: econometrics calls it DiD, psychology calls it moderation. Once you see it, you never have to think of them separately again. <a class="xlink" href="Moderationsanalyse.html" target="_blank" rel="noopener">→ Moderation Analysis</a></div>
+        <div class="lcard-body">Mathematically, DiD is <strong>nothing other than a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-moderationsanalyse" target="_blank" rel="noopener" title="Moderation analysis examines whether and how strongly a moderator W changes the effect of X on Y.">moderation analysis</a></strong>: the model <code>Y = β₀ + β₁·Post + β₂·Treat + β₃·(Post×Treat)</code> is exactly an interaction model <code>Y = b₀ + b₁·X + b₂·W + b₃·(X·W)</code> with two binary predictors. <strong>Treat moderates the effect of time</strong> (and vice versa), and β₃ is the interaction = moderation coefficient. The two "differences" are the <em>simple slopes</em> of the two groups, and their difference is the DiD estimator. It is the same OLS regression — only the framing differs: econometrics calls it DiD, psychology calls it moderation. Once you see it, you never have to think of them separately again. <a class="xlink" href="Moderationsanalyse.html" target="_blank" rel="noopener">→ Moderation Analysis</a></div>
       </div>
     </div>
   </div>
@@ -508,8 +511,8 @@ function updateTables(){
     badge.innerHTML=p3<0.05
       ?`<span class="badge badge-sig">β̂₃ = ${f(o.b3Hat)} — correct ATT estimate despite selection &amp; time trend</span>`
       :`<span class="badge badge-ns">Not significant (p=${pFmt(p3)})</span>`;
-    note.innerHTML=`<strong style="color:var(--a1)">① G1<sub>t1</sub>−G0<sub>t1</sub> = ${nc1>=0?'+':''}${f(nc1)}</strong> → too large: includes β₂ (selection = ${f(ST.b2)})<br>`+
-      `<strong style="color:var(--a4)">② G1<sub>t1</sub>−G1<sub>t0</sub> = ${nc2>=0?'+':''}${f(nc2)}</strong> → too large: includes β₁ (time trend = ${f(ST.b1)})<br>`+
+    note.innerHTML=`<strong style="color:var(--a1)"><span class="circ">①</span> G1<sub>t1</sub>−G0<sub>t1</sub> = ${nc1>=0?'+':''}${f(nc1)}</strong> → too large: includes β₂ (selection = ${f(ST.b2)})<br>`+
+      `<strong style="color:var(--a4)"><span class="circ">②</span> G1<sub>t1</sub>−G1<sub>t0</sub> = ${nc2>=0?'+':''}${f(nc2)}</strong> → too large: includes β₁ (time trend = ${f(ST.b1)})<br>`+
       `<strong style="color:var(--a5)">DiD β̂₃ = ${f(o.b3Hat)}</strong> → corrects both biases — matches the true ATT = ${f(ST.b3)}`;
   } else {
     badge.innerHTML=p3<0.05
