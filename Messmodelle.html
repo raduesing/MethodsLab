@@ -132,6 +132,8 @@ td.diag{font-weight:600;outline:2px solid var(--a1);outline-offset:-2px}
 table.htab{border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.74rem;margin:.3rem 0 .6rem;width:100%}
 table.htab th,table.htab td{border:1px solid var(--grid);padding:.3rem .45rem;text-align:left;color:var(--ink2)}
 table.htab th{color:var(--accent);font-weight:500}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -193,10 +195,10 @@ table.htab th{color:var(--accent);font-weight:500}
     <div class="story-lbl">📋 Worum geht's</div>
     Ein <strong>Messmodell</strong> beschreibt, wie beobachtbare Items mit einer latenten Variable (dem Konstrukt)
     zusammenhängen: jedes Item <em>i</em> lädt mit <strong>λ<sub>i</sub></strong> auf den Faktor und hat eine
-    <strong>Fehlervarianz θ<sub>i</sub></strong>. Beispiel: Die <em>Faktoranalyse</em> hat für den 8-Item-Kognitionstest
+    <strong>Fehlervarianz θ<sub>i</sub></strong>. Beispiel: Die <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Die Faktoranalyse ist ein latentes Variablenmodell, das Kovarianzen zwischen beobachteten Indikatoren durch eine kleinere Anzahl latenter Faktoren erklärt.">Faktoranalyse</a></em> hat für den 8-Item-Kognitionstest
     (V1–V4 verbal, S1–S4 räumlich) gerade Ladungen geschätzt — welches Modell (parallel / tau-äquivalent / kongenerisch)
     steckt darin, und welcher Reliabilitätskoeffizient ist deshalb korrekt? Welche Annahmen man über λ und θ trifft,
-    entscheidet genau das. Das ist die fehlende Brücke zwischen <em>Faktoranalyse</em> und <em>Reliabilität (α vs. ω)</em>.
+    entscheidet genau das. Das ist die fehlende Brücke zwischen <em>Faktoranalyse</em> und <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a> (α vs. ω)</em>.
     <div style="margin-top:.6rem">
       <a class="xlink" href="KTT_Grundlagen.html" target="_blank">← KTT-Grundlagen: was Reliabilität grundsätzlich ist</a>
       <a class="xlink" href="Konfirmatorische_Faktoranalyse.html" target="_blank" style="margin-left:.4rem">Mehrere Faktoren, Struktur aus Theorie? → Konfirmatorische Faktoranalyse</a>
@@ -208,12 +210,12 @@ table.htab th{color:var(--accent);font-weight:500}
   <div class="sec-h"><span class="circ">①</span> Modellklasse &amp; Reliabilität</div>
   <div class="metric-grid">
     <div class="metric">
-      <div class="metric-lbl">McDonalds <span class="gk">ω<sub>total</sub></span> (korrekt)</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-omega" target="_blank" rel="noopener" title="McDonald's Omega ist ein faktoranalytisch fundiertes Reliabilitätsmaß, das robuster als Cronbach's Alpha ist, weil es keine tau-Äquivalenz voraussetzt.">McDonalds</a> <span class="gk">ω<sub>total</sub></span> (korrekt)</div>
       <div class="metric-val" id="m-omega" style="color:var(--a3)">—</div>
       <div class="metric-sub"><span class="gk">ω<sub>t</sub></span> = (Σλ)² / [(Σλ)² + Σθ]</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">Cronbachs <span class="gk">α</span></div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cronbach" target="_blank" rel="noopener" title="Cronbach's Alpha ist das am häufigsten verwendete Maß für die interne Konsistenz einer Skala — also für den Grad, in dem mehrere Items dasselbe latente Konstrukt messen.">Cronbachs</a> <span class="gk">α</span></div>
       <div class="metric-val" id="m-alpha" style="color:var(--a5)">—</div>
       <div class="metric-sub">setzt Tau-Äquivalenz voraus</div>
     </div>
@@ -253,12 +255,12 @@ table.htab th{color:var(--accent);font-weight:500}
         kongenerisch lässt beides frei. Je allgemeiner, desto realistischer — aber desto wichtiger der richtige Koeffizient.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Warum <span class="gk">α</span> die Tau-Äquivalenz braucht</div>
-      <div class="lcard-body">Der <em>Grund</em>: α beruht auf dem <strong>ungewichteten Summenscore</strong> — jedes Item zählt
+      <div class="lcard-h">Warum <span class="gk">α</span> die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-tau-aequivalenz" target="_blank" rel="noopener" title="Tau-Äquivalenz ist eine Annahme über die Messstruktur eines Konstrukts: Alle Items eines Tests haben gleiche Faktorladungen — sie tragen in gleichem Ausmaß zur Messung des latenten Merkmals bei.">Tau-Äquivalenz</a> braucht</div>
+      <div class="lcard-body">Der <em>Grund</em>: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cronbach" target="_blank" rel="noopener" title="Cronbach's Alpha ist das am häufigsten verwendete Maß für die interne Konsistenz einer Skala — also für den Grad, in dem mehrere Items dasselbe latente Konstrukt messen.">α</a> beruht auf dem <strong>ungewichteten Summenscore</strong> — jedes Item zählt
         gleich viel, ohne eigene Gewichtung. Das ist genau dann optimal, wenn alle Items das Konstrukt gleich gut messen,
         also <strong>gleiche Ladungen</strong> haben (Tau-Äquivalenz). Sind die Ladungen ungleich, behandelt α starke und
         schwache Items trotzdem gleich und verschenkt Information → es <strong>unterschätzt</strong> die Reliabilität.
-        <strong>ω</strong> gewichtet jedes Item mit seiner Ladung und bleibt deshalb auch bei kongenerischen Daten korrekt.</div>
+        <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-omega" target="_blank" rel="noopener" title="McDonald's Omega ist ein faktoranalytisch fundiertes Reliabilitätsmaß, das robuster als Cronbach's Alpha ist, weil es keine tau-Äquivalenz voraussetzt.">ω</a></strong> gewichtet jedes Item mit seiner Ladung und bleibt deshalb auch bei kongenerischen Daten korrekt.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h">Die Matrix verrät das Modell</div>
@@ -268,7 +270,7 @@ table.htab th{color:var(--accent);font-weight:500}
     </div>
     <div class="lcard">
       <div class="lcard-h">Brücke: EFA → Reliabilität</div>
-      <div class="lcard-body">Die <strong>Faktoranalyse</strong> schätzt die Ladungen aus echten Daten; hier siehst du,
+      <div class="lcard-body">Die <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Die Faktoranalyse ist ein latentes Variablenmodell, das Kovarianzen zwischen beobachteten Indikatoren durch eine kleinere Anzahl latenter Faktoren erklärt.">Faktoranalyse</a></strong> schätzt die Ladungen aus echten Daten; hier siehst du,
         welches <em>Modell</em> dahintersteht und welcher Koeffizient gilt. Das vertieft dann das α-vs-ω-Tool.
         <br><a class="xlink" href="Faktoranalyse.html" target="_blank">→ Faktoranalyse (EFA)</a></div>
     </div>
@@ -318,7 +320,7 @@ Var(V_i)      = λ_i² + θ_i
 Cov(V_i, V_j) = λ_i · λ_j     (i ≠ j)</span>
     <p class="help-p">λ<sub>i</sub> ist die Ladung (wie stark das Item das Konstrukt misst), θ<sub>i</sub> die Fehlervarianz
       (Messrauschen). Die Kovarianz zweier Items entsteht <em>nur</em> über den gemeinsamen Faktor — das ist die zentrale
-      Annahme (lokale Unabhängigkeit).</p>
+      Annahme (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-lokale-unabhaengigkeit" target="_blank" rel="noopener" title="Lokale Unabhängigkeit ist die zentrale statistische Kernbedingung der Item-Response-Theorie: Gegeben den wahren Fähigkeitswert θ einer Person sind die Antworten auf alle Items stochastisch unabhängig voneinander.">lokale Unabhängigkeit</a>).</p>
 
     <div class="help-sh">Die vier Modellstufen</div>
     <table class="htab">
@@ -345,10 +347,10 @@ Cov(V_i, V_j) = λ_i · λ_j     (i ≠ j)</span>
       — oder man berichtet pragmatisch gleich <strong>ω</strong>, das keine Gleichheit voraussetzt und nie kleiner als die
       wahre Reliabilität ist. <em>Im Zweifel ω.</em></p>
 
-    <div class="help-sh">Reliabilität — hier ist ω = <span class="gk">ω<sub>total</sub></span></div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a> — hier ist ω = <span class="gk">ω<sub>total</sub></span></div>
     <span class="help-formula">ω_total = (Σλ_i)² / [ (Σλ_i)² + Σθ_i ]
 α       = k/(k−1) · ( 1 − Σ(λ_i²+θ_i) / [ (Σλ_i)² + Σθ_i ] )</span>
-    <p class="help-p">Das hier berechnete ω ist <strong>McDonalds ω<sub>total</sub></strong> — der Anteil der Gesamtvarianz, der auf
+    <p class="help-p">Das hier berechnete ω ist <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-omega" target="_blank" rel="noopener" title="McDonald's Omega ist ein faktoranalytisch fundiertes Reliabilitätsmaß, das robuster als Cronbach's Alpha ist, weil es keine tau-Äquivalenz voraussetzt.">McDonalds ω<sub>total</sub></a></strong> — der Anteil der Gesamtvarianz, der auf
       <em>alle</em> gemeinsamen Faktoren zurückgeht. Da dieses Tool ein <strong>einfaktorielles</strong> Modell zeigt (nur ein
       gemeinsamer Faktor), fällt hier ω<sub>total</sub> mit <strong>ω<sub>hierarchical</sub></strong> (dem Anteil eines
       Generalfaktors) zusammen. Der Unterschied zwischen ω<sub>t</sub> und ω<sub>h</sub> wird erst bei <em>Mehrdimensionalität</em>
@@ -359,8 +361,8 @@ Cov(V_i, V_j) = λ_i · λ_j     (i ≠ j)</span>
 
     <div class="help-sh">Bezug zu CFA, EFA und IRT</div>
     <p class="help-p">Diese Modelle sind <strong>konfirmatorische Faktormodelle (CFA)</strong> mit Gleichheits-Restriktionen.
-      Die <em>explorative</em> Faktoranalyse schätzt λ frei aus Daten; die IRT ist das Pendant für kategoriale Items
-      (Ladung ↔ Diskrimination). Der Gruppenvergleich solcher Modelle ist das Thema <em>Messinvarianz</em>.</p>
+      Die <em>explorative <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Die Faktoranalyse ist ein latentes Variablenmodell, das Kovarianzen zwischen beobachteten Indikatoren durch eine kleinere Anzahl latenter Faktoren erklärt.">Faktoranalyse</a></em> schätzt λ frei aus Daten; die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-irt" target="_blank" rel="noopener" title="Item Response Theory (IRT) ist ein psychometrisches Rahmenwerk, das die Beziehung zwischen latenten Personenfähigkeiten θ und beobachtetem Antwortverhalten auf Items explizit modelliert.">IRT</a> ist das Pendant für kategoriale Items
+      (Ladung ↔ Diskrimination). Der Gruppenvergleich solcher Modelle ist das Thema <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-messinvarianz" target="_blank" rel="noopener" title="Messinvarianz besagt, dass ein psychologisches Konstrukt in verschiedenen Gruppen auf dieselbe Weise gemessen wird.">Messinvarianz</a></em>.</p>
 
     <div class="help-sh">Literatur</div>
     <p class="help-p">Lord, F. M. &amp; Novick, M. R. (1968). <em>Statistical Theories of Mental Test Scores.</em><br>

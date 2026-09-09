@@ -157,6 +157,8 @@ table.deftab strong{color:var(--ink)}
 table.htab{border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.74rem;margin:.3rem 0 .6rem;width:100%}
 table.htab th,table.htab td{border:1px solid var(--grid);padding:.3rem .45rem;text-align:left;color:var(--ink2)}
 table.htab th{color:var(--accent);font-weight:500}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
 @media(max-width:900px){.two-col{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr}.lcard-grid{grid-template-columns:1fr}}
 </style>
@@ -235,14 +237,14 @@ table.htab th{color:var(--accent);font-weight:500}
   </div>
 
   <div class="sec-h">What Is Measurement Invariance — and What Is It For?</div>
-  <p class="intro-p"><strong>Measurement invariance (factorial invariance)</strong> holds when an instrument measures a
+  <p class="intro-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-messinvarianz" target="_blank" rel="noopener" title="Measurement invariance states that a psychological construct is measured in the same way across different groups.">Measurement invariance (factorial invariance)</a></strong> holds when an instrument measures a
     construct <em>the same way</em> across different <strong>groups</strong> (gender, countries) or different
     <strong>time points</strong> — formally: when the measurement model's parameters (loadings <span class="gk">λ</span>,
     intercepts <span class="gk">τ</span>, error variances <span class="gk">θ</span>) are <strong>equal</strong> across
     groups. <strong>What's it for?</strong> Only then does a difference in the <em>test score</em> also mean a
     difference in the <em>construct</em> — and not merely in the instrument. Without invariance, you're comparing
     apples to oranges: a "group difference" can be a pure <strong>measurement artifact</strong>. It is tested as a
-    <strong>nested hierarchy</strong> in a multi-group SEM (diagram ② below): step by step, more parameters are set
+    <strong>nested hierarchy</strong> in a multi-group <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-strukturgleichungsmodell" target="_blank" rel="noopener" title="A structural equation model (SEM) combines a measurement model (confirmatory factor analysis) with a structural model (regression relationships among the latent variables themselves).">SEM</a> (diagram ② below): step by step, more parameters are set
     equal across groups (<span style="color:var(--a3)">green paths</span>) and it is checked whether the model still fits.</p>
 
   <table class="deftab">
@@ -360,7 +362,7 @@ table.htab th{color:var(--accent);font-weight:500}
       <div class="lcard-body"><strong>Δτ</strong> shifts the item equally for everyone (uniform DIF) → violates only the
         <em>scalar</em> level. <strong>Δλ</strong> changes how strongly the item measures the construct (non-uniform DIF)
         → already violates the <em>metric</em> level and hence also association comparisons. The same phenomenon is
-        called <strong>item DIF</strong> in IRT.
+        called <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dif" target="_blank" rel="noopener" title="DIF occurs when persons with the same latent ability θ show systematically different response probabilities on an item — depending on their group membership.">item DIF</a></strong> in IRT.
         <a class="xlink" href="DIF.html" target="_blank">→ DIF (IRT)</a></div>
     </div>
     <div class="lcard">
@@ -377,8 +379,8 @@ table.htab th{color:var(--accent);font-weight:500}
     </div>
     <div class="lcard">
       <div class="lcard-h">⑧ Related Tools</div>
-      <div class="lcard-body">Measurement invariance is the <em>group comparison</em> of measurement models: the same
-        CFA building blocks as in the Measurement Model and CFA tools, just restricted across groups. Shifted
+      <div class="lcard-body"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-messinvarianz" target="_blank" rel="noopener" title="Measurement invariance states that a psychological construct is measured in the same way across different groups.">Measurement invariance</a> is the <em>group comparison</em> of measurement models: the same
+        <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis is a latent variable model that explains the covariances among observed indicators through a smaller number of latent factors.">CFA</a> building blocks as in the Measurement Model and CFA tools, just restricted across groups. Shifted
         intercepts are reminiscent of norm shifts.
         <a class="xlink" href="Konfirmatorische_Faktoranalyse.html" target="_blank">→ Confirmatory Factor Analysis (CFA)</a>
         <a class="xlink" href="Messmodelle.html" target="_blank">→ Measurement Models</a>
@@ -434,12 +436,12 @@ D_artifact = (Δτ + Δμ·Δλ)/k        (caused only by the violated item)</sp
 
     <div class="help-sh">How It's Tested in Practice</div>
     <p class="help-p">Multi-group CFA: estimate nested models (configural → metric → scalar → strict) and compare
-      them. The χ² difference test is oversensitive with large n; more common are <strong>ΔCFI ≤ .01</strong> and
-      ΔRMSEA ≤ .015 (Cheung &amp; Rensvold 2002; Chen 2007). If a level doesn't hold, the offending item is located
+      them. The χ² difference test is oversensitive with large n; more common are <strong>Δ<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cfi" target="_blank" rel="noopener" title="The CFI (Comparative Fit Index) compares the fit of the estimated SEM/CFA model with a baseline model that assumes no relationships between variables at all.">CFI</a> ≤ .01</strong> and
+      Δ<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rmsea" target="_blank" rel="noopener" title="The RMSEA is an absolute fit index that estimates model misfit per degree of freedom while explicitly correcting for model complexity.">RMSEA</a> ≤ .015 (Cheung &amp; Rensvold 2002; Chen 2007). If a level doesn't hold, the offending item is located
       (modification indices) and given free parameters → <strong>partial invariance</strong>.</p>
 
     <div class="help-sh">Relation to DIF and IRT</div>
-    <p class="help-p">Non-invariance at the item level is <strong>Differential Item Functioning (DIF)</strong>: uniform DIF ↔
+    <p class="help-p">Non-invariance at the item level is <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dif" target="_blank" rel="noopener" title="DIF occurs when persons with the same latent ability θ show systematically different response probabilities on an item — depending on their group membership.">Differential Item Functioning (DIF)</a></strong>: uniform DIF ↔
       intercept/difficulty (Δτ), non-uniform DIF ↔ discrimination/loading (Δλ). The CFA framework here and the
       IRT framework in the DIF tool describe the same phenomenon in different parameterizations.</p>
 

@@ -151,6 +151,8 @@ canvas{width:100%;display:block}
   padding:.55rem .75rem;margin:.4rem 0 .6rem;font-family:'DM Mono',monospace;font-size:.77rem;
   color:var(--ink2);line-height:1.78}
 .help-callout strong{color:var(--ink)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a4)}
 </style>
 </head>
 <body>
@@ -234,7 +236,7 @@ canvas{width:100%;display:block}
 
   <div class="story-box">
     <div class="story-lbl">📋 From Exploratory to Confirmatory Factor Analysis</div>
-    <strong>Factor analysis (EFA)</strong> <em>searched for</em> the structure of the 8-item cognitive test (V1–V4 verbal,
+    <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis is a latent variable model that explains the covariances among observed indicators through a smaller number of latent factors.">Factor analysis (EFA)</a></strong> <em>searched for</em> the structure of the 8-item cognitive test (V1–V4 verbal,
     S1–S4 spatial). In <strong>confirmatory factor analysis (CFA)</strong>, it's the other way around: theory
     <em>specifies in advance</em> which item loads on which factor — you <em>test</em> whether this structure fits the
     data. Here you set the <em>true</em> population on the left and, on the right, what the <em>specified</em> model
@@ -268,22 +270,22 @@ canvas{width:100%;display:block}
       <div class="metric-sub" id="m-chi2-sub">N = 300</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">CFI</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cfi" target="_blank" rel="noopener" title="The CFI (Comparative Fit Index) compares the fit of the estimated SEM/CFA model with a baseline model that assumes no relationships between variables at all.">CFI</a></div>
       <div class="metric-val" id="m-cfi" style="color:var(--a3)">—</div>
       <div class="metric-sub">≥ .95 good</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">TLI</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-tli" target="_blank" rel="noopener" title="The TLI (Tucker-Lewis Index) is, like the CFI, an incremental fit index, but additionally accounts for model complexity (degrees of freedom).">TLI</a></div>
       <div class="metric-val" id="m-tli" style="color:var(--a3)">—</div>
       <div class="metric-sub">≥ .95 good</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">RMSEA</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rmsea" target="_blank" rel="noopener" title="The RMSEA is an absolute fit index that estimates model misfit per degree of freedom while explicitly correcting for model complexity.">RMSEA</a></div>
       <div class="metric-val" id="m-rmsea" style="color:var(--a2)">—</div>
       <div class="metric-sub">≤ .06 good</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">SRMR</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-srmr" target="_blank" rel="noopener" title="The SRMR measures the average standardized discrepancy between the observed and the model-implied correlation matrix.">SRMR</a></div>
       <div class="metric-val" id="m-srmr" style="color:var(--a2)">—</div>
       <div class="metric-sub">≤ .08 good</div>
     </div>
@@ -293,7 +295,7 @@ canvas{width:100%;display:block}
   <div class="plot-box">
     <div class="plot-title"><span class="circ">④</span> lavaan Syntax (R) — Matching the Specified Model</div>
     <div class="r-code" id="r-code"></div>
-    <div class="hint">Cutoffs follow Hu &amp; Bentler (1999). This tool fits itself via maximum likelihood on the
+    <div class="hint">Cutoffs follow Hu &amp; Bentler (1999). This tool fits itself via <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mle" target="_blank" rel="noopener" title="Maximum Likelihood Estimation seeks the parameter value θ̂ that maximizes the probability of the observed data.">maximum likelihood</a> on the
       (known) population-implied covariance matrix — <code>lavaan</code> would estimate the same structure on real data
       and additionally deliver standard errors/p-values for every parameter (not simulated here, see Help).</div>
   </div>
@@ -302,7 +304,7 @@ canvas{width:100%;display:block}
   <div class="lcard-grid">
     <div class="lcard">
       <div class="lcard-h">① EFA vs. CFA</div>
-      <div class="lcard-body">In <strong>EFA</strong>, the data determine which item loads on which factor (all
+      <div class="lcard-body">In <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis is a latent variable model that explains the covariances among observed indicators through a smaller number of latent factors.">EFA</a></strong>, the data determine which item loads on which factor (all
         loadings free, then the pattern is interpreted). In <strong>CFA</strong>, theory fixes the structure
         in advance — most loadings are <em>fixed</em> at 0 (simple structure), only a few are free. The fit
         tests whether this restriction is compatible with the data.</div>
@@ -337,7 +339,7 @@ canvas{width:100%;display:block}
       <div class="lcard-h">⑥ What's Next?</div>
       <div class="lcard-body">The next tool in this series extends CFA with <strong>structural paths
         between</strong> the factors (regression between latent variables instead of only between factor and items) —
-        a <strong>structural equation model (SEM)</strong>, with the same bridges to regression and mediation, just with
+        a <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-strukturgleichungsmodell" target="_blank" rel="noopener" title="A structural equation model (SEM) combines a measurement model (confirmatory factor analysis) with a structural model (regression relationships among the latent variables themselves).">structural equation model (SEM)</a></strong>, with the same bridges to regression and mediation, just with
         latent instead of observed variables.
         <br><a class="xlink" href="Strukturgleichungsmodell.html" target="_blank">→ Structural Equation Model (SEM)</a></div>
     </div>
@@ -358,9 +360,9 @@ canvas{width:100%;display:block}
       misspecification switches (factor correlation, one cross-loading), and the resulting fit indices —
       via genuine maximum-likelihood fitting to the (known) population-implied covariance matrix, no
       analogy formula. <strong>Not here:</strong> real sampling/standard errors, free item-factor assignment,
-      modification indices, multi-group CFA (→ Measurement Invariance).</p>
+      modification indices, multi-group CFA (→ <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-messinvarianz" target="_blank" rel="noopener" title="Measurement invariance states that a psychological construct is measured in the same way across different groups.">Measurement Invariance</a>).</p>
 
-    <div class="help-sh">Maximum Likelihood Discrepancy</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mle" target="_blank" rel="noopener" title="Maximum Likelihood Estimation seeks the parameter value θ̂ that maximizes the probability of the observed data.">Maximum Likelihood</a> Discrepancy</div>
     <span class="help-formula">F_ML(Σ, Σ(θ)) = log|Σ(θ)| + tr(Σ(θ)⁻¹Σ) − log|Σ| − p
 χ² = (N−1) · F_ML,min          (N = 300, p = 8 items)</span>
     <p class="help-p">Σ is the true (population-implied) covariance matrix, Σ(θ) that of the specified model with
@@ -374,28 +376,28 @@ canvas{width:100%;display:block}
 
     <div class="fitidx-list">
       <div class="fitidx">
-        <div class="fitidx-name">CFI <span class="fitidx-range">Comparative Fit Index · 0–1, higher = better</span></div>
+        <div class="fitidx-name"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cfi" target="_blank" rel="noopener" title="The CFI (Comparative Fit Index) compares the fit of the estimated SEM/CFA model with a baseline model that assumes no relationships between variables at all.">CFI</a> <span class="fitidx-range">Comparative Fit Index · 0–1, higher = better</span></div>
         <div class="fitidx-formula">CFI = 1 − max(0, χ²_M−df_M) / max(χ²_B−df_B, χ²_M−df_M)</div>
         <div class="fitidx-body">How much better is the model than the assumption of "no associations at all between the
           items"? Relative to the baseline model, hence bounded to [0,1] and comparatively robust with small
           samples.</div>
       </div>
       <div class="fitidx">
-        <div class="fitidx-name">TLI <span class="fitidx-range">Tucker-Lewis Index · usually 0–1, can be &gt;1</span></div>
+        <div class="fitidx-name"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-tli" target="_blank" rel="noopener" title="The TLI (Tucker-Lewis Index) is, like the CFI, an incremental fit index, but additionally accounts for model complexity (degrees of freedom).">TLI</a> <span class="fitidx-range">Tucker-Lewis Index · usually 0–1, can be &gt;1</span></div>
         <div class="fitidx-formula">TLI = [(χ²_B/df_B) − (χ²_M/df_M)] / [(χ²_B/df_B) − 1]</div>
         <div class="fitidx-body">Like CFI relative to the baseline model, but additionally <strong>parsimony-corrected</strong>
           — a model with many df (few estimated parameters) is favored given good fit. That's why it's not
           capped at 1 (see flashcard "TLI Above 1.00?").</div>
       </div>
       <div class="fitidx">
-        <div class="fitidx-name">RMSEA <span class="fitidx-range">Root Mean Square Error of Approximation · 0–1, lower = better</span></div>
+        <div class="fitidx-name"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rmsea" target="_blank" rel="noopener" title="The RMSEA is an absolute fit index that estimates model misfit per degree of freedom while explicitly correcting for model complexity.">RMSEA</a> <span class="fitidx-range">Root Mean Square Error of Approximation · 0–1, lower = better</span></div>
         <div class="fitidx-formula">RMSEA = √( max(0, (χ²_M−df_M) / (df_M·(N−1))) )</div>
         <div class="fitidx-body">Misfit per degree of freedom, independent of a comparison model. Penalizes unnecessarily
           complex models (few df); common practice additionally reports a 90% confidence interval (not
           computed here, since no real sampling occurs).</div>
       </div>
       <div class="fitidx">
-        <div class="fitidx-name">SRMR <span class="fitidx-range">Standardized Root Mean Square Residual · 0–1, lower = better</span></div>
+        <div class="fitidx-name"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-srmr" target="_blank" rel="noopener" title="The SRMR measures the average standardized discrepancy between the observed and the model-implied correlation matrix.">SRMR</a> <span class="fitidx-range">Standardized Root Mean Square Residual · 0–1, lower = better</span></div>
         <div class="fitidx-formula">SRMR = square root of the mean squared standardized residual</div>
         <div class="fitidx-body">The most direct measure: how far apart are the model and true correlation matrices on
           average? Weights every residual equally — a single strongly misspecified item (like

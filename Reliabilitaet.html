@@ -116,6 +116,8 @@ canvas{width:100%;display:block}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
   font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -171,11 +173,11 @@ canvas{width:100%;display:block}
 
   <div class="story-box">
     <div class="story-lbl">📋 Worum geht's</div>
-    <strong>Cronbachs α</strong> ist der meistberichtete Reliabilitätskoeffizient — und der am häufigsten falsch verwendete.
-    Er setzt <strong>Tau-Äquivalenz</strong> (gleiche Ladungen) und <strong>Eindimensionalität</strong> voraus. Sind diese
+    <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cronbach" target="_blank" rel="noopener" title="Cronbach's Alpha ist das am häufigsten verwendete Maß für die interne Konsistenz einer Skala — also für den Grad, in dem mehrere Items dasselbe latente Konstrukt messen.">Cronbachs α</a></strong> ist der meistberichtete Reliabilitätskoeffizient — und der am häufigsten falsch verwendete.
+    Er setzt <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-tau-aequivalenz" target="_blank" rel="noopener" title="Tau-Äquivalenz ist eine Annahme über die Messstruktur eines Konstrukts: Alle Items eines Tests haben gleiche Faktorladungen — sie tragen in gleichem Ausmaß zur Messung des latenten Merkmals bei.">Tau-Äquivalenz</a></strong> (gleiche Ladungen) und <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-eindimensionalitaet" target="_blank" rel="noopener" title="Eindimensionalität postuliert, dass ein einziges latentes Merkmal θ alle Itemantworten vollständig erklärt.">Eindimensionalität</a></strong> voraus. Sind diese
     verletzt, kann α die Reliabilität <em>unterschätzen</em> (ungleiche Ladungen) oder die Eindimensionalität
     <em>vortäuschen</em> (Mehrdimensionalität) — genau wie beim 8-Item-Kognitionstest (V1–V4 verbal, S1–S4 räumlich):
-    zwei Faktoren, aber ein einziges α. <strong>McDonalds ω</strong> ist die robustere Alternative — in zwei
+    zwei Faktoren, aber ein einziges α. <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-omega" target="_blank" rel="noopener" title="McDonald's Omega ist ein faktoranalytisch fundiertes Reliabilitätsmaß, das robuster als Cronbach's Alpha ist, weil es keine tau-Äquivalenz voraussetzt.">McDonalds ω</a></strong> ist die robustere Alternative — in zwei
     Varianten: ω<sub>total</sub> und ω<sub>hierarchical</sub>. Dieses Tool zeigt, wann welche Zahl trügt.
     <em>Voraussetzung: die Messmodelle (parallel/tau/kongenerisch).</em>
     <div style="margin-top:.6rem">
@@ -212,7 +214,7 @@ canvas{width:100%;display:block}
 
   <div class="sec-h"><span class="cnum">③</span>Split-Half — <span class="gk">α</span> ≈ Mittelwert aller Test-Halbierungen</div>
   <div class="plot-box">
-    <div class="plot-title">Verteilung aller möglichen Split-Half-Reliabilitäten (Spearman-Brown-korrigiert)</div>
+    <div class="plot-title">Verteilung aller möglichen Split-Half-Reliabilitäten (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-spearman-brown" target="_blank" rel="noopener" title="Die Spearman-Brown-Formel sagt vorher, wie sich die Reliabilität eines Tests verändert, wenn man seine Länge um den Faktor n verlängert (oder verkürzt).">Spearman-Brown</a>-korrigiert)</div>
     <canvas id="cv-split" height="250"></canvas>
     <div class="hint" id="hint-split"></div>
   </div>
@@ -220,7 +222,7 @@ canvas{width:100%;display:block}
   <div class="sec-h">Konzepte</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">Wann <span class="gk">α</span> unterschätzt</div>
+      <div class="lcard-h">Wann <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cronbach" target="_blank" rel="noopener" title="Cronbach's Alpha ist das am häufigsten verwendete Maß für die interne Konsistenz einer Skala — also für den Grad, in dem mehrere Items dasselbe latente Konstrukt messen."><span class="gk">α</span></a> unterschätzt</div>
       <div class="lcard-body">Bei <strong>ungleichen Ladungen</strong> (kongenerisch) behandelt α — als ungewichteter
         Summenscore — alle Items gleich und verschenkt Information: α &lt; ω<sub>total</sub>. α ist dann eine
         <strong>Untergrenze</strong> der wahren Reliabilität. Lösung: ω<sub>total</sub> berichten.</div>
@@ -229,12 +231,12 @@ canvas{width:100%;display:block}
       <div class="lcard-h">Wann <span class="gk">α</span> täuscht</div>
       <div class="lcard-body">Bei <strong>Mehrdimensionalität</strong> (starke Gruppenfaktoren) zählen α und ω<sub>total</sub>
         auch die Gruppen-Varianz als „reliabel". Ein hohes α suggeriert dann eine Einheitlichkeit, die nicht existiert.
-        <strong>ω<sub>hierarchical</sub></strong> zeigt, wie viel wirklich auf den <em>einen</em> Generalfaktor entfällt —
+        <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-omega" target="_blank" rel="noopener" title="McDonald's Omega ist ein faktoranalytisch fundiertes Reliabilitätsmaß, das robuster als Cronbach's Alpha ist, weil es keine tau-Äquivalenz voraussetzt.">ω<sub>hierarchical</sub></a></strong> zeigt, wie viel wirklich auf den <em>einen</em> Generalfaktor entfällt —
         oft erschreckend wenig.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h"><span class="gk">α</span> = Mittel der Split-Halves</div>
-      <div class="lcard-body">Split-Half teilt den Test in zwei Hälften und korreliert sie (Spearman-Brown-korrigiert).
+      <div class="lcard-body">Split-Half teilt den Test in zwei Hälften und korreliert sie (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-spearman-brown" target="_blank" rel="noopener" title="Die Spearman-Brown-Formel sagt vorher, wie sich die Reliabilität eines Tests verändert, wenn man seine Länge um den Faktor n verlängert (oder verkürzt).">Spearman-Brown</a>-korrigiert).
         Das Ergebnis hängt davon ab, <em>wie</em> man teilt. Cronbachs α ist exakt der <strong>Mittelwert über alle
         möglichen Halbierungen</strong> — Panel ③ macht das sichtbar.</div>
     </div>
@@ -242,12 +244,12 @@ canvas{width:100%;display:block}
       <div class="lcard-h">KR-20 &amp; die Praxis</div>
       <div class="lcard-body">Für dichotome (0/1) Items ist <strong>KR-20</strong> nichts anderes als Cronbachs α.
         Empfehlung der Methodenliteratur (Revelle, McDonald, Flora): standardmäßig <strong>ω</strong> berichten und bei
-        Eindimensionalitäts-Zweifeln zusätzlich <strong>ω<sub>h</sub></strong>.</div>
+        <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-eindimensionalitaet" target="_blank" rel="noopener" title="Eindimensionalität postuliert, dass ein einziges latentes Merkmal θ alle Itemantworten vollständig erklärt.">Eindimensionalitäts</a>-Zweifeln zusätzlich <strong>ω<sub>h</sub></strong>.</div>
     </div>
     <div class="lcard" style="grid-column:1/-1">
       <div class="lcard-h">Die Mess-Achse</div>
       <div class="lcard-body">Dieses Tool steht am Ende der Kette: <strong>KTT-Grundlagen</strong> (was ist Reliabilität) →
-        <strong>Faktoranalyse</strong> (Ladungen aus Daten schätzen) → <strong>Messmodelle</strong> (welche Annahme:
+        <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Die Faktoranalyse ist ein latentes Variablenmodell, das Kovarianzen zwischen beobachteten Indikatoren durch eine kleinere Anzahl latenter Faktoren erklärt.">Faktoranalyse</a></strong> (Ladungen aus Daten schätzen) → <strong>Messmodelle</strong> (welche Annahme:
         parallel/tau/kongenerisch) → <strong>hier</strong> (welcher Koeffizient ist korrekt). Die Ladungen, mit denen ω
         rechnet, kommen genau aus einem Faktormodell.
         <br><a class="xlink" href="KTT_Grundlagen.html" target="_blank">→ KTT-Grundlagen</a>
@@ -283,7 +285,7 @@ canvas{width:100%;display:block}
       <strong>α</strong> nutzt nur die Item-Varianzen und -Kovarianzen, ohne die Faktorstruktur zu kennen.</p>
 
     <div class="help-sh">Drei Szenarien</div>
-    <p class="help-p"><strong style="color:var(--a3)">Tau-äquivalent</strong> (gleiche λg, λs = 0): α = ω<sub>t</sub> = ω<sub>h</sub>.
+    <p class="help-p"><strong style="color:var(--a3)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-tau-aequivalenz" target="_blank" rel="noopener" title="Tau-Äquivalenz ist eine Annahme über die Messstruktur eines Konstrukts: Alle Items eines Tests haben gleiche Faktorladungen — sie tragen in gleichem Ausmaß zur Messung des latenten Merkmals bei.">Tau-äquivalent</a></strong> (gleiche λg, λs = 0): α = ω<sub>t</sub> = ω<sub>h</sub>.
       Hier ist α exakt korrekt.<br>
       <strong style="color:var(--a5)">Kongenerisch</strong> (ungleiche λg, λs = 0): α &lt; ω<sub>t</sub> = ω<sub>h</sub>.
       α <em>unterschätzt</em> — je ungleicher die Ladungen, desto größer die Lücke.<br>
@@ -291,7 +293,7 @@ canvas{width:100%;display:block}
       α und ω<sub>t</sub> bleiben hoch, aber nur ein kleiner Teil entfällt auf den Generalfaktor — ein hohes α
       <em>täuscht</em> Eindimensionalität vor.</p>
 
-    <div class="help-sh">Warum <span class="gk">α</span> nicht gleich Unidimensionalität bedeutet</div>
+    <div class="help-sh">Warum <span class="gk">α</span> nicht gleich <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-eindimensionalitaet" target="_blank" rel="noopener" title="Eindimensionalität postuliert, dass ein einziges latentes Merkmal θ alle Itemantworten vollständig erklärt.">Unidimensionalität</a> bedeutet</div>
     <p class="help-p">Ein verbreiteter Irrtum: „hohes α = homogene, eindimensionale Skala". Falsch — α steigt schon mit der
       Itemzahl und mit beliebigen positiven Korrelationen, ganz gleich woher sie kommen. Mehrere korrelierte Subdimensionen
       treiben α nach oben, obwohl die Skala <em>nicht</em> eindimensional ist. Nur ω<sub>h</sub> (oder eine explizite
@@ -300,11 +302,11 @@ canvas{width:100%;display:block}
     <div class="help-sh">Split-Half (Panel ③)</div>
     <p class="help-p">Teilt man den Test in zwei Hälften und korrigiert die Halbkorrelation per Spearman-Brown
       (r<sub>sh</sub> = 2r/(1+r)), erhält man ein Split-Half-Maß — dessen Wert aber von der Aufteilung abhängt.
-      Cronbachs α ist der <strong>Durchschnitt über alle möglichen Halbierungen</strong>. Das Histogramm zeigt diese
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cronbach" target="_blank" rel="noopener" title="Cronbach's Alpha ist das am häufigsten verwendete Maß für die interne Konsistenz einer Skala — also für den Grad, in dem mehrere Items dasselbe latente Konstrukt messen.">Cronbachs α</a> ist der <strong>Durchschnitt über alle möglichen Halbierungen</strong>. Das Histogramm zeigt diese
       Verteilung; α (orange) liegt in ihrer Mitte, ω<sub>t</sub> (grün) meist darüber.</p>
 
     <div class="help-sh">Empfehlung</div>
-    <p class="help-p">Berichte standardmäßig <strong>ω<sub>total</sub></strong> statt α (oder zusätzlich). Besteht der Verdacht
+    <p class="help-p">Berichte standardmäßig <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-omega" target="_blank" rel="noopener" title="McDonald's Omega ist ein faktoranalytisch fundiertes Reliabilitätsmaß, das robuster als Cronbach's Alpha ist, weil es keine tau-Äquivalenz voraussetzt.">ω<sub>total</sub></a></strong> statt α (oder zusätzlich). Besteht der Verdacht
       auf Mehrdimensionalität, berichte <strong>ω<sub>hierarchical</sub></strong> und prüfe die Faktorstruktur. α ist nicht
       „verboten", aber unter Tau-Äquivalenz ein Spezialfall von ω und sonst irreführend.</p>
 

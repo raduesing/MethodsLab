@@ -126,6 +126,8 @@ canvas{width:100%;display:block}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -197,7 +199,7 @@ canvas{width:100%;display:block}
     <div class="story-lbl">📋 Beispiel — Intelligenztest (IQ-Skala)</div>
     Ein IQ-Test hat M = 100. Jeder beobachtete Wert <strong>X</strong> ist die Summe aus dem <em>wahren Wert</em> <strong>T</strong>
     (der tatsächlichen Merkmalsausprägung) und einem zufälligen <em>Messfehler</em> <strong>E</strong>: <strong>X = T + E</strong>.
-    Die <strong>Reliabilität</strong> ist der Anteil der Varianz, der auf wahre Unterschiede zurückgeht — nicht auf Rauschen.
+    Die <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a></strong> ist der Anteil der Varianz, der auf wahre Unterschiede zurückgeht — nicht auf Rauschen.
     Mit σ<sub>T</sub> = 14 und σ<sub>E</sub> = 5 ergibt sich r<sub>tt</sub> ≈ .89 und ein SEM von 5 Punkten.
     <div style="margin-top:.6rem">
       <a class="xlink" href="Faktoranalyse.html" target="_blank">Ein Testwert ist meist eine Summe mehrerer Items — wie kommt man von dort zur Reliabilität? →</a>
@@ -257,8 +259,8 @@ canvas{width:100%;display:block}
   <p class="ci-intro">Eine <strong>einzelne Person</strong> bearbeitet den Test einmal und erhält den beobachteten Wert
     <strong>X</strong> (Regler „Beobachteter Wert X" in der Seitenleiste). Wegen des Messfehlers ist X nicht exakt der
     wahre Wert <strong>τ</strong>. Die KTT kennt dafür zwei Konfidenzintervalle:
-    die <strong style="color:var(--a1)">Äquivalenzhypothese</strong> (KI um den beobachteten Wert X) und die
-    <strong style="color:var(--a3)">Regressionshypothese</strong> (KI um den zur Mitte korrigierten Schätzwert X′).</p>
+    die <strong style="color:var(--a1)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-aequivalenzhypothese" target="_blank" rel="noopener" title="In der Individualdiagnostik bezeichnet das KI auf Basis der Äquivalenzhypothese ein Konfidenzintervall, das direkt um den beobachteten Testwert X einer Person gelegt wird: KI = X ± z · SEM.">Äquivalenzhypothese</a></strong> (KI um den beobachteten Wert X) und die
+    <strong style="color:var(--a3)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-regressionshypothese" target="_blank" rel="noopener" title="Das KI auf Basis der Regressionshypothese berücksichtigt zusätzlich den Regressions-zur-Mitte-Effekt: Extreme beobachtete Testwerte gehen zu einem Teil auf zufällige Messfehler zurück und überschätzen systematisch die Abweichung vom Populationsmittel.">Regressionshypothese</a></strong> (KI um den zur Mitte korrigierten Schätzwert X′).</p>
   <div class="plot-box">
     <div class="plot-title"><span id="ci-cl">95</span>%-Konfidenzintervall: Äquivalenz- (rot) vs. Regressionshypothese (grün)</div>
     <canvas id="cv-ci" height="190"></canvas>
@@ -267,14 +269,14 @@ canvas{width:100%;display:block}
   <div class="ci-note">⚠ Ein Konfidenzintervall ist <strong>kein</strong> Wahrscheinlichkeitsbereich für τ und <strong>keine
     Schätzung des wahren Werts</strong> selbst — es ist ein Überdeckungs-Intervall (bei wiederholter Messung enthält es τ
     in z. B. 95 % der Fälle). Der Punkt-Schätzer des wahren Werts ist X bzw. X′; das <em>Intervall</em> drückt nur die Unsicherheit
-    aus. Eine direkte Wahrscheinlichkeitsaussage über τ erlaubt erst das Bayes-Credible-Interval — KI und CrI werden
+    aus. Eine direkte Wahrscheinlichkeitsaussage über τ erlaubt erst das <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-credible-interval-diag" target="_blank" rel="noopener" title="In der Individualdiagnostik kombiniert das bayesianische CrI einen Prior über den wahren Testwert τ mit der Likelihood des beobachteten Werts X zur Posteriorverteilung — und erlaubt direkte Wahrscheinlichkeitsaussagen wie P(τ > T | X).">Bayes-Credible-Interval</a> — KI und CrI werden
     ausführlich behandelt im Tool
     <a class="xlink" href="Diagnostische_Intervalle.html" target="_blank" style="margin-top:0;padding:.2rem .55rem">→ Diagnostische Intervalle</a></div>
 
   <div class="sec-h">Konzepte</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">Reliabilität ist ein Varianzanteil</div>
+      <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a> ist ein Varianzanteil</div>
       <div class="lcard-body">r<sub>tt</sub> sagt, <strong>welcher Anteil</strong> der beobachteten Streuung auf echte
         Unterschiede zwischen Personen zurückgeht. r = .90 heißt: 90% wahre Varianz, 10% Messrauschen. Reliabilität ist
         keine Eigenschaft „des Tests", sondern von <strong>Test + Population</strong>: dieselbe Skala ist in einer homogenen
@@ -282,20 +284,20 @@ canvas{width:100%;display:block}
     </div>
     <div class="lcard">
       <div class="lcard-h">SEM hängt von Reliabilität ab</div>
-      <div class="lcard-body">Der Standardmessfehler <strong>SEM = SD·√(1−r)</strong> übersetzt Reliabilität in die
+      <div class="lcard-body">Der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="Der Standardmessfehler (SEM, Standard Error of Measurement) quantifiziert die durchschnittliche zufällige Messabweichung des beobachteten Testwerts X vom wahren Wert τ einer einzelnen Person.">Standardmessfehler</a> <strong>SEM = SD·√(1−r)</strong> übersetzt Reliabilität in die
         Skaleneinheit. Hier gilt sogar SEM = σ<sub>E</sub>. Er ist die Basis für Konfidenzbänder um Einzelwerte — und damit
         für die <strong>Veränderungsmessung</strong> (Reliable Change).
         <br><a class="xlink" href="Jacobson_Truax.html" target="_blank">→ Jacobson-Truax</a></div>
     </div>
     <div class="lcard">
       <div class="lcard-h">Längere Tests sind reliabler</div>
-      <div class="lcard-body">Die <strong>Spearman-Brown-Formel</strong> zeigt: mehr (gleichartige) Items erhöhen die
+      <div class="lcard-body">Die <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-spearman-brown" target="_blank" rel="noopener" title="Die Spearman-Brown-Formel sagt vorher, wie sich die Reliabilität eines Tests verändert, wenn man seine Länge um den Faktor n verlängert (oder verkürzt).">Spearman-Brown-Formel</a></strong> zeigt: mehr (gleichartige) Items erhöhen die
         Reliabilität — aber mit abnehmendem Grenznutzen. Verdoppeln bringt viel, Verzehnfachen wenig. Das Tool rechnet aus,
         wie viele Items für eine Ziel-Reliabilität nötig sind.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h">Messfehler verzerrt Zusammenhänge</div>
-      <div class="lcard-body">Unreliabilität <strong>dämpft Korrelationen</strong> (Attenuation): der beobachtete
+      <div class="lcard-body">Unreliabilität <strong>dämpft Korrelationen</strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation bezeichnet die systematische Unterschätzung der wahren Korrelation zwischen zwei Konstrukten durch Messfehler in den Indikatoren.">Attenuation</a>): der beobachtete
         Zusammenhang ist kleiner als der wahre. Die Disattenuationsformel korrigiert das.
         <br><a class="xlink" href="Messfehler_Attenuierung.html" target="_blank">→ Messfehler-Attenuation</a></div>
     </div>
@@ -330,17 +332,17 @@ Var(X) = Var(T) + Var(E)</span>
       denn ihr gemeinsamer Teil ist der wahre Wert T. Das ist die operationale Grundlage der Test-Retest- und
       Parallel-Test-Reliabilität. Der empirisch geschätzte Wert schwankt um den theoretischen (Stichprobenfehler — mit n sichtbar kleiner).</p>
 
-    <div class="help-sh">Standardmessfehler &amp; Konfidenzintervalle (Panel ④)</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="Der Standardmessfehler (SEM, Standard Error of Measurement) quantifiziert die durchschnittliche zufällige Messabweichung des beobachteten Testwerts X vom wahren Wert τ einer einzelnen Person.">Standardmessfehler</a> &amp; Konfidenzintervalle (Panel ④)</div>
     <p class="help-p">Eine <strong>einzelne Person</strong> erhält bei einer Testung den beobachteten Wert X. Wegen des
       Messfehlers weicht X vom (unbekannten) wahren Wert τ ab. Der <strong>Standardmessfehler</strong> beschreibt, wie stark
       einzelne Messungen um τ streuen:</p>
     <span class="help-formula">SEM = SD_X · √(1 − r_tt)        (hier zugleich = σ_E)</span>
     <p class="help-p">Daraus bildet die KTT ein Konfidenzintervall — in zwei Lesarten, exakt wie im Tool „Diagnostische
       Intervalle":</p>
-    <p class="help-p"><strong style="color:var(--a1)">Äquivalenzhypothese</strong> (rot): das Intervall liegt um den
+    <p class="help-p"><strong style="color:var(--a1)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-aequivalenzhypothese" target="_blank" rel="noopener" title="In der Individualdiagnostik bezeichnet das KI auf Basis der Äquivalenzhypothese ein Konfidenzintervall, das direkt um den beobachteten Testwert X einer Person gelegt wird: KI = X ± z · SEM.">Äquivalenzhypothese</a></strong> (rot): das Intervall liegt um den
       beobachteten Wert X. Annahme: X ist ein erwartungstreuer Schätzer von τ.</p>
     <span class="help-formula">KI = X ± z · SEM</span>
-    <p class="help-p"><strong style="color:var(--a3)">Regressionshypothese</strong> (grün): das Intervall liegt um den
+    <p class="help-p"><strong style="color:var(--a3)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-regressionshypothese" target="_blank" rel="noopener" title="Das KI auf Basis der Regressionshypothese berücksichtigt zusätzlich den Regressions-zur-Mitte-Effekt: Extreme beobachtete Testwerte gehen zu einem Teil auf zufällige Messfehler zurück und überschätzen systematisch die Abweichung vom Populationsmittel.">Regressionshypothese</a></strong> (grün): das Intervall liegt um den
       <em>regredierten</em> Schätzwert X′, der die Regression zur Mitte berücksichtigt — extreme Werte enthalten mehr
       Messfehler und werden zur Mitte gezogen:</p>
     <span class="help-formula">X′ = M + r_tt · (X − M)
@@ -349,11 +351,11 @@ KI = X′ ± z · SE_reg</span>
     <p class="help-p"><strong>Wichtig zur Interpretation:</strong> Ein Konfidenzintervall ist <em>keine</em>
       Wahrscheinlichkeitsaussage über τ und nicht selbst „die Schätzung des wahren Werts". Der Punkt-Schätzer ist X bzw.
       X′; das Intervall drückt nur aus, dass es bei <em>wiederholter</em> Messung den wahren Wert in z. B. 95 % der Fälle
-      überdeckt. Eine direkte Aussage „mit 95 % liegt τ in …" erlaubt erst das <strong>Bayes-Credible-Interval</strong>.
+      überdeckt. Eine direkte Aussage „mit 95 % liegt τ in …" erlaubt erst das <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-credible-interval-diag" target="_blank" rel="noopener" title="In der Individualdiagnostik kombiniert das bayesianische CrI einen Prior über den wahren Testwert τ mit der Likelihood des beobachteten Werts X zur Posteriorverteilung — und erlaubt direkte Wahrscheinlichkeitsaussagen wie P(τ > T | X).">Bayes-Credible-Interval</a></strong>.
       Konfidenz- und Credible-Intervalle (sowie die Prozentrang-Einordnung) werden ausführlich im Tool
       <em>Diagnostische Intervalle</em> behandelt.</p>
 
-    <div class="help-sh">Spearman-Brown: Testlänge &amp; Reliabilität (Panel ③)</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-spearman-brown" target="_blank" rel="noopener" title="Die Spearman-Brown-Formel sagt vorher, wie sich die Reliabilität eines Tests verändert, wenn man seine Länge um den Faktor n verlängert (oder verkürzt).">Spearman-Brown</a>: Testlänge &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a> (Panel ③)</div>
     <p class="help-p">Reliabilität lässt sich durch <strong>mehr Items</strong> erhöhen — denn der gemeinsame wahre Anteil
       mehrerer Items summiert sich stärker als ihr unabhängiger Messfehler. Die Spearman-Brown-Prophezeiungsformel sagt
       voraus, welche Reliabilität ein um den Faktor k verlängerter Test hätte:</p>

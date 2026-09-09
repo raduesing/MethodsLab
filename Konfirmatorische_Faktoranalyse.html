@@ -151,6 +151,8 @@ canvas{width:100%;display:block}
   padding:.55rem .75rem;margin:.4rem 0 .6rem;font-family:'DM Mono',monospace;font-size:.77rem;
   color:var(--ink2);line-height:1.78}
 .help-callout strong{color:var(--ink)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a4)}
 </style>
 </head>
 <body>
@@ -234,7 +236,7 @@ canvas{width:100%;display:block}
 
   <div class="story-box">
     <div class="story-lbl">📋 Von der explorativen zur konfirmatorischen Faktoranalyse</div>
-    Die <strong>Faktoranalyse (EFA)</strong> hat die Struktur des 8-Item-Kognitionstests (V1–V4 verbal, S1–S4 räumlich)
+    Die <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Die Faktoranalyse ist ein latentes Variablenmodell, das Kovarianzen zwischen beobachteten Indikatoren durch eine kleinere Anzahl latenter Faktoren erklärt.">Faktoranalyse (EFA)</a></strong> hat die Struktur des 8-Item-Kognitionstests (V1–V4 verbal, S1–S4 räumlich)
     <em>gesucht</em>. Bei der <strong>konfirmatorischen Faktoranalyse (CFA)</strong> ist es umgekehrt: Die Theorie legt
     <em>vorher</em> fest, welches Item auf welchen Faktor lädt — man <em>testet</em>, ob diese Struktur zu den Daten passt.
     Hier stellst du links die <em>wahre</em> Population ein und rechts, was das <em>spezifizierte</em> Modell annimmt —
@@ -268,22 +270,22 @@ canvas{width:100%;display:block}
       <div class="metric-sub" id="m-chi2-sub">N = 300</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">CFI</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cfi" target="_blank" rel="noopener" title="Der CFI (Comparative Fit Index) vergleicht die Anpassungsgüte des geschätzten SEM/CFA-Modells mit einem Baseline-Modell, das gar keine Zusammenhänge zwischen den Variablen annimmt.">CFI</a></div>
       <div class="metric-val" id="m-cfi" style="color:var(--a3)">—</div>
       <div class="metric-sub">≥ .95 gut</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">TLI</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-tli" target="_blank" rel="noopener" title="Der TLI (Tucker-Lewis-Index) ist wie der CFI ein inkrementeller Fit-Index, berücksichtigt aber zusätzlich die Modellkomplexität (Freiheitsgrade).">TLI</a></div>
       <div class="metric-val" id="m-tli" style="color:var(--a3)">—</div>
       <div class="metric-sub">≥ .95 gut</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">RMSEA</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rmsea" target="_blank" rel="noopener" title="Der RMSEA (Root Mean Square Error of Approximation) ist ein absoluter Fit-Index, der die Modell-Fehlpassung pro Freiheitsgrad schätzt und dabei explizit für Modellkomplexität korrigiert.">RMSEA</a></div>
       <div class="metric-val" id="m-rmsea" style="color:var(--a2)">—</div>
       <div class="metric-sub">≤ .06 gut</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">SRMR</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-srmr" target="_blank" rel="noopener" title="Der SRMR (Standardized Root Mean Square Residual) misst die durchschnittliche standardisierte Diskrepanz zwischen der beobachteten und der vom Modell implizierten Korrelationsmatrix.">SRMR</a></div>
       <div class="metric-val" id="m-srmr" style="color:var(--a2)">—</div>
       <div class="metric-sub">≤ .08 gut</div>
     </div>
@@ -293,7 +295,7 @@ canvas{width:100%;display:block}
   <div class="plot-box">
     <div class="plot-title"><span class="circ">④</span> lavaan-Syntax (R) — passend zum spezifizierten Modell</div>
     <div class="r-code" id="r-code"></div>
-    <div class="hint">Cutoffs nach Hu &amp; Bentler (1999). Dieses Tool schätzt selbst per Maximum-Likelihood auf der
+    <div class="hint">Cutoffs nach Hu &amp; Bentler (1999). Dieses Tool schätzt selbst per <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-mle" target="_blank" rel="noopener" title="Die Maximum-Likelihood-Schätzung sucht denjenigen Parameterwert θ̂, der die Wahrscheinlichkeit der beobachteten Daten maximiert.">Maximum-Likelihood</a> auf der
       (bekannten) populationsimplizierten Kovarianzmatrix — <code>lavaan</code> würde dieselbe Struktur auf echten Daten
       schätzen und zusätzlich Standardfehler/p-Werte für jeden Parameter liefern (hier nicht simuliert, siehe Hilfe).</div>
   </div>
@@ -302,7 +304,7 @@ canvas{width:100%;display:block}
   <div class="lcard-grid">
     <div class="lcard">
       <div class="lcard-h">① EFA vs. CFA</div>
-      <div class="lcard-body">In der <strong>EFA</strong> bestimmen die Daten, welches Item auf welchen Faktor lädt (alle
+      <div class="lcard-body">In der <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Die Faktoranalyse ist ein latentes Variablenmodell, das Kovarianzen zwischen beobachteten Indikatoren durch eine kleinere Anzahl latenter Faktoren erklärt.">EFA</a></strong> bestimmen die Daten, welches Item auf welchen Faktor lädt (alle
         Ladungen frei, dann interpretiert man das Muster). In der <strong>CFA</strong> legt die Theorie die Struktur
         vorher fest — die meisten Ladungen sind auf 0 <em>fixiert</em> (Simple Structure), nur wenige sind frei. Der Fit
         testet, ob diese Restriktion mit den Daten verträglich ist.</div>
@@ -336,7 +338,7 @@ canvas{width:100%;display:block}
       <div class="lcard-h">⑥ Und weiter?</div>
       <div class="lcard-body">Das nächste Tool in dieser Reihe erweitert die CFA um <strong>strukturelle Pfade
         zwischen</strong> den Faktoren (Regression zwischen latenten Variablen statt nur zwischen Faktor und Items) —
-        ein <strong>Strukturgleichungsmodell (SEM)</strong>, mit denselben Brücken zu Regression und Mediation, nur mit
+        ein <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-strukturgleichungsmodell" target="_blank" rel="noopener" title="Ein Strukturgleichungsmodell (SEM) kombiniert ein Messmodell (konfirmatorische Faktorenanalyse) mit einem Strukturmodell (Regressionsbeziehungen zwischen den latenten Variablen selbst).">Strukturgleichungsmodell (SEM)</a></strong>, mit denselben Brücken zu Regression und Mediation, nur mit
         latenten statt beobachteten Variablen.
         <br><a class="xlink" href="Strukturgleichungsmodell.html" target="_blank">→ Strukturgleichungsmodell (SEM)</a></div>
     </div>
@@ -357,9 +359,9 @@ canvas{width:100%;display:block}
       Fehlspezifikations-Schalter (Faktorkorrelation, eine Kreuzladung) und die daraus resultierenden Fit-Indices —
       per echter Maximum-Likelihood-Anpassung an die (bekannte) populationsimplizierte Kovarianzmatrix, keine
       Analogie-Formel. <strong>Nicht hier:</strong> echte Stichprobenziehung/Standardfehler, freie Item-Faktor-Zuordnung,
-      Modifikationsindizes, Mehrgruppen-CFA (→ Messinvarianz).</p>
+      Modifikationsindizes, Mehrgruppen-CFA (→ <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-messinvarianz" target="_blank" rel="noopener" title="Messinvarianz besagt, dass ein psychologisches Konstrukt in verschiedenen Gruppen auf dieselbe Weise gemessen wird.">Messinvarianz</a>).</p>
 
-    <div class="help-sh">Maximum-Likelihood-Diskrepanz</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-mle" target="_blank" rel="noopener" title="Die Maximum-Likelihood-Schätzung sucht denjenigen Parameterwert θ̂, der die Wahrscheinlichkeit der beobachteten Daten maximiert.">Maximum-Likelihood</a>-Diskrepanz</div>
     <span class="help-formula">F_ML(Σ, Σ(θ)) = log|Σ(θ)| + tr(Σ(θ)⁻¹Σ) − log|Σ| − p
 χ² = (N−1) · F_ML,min          (N = 300, p = 8 Items)</span>
     <p class="help-p">Σ ist die wahre (populationsimplizierte) Kovarianzmatrix, Σ(θ) die des spezifizierten Modells mit
@@ -373,28 +375,28 @@ canvas{width:100%;display:block}
 
     <div class="fitidx-list">
       <div class="fitidx">
-        <div class="fitidx-name">CFI <span class="fitidx-range">Comparative Fit Index · 0–1, höher = besser</span></div>
+        <div class="fitidx-name"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cfi" target="_blank" rel="noopener" title="Der CFI (Comparative Fit Index) vergleicht die Anpassungsgüte des geschätzten SEM/CFA-Modells mit einem Baseline-Modell, das gar keine Zusammenhänge zwischen den Variablen annimmt.">CFI</a> <span class="fitidx-range">Comparative Fit Index · 0–1, höher = besser</span></div>
         <div class="fitidx-formula">CFI = 1 − max(0, χ²_M−df_M) / max(χ²_B−df_B, χ²_M−df_M)</div>
         <div class="fitidx-body">Wie viel besser ist das Modell als die Annahme „keinerlei Zusammenhänge zwischen den
           Items"? Relativ zum Baseline-Modell, dadurch auf [0,1] begrenzt und vergleichsweise robust bei kleinen
           Stichproben.</div>
       </div>
       <div class="fitidx">
-        <div class="fitidx-name">TLI <span class="fitidx-range">Tucker-Lewis-Index · meist 0–1, kann &gt;1 sein</span></div>
+        <div class="fitidx-name"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-tli" target="_blank" rel="noopener" title="Der TLI (Tucker-Lewis-Index) ist wie der CFI ein inkrementeller Fit-Index, berücksichtigt aber zusätzlich die Modellkomplexität (Freiheitsgrade).">TLI</a> <span class="fitidx-range">Tucker-Lewis-Index · meist 0–1, kann &gt;1 sein</span></div>
         <div class="fitidx-formula">TLI = [(χ²_B/df_B) − (χ²_M/df_M)] / [(χ²_B/df_B) − 1]</div>
         <div class="fitidx-body">Wie CFI relativ zum Baseline-Modell, aber zusätzlich <strong>parsimonie-korrigiert</strong>
           — ein Modell mit vielen df (wenig geschätzten Parametern) wird bei gutem Fit begünstigt. Deshalb nicht
           auf 1 gedeckelt (siehe Lernkarte „TLI über 1.00?").</div>
       </div>
       <div class="fitidx">
-        <div class="fitidx-name">RMSEA <span class="fitidx-range">Root Mean Square Error of Approximation · 0–1, niedriger = besser</span></div>
+        <div class="fitidx-name"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rmsea" target="_blank" rel="noopener" title="Der RMSEA ist ein absoluter Fit-Index, der die Modell-Fehlpassung pro Freiheitsgrad schätzt und dabei explizit für Modellkomplexität korrigiert.">RMSEA</a> <span class="fitidx-range">Root Mean Square Error of Approximation · 0–1, niedriger = besser</span></div>
         <div class="fitidx-formula">RMSEA = √( max(0, (χ²_M−df_M) / (df_M·(N−1))) )</div>
         <div class="fitidx-body">Misfit pro Freiheitsgrad, unabhängig von einem Vergleichsmodell. Bestraft unnötig
           komplexe Modelle (wenig df); übliche Praxis berichtet zusätzlich ein 90%-Konfidenzintervall (hier nicht
           berechnet, da keine echte Stichprobenziehung stattfindet).</div>
       </div>
       <div class="fitidx">
-        <div class="fitidx-name">SRMR <span class="fitidx-range">Standardized Root Mean Square Residual · 0–1, niedriger = besser</span></div>
+        <div class="fitidx-name"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-srmr" target="_blank" rel="noopener" title="Der SRMR misst die durchschnittliche standardisierte Diskrepanz zwischen der beobachteten und der vom Modell implizierten Korrelationsmatrix.">SRMR</a> <span class="fitidx-range">Standardized Root Mean Square Residual · 0–1, niedriger = besser</span></div>
         <div class="fitidx-formula">SRMR = Wurzel des mittleren quadrierten standardisierten Residuums</div>
         <div class="fitidx-body">Direktestes Maß: wie weit liegen Modell- und wahre Korrelationsmatrix im Schnitt
           auseinander? Behandelt jedes Residuum gleich gewichtet — ein einzelnes stark fehlspezifiziertes Item (wie

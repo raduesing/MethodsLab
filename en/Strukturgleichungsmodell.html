@@ -150,6 +150,8 @@ canvas{width:100%;display:block}
   color:var(--ink2);line-height:1.78}
 .help-callout strong{color:var(--ink)}
 .help-callout.ok{background:color-mix(in srgb,var(--a3) 10%,var(--bg));border-color:var(--a3)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a4)}
 </style>
 </head>
 <body>
@@ -248,8 +250,8 @@ canvas{width:100%;display:block}
 
   <div class="story-box">
     <div class="story-lbl">📋 From Measurement Model to Structural Model</div>
-    The <strong>CFA</strong> checked whether the item structure (X = V1–V4 verbal, Y = S1–S4 spatial) fits the
-    data. A <strong>structural equation model (SEM)</strong> goes a step further: it places a
+    The <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis is a latent variable model that explains the covariances among observed indicators through a smaller number of latent factors.">CFA</a></strong> checked whether the item structure (X = V1–V4 verbal, Y = S1–S4 spatial) fits the
+    data. A <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-strukturgleichungsmodell" target="_blank" rel="noopener" title="A structural equation model (SEM) combines a measurement model (confirmatory factor analysis) with a structural model (regression relationships among the latent variables themselves).">structural equation model (SEM)</a></strong> goes a step further: it places a
     <em>directed</em> regression path between the latent factors — instead of only estimating their correlation,
     it estimates how strongly X affects Y, <em>after</em> both are cleaned of measurement error.
     <div style="margin-top:.6rem">
@@ -262,7 +264,7 @@ canvas{width:100%;display:block}
   <div class="advantage-box">
     <div class="advantage-lbl">✓ The Advantage over Manifest Variables</div>
     If you instead simply formed <strong>sum scores</strong> of the items (classic test-score approach)
-    and regressed those directly, the estimated association would be <strong>attenuated by measurement
+    and regressed those directly, the estimated association would be <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation refers to the systematic underestimation of the true correlation between two constructs due to measurement error in the indicators.">attenuated</a> by measurement
     error</strong> — unreliable items pull every correlation toward 0 (see <a class="xlink" style="margin:0;padding:.15rem .5rem;font-size:.68rem"
     href="Messfehler_Attenuierung.html" target="_blank">Measurement Error &amp; Attenuation</a>). SEM models the
     latent factors <em>directly</em> from the items and explicitly nets out measurement error — the estimated
@@ -305,22 +307,22 @@ canvas{width:100%;display:block}
       <div class="metric-sub" id="m-chi2-sub">N = 300</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">CFI</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cfi" target="_blank" rel="noopener" title="The CFI (Comparative Fit Index) compares the fit of the estimated SEM/CFA model with a baseline model that assumes no relationships between variables at all.">CFI</a></div>
       <div class="metric-val" id="m-cfi" style="color:var(--a3)">—</div>
       <div class="metric-sub">≥ .95 good</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">TLI</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-tli" target="_blank" rel="noopener" title="The TLI (Tucker-Lewis Index) is, like the CFI, an incremental fit index, but additionally accounts for model complexity (degrees of freedom).">TLI</a></div>
       <div class="metric-val" id="m-tli" style="color:var(--a3)">—</div>
       <div class="metric-sub">≥ .95 good</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">RMSEA</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rmsea" target="_blank" rel="noopener" title="The RMSEA is an absolute fit index that estimates model misfit per degree of freedom while explicitly correcting for model complexity.">RMSEA</a></div>
       <div class="metric-val" id="m-rmsea" style="color:var(--a2)">—</div>
       <div class="metric-sub">≤ .06 good</div>
     </div>
     <div class="metric">
-      <div class="metric-lbl">SRMR</div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-srmr" target="_blank" rel="noopener" title="The SRMR measures the average standardized discrepancy between the observed and the model-implied correlation matrix.">SRMR</a></div>
       <div class="metric-val" id="m-srmr" style="color:var(--a2)">—</div>
       <div class="metric-sub">≤ .08 good</div>
     </div>
@@ -331,7 +333,7 @@ canvas{width:100%;display:block}
     <div class="plot-title"><span class="circ">④</span> lavaan Syntax (R) — Matching the Specified Model</div>
     <div class="r-code" id="r-code"></div>
     <div class="hint">Cutoffs follow Hu &amp; Bentler (1999), with caveats (see Help). This tool fits itself via
-      maximum likelihood on the (known) population-implied covariance matrix — <code>lavaan</code> would
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mle" target="_blank" rel="noopener" title="Maximum Likelihood Estimation seeks the parameter value θ̂ that maximizes the probability of the observed data.">maximum likelihood</a> on the (known) population-implied covariance matrix — <code>lavaan</code> would
       estimate the same structure on real data and additionally deliver standard errors/p-values.</div>
   </div>
 
@@ -339,8 +341,8 @@ canvas{width:100%;display:block}
   <div class="lcard-grid">
     <div class="lcard">
       <div class="lcard-h">① CFA vs. SEM</div>
-      <div class="lcard-body"><strong>CFA</strong> only estimates the measurement model plus an <em>undirected</em>
-        factor correlation Φ. An <strong>SEM</strong> replaces Φ (partly) with <em>directed</em>
+      <div class="lcard-body"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis is a latent variable model that explains the covariances among observed indicators through a smaller number of latent factors.">CFA</a></strong> only estimates the measurement model plus an <em>undirected</em>
+        factor correlation Φ. An <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-strukturgleichungsmodell" target="_blank" rel="noopener" title="A structural equation model (SEM) combines a measurement model (confirmatory factor analysis) with a structural model (regression relationships among the latent variables themselves).">SEM</a></strong> replaces Φ (partly) with <em>directed</em>
         structural equations between the factors — the same measurement model, but now with regression paths instead
         of (only) correlations between them.</div>
     </div>
@@ -355,14 +357,14 @@ canvas{width:100%;display:block}
     <div class="lcard">
       <div class="lcard-h">③ Why Measurement-Error Correction Matters</div>
       <div class="lcard-body">A sum score is only an <em>approximation</em> of the latent factor — its
-        reliability (ω) is almost never 1. Any regression on such scores <strong>attenuates</strong> the true
+        reliability (ω) is almost never 1. Any regression on such scores <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation refers to the systematic underestimation of the true correlation between two constructs due to measurement error in the indicators.">attenuates</a></strong> the true
         association by the factor √(ω<sub>X</sub>·ω<sub>Y</sub>). SEM sidesteps this by modeling the factor directly
         from the individual items — the structural path targets the relationship <em>between the constructs</em>, not
         between their error-laden indicators.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h">④ Indirect Effects Are Especially Vulnerable</div>
-      <div class="lcard-body">Under mediation, attenuation multiplies: the manifest indirect effect
+      <div class="lcard-body">Under mediation, attenuation multiplies: the manifest <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-indirekter-effekt" target="_blank" rel="noopener" title="The indirect effect measures how much of the total effect of X on Y is mediated through the mediator M: indirect = a · b.">indirect effect</a>
         â·b̂ is dampened by roughly ω<sub>X</sub>·ω<sub>M</sub>·ω<sub>M</sub>·ω<sub>Y</sub> (measurement error in <em>X and
         M</em> acts twice). At realistic reliabilities, this can drastically underestimate the estimated indirect
         effect — a key argument for latent over manifest mediation analysis.</div>
@@ -378,7 +380,7 @@ canvas{width:100%;display:block}
       <div class="lcard-h">⑥ What This Tool Doesn't Show</div>
       <div class="lcard-body">No real sampling, no standard errors/significance tests for the paths, no
         moderation or non-recursive (feedback) models. For manifest mediation with real
-        significance tests (Sobel, bootstrap) see <a class="xlink" style="margin:0;padding:.15rem .5rem;font-size:.68rem"
+        significance tests (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-sobel-test" target="_blank" rel="noopener" title="The Sobel test checks whether the indirect effect a·b in a mediation analysis is significantly different from zero by computing an approximate standard error of the product a·b.">Sobel</a>, bootstrap) see <a class="xlink" style="margin:0;padding:.15rem .5rem;font-size:.68rem"
         href="Mediationsanalyse.html" target="_blank">Mediation Analysis</a>.</div>
     </div>
   </div>
@@ -394,8 +396,8 @@ canvas{width:100%;display:block}
     </div>
 
     <div class="help-sh">What This Tool Shows — and What It Doesn't</div>
-    <p class="help-p"><strong>Shows:</strong> a 2- or 3-construct SEM (CFA measurement model + directed
-      structural paths) with genuine maximum-likelihood fitting, plus a direct, closed-form
+    <p class="help-p"><strong>Shows:</strong> a 2- or 3-construct <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-strukturgleichungsmodell" target="_blank" rel="noopener" title="A structural equation model (SEM) combines a measurement model (confirmatory factor analysis) with a structural model (regression relationships among the latent variables themselves).">SEM</a> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis is a latent variable model that explains the covariances among observed indicators through a smaller number of latent factors.">CFA</a> measurement model + directed
+      structural paths) with genuine <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mle" target="_blank" rel="noopener" title="Maximum Likelihood Estimation seeks the parameter value θ̂ that maximizes the probability of the observed data.">maximum-likelihood</a> fitting, plus a direct, closed-form
       comparison to the naive sum-score approach. <strong>Not here:</strong> real sampling/standard errors
       for the paths, free item-factor assignment, moderation, non-recursive models, multi-group SEM.</p>
 
@@ -416,7 +418,7 @@ r_manifest = Cov(sumX,sumY) / √(Var(sumX)·Var(sumY))
       (Y on M and X, both standardized) from the same aggregated correlation matrix.</p>
 
     <div class="help-sh">Fit Indices</div>
-    <p class="help-p">The same formulas and cutoff caveats as in the CFA tool (χ², CFI, TLI, RMSEA, SRMR — explained
+    <p class="help-p">The same formulas and cutoff caveats as in the CFA tool (χ², <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cfi" target="_blank" rel="noopener" title="The CFI (Comparative Fit Index) compares the fit of the estimated SEM/CFA model with a baseline model that assumes no relationships between variables at all.">CFI</a>, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-tli" target="_blank" rel="noopener" title="The TLI (Tucker-Lewis Index) is, like the CFI, an incremental fit index, but additionally accounts for model complexity (degrees of freedom).">TLI</a>, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rmsea" target="_blank" rel="noopener" title="The RMSEA is an absolute fit index that estimates model misfit per degree of freedom while explicitly correcting for model complexity.">RMSEA</a>, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-srmr" target="_blank" rel="noopener" title="The SRMR measures the average standardized discrepancy between the observed and the model-implied correlation matrix.">SRMR</a> — explained
       there in detail with formulas and interpretation: <a class="xlink" style="margin:0;padding:.15rem .5rem;font-size:.68rem"
       href="Konfirmatorische_Faktoranalyse.html" target="_blank">→ open CFA help</a>). The structural equations
       only change <em>which</em> covariances count as "explained" — not how the overall fit is computed. An SEM
@@ -441,7 +443,7 @@ r_manifest = Cov(sumX,sumY) / √(Var(sumX)·Var(sumY))
     <p class="help-p"><strong>Explicit, falsifiable theory.</strong> Every fixation (loading = 0, path = 0,
       covariance = 0) is a <em>publicly visible, testable</em> assumption — the model forces you to specify
       precisely what the theory actually claims, instead of leaving it implicit.</p>
-    <p class="help-p"><strong>Further extensible.</strong> The same logic extends to multi-group comparisons
+    <p class="help-p"><strong>Further extensible.</strong> The same logic extends to <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-messinvarianz" target="_blank" rel="noopener" title="Measurement invariance states that a psychological construct is measured in the same way across different groups.">multi-group comparisons</a>
       (→ <a class="xlink" style="margin:0;padding:.15rem .5rem;font-size:.68rem" href="Messinvarianz.html" target="_blank">Measurement Invariance</a>),
       growth models (change over time), and categorical/ordinal indicators — not shown here, but the
       same framework.</p>

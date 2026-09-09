@@ -420,7 +420,7 @@ input[type=range]::-moz-range-thumb{
   </div>
 
   <div class="erklaer" style="margin-top:.9rem">
-    <strong>Kernidee:</strong> Statt Y direkt linear vorherzusagen, transformiert die logistische Regression die Wahrscheinlichkeit P(Y=1) über <em>Odds</em> und <em>Logit</em> in eine Größe, die unbeschränkt ist (−∞ bis +∞) — <strong>dort</strong> darf ganz normal linear modelliert werden. Die Rücktransformation (Modul <span class="circ">②</span>) sorgt automatisch für die S-Form und damit für gültige Wahrscheinlichkeiten.
+    <strong>Kernidee:</strong> Statt Y direkt linear vorherzusagen, transformiert die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-logistische-regression" target="_blank" rel="noopener" title="Die logistische Regression modelliert die Wahrscheinlichkeit eines binären Outcomes (0/1) als Funktion von Prädiktoren: P(Y=1|X) = σ(β₀ + β₁X₁ + … + βₖXₖ).">logistische Regression</a> die Wahrscheinlichkeit P(Y=1) über <em>Odds</em> und <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-logit" target="_blank" rel="noopener" title="Der Logit ist die Link-Funktion der logistischen Regression: logit(p) = log(p / (1−p)). Er transformiert eine Wahrscheinlichkeit p ∈ (0, 1) in einen uneingeschränkten reellen Wert (−∞, +∞).">Logit</a></em> in eine Größe, die unbeschränkt ist (−∞ bis +∞) — <strong>dort</strong> darf ganz normal linear modelliert werden. Die Rücktransformation (Modul <span class="circ">②</span>) sorgt automatisch für die S-Form und damit für gültige Wahrscheinlichkeiten.
   </div>
 </div>
 
@@ -522,7 +522,7 @@ input[type=range]::-moz-range-thumb{
           logit(Y=1|X=1) = b₀ + b₁ &nbsp;→&nbsp; logit(P¹)<br>
           b₁ = logit(P¹) − logit(P⁰) = ln[ (P¹/(1−P¹)) / (P⁰/(1−P⁰)) ]<br>
           ⇒ e<sup>b₁</sup> = (P¹/(1−P¹)) / (P⁰/(1−P⁰)) = Odds(X=1) / Odds(X=0) = <strong style="color:var(--ink)">OR</strong><br><br>
-          Der Logit-Koeffizient ist also eine <em>Differenz</em> von Log-Odds. Eine Differenz von Logarithmen exponiert sich zu einem <em>Quotienten</em> — deshalb liefert e<sup>b</sup> immer ein <strong>Verhältnis</strong> (Odds Ratio), nie eine additive Differenz.
+          Der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-logit" target="_blank" rel="noopener" title="Der Logit ist die Link-Funktion der logistischen Regression: logit(p) = log(p / (1−p)). Er transformiert eine Wahrscheinlichkeit p ∈ (0, 1) in einen uneingeschränkten reellen Wert (−∞, +∞).">Logit-Koeffizient</a> ist also eine <em>Differenz</em> von Log-Odds. Eine Differenz von Logarithmen exponiert sich zu einem <em>Quotienten</em> — deshalb liefert e<sup>b</sup> immer ein <strong>Verhältnis</strong> (Odds Ratio), nie eine additive Differenz.
         </div>
       </div>
     </div>
@@ -531,7 +531,7 @@ input[type=range]::-moz-range-thumb{
 
 <!-- ══ MODULE 3 ════════════════════════════════════════════════════ -->
 <div id="mod3" class="mod-panel">
-  <div class="mod-h">Marginale Effekte auf der <em>Wahrscheinlichkeitsskala</em></div>
+  <div class="mod-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-marginale-effekte" target="_blank" rel="noopener" title="Marginale Effekte beschreiben die Veränderung im vorhergesagten Outcome pro Einheitsveränderung eines Prädiktors, berechnet auf der ursprünglichen Outcome-Skala.">Marginale Effekte</a> auf der <em>Wahrscheinlichkeitsskala</em></div>
   <div class="mod-sub">Derselbe Schritt Δ auf der X-Achse — konstante Differenz im Logit, konstantes Verhältnis bei den Odds, aber wechselnde Differenz bei der Wahrscheinlichkeit</div>
 
   <div class="cv-row" style="align-items:flex-start">
@@ -680,7 +680,7 @@ input[type=range]::-moz-range-thumb{
         <p><strong>Woher kommen die Konfidenzintervalle?</strong><br>
         Nicht frei erfunden: Für die aktuell eingestellten Effekte wird ein synthetischer, aber realistischer Datensatz simuliert und <strong>live per Newton-Raphson (IRLS)</strong> neu an dieses Modul gefittet — derselbe Algorithmus, den auch R's <code>glm()</code> verwendet. Die CIs sind echte Wald-Konfidenzintervalle aus der Kovarianzmatrix dieses Fits, keine Illustration. Der Info-Kasten links zeigt beides: die eingestellten Effekte und was ein Fit an den simulierten Daten (mit echtem Sampling-Rauschen) davon zurückgewinnt.</p>
         <p><strong>Bezug zum <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-glm" target="_blank" rel="noopener" title="Das Generalisierte Lineare Modell erweitert die gewöhnliche lineare Regression auf nicht-normalverteilte Outcomes über eine Verteilungsfamilie, einen linearen Prädiktor und eine Link-Funktion.">GLM</a>-Rahmen</strong><br>
-        Die logistische Regression ist ein Spezialfall des Generalisierten Linearen Modells: gleiche Prädiktorstruktur (Haupteffekte, Interaktionen, Dummy-Codierung) wie in <a href="OLS_Regression.html">OLS &amp; Multiple Regression</a> oder <a href="ANOVA.html">ANOVA</a> — nur mit Logit-Link statt Identitäts-Link und Binomial- statt Normalverteilung. Für die Gütebeurteilung der Klassifikation (Cutoff, Sensitivität/Spezifität, ROC/AUC) siehe das eigenständige Tool <a href="Sens_Spez.html">Sensitivität &amp; Spezifität</a>. Für logistische Regression als Werkzeug zur Konfundierungskontrolle siehe <a href="PSM.html">Propensity Score Matching</a>.</p>
+        Die logistische Regression ist ein Spezialfall des Generalisierten Linearen Modells: gleiche Prädiktorstruktur (Haupteffekte, Interaktionen, Dummy-Codierung) wie in <a href="OLS_Regression.html">OLS &amp; Multiple Regression</a> oder <a href="ANOVA.html">ANOVA</a> — nur mit <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-link-funktion" target="_blank" rel="noopener" title="Die Link-Funktion g verbindet im Generalisierten Linearen Modell den linearen Prädiktor η = Xβ mit dem Erwartungswert μ = E[Y]: g(μ) = η.">Logit-Link</a> statt Identitäts-Link und Binomial- statt Normalverteilung. Für die Gütebeurteilung der Klassifikation (Cutoff, Sensitivität/Spezifität, ROC/AUC) siehe das eigenständige Tool <a href="Sens_Spez.html">Sensitivität &amp; Spezifität</a>. Für logistische Regression als Werkzeug zur Konfundierungskontrolle siehe <a href="PSM.html">Propensity Score Matching</a>.</p>
       </div>
     </div>
   </div>
@@ -696,7 +696,7 @@ input[type=range]::-moz-range-thumb{
       <div class="lcard-body">
         Ein binäres Y (0/1) mit gewöhnlicher OLS-Regression zu modellieren
         (<em>Linear Probability Model</em>) führt zu Vorhersagen außerhalb von [0,1] —
-        keine gültigen Wahrscheinlichkeiten. Die logistische Regression löst das über
+        keine gültigen Wahrscheinlichkeiten. Die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-logistische-regression" target="_blank" rel="noopener" title="Die logistische Regression modelliert die Wahrscheinlichkeit eines binären Outcomes (0/1) als Funktion von Prädiktoren: P(Y=1|X) = σ(β₀ + β₁X₁ + … + βₖXₖ).">logistische Regression</a> löst das über
         eine S-förmige Funktion, die per Konstruktion nie unter 0 oder über 1 liegen kann.
       </div>
     </div>
@@ -721,7 +721,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">④</span> Marginaler Effekt ist nicht konstant</div>
+      <div class="lcard-h"><span class="circ">④</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-marginale-effekte" target="_blank" rel="noopener" title="Marginale Effekte beschreiben die Veränderung im vorhergesagten Outcome pro Einheitsveränderung eines Prädiktors, berechnet auf der ursprünglichen Outcome-Skala.">Marginaler Effekt</a> ist nicht konstant</div>
       <div class="lcard-body">
         <code>dP/dX = b₁ · P·(1−P)</code> — derselbe Logit-Koeffizient b₁ bewirkt je nach
         aktuellem P einen unterschiedlich großen Effekt auf die Wahrscheinlichkeit: maximal
@@ -743,7 +743,7 @@ input[type=range]::-moz-range-thumb{
       <div class="lcard-h"><span class="circ">⑥</span> Ein Spezialfall des GLM</div>
       <div class="lcard-body">
         Logistische Regression = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-glm" target="_blank" rel="noopener" title="Das Generalisierte Lineare Modell erweitert die gewöhnliche lineare Regression auf nicht-normalverteilte Outcomes über eine Verteilungsfamilie, einen linearen Prädiktor und eine Link-Funktion.">GLM</a>
-        mit Logit-Link und Binomialverteilung. Dieselbe Prädiktorlogik (Haupteffekte,
+        mit <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-link-funktion" target="_blank" rel="noopener" title="Die Link-Funktion g verbindet im Generalisierten Linearen Modell den linearen Prädiktor η = Xβ mit dem Erwartungswert μ = E[Y]: g(μ) = η.">Logit-Link</a> und Binomialverteilung. Dieselbe Prädiktorlogik (Haupteffekte,
         Interaktionen, Dummy-Codierung) wie bei OLS gilt weiter — nur die Rücktransformation
         auf die Skala des Outcomes unterscheidet sich.
       </div>
@@ -775,7 +775,7 @@ input[type=range]::-moz-range-thumb{
         <summary>▸ Schätzung: Maximum Likelihood / IRLS (für Interessierte)</summary>
         <div class="details-inner" style="font-size:.78rem;color:var(--ink2);line-height:1.9">
           Anders als OLS hat die logistische Regression keine geschlossene Lösung.
-          Geschätzt wird per <em>Maximum Likelihood</em>, iterativ über
+          Geschätzt wird per <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-mle" target="_blank" rel="noopener" title="Die Maximum-Likelihood-Schätzung sucht denjenigen Parameterwert θ̂, der die Wahrscheinlichkeit der beobachteten Daten maximiert: θ̂ = argmax p(D | θ).">Maximum Likelihood</a></em>, iterativ über
           <em>Iteratively Reweighted Least Squares</em> (IRLS, äquivalent zu
           Newton-Raphson): In jedem Schritt wird ein gewichtetes lineares Modell gelöst,
           wobei sich die Gewichte w = P&#770;·(1−P&#770;) aus der aktuellen Schätzung ergeben.

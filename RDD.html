@@ -161,6 +161,8 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
 .xlink{color:var(--a3);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a3)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a3)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -287,7 +289,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
   </div>
   <div class="mod-body" id="bd-poly">
     <div class="erklaer">
-      <div class="erklaer-h">Polynomiale RDD</div>
+      <div class="erklaer-h">Polynomiale <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rdd" target="_blank" rel="noopener" title="Das Regression Discontinuity Design (RDD) ist ein Quasi-Experiment, bei dem die Treatmentzuweisung vollständig oder probabilistisch durch das Über- oder Unterschreiten eines Schwellenwerts (Cutoff c) einer kontinuierlichen Laufvariable (Running Variable X) bestimmt wird.">RDD</a></div>
       Ist die wahre Beziehung zwischen QAV und Outcome nicht-linear, kann das die LATE-Schätzung verzerren.
       Durch Hinzufügen <strong>polynomialer Terme</strong> wird die Kurvenform flexibler modelliert:<br><br>
       <span class="formula-line">ŷ = b₀ + b₁·(X−c) + b₂·T + b₃·(X−c)·T + b₄·(X−c)² + b₅·T·(X−c)²</span>
@@ -319,18 +321,18 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
   </div>
   <div class="mod-body" id="bd-fuzzy">
     <div class="erklaer">
-      <div class="erklaer-h">Fuzzy RDD — Wenn die Grenze „verwischt"</div>
+      <div class="erklaer-h">Fuzzy <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rdd" target="_blank" rel="noopener" title="Das Regression Discontinuity Design (RDD) ist ein Quasi-Experiment, bei dem die Treatmentzuweisung vollständig oder probabilistisch durch das Über- oder Unterschreiten eines Schwellenwerts (Cutoff c) einer kontinuierlichen Laufvariable (Running Variable X) bestimmt wird.">RDD</a> — Wenn die Grenze „verwischt"</div>
       Beim <strong>Sharp RDD</strong> folgt die Behandlungszuteilung deterministisch dem Cutoff.<br>
       Beim <strong>Fuzzy RDD</strong> gibt es zwei Formen von Nicht-Compliance:<br><br>
       <strong>Non-Compliance (EG):</strong> Personen über dem Cutoff nehmen die Intervention nicht an.<br>
       <strong>Crossover (KG):</strong> Personen unter dem Cutoff erhalten die Intervention trotzdem.<br><br>
-      Der Cutoff wird dann als <strong>Instrument (Z)</strong> für die tatsächliche Behandlung (T) verwendet.
+      Der Cutoff wird dann als <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-iv" target="_blank" rel="noopener" title="Eine Instrumentalvariable Z ist eine Variable, die (1) mit dem Treatment D korreliert (Relevanz/First Stage), (2) das Outcome Y ausschließlich über D beeinflusst (Ausschlussrestriktion) und (3) unabhängig von ungemessenen Konfundern ist (Exogenität).">Instrument (Z)</a></strong> für die tatsächliche Behandlung (T) verwendet.
       Der LATE ergibt sich als <strong>Wald-Schätzer</strong>:<br><br>
       <span class="formula-line">LATE = Intent-to-Treat-Effekt / Compliance-Rate</span>
       <strong>Latenter Konfunder (Motivation):</strong> In dieser Simulation entscheiden Nicht-Complier
       aufgrund ihrer <em>Motivation</em> — unmotivierte EG-Personen lehnen die Behandlung ab,
       hochmotivierte KG-Personen suchen sie aktiv. Da Motivation auch Y direkt beeinflusst (γ),
-      ist T <em>endogen</em>: Naiver OLS überschätzt LATE.<br>
+      ist T <em>endogen</em>: Naiver OLS überschätzt <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-late" target="_blank" rel="noopener" title="Der LATE ist der kausale Effekt einer Behandlung, eingeschränkt auf die Teilpopulation der „Complier“ — Personen, deren Behandlungsstatus sich ändert, wenn das Instrument Z von 0 auf 1 wechselt.">LATE</a>.<br>
       Der Wald-Schätzer nutzt G (Zuweisung) als Instrument — G hängt nur von X ab, nicht von Motivation,
       daher ist der ITT unverzerrter Ausgangspunkt und LATE(Wald) ≈ b₂.
     </div>
@@ -362,7 +364,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     <div class="sec-h">Konzepte</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">Was ist ein RDD?</div>
+        <div class="lcard-h">Was ist ein <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rdd" target="_blank" rel="noopener" title="Das Regression Discontinuity Design (RDD) ist ein Quasi-Experiment, bei dem die Treatmentzuweisung vollständig oder probabilistisch durch das Über- oder Unterschreiten eines Schwellenwerts (Cutoff c) einer kontinuierlichen Laufvariable (Running Variable X) bestimmt wird.">RDD</a>?</div>
         <div class="lcard-body">Ein Regression-Discontinuity-Design nutzt einen scharfen <strong>Cutoff c</strong> auf einer kontinuierlichen Zuweisungsvariable X: wer ≥ c liegt, wird behandelt, wer darunter liegt, nicht. Knapp über und unter c unterscheiden sich Einheiten nur noch <strong>zufällig</strong> — wie in einem lokalen Experiment. Ein <strong>Sprung in Y</strong> genau am Cutoff ist dann der kausale Effekt der Behandlung.</div>
       </div>
       <div class="lcard">
@@ -370,7 +372,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
         <div class="lcard-body">Die zentrale Identifikationsannahme: alles außer der Behandlung verläuft am Cutoff <strong>stetig</strong>. Ohne Programm gäbe es <em>keinen</em> Sprung in Y bei c — alle anderen Einflussgrößen ändern sich glatt. Ist das plausibel, ist der Sprung kausal interpretierbar. (Das RDD-Pendant zur Parallel-Trends-Annahme bei DiD.) Manipulieren Einheiten ihren Score gezielt über c, ist die Annahme verletzt (McCrary-Dichtetest).</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">LATE — der lokale Effekt am Cutoff</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-late" target="_blank" rel="noopener" title="Der LATE ist der kausale Effekt einer Behandlung, eingeschränkt auf die Teilpopulation der „Complier“ — Personen, deren Behandlungsstatus sich ändert, wenn das Instrument Z von 0 auf 1 wechselt.">LATE</a> — der lokale Effekt am Cutoff</div>
         <div class="lcard-body">Das RDD schätzt einen <strong>Local Average Treatment Effect (LATE)</strong>: den Behandlungseffekt <em>genau am Cutoff</em> — den Sprung in Y bei c. Er gilt nur für Einheiten <em>nahe</em> am Cutoff; Personen weit unter c unterscheiden sich systematisch von knapp darunter, der Effekt ist daher nicht ohne Weiteres auf sie übertragbar. Hohe interne, eingeschränkte externe Validität.</div>
       </div>
       <div class="lcard">
@@ -383,7 +385,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
       </div>
       <div class="lcard">
         <div class="lcard-h">Sharp vs. Fuzzy &amp; Einordnung</div>
-        <div class="lcard-body"><strong>Sharp RDD:</strong> Überschreiten des Cutoffs bestimmt die Behandlung vollständig (T = 1 ⇔ X ≥ c). <strong>Fuzzy RDD:</strong> der Cutoff <em>erhöht</em> nur die Behandlungswahrscheinlichkeit, erzwingt sie aber nicht — manche knapp über c machen nicht mit (No-Shows), manche knapp darunter werden trotzdem behandelt (Crossover). Die Behandlungsrate springt bei c also um <em>weniger als 100 %</em>. Ein naiver Vergleich der Y-Werte unterschätzt den Effekt deshalb. Der <strong>Wald-Schätzer</strong> korrigiert das: er teilt den Sprung in Y durch den Sprung in der Behandlungsrate und gewinnt so den Effekt für die <em>Complier</em> (jene, die sich tatsächlich vom Cutoff zur Teilnahme bewegen lassen) zurück. RDD gehört zu den quasi-experimentellen Designs ohne Randomisierung. <a class="xlink" href="DiD.html" target="_blank" rel="noopener">→ Difference-in-Differences</a> · <a class="xlink" href="PSM.html" target="_blank" rel="noopener">→ Propensity Score Matching</a> · <a class="xlink" href="Causal_Teaching.html" target="_blank" rel="noopener">→ Kausale Inferenz</a></div>
+        <div class="lcard-body"><strong>Sharp RDD:</strong> Überschreiten des Cutoffs bestimmt die Behandlung vollständig (T = 1 ⇔ X ≥ c). <strong>Fuzzy RDD:</strong> der Cutoff <em>erhöht</em> nur die Behandlungswahrscheinlichkeit, erzwingt sie aber nicht — manche knapp über c machen nicht mit (No-Shows), manche knapp darunter werden trotzdem behandelt (Crossover). Die Behandlungsrate springt bei c also um <em>weniger als 100 %</em>. Ein naiver Vergleich der Y-Werte unterschätzt den Effekt deshalb. Der <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-iv" target="_blank" rel="noopener" title="Eine Instrumentalvariable Z ist eine Variable, die (1) mit dem Treatment D korreliert (Relevanz/First Stage), (2) das Outcome Y ausschließlich über D beeinflusst (Ausschlussrestriktion) und (3) unabhängig von ungemessenen Konfundern ist (Exogenität).">Wald-Schätzer</a></strong> korrigiert das: er teilt den Sprung in Y durch den Sprung in der Behandlungsrate und gewinnt so den Effekt für die <em>Complier</em> (jene, die sich tatsächlich vom Cutoff zur Teilnahme bewegen lassen) zurück. RDD gehört zu den quasi-experimentellen Designs ohne Randomisierung. <a class="xlink" href="DiD.html" target="_blank" rel="noopener">→ Difference-in-Differences</a> · <a class="xlink" href="PSM.html" target="_blank" rel="noopener">→ Propensity Score Matching</a> · <a class="xlink" href="Causal_Teaching.html" target="_blank" rel="noopener">→ Kausale Inferenz</a></div>
       </div>
     </div>
   </div>
@@ -403,14 +405,14 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 
     <div class="help-sh">RDD-Logik &amp; Continuity Assumption</div>
     <p class="help-p">Die Kernidee: Direkt links und rechts vom Cutoff unterscheiden sich Bewerber nur durch Zufall (sie hatten fast denselben Score). Hätte der Zulassungsmechanismus nicht eingegriffen, würden beide Gruppen im Mittel dasselbe Y zeigen — die erwartete Outcome-Kurve wäre <em>stetig</em> am Cutoff.</p>
-    <p class="help-p"><strong>Continuity Assumption:</strong> E[Y(0) | X] und E[Y(1) | X] sind beide stetig in X an der Stelle c. Jeder beobachtbare Sprung in Y am Cutoff ist dann kausal dem Treatment zuzuschreiben.</p>
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rdd" target="_blank" rel="noopener" title="Das Regression Discontinuity Design (RDD) ist ein Quasi-Experiment, bei dem die Treatmentzuweisung vollständig oder probabilistisch durch das Über- oder Unterschreiten eines Schwellenwerts (Cutoff c) einer kontinuierlichen Laufvariable (Running Variable X) bestimmt wird.">Continuity Assumption</a>:</strong> E[Y(0) | X] und E[Y(1) | X] sind beide stetig in X an der Stelle c. Jeder beobachtbare Sprung in Y am Cutoff ist dann kausal dem Treatment zuzuschreiben.</p>
     <span class="help-formula">Verletzung: Bewerber manipulieren X knapp über c → Selektionsverzerrung</span>
     <p class="help-p">Im Beispiel: Falls Bewerber kurz vor dem Test gezielt üben, um genau den Cutoff zu erreichen, sind die Gruppen knapp über/unter c nicht mehr vergleichbar — die Continuity Assumption wäre verletzt.</p>
 
     <div class="help-sh">Schätzmodell &amp; LATE</div>
     <p class="help-p">Das Modell zentriert die Running Variable am Cutoff (X̃ = X − c) und fügt eine Sprungindikatorvariable T sowie optional einen Slope-Unterschied (T·X̃) ein:</p>
     <span class="help-formula">Y = b₀ + b₁·X̃ + b₂·T + b₃·(T·X̃) + ε</span>
-    <p class="help-p"><strong>b₀</strong> = erwartetes Y direkt am Cutoff (T=0-Seite) &nbsp;|&nbsp; <strong>b₁</strong> = Slope der Kontrollgruppe &nbsp;|&nbsp; <strong>b₂</strong> = Sprung am Cutoff = LATE &nbsp;|&nbsp; <strong>b₃</strong> = Slope-Unterschied Treatment vs. Kontrollgruppe</p>
+    <p class="help-p"><strong>b₀</strong> = erwartetes Y direkt am Cutoff (T=0-Seite) &nbsp;|&nbsp; <strong>b₁</strong> = Slope der Kontrollgruppe &nbsp;|&nbsp; <strong>b₂</strong> = Sprung am Cutoff = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-late" target="_blank" rel="noopener" title="Der LATE ist der kausale Effekt einer Behandlung, eingeschränkt auf die Teilpopulation der „Complier“ — Personen, deren Behandlungsstatus sich ändert, wenn das Instrument Z von 0 auf 1 wechselt.">LATE</a> &nbsp;|&nbsp; <strong>b₃</strong> = Slope-Unterschied Treatment vs. Kontrollgruppe</p>
     <span class="help-formula">LATE = b₂ = lim[E(Y|X↓c)] − lim[E(Y|X↑c)]</span>
     <p class="help-p">Im Beispiel: b₂ = 15 bedeutet, dass Programmteilnehmer am Cutoff im Mittel 15 Skalenpunkte mehr Gehalt erzielen als vergleichbare Nicht-Teilnehmer — der <em>lokale</em> kausale Effekt der Weiterbildung.</p>
     <p class="help-p"><strong>Wichtig:</strong> Das LATE gilt nur für Personen nahe am Cutoff (externe Validität eingeschränkt). Personen weit unter dem Cutoff unterscheiden sich systematisch von Personen knapp darunter.</p>
@@ -435,23 +437,23 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
       <li><strong>Complier</strong>: nimmt teil wenn zugelassen (Z=1→T=1), nicht wenn nicht zugelassen (Z=0→T=0) — folgt der Zuweisung.</li>
       <li><strong>Never-Taker</strong>: nimmt nie teil, egal ob zugelassen oder nicht (Z=1→T=0, Z=0→T=0).</li>
       <li><strong>Always-Taker</strong>: nimmt immer teil, auch ohne formale Zulassung (Z=1→T=1, Z=0→T=1).</li>
-      <li><strong>Defier</strong>: macht immer das Gegenteil der Zuweisung — theoretisch möglich, in der Praxis selten und meist ausgeschlossen (Monotonie-Annahme).</li>
+      <li><strong>Defier</strong>: macht immer das Gegenteil der Zuweisung — theoretisch möglich, in der Praxis selten und meist ausgeschlossen (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-monotonizitaet" target="_blank" rel="noopener" title="Die Monotonizitätsannahme ist eine der Kernvoraussetzungen für die kausale Interpretation des Local Average Treatment Effects (LATE) bei Instrumentalvariablen (IV).">Monotonie-Annahme</a>).</li>
     </ul>
     <p class="help-p">Im Beispiel: Manche Bewerber mit Score X ≥ 50 nehmen die Weiterbildung nicht an (Never-Taker, z. B. wegen Zeitmangel). Dann springt P(T=1|X) am Cutoff nicht auf 1, sondern auf z. B. 0.85.</p>
 
-    <div class="help-sh" style="font-size:.9rem;margin-top:.9rem">ITT — Intent-to-Treat</div>
+    <div class="help-sh" style="font-size:.9rem;margin-top:.9rem"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-itt" target="_blank" rel="noopener" title="Der Intent-to-Treat-Effekt (ITT) misst, wie stark die bloße Zuweisung zu einer Behandlung (Z) den Outcome Y im Mittel verändert — unabhängig davon, ob die zugewiesene Person die Behandlung tatsächlich angenommen hat.">ITT — Intent-to-Treat</a></div>
     <p class="help-p">Der <strong>Intent-to-Treat-Effekt (ITT)</strong> misst, wie viel das bloße <em>Angebot</em> der Behandlung — die Zuweisung Z — den Outcome Y im Durchschnitt verändert, unabhängig davon, ob die Person tatsächlich teilgenommen hat:</p>
     <span class="help-formula">ITT = E[Y | Z=1] − E[Y | Z=0]  am Cutoff</span>
     <p class="help-p">Im RDD entspricht Z der Indikatorvariable Z = 1[X ≥ c] — eine Person ist "zugewiesen", sobald ihr Score den Cutoff überschreitet.</p>
     <p class="help-p"><strong>Warum ist der ITT nützlich?</strong> Die Zuweisung Z ist (zumindest nahe dem Cutoff) quasi-zufällig — wer knapp über oder knapp unter dem Cutoff landet, unterscheidet sich nur durch Zufall. Daher ist der ITT unverzerrt: Er vergleicht zwei Gruppen, die sich im Erwartungswert nur durch die Zuweisung unterscheiden, nicht durch Selektionseffekte.</p>
     <p class="help-p"><strong>Warum ist der ITT nicht die ganze Geschichte?</strong> Der ITT verwässert den wahren Behandlungseffekt, weil er auch Never-Taker enthält, die zwar zugewiesen wurden (Z=1), aber nie teilgenommen haben. Ihr Outcome ist "null" relativ zum Programm — das zieht den ITT nach unten. Je mehr Non-Compliance, desto mehr wird der ITT unterschätzen.</p>
 
-    <div class="help-sh" style="font-size:.9rem;margin-top:.9rem">IV — Instrumentalvariable</div>
+    <div class="help-sh" style="font-size:.9rem;margin-top:.9rem"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-iv" target="_blank" rel="noopener" title="Eine Instrumentalvariable Z ist eine Variable, die (1) mit dem Treatment D korreliert (Relevanz/First Stage), (2) das Outcome Y ausschließlich über D beeinflusst (Ausschlussrestriktion) und (3) unabhängig von ungemessenen Konfundern ist (Exogenität).">IV — Instrumentalvariable</a></div>
     <p class="help-p">Um vom ITT auf den echten Behandlungseffekt zu kommen, brauchen wir ein <strong>Instrument</strong>. Eine <strong>Instrumentalvariable (IV)</strong> ist eine Variable Z, die drei Bedingungen erfüllt:</p>
     <ol style="margin:.4rem 0 .7rem 1.2rem;font-size:.85rem;line-height:1.9">
       <li><strong>Relevanz:</strong> Z beeinflusst die Wahrscheinlichkeit der tatsächlichen Teilnahme T. Im Beispiel: Wer zugelassen wird (Z=1), nimmt mit deutlich höherer Wahrscheinlichkeit teil. Das ist testbar: man prüft, ob der Sprung in P(T=1|X) am Cutoff signifikant ist (First-Stage-Test).</li>
       <li><strong>Exogenität (Unabhängigkeit):</strong> Z ist nicht mit unbeobachteten Störgrößen U korreliert. Im RDD: Wer knapp über oder knapp unter dem Cutoff liegt, unterscheidet sich im Erwartungswert nur durch Zufall — die Zuweisung ist wie eine lokale Randomisierung. Damit ist Z unkorreliert mit allem, was sonst das Gehalt beeinflusst (Motivation, Fähigkeiten, Herkunft).</li>
-      <li><strong>Ausschlusskritierium (Exclusion Restriction):</strong> Z beeinflusst Y <em>ausschließlich</em> über T — es gibt keinen direkten Weg von Z nach Y. Im Beispiel: Die bloße Zulassung zum Programm darf keinen eigenen Gehaltseffekt haben; nur die tatsächliche Teilnahme am Programm wirkt auf das Gehalt. Wenn z. B. das Unternehmen schon die Zulassung als Signal für Kompetenz nimmt und das Gehalt erhöht, wäre diese Bedingung verletzt.</li>
+      <li><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ausschlussrestriktion" target="_blank" rel="noopener" title="Die Ausschlussrestriktion (engl. exclusion restriction) ist eine der drei zentralen Annahmen der Instrumentalvariablen-Schätzung (IV).">Ausschlusskritierium (Exclusion Restriction)</a>:</strong> Z beeinflusst Y <em>ausschließlich</em> über T — es gibt keinen direkten Weg von Z nach Y. Im Beispiel: Die bloße Zulassung zum Programm darf keinen eigenen Gehaltseffekt haben; nur die tatsächliche Teilnahme am Programm wirkt auf das Gehalt. Wenn z. B. das Unternehmen schon die Zulassung als Signal für Kompetenz nimmt und das Gehalt erhöht, wäre diese Bedingung verletzt.</li>
     </ol>
     <p class="help-p">Im RDD ist Z = 1[X ≥ c] das natürliche Instrument: Es ist relevant (Sprung in P(T=1|X)), lokal exogen (quasi-zufällige Zuweisung nahe c) und — unter plausibler Annahme — erfüllt das Ausschlusskriterium.</p>
 

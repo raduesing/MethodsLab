@@ -155,6 +155,8 @@ canvas{display:block;width:100%}
 .close-btn{float:right;font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;
   border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2)}
 .close-btn:hover{background:var(--ink);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a4)}
 </style>
 </head>
 <body>
@@ -243,7 +245,7 @@ canvas{display:block;width:100%}
 
   <div class="story-box">
     <div class="story-lbl">📋 Example — Cognitive Test with 8 Subtests</div>
-    300 people complete a cognitive test with <strong>8 subtests</strong>: <em>V1–V4</em> assess verbal ability, <em>S1–S4</em> spatial reasoning. It's unclear in advance how many latent factors underlie this and which items belong to which factor — that's exactly what <strong>exploratory factor analysis (EFA)</strong> is meant to uncover. The sliders on the left set the <strong>true</strong> measurement model (unknown in practice): loading <span class="gk">λ</span>, cross-loading <span class="gk">λ</span><sub>x</sub>, factor correlation <span class="gk">φ</span> — so you can directly observe how changing the model affects the scree plot, loadings, and the reliability of the total score.
+    300 people complete a cognitive test with <strong>8 subtests</strong>: <em>V1–V4</em> assess verbal ability, <em>S1–S4</em> spatial reasoning. It's unclear in advance how many latent factors underlie this and which items belong to which factor — that's exactly what <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis is a latent variable model that explains the covariances among observed indicators through a smaller number of latent factors.">exploratory factor analysis (EFA)</a></strong> is meant to uncover. The sliders on the left set the <strong>true</strong> measurement model (unknown in practice): loading <span class="gk">λ</span>, cross-loading <span class="gk">λ</span><sub>x</sub>, factor correlation <span class="gk">φ</span> — so you can directly observe how changing the model affects the scree plot, loadings, and the reliability of the total score.
     <div style="margin-top:.6rem">
       <a class="xlink" href="KTT_Grundlagen.html" target="_blank">← CTT Foundations: a single test score</a>
       <a class="xlink" href="Messmodelle.html" target="_blank" style="margin-left:.4rem">What measurement model underlies the loadings? →</a>
@@ -256,8 +258,8 @@ canvas{display:block;width:100%}
   <div class="proc-list">
     <div class="proc-step"><span class="circ">①</span><strong>Items &amp; measurement model.</strong> 8 items (V1–V4, S1–S4), N = 300. What is set here via sliders would, in practice, have to be estimated from real item responses.</div>
     <div class="proc-step"><span class="circ">②</span><strong>Correlation matrix R.</strong> From the item responses (or here: from the measurement model) follows how strongly each pair of items is related. <a class="proc-jump" href="#cv-heat">→ view reduced matrix R<sub>r</sub></a></div>
-    <div class="proc-step"><span class="circ">③</span><strong>Factor extraction — eigenvalues &amp; scree plot.</strong> How many factors explain the shared variance? The Kaiser criterion (eigenvalue &gt; 1) is common but rather permissive — parallel analysis (comparison with eigenvalues of random, uncorrelated data of the same size) is more robust. <a class="proc-jump" href="#cv-scree">→ view scree plot</a></div>
-    <div class="proc-step"><span class="circ">④</span><strong>Rotation &amp; loading matrix.</strong> The unrotated solution is rotated (varimax/oblique) to obtain an interpretable simple structure — which item loads on which factor? The table and biplot show the same information twice, once as numbers and once spatially. <a class="proc-jump" href="#tbl-wrap">→ loading table</a> · <a class="proc-jump" href="#cv-biplot">→ biplot</a></div>
+    <div class="proc-step"><span class="circ">③</span><strong>Factor extraction — eigenvalues &amp; scree plot.</strong> How many factors explain the shared variance? The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-kaiser-kriterium" target="_blank" rel="noopener" title="The Kaiser criterion (also Kaiser-Guttman criterion) is a rule of thumb for determining the number of factors to extract: retain only factors with an eigenvalue > 1.">Kaiser criterion</a> (eigenvalue &gt; 1) is common but rather permissive — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-parallelanalyse" target="_blank" rel="noopener" title="Parallel analysis (Horn, 1965) determines the number of factors to extract by comparing the actually observed eigenvalues with the eigenvalues one would expect from purely random data of the same sample size and number of items.">parallel analysis</a> (comparison with eigenvalues of random, uncorrelated data of the same size) is more robust. <a class="proc-jump" href="#cv-scree">→ view scree plot</a></div>
+    <div class="proc-step"><span class="circ">④</span><strong>Rotation &amp; loading matrix.</strong> The unrotated solution is <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rotation" target="_blank" rel="noopener" title="Factor rotation transforms an initial factor-loading matrix into a more interpretable solution without changing the model's overall fit — only the coordinate axes in factor space are rotated.">rotated</a> (varimax/oblique) to obtain an interpretable simple structure — which item loads on which factor? The table and biplot show the same information twice, once as numbers and once spatially. <a class="proc-jump" href="#tbl-wrap">→ loading table</a> · <a class="proc-jump" href="#cv-biplot">→ biplot</a></div>
     <div class="proc-step"><span class="circ">⑤</span><strong>Final communality h² &amp; reliability.</strong> The loading table already shows how much variance of each item is jointly explained by the factors. What follows from this for the reliability (α, ω) of the total score? <a class="proc-jump" href="#reli-panel">→ view reliability</a></div>
   </div>
 
@@ -301,7 +303,7 @@ canvas{display:block;width:100%}
       <div class="reli-row">
         <div class="reli-lbl">
           <div class="reli-sym" style="color:var(--a6)">&#945;</div>
-          <div class="reli-lbl-name">Cronbach's Alpha</div>
+          <div class="reli-lbl-name"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cronbach" target="_blank" rel="noopener" title="Cronbach's Alpha is the most widely used measure of the internal consistency of a scale — the degree to which multiple items measure the same latent construct.">Cronbach's Alpha</a></div>
         </div>
         <div class="reli-track"><div class="reli-bar" id="bar-alpha" style="background:var(--a6);width:0%"></div></div>
         <div class="reli-val" id="val-alpha" style="color:var(--a6)">—</div>
@@ -309,7 +311,7 @@ canvas{display:block;width:100%}
       <div class="reli-row">
         <div class="reli-lbl">
           <div class="reli-sym" style="color:var(--a3)">&#969;<sub>t</sub></div>
-          <div class="reli-lbl-name">Omega total (McDonald)</div>
+          <div class="reli-lbl-name"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-omega" target="_blank" rel="noopener" title="McDonald's Omega is a factor-analytically grounded reliability measure that is more robust than Cronbach's Alpha because it does not assume tau-equivalence (equal factor loadings for all items).">Omega total (McDonald)</a></div>
         </div>
         <div class="reli-track"><div class="reli-bar" id="bar-wt" style="background:var(--a3);width:0%"></div></div>
         <div class="reli-val" id="val-wt" style="color:var(--a3)">—</div>
@@ -336,27 +338,27 @@ canvas{display:block;width:100%}
   <div class="lcard-grid">
     <div class="lcard">
       <div class="lcard-h"><span class="circ">①</span> EFA vs. PCA</div>
-      <div class="lcard-body"><strong>Exploratory factor analysis (EFA)</strong> only explains the <em>shared variance</em> of the items — it uses a <em>reduced</em> correlation matrix with communalities h² on the diagonal. <strong>Principal component analysis (PCA)</strong> explains <em>all</em> variance (including error) and uses ones on the diagonal. This is a conceptually important difference.</div>
+      <div class="lcard-body"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis is a latent variable model that explains the covariances among observed indicators through a smaller number of latent factors.">Exploratory factor analysis (EFA)</a></strong> only explains the <em>shared variance</em> of the items — it uses a <em>reduced</em> correlation matrix with communalities h² on the diagonal. <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-hauptkomponentenanalyse" target="_blank" rel="noopener" title="Principal component analysis (PCA) is a data-reduction technique that transforms p correlated variables into an equal number of uncorrelated linear combinations, ordered by decreasing explained total variance.">Principal component analysis (PCA)</a></strong> explains <em>all</em> variance (including error) and uses ones on the diagonal. This is a conceptually important difference.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">②</span> Communality &amp; Uniqueness</div>
+      <div class="lcard-h"><span class="circ">②</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-kommunalitaet" target="_blank" rel="noopener" title="The communality h² of an item in factor analysis is the share of its variance explained by the extracted common factors — the complement of uniqueness (h² + u² = 1).">Communality</a> &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-uniqueness" target="_blank" rel="noopener" title="Uniqueness u² is the share of an item's variance in factor analysis that is not explained by the common factors (u² = 1 − h²).">Uniqueness</a></div>
       <div class="lcard-body">The <strong>communality h²</strong> is the proportion of an item's variance explained by the common factors. There are two time points: the <strong>initial</strong> communality (starting estimate before extraction, usually the squared multiple correlation SMC — the R² from the joint regression of the item on <em>all</em> other items, not a single one) and the <strong>final</strong> communality (after extraction: h² = sum of squared loadings across all retained factors — what the factor solution actually accounts for). The table in this tool always shows the final h². The <strong>uniqueness u² = 1 − h²</strong> contains measurement error and item-specific variance.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h"><span class="circ">③</span> Eigenvalues &amp; Scree Plot</div>
-      <div class="lcard-body">A factor's eigenvalue shows how much variance (in units of standardized items) it explains. The scree plot shows the eigenvalues sorted by size. The <strong>Kaiser criterion</strong> (eigenvalue &gt; 1) and the <strong>scree elbow</strong> are the most common criteria for determining the number of factors.</div>
+      <div class="lcard-body">A factor's eigenvalue shows how much variance (in units of standardized items) it explains. The scree plot shows the eigenvalues sorted by size. The <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-kaiser-kriterium" target="_blank" rel="noopener" title="The Kaiser criterion (also Kaiser-Guttman criterion) is a rule of thumb for determining the number of factors to extract: retain only factors with an eigenvalue > 1.">Kaiser criterion</a></strong> (eigenvalue &gt; 1) and the <strong>scree elbow</strong> are the most common criteria for determining the number of factors.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">④</span> Rotation &amp; Simple Structure</div>
+      <div class="lcard-h"><span class="circ">④</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rotation" target="_blank" rel="noopener" title="Factor rotation transforms an initial factor-loading matrix into a more interpretable solution without changing the model's overall fit — only the coordinate axes in factor space are rotated.">Rotation</a> &amp; Simple Structure</div>
       <div class="lcard-body"><strong>Varimax</strong> rotates the orthogonal axes so that each item loads as highly as possible on exactly <em>one</em> factor (Thurstone's simple structure). <strong>Oblique</strong> allows factor correlation (phi &gt; 0) — more realistic, but harder to interpret. Communalities do not change under rotation.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h"><span class="circ">⑤</span> Cronbach's Alpha</div>
-      <div class="lcard-body">Cronbach's <strong>alpha</strong> estimates internal consistency as a function of the average inter-item correlation. A common misconception: alpha is <strong>not a measure of unidimensionality</strong>. A 2-factor structure can have identical alpha to a 1-factor structure — if the mean inter-item correlation stays the same.</div>
+      <div class="lcard-body"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cronbach" target="_blank" rel="noopener" title="Cronbach's Alpha is the most widely used measure of the internal consistency of a scale — the degree to which multiple items measure the same latent construct.">Cronbach's alpha</a> estimates internal consistency as a function of the average inter-item correlation. A common misconception: alpha is <strong>not a measure of unidimensionality</strong>. A 2-factor structure can have identical alpha to a 1-factor structure — if the mean inter-item correlation stays the same.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h"><span class="circ">⑥</span> Omega Total &amp; Hierarchical</div>
-      <div class="lcard-body"><strong>Omega total</strong> accounts for all factors and is a better lower bound on reliability than alpha. <strong>Omega hierarchical</strong> (Schmid-Leiman) measures only the share of a higher-order general factor — it rises with both phi and the cross-loading, and is 0 only when both are 0 (truly two separate factors with no shared variance at all).</div>
+      <div class="lcard-body"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-omega" target="_blank" rel="noopener" title="McDonald's Omega is a factor-analytically grounded reliability measure that is more robust than Cronbach's Alpha because it does not assume tau-equivalence (equal factor loadings for all items).">Omega total</a></strong> accounts for all factors and is a better lower bound on reliability than alpha. <strong>Omega hierarchical</strong> (Schmid-Leiman) measures only the share of a higher-order general factor — it rises with both phi and the cross-loading, and is 0 only when both are 0 (truly two separate factors with no shared variance at all).</div>
     </div>
   </div>
 
@@ -370,7 +372,7 @@ canvas{display:block;width:100%}
     <div class="help-h">❓ Help — Exploratory Factor Analysis (EFA)</div>
 
     <div class="help-ex">
-      <strong>Research example:</strong> a psychologist develops a cognitive test with 8 subtests. The EFA is meant to check whether 2 latent factors — verbal ability and spatial reasoning — underlie it, without specifying in advance which items belong to which factor.
+      <strong>Research example:</strong> a psychologist develops a cognitive test with 8 subtests. The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis is a latent variable model that explains the covariances among observed indicators through a smaller number of latent factors.">EFA</a> is meant to check whether 2 latent factors — verbal ability and spatial reasoning — underlie it, without specifying in advance which items belong to which factor.
     </div>
 
     <div class="help-sh">Parameters</div>
@@ -381,8 +383,8 @@ canvas{display:block;width:100%}
     </ul>
 
     <div class="help-sh">Extraction Method: PAF</div>
-    <p class="help-p">This tool uses <strong>Principal Axis Factoring (PAF)</strong> — a genuine EFA method. PAF works with a <em>reduced</em> correlation matrix in which the diagonal is replaced by communalities h² — not by ones as in PCA. This models only the shared variance (factor variance), not the total variance.</p>
-    <p class="help-p">In practice this runs iteratively: you start with an <strong>initial</strong> communality estimate (usually each item's squared multiple correlation SMC with all others), extract factors, compute new <strong>final</strong> communalities from them (h² = sum of squared loadings), and repeat until h² barely changes anymore. Since in this tool the population model (Λ, Φ) is given directly via the sliders, it skips this iteration and inserts the model-implied communality immediately — with real data, by contrast, h² is always only an estimate, not a known true value.</p>
+    <p class="help-p">This tool uses <strong>Principal Axis Factoring (PAF)</strong> — a genuine EFA method. PAF works with a <em>reduced</em> correlation matrix in which the diagonal is replaced by communalities h² — not by ones as in <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-hauptkomponentenanalyse" target="_blank" rel="noopener" title="Principal component analysis (PCA) is a data-reduction technique that transforms p correlated variables into an equal number of uncorrelated linear combinations, ordered by decreasing explained total variance.">PCA</a>. This models only the shared variance (factor variance), not the total variance.</p>
+    <p class="help-p">In practice this runs iteratively: you start with an <strong>initial</strong> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-kommunalitaet" target="_blank" rel="noopener" title="The communality h² of an item in factor analysis is the share of its variance explained by the extracted common factors — the complement of uniqueness (h² + u² = 1).">communality</a> estimate (usually each item's squared multiple correlation SMC with all others), extract factors, compute new <strong>final</strong> communalities from them (h² = sum of squared loadings), and repeat until h² barely changes anymore. Since in this tool the population model (Λ, Φ) is given directly via the sliders, it skips this iteration and inserts the model-implied communality immediately — with real data, by contrast, h² is always only an estimate, not a known true value.</p>
     <p class="help-p">The scree plot shows the eigenvalues of the <em>full</em> R matrix (as is common in practice, since most software packages report it this way). The actual factor extraction is performed from the reduced matrix.</p>
 
     <div class="help-sh">Reliability Indices (Add-On)</div>
@@ -393,7 +395,7 @@ canvas{display:block;width:100%}
     <code class="help-formula">Alpha = (8/7)·(sigma²_X − 8) / sigma²_X</code>
     <code class="help-formula">Omega_total = 1 − 8·(1 − r_within) / sigma²_X</code>
     <code class="help-formula">Omega_hier = 64·r_between / sigma²_X &nbsp;(Schmid-Leiman)</code>
-    <p class="help-p"><strong>Omega hierarchical</strong> is based on the Schmid-Leiman orthogonalization: each item's loading on a higher-order general factor g equals sqrt(r_between) — because with orthogonal group factors, two items from different groups have Cov = g² exactly, regardless of whether the shared variance comes from phi (correlated factors), from cross-loadings, or from both. Omega hierarchical = 0 only when r_between = 0 (neither phi nor cross-loading creates shared variance).</p>
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-omega" target="_blank" rel="noopener" title="McDonald's Omega is a factor-analytically grounded reliability measure that is more robust than Cronbach's Alpha because it does not assume tau-equivalence (equal factor loadings for all items).">Omega hierarchical</a></strong> is based on the Schmid-Leiman orthogonalization: each item's loading on a higher-order general factor g equals sqrt(r_between) — because with orthogonal group factors, two items from different groups have Cov = g² exactly, regardless of whether the shared variance comes from phi (correlated factors), from cross-loadings, or from both. Omega hierarchical = 0 only when r_between = 0 (neither phi nor cross-loading creates shared variance).</p>
 
     <div class="help-sh">Biplot &amp; Correlation Matrix</div>
     <p class="help-p">The biplot shows each item as a point in the F1/F2 coordinate system. Items near (1,0) load highly on F1; near (0,1) highly on F2. After varimax rotation, items cluster near the axes (simple structure). Under oblique rotation, the factor axes are drawn at an angle of arccos(phi).</p>

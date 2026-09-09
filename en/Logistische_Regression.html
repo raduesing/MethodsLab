@@ -420,7 +420,7 @@ input[type=range]::-moz-range-thumb{
   </div>
 
   <div class="erklaer" style="margin-top:.9rem">
-    <strong>Core idea:</strong> Instead of predicting Y directly and linearly, logistic regression transforms the probability P(Y=1) — via <em>odds</em> and the <em>logit</em> — into a quantity that is unbounded (−∞ to +∞). <strong>There</strong>, ordinary linear modeling is fine. The back-transformation (Module <span class="circ">②</span>) automatically produces the S-shape and thereby valid probabilities.
+    <strong>Core idea:</strong> Instead of predicting Y directly and linearly, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-logistische-regression" target="_blank" rel="noopener" title="Logistic regression models the probability of a binary outcome (0/1) as a function of predictors: P(Y=1|X) = σ(β₀ + β₁X₁ + … + βₖXₖ).">logistic regression</a> transforms the probability P(Y=1) — via <em>odds</em> and the <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-logit" target="_blank" rel="noopener" title="The logit is the link function of logistic regression: logit(p) = log(p / (1−p)). It transforms a probability p ∈ (0, 1) into an unrestricted real value (−∞, +∞).">logit</a></em> — into a quantity that is unbounded (−∞ to +∞). <strong>There</strong>, ordinary linear modeling is fine. The back-transformation (Module <span class="circ">②</span>) automatically produces the S-shape and thereby valid probabilities.
   </div>
 </div>
 
@@ -505,7 +505,7 @@ input[type=range]::-moz-range-thumb{
       </div>
 
       <div class="erklaer" style="margin-bottom:0">
-        <strong>OR = e<sup>0.518</sup> ≈ 1.68</strong> — men have a 1.68-fold higher <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="Das Odds Ratio (OR) vergleicht die Chancen (Odds) eines Ereignisses zwischen zwei Gruppen: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)).">chance</a></em> (odds) of relapse than women. On the <strong>probability scale</strong>, though, that's "only" +12.4 percentage points (33.8%&nbsp;→&nbsp;46.2%). <strong>68% higher odds ≠ 68% higher probability</strong> — that difference is the core of Module <span class="circ">③</span>.
+        <strong>OR = e<sup>0.518</sup> ≈ 1.68</strong> — men have a 1.68-fold higher <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="The Odds Ratio (OR) compares the odds of an event between two groups: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)).">chance</a></em> (odds) of relapse than women. On the <strong>probability scale</strong>, though, that's "only" +12.4 percentage points (33.8%&nbsp;→&nbsp;46.2%). <strong>68% higher odds ≠ 68% higher probability</strong> — that difference is the core of Module <span class="circ">③</span>.
       </div>
     </div>
   </div>
@@ -522,7 +522,7 @@ input[type=range]::-moz-range-thumb{
           logit(Y=1|X=1) = b₀ + b₁ &nbsp;→&nbsp; logit(P¹)<br>
           b₁ = logit(P¹) − logit(P⁰) = ln[ (P¹/(1−P¹)) / (P⁰/(1−P⁰)) ]<br>
           ⇒ e<sup>b₁</sup> = (P¹/(1−P¹)) / (P⁰/(1−P⁰)) = Odds(X=1) / Odds(X=0) = <strong style="color:var(--ink)">OR</strong><br><br>
-          The logit coefficient is thus a <em>difference</em> of log-odds. A difference of logarithms exponentiates to a <em>ratio</em> — which is why e<sup>b</sup> always yields a <strong>ratio</strong> (odds ratio), never an additive difference.
+          The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-logit" target="_blank" rel="noopener" title="The logit is the link function of logistic regression: logit(p) = log(p / (1−p)). It transforms a probability p ∈ (0, 1) into an unrestricted real value (−∞, +∞).">logit coefficient</a> is thus a <em>difference</em> of log-odds. A difference of logarithms exponentiates to a <em>ratio</em> — which is why e<sup>b</sup> always yields a <strong>ratio</strong> (odds ratio), never an additive difference.
         </div>
       </div>
     </div>
@@ -531,7 +531,7 @@ input[type=range]::-moz-range-thumb{
 
 <!-- ══ MODULE 3 ════════════════════════════════════════════════════ -->
 <div id="mod3" class="mod-panel">
-  <div class="mod-h">Marginal Effects on the <em>Probability Scale</em></div>
+  <div class="mod-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-marginale-effekte" target="_blank" rel="noopener" title="Marginal effects describe the change in the predicted outcome per unit change in a predictor, computed on the original outcome scale.">Marginal Effects</a> on the <em>Probability Scale</em></div>
   <div class="mod-sub">The same step Δ on the X axis — a constant difference in the logit, a constant ratio in the odds, but a changing difference in the probability</div>
 
   <div class="cv-row" style="align-items:flex-start">
@@ -679,8 +679,8 @@ input[type=range]::-moz-range-thumb{
         On the left you can freely set b₀, the main effects, and an <strong>interaction</strong> on the logit scale. Raise "Interaction m×low", for instance: the sex difference becomes larger or smaller within the "low" status group than in the other groups — the bars visibly diverge instead of staying parallel. In the second view, "Interaction cig.×low" rotates one S-curve's slope relative to the other two. <em>↺ Lecture values</em> resets the original values from the lecture.</p>
         <p><strong>Where do the confidence intervals come from?</strong><br>
         Not made up: for whatever effects are currently set, a synthetic but realistic dataset is simulated and <strong>refit live via Newton-Raphson (IRLS)</strong> — the same algorithm R's <code>glm()</code> uses. The CIs are genuine Wald confidence intervals from that fit's covariance matrix, not an illustration. The info box on the left shows both: the effects you set, and what a fit on the simulated data (with real sampling noise) recovers from them.</p>
-        <p><strong>Relation to the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-glm" target="_blank" rel="noopener" title="Das Generalisierte Lineare Modell erweitert die gewöhnliche lineare Regression auf nicht-normalverteilte Outcomes über eine Verteilungsfamilie, einen linearen Prädiktor und eine Link-Funktion.">GLM</a> framework</strong><br>
-        Logistic regression is a special case of the Generalized Linear Model: the same predictor structure (main effects, interactions, dummy coding) as in <a href="../OLS_Regression.html">OLS &amp; Multiple Regression</a> or <a href="../ANOVA.html">ANOVA</a> — just with a logit link instead of an identity link, and a binomial instead of a normal distribution. For classification quality (cutoff, sensitivity/specificity, ROC/AUC), see the dedicated <a href="../Sens_Spez.html">Sensitivity &amp; Specificity</a> tool. For logistic regression as a tool for confounding control, see <a href="../PSM.html">Propensity Score Matching</a>.</p>
+        <p><strong>Relation to the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-glm" target="_blank" rel="noopener" title="The Generalized Linear Model extends ordinary linear regression to non-normally distributed outcomes via a distribution family, a linear predictor, and a link function.">GLM</a> framework</strong><br>
+        Logistic regression is a special case of the Generalized Linear Model: the same predictor structure (main effects, interactions, dummy coding) as in <a href="../OLS_Regression.html">OLS &amp; Multiple Regression</a> or <a href="../ANOVA.html">ANOVA</a> — just with a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-link-funktion" target="_blank" rel="noopener" title="The link function g connects the linear predictor η = Xβ to the expected value μ = E[Y] in the Generalized Linear Model: g(μ) = η.">logit link</a> instead of an identity link, and a binomial instead of a normal distribution. For classification quality (cutoff, sensitivity/specificity, ROC/AUC), see the dedicated <a href="../Sens_Spez.html">Sensitivity &amp; Specificity</a> tool. For logistic regression as a tool for confounding control, see <a href="../PSM.html">Propensity Score Matching</a>.</p>
       </div>
     </div>
   </div>
@@ -695,8 +695,8 @@ input[type=range]::-moz-range-thumb{
       <div class="lcard-h"><span class="circ">①</span> Why not OLS?</div>
       <div class="lcard-body">
         Modeling a binary Y (0/1) with ordinary OLS regression (a <em>Linear Probability
-        Model</em>) produces predictions outside [0,1] — not valid probabilities. Logistic
-        regression solves this with an S-shaped function that, by construction, can never
+        Model</em>) produces predictions outside [0,1] — not valid probabilities. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-logistische-regression" target="_blank" rel="noopener" title="Logistic regression models the probability of a binary outcome (0/1) as a function of predictors: P(Y=1|X) = σ(β₀ + β₁X₁ + … + βₖXₖ).">Logistic
+        regression</a> solves this with an S-shaped function that, by construction, can never
         fall below 0 or rise above 1.
       </div>
     </div>
@@ -711,7 +711,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">③</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="Das Odds Ratio (OR) vergleicht die Chancen (Odds) eines Ereignisses zwischen zwei Gruppen: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)).">Odds Ratio</a></div>
+      <div class="lcard-h"><span class="circ">③</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="The Odds Ratio (OR) compares the odds of an event between two groups: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)).">Odds Ratio</a></div>
       <div class="lcard-body">
         <code>OR = e<sup>b₁</sup></code> — differences of log-odds exponentiate to
         <strong>ratios</strong>, not differences. OR = 1.68 means 68% higher odds,
@@ -721,7 +721,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">④</span> The marginal effect isn't constant</div>
+      <div class="lcard-h"><span class="circ">④</span> The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-marginale-effekte" target="_blank" rel="noopener" title="Marginal effects describe the change in the predicted outcome per unit change in a predictor, computed on the original outcome scale.">marginal effect</a> isn't constant</div>
       <div class="lcard-body">
         <code>dP/dX = b₁ · P·(1−P)</code> — the same logit coefficient b₁ produces a
         differently sized effect on the probability depending on the current P: maximal
@@ -742,8 +742,8 @@ input[type=range]::-moz-range-thumb{
     <div class="lcard">
       <div class="lcard-h"><span class="circ">⑥</span> A special case of the GLM</div>
       <div class="lcard-body">
-        Logistic regression = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-glm" target="_blank" rel="noopener" title="Das Generalisierte Lineare Modell erweitert die gewöhnliche lineare Regression auf nicht-normalverteilte Outcomes über eine Verteilungsfamilie, einen linearen Prädiktor und eine Link-Funktion.">GLM</a>
-        with a logit link and binomial distribution. The same predictor logic (main
+        Logistic regression = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-glm" target="_blank" rel="noopener" title="The Generalized Linear Model extends ordinary linear regression to non-normally distributed outcomes via a distribution family, a linear predictor, and a link function.">GLM</a>
+        with a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-link-funktion" target="_blank" rel="noopener" title="The link function g connects the linear predictor η = Xβ to the expected value μ = E[Y] in the Generalized Linear Model: g(μ) = η.">logit link</a> and binomial distribution. The same predictor logic (main
         effects, interactions, dummy coding) as in OLS still applies — only the
         back-transformation onto the outcome's scale differs.
       </div>
@@ -774,7 +774,7 @@ input[type=range]::-moz-range-thumb{
         <summary>▸ Estimation: maximum likelihood / IRLS (for the curious)</summary>
         <div class="details-inner" style="font-size:.78rem;color:var(--ink2);line-height:1.9">
           Unlike OLS, logistic regression has no closed-form solution. It is estimated
-          via <em>maximum likelihood</em>, iteratively, using
+          via <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mle" target="_blank" rel="noopener" title="Maximum Likelihood Estimation seeks the parameter value θ̂ that maximizes the probability of the observed data.">maximum likelihood</a></em>, iteratively, using
           <em>Iteratively Reweighted Least Squares</em> (IRLS, equivalent to
           Newton-Raphson): at each step a weighted linear model is solved, with weights
           w = P&#770;·(1−P&#770;) derived from the current estimate. This procedure actually
@@ -788,7 +788,7 @@ input[type=range]::-moz-range-thumb{
       <p><strong>b₁</strong> (logit scale): "For each +1 unit of X, the logit of P(Y=1)
       increases by b₁" — correct, but practically unintuitive, since nobody thinks in
       logits.</p>
-      <p><strong>OR = e<sup>b₁</sup></strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="Das Odds Ratio (OR) vergleicht die Chancen (Odds) eines Ereignisses zwischen zwei Gruppen: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)).">odds ratio</a>): "For each +1 unit of X, the odds of Y=1 are
+      <p><strong>OR = e<sup>b₁</sup></strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="The Odds Ratio (OR) compares the odds of an event between two groups: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)).">odds ratio</a>): "For each +1 unit of X, the odds of Y=1 are
       multiplied by the factor OR." <strong>Multiplicative, not additive</strong> — an OR
       of 2 means "twice the odds," not "50 percentage points more."</p>
       <p><strong>Predicted probability</strong>: the only quantity people can intuitively

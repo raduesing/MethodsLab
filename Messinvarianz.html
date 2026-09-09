@@ -157,6 +157,8 @@ table.deftab strong{color:var(--ink)}
 table.htab{border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.74rem;margin:.3rem 0 .6rem;width:100%}
 table.htab th,table.htab td{border:1px solid var(--grid);padding:.3rem .45rem;text-align:left;color:var(--ink2)}
 table.htab th{color:var(--accent);font-weight:500}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
 @media(max-width:900px){.two-col{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr}.lcard-grid{grid-template-columns:1fr}}
 </style>
@@ -235,14 +237,14 @@ table.htab th{color:var(--accent);font-weight:500}
   </div>
 
   <div class="sec-h">Was ist Messinvarianz — und wozu?</div>
-  <p class="intro-p"><strong>Messinvarianz (Faktorielle Invarianz)</strong> liegt vor, wenn ein Instrument ein Konstrukt in
+  <p class="intro-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-messinvarianz" target="_blank" rel="noopener" title="Messinvarianz besagt, dass ein psychologisches Konstrukt in verschiedenen Gruppen auf dieselbe Weise gemessen wird.">Messinvarianz (Faktorielle Invarianz)</a></strong> liegt vor, wenn ein Instrument ein Konstrukt in
     verschiedenen <strong>Gruppen</strong> (Geschlecht, Länder) oder zu verschiedenen <strong>Zeitpunkten</strong> auf
     <em>dieselbe Weise</em> misst — formal: wenn die Parameter des Messmodells (Ladungen <span class="gk">λ</span>,
     Intercepts <span class="gk">τ</span>, Fehlervarianzen <span class="gk">θ</span>) über die Gruppen <strong>gleich</strong>
     sind. <strong>Wozu?</strong> Nur dann bedeutet ein Unterschied im <em>Testwert</em> auch einen Unterschied im
     <em>Konstrukt</em> — und nicht bloß im Instrument. Fehlt die Invarianz, vergleicht man Äpfel mit Birnen: eine
     „Gruppendifferenz" kann ein reines <strong>Messartefakt</strong> sein. Geprüft wird sie als <strong>genestete
-    Hierarchie</strong> im Mehrgruppen-SEM (Diagramm ② unten): Stufe für Stufe setzt man mehr Parameter über die Gruppen
+    Hierarchie</strong> im Mehrgruppen-<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-strukturgleichungsmodell" target="_blank" rel="noopener" title="Ein Strukturgleichungsmodell (SEM) kombiniert ein Messmodell (konfirmatorische Faktorenanalyse) mit einem Strukturmodell (Regressionsbeziehungen zwischen den latenten Variablen selbst).">SEM</a> (Diagramm ② unten): Stufe für Stufe setzt man mehr Parameter über die Gruppen
     gleich (<span style="color:var(--a3)">grüne Pfade</span>) und prüft, ob das Modell noch passt.</p>
 
   <table class="deftab">
@@ -359,7 +361,7 @@ table.htab th{color:var(--accent);font-weight:500}
       <div class="lcard-body"><strong>Δτ</strong> verschiebt das Item für alle gleich stark (uniformer DIF) → verletzt nur die
         <em>skalare</em> Stufe. <strong>Δλ</strong> ändert, wie stark das Item das Konstrukt misst (nicht-uniformer DIF) → verletzt
         schon die <em>metrische</em> Stufe und damit auch Zusammenhangs­vergleiche. Dasselbe Phänomen heißt in der IRT
-        <strong>Item-DIF</strong>.
+        <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-dif" target="_blank" rel="noopener" title="DIF liegt vor, wenn Personen mit gleicher latenter Fähigkeit θ systematisch unterschiedliche Antwortwahrscheinlichkeiten auf ein Item zeigen — abhängig von ihrer Gruppenzugehörigkeit.">Item-DIF</a></strong>.
         <a class="xlink" href="DIF.html" target="_blank">→ DIF (IRT)</a></div>
     </div>
     <div class="lcard">
@@ -376,7 +378,7 @@ table.htab th{color:var(--accent);font-weight:500}
     </div>
     <div class="lcard">
       <div class="lcard-h">⑧ Verwandte Werkzeuge</div>
-      <div class="lcard-body">Messinvarianz ist der <em>Gruppenvergleich</em> von Messmodellen: dieselben CFA-Bausteine wie im
+      <div class="lcard-body"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-messinvarianz" target="_blank" rel="noopener" title="Messinvarianz besagt, dass ein psychologisches Konstrukt in verschiedenen Gruppen auf dieselbe Weise gemessen wird.">Messinvarianz</a> ist der <em>Gruppenvergleich</em> von Messmodellen: dieselben <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Die Faktoranalyse ist ein latentes Variablenmodell, das Kovarianzen zwischen beobachteten Indikatoren durch eine kleinere Anzahl latenter Faktoren erklärt.">CFA</a>-Bausteine wie im
         Messmodell- und CFA-Tool, nur über Gruppen restringiert. Verschobene Intercepts erinnern an Normverschiebungen.
         <a class="xlink" href="Konfirmatorische_Faktoranalyse.html" target="_blank">→ Konfirmatorische Faktoranalyse (CFA)</a>
         <a class="xlink" href="Messmodelle.html" target="_blank">→ Messmodelle</a>
@@ -432,12 +434,12 @@ D_artefakt = (Δτ + Δμ·Δλ)/k       (nur durch das verletzte Item)</span>
 
     <div class="help-sh">Wie real getestet wird</div>
     <p class="help-p">Mehrgruppen-CFA: Modelle genestet schätzen (konfigural → metrisch → skalar → strikt) und
-      vergleichen. Der χ²-Differenztest ist bei großem n übersensibel; verbreiteter sind <strong>ΔCFI ≤ .01</strong> und
-      ΔRMSEA ≤ .015 (Cheung &amp; Rensvold 2002; Chen 2007). Hält eine Stufe nicht, sucht man das verletzende Item
+      vergleichen. Der χ²-Differenztest ist bei großem n übersensibel; verbreiteter sind <strong>Δ<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cfi" target="_blank" rel="noopener" title="Der CFI (Comparative Fit Index) vergleicht die Anpassungsgüte des geschätzten SEM/CFA-Modells mit einem Baseline-Modell, das gar keine Zusammenhänge zwischen den Variablen annimmt.">CFI</a> ≤ .01</strong> und
+      Δ<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rmsea" target="_blank" rel="noopener" title="Der RMSEA ist ein absoluter Fit-Index, der die Modell-Fehlpassung pro Freiheitsgrad schätzt und dabei explizit für Modellkomplexität korrigiert.">RMSEA</a> ≤ .015 (Cheung &amp; Rensvold 2002; Chen 2007). Hält eine Stufe nicht, sucht man das verletzende Item
       (Modifikationsindizes) und erlaubt ihm freie Parameter → <strong>partielle Invarianz</strong>.</p>
 
     <div class="help-sh">Bezug zu DIF und IRT</div>
-    <p class="help-p">Nicht-Invarianz auf Itemebene ist <strong>Differential Item Functioning (DIF)</strong>: uniformer DIF ↔
+    <p class="help-p">Nicht-Invarianz auf Itemebene ist <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-dif" target="_blank" rel="noopener" title="DIF liegt vor, wenn Personen mit gleicher latenter Fähigkeit θ systematisch unterschiedliche Antwortwahrscheinlichkeiten auf ein Item zeigen — abhängig von ihrer Gruppenzugehörigkeit.">Differential Item Functioning (DIF)</a></strong>: uniformer DIF ↔
       Intercept/Schwierigkeit (Δτ), nicht-uniformer DIF ↔ Diskrimination/Ladung (Δλ). Das CFA-Framework hier und das
       IRT-Framework im DIF-Tool beschreiben dasselbe Phänomen in unterschiedlicher Parametrisierung.</p>
 

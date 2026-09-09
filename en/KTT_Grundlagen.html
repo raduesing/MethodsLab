@@ -126,6 +126,8 @@ canvas{width:100%;display:block}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -197,7 +199,7 @@ canvas{width:100%;display:block}
     <div class="story-lbl">📋 Example — IQ Test (IQ Scale)</div>
     An IQ test has M = 100. Every observed score <strong>X</strong> is the sum of the <em>true score</em> <strong>T</strong>
     (the actual trait level) and a random <em>measurement error</em> <strong>E</strong>: <strong>X = T + E</strong>.
-    <strong>Reliability</strong> is the proportion of variance attributable to true differences — not to noise.
+    <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">Reliability</a></strong> is the proportion of variance attributable to true differences — not to noise.
     With σ<sub>T</sub> = 14 and σ<sub>E</sub> = 5, this gives r<sub>tt</sub> ≈ .89 and an SEM of 5 points.
     <div style="margin-top:.6rem">
       <a class="xlink" href="Faktoranalyse.html" target="_blank">A test score is usually a sum of several items — how do you get from there to reliability? →</a>
@@ -257,8 +259,8 @@ canvas{width:100%;display:block}
   <p class="ci-intro">A <strong>single person</strong> takes the test once and gets the observed score
     <strong>X</strong> (the "Observed score X" slider in the sidebar). Because of measurement error, X is not exactly the
     true score <strong>τ</strong>. CTT offers two confidence intervals for this:
-    the <strong style="color:var(--a1)">equivalence hypothesis</strong> (CI around the observed score X) and the
-    <strong style="color:var(--a3)">regression hypothesis</strong> (CI around the regression-corrected estimate X′).</p>
+    the <strong style="color:var(--a1)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-aequivalenzhypothese" target="_blank" rel="noopener" title="In individual diagnostics, the CI based on the equivalence hypothesis is placed directly around the observed test score X: CI = X ± z·SEM.">equivalence hypothesis</a></strong> (CI around the observed score X) and the
+    <strong style="color:var(--a3)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-regressionshypothese" target="_blank" rel="noopener" title="The CI based on the regression hypothesis additionally accounts for regression-to-the-mean: extreme observed test scores partly reflect random measurement error and systematically overestimate the deviation from the population mean.">regression hypothesis</a></strong> (CI around the regression-corrected estimate X′).</p>
   <div class="plot-box">
     <div class="plot-title"><span id="ci-cl">95</span>% confidence interval: equivalence (red) vs. regression hypothesis (green)</div>
     <canvas id="cv-ci" height="190"></canvas>
@@ -267,14 +269,14 @@ canvas{width:100%;display:block}
   <div class="ci-note">⚠ A confidence interval is <strong>not</strong> a probability range for τ and <strong>not an
     estimate of the true score</strong> itself — it is a coverage interval (under repeated measurement, it contains τ
     in, say, 95% of cases). The point estimate of the true score is X or X′; the <em>interval</em> only expresses the
-    uncertainty. A direct probability statement about τ requires the Bayesian credible interval — CIs and CrIs are
+    uncertainty. A direct probability statement about τ requires the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-credible-interval-diag" target="_blank" rel="noopener" title="In individual diagnostics, the Bayesian CrI combines a prior over the true test score τ with the likelihood of the observed score X to yield the posterior — and allows direct probability statements like P(τ > T | X).">Bayesian credible interval</a> — CIs and CrIs are
     covered in detail in the tool
     <a class="xlink" href="../Diagnostische_Intervalle.html" target="_blank" style="margin-top:0;padding:.2rem .55rem">→ Diagnostic Intervals</a></div>
 
   <div class="sec-h">Concepts</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">Reliability Is a Proportion of Variance</div>
+      <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">Reliability</a> Is a Proportion of Variance</div>
       <div class="lcard-body">r<sub>tt</sub> tells you <strong>what proportion</strong> of the observed spread is due to true
         differences between people. r = .90 means: 90% true variance, 10% measurement noise. Reliability is not a property
         "of the test" but of <strong>test + population</strong>: the same scale is less reliable in a homogeneous
@@ -282,20 +284,20 @@ canvas{width:100%;display:block}
     </div>
     <div class="lcard">
       <div class="lcard-h">SEM Depends on Reliability</div>
-      <div class="lcard-body">The standard error of measurement <strong>SEM = SD·√(1−r)</strong> translates reliability into
+      <div class="lcard-body">The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="The Standard Error of Measurement (SEM) quantifies the average random deviation of the observed test score X from the true score τ of an individual.">standard error of measurement</a> <strong>SEM = SD·√(1−r)</strong> translates reliability into
         the scale unit. Here, SEM even equals σ<sub>E</sub>. It is the basis for confidence bands around individual scores —
         and thus for <strong>change measurement</strong> (reliable change).
         <br><a class="xlink" href="../Jacobson_Truax.html" target="_blank">→ Jacobson-Truax</a></div>
     </div>
     <div class="lcard">
       <div class="lcard-h">Longer Tests Are More Reliable</div>
-      <div class="lcard-body">The <strong>Spearman-Brown formula</strong> shows: more (equivalent) items increase
+      <div class="lcard-body">The <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-spearman-brown" target="_blank" rel="noopener" title="The Spearman-Brown formula predicts how a test's reliability changes when its length is multiplied by a factor n (lengthened or shortened).">Spearman-Brown formula</a></strong> shows: more (equivalent) items increase
         reliability — but with diminishing returns. Doubling helps a lot; a tenfold increase, little. The tool computes
         how many items are needed for a target reliability.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h">Measurement Error Distorts Associations</div>
-      <div class="lcard-body">Unreliability <strong>attenuates correlations</strong>: the observed
+      <div class="lcard-body">Unreliability <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation refers to the systematic underestimation of the true correlation between two constructs due to measurement error in the indicators.">attenuates</a> correlations</strong>: the observed
         association is smaller than the true one. The disattenuation formula corrects for this.
         <br><a class="xlink" href="Messfehler_Attenuierung.html" target="_blank">→ Measurement Error Attenuation</a></div>
     </div>
@@ -331,17 +333,17 @@ Var(X) = Var(T) + Var(E)</span>
       parallel-test reliability. The empirically estimated value fluctuates around the theoretical one (sampling error —
       visibly smaller with larger n).</p>
 
-    <div class="help-sh">Standard Error of Measurement &amp; Confidence Intervals (Panel ④)</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="The Standard Error of Measurement (SEM) quantifies the average random deviation of the observed test score X from the true score τ of an individual.">Standard Error of Measurement</a> &amp; Confidence Intervals (Panel ④)</div>
     <p class="help-p">A <strong>single person</strong> gets the observed score X on one test administration. Because of
       measurement error, X deviates from the (unknown) true score τ. The <strong>standard error of measurement</strong>
       describes how much individual measurements scatter around τ:</p>
     <span class="help-formula">SEM = SD_X · √(1 − r_tt)        (here it also equals σ_E)</span>
     <p class="help-p">From this, CTT constructs a confidence interval — in two readings, exactly as in the "Diagnostic
       Intervals" tool:</p>
-    <p class="help-p"><strong style="color:var(--a1)">Equivalence hypothesis</strong> (red): the interval is centered
+    <p class="help-p"><strong style="color:var(--a1)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-aequivalenzhypothese" target="_blank" rel="noopener" title="In individual diagnostics, the CI based on the equivalence hypothesis is placed directly around the observed test score X: CI = X ± z·SEM.">Equivalence hypothesis</a></strong> (red): the interval is centered
       around the observed score X. Assumption: X is an unbiased estimator of τ.</p>
     <span class="help-formula">CI = X ± z · SEM</span>
-    <p class="help-p"><strong style="color:var(--a3)">Regression hypothesis</strong> (green): the interval is centered
+    <p class="help-p"><strong style="color:var(--a3)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-regressionshypothese" target="_blank" rel="noopener" title="The CI based on the regression hypothesis additionally accounts for regression-to-the-mean: extreme observed test scores partly reflect random measurement error and systematically overestimate the deviation from the population mean.">Regression hypothesis</a></strong> (green): the interval is centered
       around the <em>regressed</em> estimate X′, which accounts for regression to the mean — extreme scores contain more
       measurement error and get pulled toward the mean:</p>
     <span class="help-formula">X′ = M + r_tt · (X − M)
@@ -351,11 +353,11 @@ CI = X′ ± z · SE_reg</span>
       a probability statement about τ and is not itself "the estimate of the true score." The point estimate is X or
       X′; the interval only expresses that, under <em>repeated</em> measurement, it covers the true score in, say, 95%
       of cases. A direct statement "with 95% probability τ lies in …" is only possible with the
-      <strong>Bayesian credible interval</strong>. Confidence and credible intervals (as well as percentile-rank
+      <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-credible-interval-diag" target="_blank" rel="noopener" title="In individual diagnostics, the Bayesian CrI combines a prior over the true test score τ with the likelihood of the observed score X to yield the posterior — and allows direct probability statements like P(τ > T | X).">Bayesian credible interval</a></strong>. Confidence and credible intervals (as well as percentile-rank
       placement) are covered in detail in the tool
       <em>Diagnostic Intervals</em>.</p>
 
-    <div class="help-sh">Spearman-Brown: Test Length &amp; Reliability (Panel ③)</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-spearman-brown" target="_blank" rel="noopener" title="The Spearman-Brown formula predicts how a test's reliability changes when its length is multiplied by a factor n (lengthened or shortened).">Spearman-Brown</a>: Test Length &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">Reliability</a> (Panel ③)</div>
     <p class="help-p">Reliability can be increased by <strong>adding items</strong> — because the shared true-score part
       of several items sums up more strongly than their independent measurement error. The Spearman-Brown prophecy
       formula predicts what reliability a test lengthened by a factor of k would have:</p>
