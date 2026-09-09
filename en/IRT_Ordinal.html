@@ -122,6 +122,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);float:right;margin-top:-.3rem}
 .help-close:hover{background:var(--ink);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -139,37 +141,37 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="help-h">Ordinal IRT — Help <button class="help-close" onclick="toggleHelp()">✕ Close</button></div>
 
   <div class="help-sh">What Is Ordinal IRT?</div>
-  <p class="help-p">Classical IRT models dichotomous responses (correct/incorrect). Ordinal IRT extends this framework to polytomous items with ordered response categories (e.g. Likert scales, partial credit). As with binary IRT, person ability θ and item parameters lie on the same scale — but now with several threshold parameters per item.</p>
+  <p class="help-p">Classical <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-irt" target="_blank" rel="noopener" title="IRT models the relationship between latent person ability θ and observed response behavior on items — item-specific and sample-independent.">IRT</a> models dichotomous responses (correct/incorrect). Ordinal IRT extends this framework to polytomous items with ordered response categories (e.g. Likert scales, partial credit). As with binary IRT, person ability θ and item parameters lie on the same scale — but now with several threshold parameters per item.</p>
 
-  <div class="help-sh">Partial Credit Model (PCM) — Masters (1982)</div>
+  <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-pcm" target="_blank" rel="noopener" title="The Partial Credit Model extends the Rasch model to polytomous items with multiple threshold parameters, keeping discrimination fixed at a = 1 for all items.">Partial Credit Model (PCM)</a> — Masters (1982)</div>
   <p class="help-p">The PCM is a member of the Rasch family: all items have a = 1 by axiom. The response probability results from cumulated adjacent log-odds transitions:</p>
   <code class="help-formula">PCM: P(X=k|θ) = exp(Σⱼ₌₁ᵏ (θ − δⱼ)) / Σₘ₌₀ᴷ⁻¹ exp(Σⱼ₌₁ᵐ (θ − δⱼ))
 δⱼ = threshold parameter · sum for m=0: empty (= 0)</code>
   <p class="help-p">The threshold parameter δⱼ is the θ value at which the adjacent categories j−1 and j are equally probable. As with the binary Rasch model: if an item doesn't fit, it is revised — not the model.</p>
 
-  <div class="help-sh">Generalized Partial Credit Model (GPCM) — Muraki (1992)</div>
+  <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-gpcm" target="_blank" rel="noopener" title="The Generalized PCM extends the PCM with a discrimination parameter a estimated from the data.">Generalized Partial Credit Model (GPCM)</a> — Muraki (1992)</div>
   <p class="help-p">The GPCM extends the PCM with a discrimination parameter a that is estimated from the data:</p>
   <code class="help-formula">GPCM: P(X=k|θ) = exp(Σⱼ₌₁ᵏ a·(θ − δⱼ)) / Σₘ₌₀ᴷ⁻¹ exp(Σⱼ₌₁ᵐ a·(θ − δⱼ))
 PCM is the special case with a = 1</code>
   <p class="help-p">High a → steep category curves → item discriminates well. The GPCM adapts to the data — not a measurement ideal, but a descriptive model.</p>
 
-  <div class="help-sh">Graded Response Model (GRM) — Samejima (1969)</div>
+  <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-grm" target="_blank" rel="noopener" title="The Graded Response Model models cumulative response probabilities P*(X≥k|θ) for ordinal items.">Graded Response Model (GRM)</a> — Samejima (1969)</div>
   <p class="help-p">The GRM works with cumulative probabilities (boundary response curves):</p>
   <code class="help-formula">P*(X≥k|θ) = 1 / (1 + exp(−a·(θ − bₖ)))    k = 1,...,K−1
 P(X=k|θ)  = P*(X≥k|θ) − P*(X≥k+1|θ)
 P*(X≥0) = 1,  P*(X≥K) = 0</code>
   <p class="help-p">The boundary parameters bₖ must be strictly monotonic (b₁ &lt; b₂ &lt; ... &lt; bₖ₋₁), otherwise negative response probabilities result. This is a structural difference from PCM/GPCM, where disordered thresholds can occur.</p>
 
-  <div class="help-sh">Threshold Parameters and Disordered Thresholds</div>
+  <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-threshold" target="_blank" rel="noopener" title="Threshold parameters indicate the θ value at which the transition between two adjacent response categories is equally probable.">Threshold Parameters</a> and Disordered Thresholds</div>
   <p class="help-p"><strong>PCM/GPCM (δⱼ):</strong> at δⱼ, categories j−1 and j are equally probable. The δⱼ need not be ordered. Disordered thresholds (δⱼ₊₁ &lt; δⱼ) mean that category j is the most likely response at no θ point — it is empirically redundant. Cause: adjacent categories worded too similarly.</p>
   <p class="help-p"><strong>GRM (bₖ):</strong> at bₖ, P*(X≥k|θ=bₖ) = 0.5 — the cumulative curve crosses the 50% line. Disordered thresholds are impossible in the GRM by model structure.</p>
 
-  <div class="help-sh">Connection to Factor Analysis</div>
+  <div class="help-sh">Connection to <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis explains correlations among indicators through a smaller number of latent factors.">Factor Analysis</a></div>
   <p class="help-p">The GRM and ordinal factor analysis with polychoric correlations are mathematically equivalent: the GRM parameter a corresponds to a factor loading (a = λ/√(1−λ²)). The boundary parameters bₖ correspond to the threshold parameters τₖ in polychoric FA. The person parameter θ corresponds to the factor score.</p>
-  <p class="help-p">The GPCM corresponds to a graded FA model with varying factor loadings. The PCM corresponds to the Rasch ideal for ordinal data — equal loadings (a=1), measurement-theoretic rigor.</p>
+  <p class="help-p">The GPCM corresponds to a graded FA model with varying factor loadings. The PCM corresponds to the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rasch" target="_blank" rel="noopener" title="In the Rasch model, discrimination a = 1 is fixed by axiom rather than estimated from the data — the basis of specific objectivity.">Rasch</a> ideal for ordinal data — equal loadings (a=1), measurement-theoretic rigor.</p>
   <p class="help-p">The difference lies in the estimation approach: the GRM estimates parameters directly via ML; polychoric FA first estimates pairwise correlations, then factor loadings. For large samples, both give similar results.</p>
 
-  <div class="help-sh">Item Information in Ordinal Models</div>
+  <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-testinformation" target="_blank" rel="noopener" title="The test information function I(θ) describes a test's measurement precision as a function of ability θ; it is the sum of the item informations.">Item Information</a> in Ordinal Models</div>
   <p class="help-p">For the GPCM, I(θ) = a² · Var(X|θ) — higher discrimination and more response variance produce more information. Compared to dichotomous items, polytomous items can carry more information — every intermediate category contributes to measurement. But only if the categories discriminate well: disordered thresholds and weak a reduce information despite many categories.</p>
 
   <div class="help-sh">Expected Score Curve (ESC)</div>
@@ -180,7 +182,7 @@ P*(X≥0) = 1,  P*(X≥K) = 0</code>
   <p class="help-p"><strong>PCM:</strong> suitable when the categories represent graded partial performance — e.g. 0 = no solution, 1 = partial approach recognizable, 2 = complete solution. The model enforces measurement-theoretic rigor (a = 1): items that don't fit are revised or removed. Useful for item banking, computerized adaptive testing, and achievement surveys where item parameters must be stable across samples.</p>
   <p class="help-p"><strong>GPCM:</strong> suitable when items are allowed different discrimination — e.g. in heterogeneous test batteries with mixed item formats. The GPCM is the standard model in large-scale educational assessments (e.g. PISA, TIMSS) for open-ended tasks with partial credit. Unlike the PCM, no measurement ideal is postulated: a is a free parameter estimated from the data.</p>
   <p class="help-p"><strong>GRM:</strong> suitable when the categories represent continuous intensity levels or degrees of agreement — e.g. Likert scales in personality or attitude questionnaires. The model is mathematically closely related to confirmatory FA via polychoric correlations. The boundary response curves are substantively easy to interpret: P*(X≥k|θ) is the probability of choosing at least category k.</p>
-  <p class="help-p"><strong>Rating Scale Model (RSM, Andrich 1978):</strong> a special case of the PCM in which all items share the same threshold spacing. The threshold parameter for item i and transition j is τⱼ + βᵢ — where τⱼ is the shared category threshold and βᵢ the item-specific difficulty. Useful when all items use exactly the same response scale and one can assume that the psychological distances between categories are constant across items. The most parsimonious of the four approaches; often fails when items differ substantively.</p>
+  <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rsm" target="_blank" rel="noopener" title="The Rating Scale Model is a special case of the PCM in which all items share the same relative threshold spacing (δᵢⱼ = τⱼ + βᵢ).">Rating Scale Model (RSM, Andrich 1978)</a>:</strong> a special case of the PCM in which all items share the same threshold spacing. The threshold parameter for item i and transition j is τⱼ + βᵢ — where τⱼ is the shared category threshold and βᵢ the item-specific difficulty. Useful when all items use exactly the same response scale and one can assume that the psychological distances between categories are constant across items. The most parsimonious of the four approaches; often fails when items differ substantively.</p>
 
   <div class="help-sh">Model Comparison and Fit</div>
   <p class="help-p">PCM and GPCM are nested (PCM ⊂ GPCM): a likelihood-ratio test (LRT) checks whether the additional a parameter significantly improves model fit. GPCM and GRM are not nested — here AIC and BIC are recommended as comparison criteria (lower values = better). For the PCM, Rasch-specific fit statistics are available: <strong>infit</strong> (information-weighted fit, sensitive to mid-range θ) and <strong>outfit</strong> (unweighted fit, sensitive to outliers at the θ extremes). Common rule of thumb: infit/outfit between 0.7 and 1.3 are considered acceptable.</p>
@@ -191,7 +193,7 @@ P*(X≥0) = 1,  P*(X≥K) = 0</code>
   <p class="help-p"><strong>In R:</strong> the package <strong>mirt</strong> is available for all three models (Chalmers, 2012). The package <strong>TAM</strong> specializes in the Rasch family (PCM, RSM). <strong>ltm</strong> implements the GRM. For an FA perspective on ordinal data: <strong>lavaan</strong> with polychoric correlations or <strong>psych::fa()</strong> with cor="poly".</p>
 
   <div class="help-sh">Connection to DIF — Test Fairness and Item Bias</div>
-  <p class="help-p">Ordinal IRT models are the methodological basis for <strong>Differential Item Functioning (DIF)</strong> analyses. DIF is present when an item is differentially difficult for two groups (e.g. by gender, background, or language) — even after latent ability θ has been statistically controlled for. That is the decisive difference from mere <em>impact</em> (group differences in mean ability): DIF is a problem of the item, impact is a characteristic of the groups.</p>
+  <p class="help-p">Ordinal IRT models are the methodological basis for <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dif" target="_blank" rel="noopener" title="DIF occurs when people with the same latent ability θ show systematically different response probabilities on an item, depending on group membership.">Differential Item Functioning (DIF)</a></strong> analyses. DIF is present when an item is differentially difficult for two groups (e.g. by gender, background, or language) — even after latent ability θ has been statistically controlled for. That is the decisive difference from mere <em>impact</em> (group differences in mean ability): DIF is a problem of the item, impact is a characteristic of the groups.</p>
   <p class="help-p">PCM, GPCM, and GRM enable group-specific item parameter estimation. With <strong>uniform DIF</strong>, difficulty b is systematically higher for one group — the CRF curves are shifted horizontally without crossing. With <strong>non-uniform DIF</strong>, discrimination a additionally differs — the curves cross, so the item is differentially fair across ability levels. IRT-based DIF analyses are explored in depth in the separate <strong>DIF tool</strong> in MethodsLab.</p>
 </div>
 </div>
@@ -247,13 +249,13 @@ P*(X≥0) = 1,  P*(X≥K) = 0</code>
 
   <div class="advantage-box">
     <div class="advantage-lbl">✓ Why Separate Models for Likert/Partial-Credit Items?</div>
-    Assumes the basic concepts θ, ICC, and discrimination from <a href="IRT.html" target="_blank">IRT — Dichotomous Models</a>, now for items with <strong>more than two ordered response categories</strong>. The payoff: every intermediate category contributes to measurement — a 5-point item can carry substantially more information than a binary-coded one. But that only holds if the categories actually discriminate well; weak or <em>disordered</em> thresholds (step ③) wipe out this advantage immediately.
+    Assumes the basic concepts θ, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc-irt" target="_blank" rel="noopener" title="The Item Characteristic Curve shows how the probability of a correct response P(θ) rises with person ability θ.">ICC</a>, and discrimination from <a href="IRT.html" target="_blank">IRT — Dichotomous Models</a>, now for items with <strong>more than two ordered response categories</strong>. The payoff: every intermediate category contributes to measurement — a 5-point item can carry substantially more information than a binary-coded one. But that only holds if the categories actually discriminate well; weak or <em>disordered</em> thresholds (step ③) wipe out this advantage immediately.
   </div>
 
   <div class="sec-h" style="margin-top:0">Approach — From Binary to Polytomous Item</div>
   <div>
-    <div class="proc-step"><span class="circ">①</span><strong>From binary to polytomous.</strong> Instead of one difficulty b, an item with K categories has K−1 threshold parameters — transitions between adjacent (PCM/GPCM) or cumulated (GRM) categories. <a class="proc-jump" href="#cv-crf">→ View category response curves</a></div>
-    <div class="proc-step"><span class="circ">②</span><strong>Model choice: PCM, GPCM, or GRM?</strong> Partial-credit levels (0/partial approach/complete) → PCM. Heterogeneous discrimination in mixed item formats → GPCM. Degrees of agreement on Likert scales → GRM (closely related to ordinal factor analysis via polychoric correlations).</div>
+    <div class="proc-step"><span class="circ">①</span><strong>From binary to polytomous.</strong> Instead of one difficulty b, an item with K categories has K−1 <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-threshold" target="_blank" rel="noopener" title="Threshold parameters indicate the θ value at which the transition between two adjacent response categories is equally probable.">threshold parameters</a> — transitions between adjacent (PCM/GPCM) or cumulated (GRM) categories. <a class="proc-jump" href="#cv-crf">→ View category response curves</a></div>
+    <div class="proc-step"><span class="circ">②</span><strong>Model choice: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-pcm" target="_blank" rel="noopener" title="The Partial Credit Model extends the Rasch model to polytomous items with multiple threshold parameters, keeping discrimination fixed at a = 1 for all items.">PCM</a>, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-gpcm" target="_blank" rel="noopener" title="The Generalized PCM extends the PCM with a discrimination parameter a estimated from the data.">GPCM</a>, or <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-grm" target="_blank" rel="noopener" title="The Graded Response Model models cumulative response probabilities P*(X≥k|θ) for ordinal items.">GRM</a>?</strong> Partial-credit levels (0/partial approach/complete) → PCM. Heterogeneous discrimination in mixed item formats → GPCM. Degrees of agreement on Likert scales → GRM (closely related to ordinal factor analysis via polychoric correlations).</div>
     <div class="proc-step"><span class="circ">③</span><strong>Check for disordered thresholds.</strong> If the thresholds are not ordered in sequence, a category is empirically redundant — a warning sign for response levels worded too similarly. <a class="proc-jump" href="#crf-note">→ View the warning note</a></div>
     <div class="proc-step"><span class="circ">④</span><strong>Expected score &amp; item information.</strong> Where along the θ scale does the item contribute most to measurement? <a class="proc-jump" href="#cv-esc">→ Expected score</a> · <a class="proc-jump" href="#cv-info">→ Item information</a></div>
   </div>
@@ -331,15 +333,15 @@ const ST={
 };
 
 const LK=[
-  {h:'PCM vs. GPCM vs. GRM',
+  {h:'<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-pcm" target="_blank" rel="noopener" title="The Partial Credit Model extends the Rasch model to polytomous items with multiple threshold parameters, keeping discrimination fixed at a = 1 for all items.">PCM</a> vs. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-gpcm" target="_blank" rel="noopener" title="The Generalized PCM extends the PCM with a discrimination parameter a estimated from the data.">GPCM</a> vs. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-grm" target="_blank" rel="noopener" title="The Graded Response Model models cumulative response probabilities P*(X≥k|θ) for ordinal items.">GRM</a>',
    b:'<strong>PCM</strong> (Masters, 1982): Rasch family, a = 1 by axiom — no discrimination parameter. If items don\'t fit, they are revised. <strong>GPCM</strong> (Muraki, 1992): like PCM, but a is estimated — items may discriminate to different degrees. <strong>GRM</strong> (Samejima, 1969): models cumulative probabilities P*(X ≥ k|θ) instead of adjacent category transitions.'},
-  {h:'Threshold Parameters',
+  {h:'<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-threshold" target="_blank" rel="noopener" title="Threshold parameters indicate the θ value at which the transition between two adjacent response categories is equally probable.">Threshold Parameters</a>',
    b:'In the <strong>PCM/GPCM</strong>, δⱼ is the θ value at which categories j−1 and j are equally probable. In the <strong>GRM</strong>, bₖ is the θ value at which P*(X≥k|θ) = 0.5. In both cases the parameters lie on the same θ scale as person ability.'},
   {h:'Disordered Thresholds',
    b:'In the PCM/GPCM, thresholds can be disordered (δ₂ &lt; δ₁). Category 1 then has the highest response probability at no θ point — it is empirically redundant. Cause: adjacent categories worded too similarly. In the <strong>GRM</strong>, disordered thresholds are impossible by model structure.'},
   {h:'Expected Score Curve',
    b:'E[X|θ] = Σₖ k · P(X=k|θ) — expected response score as a function of person ability. Steep ESC → high a → good discrimination. Where the ESC is steepest, I(θ) is highest — because that\'s where the item best distinguishes between similar ability levels.'},
-  {h:'GRM and Factor Analysis',
+  {h:'GRM and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis explains correlations among indicators through a smaller number of latent factors.">Factor Analysis</a>',
    b:'The GRM and ordinal FA with <strong>polychoric correlations</strong> are mathematically equivalent: a ↔ factor loading λ (a = λ/√(1−λ²)), bₖ ↔ threshold parameter τₖ, θ ↔ factor score. Difference: the GRM estimates directly via ML; polychoric FA first estimates correlations, then loadings.'},
   {h:'Which Model, When?',
    b:'<strong>PCM:</strong> Rasch conformity, item banking, adaptive tests. <strong>GPCM:</strong> variable discrimination, mixed item formats in psychological tests. <strong>GRM:</strong> connection to FA, rating scales with clearly defined boundaries. Rule of thumb: GRM for Likert scales in questionnaires; PCM/GPCM for graded rating scales in achievement tests.'},

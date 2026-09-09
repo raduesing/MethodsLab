@@ -72,6 +72,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   color:var(--a2);margin-bottom:.45rem}
 .xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
   padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 .xlink:hover{background:var(--a4);color:var(--bg)}
 .plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
 .plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
@@ -185,7 +187,7 @@ canvas{width:100%;display:block}
   <div class="story-box" style="margin-bottom:.7rem">
     <div class="story-lbl">📋 Introduction — SCL-90-R as an Example</div>
     The SCL-90-R (items 0–4, here 10 items → sum score 0–40) has a <strong>strongly right-skewed</strong> norming distribution.
-    The authors solved this correctly and computed T scores via the <strong>area transformation</strong> (Lienert &amp; Raatz) — i.e. percentile-equivalent.
+    The authors solved this correctly and computed T scores via the <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="The area transformation converts each raw score into a norm score via its empirical percentile rank rather than via a linear formula.">area transformation</a></strong> (Lienert &amp; Raatz) — i.e. percentile-equivalent.
     This tool asks the opposite question: <em>how strong would the bias be if linear T scores (M=50, SD=10) had been used instead?</em>
     A linear T=50 would empirically fall at <strong id="sb-pr">…</strong> of the norm sample.
     <div style="margin-top:.6rem">
@@ -236,13 +238,13 @@ canvas{width:100%;display:block}
   <div class="lcard-grid">
     <div class="lcard">
       <div class="lcard-h">The Norming Dilemma</div>
-      <div class="lcard-body">Linear T scores assume that the norming sample is <strong>normally distributed</strong>.
+      <div class="lcard-body">Linear T scores assume that the norming sample is <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-normalverteilung" target="_blank" rel="noopener" title="The normal distribution (Gaussian distribution) is a bell-shaped, symmetric continuous distribution parameterized by mean μ and standard deviation σ.">normally distributed</a></strong>.
         With skewed raw data (e.g. symptom scales), this assumption is violated.
         The T-score mean (T=50) then doesn't fall at the population's <em>50th percentile</em>,
         but at a considerably higher one.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Why PR(Mean) &gt; 50%?</div>
+      <div class="lcard-h">Why <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-prozentrang" target="_blank" rel="noopener" title="The percentile rank of a test score indicates what percentage of the norm sample obtains an equal or lower score.">PR</a>(Mean) &gt; 50%?</div>
       <div class="lcard-body">In right-skewed distributions, <strong>more than half of all values lie below the mean</strong>
         (mean &gt; median). The T score is normed on the mean — but empirically this
         value exceeds 60–75% of the norm sample. A patient with T=50 is thus more pathological than PR=50 suggests.</div>
@@ -255,7 +257,7 @@ canvas{width:100%;display:block}
         Clinically consequential: it's precisely mild to moderate symptom values that get misclassified.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Alternatives: Area-True Norming</div>
+      <div class="lcard-h">Alternatives: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="The area transformation converts each raw score into a norm score via its empirical percentile rank rather than via a linear formula.">Area-True Norming</a></div>
       <div class="lcard-body">The <strong>area transformation</strong> (Watts &amp; Bollen, 1985; Blom, 1958) assigns
         each raw score its empirical percentile rank and then transforms it into a normal score.
         The result corresponds to what one would obtain if the raw scores were normally distributed —
@@ -276,7 +278,7 @@ canvas{width:100%;display:block}
     <p class="help-p">Many psychological tests (SCL-90-R, BDI, PHQ-9, BAI) assess symptom values on ordinal scales (e.g. 0–4).
       Sum scores across several items are <strong>strongly right-skewed</strong> in healthy norming samples:
       most people have low values, few have high ones.
-      Even though this distribution is <em>not</em> normally distributed, <strong>linear T scores</strong> are often computed:</p>
+      Even though this distribution is <em>not</em> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-normalverteilung" target="_blank" rel="noopener" title="The normal distribution (Gaussian distribution) is a bell-shaped, symmetric continuous distribution parameterized by mean μ and standard deviation σ.">normally distributed</a>, <strong>linear T scores</strong> are often computed:</p>
     <span class="help-formula">T = 50 + 10 · (X − M) / SD</span>
     <p class="help-p">This transformation implicitly assumes that X is normally distributed. This leads to systematic biases.</p>
 
@@ -286,25 +288,25 @@ canvas{width:100%;display:block}
       with the <strong>true empirical percentile rank</strong> from the chosen distribution.</p>
 
     <div class="help-sh">The Four Distribution Types</div>
-    <p class="help-p"><strong>Gamma (α, β):</strong> the <em>rate parametrization</em> is used here (as in R: <code>dgamma(x, shape=α, rate=β)</code>).
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-gamma-verteilung" target="_blank" rel="noopener" title="The gamma distribution is a flexible right-skewed distribution for positive quantities with shape and rate parameters.">Gamma (α, β)</a>:</strong> the <em>rate parametrization</em> is used here (as in R: <code>dgamma(x, shape=α, rate=β)</code>).
       <strong>Shape α</strong> determines the shape and skew: skewness = 2/√α.
       For α &lt; 1, the distribution is extremely right-skewed (monotonically decreasing); as α → ∞ it approaches the normal distribution.
       <strong>Rate β</strong> is the reciprocal scale parameter (β = 1/scale): it compresses (large β) or stretches (small β) the distribution.
       Mean <em>M = α/β</em>, variance <em>σ² = α/β²</em>, PDF: <em>f(x) = β^α · x^(α−1) · e^(−βx) / Γ(α)</em>.
       Example: α=1.5, β=0.20 → M=7.5, SD=6.1, γ₁=1.63 — typical for a healthy SCL-90 norm sample (10 items, range 0–40).
       In practice: α controls the asymmetry, β the location (inversely proportional to the mean).</p>
-    <p class="help-p"><strong>Log-Normal (μ_log, σ_log):</strong> results when the logarithm of the measured value is normally distributed.
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-log-normal" target="_blank" rel="noopener" title="The log-normal distribution is a right-skewed positive distribution that arises when the logarithm of the variable is normally distributed.">Log-Normal (μ_log, σ_log)</a>:</strong> results when the logarithm of the measured value is normally distributed.
       Skewness rises rapidly with σ_log. Common for measurements that cannot go negative.</p>
-    <p class="help-p"><strong>Exponential (λ):</strong> a special case of the gamma distribution (α=1). Memoryless process,
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-exponentialverteilung" target="_blank" rel="noopener" title="The exponential distribution is a distribution for positive, right-skewed quantities — a special case of the gamma distribution with α=1.">Exponential (λ)</a>:</strong> a special case of the gamma distribution (α=1). Memoryless process,
       maximum skewness = 2. All raw scores equally likely to decrease — an extreme model.</p>
-    <p class="help-p"><strong>Weibull (k, λ):</strong> a two-parameter distribution that takes very different shapes depending on the shape parameter k.
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-weibull-verteilung" target="_blank" rel="noopener" title="The Weibull distribution is a two-parameter distribution for positive quantities that ranges from exponential-like to nearly normal depending on the shape parameter k.">Weibull (k, λ)</a>:</strong> a two-parameter distribution that takes very different shapes depending on the shape parameter k.
       <strong>k &lt; 1:</strong> strictly monotonically decreasing, decreasing hazard rate (like exponential, but even more extreme).
       <strong>k = 1:</strong> identical to Exponential(1/λ).
       <strong>1 &lt; k &lt; 3.6:</strong> right-skewed, bell-shaped — relevant for survival times and reaction times.
       <strong>k &gt; 3.6:</strong> approximately normally distributed.
       Mean = λ · Γ(1 + 1/k), variance = λ² · [Γ(1+2/k) − Γ(1+1/k)²].</p>
 
-    <p class="help-p"><strong>Ex-Gaussian (μ, σ, τ):</strong> a convolution of a normal distribution N(μ,σ²) and an exponential Exp(1/τ).
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-exgaussian" target="_blank" rel="noopener" title="The ExGaussian distribution arises as the sum of a normally distributed and an exponentially distributed random variable — bell-shaped and right-skewed.">Ex-Gaussian (μ, σ, τ)</a>:</strong> a convolution of a normal distribution N(μ,σ²) and an exponential Exp(1/τ).
       Common for reaction-time data. Allows separate control over the normally distributed base component
       and the exponential outlier term (τ). Skewness ≈ 2τ³/(σ²+τ²)^(3/2).</p>
 
@@ -319,8 +321,8 @@ Empirical PR(x) = F_skew(x)              [true cumulative distribution function]
       the same values used for the linear T transformation.
       The difference empir. PR − nominal PR shows the misclassification.</p>
 
-    <div class="help-sh">Area Transformation per Lienert &amp; Raatz</div>
-    <p class="help-p">The <strong>area-true T norming</strong> (Lienert &amp; Raatz, 1998; also: "area transformation" or "normalized standard scores") solves the skew problem by converting each raw score into a T score via its <em>empirical percentile rank</em> — not via a linear formula:</p>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="The area transformation converts each raw score into a norm score via its empirical percentile rank rather than via a linear formula.">Area Transformation</a> per Lienert &amp; Raatz</div>
+    <p class="help-p">The <strong>area-true T norming</strong> (Lienert &amp; Raatz, 1998; also: "area transformation" or "normalized standard scores") solves the skew problem by converting each raw score into a T score via its <em>empirical <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-prozentrang" target="_blank" rel="noopener" title="The percentile rank of a test score indicates what percentage of the norm sample obtains an equal or lower score.">percentile rank</a></em> — not via a linear formula:</p>
     <span class="help-formula">T_F(x) = 50 + 10 · Φ⁻¹(F_emp(x))</span>
     <p class="help-p">Here <em>F_emp(x)</em> is the empirical cumulative frequency of raw score x and <em>Φ⁻¹</em> is the quantile function (inverse) of the standard normal distribution. The result: whoever sits at the 84th percentile of the norm sample always gets T_F = 60 — regardless of whether the raw-score distribution is skewed or not.</p>
     <p class="help-p"><strong>Comparing both methods:</strong></p>

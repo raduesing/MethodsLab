@@ -153,6 +153,8 @@ canvas{width:100%;display:block}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -299,7 +301,7 @@ canvas{width:100%;display:block}
   <div class="sec-h"><span class="circ">①</span> Metrics of Change Measurement</div>
   <div class="metric-grid">
     <div class="metric">
-      <div class="metric-lbl">Measurement Error SE<sub>M</sub></div>
+      <div class="metric-lbl"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="The standard error of measurement (SEM) quantifies the average random measurement deviation of the observed test score X from the true score τ: SEM = σ · √(1 − r_xx).">Measurement Error SE<sub>M</sub></a></div>
       <div class="metric-val" id="m-sem">—</div>
       <div class="metric-sub" id="m-sem-sub">SD<sub>d</sub>·√(1−r<sub>tt</sub>)</div>
     </div>
@@ -366,13 +368,13 @@ canvas{width:100%;display:block}
   <div class="sec-h">Concepts</div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">Reliable Change Index (RCI)</div>
+      <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliable-change-index" target="_blank" rel="noopener" title="The Reliable Change Index (RCI) checks whether the change in an individual's test score between two time points is larger than the random fluctuation expected from measurement error.">Reliable Change Index (RCI)</a></div>
       <div class="lcard-body">The RCI checks whether an individual change is <strong>larger than the measurement error</strong>.
         It relates the pre-post difference to the standard error of the difference. Only at |RCI| &gt; 1.96
         does the change count as reliable (p &lt; .05) — anything below could be pure measurement noise.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Clinical Significance</div>
+      <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-jacobson-truax" target="_blank" rel="noopener" title="The Jacobson-Truax method determines the clinical significance of individual change via two criteria: the Reliable Change Index and a cutoff criterion for the transition from the dysfunctional to the functional population.">Clinical Significance</a></div>
       <div class="lcard-body">Reliable ≠ meaningful. A person can improve reliably and still remain clinically symptomatic.
         Clinical significance asks: has the person <strong>moved from the dysfunctional to the functional
         population</strong>? The cutoff marks the boundary between the two worlds.</div>
@@ -380,7 +382,7 @@ canvas{width:100%;display:block}
     <div class="lcard">
       <div class="lcard-h">Why Two Criteria?</div>
       <div class="lcard-body">Statistical significance at the group level says nothing about the <strong>individual patient</strong>.
-        Jacobson &amp; Truax (1991) therefore combine reliability (RCI) and meaningfulness (cutoff) — the foundation of
+        Jacobson &amp; Truax (1991) therefore combine <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability is the degree to which a measurement instrument yields consistent results under repeated application — measurement precision.">reliability</a> (RCI) and meaningfulness (cutoff) — the foundation of
         modern outcome research. This tool uses the <strong>5-group variant</strong> from the R package JTRCI, which
         additionally identifies "not reliably recovered".</div>
     </div>
@@ -408,8 +410,8 @@ canvas{width:100%;display:block}
       <strong>individual patient</strong> actually feels better after treatment. Jacobson &amp; Truax (1991)
       resolve this with two questions per person: (1) Is the change <em>reliable</em>? (2) Is it <em>clinically meaningful</em>?</p>
 
-    <div class="help-sh">1 · Reliable Change Index (RCI)</div>
-    <p class="help-p">The measurement error (standard error of measurement, SE<sub>M</sub>) results from spread and reliability:</p>
+    <div class="help-sh">1 · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliable-change-index" target="_blank" rel="noopener" title="The Reliable Change Index (RCI) checks whether the change in an individual's test score between two time points is larger than the random fluctuation expected from measurement error.">Reliable Change Index (RCI)</a></div>
+    <p class="help-p">The measurement error (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="The standard error of measurement (SEM) quantifies the average random measurement deviation of the observed test score X from the true score τ: SEM = σ · √(1 − r_xx).">standard error of measurement</a>, SE<sub>M</sub>) results from spread and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability is the degree to which a measurement instrument yields consistent results under repeated application — measurement precision.">reliability</a>:</p>
     <span class="help-formula">SE_M  = SD · √(1 − r_tt)
 S_diff = √2 · SE_M           (standard error of the difference)
 RCI    = (x_pre − x_post) / S_diff</span>
@@ -417,7 +419,7 @@ RCI    = (x_pre − x_post) / S_diff</span>
       Equivalently: the raw difference must be larger than the <strong>critical value</strong> = 1.96 · S<sub>diff</sub>.
       The SD of the clinical population (SD<sub>d</sub>) is used here as the pretest SD.</p>
 
-    <div class="help-sh">2 · Clinical Significance — Four Cutoff Criteria</div>
+    <div class="help-sh">2 · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-jacobson-truax" target="_blank" rel="noopener" title="The Jacobson-Truax method determines the clinical significance of individual change via two criteria: the Reliable Change Index and a cutoff criterion for the transition from the dysfunctional to the functional population.">Clinical Significance</a> — Four Cutoff Criteria</div>
     <span class="help-formula">a = M_d − 2·SD_d     (leaving the clinical distribution)
 b = M_f + 2·SD_f     (entering the healthy distribution)
 c = (SD_f·M_d + SD_d·M_f) / (SD_f + SD_d)
@@ -948,10 +950,10 @@ const EXAMPLES = {
     cutoff:'c', cutD:20, z:1.96, lowerBetter:true, n:80, eff:8, pre:32, post:12,
     bands:[{lo:0,hi:13,col:'--a3'},{lo:14,hi:19,col:'--a6'},{lo:20,hi:28,col:'--a5'},{lo:29,hi:63,col:'--a1'}],
     story:`<div class="story-lbl">📋 Example — BDI-II (Beck Depression Inventory II)</div>
-      The BDI-II measures depressive symptoms on a scale of <strong>0–63</strong> (retest reliability ≈ <strong>.92</strong>).
+      The BDI-II measures depressive symptoms on a scale of <strong>0–63</strong> (retest <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability is the degree to which a measurement instrument yields consistent results under repeated application — measurement precision.">reliability</a> ≈ <strong>.92</strong>).
       A patient starts at <em>Pre = 32</em> (severe) and, after therapy, is at <em>Post = 12</em> (minimal).
       Is this improvement <strong>reliable</strong> (beyond measurement error) — and is it <strong>clinically meaningful</strong>
-      (a shift from the clinical to the healthy population)? These are exactly the two questions the Jacobson-Truax method answers.`
+      (a shift from the clinical to the healthy population)? These are exactly the two questions the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-jacobson-truax" target="_blank" rel="noopener" title="The Jacobson-Truax method determines the clinical significance of individual change via two criteria: the Reliable Change Index and a cutoff criterion for the transition from the dysfunctional to the functional population.">Jacobson-Truax method</a> answers.`
   },
   scl: {
     btnText:'SCL Reference Ranges',

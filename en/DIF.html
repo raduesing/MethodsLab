@@ -113,6 +113,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);float:right;margin-top:-.3rem}
 .help-close:hover{background:var(--ink);color:var(--bg)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 </style>
 </head>
 <body>
@@ -130,16 +132,16 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="help-h">DIF — Differential Item Functioning — Help <button class="help-close" onclick="toggleHelp()">✕ Close</button></div>
 
   <div class="help-sh">What Is DIF?</div>
-  <p class="help-p">Differential Item Functioning (DIF) is present when an item is differentially difficult for people from different groups — e.g. by gender, background, language, or age — even though these people have <em>the same latent ability θ</em>. DIF is thus an item-level phenomenon: it describes whether the item itself is fair, independent of whether groups differ in their mean ability.</p>
+  <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dif" target="_blank" rel="noopener" title="DIF occurs when people with the same latent ability θ show systematically different response probabilities on an item, depending on group membership.">Differential Item Functioning (DIF)</a> is present when an item is differentially difficult for people from different groups — e.g. by gender, background, language, or age — even though these people have <em>the same latent ability θ</em>. DIF is thus an item-level phenomenon: it describes whether the item itself is fair, independent of whether groups differ in their mean ability.</p>
   <p class="help-p">The concept is central to <strong>test fairness analysis</strong>: a test can be harder for a group on average because that group has, on average, lower ability (that is not bias). A test is unfair when an item is harder for a group than expected — given equal ability (that is DIF).</p>
 
-  <div class="help-sh">DIF vs. Impact</div>
+  <div class="help-sh">DIF vs. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-impact" target="_blank" rel="noopener" title="Impact refers to the difference in mean ability θ between two groups — regardless of how individual items function; unlike DIF, it is a characteristic of the groups, not the item.">Impact</a></div>
   <p class="help-p"><strong>Impact:</strong> the reference group and the focal group differ in their mean ability θ. This can be legitimate — e.g. when groups have genuinely acquired different amounts of knowledge. Impact alone does not mean bias.</p>
   <p class="help-p"><strong>DIF:</strong> an item is harder (or easier) for the focal group even <em>after</em> conditioning on equal ability θ. This can point to irrelevant item characteristics: culture-specific prior knowledge, linguistic complexity, or context (e.g. sports, occupations) more familiar to one group.</p>
   <p class="help-p">In the tool: change the group distribution (μ_focal) without changing the DIF parameters — impact changes, DIF stays zero. Change Δb or Δa without changing the group distributions — DIF changes, impact stays the same.</p>
 
   <div class="help-sh">Uniform DIF (Δb ≠ 0, Δa = 0)</div>
-  <p class="help-p">With uniform DIF, the focal group's difficulty parameter b is systematically raised (or lowered): b_foc = b_ref + Δb. The ICC shape stays the same — the curves run parallel, without crossing. The focal group is disadvantaged (or favored) uniformly across all θ levels.</p>
+  <p class="help-p">With uniform DIF, the focal group's difficulty parameter b is systematically raised (or lowered): b_foc = b_ref + Δb. The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc-irt" target="_blank" rel="noopener" title="The Item Characteristic Curve shows how the probability of a correct response P(θ) rises with person ability θ.">ICC</a> shape stays the same — the curves run parallel, without crossing. The focal group is disadvantaged (or favored) uniformly across all θ levels.</p>
   <code class="help-formula">Uniform DIF:  b_foc = b_ref + Δb,  a_foc = a_ref
 ICCs run parallel — no crossing point</code>
   <p class="help-p">Typical example: a vocabulary item that requires language-specific knowledge. People without the corresponding language background have a lower probability of solving it despite equal logical ability.</p>
@@ -150,10 +152,10 @@ ICCs run parallel — no crossing point</code>
 ICCs cross — DIF switches direction</code>
 
   <div class="help-sh">Detection Methods</div>
-  <p class="help-p"><strong>Mantel-Haenszel (MH):</strong> non-parametric. People are grouped into strata by total score (as a proxy for θ). Within each stratum, a 2×2 χ² test for group × response is computed and aggregated across strata. The MH odds ratio α_MH estimates the common effect. The ETS D-DIF scale is computed from α_MH: D-DIF = −2.35 · ln(α_MH). ETS classification: |D-DIF| &lt; 1.0 → A (negligible), 1.0–1.5 → B (moderate), &gt; 1.5 → C (substantial).</p>
-  <p class="help-p"><strong>Logistic regression:</strong> item response (0/1) is regressed on total score, group, and their interaction. A significant main effect of group indicates uniform DIF; a significant interaction term indicates non-uniform DIF. Advantage: both DIF types are captured in one analysis.</p>
-  <p class="help-p"><strong>IRT-based methods:</strong> item parameters are estimated separately for both groups and compared. Two common approaches are Lord's χ² test (tests whether the entire parameter vector [a, b] differs significantly) and Raju's area measure (quantifies the difference between the ICC curves as an area).</p>
-  <div class="help-sh">Raju Index: Signed Area vs. Unsigned Area</div>
+  <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mantel-haenszel" target="_blank" rel="noopener" title="The Mantel-Haenszel test is one of the most widely used non-parametric procedures for detecting Differential Item Functioning.">Mantel-Haenszel (MH)</a>:</strong> non-parametric. People are grouped into strata by total score (as a proxy for θ). Within each stratum, a 2×2 χ² test for group × response is computed and aggregated across strata. The MH odds ratio α_MH estimates the common effect. The ETS D-DIF scale is computed from α_MH: D-DIF = −2.35 · ln(α_MH). ETS classification: |D-DIF| &lt; 1.0 → A (negligible), 1.0–1.5 → B (moderate), &gt; 1.5 → C (substantial).</p>
+  <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-logistische-regression" target="_blank" rel="noopener" title="Logistic regression models the probability of a binary outcome as a function of predictors via the logit link function.">Logistic regression</a>:</strong> item response (0/1) is regressed on total score, group, and their interaction. A significant main effect of group indicates uniform DIF; a significant interaction term indicates non-uniform DIF. Advantage: both DIF types are captured in one analysis.</p>
+  <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-irt" target="_blank" rel="noopener" title="IRT models the relationship between latent person ability θ and observed response behavior on items — item-specific and sample-independent.">IRT</a>-based methods:</strong> item parameters are estimated separately for both groups and compared. Two common approaches are Lord's χ² test (tests whether the entire parameter vector [a, b] differs significantly) and Raju's area measure (quantifies the difference between the ICC curves as an area).</p>
+  <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-raju-index" target="_blank" rel="noopener" title="The Raju index quantifies the difference between two groups' ICCs as an area measure (signed area / unsigned area) — the basis for DIF classification in this tool.">Raju Index</a>: Signed Area vs. Unsigned Area</div>
   <p class="help-p">Both measures are based on the difference curve D(θ) = ICC_ref(θ) − ICC_foc(θ). This curve shows, for each θ value, who is favored — and by how much.</p>
   <p class="help-p"><strong>Signed Area (SA)</strong> = ∫ D(θ) dθ = ∫ [ICC_ref(θ) − ICC_foc(θ)] dθ<br>
   The <em>signed</em> integral: areas above the zero line (reference favored) count positive, areas below (focal favored) negative. SA &gt; 0 means the reference group is overall at an advantage. SA = 0 can still coincide with strong DIF — namely when the ICCs cross (non-uniform DIF): then positive and negative areas cancel out, even though both groups are disadvantaged at different θ locations.</p>
@@ -167,7 +169,7 @@ ICCs cross — DIF switches direction</code>
 
   <div class="help-sh">What to Do About DIF?</div>
   <p class="help-p">DIF does not automatically mean an item must be removed from the test. The following steps are sensible: (1) Substantive review: is there a substantive reason for the DIF? Language-specific knowledge, a culturally more familiar context, gender- or background-specific experience? (2) If the reason is irrelevant to the construct: revise or remove the item. (3) If the reason is substantively justified (e.g. occupational prior experience that belongs to the construct): DIF can be legitimate. (4) With substantial DIF and no substantive explanation, the item is considered biased and should not be used in the test.</p>
-  <p class="help-p"><strong>In R:</strong> <strong>mirt</strong> (mirt::DIF), <strong>difR</strong> (difMH, difLord, difRaju), <strong>lordif</strong> for logistic regression, <strong>TAM</strong> for Rasch-based DIF.</p>
+  <p class="help-p"><strong>In R:</strong> <strong>mirt</strong> (mirt::DIF), <strong>difR</strong> (difMH, difLord, difRaju), <strong>lordif</strong> for logistic regression, <strong>TAM</strong> for <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rasch" target="_blank" rel="noopener" title="In the Rasch model, discrimination a = 1 is fixed by axiom rather than estimated from the data — the basis of specific objectivity.">Rasch</a>-based DIF.</p>
 </div>
 </div>
 
@@ -248,9 +250,9 @@ ICCs cross — DIF switches direction</code>
   <div class="sec-h" style="margin-top:0">Approach — Checking Item-Focused Test Fairness</div>
   <div>
     <div class="proc-step"><span class="circ">①</span><strong>Distinguish impact from DIF.</strong> Different group means (impact) are not bias. DIF is present only when an item has different solving probabilities even at <em>equal</em> θ.</div>
-    <div class="proc-step"><span class="circ">②</span><strong>ICC comparison between groups.</strong> Do the reference and focal group curves diverge? <a class="proc-jump" href="#cv-icc">→ View the ICC comparison</a></div>
+    <div class="proc-step"><span class="circ">②</span><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc-irt" target="_blank" rel="noopener" title="The Item Characteristic Curve shows how the probability of a correct response P(θ) rises with person ability θ.">ICC</a> comparison between groups.</strong> Do the reference and focal group curves diverge? <a class="proc-jump" href="#cv-icc">→ View the ICC comparison</a></div>
     <div class="proc-step"><span class="circ">③</span><strong>Uniform vs. non-uniform (Δb vs. Δa).</strong> Do the curves run parallel (uniform DIF) or do they cross (non-uniform DIF)? <a class="proc-jump" href="#cv-diff">→ View the difference curve</a></div>
-    <div class="proc-step"><span class="circ">④</span><strong>Effect size: signed vs. unsigned area (Raju).</strong> How large is the amount of DIF, and does it justify a consequence (revising or removing the item)? <a class="proc-jump" href="#cv-groups">→ Group distributions as context</a></div>
+    <div class="proc-step"><span class="circ">④</span><strong>Effect size: signed vs. unsigned area (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-raju-index" target="_blank" rel="noopener" title="The Raju index quantifies the difference between two groups&#39; ICCs as an area measure (signed area / unsigned area) — the basis for DIF classification in this tool.">Raju</a>).</strong> How large is the amount of DIF, and does it justify a consequence (revising or removing the item)? <a class="proc-jump" href="#cv-groups">→ Group distributions as context</a></div>
   </div>
   <div>
     <a class="xlink" href="IRT.html" target="_blank">← Foundations: IRT — Dichotomous Models</a>
@@ -313,15 +315,15 @@ const ST={
 };
 
 const LK=[
-  {h:'What Is DIF?',
+  {h:'What Is <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dif" target="_blank" rel="noopener" title="DIF occurs when people with the same latent ability θ show systematically different response probabilities on an item, depending on group membership.">DIF</a>?',
    b:'DIF (Differential Item Functioning) is present when an item is differentially difficult for people from two groups — <strong>even at equal true ability θ</strong>. DIF is a problem of the item itself, not of the groups. An item with DIF may be measuring, alongside the target construct, construct-irrelevant characteristics (e.g. language proficiency in a math test).'},
-  {h:'DIF vs. Impact',
+  {h:'DIF vs. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-impact" target="_blank" rel="noopener" title="Impact refers to the difference in mean ability θ between two groups — regardless of how individual items function; unlike DIF, it is a characteristic of the groups, not the item.">Impact</a>',
    b:'<strong>Impact</strong>: the groups differ in their mean ability, μ_Ref ≠ μ_Foc. That is not bias — it can be legitimate for groups to have acquired different knowledge. <strong>DIF</strong>: the item is harder for one group, given equal θ. Both can occur together or independently. Only DIF is a sign of potential item bias.'},
   {h:'Uniform vs. Non-Uniform DIF',
    b:'<strong>Uniform DIF</strong> (Δb ≠ 0, Δa = 0): the ICCs run parallel — one group is uniformly disadvantaged across all θ levels. <strong>Non-uniform DIF</strong> (Δa ≠ 0): the ICCs cross — the item favors one group at low θ values and the other at high values. Non-uniform DIF partially cancels out on average and is harder to detect.'},
-  {h:'Mantel-Haenszel Test',
+  {h:'<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mantel-haenszel" target="_blank" rel="noopener" title="The Mantel-Haenszel test is one of the most widely used non-parametric procedures for detecting Differential Item Functioning.">Mantel-Haenszel Test</a>',
    b:'People are grouped into strata by total score (equal ability). Within each stratum, a 2×2 test for group × response is computed and aggregated. The MH odds ratio α_MH indicates how much more likely the reference group is to answer correctly. ETS D-DIF = −2.35 · ln(α_MH). Classes: |D-DIF| &lt; 1.0 = A (negligible), 1.0–1.5 = B (moderate), &gt; 1.5 = C (substantial).'},
-  {h:'Logistic Regression',
+  {h:'<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-logistische-regression" target="_blank" rel="noopener" title="Logistic regression models the probability of a binary outcome as a function of predictors via the logit link function.">Logistic Regression</a>',
    b:'Response ~ total score + group + total score×group. Significant group effect → uniform DIF. Significant interaction → non-uniform DIF. Advantage: both DIF types are captured simultaneously. Effect size: Nagelkerke R² difference between models with and without the group effect (ΔR²). Cutoffs: ΔR² &gt; 0.035 moderate, &gt; 0.070 substantial.'},
   {h:'What to Do About DIF?',
    b:'(1) <strong>Substantive review</strong>: why might the item show DIF? Language-specific vocabulary? A culturally more familiar context? (2) If the reason is construct-irrelevant: revise or remove the item. (3) If the reason is part of the construct: DIF can be legitimate. (4) With substantial DIF and no explanation: the item is considered biased. In R: <strong>mirt::DIF()</strong>, <strong>difR</strong>, <strong>lordif</strong>.'},

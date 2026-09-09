@@ -72,6 +72,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   color:var(--a2);margin-bottom:.45rem}
 .xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
   padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 .xlink:hover{background:var(--a4);color:var(--bg)}
 .plot-box{background:var(--panel);border:1px solid var(--grid);padding:.7rem .85rem;margin-bottom:.85rem}
 .plot-title{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
@@ -185,7 +187,7 @@ canvas{width:100%;display:block}
   <div class="story-box" style="margin-bottom:.7rem">
     <div class="story-lbl">📋 Einleitung — SCL-90-R als Beispiel</div>
     Die SCL-90-R (Items 0–4, hier 10 Items → Summenwert 0–40) hat eine <strong>stark rechtsschiefe</strong> Normierungsverteilung.
-    Die Autoren haben dies korrekt gelöst und die T-Werte über die <strong>Flächentransformation</strong> (Lienert &amp; Raatz) berechnet — also percentiläquivalent.
+    Die Autoren haben dies korrekt gelöst und die T-Werte über die <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="Die Flächentransformation überführt jeden Rohwert über seinen empirischen Prozentrang statt über eine lineare Formel in einen Normwert.">Flächentransformation</a></strong> (Lienert &amp; Raatz) berechnet — also percentiläquivalent.
     Dieses Tool stellt die Gegenfrage: <em>Wie stark wäre die Verzerrung, wenn man stattdessen lineare T-Werte (M=50, SD=10) verwendet hätte?</em>
     Ein lineares T=50 läge empirisch bei <strong id="sb-pr">…</strong> der Normstichprobe.
     <div style="margin-top:.6rem">
@@ -236,13 +238,13 @@ canvas{width:100%;display:block}
   <div class="lcard-grid">
     <div class="lcard">
       <div class="lcard-h">Das Normierungsdilemma</div>
-      <div class="lcard-body">Lineare T-Werte setzen voraus, dass die Normierungsstichprobe <strong>normalverteilt</strong> ist.
+      <div class="lcard-body">Lineare T-Werte setzen voraus, dass die Normierungsstichprobe <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-normalverteilung" target="_blank" rel="noopener" title="Die Normalverteilung (Gauß-Verteilung) ist eine glockenförmige, symmetrische stetige Verteilung, parametrisiert durch Mittelwert μ und Standardabweichung σ.">normalverteilt</a></strong> ist.
         Bei schiefen Rohdaten (z.B. Symptomskalen) ist diese Voraussetzung verletzt.
         Der T-Wert-Mittelwert (T=50) fällt dann nicht auf den <em>50. Perzentrang</em> der Population,
         sondern auf einen deutlich höheren.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Warum PR(Mittelwert) &gt; 50 %?</div>
+      <div class="lcard-h">Warum <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-prozentrang" target="_blank" rel="noopener" title="Der Prozentrang eines Testwerts gibt an, wie viel Prozent der Normstichprobe einen gleich hohen oder niedrigeren Wert erzielen.">PR</a>(Mittelwert) &gt; 50 %?</div>
       <div class="lcard-body">Bei rechtsschiefen Verteilungen liegt <strong>mehr als die Hälfte aller Werte unterhalb des Mittelwerts</strong>
         (Mittelwert &gt; Median). Der T-Wert normiert auf den Mittelwert — aber empirisch übertrifft dieser
         Wert 60–75 % der Normstichprobe. Ein Patient mit T=50 ist damit pathologischer als PR=50 suggeriert.</div>
@@ -255,7 +257,7 @@ canvas{width:100%;display:block}
         Klinisch brisant: gerade milde bis moderate Symptomwerte werden fehlklassifiziert.</div>
     </div>
     <div class="lcard">
-      <div class="lcard-h">Alternativen: Flächentreue Normierung</div>
+      <div class="lcard-h">Alternativen: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="Die Flächentransformation überführt jeden Rohwert über seinen empirischen Prozentrang statt über eine lineare Formel in einen Normwert.">Flächentreue Normierung</a></div>
       <div class="lcard-body">Die <strong>area transformation</strong> (Watts &amp; Bollen, 1985; Blom, 1958) weist
         jedem Rohwert seinen empirischen Perzentrang zu und transformiert diesen dann in einen Normalwert.
         Das Ergebnis entspricht dem, was man erhalten würde, wenn die Rohwerte normalverteilt wären —
@@ -276,7 +278,7 @@ canvas{width:100%;display:block}
     <p class="help-p">Viele psychologische Tests (SCL-90-R, BDI, PHQ-9, BAI) erheben Symptomwerte auf ordinalen Skalen (z.B. 0–4).
       Summenwerte über mehrere Items sind in gesunden Normierungsstichproben <strong>stark rechtschief</strong>:
       Die meisten Menschen haben niedrige Werte, wenige haben hohe.
-      Obwohl diese Verteilung <em>nicht</em> normalverteilt ist, werden häufig <strong>lineare T-Werte</strong> berechnet:</p>
+      Obwohl diese Verteilung <em>nicht</em> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-normalverteilung" target="_blank" rel="noopener" title="Die Normalverteilung (Gauß-Verteilung) ist eine glockenförmige, symmetrische stetige Verteilung, parametrisiert durch Mittelwert μ und Standardabweichung σ.">normalverteilt</a> ist, werden häufig <strong>lineare T-Werte</strong> berechnet:</p>
     <span class="help-formula">T = 50 + 10 · (X − M) / SD</span>
     <p class="help-p">Diese Transformation setzt implizit voraus, dass X normalverteilt ist. Das führt zu systematischen Verzerrungen.</p>
 
@@ -286,25 +288,25 @@ canvas{width:100%;display:block}
       mit dem <strong>echten empirischen Prozentrang</strong> aus der gewählten Verteilung.</p>
 
     <div class="help-sh">Die vier Verteilungstypen</div>
-    <p class="help-p"><strong>Gamma (α, β):</strong> Hier wird die <em>Raten-Parametrisierung</em> verwendet (wie in R: <code>dgamma(x, shape=α, rate=β)</code>).
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-gamma-verteilung" target="_blank" rel="noopener" title="Die Gamma-Verteilung ist eine flexible rechtsschiefe Verteilung für positive Größen mit Shape- und Rate-Parameter.">Gamma (α, β)</a>:</strong> Hier wird die <em>Raten-Parametrisierung</em> verwendet (wie in R: <code>dgamma(x, shape=α, rate=β)</code>).
       <strong>Shape α</strong> bestimmt die Form und Schiefe: Schiefe = 2/√α.
       Für α &lt; 1 ist die Verteilung extrem rechtschief (monoton fallend), für α → ∞ nähert sie sich der Normalverteilung.
       <strong>Rate β</strong> ist der reziproke Skalierungsparameter (β = 1/Scale): er staucht (großes β) oder streckt (kleines β) die Verteilung.
       Mittelwert <em>M = α/β</em>, Varianz <em>σ² = α/β²</em>, PDF: <em>f(x) = β^α · x^(α−1) · e^(−βx) / Γ(α)</em>.
       Beispiel: α=1.5, β=0.20 → M=7.5, SD=6.1, γ₁=1.63 — typisch für gesunde SCL-90-Normstichprobe (10 Items, Bereich 0–40).
       Praktisch: α kontrolliert die Asymmetrie, β die Lage (umgekehrt proportional zum Mittelwert).</p>
-    <p class="help-p"><strong>Log-Normal (μ_log, σ_log):</strong> Ergibt sich, wenn der Logarithmus des Messwerts normalverteilt ist.
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-log-normal" target="_blank" rel="noopener" title="Die Log-Normal-Verteilung ist eine rechtsschiefe Positivverteilung, die entsteht, wenn der Logarithmus der Variable normalverteilt ist.">Log-Normal (μ_log, σ_log)</a>:</strong> Ergibt sich, wenn der Logarithmus des Messwerts normalverteilt ist.
       Schiefe steigt schnell mit σ_log. Häufig bei Messwerten, die nicht negativ werden können.</p>
-    <p class="help-p"><strong>Exponential (λ):</strong> Spezialfall der Gamma-Verteilung (α=1). Gedächtnisloser Prozess,
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-exponentialverteilung" target="_blank" rel="noopener" title="Die Exponentialverteilung ist eine Verteilung für positive, rechtsschiefe Größen — Spezialfall der Gamma-Verteilung mit α=1.">Exponential (λ)</a>:</strong> Spezialfall der Gamma-Verteilung (α=1). Gedächtnisloser Prozess,
       maximale Schiefe = 2. Alle Rohwerte gleich wahrscheinlich zu verringern — extremes Modell.</p>
-    <p class="help-p"><strong>Weibull (k, λ):</strong> Zweiparametrische Verteilung, die je nach Shape-Parameter k sehr unterschiedliche Formen annimmt.
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-weibull-verteilung" target="_blank" rel="noopener" title="Die Weibull-Verteilung ist eine zweiparametrische Verteilung für positive Größen, die je nach Shape-Parameter k von exponentialartig bis nahezu normalverteilt reicht.">Weibull (k, λ)</a>:</strong> Zweiparametrische Verteilung, die je nach Shape-Parameter k sehr unterschiedliche Formen annimmt.
       <strong>k &lt; 1:</strong> streng monoton fallend, fallende Hazardrate (wie Exponential, aber noch extremer).
       <strong>k = 1:</strong> identisch mit Exponential(1/λ).
       <strong>1 &lt; k &lt; 3.6:</strong> rechtschief, glockenförmig — relevant für Überlebenszeiten und Reaktionszeiten.
       <strong>k &gt; 3.6:</strong> annähernd normalverteilt.
       Mittelwert = λ · Γ(1 + 1/k), Varianz = λ² · [Γ(1+2/k) − Γ(1+1/k)²].</p>
 
-    <p class="help-p"><strong>Ex-Gaussian (μ, σ, τ):</strong> Faltung aus Normalverteilung N(μ,σ²) und Exponential Exp(1/τ).
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-exgaussian" target="_blank" rel="noopener" title="Die ExGaussian-Verteilung entsteht als Summe einer normalverteilten und einer exponentialverteilten Zufallsvariable — glockenförmig und rechtsschief.">Ex-Gaussian (μ, σ, τ)</a>:</strong> Faltung aus Normalverteilung N(μ,σ²) und Exponential Exp(1/τ).
       Häufig für Reaktionszeitdaten. Ermöglicht separate Kontrolle über normalverteilte Grundkomponente
       und exponentiellen Ausreißerterm (τ). Schiefe ≈ 2τ³/(σ²+τ²)^(3/2).</p>
 
@@ -319,8 +321,8 @@ Empirischer PR(x) = F_skief(x)           [wahre kumulative Verteilungsfunktion]<
       die gleichen Werte, die für die lineare T-Transformation verwendet werden.
       Die Differenz Empir. PR − Nominal PR zeigt die Fehlklassifikation.</p>
 
-    <div class="help-sh">Flächentransformation nach Lienert &amp; Raatz</div>
-    <p class="help-p">Die <strong>flächentreue T-Normierung</strong> (Lienert &amp; Raatz, 1998; auch: „area transformation" oder „normalized standard scores") löst das Schiefeproblem, indem sie jeden Rohwert über seinen <em>empirischen Prozentrang</em> in einen T-Wert überführt — nicht über eine lineare Formel:</p>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="Die Flächentransformation überführt jeden Rohwert über seinen empirischen Prozentrang statt über eine lineare Formel in einen Normwert.">Flächentransformation</a> nach Lienert &amp; Raatz</div>
+    <p class="help-p">Die <strong>flächentreue T-Normierung</strong> (Lienert &amp; Raatz, 1998; auch: „area transformation" oder „normalized standard scores") löst das Schiefeproblem, indem sie jeden Rohwert über seinen <em>empirischen <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-prozentrang" target="_blank" rel="noopener" title="Der Prozentrang eines Testwerts gibt an, wie viel Prozent der Normstichprobe einen gleich hohen oder niedrigeren Wert erzielen.">Prozentrang</a></em> in einen T-Wert überführt — nicht über eine lineare Formel:</p>
     <span class="help-formula">T_F(x) = 50 + 10 · Φ⁻¹(F_emp(x))</span>
     <p class="help-p">Dabei ist <em>F_emp(x)</em> die empirische kumulative Häufigkeit des Rohwerts x und <em>Φ⁻¹</em> die Quantilfunktion (Inverse) der Standardnormalverteilung. Das Ergebnis: Wer auf dem 84. Perzentrang der Normstichprobe liegt, bekommt immer T_F = 60 — unabhängig davon, ob die Rohwertverteilung schief ist oder nicht.</p>
     <p class="help-p"><strong>Vergleich beider Methoden:</strong></p>

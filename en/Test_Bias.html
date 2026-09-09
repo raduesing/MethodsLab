@@ -154,6 +154,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
 .xlink{color:var(--a4);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a4)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--accent)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -271,7 +273,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   </div>
   <div class="mod-body" id="bd1">
     <div class="erklaer">
-      <div class="erklaer-h">Cleary (1968) — Definition of Test Bias</div>
+      <div class="erklaer-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-fairness-cleary" target="_blank" rel="noopener" title="The Cleary model defines test fairness via predictive validity: a test is fair if it shows the same regression line between test score and criterion for all subgroups.">Cleary (1968)</a> — Definition of Test Bias</div>
       A test is considered <strong>biased</strong> if the regression equation for the overall sample
       produces systematically wrong predictions for one group. Cleary tests this with a
       hierarchical regression model in three steps:<br><br>
@@ -317,7 +319,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="mod-body" id="bd3">
     <div class="erklaer">
       <div class="erklaer-h">Adverse Impact</div>
-      <strong>Adverse impact</strong> is present when one group is selected considerably less often
+      <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-adverse-impact" target="_blank" rel="noopener" title="Adverse Impact occurs when a group is selected substantially less often in a selection decision than a comparison group — regardless of whether the test itself is fair.">Adverse impact</a></strong> is present when one group is selected considerably less often
       than another in a selection decision — even if the test itself is fair.
       The US Uniform Guidelines (1978) formulate the <strong>4/5 rule</strong>:
       the selection rate of the disadvantaged group should be at least 80% of the rate
@@ -337,7 +339,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="sec-h">Concepts</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">Test Bias per Cleary (1968)</div>
+        <div class="lcard-h">Test Bias per <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-fairness-cleary" target="_blank" rel="noopener" title="The Cleary model defines test fairness via predictive validity: a test is fair if it shows the same regression line between test score and criterion for all subgroups.">Cleary (1968)</a></div>
         <div class="lcard-body">A test is <strong>biased</strong> if the shared regression of criterion (Y) on predictor (X) yields <em>systematically wrong</em> predictions for one group — <strong>differential prediction</strong>. It's tested whether the intercept and slope of the regression line are equal for the reference (A) and focal (B) groups. If they are, the test is fair in Cleary's sense.</div>
       </div>
       <div class="lcard">
@@ -349,7 +351,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
         <div class="lcard-body">The standardized mean differences <code>d_X</code> (predictor) and <code>d_Y</code> (criterion) point to the source: <strong>d_X large, d_Y small</strong> → test bias; <strong>both large &amp; proportional</strong> → adverse impact without bias; <strong>only d_Y</strong> → criterion bias; <strong>both small</strong> → no problem. Four patterns, only one is genuine bias per Cleary.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Adverse Impact &amp; the 4/5 Rule</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-adverse-impact" target="_blank" rel="noopener" title="Adverse Impact occurs when a group is selected substantially less often in a selection decision than a comparison group — regardless of whether the test itself is fair.">Adverse Impact</a> &amp; the 4/5 Rule</div>
         <div class="lcard-body"><strong>Adverse impact</strong> concerns the <em>selection outcomes</em>, not test quality: <code>AIR = selection rate_B / selection rate_A</code>. If the AIR falls below <strong>0.80</strong> (four-fifths rule, US EEOC), that counts as a legal indicator of disadvantage. It's about hit rates between groups, not prediction error.</div>
       </div>
       <div class="lcard">
@@ -970,7 +972,7 @@ const HELP_CONTENT={
     body:`
 <h3>Example</h3>
 <p>A selection test (X = cognitive aptitude measure, z-standardized) is meant to predict job performance (Y = supervisor rating, z-standardized). What's tested: does the regression equation hold equally for group A (reference) and group B (focal group)? If the lines diverge, the test is biased in Cleary's (1968) sense.</p>
-<h3>Test Bias per Cleary (1968)</h3>
+<h3>Test Bias per <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-fairness-cleary" target="_blank" rel="noopener" title="The Cleary model defines test fairness via predictive validity: a test is fair if it shows the same regression line between test score and criterion for all subgroups.">Cleary (1968)</a></h3>
 <p>A test is considered <strong>unbiased</strong> if it produces the same prediction equation for all groups: equal intercept (b₀) and equal slope (b₁). Bias is present when the regression line systematically over- or underestimates — independent of mean differences on X or Y.</p>
 <p>In the example: scenario <span class="num-sym">①</span> — group B scores lower on X but the same on Y → the shared line underestimates group B's job performance → classic test bias.</p>
 <h3>The Three Test Steps</h3>
@@ -979,7 +981,7 @@ const HELP_CONTENT={
   <li><strong>Module 2 (Meade &amp; Fetzer):</strong> diagnoses the cause via standardized mean differences d_X and d_Y. Distinguishes four types of cause: test bias, criterion bias, adverse impact, no bias.</li>
   <li><strong>Module 3 (Adverse Impact):</strong> 4/5 rule: AIR = selection rate_B / selection rate_A. Below 0.80 → adverse impact. Important: a fair test can still produce AI if the groups have different X means.</li>
 </ul>
-<h3>Test Bias ≠ Adverse Impact</h3>
+<h3>Test Bias ≠ <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-adverse-impact" target="_blank" rel="noopener" title="Adverse Impact occurs when a group is selected substantially less often in a selection decision than a comparison group — regardless of whether the test itself is fair.">Adverse Impact</a></h3>
 <p>This is the most important conceptual distinction: in example scenario <span class="num-sym">③</span> (adverse impact), the groups have different X means but identical regression lines — the test is <em>fair</em> in Cleary's sense, but produces different selection rates. Adverse impact is an empirical-legal concept; test bias is a psychometric one.</p>`
   },
   1:{

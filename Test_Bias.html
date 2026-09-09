@@ -154,6 +154,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
 .xlink{color:var(--a4);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a4)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--accent)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -271,7 +273,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   </div>
   <div class="mod-body" id="bd1">
     <div class="erklaer">
-      <div class="erklaer-h">Cleary (1968) — Definition von Testverzerrung</div>
+      <div class="erklaer-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-fairness-cleary" target="_blank" rel="noopener" title="Das Cleary-Modell definiert Testfairness über prädiktive Validität: ein Test ist fair, wenn er für alle Subgruppen dieselbe Regressionsgerade zwischen Testwert und Kriterium aufweist.">Cleary (1968)</a> — Definition von Testverzerrung</div>
       Ein Test gilt als <strong>verzerrt</strong>, wenn die Regressionsgleichung für die Gesamtstichprobe
       für eine Gruppe systematisch falsche Vorhersagen erzeugt. Cleary prüft dies mit einem
       hierarchischen Regressionsmodell in drei Schritten:<br><br>
@@ -317,7 +319,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="mod-body" id="bd3">
     <div class="erklaer">
       <div class="erklaer-h">Adverse Impact</div>
-      <strong>Adverse Impact</strong> liegt vor, wenn eine Gruppe bei einer Auswahlentscheidung
+      <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-adverse-impact" target="_blank" rel="noopener" title="Adverse Impact liegt vor, wenn eine Gruppe bei einer Auswahlentscheidung deutlich seltener ausgewählt wird als eine Vergleichsgruppe — unabhängig davon, ob der Test selbst fair ist.">Adverse Impact</a></strong> liegt vor, wenn eine Gruppe bei einer Auswahlentscheidung
       deutlich seltener ausgewählt wird als eine andere — auch wenn der Test selbst fair ist.
       Die US-amerikanischen Uniform Guidelines (1978) formulieren die <strong>4/5-Regel</strong>:
       Die Selektionsrate der benachteiligten Gruppe soll mindestens 80 % der Rate
@@ -337,7 +339,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="sec-h">Konzepte</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">Testverzerrung nach Cleary (1968)</div>
+        <div class="lcard-h">Testverzerrung nach <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-fairness-cleary" target="_blank" rel="noopener" title="Das Cleary-Modell definiert Testfairness über prädiktive Validität: ein Test ist fair, wenn er für alle Subgruppen dieselbe Regressionsgerade zwischen Testwert und Kriterium aufweist.">Cleary (1968)</a></div>
         <div class="lcard-body">Ein Test ist <strong>verzerrt</strong>, wenn die gemeinsame Regression von Kriterium (Y) auf Prädiktor (X) für eine Gruppe <em>systematisch falsche</em> Vorhersagen liefert — <strong>differentielle Prädiktion</strong>. Geprüft wird, ob Achsenabschnitt und Steigung der Regressionsgeraden für Referenz- (A) und Fokusgruppe (B) gleich sind. Sind sie es, ist der Test im Cleary-Sinn fair.</div>
       </div>
       <div class="lcard">
@@ -349,7 +351,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
         <div class="lcard-body">Die standardisierten Mittelwertdifferenzen <code>d_X</code> (Prädiktor) und <code>d_Y</code> (Kriterium) deuten auf die Quelle: <strong>d_X groß, d_Y klein</strong> → Testverzerrung; <strong>beide groß &amp; proportional</strong> → Adverse Impact ohne Bias; <strong>nur d_Y</strong> → Kriteriumsverzerrung; <strong>beide klein</strong> → kein Problem. Vier Muster, nur eines ist echte Verzerrung nach Cleary.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Adverse Impact &amp; 4/5-Regel</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-adverse-impact" target="_blank" rel="noopener" title="Adverse Impact liegt vor, wenn eine Gruppe bei einer Auswahlentscheidung deutlich seltener ausgewählt wird als eine Vergleichsgruppe — unabhängig davon, ob der Test selbst fair ist.">Adverse Impact</a> &amp; 4/5-Regel</div>
         <div class="lcard-body"><strong>Adverse Impact</strong> betrifft die <em>Auswahlergebnisse</em>, nicht die Testgüte: <code>AIR = Selektionsrate_B / Selektionsrate_A</code>. Liegt die AIR unter <strong>0.80</strong> (Vier-Fünftel-Regel, US-EEOC), gilt das als rechtlicher Hinweis auf Benachteiligung. Es geht um Trefferquoten zwischen Gruppen, nicht um Vorhersagefehler.</div>
       </div>
       <div class="lcard">
@@ -970,7 +972,7 @@ const HELP_CONTENT={
     body:`
 <h3>Beispiel</h3>
 <p>Ein Auswahltest (X = kognitive Eignungsmessung, z-standardisiert) soll die Jobleistung (Y = Vorgesetztenbeurteilung, z-standardisiert) vorhersagen. Geprüft wird: Gilt die Regressionsgleichung für Gruppe A (Referenz) und Gruppe B (Fokusgruppe) gleichermaßen? Wenn die Geraden divergieren, ist der Test im Sinne von Cleary (1968) verzerrt.</p>
-<h3>Testverzerrung nach Cleary (1968)</h3>
+<h3>Testverzerrung nach <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-fairness-cleary" target="_blank" rel="noopener" title="Das Cleary-Modell definiert Testfairness über prädiktive Validität: ein Test ist fair, wenn er für alle Subgruppen dieselbe Regressionsgerade zwischen Testwert und Kriterium aufweist.">Cleary (1968)</a></h3>
 <p>Ein Test gilt als <strong>nicht verzerrt</strong>, wenn er für alle Gruppen dieselbe Vorhersagegleichung produziert: gleicher Achsenabschnitt (b₀) und gleiche Steigung (b₁). Ein Bias liegt vor, wenn die Regressionsgerade systematisch überschätzt oder unterschätzt — unabhängig von Mittelwertdifferenzen auf X oder Y.</p>
 <p>Im Beispiel: Szenario <span class="num-sym">①</span> — Gruppe B erzielt niedrigere X-Werte, aber gleiche Y-Werte → Die gemeinsame Gerade unterschätzt die Jobleistung von Gruppe B → klassische Testverzerrung.</p>
 <h3>Die drei Prüfschritte</h3>
@@ -979,7 +981,7 @@ const HELP_CONTENT={
   <li><strong>Modul 2 (Meade &amp; Fetzer):</strong> Diagnose der Ursache über standardisierte Mittelwertdifferenzen d_X und d_Y. Unterscheidet vier Ursachentypen: Testverzerrung, Kriteriumsverzerrung, Adverse Impact, kein Bias.</li>
   <li><strong>Modul 3 (Adverse Impact):</strong> 4/5-Regel: AIR = Selektionsrate_B / Selektionsrate_A. Unter 0.80 → Adverse Impact. Wichtig: Ein fairer Test kann trotzdem AI erzeugen, wenn die Gruppen unterschiedliche X-Mittelwerte haben.</li>
 </ul>
-<h3>Test Bias ≠ Adverse Impact</h3>
+<h3>Test Bias ≠ <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-adverse-impact" target="_blank" rel="noopener" title="Adverse Impact liegt vor, wenn eine Gruppe bei einer Auswahlentscheidung deutlich seltener ausgewählt wird als eine Vergleichsgruppe — unabhängig davon, ob der Test selbst fair ist.">Adverse Impact</a></h3>
 <p>Das ist der wichtigste konzeptuelle Unterschied: Im Beispiel-Szenario <span class="num-sym">③</span> (Adverse Impact) haben die Gruppen unterschiedliche X-Mittelwerte, aber identische Regressionsgeraden — der Test ist <em>fair</em> im Cleary-Sinne, erzeugt aber unterschiedliche Selektionsraten. Adverse Impact ist ein empirisch-rechtliches Konzept; Testverzerrung ist ein psychometrisches.</p>`
   },
   1:{

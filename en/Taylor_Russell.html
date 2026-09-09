@@ -110,6 +110,8 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
 .xlink{color:var(--a6);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a6)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -130,7 +132,7 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
     <div class="help-h3">Does / Does NOT</div>
     <p class="help-p"><strong style="color:var(--ink)">Does:</strong> compute what proportion of those selected with a test later turn out to be <em>successful/qualified</em> — as a function of validity, selection ratio, and base rate. Shows the table <em>and</em> the nomogram, and makes visible that the table values are grid points of a continuous function. <strong style="color:var(--ink)">Does NOT:</strong> no cost-benefit analysis in monetary terms (that would be Brogden-Cronbach-Gleser), and no correction for bias — as validity, the correlation <em>corrected for range restriction</em> should be used.</p>
     <div class="help-h3">What Is This About?</div>
-    <p class="help-p">Taylor &amp; Russell (1939) answer the practical question: "Is a selection test worth it?" A test with validity <span class="gk">ρ</span> is more useful the more <strong style="color:var(--ink)">selectively</strong> one selects, and depending on the <strong style="color:var(--ink)">base rate</strong> of suitability. The utility is the <strong style="color:var(--ink)">success rate</strong> of those selected minus the base rate (= what you'd get without a test).</p>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-taylor-russell" target="_blank" rel="noopener" title="The Taylor-Russell tables formalize the relationship between validity, base rate, and selection ratio, mapping them onto the resulting success ratio.">Taylor &amp; Russell (1939)</a> answer the practical question: "Is a selection test worth it?" A test with validity <span class="gk">ρ</span> is more <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-nuetzlichkeit" target="_blank" rel="noopener" title="Utility asks whether using a test in a concrete decision situation actually provides a practical benefit — depending on base rate, selection ratio, and the consequences of wrong decisions.">useful</a> the more <strong style="color:var(--ink)">selectively</strong> one selects, and depending on the <strong style="color:var(--ink)">base rate</strong> of suitability. The utility is the <strong style="color:var(--ink)">success rate</strong> of those selected minus the base rate (= what you'd get without a test).</p>
     <div class="help-h3">The Running Example</div>
     <p class="help-p">A clinic (or HR department) selects applicants via an aptitude test. <strong style="color:var(--a2)">Validity</strong> = correlation between test and later success. <strong style="color:var(--a5)">Selection ratio</strong> = proportion of applicants taken. <strong style="color:var(--a4)">Base rate</strong> = proportion who would succeed <em>without</em> the test. Result: the <strong style="color:var(--a3)">success rate</strong> of those selected = positive predictive value.</p>
     <div class="help-h3">How to Read the Table</div>
@@ -141,8 +143,8 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
     <p class="help-p">
       <code><span class="gk">ρ</span></code> — validity (correlation test ↔ criterion).<br>
       <code>SR</code> — selection ratio = proportion selected.<br>
-      <code>BR</code> — base rate = proportion in the population that meets the success criterion.<br>
-      <code>EQ</code> — success rate of those selected = positive predictive value (PPV).<br>
+      <code>BR</code> — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-praevalenz" target="_blank" rel="noopener" title="Prevalence is the proportion of a population affected by a condition or trait at a given point in time; it corresponds to the base rate or pre-test probability.">base rate</a> = proportion in the population that meets the success criterion.<br>
+      <code>EQ</code> — success rate of those selected = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ppv" target="_blank" rel="noopener" title="PPV indicates how likely a person is truly affected, given that the test came back positive: PPV = TP / (TP + FP).">positive predictive value (PPV)</a>.<br>
       <code>Lift</code> — gain EQ − BR (utility relative to "selecting without a test").
     </p>
     <div class="help-h3">Formula</div>
@@ -206,8 +208,8 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
   <div class="sym-grid">
     <div class="sym"><b><span class="gk">ρ</span></b><span><strong>Validity</strong> — correlation between the test and the later success criterion</span></div>
     <div class="sym"><b>SR</b><span><strong>Selection ratio</strong> — proportion of applicants selected (small = strict)</span></div>
-    <div class="sym"><b>BR</b><span><strong>Base rate</strong> — proportion who meet the criterion <em>without</em> the test</span></div>
-    <div class="sym"><b>EQ</b><span><strong>Success rate</strong> of those selected = positive predictive value (PPV)</span></div>
+    <div class="sym"><b>BR</b><span><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-praevalenz" target="_blank" rel="noopener" title="Prevalence is the proportion of a population affected by a condition or trait at a given point in time; it corresponds to the base rate or pre-test probability.">Base rate</a></strong> — proportion who meet the criterion <em>without</em> the test</span></div>
+    <div class="sym"><b>EQ</b><span><strong>Success rate</strong> of those selected = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ppv" target="_blank" rel="noopener" title="PPV indicates how likely a person is truly affected, given that the test came back positive: PPV = TP / (TP + FP).">positive predictive value (PPV)</a></span></div>
     <div class="sym"><b>Lift</b><span>EQ − BR — the <strong>incremental utility</strong> of the test in percentage points</span></div>
     <div class="sym"><b><span class="gk">Φ</span>⁻¹</b><span>Quantile of the standard normal distribution — translates proportions into thresholds</span></div>
   </div>
@@ -243,7 +245,7 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
     <div class="sec-h">Concepts</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">The Basic Idea (Taylor &amp; Russell 1939)</div>
+        <div class="lcard-h">The Basic Idea (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-taylor-russell" target="_blank" rel="noopener" title="The Taylor-Russell tables formalize the relationship between validity, base rate, and selection ratio, mapping them onto the resulting success ratio.">Taylor &amp; Russell 1939</a>)</div>
         <div class="lcard-body">The utility of a selection test cannot be read off from its validity alone. What matters is the interplay with two contextual quantities: the <strong>selection ratio</strong> (how strictly is one selecting?) and the <strong>base rate</strong> (how many would succeed anyway?). Under the assumption of a bivariate normal distribution, Taylor and Russell provided tables that give the success rate of those selected.</div>
       </div>
       <div class="lcard">
@@ -251,20 +253,20 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
         <div class="lcard-body">The <strong>stricter</strong> the selection (small SR), the further right the threshold sits on the test — and the more strongly even a moderate validity comes through. At SR = 1 (everyone is taken), the success rate is necessarily equal to the base rate: no selection, no utility. In the nomogram this shows up as all curves starting at the base-rate line at validity 0, with lower-SR curves rising more steeply.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">The Role of the Base Rate</div>
+        <div class="lcard-h">The Role of the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-praevalenz" target="_blank" rel="noopener" title="Prevalence is the proportion of a population affected by a condition or trait at a given point in time; it corresponds to the base rate or pre-test probability.">Base Rate</a></div>
         <div class="lcard-body">The maximum room for improvement lies at a medium base rate (≈ .50). If the base rate is very <strong>high</strong> (almost everyone qualified), a test can hardly improve anything — you'd be right anyway. If it's very <strong>low</strong>, absolute improvement is hard, but the <em>relative</em> improvement can be large. Set the base rate to .20 vs. .80 and watch how the whole table and nomogram shift.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Success Rate = Positive Predictive Value</div>
+        <div class="lcard-h">Success Rate = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ppv" target="_blank" rel="noopener" title="PPV indicates how likely a person is truly affected, given that the test came back positive: PPV = TP / (TP + FP).">Positive Predictive Value</a></div>
         <div class="lcard-body">The Taylor-Russell success rate is nothing other than the <strong>PPV</strong>: among those selected as "qualified", the proportion who actually meet the criterion. That makes this tool the continuous counterpart to the confusion matrix from sensitivity/specificity — just via a continuous bivariate normal distribution instead of discrete classification. <a class="xlink" href="Sens_Spez.html" target="_blank" rel="noopener">→ Sensitivity &amp; Specificity</a></div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Connection: Range Restriction</div>
-        <div class="lcard-body"><strong>Important:</strong> the <span class="gk">ρ</span> used here must be the <em>true</em> validity in the applicant population. But validity studies are often conducted on people already selected → the observed correlation is biased downward by <strong>range restriction</strong>. Using the uncorrected value <em>systematically underestimates</em> the utility. Correct via Thorndike first, then plug into the Taylor-Russell table. <a class="xlink" href="Range_Restriction.html" target="_blank" rel="noopener">→ Range Restriction</a></div>
+        <div class="lcard-body"><strong>Important:</strong> the <span class="gk">ρ</span> used here must be the <em>true</em> validity in the applicant population. But validity studies are often conducted on people already selected → the observed correlation is biased downward by <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-range-restriction" target="_blank" rel="noopener" title="Range restriction is the systematic underestimation of a correlation that occurs when a sample covers only a restricted part of a variable's value range.">range restriction</a></strong>. Using the uncorrected value <em>systematically underestimates</em> the utility. Correct via Thorndike first, then plug into the Taylor-Russell table. <a class="xlink" href="Range_Restriction.html" target="_blank" rel="noopener">→ Range Restriction</a></div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Connection: Diagnostic Validity</div>
-        <div class="lcard-body">Taylor-Russell is one building block in the utility analysis of selection procedures. The <em>Diagnostic Validity</em> tool places it within construct, criterion, and content validity, and shows the bridge to utility analysis (Brogden-Cronbach-Gleser), which additionally expresses selection utility in monetary units. <a class="xlink" href="Diagnostische_Validitaet.html" target="_blank" rel="noopener">→ Diagnostic Validity</a></div>
+        <div class="lcard-body">Taylor-Russell is one building block in the utility analysis of selection procedures. The <em>Diagnostic Validity</em> tool places it within <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-konstruktvaliditaet" target="_blank" rel="noopener" title="Construct validity is the degree to which a test truly captures the underlying theoretical construct — operationalized via convergent and discriminant validity.">construct</a>, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-kriteriumsvaliditaet" target="_blank" rel="noopener" title="Criterion validity is the degree to which test scores correlate with a relevant external criterion — concurrently (measured at the same time) or predictively (measured later).">criterion</a>, and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-inhaltsvaliditaet" target="_blank" rel="noopener" title="Content validity is the degree to which a test's items representatively and completely cover the content domain to be assessed.">content validity</a>, and shows the bridge to utility analysis (Brogden-Cronbach-Gleser), which additionally expresses selection utility in monetary units. <a class="xlink" href="Diagnostische_Validitaet.html" target="_blank" rel="noopener">→ Diagnostic Validity</a></div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Limitations &amp; Assumptions</div>

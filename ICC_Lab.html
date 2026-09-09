@@ -79,6 +79,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
 .xlink{color:var(--a4);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a4)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--accent)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 
 /* ── CANVAS WRAPPER ── */
@@ -405,8 +407,8 @@ canvas{display:block;width:100%;height:auto}
   </div>
   <div class="lcard-grid">
     <div class="lcard">
-      <div class="lcard-h">Was misst die ICC?</div>
-      <div class="lcard-body">Die Intraklassenkorrelation ist eine <strong>Reliabilität als Varianzanteil</strong>: Welcher Teil der Gesamtvarianz geht auf <em>echte</em> Unterschiede zwischen den Objekten (σ²_B) zurück — und nicht auf Rater-Bias (σ²_R) oder Zufallsfehler (σ²_E)? ICC = 1 heißt perfekte Übereinstimmung, ICC = 0 heißt: die Beurteilung trägt keine Information über die Objekte.</div>
+      <div class="lcard-h">Was misst die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="Die ICC nach Shrout & Fleiss (1979) quantifiziert die Reliabilität metrischer Ratings als Varianzanteil echter Objektunterschiede an der Gesamtvarianz.">ICC</a>?</div>
+      <div class="lcard-body">Die Intraklassenkorrelation ist eine <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung konsistente Ergebnisse liefert — die Messgenauigkeit.">Reliabilität als Varianzanteil</a></strong>: Welcher Teil der Gesamtvarianz geht auf <em>echte</em> Unterschiede zwischen den Objekten (σ²_B) zurück — und nicht auf Rater-Bias (σ²_R) oder Zufallsfehler (σ²_E)? ICC = 1 heißt perfekte Übereinstimmung, ICC = 0 heißt: die Beurteilung trägt keine Information über die Objekte.</div>
     </div>
     <div class="lcard">
       <div class="lcard-h">Die drei Modelle (Shrout &amp; Fleiss)</div>
@@ -426,7 +428,7 @@ canvas{display:block;width:100%;height:auto}
     </div>
     <div class="lcard">
       <div class="lcard-h">Einordnung &amp; verwandte Tools</div>
-      <div class="lcard-body">Die ICC ist die <strong>kontinuierliche</strong> Schwester der Beurteilerübereinstimmung: dort κ/Fleiss/Gwet für kategoriale Urteile, hier die Varianzzerlegung für metrische. Als Varianzanteil ist sie zugleich ein Reliabilitätskoeffizient im Sinne der Klassischen Testtheorie. <a class="xlink" href="Beurteileruebereinstimmung.html" target="_blank" rel="noopener">→ Beurteilerübereinstimmung</a> · <a class="xlink" href="KTT_Grundlagen.html" target="_blank" rel="noopener">→ KTT-Grundlagen</a></div>
+      <div class="lcard-body">Die ICC ist die <strong>kontinuierliche</strong> Schwester der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-beurteileruebereinstimmung" target="_blank" rel="noopener" title="Beurteilerübereinstimmung bezeichnet das Ausmaß, in dem verschiedene Rater bei der Einschätzung derselben Objekte übereinstimmen.">Beurteilerübereinstimmung</a>: dort κ/Fleiss/Gwet für kategoriale Urteile, hier die Varianzzerlegung für metrische. Als Varianzanteil ist sie zugleich ein Reliabilitätskoeffizient im Sinne der Klassischen Testtheorie. <a class="xlink" href="Beurteileruebereinstimmung.html" target="_blank" rel="noopener">→ Beurteilerübereinstimmung</a> · <a class="xlink" href="KTT_Grundlagen.html" target="_blank" rel="noopener">→ KTT-Grundlagen</a></div>
     </div>
   </div>
 
@@ -456,7 +458,7 @@ canvas{display:block;width:100%;height:auto}
     <span class="help-formula2">ICC(3,k) = k·σ²_B / (k·σ²_B + σ²_E)  &nbsp;  [k Rater gemittelt, Consistency]</span>
     <p class="help-p">Im Beispiel: Wenn σ²_R groß ist (Therapeuten sehr verschieden in Strenge), ist ICC(2) deutlich kleiner als ICC(3). ICC(3) ist nur dann gerechtfertigt, wenn die Rater-Strenge herausgemittelt werden kann (z. B. jeder Patient wird immer von denselben Ratern beurteilt).</p>
 
-    <div class="help-sh">Agreement vs. Consistency</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="Die ICC nach Shrout & Fleiss (1979) quantifiziert die Reliabilität metrischer Ratings als Varianzanteil echter Objektunterschiede an der Gesamtvarianz.">Agreement vs. Consistency</a></div>
     <p class="help-p"><strong>Agreement (ICC(2)):</strong> Rater können die gleichen Objekte auf absolut unterschiedlichen Niveaus bewerten — das ist ein Fehler. Relevant wenn verschiedene Rater verschiedene Personen beurteilen und eine Vergleichbarkeit wichtig ist.</p>
     <p class="help-p"><strong>Consistency (ICC(3)):</strong> Nur die Rangordnung zählt, nicht das absolute Niveau. Relevant wenn alle Rater alle Objekte beurteilen und systematische Strenge-Unterschiede durch Mittelung verschwinden.</p>
     <p class="help-p">Im Beispiel: Will man die Therapeutenbeurteilung für eine Diagnoseentscheidung nutzen, ist Agreement relevant (ICC(2)). Für einen Forschungsindex, der immer von denselben 3 Therapeuten erhoben wird, reicht Consistency (ICC(3)).</p>

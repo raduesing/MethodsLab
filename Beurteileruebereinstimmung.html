@@ -20,6 +20,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{font-size:18px}
 body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--accent)}
 /* ── Topbar ── */
 #topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
   padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem;flex:none}
@@ -244,13 +246,13 @@ canvas{width:100%;display:block}
   <div class="modal-h2">Methoden</div>
   <table class="modal-table">
     <tr><th>Maß</th><th>Wann</th></tr>
-    <tr><td><strong>Cohen's κ</strong></td><td>Genau 2 Beurteiler, nominal oder ordinal (ungewichtet)</td></tr>
+    <tr><td><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cohens-kappa" target="_blank" rel="noopener" title="Cohen's Kappa ist ein zufallskorrigiertes Maß für die Übereinstimmung zwischen zwei Ratern bei kategorialen Daten.">Cohen's κ</a></strong></td><td>Genau 2 Beurteiler, nominal oder ordinal (ungewichtet)</td></tr>
     <tr><td><strong>Cohen's κ (gewichtet)</strong></td><td>2 Beurteiler, ordinal — lin. Gewicht bestraft größere Abweichungen stärker</td></tr>
-    <tr><td><strong>Fleiss' κ</strong></td><td>3 oder mehr Beurteiler, nominal oder ordinal</td></tr>
-    <tr><td><strong>Krippendorff's α</strong></td><td>Beliebig viele Beurteiler, alle Skalenniveaus; toleriert fehlende Werte</td></tr>
-    <tr><td><strong>Gwet's AC1</strong></td><td>Nominal, beliebig viele Rater; robuster als κ bei ungleichen Kategoriehäufigkeiten (kein Kappa-Paradox)</td></tr>
+    <tr><td><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-fleiss-kappa" target="_blank" rel="noopener" title="Fleiss Kappa erweitert Cohen's Kappa auf Situationen mit mehr als zwei Ratern.">Fleiss' κ</a></strong></td><td>3 oder mehr Beurteiler, nominal oder ordinal</td></tr>
+    <tr><td><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-krippendorff" target="_blank" rel="noopener" title="Krippendorff's Alpha ist ein universelles Maß für Beurteilerübereinstimmung, geeignet für beliebige Messniveaus, beliebig viele Rater und unvollständige Daten.">Krippendorff's α</a></strong></td><td>Beliebig viele Beurteiler, alle Skalenniveaus; toleriert fehlende Werte</td></tr>
+    <tr><td><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-gwet" target="_blank" rel="noopener" title="Gwet's AC1/AC2 sind robustere Alternativen zu Kappa-Maßen, die das Kappa-Paradox bei ungleichen Kategoriehäufigkeiten vermeiden.">Gwet's AC1</a></strong></td><td>Nominal, beliebig viele Rater; robuster als κ bei ungleichen Kategoriehäufigkeiten (kein Kappa-Paradox)</td></tr>
     <tr><td><strong>Gwet's AC2</strong></td><td>Ordinal, lin./quad. gewichtet; Zufallskorrektur basiert auf gleicher Kategorieverteilung, nicht auf Marginalien</td></tr>
-    <tr><td><strong>ICC(1,x)</strong></td><td>Jeder Reiz von <em>anderen</em> zufällig gewählten Ratern bewertet</td></tr>
+    <tr><td><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="Die ICC nach Shrout & Fleiss (1979) quantifiziert die Reliabilität metrischer Ratings als Varianzanteil echter Objektunterschiede an der Gesamtvarianz.">ICC(1,x)</a></strong></td><td>Jeder Reiz von <em>anderen</em> zufällig gewählten Ratern bewertet</td></tr>
     <tr><td><strong>ICC(2,x)</strong></td><td>Dieselben Rater, als Zufallsstichprobe gedacht — Agreement (konservativ)</td></tr>
     <tr><td><strong>ICC(3,x)</strong></td><td>Dieselben fixen Rater — Consistency (Bias wird rausgepartiellt)</td></tr>
   </table>
@@ -281,10 +283,10 @@ canvas{width:100%;display:block}
     <tr><td>&lt; .50</td><td>Schlecht</td></tr>
   </table>
 
-  <div class="modal-h2">Kendall's W</div>
+  <div class="modal-h2"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-kendall-w" target="_blank" rel="noopener" title="Kendall's W misst, wie stark mehrere Beurteiler in ihrer Rangreihung derselben Objekte übereinstimmen.">Kendall's W</a></div>
   <div class="modal-p">Konkordanzmaß für ordinale Daten mit ≥ 2 Beurteiler. W = 0: keine Übereinstimmung, W = 1: perfekte Konkordanz. Wird immer zusätzlich zum Hauptmaß berechnet, wenn Skalenniveau = Ordinal.</div>
 
-  <div class="modal-h2">Bland-Altman-Plot</div>
+  <div class="modal-h2"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-bland-altman" target="_blank" rel="noopener" title="Die Bland-Altman-Methode prüft die Übereinstimmung zweier Beurteiler auf intervallskalierten Daten über Bias und Limits of Agreement.">Bland-Altman-Plot</a></div>
   <div class="modal-p">Nur für Intervallskala. Zeigt Mittelwert beider Beurteiler (x-Achse) gegen ihre Differenz (y-Achse). <strong>Bias</strong> = mittlere Differenz. <strong>LoA</strong> (Limits of Agreement) = Bias ± 1.96 × SD(Differenz). Bei D &gt; 1 wählbar pro Dimension.</div>
 </div>
 </div>
@@ -362,7 +364,7 @@ canvas{width:100%;display:block}
       <span class="sv">Dimension 2</span><span class="sd">Risikoeinstufung (0 = kein Risiko … 4 = akut)</span>
       <span class="sv">Format</span><span class="sd">3 CSV-Dateien (je 80 Zeilen × 2 Spalten) — eine pro Beurteiler</span>
     </div>
-    <div class="story-q">Wie gut stimmen die drei Psychologen überein — und macht es einen Unterschied, ob wir Zufallsübereinstimmung korrigieren (κ, α), den Rater-Bias herausrechnen (ICC) oder robuste Korrekturen nutzen (Gwet AC)?</div>
+    <div class="story-q">Wie gut stimmen die drei Psychologen überein — und macht es einen Unterschied, ob wir Zufallsübereinstimmung korrigieren (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-cohens-kappa" target="_blank" rel="noopener" title="Cohen's Kappa ist ein zufallskorrigiertes Maß für die Übereinstimmung zwischen zwei Ratern bei kategorialen Daten.">κ</a>, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-krippendorff" target="_blank" rel="noopener" title="Krippendorff's Alpha ist ein universelles Maß für Beurteilerübereinstimmung, geeignet für beliebige Messniveaus, beliebig viele Rater und unvollständige Daten.">α</a>), den Rater-Bias herausrechnen (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="Die ICC nach Shrout & Fleiss (1979) quantifiziert die Reliabilität metrischer Ratings als Varianzanteil echter Objektunterschiede an der Gesamtvarianz.">ICC</a>) oder robuste Korrekturen nutzen (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-gwet" target="_blank" rel="noopener" title="Gwet's AC1/AC2 sind robustere Alternativen zu Kappa-Maßen, die das Kappa-Paradox bei ungleichen Kategoriehäufigkeiten vermeiden.">Gwet AC</a>)?</div>
   </div>
 
   <!-- Empty state -->
@@ -410,7 +412,7 @@ canvas{width:100%;display:block}
     <div id="stim-desc"></div>
     <div class="cv-wrap"><canvas id="cv-stim-box" height="200"></canvas></div>
     <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin:.25rem .1rem .6rem;line-height:1.55">
-      Box-Whisker-Plots der paarweisen Ähnlichkeit (Hamming) bzw. mittleren absoluten Differenz (MAD) pro Reiz für jedes Rater-Paar.
+      Box-Whisker-Plots der paarweisen <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-hamming" target="_blank" rel="noopener" title="Die Hamming-Ähnlichkeit misst den Anteil übereinstimmender Urteile über alle Items, ohne Zufallskorrektur.">Ähnlichkeit (Hamming)</a> bzw. mittleren absoluten Differenz (MAD) pro Reiz für jedes Rater-Paar.
     </div>
     <div class="cv-wrap" style="margin-top:.6rem"><canvas id="cv-stim-density" height="240"></canvas></div>
     <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin:.25rem .1rem .6rem;line-height:1.55">
@@ -426,7 +428,7 @@ canvas{width:100%;display:block}
     </div>
     <div class="mod-body" id="bd-kendall">
       <div class="erklaer">
-        <div class="erklaer-h">Kendall's W</div>
+        <div class="erklaer-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-kendall-w" target="_blank" rel="noopener" title="Kendall's W misst, wie stark mehrere Beurteiler in ihrer Rangreihung derselben Objekte übereinstimmen.">Kendall's W</a></div>
         Misst die <strong>Konkordanz</strong> aller Beurteiler gleichzeitig auf Basis von Rängen.
         W = 0: keine Übereinstimmung; W = 1: alle Beurteiler ranken identisch.<br>
         Wird per Dimension berechnet; χ²-Test prüft ob W > 0 (df = n_Reize − 1).
@@ -443,7 +445,7 @@ canvas{width:100%;display:block}
     </div>
     <div class="mod-body" id="bd-icc">
       <div class="erklaer">
-        <div class="erklaer-h">ICC(x,1) und ICC(x,k)</div>
+        <div class="erklaer-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="Die ICC nach Shrout & Fleiss (1979) quantifiziert die Reliabilität metrischer Ratings als Varianzanteil echter Objektunterschiede an der Gesamtvarianz.">ICC(x,1) und ICC(x,k)</a></div>
         <strong>ICC(x,1)</strong>: Reliabilität einer Einzelmessung (1 Rater pro Person).<br>
         <strong>ICC(x,k)</strong>: Reliabilität des Mittelwerts aller k Rater (Spearman-Brown-korrigiert).<br><br>
         Referenzwerte (Koo & Mae 2016):<br>
@@ -481,7 +483,7 @@ canvas{width:100%;display:block}
     </div>
     <div class="mod-body" id="bd-bland">
       <div class="erklaer">
-        <div class="erklaer-h">Bland-Altman</div>
+        <div class="erklaer-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-bland-altman" target="_blank" rel="noopener" title="Die Bland-Altman-Methode prüft die Übereinstimmung zweier Beurteiler auf intervallskalierten Daten über Bias und Limits of Agreement.">Bland-Altman</a></div>
         Zeigt für jedes Rater-Paar: x-Achse = Mittelwert beider Werte, y-Achse = Differenz.<br>
         <strong>Bias</strong> = mittlere Differenz. <strong>LoA</strong> = Bias ± 1.96 SD.<br>
         Punkte außerhalb der LoA = systematische Diskrepanz zwischen Rater-Paar.

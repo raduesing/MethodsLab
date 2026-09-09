@@ -110,6 +110,8 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
 .xlink{color:var(--a6);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a6)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -130,7 +132,7 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
     <div class="help-h3">Macht / macht NICHT</div>
     <p class="help-p"><strong style="color:var(--ink)">Macht:</strong> berechnet, welcher Anteil der mit einem Test Ausgewählten später <em>erfolgreich/geeignet</em> ist — in Abhängigkeit von Validität, Selektionsrate und Basisrate. Zeigt Tafel <em>und</em> Nomogramm und macht sichtbar, dass die Tafelwerte Stützstellen einer stetigen Funktion sind. <strong style="color:var(--ink)">Macht NICHT:</strong> keine Kosten-Nutzen-Analyse in Geld (das wäre Brogden-Cronbach-Gleser) und keine Korrektur von Verzerrungen — als Validität sollte die <em>für Range Restriction korrigierte</em> Korrelation eingesetzt werden.</p>
     <div class="help-h3">Worum geht es?</div>
-    <p class="help-p">Taylor &amp; Russell (1939) beantworten die praktische Frage: „Lohnt sich ein Auswahltest?" Ein Test mit Validität <span class="gk">ρ</span> ist umso nützlicher, je <strong style="color:var(--ink)">selektiver</strong> man auswählt und je nach <strong style="color:var(--ink)">Basisrate</strong> der Eignung. Der Nutzen ist die <strong style="color:var(--ink)">Erfolgsquote</strong> der Ausgewählten minus der Basisrate (= was man ohne Test hätte).</p>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-taylor-russell" target="_blank" rel="noopener" title="Die Taylor-Russell-Tafeln formalisieren den Zusammenhang zwischen Validität, Basisrate und Selektionsquote auf die resultierende Erfolgsquote.">Taylor &amp; Russell (1939)</a> beantworten die praktische Frage: „Lohnt sich ein Auswahltest?" Ein Test mit Validität <span class="gk">ρ</span> ist umso <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-nuetzlichkeit" target="_blank" rel="noopener" title="Nützlichkeit fragt, ob der Einsatz eines Tests in einer konkreten Entscheidungssituation tatsächlich einen praktischen Vorteil bringt — abhängig von Basisrate, Selektionsquote und den Konsequenzen von Fehlentscheidungen.">nützlicher</a>, je <strong style="color:var(--ink)">selektiver</strong> man auswählt und je nach <strong style="color:var(--ink)">Basisrate</strong> der Eignung. Der Nutzen ist die <strong style="color:var(--ink)">Erfolgsquote</strong> der Ausgewählten minus der Basisrate (= was man ohne Test hätte).</p>
     <div class="help-h3">Das laufende Beispiel</div>
     <p class="help-p">Eine Klinik (oder Personalabteilung) wählt Bewerber per Eignungstest aus. <strong style="color:var(--a2)">Validität</strong> = Korrelation Test ↔ späterer Erfolg. <strong style="color:var(--a5)">Selektionsrate</strong> = Anteil der Bewerber, der genommen wird. <strong style="color:var(--a4)">Basisrate</strong> = Anteil, der <em>ohne</em> Test erfolgreich wäre. Ergebnis: die <strong style="color:var(--a3)">Erfolgsquote</strong> der Ausgewählten = positiver prädiktiver Wert.</p>
     <div class="help-h3">So liest man die Tafel</div>
@@ -141,8 +143,8 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
     <p class="help-p">
       <code><span class="gk">ρ</span></code> — Validität (Korrelation Test ↔ Kriterium).<br>
       <code>SR</code> — Selektionsrate = Anteil ausgewählt (selection ratio).<br>
-      <code>BR</code> — Basisrate = Anteil in der Population, der das Erfolgskriterium erfüllt (base rate).<br>
-      <code>EQ</code> — Erfolgsquote der Ausgewählten = positiver prädiktiver Wert (PPV).<br>
+      <code>BR</code> — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-praevalenz" target="_blank" rel="noopener" title="Prävalenz ist der Anteil einer Population, der zu einem bestimmten Zeitpunkt von einer Erkrankung oder einem Merkmal betroffen ist; sie entspricht der Basisrate bzw. Vortestwahrscheinlichkeit.">Basisrate</a> = Anteil in der Population, der das Erfolgskriterium erfüllt (base rate).<br>
+      <code>EQ</code> — Erfolgsquote der Ausgewählten = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ppv" target="_blank" rel="noopener" title="Der PPV gibt an, wie wahrscheinlich eine Person tatsächlich krank ist, gegeben dass der Test positiv ausfiel: PPV = TP / (TP + FP).">positiver prädiktiver Wert (PPV)</a>.<br>
       <code>Lift</code> — Zugewinn EQ − BR (Nutzen gegenüber „ohne Test auswählen").
     </p>
     <div class="help-h3">Formel</div>
@@ -206,8 +208,8 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
   <div class="sym-grid">
     <div class="sym"><b><span class="gk">ρ</span></b><span><strong>Validität</strong> — Korrelation zwischen Test und späterem Erfolgskriterium</span></div>
     <div class="sym"><b>SR</b><span><strong>Selektionsrate</strong> — Anteil der Bewerber, der ausgewählt wird (klein = streng)</span></div>
-    <div class="sym"><b>BR</b><span><strong>Basisrate</strong> — Anteil, der <em>ohne</em> Test das Kriterium erfüllt</span></div>
-    <div class="sym"><b>EQ</b><span><strong>Erfolgsquote</strong> der Ausgewählten = positiver prädiktiver Wert (PPV)</span></div>
+    <div class="sym"><b>BR</b><span><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-praevalenz" target="_blank" rel="noopener" title="Prävalenz ist der Anteil einer Population, der zu einem bestimmten Zeitpunkt von einer Erkrankung oder einem Merkmal betroffen ist; sie entspricht der Basisrate bzw. Vortestwahrscheinlichkeit.">Basisrate</a></strong> — Anteil, der <em>ohne</em> Test das Kriterium erfüllt</span></div>
+    <div class="sym"><b>EQ</b><span><strong>Erfolgsquote</strong> der Ausgewählten = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ppv" target="_blank" rel="noopener" title="Der PPV gibt an, wie wahrscheinlich eine Person tatsächlich krank ist, gegeben dass der Test positiv ausfiel: PPV = TP / (TP + FP).">positiver prädiktiver Wert (PPV)</a></span></div>
     <div class="sym"><b>Lift</b><span>EQ − BR — der <strong>inkrementelle Nutzen</strong> des Tests in Prozentpunkten</span></div>
     <div class="sym"><b><span class="gk">Φ</span>⁻¹</b><span>Quantil der Standardnormalverteilung — übersetzt Anteile in Schwellenwerte</span></div>
   </div>
@@ -243,7 +245,7 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
     <div class="sec-h">Konzepte</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">Die Grundidee (Taylor &amp; Russell 1939)</div>
+        <div class="lcard-h">Die Grundidee (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-taylor-russell" target="_blank" rel="noopener" title="Die Taylor-Russell-Tafeln formalisieren den Zusammenhang zwischen Validität, Basisrate und Selektionsquote auf die resultierende Erfolgsquote.">Taylor &amp; Russell 1939</a>)</div>
         <div class="lcard-body">Der Nutzen eines Auswahltests lässt sich nicht allein an seiner Validität ablesen. Entscheidend ist das Zusammenspiel mit zwei Kontextgrößen: der <strong>Selektionsrate</strong> (wie streng wird ausgewählt?) und der <strong>Basisrate</strong> (wie viele wären ohnehin erfolgreich?). Taylor und Russell legten dafür unter der Annahme bivariater Normalverteilung Tafeln vor, die die Erfolgsquote der Ausgewählten liefern.</div>
       </div>
       <div class="lcard">
@@ -251,20 +253,20 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
         <div class="lcard-body">Je <strong>strenger</strong> selektiert wird (kleine SR), desto weiter rechts liegt der Schwellenwert auf dem Test — und desto stärker schlägt selbst eine moderate Validität durch. Bei SR = 1 (alle werden genommen) ist die Erfolgsquote zwangsläufig gleich der Basisrate: ohne Auswahl kein Nutzen. Im Nomogramm sieht man das daran, dass alle Kurven bei Validität 0 in der Basisrate-Linie starten und tiefere SR-Kurven steiler ansteigen.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Die Rolle der Basisrate</div>
+        <div class="lcard-h">Die Rolle der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-praevalenz" target="_blank" rel="noopener" title="Prävalenz ist der Anteil einer Population, der zu einem bestimmten Zeitpunkt von einer Erkrankung oder einem Merkmal betroffen ist; sie entspricht der Basisrate bzw. Vortestwahrscheinlichkeit.">Basisrate</a></div>
         <div class="lcard-body">Der maximale Spielraum liegt bei mittlerer Basisrate (≈ .50). Ist die Basisrate sehr <strong>hoch</strong> (fast alle geeignet), kann ein Test kaum verbessern — man läge ohnehin richtig. Ist sie sehr <strong>niedrig</strong>, ist absolute Verbesserung schwer, aber die <em>relative</em> kann groß sein. Stell die Basisrate auf .20 vs. .80 und beobachte, wie sich die ganze Tafel und das Nomogramm verschieben.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Erfolgsquote = positiver prädiktiver Wert</div>
+        <div class="lcard-h">Erfolgsquote = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ppv" target="_blank" rel="noopener" title="Der PPV gibt an, wie wahrscheinlich eine Person tatsächlich krank ist, gegeben dass der Test positiv ausfiel: PPV = TP / (TP + FP).">positiver prädiktiver Wert</a></div>
         <div class="lcard-body">Die Taylor-Russell-Erfolgsquote ist nichts anderes als der <strong>PPV</strong>: unter den als „geeignet" Ausgewählten der Anteil, der das Kriterium tatsächlich erfüllt. Damit ist das Tool das stetige Gegenstück zur Vierfeldertafel aus Sensitivität/Spezifität — nur über kontinuierliche bivariate Normalverteilung statt diskreter Klassifikation. <a class="xlink" href="Sens_Spez.html" target="_blank" rel="noopener">→ Sensitivität &amp; Spezifität</a></div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Bezug: Range Restriction</div>
-        <div class="lcard-body"><strong>Wichtig:</strong> die <span class="gk">ρ</span>, die hier eingesetzt wird, muss die <em>wahre</em> Validität in der Bewerberpopulation sein. Validitätsstudien werden aber oft an bereits Ausgewählten durchgeführt → die beobachtete Korrelation ist durch <strong>Range Restriction</strong> nach unten verzerrt. Wer den unkorrigierten Wert einsetzt, <em>unterschätzt</em> den Nutzen systematisch. Erst Thorndike-korrigieren, dann in die Taylor-Russell-Tafel. <a class="xlink" href="Range_Restriction.html" target="_blank" rel="noopener">→ Range Restriction (Varianzeinschränkung)</a></div>
+        <div class="lcard-body"><strong>Wichtig:</strong> die <span class="gk">ρ</span>, die hier eingesetzt wird, muss die <em>wahre</em> Validität in der Bewerberpopulation sein. Validitätsstudien werden aber oft an bereits Ausgewählten durchgeführt → die beobachtete Korrelation ist durch <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-range-restriction" target="_blank" rel="noopener" title="Range Restriction bezeichnet die systematische Unterschätzung einer Korrelation, die entsteht, wenn eine Stichprobe nur einen eingeschränkten Teil des Wertebereichs einer Variable abdeckt.">Range Restriction</a></strong> nach unten verzerrt. Wer den unkorrigierten Wert einsetzt, <em>unterschätzt</em> den Nutzen systematisch. Erst Thorndike-korrigieren, dann in die Taylor-Russell-Tafel. <a class="xlink" href="Range_Restriction.html" target="_blank" rel="noopener">→ Range Restriction (Varianzeinschränkung)</a></div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Bezug: Diagnostische Validität</div>
-        <div class="lcard-body">Taylor-Russell ist ein Baustein der Nutzenbetrachtung von Auswahlverfahren. Das Tool <em>Diagnostische Validität</em> ordnet es in Konstrukt-, Kriteriums- und Inhaltsvalidität ein und zeigt die Brücke zur Nutzenwert-Analyse (Brogden-Cronbach-Gleser), die den Selektionsnutzen zusätzlich in Geldeinheiten ausdrückt. <a class="xlink" href="Diagnostische_Validitaet.html" target="_blank" rel="noopener">→ Diagnostische Validität</a></div>
+        <div class="lcard-body">Taylor-Russell ist ein Baustein der Nutzenbetrachtung von Auswahlverfahren. Das Tool <em>Diagnostische Validität</em> ordnet es in <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-konstruktvaliditaet" target="_blank" rel="noopener" title="Konstruktvalidität bezeichnet, wie gut ein Test das zugrundeliegende theoretische Konstrukt tatsächlich abbildet — operationalisiert über konvergente und diskriminante Validität.">Konstrukt-</a>, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-kriteriumsvaliditaet" target="_blank" rel="noopener" title="Kriteriumsvalidität ist der Grad, in dem Testwerte mit einem relevanten externen Kriterium korrelieren — konkurrent (gleichzeitig gemessen) oder prädiktiv (später gemessen).">Kriteriums-</a> und <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-inhaltsvaliditaet" target="_blank" rel="noopener" title="Inhaltsvalidität ist der Grad, in dem die Items eines Tests den zu erfassenden Inhaltsbereich repräsentativ und vollständig abdecken.">Inhaltsvalidität</a> ein und zeigt die Brücke zur Nutzenwert-Analyse (Brogden-Cronbach-Gleser), die den Selektionsnutzen zusätzlich in Geldeinheiten ausdrückt. <a class="xlink" href="Diagnostische_Validitaet.html" target="_blank" rel="noopener">→ Diagnostische Validität</a></div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Grenzen &amp; Annahmen</div>

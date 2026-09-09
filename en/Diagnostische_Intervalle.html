@@ -154,6 +154,8 @@ select:focus{outline:1px solid var(--accent)}
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
 .xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -272,8 +274,8 @@ select:focus{outline:1px solid var(--accent)}
     <div class="story-vars">
       <span class="sv">Person</span><span class="sd">Child undergoing IQ testing (Wechsler scale, μ=100, σ=15)</span>
       <span class="sv">X</span><span class="sd">Observed test score = 115 (single measurement, 1 SD above μ)</span>
-      <span class="sv">r_xx</span><span class="sd">Subtest reliability = 0.85</span>
-      <span class="sv">SEM</span><span class="sd">Standard error of measurement = σ·√(1−r_xx) = 15·√0.15 ≈ 5.81</span>
+      <span class="sv">r_xx</span><span class="sd">Subtest <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability is the degree to which a measurement instrument yields consistent results under repeated application — measurement precision.">reliability</a> = 0.85</span>
+      <span class="sv">SEM</span><span class="sd"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="The standard error of measurement (SEM) quantifies the average random measurement deviation of the observed test score X from the true score τ: SEM = σ · √(1 − r_xx).">Standard error of measurement</a> = σ·√(1−r_xx) = 15·√0.15 ≈ 5.81</span>
     </div>
     <div class="story-q">In what range does this child's true IQ lie with 95% probability — and why do the three methods yield different intervals even though all use the same test score?</div>
   </div>
@@ -352,18 +354,18 @@ select:focus{outline:1px solid var(--accent)}
     <div class="lcard-grid">
       <div class="lcard">
         <div class="lcard-h">Why an Interval Instead of a Point Value?</div>
-        <div class="lcard-body">Every measurement contains measurement error — the observed value <strong>X</strong> is not the true value <strong>τ</strong>. The size of the uncertainty is given by the <strong>standard error of measurement</strong>: <code>SEM = σ · √(1 − r_xx)</code>. The <em>less reliable</em> the test (small r_xx), the larger the SEM and the wider the interval. So instead of a single point value ("the IQ is 115"), one states a range of uncertainty — but <strong>what exactly this range means depends on the method</strong> (frequentist CI vs. Bayesian CrI). That's exactly the difference this tool shows.</div>
+        <div class="lcard-body">Every measurement contains measurement error — the observed value <strong>X</strong> is not the true value <strong>τ</strong>. The size of the uncertainty is given by the <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="The standard error of measurement (SEM) quantifies the average random measurement deviation of the observed test score X from the true score τ: SEM = σ · √(1 − r_xx).">standard error of measurement</a></strong>: <code>SEM = σ · √(1 − r_xx)</code>. The <em>less reliable</em> the test (small r_xx), the larger the SEM and the wider the interval. So instead of a single point value ("the IQ is 115"), one states a range of uncertainty — but <strong>what exactly this range means depends on the method</strong> (frequentist CI vs. Bayesian CrI). That's exactly the difference this tool shows.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">CI per the Equivalence Hypothesis</div>
+        <div class="lcard-h">CI per the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-aequivalenzhypothese" target="_blank" rel="noopener" title="The equivalence-hypothesis CI is placed directly around the observed test score X: CI = X ± z · SEM — X is treated as the best estimate of τ.">Equivalence Hypothesis</a></div>
         <div class="lcard-body">The classical CTT confidence interval, <strong>centered on the observed value X</strong>: <code>CI = X ± 1.96 · SEM</code>. Assumption: X is an unbiased estimator of τ (observed = true value "on average"). Frequentist interpretation: over infinitely many repetitions, this interval would contain the true value in 95% of cases.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">CI per the Regression Hypothesis</div>
-        <div class="lcard-body">Accounts for <strong>regression to the mean</strong>: extreme test scores contain more measurement error, so the best estimator sits closer to the mean. <code><span class="gl-hat">τ</span> = μ + r_xx · (X − μ)</code> always lies between X and μ; <code>SE_reg = σ · √(r_xx · (1 − r_xx))</code>. Compared to the equivalence CI, the interval is shifted toward the mean and somewhat narrower. <a class="xlink" href="Regression_zur_Mitte.html" target="_blank" rel="noopener">→ Regression to the Mean</a></div>
+        <div class="lcard-h">CI per the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-regressionshypothese" target="_blank" rel="noopener" title="The regression-hypothesis CI corrects for regression to the mean: τ̂ = X̄ + r_xx · (X − X̄), the interval is centered on this corrected estimate rather than on X itself.">Regression Hypothesis</a></div>
+        <div class="lcard-body">Accounts for <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-regression-zur-mitte" target="_blank" rel="noopener" title="Regression to the mean describes how extreme measurements, upon repetition, tend to lie closer to the population mean — a mathematical consequence of imperfect reliability.">regression to the mean</a></strong>: extreme test scores contain more measurement error, so the best estimator sits closer to the mean. <code><span class="gl-hat">τ</span> = μ + r_xx · (X − μ)</code> always lies between X and μ; <code>SE_reg = σ · √(r_xx · (1 − r_xx))</code>. Compared to the equivalence CI, the interval is shifted toward the mean and somewhat narrower. <a class="xlink" href="Regression_zur_Mitte.html" target="_blank" rel="noopener">→ Regression to the Mean</a></div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Bayesian CrI (Credible Interval)</div>
+        <div class="lcard-h">Bayesian <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-credible-interval-diag" target="_blank" rel="noopener" title="The Bayesian CrI combines a prior over the true test score τ with the likelihood of the observed score X into a posterior distribution — it allows direct probability statements like P(τ > T | X).">CrI (Credible Interval)</a></div>
         <div class="lcard-body">Prior <code>N(μ, SD_prior)</code> + likelihood <code>N(X, SEM)</code> → posterior via precision weighting. The estimator <span class="gl-hat">τ</span> is a weighted mean of μ and X (weight = 1/variance). With <code>SD_prior = σ·√r_xx</code>, the CrI exactly matches the regression CI; with a flat prior, it approaches the equivalence CI. The advantage: <strong>direct</strong> probability statements <code>P(τ &gt; T | X)</code>.</div>
       </div>
       <div class="lcard">
@@ -372,7 +374,7 @@ select:focus{outline:1px solid var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Context &amp; Related Tools</div>
-        <div class="lcard-body">SEM and reliability come from <strong>Classical Test Theory</strong>; the regression hypothesis is the application of regression to the mean to the single case; the CrI brings in the <strong>Bayesian</strong> perspective (prior knowledge, no multiple-testing problem with flexible cutoffs). <a class="xlink" href="KTT_Grundlagen.html" target="_blank" rel="noopener">→ CTT Foundations</a> · <a class="xlink" href="Regression_zur_Mitte.html" target="_blank" rel="noopener">→ Regression to the Mean</a></div>
+        <div class="lcard-body">SEM and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability is the degree to which a measurement instrument yields consistent results under repeated application — measurement precision.">reliability</a> come from <strong>Classical Test Theory</strong>; the regression hypothesis is the application of regression to the mean to the single case; the CrI brings in the <strong>Bayesian</strong> perspective (prior knowledge, no multiple-testing problem with flexible cutoffs). <a class="xlink" href="KTT_Grundlagen.html" target="_blank" rel="noopener">→ CTT Foundations</a> · <a class="xlink" href="Regression_zur_Mitte.html" target="_blank" rel="noopener">→ Regression to the Mean</a></div>
       </div>
     </div>
   </div>
@@ -387,19 +389,19 @@ select:focus{outline:1px solid var(--accent)}
     <button class="help-close" onclick="toggleHelp()">✕ Close</button>
 
     <div class="help-sh">Example</div>
-    <p class="help-p">A child scores an IQ of X=115 (Wechsler, μ=100, σ=15, r_xx=0.85). The standard error of measurement is SEM = 15·√(1−0.85) ≈ 5.81. Question: in what range does the true IQ lie — and what statement does the chosen interval allow?</p>
+    <p class="help-p">A child scores an IQ of X=115 (Wechsler, μ=100, σ=15, r_xx=0.85). The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="The standard error of measurement (SEM) quantifies the average random measurement deviation of the observed test score X from the true score τ: SEM = σ · √(1 − r_xx).">standard error of measurement</a> is SEM = 15·√(1−0.85) ≈ 5.81. Question: in what range does the true IQ lie — and what statement does the chosen interval allow?</p>
 
-    <div class="help-sh">CI Equivalence Hypothesis</div>
+    <div class="help-sh">CI <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-aequivalenzhypothese" target="_blank" rel="noopener" title="The equivalence-hypothesis CI is placed directly around the observed test score X: CI = X ± z · SEM — X is treated as the best estimate of τ.">Equivalence Hypothesis</a></div>
     <p class="help-p">The interval is centered on the observed test score X. Assumption: X is an unbiased estimator of the true value τ. The classical CTT confidence interval.</p>
     <span class="help-formula2">CI = X ± 1.96 · SEM  &nbsp;  (SEM = σ · √(1 − r_xx))</span>
     <p class="help-p">In the example: 115 ± 1.96 · 5.81 → [103.6, 126.4]. Interpretation: under repeated testing (n → ∞), this interval would contain the true value in 95% of cases.</p>
 
-    <div class="help-sh">CI Regression Hypothesis</div>
-    <p class="help-p">The interval is centered on the regressed estimate τ̂, not on the observed X. Accounts for <strong>regression to the mean</strong>: extreme test scores have more measurement error than values near the mean — that's why τ̂ always lies between X and μ.</p>
+    <div class="help-sh">CI <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-regressionshypothese" target="_blank" rel="noopener" title="The regression-hypothesis CI corrects for regression to the mean: τ̂ = X̄ + r_xx · (X − X̄), the interval is centered on this corrected estimate rather than on X itself.">Regression Hypothesis</a></div>
+    <p class="help-p">The interval is centered on the regressed estimate τ̂, not on the observed X. Accounts for <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-regression-zur-mitte" target="_blank" rel="noopener" title="Regression to the mean describes how extreme measurements, upon repetition, tend to lie closer to the population mean — a mathematical consequence of imperfect reliability.">regression to the mean</a></strong>: extreme test scores have more measurement error than values near the mean — that's why τ̂ always lies between X and μ.</p>
     <span class="help-formula2">τ̂ = μ + r_xx · (X − μ)  &nbsp;  SE_reg = σ · √(r_xx · (1 − r_xx))</span>
     <p class="help-p">In the example: τ̂ = 100 + 0.85 · (115−100) = 112.75. SE_reg = 15·√(0.85·0.15) ≈ 5.36. CI_reg = 112.75 ± 1.96 · 5.36 → [102.2, 123.3]. The location and width sit closer to μ than the equivalence-hypothesis CI.</p>
 
-    <div class="help-sh">Bayesian CrI (Credible Interval)</div>
+    <div class="help-sh">Bayesian <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-credible-interval-diag" target="_blank" rel="noopener" title="The Bayesian CrI combines a prior over the true test score τ with the likelihood of the observed score X into a posterior distribution — it allows direct probability statements like P(τ > T | X).">CrI (Credible Interval)</a></div>
     <p class="help-p">Prior N(μ, SD_prior) + likelihood N(X, SEM) → posterior via precision weighting. The posterior is a weighted mean of prior mean μ and observed X, where the weight is inversely proportional to the variance.</p>
     <span class="help-formula2">w_data = 1/SEM²  &nbsp;  w_prior = 1/SD_prior²</span>
     <span class="help-formula2">τ̂ = (μ·w_prior + X·w_data) / (w_prior + w_data)  &nbsp;  SD_post = √(1/(w_prior+w_data))</span>

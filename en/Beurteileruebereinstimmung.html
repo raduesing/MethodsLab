@@ -20,6 +20,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{font-size:18px}
 body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;font-size:1rem;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--accent)}
 /* ── Topbar ── */
 #topbar{position:sticky;top:0;z-index:300;background:var(--paper);border-bottom:1px solid var(--grid);
   padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem;flex:none}
@@ -244,13 +246,13 @@ canvas{width:100%;display:block}
   <div class="modal-h2">Methods</div>
   <table class="modal-table">
     <tr><th>Measure</th><th>When</th></tr>
-    <tr><td><strong>Cohen's κ</strong></td><td>Exactly 2 raters, nominal or ordinal (unweighted)</td></tr>
+    <tr><td><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cohens-kappa" target="_blank" rel="noopener" title="Cohen's Kappa is a chance-corrected measure of agreement between two raters on categorical data.">Cohen's κ</a></strong></td><td>Exactly 2 raters, nominal or ordinal (unweighted)</td></tr>
     <tr><td><strong>Cohen's κ (weighted)</strong></td><td>2 raters, ordinal — linear weight penalizes larger deviations more</td></tr>
-    <tr><td><strong>Fleiss' κ</strong></td><td>3 or more raters, nominal or ordinal</td></tr>
-    <tr><td><strong>Krippendorff's α</strong></td><td>Any number of raters, all scale levels; tolerates missing values</td></tr>
-    <tr><td><strong>Gwet's AC1</strong></td><td>Nominal, any number of raters; more robust than κ with unequal category frequencies (no kappa paradox)</td></tr>
+    <tr><td><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-fleiss-kappa" target="_blank" rel="noopener" title="Fleiss Kappa extends Cohen's Kappa to situations with more than two raters.">Fleiss' κ</a></strong></td><td>3 or more raters, nominal or ordinal</td></tr>
+    <tr><td><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-krippendorff" target="_blank" rel="noopener" title="Krippendorff's Alpha is a universal measure of inter-rater agreement, suitable for any scale level, any number of raters, and incomplete data.">Krippendorff's α</a></strong></td><td>Any number of raters, all scale levels; tolerates missing values</td></tr>
+    <tr><td><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-gwet" target="_blank" rel="noopener" title="Gwet's AC1/AC2 are more robust alternatives to kappa measures that avoid the kappa paradox with unequal category frequencies.">Gwet's AC1</a></strong></td><td>Nominal, any number of raters; more robust than κ with unequal category frequencies (no kappa paradox)</td></tr>
     <tr><td><strong>Gwet's AC2</strong></td><td>Ordinal, linear/quadratic weighted; chance correction based on equal category distribution, not marginals</td></tr>
-    <tr><td><strong>ICC(1,x)</strong></td><td>Each stimulus rated by <em>different</em>, randomly chosen raters</td></tr>
+    <tr><td><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="The ICC per Shrout & Fleiss (1979) quantifies the reliability of metric ratings as the proportion of variance due to real differences between rated objects.">ICC(1,x)</a></strong></td><td>Each stimulus rated by <em>different</em>, randomly chosen raters</td></tr>
     <tr><td><strong>ICC(2,x)</strong></td><td>Same raters, treated as a random sample — agreement (conservative)</td></tr>
     <tr><td><strong>ICC(3,x)</strong></td><td>Same fixed raters — consistency (bias is partialled out)</td></tr>
   </table>
@@ -281,10 +283,10 @@ canvas{width:100%;display:block}
     <tr><td>&lt; .50</td><td>Poor</td></tr>
   </table>
 
-  <div class="modal-h2">Kendall's W</div>
+  <div class="modal-h2"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-kendall-w" target="_blank" rel="noopener" title="Kendall's W measures how strongly multiple raters agree in their rank ordering of the same objects.">Kendall's W</a></div>
   <div class="modal-p">Concordance measure for ordinal data with ≥ 2 raters. W = 0: no agreement, W = 1: perfect concordance. Always computed additionally to the main measure when scale level = ordinal.</div>
 
-  <div class="modal-h2">Bland-Altman Plot</div>
+  <div class="modal-h2"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-bland-altman" target="_blank" rel="noopener" title="The Bland-Altman method assesses agreement between two raters on interval-scaled data via bias and limits of agreement.">Bland-Altman Plot</a></div>
   <div class="modal-p">Interval scale only. Shows the mean of both raters (x-axis) against their difference (y-axis). <strong>Bias</strong> = mean difference. <strong>LoA</strong> (limits of agreement) = bias ± 1.96 × SD(difference). Selectable per dimension when D &gt; 1.</div>
 </div>
 </div>
@@ -362,7 +364,7 @@ canvas{width:100%;display:block}
       <span class="sv">Dimension 2</span><span class="sd">risk classification (0 = no risk … 4 = acute)</span>
       <span class="sv">Format</span><span class="sd">3 CSV files (80 rows × 2 columns each) — one per rater</span>
     </div>
-    <div class="story-q">How well do the three psychologists agree — and does it matter whether we correct for chance agreement (κ, α), partial out rater bias (ICC), or use robust corrections (Gwet AC)?</div>
+    <div class="story-q">How well do the three psychologists agree — and does it matter whether we correct for chance agreement (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cohens-kappa" target="_blank" rel="noopener" title="Cohen's Kappa is a chance-corrected measure of agreement between two raters on categorical data.">κ</a>, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-krippendorff" target="_blank" rel="noopener" title="Krippendorff's Alpha is a universal measure of inter-rater agreement, suitable for any scale level, any number of raters, and incomplete data.">α</a>), partial out rater bias (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="The ICC per Shrout & Fleiss (1979) quantifies the reliability of metric ratings as the proportion of variance due to real differences between rated objects.">ICC</a>), or use robust corrections (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-gwet" target="_blank" rel="noopener" title="Gwet's AC1/AC2 are more robust alternatives to kappa measures that avoid the kappa paradox with unequal category frequencies.">Gwet AC</a>)?</div>
   </div>
 
   <!-- Empty state -->
@@ -410,7 +412,7 @@ canvas{width:100%;display:block}
     <div id="stim-desc"></div>
     <div class="cv-wrap"><canvas id="cv-stim-box" height="200"></canvas></div>
     <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin:.25rem .1rem .6rem;line-height:1.55">
-      Box-and-whisker plots of the pairwise similarity (Hamming) or mean absolute difference (MAD) per stimulus for each rater pair.
+      Box-and-whisker plots of the pairwise <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-hamming" target="_blank" rel="noopener" title="Hamming similarity measures the proportion of matching judgments across all items, without chance correction.">similarity (Hamming)</a> or mean absolute difference (MAD) per stimulus for each rater pair.
     </div>
     <div class="cv-wrap" style="margin-top:.6rem"><canvas id="cv-stim-density" height="240"></canvas></div>
     <div style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin:.25rem .1rem .6rem;line-height:1.55">
@@ -426,7 +428,7 @@ canvas{width:100%;display:block}
     </div>
     <div class="mod-body" id="bd-kendall">
       <div class="erklaer">
-        <div class="erklaer-h">Kendall's W</div>
+        <div class="erklaer-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-kendall-w" target="_blank" rel="noopener" title="Kendall's W measures how strongly multiple raters agree in their rank ordering of the same objects.">Kendall's W</a></div>
         Measures the <strong>concordance</strong> of all raters simultaneously based on ranks.
         W = 0: no agreement; W = 1: all raters rank identically.<br>
         Computed per dimension; χ² test checks whether W > 0 (df = n_stimuli − 1).
@@ -443,7 +445,7 @@ canvas{width:100%;display:block}
     </div>
     <div class="mod-body" id="bd-icc">
       <div class="erklaer">
-        <div class="erklaer-h">ICC(x,1) and ICC(x,k)</div>
+        <div class="erklaer-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="The ICC per Shrout & Fleiss (1979) quantifies the reliability of metric ratings as the proportion of variance due to real differences between rated objects.">ICC(x,1) and ICC(x,k)</a></div>
         <strong>ICC(x,1)</strong>: reliability of a single measurement (1 rater per person).<br>
         <strong>ICC(x,k)</strong>: reliability of the mean of all k raters (Spearman-Brown corrected).<br><br>
         Reference values (Koo & Mae 2016):<br>
@@ -481,7 +483,7 @@ canvas{width:100%;display:block}
     </div>
     <div class="mod-body" id="bd-bland">
       <div class="erklaer">
-        <div class="erklaer-h">Bland-Altman</div>
+        <div class="erklaer-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-bland-altman" target="_blank" rel="noopener" title="The Bland-Altman method assesses agreement between two raters on interval-scaled data via bias and limits of agreement.">Bland-Altman</a></div>
         Shows for each rater pair: x-axis = mean of both values, y-axis = difference.<br>
         <strong>Bias</strong> = mean difference. <strong>LoA</strong> = bias ± 1.96 SD.<br>
         Points outside the LoA = systematic discrepancy between the rater pair.

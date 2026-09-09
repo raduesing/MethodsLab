@@ -154,6 +154,8 @@ select:focus{outline:1px solid var(--accent)}
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
 .xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -272,8 +274,8 @@ select:focus{outline:1px solid var(--accent)}
     <div class="story-vars">
       <span class="sv">Person</span><span class="sd">Kind mit IQ-Testung (Wechsler-Skala, μ=100, σ=15)</span>
       <span class="sv">X</span><span class="sd">Beobachteter Testwert = 115 (einmalige Messung, 1 SD über μ)</span>
-      <span class="sv">r_xx</span><span class="sd">Reliabilität des Subtests = 0.85</span>
-      <span class="sv">SEM</span><span class="sd">Standardmessfehler = σ·√(1−r_xx) = 15·√0.15 ≈ 5.81</span>
+      <span class="sv">r_xx</span><span class="sd"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung konsistente Ergebnisse liefert — die Messgenauigkeit.">Reliabilität</a> des Subtests = 0.85</span>
+      <span class="sv">SEM</span><span class="sd"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="Der Standardmessfehler (SEM) quantifiziert die durchschnittliche zufällige Messabweichung des beobachteten Testwerts X vom wahren Wert τ: SEM = σ · √(1 − r_xx).">Standardmessfehler</a> = σ·√(1−r_xx) = 15·√0.15 ≈ 5.81</span>
     </div>
     <div class="story-q">In welchem Bereich liegt der wahre IQ dieses Kindes mit 95% Wahrscheinlichkeit — und warum liefern die drei Methoden unterschiedliche Intervalle, obwohl alle denselben Testwert nutzen?</div>
   </div>
@@ -352,18 +354,18 @@ select:focus{outline:1px solid var(--accent)}
     <div class="lcard-grid">
       <div class="lcard">
         <div class="lcard-h">Warum ein Intervall statt eines Punktwerts?</div>
-        <div class="lcard-body">Jede Messung enthält Messfehler — der beobachtete Wert <strong>X</strong> ist nicht der wahre Wert <strong>τ</strong>. Wie groß die Unsicherheit ist, sagt der <strong>Standardmessfehler</strong>: <code>SEM = σ · √(1 − r_xx)</code>. Je <em>unreliabler</em> der Test (kleines r_xx), desto größer der SEM und desto breiter das Intervall. Statt eines einzelnen Punktwerts („der IQ ist 115") gibt man also einen Unsicherheitsbereich an — <strong>was dieser Bereich genau besagt, hängt aber von der Methode ab</strong> (frequentistisches KI vs. bayesianisches CrI). Genau diesen Unterschied zeigt das Tool.</div>
+        <div class="lcard-body">Jede Messung enthält Messfehler — der beobachtete Wert <strong>X</strong> ist nicht der wahre Wert <strong>τ</strong>. Wie groß die Unsicherheit ist, sagt der <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="Der Standardmessfehler (SEM) quantifiziert die durchschnittliche zufällige Messabweichung des beobachteten Testwerts X vom wahren Wert τ: SEM = σ · √(1 − r_xx).">Standardmessfehler</a></strong>: <code>SEM = σ · √(1 − r_xx)</code>. Je <em>unreliabler</em> der Test (kleines r_xx), desto größer der SEM und desto breiter das Intervall. Statt eines einzelnen Punktwerts („der IQ ist 115") gibt man also einen Unsicherheitsbereich an — <strong>was dieser Bereich genau besagt, hängt aber von der Methode ab</strong> (frequentistisches KI vs. bayesianisches CrI). Genau diesen Unterschied zeigt das Tool.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">KI nach Äquivalenzhypothese</div>
+        <div class="lcard-h">KI nach <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-aequivalenzhypothese" target="_blank" rel="noopener" title="Das KI der Äquivalenzhypothese wird direkt um den beobachteten Testwert X gelegt: KI = X ± z · SEM — X wird als bester Schätzwert von τ behandelt.">Äquivalenzhypothese</a></div>
         <div class="lcard-body">Das klassische Konfidenzintervall der KTT, <strong>zentriert um den beobachteten Wert X</strong>: <code>KI = X ± 1.96 · SEM</code>. Annahme: X ist ein erwartungstreuer Schätzer von τ (Beobachteter = wahrer Wert „im Mittel"). Interpretation frequentistisch: Bei unendlich vielen Wiederholungen enthielte dieses Intervall den wahren Wert in 95 % der Fälle.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">KI nach Regressionshypothese</div>
-        <div class="lcard-body">Berücksichtigt die <strong>Regression zur Mitte</strong>: extreme Testwerte enthalten mehr Messfehler, der beste Schätzer liegt näher am Mittel. <code><span class="gl-hat">τ</span> = μ + r_xx · (X − μ)</code> liegt immer zwischen X und μ; <code>SE_reg = σ · √(r_xx · (1 − r_xx))</code>. Das Intervall ist gegenüber dem Äquivalenz-KI zum Mittelwert verschoben und etwas schmaler. <a class="xlink" href="Regression_zur_Mitte.html" target="_blank" rel="noopener">→ Regression zur Mitte</a></div>
+        <div class="lcard-h">KI nach <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-regressionshypothese" target="_blank" rel="noopener" title="Das KI der Regressionshypothese korrigiert für Regression zur Mitte: τ̂ = X̄ + r_xx · (X − X̄), das Intervall liegt um diesen korrigierten Schätzwert statt um X selbst.">Regressionshypothese</a></div>
+        <div class="lcard-body">Berücksichtigt die <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-regression-zur-mitte" target="_blank" rel="noopener" title="Regression zur Mitte beschreibt, dass extreme Messwerte bei Wiederholung im Mittel näher am Populationsmittelwert liegen — eine mathematische Folge unvollständiger Reliabilität.">Regression zur Mitte</a></strong>: extreme Testwerte enthalten mehr Messfehler, der beste Schätzer liegt näher am Mittel. <code><span class="gl-hat">τ</span> = μ + r_xx · (X − μ)</code> liegt immer zwischen X und μ; <code>SE_reg = σ · √(r_xx · (1 − r_xx))</code>. Das Intervall ist gegenüber dem Äquivalenz-KI zum Mittelwert verschoben und etwas schmaler. <a class="xlink" href="Regression_zur_Mitte.html" target="_blank" rel="noopener">→ Regression zur Mitte</a></div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">Bayesianisches CrI (Credible Interval)</div>
+        <div class="lcard-h">Bayesianisches <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-credible-interval-diag" target="_blank" rel="noopener" title="Das bayesianische CrI kombiniert einen Prior über den wahren Testwert τ mit der Likelihood des beobachteten Werts X zur Posteriorverteilung — es erlaubt direkte Wahrscheinlichkeitsaussagen wie P(τ > T | X).">CrI (Credible Interval)</a></div>
         <div class="lcard-body">Prior <code>N(μ, SD_prior)</code> + Likelihood <code>N(X, SEM)</code> → Posterior per Präzisionsgewichtung. Der Schätzer <span class="gl-hat">τ</span> ist ein gewichtetes Mittel aus μ und X (Gewicht = 1/Varianz). Mit <code>SD_prior = σ·√r_xx</code> stimmt das CrI exakt mit dem Regressions-KI überein; bei flachem Prior nähert es sich dem Äquivalenz-KI. Der Vorteil: <strong>direkte</strong> Wahrscheinlichkeitsaussagen <code>P(τ &gt; T | X)</code>.</div>
       </div>
       <div class="lcard">
@@ -372,7 +374,7 @@ select:focus{outline:1px solid var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Einordnung &amp; verwandte Tools</div>
-        <div class="lcard-body">SEM und Reliabilität stammen aus der <strong>Klassischen Testtheorie</strong>; die Regressionshypothese ist die Anwendung der Regression zur Mitte auf den Einzelfall; das CrI bringt die <strong>bayesianische</strong> Perspektive (Vorwissen, kein multiples-Testen-Problem bei flexiblen Trennwerten). <a class="xlink" href="KTT_Grundlagen.html" target="_blank" rel="noopener">→ KTT-Grundlagen</a> · <a class="xlink" href="Regression_zur_Mitte.html" target="_blank" rel="noopener">→ Regression zur Mitte</a></div>
+        <div class="lcard-body">SEM und <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung konsistente Ergebnisse liefert — die Messgenauigkeit.">Reliabilität</a> stammen aus der <strong>Klassischen Testtheorie</strong>; die Regressionshypothese ist die Anwendung der Regression zur Mitte auf den Einzelfall; das CrI bringt die <strong>bayesianische</strong> Perspektive (Vorwissen, kein multiples-Testen-Problem bei flexiblen Trennwerten). <a class="xlink" href="KTT_Grundlagen.html" target="_blank" rel="noopener">→ KTT-Grundlagen</a> · <a class="xlink" href="Regression_zur_Mitte.html" target="_blank" rel="noopener">→ Regression zur Mitte</a></div>
       </div>
     </div>
   </div>
@@ -387,19 +389,19 @@ select:focus{outline:1px solid var(--accent)}
     <button class="help-close" onclick="toggleHelp()">✕ Schließen</button>
 
     <div class="help-sh">Beispiel</div>
-    <p class="help-p">Ein Kind erzielt einen IQ von X=115 (Wechsler, μ=100, σ=15, r_xx=0.85). Der Standardmessfehler beträgt SEM = 15·√(1−0.85) ≈ 5.81. Frage: In welchem Bereich liegt der wahre IQ — und welche Aussage erlaubt das gewählte Intervall?</p>
+    <p class="help-p">Ein Kind erzielt einen IQ von X=115 (Wechsler, μ=100, σ=15, r_xx=0.85). Der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="Der Standardmessfehler (SEM) quantifiziert die durchschnittliche zufällige Messabweichung des beobachteten Testwerts X vom wahren Wert τ: SEM = σ · √(1 − r_xx).">Standardmessfehler</a> beträgt SEM = 15·√(1−0.85) ≈ 5.81. Frage: In welchem Bereich liegt der wahre IQ — und welche Aussage erlaubt das gewählte Intervall?</p>
 
-    <div class="help-sh">KI Äquivalenzhypothese</div>
+    <div class="help-sh">KI <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-aequivalenzhypothese" target="_blank" rel="noopener" title="Das KI der Äquivalenzhypothese wird direkt um den beobachteten Testwert X gelegt: KI = X ± z · SEM — X wird als bester Schätzwert von τ behandelt.">Äquivalenzhypothese</a></div>
     <p class="help-p">Das Intervall liegt um den beobachteten Testwert X. Annahme: X ist ein unverzerrter Schätzer des wahren Werts τ. Das klassische Konfidenzintervall der CTT.</p>
     <span class="help-formula2">KI = X ± 1.96 · SEM  &nbsp;  (SEM = σ · √(1 − r_xx))</span>
     <p class="help-p">Im Beispiel: 115 ± 1.96 · 5.81 → [103.6, 126.4]. Interpretation: Bei wiederholter Testung (n → ∞) würde dieses Intervall den wahren Wert in 95% der Fälle enthalten.</p>
 
-    <div class="help-sh">KI Regressionshypothese</div>
-    <p class="help-p">Das Intervall liegt um den regredierten Schätzwert τ̂, nicht um den beobachteten X. Berücksichtigt die <strong>Regression zur Mitte</strong>: Extreme Testwerte haben mehr Messfehler als Werte nahe am Mittelwert — deshalb ist τ̂ immer zwischen X und μ.</p>
+    <div class="help-sh">KI <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-regressionshypothese" target="_blank" rel="noopener" title="Das KI der Regressionshypothese korrigiert für Regression zur Mitte: τ̂ = X̄ + r_xx · (X − X̄), das Intervall liegt um diesen korrigierten Schätzwert statt um X selbst.">Regressionshypothese</a></div>
+    <p class="help-p">Das Intervall liegt um den regredierten Schätzwert τ̂, nicht um den beobachteten X. Berücksichtigt die <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-regression-zur-mitte" target="_blank" rel="noopener" title="Regression zur Mitte beschreibt, dass extreme Messwerte bei Wiederholung im Mittel näher am Populationsmittelwert liegen — eine mathematische Folge unvollständiger Reliabilität.">Regression zur Mitte</a></strong>: Extreme Testwerte haben mehr Messfehler als Werte nahe am Mittelwert — deshalb ist τ̂ immer zwischen X und μ.</p>
     <span class="help-formula2">τ̂ = μ + r_xx · (X − μ)  &nbsp;  SE_reg = σ · √(r_xx · (1 − r_xx))</span>
     <p class="help-p">Im Beispiel: τ̂ = 100 + 0.85 · (115−100) = 112.75. SE_reg = 15·√(0.85·0.15) ≈ 5.36. KI_reg = 112.75 ± 1.96 · 5.36 → [102.2, 123.3]. Lage und Breite liegen näher an μ als beim KI der Äquivalenzhypothese.</p>
 
-    <div class="help-sh">Bayesianisches CrI (Credible Interval)</div>
+    <div class="help-sh">Bayesianisches <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-credible-interval-diag" target="_blank" rel="noopener" title="Das bayesianische CrI kombiniert einen Prior über den wahren Testwert τ mit der Likelihood des beobachteten Werts X zur Posteriorverteilung — es erlaubt direkte Wahrscheinlichkeitsaussagen wie P(τ > T | X).">CrI (Credible Interval)</a></div>
     <p class="help-p">Prior N(μ, SD_prior) + Likelihood N(X, SEM) → Posterior via Präzisionsgewichtung. Der Posterior ist ein gewichtetes Mittel aus Prior-Mittelwert μ und beobachtetem X, wobei das Gewicht umgekehrt proportional zur Varianz ist.</p>
     <span class="help-formula2">w_data = 1/SEM²  &nbsp;  w_prior = 1/SD_prior²</span>
     <span class="help-formula2">τ̂ = (μ·w_prior + X·w_data) / (w_prior + w_data)  &nbsp;  SD_post = √(1/(w_prior+w_data))</span>

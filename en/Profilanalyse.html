@@ -140,6 +140,8 @@ select:focus{outline:1px solid var(--accent)}
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{font-family:'DM Mono',monospace;font-size:.75rem;background:var(--panel);padding:.1rem .3rem}
 .xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+.glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
+.glo-link:hover{color:var(--a2)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -240,7 +242,7 @@ select:focus{outline:1px solid var(--accent)}
     <div class="sec-h">Concepts</div>
     <div class="lcard-grid">
       <div class="lcard">
-        <div class="lcard-h">Elevation, Scatter, Shape</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-profilanalyse" target="_blank" rel="noopener" title="Profile analysis compares test-score profiles for similarity, separating level differences, scatter differences, and shape differences.">Elevation, Scatter, Shape</a></div>
         <div class="lcard-body">Every profile decomposes into three <em>independent</em> components (Cronbach &amp; Gleser 1953): <strong>elevation</strong> = mean level, <strong>scatter S²</strong> = variability of the subtest values around one's own level, <strong>shape</strong> = pattern of peaks/troughs independent of level and scatter. A profile difference can stem from just one of these components — the metrics below weight them differently.</div>
       </div>
       <div class="lcard">
@@ -256,7 +258,7 @@ select:focus{outline:1px solid var(--accent)}
         <div class="lcard-body"><strong>rₚ (Cattell 1949)</strong> is a distance-based profile correlation: <code>rₚ = (2Eₖ − d²<sub>z</sub>)/(2Eₖ + d²<sub>z</sub>)</code> — unlike simple r, it responds to level differences (drops when A is generally below norm), but depends on k and scatter. <strong>Iₚₐ / rₚₐ (McCrae 1993)</strong> are normed (≈ 0 at chance similarity) and allow high shape similarity even with a level difference present.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">ICC_de (Griffin &amp; Gonzalez)</div>
+        <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-double-entry-icc" target="_blank" rel="noopener" title="The Double Entry ICC computes the Pearson correlation on a doubled/duplicated dataset — here applied to profile similarity rather than intra-rater reliability.">ICC_de</a> (Griffin &amp; Gonzalez)</div>
         <div class="lcard-body">Pearson correlation on a <strong>double-entered</strong> dataset (column 1 = [P₁;P₂], column 2 = [P₂;P₁]). This makes ICC_de <strong>the most sensitive</strong> to level differences — suitable when the absolute level fully matters, e.g. in retest or progress comparisons after therapy. Conceptually the intraclass correlation at the profile level.</div>
       </div>
       <div class="lcard">
@@ -278,7 +280,7 @@ select:focus{outline:1px solid var(--accent)}
     <div class="help-sh">Example</div>
     <p class="help-p">Person A is a patient after neuropsychological assessment, Person B is the norm-sample profile (or a pretest profile). Both show stanine scores on 7 subtests (e.g. working memory, processing speed, verbal comprehension). Question: How similar are the profiles — and where does a difference come from?</p>
 
-    <div class="help-sh">Elevation, Scatter, Shape</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-profilanalyse" target="_blank" rel="noopener" title="Profile analysis compares test-score profiles for similarity, separating level differences, scatter differences, and shape differences.">Elevation, Scatter, Shape</a></div>
     <p class="help-p">Every profile can be decomposed into three independent components (Cronbach &amp; Gleser, 1953):</p>
     <p class="help-p"><strong>Elevation M̄</strong> = mean level = (1/k)·Σxᵢ. A difference in elevation → Person A scores overall higher or lower than B.</p>
     <p class="help-p"><strong>Scatter S²</strong> = variability of the subtest values around one's own level = (1/k)·Σ(xᵢ−M̄)². High scatter = uneven profile.</p>
@@ -302,7 +304,7 @@ select:focus{outline:1px solid var(--accent)}
     <span class="help-formula2">rₚₐ = Iₚₐ / √((k−2) + Iₚₐ²)</span>
     <p class="help-p">In the example: rₚₐ ≈ 0.90 = high shape similarity is possible even with a level difference present.</p>
 
-    <div class="help-sh">ICC_de after Griffin &amp; Gonzalez (1995)</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-double-entry-icc" target="_blank" rel="noopener" title="The Double Entry ICC computes the Pearson correlation on a doubled/duplicated dataset — here applied to profile similarity rather than intra-rater reliability.">ICC_de</a> after Griffin &amp; Gonzalez (1995)</div>
     <p class="help-p">Pearson correlation on a double-entered dataset: column 1 = [P₁; P₂], column 2 = [P₂; P₁]. Sensitive to level differences because the symmetrization increases the variance when the profiles sit at different levels.</p>
     <span class="help-formula2">ICC_de = (MSB − MSW) / (MSB + MSW)</span>
     <p class="help-p">In the example: pure shape similarity (same scatter, same elevation) → ICC_de = high Pearson r on the doubled dataset. A level difference pulls ICC_de down more than rₚₐ.</p>
