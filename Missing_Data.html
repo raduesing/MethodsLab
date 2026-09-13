@@ -188,7 +188,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   4. Finde k=5 nächste Spender j: |ŷ_i − ŷ_j| minimal
   5. Ziehe einen Spender j* zufällig; imputiere y_i = y_j*
   6. Analysiere vervollständigten Datensatz mit Y~X → θ̂_m (β_X, μ_Y)</span>
-    <p class="help-p">Pooling nach Rubin (1987):</p>
+    <p class="help-p">Pooling nach <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-rubin-1987" target="_blank" rel="noopener">Rubin (1987)</a>:</p>
     <span class="help-formula">θ̂_MI = (1/M) Σ θ̂_m
 Var_MI = W + (1 + 1/M)·B
 W = (1/M) Σ Var_m          (Within-Varianz)
@@ -201,6 +201,9 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
 <strong>3. m ≥ 5–20:</strong> Mehr Imputationen → stabilere Schätzer, kleinerer Between-Varianz-Anteil.<br>
 <strong>4. Nicht zu viel Missing:</strong> Ab >50% wird MI instabil, weil das Imputationsmodell auf zu wenig Daten basiert.<br>
 <strong>5. MNAR:</strong> MI ist keine perfekte Lösung, aber praktisch selten schlechter als Listwise oder Mean Imputation.</p>
+
+    <div class="help-sh">Literatur</div>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-rubin-1987" target="_blank" rel="noopener">Rubin, D. B. (1987)</a>. <em>Multiple Imputation for Nonresponse in Surveys.</em> Wiley.</p>
   </div>
 </div>
 
@@ -338,7 +341,7 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
       </div>
       <div class="lcard">
         <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-multiple-imputation" target="_blank" rel="noopener" title="Multiple Imputation (MI) ist die Standardmethode zur Behandlung fehlender Werte unter der MAR-Annahme.">Multiple Imputation</a> (PMM)</div>
-        <div class="lcard-body">Statt <em>eines</em> Ersatzwerts erzeugt MI <strong>mehrere</strong> vollständige Datensätze. <strong>Predictive Mean Matching</strong> zieht für jede Lücke einen plausiblen <em>echten</em> Spenderwert aus ähnlichen Fällen. Man analysiert jeden Datensatz und poolt die Ergebnisse (Rubin's Rules) — so fließt die <strong>Imputationsunsicherheit</strong> in die Standardfehler ein, anders als bei Single Imputation.</div>
+        <div class="lcard-body">Statt <em>eines</em> Ersatzwerts erzeugt MI <strong>mehrere</strong> vollständige Datensätze. <strong>Predictive Mean Matching</strong> zieht für jede Lücke einen plausiblen <em>echten</em> Spenderwert aus ähnlichen Fällen. Man analysiert jeden Datensatz und poolt die Ergebnisse (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-rubin-1987" target="_blank" rel="noopener">Rubin's Rules</a>) — so fließt die <strong>Imputationsunsicherheit</strong> in die Standardfehler ein, anders als bei Single Imputation.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Das Imputationsmodell muss reicher sein</div>

@@ -131,7 +131,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="help-h3">Does / does NOT</div>
     <p class="help-p"><strong style="color:var(--ink)">Does:</strong> shows how selecting on the predictor X systematically biases the correlation r <em>observed</em> in the selected group — and how Thorndike's formulas back-correct the true value <span class="gk">ρ</span>. <strong style="color:var(--ink)">Does NOT:</strong> no estimation from real data, no indirect case with a measured third variable (only a demonstration of the mechanism under bivariate normality).</p>
     <div class="help-h3">What is this about?</div>
-    <p class="help-p">If a sample covers only <strong style="color:var(--ink)">part of the value range</strong> of X (e.g. because only applicants above a test cutoff are hired), the spread of X shrinks. The <strong style="color:var(--ink)">correlation</strong> between X and Y is then <em>underestimated</em> — even though the true relationship in the overall population is much stronger. This is <strong style="color:var(--ink)">direct range restriction</strong> (Thorndike Case II).</p>
+    <p class="help-p">If a sample covers only <strong style="color:var(--ink)">part of the value range</strong> of X (e.g. because only applicants above a test cutoff are hired), the spread of X shrinks. The <strong style="color:var(--ink)">correlation</strong> between X and Y is then <em>underestimated</em> — even though the true relationship in the overall population is much stronger. This is <strong style="color:var(--ink)">direct range restriction</strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-thorndike-1949" target="_blank" rel="noopener">Thorndike</a> Case II).</p>
     <div class="help-h3">The running example</div>
     <p class="help-p">A company validates an <strong style="color:var(--a2)">aptitude test X</strong> against later <strong style="color:var(--a1)">career success Y</strong>. But: only those who score above the cutoff are hired — only for them is a Y value available later. The validity r observed this way is <em>smaller</em> than the true validity <span class="gk">ρ</span>. Anyone who ignores range restriction wrongly writes off a good test as useless.</p>
     <div class="help-h3">The mechanism (why?)</div>
@@ -156,6 +156,10 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     </p>
     <div class="help-h3">Formulas (Thorndike, Case II)</div>
     <p class="help-p">Attenuation: <code>r = <span class="gk">ρ</span>u / √(1 − <span class="gk">ρ</span>²(1 − u²))</code> &nbsp;·&nbsp; Correction: <code><span class="gk hat">ρ</span> = rU / √(1 + r²(U² − 1))</code> with <code>U = 1/u = s<sub>x</sub>/s′<sub>x</sub></code>.</p>
+    <div class="help-h3">References</div>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-thorndike-1949" target="_blank" rel="noopener">Thorndike, R. L. (1949)</a>. <em>Personnel Selection: Test and Measurement Techniques.</em> Wiley.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-sackett-yang-2000" target="_blank" rel="noopener">Sackett, P. R. &amp; Yang, H. (2000)</a>. Correction for range restriction: An expanded typology. <em>Journal of Applied Psychology, 85</em>(1), 112–118.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-hunter-schmidt-le-2006" target="_blank" rel="noopener">Hunter, J. E., Schmidt, F. L. &amp; Le, H. (2006)</a>. Implications of direct and indirect range restriction for meta-analysis methods and findings. <em>Journal of Applied Psychology, 91</em>(3), 594–612.</p>
   </div>
 </div>
 
@@ -299,7 +303,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Direct vs. indirect (Case II vs. III)</div>
-        <div class="lcard-body"><strong>Direct</strong> range restriction (Thorndike Case II): selection happens on the predictor X itself (e.g. a cutoff on an aptitude test). <strong>Indirect</strong> (Case III): selection happens on a <em>third</em> variable Z that correlates with X — X only gets "restricted along with it." The indirect case is more common in practice (e.g. selection on an earlier overall rating) and needs Lawley's extended formula / the correction by Hunter, Schmidt &amp; Le (2006). This tool shows the direct case.</div>
+        <div class="lcard-body"><strong>Direct</strong> range restriction (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-thorndike-1949" target="_blank" rel="noopener">Thorndike</a> Case II): selection happens on the predictor X itself (e.g. a cutoff on an aptitude test). <strong>Indirect</strong> (Case III): selection happens on a <em>third</em> variable Z that correlates with X — X only gets "restricted along with it." The indirect case is more common in practice (e.g. selection on an earlier overall rating) and needs Lawley's extended formula / the correction by <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-hunter-schmidt-le-2006" target="_blank" rel="noopener">Hunter, Schmidt &amp; Le (2006)</a>. This tool shows the direct case.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Correlation drops, slope stays</div>
@@ -315,7 +319,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Practice &amp; literature</div>
-        <div class="lcard-body">Range restriction is a core topic in meta-analyses of validity studies (personnel selection, clinical prediction, university admissions). Rules of thumb: (1) always report u = s′/s; (2) use the Case-II correction for selection on X, the Case-III correction for selection on third variables; (3) label corrected values as such. References: Thorndike (1949); Sackett &amp; Yang (2000); Hunter, Schmidt &amp; Le (2006).</div>
+        <div class="lcard-body">Range restriction is a core topic in meta-analyses of validity studies (personnel selection, clinical prediction, university admissions). Rules of thumb: (1) always report u = s′/s; (2) use the Case-II correction for selection on X, the Case-III correction for selection on third variables; (3) label corrected values as such. References: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-thorndike-1949" target="_blank" rel="noopener">Thorndike (1949)</a>; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-sackett-yang-2000" target="_blank" rel="noopener">Sackett &amp; Yang (2000)</a>; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-hunter-schmidt-le-2006" target="_blank" rel="noopener">Hunter, Schmidt &amp; Le (2006)</a>.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Distinguishing it from Berkson's paradox</div>

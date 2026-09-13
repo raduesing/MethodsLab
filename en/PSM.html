@@ -133,7 +133,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="help-sh">What Is a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-propensity-score" target="_blank" rel="noopener" title="The propensity score e(X) = P(T = 1 | X) is the conditional probability of receiving the treatment, given the observed covariates X.">Propensity Score</a>?</div>
   <p class="help-p">The <strong>propensity score (PS)</strong> is the conditional probability of treatment given all measured covariates:</p>
   <code class="help-formula">e(X) = P(T = 1 | X₁, X₂, ..., Xₖ)</code>
-  <p class="help-p">Rosenbaum &amp; Rubin (1983): if treatment is conditionally independent of the potential outcomes given X (ignorability), it is also conditionally independent given the single scalar e(X). Instead of balancing k covariates simultaneously, it suffices to condition on the PS. In practice, the PS is estimated via logistic regression.</p>
+  <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-rosenbaum-rubin-1983" target="_blank" rel="noopener">Rosenbaum &amp; Rubin (1983)</a>: if treatment is conditionally independent of the potential outcomes given X (ignorability), it is also conditionally independent given the single scalar e(X). Instead of balancing k covariates simultaneously, it suffices to condition on the PS. In practice, the PS is estimated via logistic regression.</p>
 
   <div class="help-sh">Assumptions — When Do PSM/IPW Work?</div>
   <p class="help-p"><strong>1. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ignorability" target="_blank" rel="noopener" title="Strong ignorability (also: unconfoundedness) states that treatment assignment T — after conditioning on observed covariates X — can be treated as quasi-random.">Ignorability (CIA / unconfoundedness)</a>:</strong> {Y(0), Y(1)} ⊥ T | X — conditional on the measured covariates, treatment is quasi-random. This assumption is not testable. PSM/IPW only eliminates bias from measured covariates; unmeasured confounders (omitted variable bias) remain a risk.</p>
@@ -163,6 +163,9 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
   <div class="help-sh">R Packages</div>
   <p class="help-p"><strong>MatchIt</strong>: flexible matching (nearest-neighbor, optimal, genetic, CEM). <strong>WeightIt</strong>: IPW and other weighting methods. <strong>cobalt</strong>: Love plot + balance statistics, compatible with MatchIt &amp; WeightIt. <strong>twang</strong>: PS via gradient boosting (GBM). <strong>CBPS</strong>: covariate balancing PS — estimates the PS directly optimized for balance.</p>
+
+  <div class="help-sh">References</div>
+  <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-rosenbaum-rubin-1983" target="_blank" rel="noopener">Rosenbaum, P. R. &amp; Rubin, D. B. (1983)</a>. The central role of the propensity score in observational studies for causal effects. <em>Biometrika, 70</em>(1), 41–55.</p>
 </div>
 </div>
 
@@ -281,7 +284,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="lcard-grid">
       <div class="lcard">
         <div class="lcard-h">What Is a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-propensity-score" target="_blank" rel="noopener" title="The propensity score e(X) = P(T = 1 | X) is the conditional probability of receiving the treatment, given the observed covariates X.">Propensity Score</a>?</div>
-        <div class="lcard-body">e(X) = P(T=1|X) — the conditional treatment probability. Rosenbaum &amp; Rubin (1983): if Y(0),Y(1) ⊥ T | X, then also Y(0),Y(1) ⊥ T | e(X). A powerful dimension reduction: k covariates → 1 scalar. Usually estimated via <a href="../Logistische_Regression.html">logistic regression</a>.</div>
+        <div class="lcard-body">e(X) = P(T=1|X) — the conditional treatment probability. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-rosenbaum-rubin-1983" target="_blank" rel="noopener">Rosenbaum &amp; Rubin (1983)</a>: if Y(0),Y(1) ⊥ T | X, then also Y(0),Y(1) ⊥ T | e(X). A powerful dimension reduction: k covariates → 1 scalar. Usually estimated via <a href="../Logistische_Regression.html">logistic regression</a>.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-selektion-bias" target="_blank" rel="noopener" title="Selection bias arises when the selection of units into a study or treatment group is systematically associated with the outcome.">Selection Bias</a> &amp; CIA</div>

@@ -131,7 +131,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="help-h3">Macht / macht NICHT</div>
     <p class="help-p"><strong style="color:var(--ink)">Macht:</strong> zeigt, wie die Selektion auf den Prädiktor X die in der selektierten Gruppe <em>beobachtete</em> Korrelation r systematisch verzerrt — und wie die Thorndike-Formeln den wahren Wert <span class="gk">ρ</span> zurückrechnen. <strong style="color:var(--ink)">Macht NICHT:</strong> keine Schätzung aus echten Daten, kein indirekter Fall mit gemessener Drittvariable (nur Demonstration des Mechanismus unter bivariater Normalität).</p>
     <div class="help-h3">Worum geht es?</div>
-    <p class="help-p">Wenn eine Stichprobe nur einen <strong style="color:var(--ink)">Teil des Wertebereichs</strong> von X abdeckt (weil z.&thinsp;B. nur Bewerber oberhalb eines Test-Cutoffs eingestellt werden), schrumpft die Streuung von X. Die <strong style="color:var(--ink)">Korrelation</strong> zwischen X und Y wird dadurch <em>unterschätzt</em> — obwohl der wahre Zusammenhang in der Gesamtpopulation viel stärker ist. Das ist <strong style="color:var(--ink)">direkte Range Restriction</strong> (Thorndike Fall II).</p>
+    <p class="help-p">Wenn eine Stichprobe nur einen <strong style="color:var(--ink)">Teil des Wertebereichs</strong> von X abdeckt (weil z.&thinsp;B. nur Bewerber oberhalb eines Test-Cutoffs eingestellt werden), schrumpft die Streuung von X. Die <strong style="color:var(--ink)">Korrelation</strong> zwischen X und Y wird dadurch <em>unterschätzt</em> — obwohl der wahre Zusammenhang in der Gesamtpopulation viel stärker ist. Das ist <strong style="color:var(--ink)">direkte Range Restriction</strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-thorndike-1949" target="_blank" rel="noopener">Thorndike</a> Fall II).</p>
     <div class="help-h3">Das laufende Beispiel</div>
     <p class="help-p">Ein Unternehmen validiert einen <strong style="color:var(--a2)">Eignungstest X</strong> gegen den späteren <strong style="color:var(--a1)">Berufserfolg Y</strong>. Aber: nur wer im Test über dem Cutoff liegt, wird eingestellt — nur für diese Personen liegt später ein Y-Wert vor. Die so beobachtete Validität r ist <em>kleiner</em> als die wahre Validität <span class="gk">ρ</span>. Wer die Range Restriction ignoriert, hält einen guten Test fälschlich für unbrauchbar.</p>
     <div class="help-h3">Der Mechanismus (Warum?)</div>
@@ -156,6 +156,10 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     </p>
     <div class="help-h3">Formeln (Thorndike, Fall II)</div>
     <p class="help-p">Attenuation: <code>r = <span class="gk">ρ</span>u / √(1 − <span class="gk">ρ</span>²(1 − u²))</code> &nbsp;·&nbsp; Korrektur: <code><span class="gk hat">ρ</span> = rU / √(1 + r²(U² − 1))</code> mit <code>U = 1/u = s<sub>x</sub>/s′<sub>x</sub></code>.</p>
+    <div class="help-h3">Literatur</div>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-thorndike-1949" target="_blank" rel="noopener">Thorndike, R. L. (1949)</a>. <em>Personnel Selection: Test and Measurement Techniques.</em> Wiley.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-sackett-yang-2000" target="_blank" rel="noopener">Sackett, P. R. &amp; Yang, H. (2000)</a>. Correction for range restriction: An expanded typology. <em>Journal of Applied Psychology, 85</em>(1), 112–118.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-hunter-schmidt-le-2006" target="_blank" rel="noopener">Hunter, J. E., Schmidt, F. L. &amp; Le, H. (2006)</a>. Implications of direct and indirect range restriction for meta-analysis methods and findings. <em>Journal of Applied Psychology, 91</em>(3), 594–612.</p>
   </div>
 </div>
 
@@ -299,7 +303,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Direkt vs. indirekt (Fall II vs. III)</div>
-        <div class="lcard-body"><strong>Direkte</strong> Range Restriction (Thorndike Fall II): selektiert wird auf den Prädiktor X selbst (z.&thinsp;B. Cutoff im Eignungstest). <strong>Indirekte</strong> (Fall III): selektiert wird auf eine <em>dritte</em> Variable Z, die mit X korreliert — X wird nur „mitgekappt". Der indirekte Fall ist in der Praxis häufiger (z.&thinsp;B. Selektion auf ein früheres Gesamturteil) und braucht die erweiterte Formel von Lawley / die Korrektur nach Hunter, Schmidt &amp; Le (2006). Dieses Tool zeigt den direkten Fall.</div>
+        <div class="lcard-body"><strong>Direkte</strong> Range Restriction (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-thorndike-1949" target="_blank" rel="noopener">Thorndike</a> Fall II): selektiert wird auf den Prädiktor X selbst (z.&thinsp;B. Cutoff im Eignungstest). <strong>Indirekte</strong> (Fall III): selektiert wird auf eine <em>dritte</em> Variable Z, die mit X korreliert — X wird nur „mitgekappt". Der indirekte Fall ist in der Praxis häufiger (z.&thinsp;B. Selektion auf ein früheres Gesamturteil) und braucht die erweiterte Formel von Lawley / die Korrektur nach <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-hunter-schmidt-le-2006" target="_blank" rel="noopener">Hunter, Schmidt &amp; Le (2006)</a>. Dieses Tool zeigt den direkten Fall.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Korrelation sinkt, Steigung bleibt</div>
@@ -315,7 +319,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">Praxis &amp; Literatur</div>
-        <div class="lcard-body">Range Restriction ist ein Kernthema der Metaanalyse von Validitätsstudien (Personalauswahl, klinische Prädiktion, Hochschulzulassung). Faustregeln: (1) immer u = s′/s berichten; (2) bei Selektion auf X den Fall-II-, bei Selektion auf Drittvariablen den Fall-III-Korrektur verwenden; (3) korrigierte Werte als solche kennzeichnen. Literatur: Thorndike (1949); Sackett &amp; Yang (2000); Hunter, Schmidt &amp; Le (2006).</div>
+        <div class="lcard-body">Range Restriction ist ein Kernthema der Metaanalyse von Validitätsstudien (Personalauswahl, klinische Prädiktion, Hochschulzulassung). Faustregeln: (1) immer u = s′/s berichten; (2) bei Selektion auf X den Fall-II-, bei Selektion auf Drittvariablen den Fall-III-Korrektur verwenden; (3) korrigierte Werte als solche kennzeichnen. Literatur: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-thorndike-1949" target="_blank" rel="noopener">Thorndike (1949)</a>; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-sackett-yang-2000" target="_blank" rel="noopener">Sackett &amp; Yang (2000)</a>; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-hunter-schmidt-le-2006" target="_blank" rel="noopener">Hunter, Schmidt &amp; Le (2006)</a>.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Abgrenzung: Berkson's Paradox</div>

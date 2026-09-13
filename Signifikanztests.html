@@ -144,9 +144,14 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
     <div class="help-h3">Abschnitt ①: Wiederholte Ziehung unter H₀</div>
     <p class="help-p">Jeder Klick auf "Stichprobe ziehen" simuliert zwei neue Gruppen, zwischen denen in Wahrheit kein Unterschied besteht (H₀ trifft in der Simulation garantiert zu). Der resultierende t-Wert wird auf der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-student-t" target="_blank" rel="noopener" title="Die Student-t-Verteilung ist eine symmetrische, glockenförmige Verteilung mit schwereren Tails als die Normalverteilung, parametrisiert durch den Freiheitsgrad ν.">t-Verteilung</a> markiert; die Trefferquote "mindestens so extrem wie unser t" konvergiert mit wachsender Anzahl Ziehungen gegen den formal berechneten p-Wert.</p>
     <div class="help-h3">Abschnitt ②: Der p-Wert-Tanz</div>
-    <p class="help-p">Jetzt mit einem <strong style="color:var(--ink)">echten, festen</strong> Effekt (Regler). Jede "Replikation" zieht neue Stichproben aus exakt derselben Population und berechnet einen neuen p-Wert. Das Ergebnis: selbst bei identischem wahren Effekt streuen die p-Werte stark — ein einzelner p-Wert ist kein verlässliches Maß für die Stärke oder Replizierbarkeit eines Befunds (Geoff Cummings "Dance of the p-values").</p>
+    <p class="help-p">Jetzt mit einem <strong style="color:var(--ink)">echten, festen</strong> Effekt (Regler). Jede "Replikation" zieht neue Stichproben aus exakt derselben Population und berechnet einen neuen p-Wert. Das Ergebnis: selbst bei identischem wahren Effekt streuen die p-Werte stark — ein einzelner p-Wert ist kein verlässliches Maß für die Stärke oder Replizierbarkeit eines Befunds (Geoff <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-cumming-2014" target="_blank" rel="noopener">Cummings</a> "Dance of the p-values").</p>
     <div class="help-h3">Statistischer Test im Hintergrund</div>
     <p class="help-p">Alle Simulationen verwenden einen ungepaarten Zwei-Stichproben-t-Test mit gleicher Gruppengröße n und angenommener Varianzhomogenität: t&nbsp;=&nbsp;(M₁−M₂)/(SD·√(2/n)), df&nbsp;=&nbsp;2n−2, zweiseitiger p-Wert über die t-Verteilung.</p>
+
+    <div class="help-h3">Literatur</div>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-fisher-1925" target="_blank" rel="noopener">Fisher, R. A. (1925)</a>. <em>Statistical Methods for Research Workers.</em> Oliver &amp; Boyd.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-neyman-pearson-1933" target="_blank" rel="noopener">Neyman, J. &amp; Pearson, E. S. (1933)</a>. On the problem of the most efficient tests of statistical hypotheses. <em>Philosophical Transactions of the Royal Society A, 231</em>, 289–337.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-cumming-2014" target="_blank" rel="noopener">Cumming, G. (2014)</a>. The new statistics: Why and how. <em>Psychological Science, 25</em>(1), 7–29.</p>
   </div>
 </div>
 
@@ -295,7 +300,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
     <div class="lcard-grid">
       <div class="lcard">
         <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-nhst" target="_blank" rel="noopener" title="NHST verschmilzt zwei ursprünglich konkurrierende Denkschulen: Fishers gradueller p-Wert als Evidenzmaß gegen H₀, und Neyman-Pearsons binäres Entscheidungsverfahren mit vorab festgelegtem α und Power.">Fisher vs. Neyman-Pearson</a></div>
-        <div class="lcard-body">Fisher verstand den p-Wert als graduelles Evidenzmaß gegen H₀. Neyman &amp; Pearson entwickelten unabhängig davon ein Entscheidungsschema mit vorab fixierten Fehlerraten α und β. Die heutige Praxis vermischt beide Ansätze unsauber zu einem Hybrid — eine Hauptursache vieler Missverständnisse.</div>
+        <div class="lcard-body"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-fisher-1925" target="_blank" rel="noopener">Fisher</a> verstand den p-Wert als graduelles Evidenzmaß gegen H₀. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-neyman-pearson-1933" target="_blank" rel="noopener">Neyman &amp; Pearson</a> entwickelten unabhängig davon ein Entscheidungsschema mit vorab fixierten Fehlerraten α und β. Die heutige Praxis vermischt beide Ansätze unsauber zu einem Hybrid — eine Hauptursache vieler Missverständnisse.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h"><span class="gk">α</span> ist fix, p ist zufällig</div>
@@ -303,7 +308,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
       </div>
       <div class="lcard">
         <div class="lcard-h">Ein p-Wert ist kein Replizierbarkeits-Maß</div>
-        <div class="lcard-body">Bei realistischer Power (z.&nbsp;B. 50–70&nbsp;%) ist es normal, dass eine knapp signifikante Replikation direkt gefolgt wird von einer, die es nicht ist — obwohl der wahre Effekt konstant bleibt. Ein einzelner p-Wert sagt fast nichts darüber aus, wie ein zweiter Versuch ausgehen würde. Das ist als <strong>"Dance of the p-values"</strong> bekannt (Geoff Cumming) — direkt erlebbar in Abschnitt ② oben.</div>
+        <div class="lcard-body">Bei realistischer Power (z.&nbsp;B. 50–70&nbsp;%) ist es normal, dass eine knapp signifikante Replikation direkt gefolgt wird von einer, die es nicht ist — obwohl der wahre Effekt konstant bleibt. Ein einzelner p-Wert sagt fast nichts darüber aus, wie ein zweiter Versuch ausgehen würde. Das ist als <strong>"Dance of the p-values"</strong> bekannt (Geoff <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-cumming-2014" target="_blank" rel="noopener">Cumming</a>) — direkt erlebbar in Abschnitt ② oben.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Ein- vs. zweiseitig testen</div>

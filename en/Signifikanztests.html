@@ -144,9 +144,14 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
     <div class="help-h3">Section ①: Repeated sampling under H₀</div>
     <p class="help-p">Each click on "Draw sample" simulates two new groups between which there is truly no difference (H₀ is guaranteed to hold in the simulation). The resulting t-value is marked on the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-student-t" target="_blank" rel="noopener" title="The Student-t distribution is a symmetric, bell-shaped distribution with heavier tails than the normal distribution, parameterized by the degrees of freedom ν.">t-distribution</a>; the hit rate "at least as extreme as our t" converges, as the number of draws grows, toward the formally computed p-value.</p>
     <div class="help-h3">Section ②: The p-value dance</div>
-    <p class="help-p">Now with a <strong style="color:var(--ink)">real, fixed</strong> effect (slider). Each "replication" draws new samples from exactly the same population and computes a new p-value. The result: even with an identical true effect, p-values scatter widely — a single p-value is not a reliable measure of the strength or replicability of a finding (Geoff Cumming's "dance of the p-values").</p>
+    <p class="help-p">Now with a <strong style="color:var(--ink)">real, fixed</strong> effect (slider). Each "replication" draws new samples from exactly the same population and computes a new p-value. The result: even with an identical true effect, p-values scatter widely — a single p-value is not a reliable measure of the strength or replicability of a finding (Geoff <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-cumming-2014" target="_blank" rel="noopener">Cumming's</a> "dance of the p-values").</p>
     <div class="help-h3">Statistical test in the background</div>
     <p class="help-p">All simulations use an unpaired two-sample t-test with equal group size n and assumed variance homogeneity: t&nbsp;=&nbsp;(M₁−M₂)/(SD·√(2/n)), df&nbsp;=&nbsp;2n−2, two-tailed p-value via the t-distribution.</p>
+
+    <div class="help-h3">References</div>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-fisher-1925" target="_blank" rel="noopener">Fisher, R. A. (1925)</a>. <em>Statistical Methods for Research Workers.</em> Oliver &amp; Boyd.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-neyman-pearson-1933" target="_blank" rel="noopener">Neyman, J. &amp; Pearson, E. S. (1933)</a>. On the problem of the most efficient tests of statistical hypotheses. <em>Philosophical Transactions of the Royal Society A, 231</em>, 289–337.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-cumming-2014" target="_blank" rel="noopener">Cumming, G. (2014)</a>. The new statistics: Why and how. <em>Psychological Science, 25</em>(1), 7–29.</p>
   </div>
 </div>
 
@@ -295,7 +300,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
     <div class="lcard-grid">
       <div class="lcard">
         <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-nhst" target="_blank" rel="noopener" title="NHST blends two originally competing schools of thought: Fisher's graded p-value as evidence against H₀, and Neyman-Pearson's binary decision procedure with a pre-fixed α and power.">Fisher vs. Neyman-Pearson</a></div>
-        <div class="lcard-body">Fisher understood the p-value as a graded measure of evidence against H₀. Neyman &amp; Pearson independently developed a decision scheme with pre-fixed error rates α and β. Today's practice blends both approaches into an imprecise hybrid — a major source of many misunderstandings.</div>
+        <div class="lcard-body"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-fisher-1925" target="_blank" rel="noopener">Fisher</a> understood the p-value as a graded measure of evidence against H₀. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-neyman-pearson-1933" target="_blank" rel="noopener">Neyman &amp; Pearson</a> independently developed a decision scheme with pre-fixed error rates α and β. Today's practice blends both approaches into an imprecise hybrid — a major source of many misunderstandings.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h"><span class="gk">α</span> is fixed, p is random</div>
@@ -303,7 +308,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
       </div>
       <div class="lcard">
         <div class="lcard-h">A p-value is not a replicability measure</div>
-        <div class="lcard-body">At realistic power (e.g.&nbsp;50–70&nbsp;%) it's normal for a barely significant replication to be immediately followed by one that isn't — even though the true effect stays constant. A single p-value says almost nothing about how a second attempt would turn out. This is known as the <strong>"dance of the p-values"</strong> (Geoff Cumming) — directly experienceable in Section ② above.</div>
+        <div class="lcard-body">At realistic power (e.g.&nbsp;50–70&nbsp;%) it's normal for a barely significant replication to be immediately followed by one that isn't — even though the true effect stays constant. A single p-value says almost nothing about how a second attempt would turn out. This is known as the <strong>"dance of the p-values"</strong> (Geoff <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-cumming-2014" target="_blank" rel="noopener">Cumming</a>) — directly experienceable in Section ② above.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">One-sided vs. two-sided testing</div>

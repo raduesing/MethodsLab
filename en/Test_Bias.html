@@ -290,7 +290,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="mod-header" id="hd2" onclick="toggleMod(2)" style="justify-content:space-between">
     <span style="display:flex;align-items:center;gap:.65rem">
       <span class="mod-icon" id="ic2">▶</span>
-      Module 2 — Meade &amp; Fetzer (2009): What's Behind It?
+      Module 2 — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-meade-fetzer-2009" target="_blank" rel="noopener" onclick="event.stopPropagation()">Meade &amp; Fetzer (2009)</a>: What's Behind It?
     </span>
     <button class="help-btn" onclick="event.stopPropagation();openHelp(2)">? Help</button>
   </div>
@@ -298,12 +298,12 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="erklaer">
       <div class="erklaer-h">Differential Prediction ≠ Test Bias</div>
       A significant intercept difference (M2 vs. M1) can have four different causes.
-      Only one of them is genuine test bias in Cleary's sense.<br><br>
+      Only one of them is genuine test bias in <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-cleary-1968" target="_blank" rel="noopener">Cleary</a>'s sense.<br><br>
       <strong>Source 1 — Test bias:</strong> the test measures the construct differently for the two groups — group B scores lower on X even though their real Y performance is comparable. d_X large, d_Y small. <em>Effect:</em> qualified people from B are systematically screened out; the test underestimates their actual capability.<br>
       <strong>Source 2 — Criterion bias:</strong> the criterion Y (e.g. supervisor rating) rates one group better or worse, independent of their actual performance. d_X ≈ 0, d_Y large. <em>Effect:</em> the test itself is fair — but the validation target is biased. Selection based on this criterion cements the disadvantage.<br>
       <strong>Source 3 — Missing variables:</strong> additional predictors (e.g. length of training, socioeconomic status) would explain the intercept difference. <em>Effect:</em> the apparent bias disappears after controlling for them — action: extend the model.<br>
       <strong>Source 4 — Sampling error:</strong> random deviations, especially with small n. <em>Effect:</em> no systematic bias; replication settles the question.<br><br>
-      <strong>Diagnosis:</strong> the standardized mean differences d_X and d_Y point to the most likely source (cf. Meade &amp; Fetzer, 2009, Fig. 1–3).
+      <strong>Diagnosis:</strong> the standardized mean differences d_X and d_Y point to the most likely source (cf. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-meade-fetzer-2009" target="_blank" rel="noopener">Meade &amp; Fetzer, 2009</a>, Fig. 1–3).
     </div>
     <div id="mod2-content"></div>
   </div>
@@ -321,7 +321,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <div class="erklaer-h">Adverse Impact</div>
       <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-adverse-impact" target="_blank" rel="noopener" title="Adverse Impact occurs when a group is selected substantially less often in a selection decision than a comparison group — regardless of whether the test itself is fair.">Adverse impact</a></strong> is present when one group is selected considerably less often
       than another in a selection decision — even if the test itself is fair.
-      The US Uniform Guidelines (1978) formulate the <strong>4/5 rule</strong>:
+      The US <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-eeoc-1978" target="_blank" rel="noopener">Uniform Guidelines (1978)</a> formulate the <strong>4/5 rule</strong>:
       the selection rate of the disadvantaged group should be at least 80% of the rate
       of the favored group.<br><br>
       <span class="formula-line">AIR = selection rate_B / selection rate_A</span>
@@ -971,7 +971,7 @@ const HELP_CONTENT={
     title:'Test Bias & Fairness — Overview',
     body:`
 <h3>Example</h3>
-<p>A selection test (X = cognitive aptitude measure, z-standardized) is meant to predict job performance (Y = supervisor rating, z-standardized). What's tested: does the regression equation hold equally for group A (reference) and group B (focal group)? If the lines diverge, the test is biased in Cleary's (1968) sense.</p>
+<p>A selection test (X = cognitive aptitude measure, z-standardized) is meant to predict job performance (Y = supervisor rating, z-standardized). What's tested: does the regression equation hold equally for group A (reference) and group B (focal group)? If the lines diverge, the test is biased in <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-cleary-1968" target="_blank" rel="noopener">Cleary's (1968)</a> sense.</p>
 <h3>Test Bias per <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-fairness-cleary" target="_blank" rel="noopener" title="The Cleary model defines test fairness via predictive validity: a test is fair if it shows the same regression line between test score and criterion for all subgroups.">Cleary (1968)</a></h3>
 <p>A test is considered <strong>unbiased</strong> if it produces the same prediction equation for all groups: equal intercept (b₀) and equal slope (b₁). Bias is present when the regression line systematically over- or underestimates — independent of mean differences on X or Y.</p>
 <p>In the example: scenario <span class="num-sym">①</span> — group B scores lower on X but the same on Y → the shared line underestimates group B's job performance → classic test bias.</p>
@@ -988,7 +988,7 @@ const HELP_CONTENT={
     title:'Module 1 — Cleary Test: Differential Prediction',
     body:`
 <h3>What Does the Model Test?</h3>
-<p>The Cleary test checks whether a test produces <strong>different regression lines</strong> for different groups. Per Cleary (1968), a test is considered biased if the prediction equation yields systematically wrong forecasts for one group.</p>
+<p>The Cleary test checks whether a test produces <strong>different regression lines</strong> for different groups. Per <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-cleary-1968" target="_blank" rel="noopener">Cleary (1968)</a>, a test is considered biased if the prediction equation yields systematically wrong forecasts for one group.</p>
 <h3>The Three Models</h3>
 <ul>
   <li><strong>M1</strong> – shared regression line for everyone: Ŷ = b₀ + b₁·X</li>
@@ -1010,13 +1010,13 @@ const HELP_CONTENT={
 </ul>
 <h3>Important Notes</h3>
 <p>Statistical significance depends heavily on n. With large samples, even practically meaningless differences become significant. Always report effect size (Δb₀, Δb₁). The test decision concerns <em>differential prediction</em>, not directly test fairness in the broader sense.</p>
-<p class="ref">References: Cleary, T. A. (1968). <em>Educational and Psychological Measurement, 28</em>, 115–124. · Bartlett, C. J., Bobko, P., Mosier, S. B., &amp; Hannan, R. (1978). <em>Personnel Psychology, 31</em>, 233–248. · Linn, R. L. (1984). <em>Journal of Educational Measurement, 21</em>, 5–32.</p>`
+<p class="ref">References: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-cleary-1968" target="_blank" rel="noopener">Cleary, T. A. (1968)</a>. <em>Educational and Psychological Measurement, 28</em>, 115–124. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-bartlett-1978" target="_blank" rel="noopener">Bartlett, C. J., Bobko, P., Mosier, S. B., &amp; Hannan, R. (1978)</a>. <em>Personnel Psychology, 31</em>, 233–248. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-linn-1984" target="_blank" rel="noopener">Linn, R. L. (1984)</a>. <em>Journal of Educational Measurement, 21</em>, 5–32.</p>`
   },
   2:{
     title:'Module 2 — Meade & Fetzer (2009): Diagnosing the Cause',
     body:`
 <h3>Why Isn't the Cleary Test Alone Enough?</h3>
-<p>A significant intercept difference (M2 vs. M1) can have <strong>four different causes</strong>. Only one is genuine test bias in Cleary's sense. Meade &amp; Fetzer (2009) propose using the standardized mean differences d_X and d_Y for diagnosis.</p>
+<p>A significant intercept difference (M2 vs. M1) can have <strong>four different causes</strong>. Only one is genuine test bias in <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-cleary-1968" target="_blank" rel="noopener">Cleary</a>'s sense. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-meade-fetzer-2009" target="_blank" rel="noopener">Meade &amp; Fetzer (2009)</a> propose using the standardized mean differences d_X and d_Y for diagnosis.</p>
 <h3>The Classification Scheme</h3>
 <ul>
   <li><strong>d_X large, d_Y small</strong> (Fig. 1 — test bias): the groups differ on the predictor but barely on the criterion. The test assesses the underlying construct with different quality for the two groups.</li>
@@ -1025,10 +1025,10 @@ const HELP_CONTENT={
   <li><strong>d_X small, d_Y small</strong>: no meaningful bias, no adverse impact.</li>
 </ul>
 <h3>Expected d_Y</h3>
-<p>Meade &amp; Fetzer derive the expected criterion difference from d_X and the pooled correlation r_YX (Eq. 4). If d_Y is markedly smaller than expected, that points to test bias; if d_Y is larger than expected, to criterion bias or missing variables.</p>
+<p><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-meade-fetzer-2009" target="_blank" rel="noopener">Meade &amp; Fetzer</a> derive the expected criterion difference from d_X and the pooled correlation r_YX (Eq. 4). If d_Y is markedly smaller than expected, that points to test bias; if d_Y is larger than expected, to criterion bias or missing variables.</p>
 <h3>Threshold</h3>
 <p>The cutoff used is |d| ≥ 0.20 (corresponding to a small-to-medium effect per Cohen). This value is conservative; with large n, even smaller d values can be meaningful.</p>
-<p class="ref">References: Meade, A. W., &amp; Fetzer, M. (2009). <em>Journal of Personnel Psychology, 8</em>, 1–13. · Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). LEA.</p>`
+<p class="ref">References: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-meade-fetzer-2009" target="_blank" rel="noopener">Meade, A. W., &amp; Fetzer, M. (2009)</a>. <em>Journal of Personnel Psychology, 8</em>, 1–13. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-cohen-1988" target="_blank" rel="noopener">Cohen, J. (1988)</a>. <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). LEA.</p>`
   },
   3:{
     title:'Module 3 — Adverse Impact & the 4/5 Rule',
@@ -1036,7 +1036,7 @@ const HELP_CONTENT={
 <h3>What Is Adverse Impact?</h3>
 <p>Adverse impact (AI) is present when a protected group is selected considerably less often than a comparison group in a selection decision — <strong>regardless of whether the test itself is fair</strong>. AI is a legal and ethical concept, not a psychometric one.</p>
 <h3>The 4/5 Rule (80% Rule)</h3>
-<p>The US <em>Uniform Guidelines on Employee Selection Procedures</em> (EEOC, 1978) define: AI is present when the selection rate of the disadvantaged group is less than 80% of the selection rate of the favored group.</p>
+<p>The US <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-eeoc-1978" target="_blank" rel="noopener"><em>Uniform Guidelines on Employee Selection Procedures</em> (EEOC, 1978)</a> define: AI is present when the selection rate of the disadvantaged group is less than 80% of the selection rate of the favored group.</p>
 <ul>
   <li><strong>AIR = selection rate_B / selection rate_A</strong></li>
   <li>AIR &lt; 0.80 → adverse impact (4/5 rule violated)</li>
@@ -1050,7 +1050,7 @@ const HELP_CONTENT={
   <li><strong>No AI Despite Bias Is Possible:</strong> if the groups have similar predictor values but different regression lines, there may be no AI even though the test is biased.</li>
   <li><strong>The 4/5 rule is not an absolute cutoff</strong>, but a rule of thumb. Courts also consider sample size and practical significance.</li>
 </ul>
-<p class="ref">References: EEOC et al. (1978). <em>Uniform guidelines on employee selection procedures</em>. Federal Register, 43, 38290–38315. · Roth, P. L., Bobko, P., &amp; Switzer, F. S. (2006). <em>Personnel Psychology, 59</em>, 565–598. · Sackett, P. R., &amp; Wilk, S. L. (1994). <em>American Psychologist, 49</em>, 929–954.</p>`
+<p class="ref">References: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-eeoc-1978" target="_blank" rel="noopener">EEOC et al. (1978)</a>. <em>Uniform guidelines on employee selection procedures</em>. Federal Register, 43, 38290–38315. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-roth-bobko-switzer-2006" target="_blank" rel="noopener">Roth, P. L., Bobko, P., &amp; Switzer, F. S. (2006)</a>. <em>Personnel Psychology, 59</em>, 565–598. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-sackett-wilk-1994" target="_blank" rel="noopener">Sackett, P. R., &amp; Wilk, S. L. (1994)</a>. <em>American Psychologist, 49</em>, 929–954.</p>`
   }
 };
 

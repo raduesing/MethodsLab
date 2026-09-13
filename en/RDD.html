@@ -381,7 +381,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
       </div>
       <div class="lcard">
         <div class="lcard-h">Bandwidth &amp; Polynomials — Pitfalls</div>
-        <div class="lcard-body">A <strong>narrower window</strong> around c reduces bias (only comparable units) but increases variance (less data) — the classic bias-variance trade-off. <strong>High polynomial degrees</strong> seem flexible but produce overfitting and edge artifacts that distort the jump. Recommendation (Gelman &amp; Imbens 2019): local-linear estimation in a narrow bandwidth instead of global high-degree polynomials.</div>
+        <div class="lcard-body">A <strong>narrower window</strong> around c reduces bias (only comparable units) but increases variance (less data) — the classic bias-variance trade-off. <strong>High polynomial degrees</strong> seem flexible but produce overfitting and edge artifacts that distort the jump. Recommendation (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-imbens-gelman-2019" target="_blank" rel="noopener">Gelman &amp; Imbens 2019</a>): local-linear estimation in a narrow bandwidth instead of global high-degree polynomials.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Sharp vs. Fuzzy &amp; Context</div>
@@ -428,7 +428,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     <p class="help-p">The polynomial extension (degree 2) adds X̃² and T·X̃²:</p>
     <span class="help-formula">Y = b₀ + b₁·X̃ + b₂·T + b₃·(T·X̃) + b₄·X̃² + b₅·(T·X̃²) + ε</span>
     <p class="help-p">In the example: if applicants with a very high score (X=90) would earn well even without the program (ceiling effect), a linear model would overestimate the LATE. The polynomial model captures this curvature.</p>
-    <p class="help-p"><strong>Trade-off:</strong> higher polynomial degrees increase the variance of the estimate and can lead to overfitting near the cutoff. Degree 2 is usually sufficient — Imbens &amp; Gelman (2019) recommend local linear estimation with an optimal bandwidth instead of high-degree polynomials.</p>
+    <p class="help-p"><strong>Trade-off:</strong> higher polynomial degrees increase the variance of the estimate and can lead to overfitting near the cutoff. Degree 2 is usually sufficient — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-imbens-gelman-2019" target="_blank" rel="noopener">Imbens &amp; Gelman (2019)</a> recommend local linear estimation with an optimal bandwidth instead of high-degree polynomials.</p>
 
     <div class="help-sh">Fuzzy RDD</div>
     <p class="help-p">In a sharp RDD, the treatment probability P(T=1|X) jumps from 0 to 1 at the cutoff — every applicant above the cutoff necessarily participates, none below do. Fuzzy RDD allows <strong>incomplete compliance</strong>: the jump in P(T=1|X) at the cutoff is real, but &lt; 1.</p>
@@ -471,6 +471,10 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
       <li><strong>Local to compliers:</strong> the LATE is the average effect only for those who actually respond to the assignment. Never-takers and always-takers contribute nothing to the LATE — their outcome is the same under either value of Z, so their treatment effect cannot be identified.</li>
     </ul>
     <p class="help-p">In the example: the LATE of 10k € holds for applicants who were just above the cutoff <em>and</em> would have accepted admission (compliers). Whether the program would be equally effective for never-takers or for applicants far above the cutoff cannot be inferred from this design.</p>
+
+    <div class="help-sh">References</div>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-thistlethwaite-campbell-1960" target="_blank" rel="noopener">Thistlethwaite, D. L. &amp; Campbell, D. T. (1960)</a>. Regression-discontinuity analysis: An alternative to the ex post facto experiment. <em>Journal of Educational Psychology, 51</em>(6), 309–317.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-imbens-gelman-2019" target="_blank" rel="noopener">Gelman, A. &amp; Imbens, G. (2019)</a>. Why high-order polynomials should not be used in regression discontinuity designs. <em>Journal of Business &amp; Economic Statistics, 37</em>(3), 447–456.</p>
   </div>
 </div>
 

@@ -187,7 +187,7 @@ canvas{width:100%;display:block}
   <div class="story-box" style="margin-bottom:.7rem">
     <div class="story-lbl">📋 Einleitung — SCL-90-R als Beispiel</div>
     Die SCL-90-R (Items 0–4, hier 10 Items → Summenwert 0–40) hat eine <strong>stark rechtsschiefe</strong> Normierungsverteilung.
-    Die Autoren haben dies korrekt gelöst und die T-Werte über die <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="Die Flächentransformation überführt jeden Rohwert über seinen empirischen Prozentrang statt über eine lineare Formel in einen Normwert.">Flächentransformation</a></strong> (Lienert &amp; Raatz) berechnet — also percentiläquivalent.
+    Die Autoren haben dies korrekt gelöst und die T-Werte über die <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="Die Flächentransformation überführt jeden Rohwert über seinen empirischen Prozentrang statt über eine lineare Formel in einen Normwert.">Flächentransformation</a></strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-lienert-raatz-1998" target="_blank" rel="noopener">Lienert &amp; Raatz</a>) berechnet — also percentiläquivalent.
     Dieses Tool stellt die Gegenfrage: <em>Wie stark wäre die Verzerrung, wenn man stattdessen lineare T-Werte (M=50, SD=10) verwendet hätte?</em>
     Ein lineares T=50 läge empirisch bei <strong id="sb-pr">…</strong> der Normstichprobe.
     <div style="margin-top:.6rem">
@@ -223,7 +223,7 @@ canvas{width:100%;display:block}
     <span class="te-item"><span class="te-key" style="color:var(--a5)">T-Norm PR</span> = nominaler Prozentrang unter NV-Annahme</span>
     <span class="te-item"><span class="te-key" style="color:var(--a2)">Empir. PR</span> = wahrer Prozentrang in der simulierten Verteilung</span>
     <span class="te-item"><span class="te-key">Diff (PP)</span> = Empir. PR − T-Norm PR in Prozentpunkten</span>
-    <span class="te-item"><span class="te-key" style="color:var(--a3)">T_F (Fläche)</span> = 50 + 10·Φ⁻¹(Empir. PR / 100) &thinsp;—&thinsp; Lienert &amp; Raatz</span>
+    <span class="te-item"><span class="te-key" style="color:var(--a3)">T_F (Fläche)</span> = 50 + 10·Φ⁻¹(Empir. PR / 100) &thinsp;—&thinsp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-lienert-raatz-1998" target="_blank" rel="noopener">Lienert &amp; Raatz</a></span>
     <span class="te-item"><span class="te-key" style="color:var(--a3)">Δ T</span> = T_F − T (linear): positiv = lineare Norm unterschätzt Elevation</span>
   </div>
 
@@ -321,7 +321,7 @@ Empirischer PR(x) = F_skief(x)           [wahre kumulative Verteilungsfunktion]<
       die gleichen Werte, die für die lineare T-Transformation verwendet werden.
       Die Differenz Empir. PR − Nominal PR zeigt die Fehlklassifikation.</p>
 
-    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="Die Flächentransformation überführt jeden Rohwert über seinen empirischen Prozentrang statt über eine lineare Formel in einen Normwert.">Flächentransformation</a> nach Lienert &amp; Raatz</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="Die Flächentransformation überführt jeden Rohwert über seinen empirischen Prozentrang statt über eine lineare Formel in einen Normwert.">Flächentransformation</a> nach <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-lienert-raatz-1998" target="_blank" rel="noopener">Lienert &amp; Raatz</a></div>
     <p class="help-p">Die <strong>flächentreue T-Normierung</strong> (Lienert &amp; Raatz, 1998; auch: „area transformation" oder „normalized standard scores") löst das Schiefeproblem, indem sie jeden Rohwert über seinen <em>empirischen <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-prozentrang" target="_blank" rel="noopener" title="Der Prozentrang eines Testwerts gibt an, wie viel Prozent der Normstichprobe einen gleich hohen oder niedrigeren Wert erzielen.">Prozentrang</a></em> in einen T-Wert überführt — nicht über eine lineare Formel:</p>
     <span class="help-formula">T_F(x) = 50 + 10 · Φ⁻¹(F_emp(x))</span>
     <p class="help-p">Dabei ist <em>F_emp(x)</em> die empirische kumulative Häufigkeit des Rohwerts x und <em>Φ⁻¹</em> die Quantilfunktion (Inverse) der Standardnormalverteilung. Das Ergebnis: Wer auf dem 84. Perzentrang der Normstichprobe liegt, bekommt immer T_F = 60 — unabhängig davon, ob die Rohwertverteilung schief ist oder nicht.</p>
@@ -334,9 +334,9 @@ Fläche:  T_F = 50 + 10 · Φ⁻¹(F_emp(x)) → exakt nach Prozentrang</span>
     <p class="help-p">③ <strong>Tabellenspalten „T Fläche" und „Δ T"</strong>: Für jeden linearen T-Wert (T = 30–80) wird der flächentreue T-Wert am gleichen Rohwert berechnet und die Differenz ausgewiesen. Positive Δ T: Die lineare Normierung unterschätzt die klinische Elevation — der Patient ist pathologischer als T_linear suggeriert.</p>
 
     <div class="help-sh">Literatur</div>
-    <p class="help-p">Lienert, G.A. &amp; Raatz, U. (1998). <em>Testaufbau und Testanalyse</em> (6. Aufl.). Beltz PVU. [Kap. 7: Normierung]<br>
-    Franke, G.H. (2002). <em>SCL-90-R. Symptom-Checkliste von L.R. Derogatis</em> (2. Aufl.). Beltz Test.<br>
-    Blom, G. (1958). <em>Statistical estimates and transformed beta-variables.</em> Almqvist &amp; Wiksell.</p>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-lienert-raatz-1998" target="_blank" rel="noopener">Lienert, G.A. &amp; Raatz, U. (1998)</a>. <em>Testaufbau und Testanalyse</em> (6. Aufl.). Beltz PVU. [Kap. 7: Normierung]<br>
+    <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-franke-2002" target="_blank" rel="noopener">Franke, G.H. (2002)</a>. <em>SCL-90-R. Symptom-Checkliste von L.R. Derogatis</em> (2. Aufl.). Beltz Test.<br>
+    <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-blom-1958" target="_blank" rel="noopener">Blom, G. (1958)</a>. <em>Statistical estimates and transformed beta-variables.</em> Almqvist &amp; Wiksell.</p>
   </div>
 </div>
 

@@ -401,10 +401,13 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     <p class="help-p">Die <strong>AUC</strong> (Area Under the Curve) fasst die Gesamttrennschärfe in einer Zahl zusammen (0.5=Zufall, 1.0=perfekt). AUC ist unabhängig vom gewählten Cut-Off — je weiter die Verteilungen auseinanderliegen und je schmaler sie sind, desto höher die AUC.</p>
 
     <div class="help-sh">Optimale Cut-Off-Methoden</div>
-    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-youden" target="_blank" rel="noopener" title="Der Youden-Index J fasst Sensitivität und Spezifität in einer einzigen Zahl zusammen: J = Sensitivität + Spezifität − 1.">Youden-Index</a>:</strong> Maximiert SE + SP − 1. Standardwahl ohne spezifische Annahmen, behandelt FP und FN gleichwertig, kein Prävalenzeinfluss. Bei normalverteilten Gruppen liegt der optimale Cut-Off in der Mitte zwischen den Verteilungsmittelpunkten — variierbar über die Schieberegler.</p>
+    <p class="help-p"><strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-youden" target="_blank" rel="noopener" title="Der Youden-Index J fasst Sensitivität und Spezifität in einer einzigen Zahl zusammen: J = Sensitivität + Spezifität − 1.">Youden-Index</a> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-youden-1950" target="_blank" rel="noopener">Youden, 1950</a>):</strong> Maximiert SE + SP − 1. Standardwahl ohne spezifische Annahmen, behandelt FP und FN gleichwertig, kein Prävalenzeinfluss. Bei normalverteilten Gruppen liegt der optimale Cut-Off in der Mitte zwischen den Verteilungsmittelpunkten — variierbar über die Schieberegler.</p>
     <p class="help-p"><strong>Kosten-Nutzen:</strong> Sinnvoll wenn eine Fehlerart klar teurer ist. Im Screening-Beispiel: Eine verpasste ADHS-Diagnose (FN) kann langfristig kostspielig sein — niedrigerer Cut-Off, höhere SE bevorzugt. Der Faktor c = Kosten(FP)/Kosten(FN) steuert direkt: c&lt;1 → FN teurer → cut-off sinkt.</p>
     <p class="help-p"><strong>Missklassifikationskosten:</strong> Bezieht die Prävalenz ein — populationsgewichteter Gesamtfehler. Bei seltener ADHS (5%) fallen FP-Fehler häufiger an; das Modell schiebt den Cut-Off nach oben (mehr SP).</p>
     <p class="help-p"><strong>Prävalenz-adjustiert (PPV/NPV):</strong> Wenn Kommunizierbarkeit entscheidend ist. PPV maximieren: bei invasiver Folgeuntersuchung soll ein positiver Befund verlässlich sein. NPV maximieren: bei ernsthafter Erkrankung soll ein negatives Ergebnis sicher ausschließen.</p>
+
+    <div class="help-sh">Literatur</div>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-youden-1950" target="_blank" rel="noopener">Youden, W. J. (1950)</a>. Index for rating diagnostic tests. <em>Cancer, 3</em>(1), 32–35.</p>
   </div>
 </div>
 
@@ -591,7 +594,7 @@ function updateUI(){
     {n:'LR+',           f:'Sens/(1−Spez)',    c:`${r.sens.toFixed(3)}/${(1-r.spec).toFixed(3)}`, v:fmt(r.lrp)},
     {n:'LR−',           f:'Spez/(1−Sens)',    c:`${r.spec.toFixed(3)}/${(1-r.sens).toFixed(3)}`, v:fmt(r.lrm)},
     {n:'Accuracy',      f:'(TP+TN)/N',         c:`${r.tp+r.tn}/${r.tp+r.fn+r.fp+r.tn}`,             v:fmtp(r.acc)},
-    {n:'Youden J',      f:'Sens+Spez−1',      c:`${r.sens.toFixed(3)}+${r.spec.toFixed(3)}−1`,      v:fmt(r.j)},
+    {n:'<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-youden-1950" target="_blank" rel="noopener">Youden J</a>', f:'Sens+Spez−1',      c:`${r.sens.toFixed(3)}+${r.spec.toFixed(3)}−1`,      v:fmt(r.j)},
     {n:'Diagn. OR',     f:'(TP·TN)/(FP·FN)', c:`(${r.tp}·${r.tn})/(${r.fp}·${r.fn})`,             v:fmt(r.dor)},
     {n:'Rel. Risiko',   f:'PPV/(1−NPV)',      c:`${r.ppv.toFixed(3)}/${(1-r.npv).toFixed(3)}`,      v:fmt(r.rr)},
   ];

@@ -272,7 +272,7 @@ canvas{display:block;width:100%}
   <div class="plot-panel">
     <div class="plot-title pt-blue">Scree Plot — Eigenvalues (from R)</div>
     <canvas id="cv-scree" height="320" style="height:320px"></canvas>
-    <div class="plot-note"><strong>Kaiser criterion</strong> (dashed line at eigenvalue = 1): keep factors with eigenvalue &gt; 1. Common, but notoriously <strong>too permissive</strong> — it barely depends on the number of items or sample size and often overestimates the number of factors. <strong>Parallel analysis</strong> (Horn, 1965) is more robust: many datasets of uncorrelated random variables of the same size (n people, p items) are simulated, and only factors whose eigenvalue exceeds the 95th percentile of the simulated eigenvalues are kept. This removes factors that, in a real scree plot, sit just above 1 and are actually sampling noise.</div>
+    <div class="plot-note"><strong>Kaiser criterion</strong> (dashed line at eigenvalue = 1): keep factors with eigenvalue &gt; 1. Common, but notoriously <strong>too permissive</strong> — it barely depends on the number of items or sample size and often overestimates the number of factors. <strong>Parallel analysis</strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-horn-1965" target="_blank" rel="noopener">Horn, 1965</a>) is more robust: many datasets of uncorrelated random variables of the same size (n people, p items) are simulated, and only factors whose eigenvalue exceeds the 95th percentile of the simulated eigenvalues are kept. This removes factors that, in a real scree plot, sit just above 1 and are actually sampling noise.</div>
   </div>
 
   <div class="plot-panel">
@@ -400,6 +400,9 @@ canvas{display:block;width:100%}
     <div class="help-sh">Biplot &amp; Correlation Matrix</div>
     <p class="help-p">The biplot shows each item as a point in the F1/F2 coordinate system. Items near (1,0) load highly on F1; near (0,1) highly on F2. After varimax rotation, items cluster near the axes (simple structure). Under oblique rotation, the factor axes are drawn at an angle of arccos(phi).</p>
     <p class="help-p">The correlation matrix shows the population matrix <em>implied</em> by the factor structure, R = Lambda·Phi·Lambda' + Psi. Teal = positive, orange = negative correlation.</p>
+
+    <div class="help-sh">References</div>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-horn-1965" target="_blank" rel="noopener">Horn, J. L. (1965)</a>. A rationale and test for the number of factors in factor analysis. <em>Psychometrika, 30</em>(2), 179–185.</p>
   </div>
 </div>
 

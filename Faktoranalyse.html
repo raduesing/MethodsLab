@@ -272,7 +272,7 @@ canvas{display:block;width:100%}
   <div class="plot-panel">
     <div class="plot-title pt-blue">Scree-Plot — Eigenwerte (aus R)</div>
     <canvas id="cv-scree" height="320" style="height:320px"></canvas>
-    <div class="plot-note"><strong>Kaiser-Kriterium</strong> (gestrichelte Linie bei Eigenwert = 1): Faktoren mit Eigenwert &gt; 1 behalten. Gebräuchlich, aber notorisch <strong>zu freizügig</strong> — es hängt kaum von der Itemanzahl oder der Stichprobengröße ab und überschätzt oft die Faktorenzahl. Robuster ist die <strong>Parallelanalyse</strong> (Horn, 1965): Man simuliert viele Datensätze aus unkorrelierten Zufallsvariablen derselben Größe (n Personen, p Items) und behält nur Faktoren, deren Eigenwert über dem 95. Perzentil der simulierten Eigenwerte liegt. Das entfernt Faktoren, die im echten Scree-Plot nur knapp über 1 liegen und tatsächlich Stichprobenrauschen sind.</div>
+    <div class="plot-note"><strong>Kaiser-Kriterium</strong> (gestrichelte Linie bei Eigenwert = 1): Faktoren mit Eigenwert &gt; 1 behalten. Gebräuchlich, aber notorisch <strong>zu freizügig</strong> — es hängt kaum von der Itemanzahl oder der Stichprobengröße ab und überschätzt oft die Faktorenzahl. Robuster ist die <strong>Parallelanalyse</strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-horn-1965" target="_blank" rel="noopener">Horn, 1965</a>): Man simuliert viele Datensätze aus unkorrelierten Zufallsvariablen derselben Größe (n Personen, p Items) und behält nur Faktoren, deren Eigenwert über dem 95. Perzentil der simulierten Eigenwerte liegt. Das entfernt Faktoren, die im echten Scree-Plot nur knapp über 1 liegen und tatsächlich Stichprobenrauschen sind.</div>
   </div>
 
   <div class="plot-panel">
@@ -400,6 +400,9 @@ canvas{display:block;width:100%}
     <div class="help-sh">Biplot & Korrelationsmatrix</div>
     <p class="help-p">Der Biplot zeigt jedes Item als Punkt im F1/F2-Koordinatensystem. Items nahe (1,0) laden hoch auf F1; nahe (0,1) hoch auf F2. Nach Varimax-Rotation clustern Items nahe den Achsen (Einfachstruktur). Bei Oblique werden die Faktorachsen im Winkel arccos(phi) dargestellt.</p>
     <p class="help-p">Die Korrelationsmatrix zeigt die von der Faktorstruktur <em>implizierte</em> Populationsmatrix R = Lambda·Phi·Lambda' + Psi. Teal = positive, Orange = negative Korrelation.</p>
+
+    <div class="help-sh">Literatur</div>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-horn-1965" target="_blank" rel="noopener">Horn, J. L. (1965)</a>. A rationale and test for the number of factors in factor analysis. <em>Psychometrika, 30</em>(2), 179–185.</p>
   </div>
 </div>
 

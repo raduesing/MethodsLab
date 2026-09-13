@@ -274,7 +274,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   </table>
   <div style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink3);margin-bottom:1.2rem">
     R²(M) = <strong id="r2m">—</strong>
-    <span style="margin-left:1.2rem">Zitation: Hayes, A. F. (2022). <em>Introduction to mediation, moderation, and conditional process analysis</em> (3rd ed.). Guilford.</span>
+    <span style="margin-left:1.2rem">Zitation: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-hayes-2022" target="_blank" rel="noopener">Hayes, A. F. (2022)</a>. <em>Introduction to mediation, moderation, and conditional process analysis</em> (3rd ed.). Guilford.</span>
   </div>
 
   <div class="sec-h">Regressionsoutput — Outcome: Y</div>
@@ -329,7 +329,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     </div>
     <div class="erklaer-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-bootstrap" target="_blank" rel="noopener" title="Bootstrap ist eine Resampling-Methode zur Schätzung der Samplingverteilung einer Statistik ohne parametrische Annahmen.">Bootstrap</a>-Konfidenzintervall</div>
     <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);margin-bottom:.4rem">
-      Perzentil-Methode · 5000 Iterationen · nur auf Anfrage (Hayes, 2022, 3rd ed., Kap. 4)
+      Perzentil-Methode · 5000 Iterationen · nur auf Anfrage (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-hayes-2022" target="_blank" rel="noopener">Hayes, 2022, 3rd ed., Kap. 4</a>)
     </div>
     <button class="bs-btn" id="bs-btn" onclick="runBootstrap()">Bootstrap-KI berechnen</button>
     <div id="bs-result" style="font-family:'DM Mono',monospace;font-size:.82rem;margin-top:.65rem;color:var(--ink2)"></div>
@@ -397,10 +397,16 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
     <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-sobel-test" target="_blank" rel="noopener" title="Der Sobel-Test prüft, ob der indirekte Effekt a·b signifikant von null verschieden ist, indem er einen approximierten Standardfehler des Produkts a·b berechnet.">Sobel-Test</a> vs. Bootstrap</div>
     <p class="help-p">Der <strong>Sobel-Test</strong> nimmt an, dass a·b annähernd normalverteilt ist. Das stimmt nur bei großem n — bei kleinen Stichproben ist die Produktverteilung schief und leptokurtisch, was den Test zu konservativ macht.</p>
-    <p class="help-p">Das <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-bootstrap" target="_blank" rel="noopener" title="Bootstrap ist eine Resampling-Methode zur Schätzung der Samplingverteilung einer Statistik ohne parametrische Annahmen.">Bootstrap-KI</a></strong> (Preacher & Hayes, 2008) macht keine Verteilungsannahme: 5000 Resamples approximieren die tatsächliche Form der a·b-Verteilung. Es hat in Simulationen bessere Power <em>und</em> korrektere α-Kontrolle — besonders bei n &lt; 100 oder asymmetrischen Effekten.</p>
+    <p class="help-p">Das <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-bootstrap" target="_blank" rel="noopener" title="Bootstrap ist eine Resampling-Methode zur Schätzung der Samplingverteilung einer Statistik ohne parametrische Annahmen.">Bootstrap-KI</a></strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-preacher-hayes-2008" target="_blank" rel="noopener">Preacher &amp; Hayes, 2008</a>) macht keine Verteilungsannahme: 5000 Resamples approximieren die tatsächliche Form der a·b-Verteilung. Es hat in Simulationen bessere Power <em>und</em> korrektere α-Kontrolle — besonders bei n &lt; 100 oder asymmetrischen Effekten.</p>
 
     <div class="help-sh">Kausalität</div>
     <p class="help-p">Ein signifikantes a·b beweist keine Kausalität. Für kausale Aussagen müssen <strong>(1)</strong> alle <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Eine Konfundierungsvariable (Confounder) ist eine Variable, die sowohl mit dem Treatment T als auch mit dem Outcome Y assoziiert ist und nicht auf dem kausalen Pfad von T nach Y liegt.">Confounder</a> zwischen X und Y und <strong>(2)</strong> alle Confounder zwischen M und Y kontrolliert sein. Bedingung 2 ist in Beobachtungsstudien selten erfüllbar. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-dag" target="_blank" rel="noopener" title="Ein Directed Acyclic Graph (DAG) ist ein gerichteter Graph ohne Zyklen, der kausale Annahmen über ein System von Variablen explizit und überprüfbar macht.">DAGs</a> helfen, die nötigen Kontrollvariablen zu identifizieren.</p>
+
+    <div class="help-sh">Literatur</div>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-baron-kenny-1986" target="_blank" rel="noopener">Baron, R. M. &amp; Kenny, D. A. (1986)</a>. The moderator-mediator variable distinction in social psychological research. <em>JPSP, 51</em>(6), 1173–1182.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-preacher-hayes-2008" target="_blank" rel="noopener">Preacher, K. J. &amp; Hayes, A. F. (2008)</a>. Asymptotic and resampling strategies for assessing and comparing indirect effects in multiple mediator models. <em>Behavior Research Methods, 40</em>(3), 879–891.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-mackinnon-2002" target="_blank" rel="noopener">MacKinnon, D. P., Lockwood, C. M., Hoffman, J. M., West, S. G. &amp; Sheets, V. (2002)</a>. A comparison of methods to test mediation and other intervening variable effects. <em>Psychological Methods, 7</em>(1), 83–104.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-hayes-2022" target="_blank" rel="noopener">Hayes, A. F. (2022)</a>. <em>Introduction to Mediation, Moderation, and Conditional Process Analysis</em> (3rd ed.). Guilford.</p>
   </div>
 </div>
 

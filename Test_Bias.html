@@ -290,7 +290,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="mod-header" id="hd2" onclick="toggleMod(2)" style="justify-content:space-between">
     <span style="display:flex;align-items:center;gap:.65rem">
       <span class="mod-icon" id="ic2">▶</span>
-      Modul 2 — Meade &amp; Fetzer (2009): Was steckt dahinter?
+      Modul 2 — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-meade-fetzer-2009" target="_blank" rel="noopener" onclick="event.stopPropagation()">Meade &amp; Fetzer (2009)</a>: Was steckt dahinter?
     </span>
     <button class="help-btn" onclick="event.stopPropagation();openHelp(2)">? Hilfe</button>
   </div>
@@ -298,12 +298,12 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="erklaer">
       <div class="erklaer-h">Differentielle Prädiktion ≠ Testverzerrung</div>
       Ein signifikanter Achsenabschnittsunterschied (M2 vs. M1) kann vier verschiedene Ursachen haben.
-      Nur eine davon ist echte Testverzerrung nach Cleary.<br><br>
+      Nur eine davon ist echte Testverzerrung nach <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-cleary-1968" target="_blank" rel="noopener">Cleary</a>.<br><br>
       <strong>Quelle 1 — Testverzerrung:</strong> Der Test misst das Konstrukt für beide Gruppen unterschiedlich — Gruppe B erzielt niedrigere X-Werte, obwohl ihre reale Y-Leistung vergleichbar ist. d_X groß, d_Y klein. <em>Auswirkung:</em> Qualifizierte Personen aus B werden systematisch aussortiert; der Test unterschätzt ihre Leistungsfähigkeit.<br>
       <strong>Quelle 2 — Kriteriumsverzerrung:</strong> Das Kriterium Y (z. B. Vorgesetztenbeurteilung) bewertet eine Gruppe besser oder schlechter, unabhängig von ihrer tatsächlichen Leistung. d_X ≈ 0, d_Y groß. <em>Auswirkung:</em> Der Test selbst ist fair — aber das Validierungsziel ist verzerrt. Eine am Kriterium orientierte Selektion zementiert die Benachteiligung.<br>
       <strong>Quelle 3 — Fehlende Variablen:</strong> Weitere Prädiktoren (z. B. Ausbildungsdauer, sozioökon. Status) würden den Interzeptunterschied erklären. <em>Auswirkung:</em> Der scheinbare Bias verschwindet nach Kontrolle — Handlung: Modell erweitern.<br>
       <strong>Quelle 4 — Stichprobenfehler:</strong> Zufällige Abweichungen, insbesondere bei kleinen n. <em>Auswirkung:</em> Kein systematischer Bias; Replikation klärt die Frage.<br><br>
-      <strong>Diagnose:</strong> Die standardisierten Mittelwertdifferenzen d_X und d_Y geben Hinweise auf die wahrscheinlichste Quelle (vgl. Meade &amp; Fetzer, 2009, Fig. 1–3).
+      <strong>Diagnose:</strong> Die standardisierten Mittelwertdifferenzen d_X und d_Y geben Hinweise auf die wahrscheinlichste Quelle (vgl. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-meade-fetzer-2009" target="_blank" rel="noopener">Meade &amp; Fetzer, 2009</a>, Fig. 1–3).
     </div>
     <div id="mod2-content"></div>
   </div>
@@ -321,7 +321,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <div class="erklaer-h">Adverse Impact</div>
       <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-adverse-impact" target="_blank" rel="noopener" title="Adverse Impact liegt vor, wenn eine Gruppe bei einer Auswahlentscheidung deutlich seltener ausgewählt wird als eine Vergleichsgruppe — unabhängig davon, ob der Test selbst fair ist.">Adverse Impact</a></strong> liegt vor, wenn eine Gruppe bei einer Auswahlentscheidung
       deutlich seltener ausgewählt wird als eine andere — auch wenn der Test selbst fair ist.
-      Die US-amerikanischen Uniform Guidelines (1978) formulieren die <strong>4/5-Regel</strong>:
+      Die US-amerikanischen <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-eeoc-1978" target="_blank" rel="noopener">Uniform Guidelines (1978)</a> formulieren die <strong>4/5-Regel</strong>:
       Die Selektionsrate der benachteiligten Gruppe soll mindestens 80 % der Rate
       der bevorzugten Gruppe betragen.<br><br>
       <span class="formula-line">AIR = Selektionsrate_B / Selektionsrate_A</span>
@@ -971,7 +971,7 @@ const HELP_CONTENT={
     title:'Test Bias & Fairness — Überblick',
     body:`
 <h3>Beispiel</h3>
-<p>Ein Auswahltest (X = kognitive Eignungsmessung, z-standardisiert) soll die Jobleistung (Y = Vorgesetztenbeurteilung, z-standardisiert) vorhersagen. Geprüft wird: Gilt die Regressionsgleichung für Gruppe A (Referenz) und Gruppe B (Fokusgruppe) gleichermaßen? Wenn die Geraden divergieren, ist der Test im Sinne von Cleary (1968) verzerrt.</p>
+<p>Ein Auswahltest (X = kognitive Eignungsmessung, z-standardisiert) soll die Jobleistung (Y = Vorgesetztenbeurteilung, z-standardisiert) vorhersagen. Geprüft wird: Gilt die Regressionsgleichung für Gruppe A (Referenz) und Gruppe B (Fokusgruppe) gleichermaßen? Wenn die Geraden divergieren, ist der Test im Sinne von <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-cleary-1968" target="_blank" rel="noopener">Cleary (1968)</a> verzerrt.</p>
 <h3>Testverzerrung nach <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-fairness-cleary" target="_blank" rel="noopener" title="Das Cleary-Modell definiert Testfairness über prädiktive Validität: ein Test ist fair, wenn er für alle Subgruppen dieselbe Regressionsgerade zwischen Testwert und Kriterium aufweist.">Cleary (1968)</a></h3>
 <p>Ein Test gilt als <strong>nicht verzerrt</strong>, wenn er für alle Gruppen dieselbe Vorhersagegleichung produziert: gleicher Achsenabschnitt (b₀) und gleiche Steigung (b₁). Ein Bias liegt vor, wenn die Regressionsgerade systematisch überschätzt oder unterschätzt — unabhängig von Mittelwertdifferenzen auf X oder Y.</p>
 <p>Im Beispiel: Szenario <span class="num-sym">①</span> — Gruppe B erzielt niedrigere X-Werte, aber gleiche Y-Werte → Die gemeinsame Gerade unterschätzt die Jobleistung von Gruppe B → klassische Testverzerrung.</p>
@@ -988,7 +988,7 @@ const HELP_CONTENT={
     title:'Modul 1 — Cleary-Test: Differentielle Prädiktion',
     body:`
 <h3>Was testet das Modell?</h3>
-<p>Der Cleary-Test prüft, ob ein Test <strong>unterschiedliche Regressionsgeraden</strong> für verschiedene Gruppen produziert. Ein Test gilt nach Cleary (1968) als verzerrt, wenn die Vorhersagegleichung systematisch falsche Prognosen für eine Gruppe liefert.</p>
+<p>Der Cleary-Test prüft, ob ein Test <strong>unterschiedliche Regressionsgeraden</strong> für verschiedene Gruppen produziert. Ein Test gilt nach <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-cleary-1968" target="_blank" rel="noopener">Cleary (1968)</a> als verzerrt, wenn die Vorhersagegleichung systematisch falsche Prognosen für eine Gruppe liefert.</p>
 <h3>Die drei Modelle</h3>
 <ul>
   <li><strong>M1</strong> – gemeinsame Regressionslinie für alle: Ŷ = b₀ + b₁·X</li>
@@ -1010,13 +1010,13 @@ const HELP_CONTENT={
 </ul>
 <h3>Wichtige Hinweise</h3>
 <p>Statistische Signifikanz hängt stark von n ab. Bei großen Stichproben werden auch praktisch bedeutungslose Unterschiede signifikant. Immer Effektgröße (Δb₀, Δb₁) berichten. Die Testentscheidung betrifft <em>differentielle Prädiktion</em>, nicht direkt Testfairness im umfassenden Sinne.</p>
-<p class="ref">Referenzen: Cleary, T. A. (1968). <em>Educational and Psychological Measurement, 28</em>, 115–124. · Bartlett, C. J., Bobko, P., Mosier, S. B., &amp; Hannan, R. (1978). <em>Personnel Psychology, 31</em>, 233–248. · Linn, R. L. (1984). <em>Journal of Educational Measurement, 21</em>, 5–32.</p>`
+<p class="ref">Referenzen: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-cleary-1968" target="_blank" rel="noopener">Cleary, T. A. (1968)</a>. <em>Educational and Psychological Measurement, 28</em>, 115–124. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-bartlett-1978" target="_blank" rel="noopener">Bartlett, C. J., Bobko, P., Mosier, S. B., &amp; Hannan, R. (1978)</a>. <em>Personnel Psychology, 31</em>, 233–248. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-linn-1984" target="_blank" rel="noopener">Linn, R. L. (1984)</a>. <em>Journal of Educational Measurement, 21</em>, 5–32.</p>`
   },
   2:{
     title:'Modul 2 — Meade & Fetzer (2009): Diagnose der Ursache',
     body:`
 <h3>Warum reicht der Cleary-Test allein nicht?</h3>
-<p>Ein signifikanter Intercept-Unterschied (M2 vs. M1) kann <strong>vier verschiedene Ursachen</strong> haben. Nur eine ist echte Testverzerrung im Sinne von Cleary. Meade &amp; Fetzer (2009) schlagen vor, die standardisierten Mittelwertdifferenzen d_X und d_Y zur Diagnose zu nutzen.</p>
+<p>Ein signifikanter Intercept-Unterschied (M2 vs. M1) kann <strong>vier verschiedene Ursachen</strong> haben. Nur eine ist echte Testverzerrung im Sinne von <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-cleary-1968" target="_blank" rel="noopener">Cleary</a>. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-meade-fetzer-2009" target="_blank" rel="noopener">Meade &amp; Fetzer (2009)</a> schlagen vor, die standardisierten Mittelwertdifferenzen d_X und d_Y zur Diagnose zu nutzen.</p>
 <h3>Das Klassifikationsschema</h3>
 <ul>
   <li><strong>d_X groß, d_Y klein</strong> (Fig. 1 — Testverzerrung): Die Gruppen unterscheiden sich auf dem Prädiktor, aber kaum auf dem Kriterium. Der Test bewertet das zugrunde liegende Konstrukt für die beiden Gruppen unterschiedlich gut.</li>
@@ -1025,10 +1025,10 @@ const HELP_CONTENT={
   <li><strong>d_X klein, d_Y klein</strong>: Kein wesentlicher Bias, kein Adverse Impact.</li>
 </ul>
 <h3>Erwartetes d_Y</h3>
-<p>Meade &amp; Fetzer leiten die erwartete Kriteriumsdifferenz aus d_X und der gepoolten Korrelation r_YX ab (Gl. 4). Wenn d_Y deutlich kleiner als erwartet ist, spricht das für Testverzerrung; wenn d_Y größer als erwartet, für Kriteriumsverzerrung oder fehlende Variablen.</p>
+<p><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-meade-fetzer-2009" target="_blank" rel="noopener">Meade &amp; Fetzer</a> leiten die erwartete Kriteriumsdifferenz aus d_X und der gepoolten Korrelation r_YX ab (Gl. 4). Wenn d_Y deutlich kleiner als erwartet ist, spricht das für Testverzerrung; wenn d_Y größer als erwartet, für Kriteriumsverzerrung oder fehlende Variablen.</p>
 <h3>Schwellenwert</h3>
 <p>Als Grenzwert gilt |d| ≥ 0.20 (entspricht einem kleinen bis mittleren Effekt nach Cohen). Dieser Wert ist konservativ; bei großen n können auch kleinere d-Werte bedeutsam sein.</p>
-<p class="ref">Referenzen: Meade, A. W., &amp; Fetzer, M. (2009). <em>Journal of Personnel Psychology, 8</em>, 1–13. · Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). LEA.</p>`
+<p class="ref">Referenzen: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-meade-fetzer-2009" target="_blank" rel="noopener">Meade, A. W., &amp; Fetzer, M. (2009)</a>. <em>Journal of Personnel Psychology, 8</em>, 1–13. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-cohen-1988" target="_blank" rel="noopener">Cohen, J. (1988)</a>. <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). LEA.</p>`
   },
   3:{
     title:'Modul 3 — Adverse Impact & 4/5-Regel',
@@ -1036,7 +1036,7 @@ const HELP_CONTENT={
 <h3>Was ist Adverse Impact?</h3>
 <p>Adverse Impact (AI) liegt vor, wenn eine geschützte Gruppe bei einer Auswahlentscheidung deutlich seltener ausgewählt wird als eine Vergleichsgruppe — <strong>unabhängig davon, ob der Test selbst fair ist</strong>. AI ist ein rechtliches und ethisches Konzept, kein psychometrisches.</p>
 <h3>Die 4/5-Regel (80 %-Regel)</h3>
-<p>Die US-amerikanischen <em>Uniform Guidelines on Employee Selection Procedures</em> (EEOC, 1978) definieren: AI liegt vor, wenn die Selektionsrate der benachteiligten Gruppe weniger als 80 % der Selektionsrate der bevorzugten Gruppe beträgt.</p>
+<p>Die US-amerikanischen <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-eeoc-1978" target="_blank" rel="noopener"><em>Uniform Guidelines on Employee Selection Procedures</em> (EEOC, 1978)</a> definieren: AI liegt vor, wenn die Selektionsrate der benachteiligten Gruppe weniger als 80 % der Selektionsrate der bevorzugten Gruppe beträgt.</p>
 <ul>
   <li><strong>AIR = Selektionsrate_B / Selektionsrate_A</strong></li>
   <li>AIR &lt; 0.80 → Adverse Impact (4/5-Regel verletzt)</li>
@@ -1050,7 +1050,7 @@ const HELP_CONTENT={
   <li><strong>Kein AI trotz Bias möglich:</strong> Wenn die Gruppen ähnliche Prädiktorwerte haben, aber unterschiedliche Regressionslinien, gibt es möglicherweise keinen AI, obwohl der Test verzerrt ist.</li>
   <li><strong>Die 4/5-Regel ist keine absolute Grenze</strong>, sondern ein Richtwert. Gerichte berücksichtigen auch Stichprobengröße und praktische Bedeutsamkeit.</li>
 </ul>
-<p class="ref">Referenzen: EEOC et al. (1978). <em>Uniform guidelines on employee selection procedures</em>. Federal Register, 43, 38290–38315. · Roth, P. L., Bobko, P., &amp; Switzer, F. S. (2006). <em>Personnel Psychology, 59</em>, 565–598. · Sackett, P. R., &amp; Wilk, S. L. (1994). <em>American Psychologist, 49</em>, 929–954.</p>`
+<p class="ref">Referenzen: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-eeoc-1978" target="_blank" rel="noopener">EEOC et al. (1978)</a>. <em>Uniform guidelines on employee selection procedures</em>. Federal Register, 43, 38290–38315. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-roth-bobko-switzer-2006" target="_blank" rel="noopener">Roth, P. L., Bobko, P., &amp; Switzer, F. S. (2006)</a>. <em>Personnel Psychology, 59</em>, 565–598. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-sackett-wilk-1994" target="_blank" rel="noopener">Sackett, P. R., &amp; Wilk, S. L. (1994)</a>. <em>American Psychologist, 49</em>, 929–954.</p>`
   }
 };
 

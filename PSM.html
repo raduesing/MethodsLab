@@ -133,7 +133,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="help-sh">Was ist ein <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-propensity-score" target="_blank" rel="noopener" title="Der Propensity Score e(X) = P(T = 1 | X) ist die bedingte Wahrscheinlichkeit, das Treatment zu erhalten, gegeben die beobachteten Kovariaten X.">Propensity Score</a>?</div>
   <p class="help-p">Der <strong>Propensity Score (PS)</strong> ist die bedingte Wahrscheinlichkeit der Behandlung gegeben alle gemessenen Kovariaten:</p>
   <code class="help-formula">e(X) = P(T = 1 | X₁, X₂, ..., Xₖ)</code>
-  <p class="help-p">Rosenbaum &amp; Rubin (1983): Wenn die Behandlung bedingt auf X unabhängig von den potenziellen Outcomes ist (Ignorabilität), dann ist sie auch bedingt auf den einzigen Skalar e(X) unabhängig. Statt k Kovariaten simultan zu balancieren, genügt es, auf den PS zu konditionieren. In der Praxis wird der PS via logistischer Regression geschätzt.</p>
+  <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-rosenbaum-rubin-1983" target="_blank" rel="noopener">Rosenbaum &amp; Rubin (1983)</a>: Wenn die Behandlung bedingt auf X unabhängig von den potenziellen Outcomes ist (Ignorabilität), dann ist sie auch bedingt auf den einzigen Skalar e(X) unabhängig. Statt k Kovariaten simultan zu balancieren, genügt es, auf den PS zu konditionieren. In der Praxis wird der PS via logistischer Regression geschätzt.</p>
 
   <div class="help-sh">Annahmen — Wann funktioniert PSM/IPW?</div>
   <p class="help-p"><strong>1. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ignorability" target="_blank" rel="noopener" title="Ignorierbarkeit (strong ignorability, unconfoundedness) besagt, dass die Behandlungszuweisung T — nach Konditionierung auf beobachtete Kovariaten X — als quasi-zufällig behandelt werden kann.">Ignorabilität (CIA / Unconfoundedness)</a>:</strong> {Y(0), Y(1)} ⊥ T | X — bedingt auf die gemessenen Kovariaten ist die Behandlung quasi-zufällig. Diese Annahme ist nicht testbar. PSM/IPW eliminiert nur Bias durch gemessene Kovariaten; ungemessene Confounders (omitted variable bias) bleiben ein Risiko.</p>
@@ -163,6 +163,9 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
   <div class="help-sh">R-Pakete</div>
   <p class="help-p"><strong>MatchIt</strong>: Flexibles Matching (Nearest-Neighbor, Optimal, Genetic, CEM). <strong>WeightIt</strong>: IPW und weitere Gewichtungsmethoden. <strong>cobalt</strong>: Love Plot + Balance-Statistiken, kompatibel mit MatchIt &amp; WeightIt. <strong>twang</strong>: PS via Gradient Boosting (GBM). <strong>CBPS</strong>: Covariate Balancing PS — schätzt PS direkt auf Balance optimiert.</p>
+
+  <div class="help-sh">Literatur</div>
+  <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-rosenbaum-rubin-1983" target="_blank" rel="noopener">Rosenbaum, P. R. &amp; Rubin, D. B. (1983)</a>. The central role of the propensity score in observational studies for causal effects. <em>Biometrika, 70</em>(1), 41–55.</p>
 </div>
 </div>
 
@@ -281,7 +284,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="lcard-grid">
       <div class="lcard">
         <div class="lcard-h">Was ist ein <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-propensity-score" target="_blank" rel="noopener" title="Der Propensity Score e(X) = P(T = 1 | X) ist die bedingte Wahrscheinlichkeit, das Treatment zu erhalten, gegeben die beobachteten Kovariaten X.">Propensity Score</a>?</div>
-        <div class="lcard-body">e(X) = P(T=1|X) — die bedingte Behandlungswahrscheinlichkeit. Rosenbaum &amp; Rubin (1983): Wenn Y(0),Y(1) ⊥ T | X, dann auch Y(0),Y(1) ⊥ T | e(X). Mächtige Dimensionsreduktion: k Kovariaten → 1 Skalar. Wird meist via <a href="Logistische_Regression.html">logistische Regression</a> geschätzt.</div>
+        <div class="lcard-body">e(X) = P(T=1|X) — die bedingte Behandlungswahrscheinlichkeit. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-rosenbaum-rubin-1983" target="_blank" rel="noopener">Rosenbaum &amp; Rubin (1983)</a>: Wenn Y(0),Y(1) ⊥ T | X, dann auch Y(0),Y(1) ⊥ T | e(X). Mächtige Dimensionsreduktion: k Kovariaten → 1 Skalar. Wird meist via <a href="Logistische_Regression.html">logistische Regression</a> geschätzt.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-selektion-bias" target="_blank" rel="noopener" title="Selektionsbias entsteht, wenn die Auswahl von Einheiten in eine Studie oder in eine Behandlungsgruppe systematisch mit dem Outcome zusammenhängt.">Selektionsbias</a> &amp; CIA</div>

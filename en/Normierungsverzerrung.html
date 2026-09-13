@@ -187,7 +187,7 @@ canvas{width:100%;display:block}
   <div class="story-box" style="margin-bottom:.7rem">
     <div class="story-lbl">📋 Introduction — SCL-90-R as an Example</div>
     The SCL-90-R (items 0–4, here 10 items → sum score 0–40) has a <strong>strongly right-skewed</strong> norming distribution.
-    The authors solved this correctly and computed T scores via the <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="The area transformation converts each raw score into a norm score via its empirical percentile rank rather than via a linear formula.">area transformation</a></strong> (Lienert &amp; Raatz) — i.e. percentile-equivalent.
+    The authors solved this correctly and computed T scores via the <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="The area transformation converts each raw score into a norm score via its empirical percentile rank rather than via a linear formula.">area transformation</a></strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-lienert-raatz-1998" target="_blank" rel="noopener">Lienert &amp; Raatz</a>) — i.e. percentile-equivalent.
     This tool asks the opposite question: <em>how strong would the bias be if linear T scores (M=50, SD=10) had been used instead?</em>
     A linear T=50 would empirically fall at <strong id="sb-pr">…</strong> of the norm sample.
     <div style="margin-top:.6rem">
@@ -223,7 +223,7 @@ canvas{width:100%;display:block}
     <span class="te-item"><span class="te-key" style="color:var(--a5)">T-norm PR</span> = nominal percentile rank under the normal-distribution assumption</span>
     <span class="te-item"><span class="te-key" style="color:var(--a2)">Empir. PR</span> = true percentile rank in the simulated distribution</span>
     <span class="te-item"><span class="te-key">Diff (pp)</span> = empir. PR − T-norm PR, in percentage points</span>
-    <span class="te-item"><span class="te-key" style="color:var(--a3)">T_F (area)</span> = 50 + 10·Φ⁻¹(empir. PR / 100) &thinsp;—&thinsp; Lienert &amp; Raatz</span>
+    <span class="te-item"><span class="te-key" style="color:var(--a3)">T_F (area)</span> = 50 + 10·Φ⁻¹(empir. PR / 100) &thinsp;—&thinsp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-lienert-raatz-1998" target="_blank" rel="noopener">Lienert &amp; Raatz</a></span>
     <span class="te-item"><span class="te-key" style="color:var(--a3)">Δ T</span> = T_F − T (linear): positive = linear norm underestimates elevation</span>
   </div>
 
@@ -321,7 +321,7 @@ Empirical PR(x) = F_skew(x)              [true cumulative distribution function]
       the same values used for the linear T transformation.
       The difference empir. PR − nominal PR shows the misclassification.</p>
 
-    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="The area transformation converts each raw score into a norm score via its empirical percentile rank rather than via a linear formula.">Area Transformation</a> per Lienert &amp; Raatz</div>
+    <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="The area transformation converts each raw score into a norm score via its empirical percentile rank rather than via a linear formula.">Area Transformation</a> per <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-lienert-raatz-1998" target="_blank" rel="noopener">Lienert &amp; Raatz</a></div>
     <p class="help-p">The <strong>area-true T norming</strong> (Lienert &amp; Raatz, 1998; also: "area transformation" or "normalized standard scores") solves the skew problem by converting each raw score into a T score via its <em>empirical <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-prozentrang" target="_blank" rel="noopener" title="The percentile rank of a test score indicates what percentage of the norm sample obtains an equal or lower score.">percentile rank</a></em> — not via a linear formula:</p>
     <span class="help-formula">T_F(x) = 50 + 10 · Φ⁻¹(F_emp(x))</span>
     <p class="help-p">Here <em>F_emp(x)</em> is the empirical cumulative frequency of raw score x and <em>Φ⁻¹</em> is the quantile function (inverse) of the standard normal distribution. The result: whoever sits at the 84th percentile of the norm sample always gets T_F = 60 — regardless of whether the raw-score distribution is skewed or not.</p>
@@ -334,9 +334,9 @@ Area:   T_F = 50 + 10 · Φ⁻¹(F_emp(x)) → exact by percentile rank</span>
     <p class="help-p">③ <strong>Table columns "T Area" and "Δ T"</strong>: for each linear T score (T = 30–80), the area-true T score at the same raw score is computed and the difference reported. Positive Δ T: the linear norming underestimates the clinical elevation — the patient is more pathological than T_linear suggests.</p>
 
     <div class="help-sh">References</div>
-    <p class="help-p">Lienert, G.A. &amp; Raatz, U. (1998). <em>Testaufbau und Testanalyse</em> (6th ed.). Beltz PVU. [Ch. 7: Norming]<br>
-    Franke, G.H. (2002). <em>SCL-90-R. Symptom-Checkliste von L.R. Derogatis</em> (2nd ed.). Beltz Test.<br>
-    Blom, G. (1958). <em>Statistical estimates and transformed beta-variables.</em> Almqvist &amp; Wiksell.</p>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-lienert-raatz-1998" target="_blank" rel="noopener">Lienert, G.A. &amp; Raatz, U. (1998)</a>. <em>Testaufbau und Testanalyse</em> (6th ed.). Beltz PVU. [Ch. 7: Norming]<br>
+    <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-franke-2002" target="_blank" rel="noopener">Franke, G.H. (2002)</a>. <em>SCL-90-R. Symptom-Checkliste von L.R. Derogatis</em> (2nd ed.). Beltz Test.<br>
+    <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-blom-1958" target="_blank" rel="noopener">Blom, G. (1958)</a>. <em>Statistical estimates and transformed beta-variables.</em> Almqvist &amp; Wiksell.</p>
   </div>
 </div>
 
