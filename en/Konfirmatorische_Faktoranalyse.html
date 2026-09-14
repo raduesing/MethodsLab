@@ -64,6 +64,12 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .scen-sub{font-size:.68rem;color:var(--ink3);display:block}
 .scen-btn.act .scen-sub{color:color-mix(in srgb,var(--a6) 70%,var(--ink3))}
 
+.stat-row{display:flex;justify-content:space-between;align-items:center;
+  padding:.25rem 0;border-bottom:1px solid var(--grid);font-family:'DM Mono',monospace;font-size:.75rem}
+.stat-row:last-child{border-bottom:none}
+.stat-label{color:var(--ink3)}
+.stat-val{font-weight:500}
+
 .story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
   padding:.75rem .9rem;margin-bottom:.85rem;line-height:1.6}
 .story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
@@ -779,6 +785,13 @@ function update(){
   document.getElementById('m-tli').textContent=state.fit.TLI.toFixed(3);
   document.getElementById('m-rmsea').textContent=state.fit.RMSEA.toFixed(3);
   document.getElementById('m-srmr').textContent=state.srmr.toFixed(3);
+
+  document.getElementById('stats').innerHTML=
+    '<div class="stat-row"><span class="stat-label">χ² (df)</span><span class="stat-val" style="color:var(--a1)">'+state.fit.chi2_model.toFixed(1)+' ('+state.df+')</span></div>'+
+    '<div class="stat-row"><span class="stat-label">CFI</span><span class="stat-val" style="color:var(--a3)">'+state.fit.CFI.toFixed(3)+'</span></div>'+
+    '<div class="stat-row"><span class="stat-label">TLI</span><span class="stat-val" style="color:var(--a3)">'+state.fit.TLI.toFixed(3)+'</span></div>'+
+    '<div class="stat-row"><span class="stat-label">RMSEA</span><span class="stat-val" style="color:var(--a2)">'+state.fit.RMSEA.toFixed(3)+'</span></div>'+
+    '<div class="stat-row"><span class="stat-label">SRMR</span><span class="stat-val" style="color:var(--a2)">'+state.srmr.toFixed(3)+'</span></div>';
 
   const vd=fitVerdict(state.fit.CFI,state.fit.RMSEA,state.srmr);
   const v=document.getElementById('verdict'); v.className='verdict '+vd.cls;
