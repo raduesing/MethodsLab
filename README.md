@@ -6,12 +6,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Static Badge](https://img.shields.io/badge/Status-Academic_Project-blue)]()
 [![Static Badge](https://img.shields.io/badge/Tech-Vanilla_JS-orange)]()
-[![Static Badge](https://img.shields.io/badge/Tools-46_interactive-green)]()
+[![Static Badge](https://img.shields.io/badge/Tools-50_interactive-green)]()
 [![Static Badge](https://img.shields.io/badge/Version-0.7_beta-lightgrey)]()
 
 ### 🌐 [www.methodslab.uni-osnabrueck.de](https://www.methodslab.uni-osnabrueck.de/)
 
-**A suite of 46 interactive tools that build statistical intuition from the ground up — from OLS regression, ANOVA and multilevel models, through the counter-intuitive paradoxes that trip up even seasoned researchers, into modern causal inference, psychometrics (classical test theory, measurement models, reliability, IRT), and clinical diagnostics. Everything runs entirely in the browser. No code, no server, no data ever leaves your machine.**
+**A suite of 50 interactive tools that build statistical intuition from the ground up — from OLS and logistic regression, ANOVA and multilevel models, through the counter-intuitive paradoxes that trip up even seasoned researchers, into modern causal inference, psychometrics (classical test theory, factor analysis, CFA/SEM, reliability, IRT), and clinical diagnostics. Everything runs entirely in the browser. No code, no server, no data ever leaves your machine.**
 
 [ [Learning Path](#-the-learning-path) ] • [ [Ecosystem](#-the-ecosystem) ] • [ [Philosophy](#-scientific-philosophy) ] • [ [Usage](#-getting-started) ] • [ [Sister Project](#-sister-project--bayes-thinking-lab) ]
 
@@ -40,12 +40,12 @@ The lab is organized into six sections that build on one another. Work through t
 
 | Section | What you will learn | Key Tools |
 | :--- | :--- | :--- |
-| **1 · Regression & Relationships** | How linear relationships are estimated and decomposed — the foundation for everything else | OLS Regression · Partial Correlation · Mediation · Moderation · ANOVA · Multilevel Models |
+| **1 · Regression & Relationships** | How linear relationships are estimated and decomposed — the foundation for everything else | OLS Regression · Logistic Regression · Partial Correlation · Mediation · Moderation · ANOVA · Multilevel Models |
 | **2 · Inference & Planning** | What a p-value actually claims, how big a sample needs to be, what counts as a meaningful effect, and what missing data does | Significance Tests · Effect Sizes · Power & Sample Size · Missing Data |
 | **3 · Statistical Paradoxes** | Why counter-intuitive results are, in fact, plain regression or sampling logic | Regression to the Mean · Attenuation · Berkson · Lord · Simpson · Law of Small Numbers |
 | **4 · Causal Inference** | When association may be read as causation — and the toolkit of modern causal analysis | Causal Foundations · RDD · Difference-in-Differences · Propensity Score Matching |
-| **5 · Test Theory & Measurement** | How psychological constructs are measured and how well | Classical Test Theory · Measurement Models (CFA) · Factor Analysis · Reliability (α vs. ω) · IRT · DIF |
-| **6 · Diagnostics & Test Quality** | How accurately an instrument detects what it should — at the level of the individual | Sensitivity/Specificity · Diagnostic Validity · Taylor-Russell · ICC · Diagnostic Intervals · Norm-Score Distortion · Jacobson-Truax |
+| **5 · Test Theory & Measurement** | How psychological constructs are measured and how well | Classical Test Theory · Factor Analysis · Measurement Models · CFA · SEM · Reliability (α vs. ω) · IRT · DIF |
+| **6 · Diagnostics & Test Quality** | How accurately an instrument detects what it should — at the level of the individual | Sensitivity/Specificity · Diagnostic Validity · Taylor-Russell · ICC · Diagnostic Intervals · Norm-Score Distortion · Jacobson-Truax · Single Case Designs |
 
 ---
 
@@ -57,6 +57,7 @@ Legend: **✓** finished · **◷** planned
 *The foundation: how to estimate linear relationships, what "controlling for" means, and how effects split into direct and indirect paths.*
 
 * **✓ OLS & Multiple Regression** — Simple and multiple regression: coefficients, R², assumptions, and typical violations. Interactive data injection.
+* **✓ Logistic Regression** — LPM vs. logit: why the linear probability model breaks down outside [0,1] and the S-curve fixes it. The P → Odds → Logit transformation chain, marginal effects on the probability scale, multiple categorical and continuous predictors with 95% CI.
 * **✓ Partial Correlation** — The correlation of two variables purged of a third. Suppressor effects, semi-partial correlation, path coefficients.
 * **✓ Mediation Analysis** — Hayes/PROCESS Model 4: DAG visualization, direct and indirect effect, Sobel/Aroian live, bootstrap on demand.
 * **✓ Moderation Analysis** — Hayes/PROCESS Model 1: simple slopes, Johnson-Neyman technique, floodlight plot. When does W moderate the effect of X on Y?
@@ -98,16 +99,18 @@ Legend: **✓** finished · **◷** planned
 * **✓ Propensity Score Matching** — Logistic PS estimation, greedy 1:1 matching, IPW (ATT), love plot, estimator comparison before/after matching.
 
 ### 5 · Test Theory & Measurement
-*How psychological constructs are measured — and how well a test does that. Ordered as a learning path: classical foundations → latent measurement models → reliability → modern IRT.*
+*How psychological constructs are measured — and how well a test does that. Ordered as a learning path: classical foundations → latent measurement models (EFA → CFA → SEM) → reliability → invariance → modern IRT.*
 
-* **✓ Classical Test Theory — Basics** — True-score model X = T + E, reliability as a variance ratio, SEM, confidence band around a single test score, Spearman-Brown test-length prophecy. The anchor of the whole reliability theme.
-* **✓ Measurement Models (CFA intro)** — Parallel, tau-equivalent, congeneric: path diagram, implied covariance matrix, automatic model classification, ω_total vs. α live, optional intercepts for essential equivalence. The bridge from factor analysis to reliability.
+* **✓ Classical Test Theory — Basics** — True-score model X = T + E, reliability as a variance ratio, standard error of measurement, confidence band around a single test score, Spearman-Brown test-length prophecy. The anchor of the whole reliability theme.
 * **✓ Factor Analysis** — PAF (genuine EFA), correct oblique solution (pattern matrix Λ), reliability panel (α / ωt / ωh Schmid-Leiman), three scenarios, biplot.
+* **✓ Measurement Models (CFA intro)** — Parallel, tau-equivalent, congeneric: path diagram, implied covariance matrix, automatic model classification, ω_total vs. α live, optional intercepts for essential equivalence. The bridge from factor analysis to reliability.
+* **✓ Confirmatory Factor Analysis (CFA)** — A real 2-factor CFA fit by genuine maximum likelihood (no shortcut formula): specify orthogonal vs. oblique, model or ignore a cross-loading, and watch χ², CFI, TLI, RMSEA, SRMR react to misspecification. Live `lavaan` syntax alongside.
+* **✓ Structural Equation Model (SEM)** — From measurement model to structural model: a directed regression path between latent factors (or a full X→M→Y mediation model), fit by the same ML machinery as the CFA tool. Live comparison against the attenuation-prone manifest sum-score approach.
 * **✓ Reliability: α vs. ω** — Cronbach's α vs. McDonald's ω_total / ω_hierarchical: when α *underestimates* (congeneric) and when it *feigns unidimensionality* (multidimensional). Variance decomposition, split-half distribution, three scenarios.
+* **✓ Measurement Invariance** — Configural / metric / scalar: the CFA twin of DIF. Set a true difference and a degree of non-invariance and see how much of a group difference is real vs. a measurement artifact.
 * **✓ IRT — Dichotomous Models** — 1PL/2PL/3PL/4PL + Rasch: ICC, TIF, Wright map, MLE person estimation. The Rasch-vs-1PL distinction made explicit.
 * **✓ IRT — Ordinal Models** — PCM, GPCM, GRM: CRF, ESC, item information for every item. Disordered-threshold warning, factor-analysis link in the help.
 * **✓ Differential Item Functioning (DIF)** — 2PL model, four items, Δb/Δa sliders, ICC comparison, difference curve, group distributions, Raju SA/UA, ETS A/B/C.
-* **✓ Measurement Invariance** — Configural / metric / scalar: the CFA twin of DIF. Set a true difference and a degree of non-invariance and see how much of a group difference is real vs. a measurement artifact.
 * **◷ Generalizability Theory** — G-theory as the multi-facet extension of CTT: variance components across raters, items, occasions; G- and D-studies.
 
 ### 6 · Diagnostics & Test Quality
@@ -119,6 +122,7 @@ Legend: **✓** finished · **◷** planned
 * **✓ Test Bias** — Cleary model, Meade & Fetzer, adverse impact: three modules, four scenarios. Differential prediction vs. fairness in practice.
 * **✓ Diagnostic Intervals** — Confidence, prediction, and tolerance intervals compared: what each one says and which question it answers.
 * **✓ Jacobson-Truax Analysis** — Reliable Change Index & clinical significance: RCI band, cut-off criteria a/b/c/d, five-group classification (analogous to the R package JTRCI) in the pre-post plot. BDI-II and SCL-90 as worked examples.
+* **✓ Single Case Designs** — Baseline description & prediction, AB/ABAB and multiple-baseline designs: visual inspection plus PND, NAP, and Tau-U as quantitative supplements for the N = 1 case.
 * **✓ Norm-Score Distortion** — What linear T-scores do to right-skewed distributions (SCL-90 analogy). Gamma, log-normal, exponential, Weibull, ex-Gaussian; empirical vs. T-norm percentile ranks; area-transformation (Lienert & Raatz) overlay.
 * **✓ Profile Analysis** — Profile comparison with Cattell rₚ, McCrae Iₚₐ/rₚₐ, ICC_de: elevation, scatter, and shape evaluated separately.
 * **✓ ICC-Lab** — Intraclass correlation: all six Shrout-&-Fleiss forms, rater count, absolute vs. consistency agreement.
