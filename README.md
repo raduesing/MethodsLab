@@ -19,7 +19,7 @@
 
 </div>
 
-> **Language note:** The interface, inline explanations, and help panels are written in **German**, as the lab is used in teaching at the University of Osnabrück. The methods and code are, of course, language-independent.
+> **Language note:** The lab was built for teaching at the University of Osnabrück, so its primary interface is **German** — but every one of the 50 tools now also has a complete **English** translation, reachable via the 🇬🇧 flag in each tool's top bar or directly at [methodslab.uni-osnabrueck.de/en](https://www.methodslab.uni-osnabrueck.de/en/). The methods and code are, of course, language-independent.
 
 ---
 
@@ -138,7 +138,7 @@ The Methods Lab is a **serverless web application**. No installation, no backend
 
 Open the hosted version directly in your browser:
 
-🌐 **[www.methodslab.uni-osnabrueck.de](https://www.methodslab.uni-osnabrueck.de/)**
+🌐 **[www.methodslab.uni-osnabrueck.de](https://www.methodslab.uni-osnabrueck.de/)** (German) · **[/en](https://www.methodslab.uni-osnabrueck.de/en/)** (English)
 
 No setup required.
 
