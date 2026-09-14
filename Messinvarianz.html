@@ -2,6 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Messinvarianz — MethodsLab</title>
 <style>
@@ -930,7 +931,7 @@ document.getElementById('s-dtau').addEventListener('input',function(){
 document.getElementById('s-dlam').addEventListener('input',function(){
   ST.dLam=parseFloat(this.value); document.getElementById('v-dlam').textContent=ST.dLam.toFixed(2); clearPreset(); update();});
 
-function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 function toggleWork(){
   const w=document.getElementById('work'), b=document.getElementById('work-toggle');

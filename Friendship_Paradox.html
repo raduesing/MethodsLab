@@ -2,6 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Friendship Paradox — MethodsLab</title>
 <style>
@@ -332,7 +333,7 @@ document.getElementById('s-n').addEventListener('input',function(){ST.n=+this.va
 document.getElementById('s-m').addEventListener('input',function(){ST.m=+this.value;document.getElementById('v-m').textContent=ST.m;build();render();});
 function reroll(){seed=(seed*1103515245+12345)>>>0;build();render();}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
-function toggleTheme(){const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(drawNet);}
+function toggleTheme(){const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(drawNet);}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('help-overlay').classList.remove('open');});
 window.addEventListener('resize',()=>requestAnimationFrame(drawNet));
 

@@ -2,6 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Propensity Score Matching & Weighting | MethodsLab</title>
 <style>
@@ -385,7 +386,7 @@ function resimulate(){
 function toggleHelp(){ document.getElementById('help-overlay').classList.toggle('open'); }
 function toggleTheme(){
   const dark = document.documentElement.getAttribute('data-theme')==='dark';
-  document.documentElement.setAttribute('data-theme', dark?'light':'dark');
+  document.documentElement.setAttribute('data-theme', dark?'light':'dark'); localStorage.setItem('ml-theme',dark?'light':'dark');
   document.getElementById('btn-theme').textContent = dark?'🌙 Dark':'☀ Light';
   draw();
 }

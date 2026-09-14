@@ -2,6 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Norming Bias — MethodsLab</title>
 <style>
@@ -1085,7 +1086,7 @@ function toggleAreaT() {
 function toggleTheme() {
   const h = document.documentElement;
   const dark = h.getAttribute('data-theme') === 'dark';
-  h.setAttribute('data-theme', dark ? 'light' : 'dark');
+  h.setAttribute('data-theme', dark ? 'light' : 'dark'); localStorage.setItem('ml-theme',dark?'light':'dark');
   document.getElementById('btn-theme').textContent = dark ? '🌙 Dark' : '☀ Light';
   // Wait one frame so CSS variables are recomputed before canvas reads them
   requestAnimationFrame(() => update());

@@ -2,6 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Survivorship Bias — MethodsLab</title>
 <style>
@@ -439,7 +440,7 @@ function reroll(){ seed=(seed*1103515245+12345)>>>0; buildHits(); retry(); }
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 function toggleTheme(){
   const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';
-  h.setAttribute('data-theme',d?'light':'dark');
+  h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');
   document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';
   requestAnimationFrame(draw);
 }

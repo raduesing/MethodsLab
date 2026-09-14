@@ -2,6 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Jacobson-Truax — Reliable Change &amp; Klinische Signifikanz — MethodsLab</title>
 <style>
@@ -1013,7 +1014,7 @@ function loadExample(name){
 function toggleTheme(){
   const h=document.documentElement;
   const dark=h.getAttribute('data-theme')==='dark';
-  h.setAttribute('data-theme', dark?'light':'dark');
+  h.setAttribute('data-theme', dark?'light':'dark'); localStorage.setItem('ml-theme',dark?'light':'dark');
   document.getElementById('btn-theme').textContent = dark?'🌙 Dark':'☀ Light';
   requestAnimationFrame(()=>update());
 }

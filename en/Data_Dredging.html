@@ -2,6 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Data Dredging — MethodsLab</title>
 <style>
@@ -477,7 +478,7 @@ function reroll(){ seed=(seed*1103515245+12345)>>>0; build(); document.getElemen
 function rerollStep(){ ensureHit(); render(); }
 
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
-function toggleTheme(){const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';}
+function toggleTheme(){const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('help-overlay').classList.remove('open');});
 
 // beim Start einen Seed wählen, der mind. 1 Zufallstreffer liefert (sonst ist die Pointe weg)

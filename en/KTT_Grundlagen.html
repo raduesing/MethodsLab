@@ -2,6 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CTT — Foundations — MethodsLab</title>
 <style>
@@ -597,7 +598,7 @@ function setCL(z,lbl){ST.z=z;ST.cl=lbl;
   document.getElementById('ci-cl').textContent=lbl;
   update();}
 function reroll(){seed=Math.floor(Math.random()*1e9);simulate();update();}
-function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 
 // init

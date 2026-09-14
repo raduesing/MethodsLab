@@ -2,6 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mediation Analysis — Diagnostics</title>
 <style>
@@ -774,7 +775,7 @@ function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
 
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark'); localStorage.setItem('ml-theme',dark?'light':'dark');
   document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
   if(ST.fitM&&ST.fitY&&ST.fitC)updateDAG(ST.fitM,ST.fitY,ST.fitC);
 }

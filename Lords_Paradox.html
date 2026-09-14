@@ -2,6 +2,7 @@
 <html lang="de" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('ml-theme');if(t)document.documentElement.setAttribute('data-theme',t);})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Lord's Paradox — MethodsLab</title>
 <style>
@@ -1035,7 +1036,7 @@ function newSeed(){ P.seed=Math.floor(Math.random()*1e8); clearActivePresets(); 
 function toggleTheme(){
   const d=document.documentElement;
   const dark=d.getAttribute('data-theme')==='dark';
-  d.setAttribute('data-theme',dark?'light':'dark');
+  d.setAttribute('data-theme',dark?'light':'dark'); localStorage.setItem('ml-theme',dark?'light':'dark');
   document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
   draw();
   drawTrajectory();
