@@ -29,6 +29,9 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+.vtbtn{font-family:'DM Mono',monospace;font-size:.62rem;padding:.1rem .48rem;border:1.5px solid var(--border);
+  background:transparent;cursor:pointer;color:var(--ink3);letter-spacing:.04em;border-radius:2px;line-height:1.5}
+.vtbtn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
 #app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
@@ -249,13 +252,6 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
       <input type="checkbox" id="tog-yafix" onchange="onToggleYFix()">
       <label for="tog-yafix">Fix Y axis</label>
     </div>
-    <div class="toggle-row">
-      <input type="checkbox" id="tog-pin" checked onchange="onTogglePin(this)">
-      <label for="tog-pin">Pin plot (instead of scrolling with page)</label>
-    </div>
-    <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.3rem;line-height:1.5">
-      On small screens: disable this to leave more room for the text.
-    </div>
   </div>
 
 </div><!-- /sidebar -->
@@ -272,7 +268,11 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
     <div class="story-q">Does the training causally raise salary — or do higher-performing applicants simply earn more anyway? Just above and below the cutoff, applicants should differ only by chance: that's exactly what the RDD exploits.</div>
   </div>
   <div class="cv-sticky">
-    <div class="sec-h" style="margin-top:0;padding-top:.35rem"><span class="circ">①</span> Scatterplot</div>
+    <div class="sec-h" style="margin-top:0;padding-top:.35rem;display:flex;align-items:center;gap:.5rem">
+      <span><span class="circ">①</span> Scatterplot</span>
+      <span style="flex:1"></span>
+      <button id="btn-pin" class="vtbtn active" onclick="onTogglePin()" title="On small screens, unpin to leave more room for the text">📌 Pinned</button>
+    </div>
     <canvas id="cv-rdd" height="320"></canvas>
   </div>
 
@@ -1056,10 +1056,14 @@ function onToggleYFix(){
   }
   if(ST.data) drawCanvas(ST.data,ST.fitResult?.beta,ST.fitITT?.beta||null);
 }
-function onTogglePin(el){
+function onTogglePin(){
+  const btn=document.getElementById('btn-pin');
+  const pinned=!btn.classList.contains('active');
+  btn.classList.toggle('active',pinned);
+  btn.innerHTML=pinned?'📌 Pinned':'📌 Unpinned';
   const sticky=document.querySelector('.cv-sticky');
-  if(sticky)sticky.classList.toggle('unpinned',!el.checked);
-  localStorage.setItem('ml-cv-pin',el.checked?'1':'0');
+  if(sticky)sticky.classList.toggle('unpinned',!pinned);
+  localStorage.setItem('ml-cv-pin',pinned?'1':'0');
 }
 function onFuzzySlider(key,el){
   ST[key]=parseFloat(el.value);
@@ -1121,7 +1125,8 @@ window.addEventListener('resize',()=>{
 
 // Init
 if(localStorage.getItem('ml-cv-pin')==='0'){
-  const cb=document.getElementById('tog-pin');if(cb)cb.checked=false;
+  const btn=document.getElementById('btn-pin');
+  if(btn){btn.classList.remove('active');btn.innerHTML='📌 Unpinned';}
   const sticky=document.querySelector('.cv-sticky');if(sticky)sticky.classList.add('unpinned');
 }
 setPreset('B');

@@ -276,13 +276,6 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
       <input type="checkbox" id="tog-yafix" onchange="onToggleYFix()">
       <label for="tog-yafix">Fix Y-axis</label>
     </div>
-    <div class="toggle-row">
-      <input type="checkbox" id="tog-pin" checked onchange="onTogglePin(this)">
-      <label for="tog-pin">Plot pinned (instead of scrolling with page)</label>
-    </div>
-    <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-top:.3rem;line-height:1.5">
-      On small screens: disable this to leave more room for the text.
-    </div>
   </div>
 
 </div><!-- /sidebar -->
@@ -304,6 +297,7 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
       <span style="flex:1"></span>
       <button id="btn-2d" class="vtbtn active" onclick="toggleView3D(false)">2D</button>
       <button id="btn-3d" class="vtbtn" onclick="toggleView3D(true)">3D</button>
+      <button id="btn-pin" class="vtbtn active" onclick="onTogglePin()" title="On small screens, unpin to leave more room for the text">📌 Pinned</button>
     </div>
     <canvas id="cv-mod" height="510"></canvas>
   </div>
@@ -1530,10 +1524,14 @@ function onToggleYFix(){
   }
   if(ST.data&&ST.fitResult) renderView(ST.data,ST.fitResult,ST.spotW);
 }
-function onTogglePin(el){
+function onTogglePin(){
+  const btn=document.getElementById('btn-pin');
+  const pinned=!btn.classList.contains('active');
+  btn.classList.toggle('active',pinned);
+  btn.innerHTML=pinned?'📌 Pinned':'📌 Unpinned';
   const sticky=document.querySelector('.cv-sticky');
-  if(sticky)sticky.classList.toggle('unpinned',!el.checked);
-  localStorage.setItem('ml-cv-pin',el.checked?'1':'0');
+  if(sticky)sticky.classList.toggle('unpinned',!pinned);
+  localStorage.setItem('ml-cv-pin',pinned?'1':'0');
 }
 function onSpotlight(){
   ST.spotlight=document.querySelector('input[name=spotlight]:checked').value;
@@ -1614,7 +1612,8 @@ window.addEventListener('resize',()=>{
 
 setup3DDrag();
 if(localStorage.getItem('ml-cv-pin')==='0'){
-  const cb=document.getElementById('tog-pin');if(cb)cb.checked=false;
+  const btn=document.getElementById('btn-pin');
+  if(btn){btn.classList.remove('active');btn.innerHTML='📌 Unpinned';}
   const sticky=document.querySelector('.cv-sticky');if(sticky)sticky.classList.add('unpinned');
 }
 setPreset('C');
