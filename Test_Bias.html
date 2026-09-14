@@ -102,6 +102,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .air-thresh{position:absolute;top:-4px;width:2px;height:15px;background:var(--a1);left:80%}
 /* Sticky plot */
 .plot-sticky{position:sticky;top:0;z-index:20;background:var(--bg);padding-bottom:.5rem;margin-bottom:.2rem;border-bottom:1px solid var(--grid)}
+.plot-sticky.unpinned{position:static}
 /* Table alignment fix */
 .reg-table th:not(:first-child){text-align:right}
 .reg-table colgroup col:first-child{width:38%}
@@ -259,6 +260,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
         <button class="tbtn" id="btn-ellipse" onclick="toggleEllipses()" title="95%-Konfidenzellipsen ein-/ausblenden">⊡ Ellipsen</button>
         <button class="tbtn" id="btn-proj" onclick="toggleProjections()" title="Projektionslinien der Gruppenmittelwerte auf X- und Y-Achse">⊡ Projektionen</button>
         <button class="tbtn" id="btn-ylock" onclick="toggleYLock()" title="Y-Achse über Szenarien fixieren">⊡ Y-Achse fixieren</button>
+        <button class="tbtn active" id="btn-pin" onclick="onTogglePin()" title="Auf kleinen Bildschirmen lösen, damit mehr Platz für den Text bleibt">⊠ Fixiert</button>
       </div>
     </div>
     <canvas id="cv-scatter" height="408"></canvas>
@@ -954,6 +956,16 @@ function toggleYLock(){
   drawScatter();
 }
 
+function onTogglePin(){
+  const btn=document.getElementById('btn-pin');
+  const pinned=!btn.classList.contains('active');
+  btn.classList.toggle('active',pinned);
+  btn.textContent=pinned?'⊠ Fixiert':'⊡ Gelöst';
+  const sticky=document.querySelector('.plot-sticky');
+  if(sticky)sticky.classList.toggle('unpinned',!pinned);
+  localStorage.setItem('ml-cv-pin',pinned?'1':'0');
+}
+
 function onCutoff(el){
   ST.cutoff=parseFloat(el.value);
   document.getElementById('val-cutoff').textContent=ST.cutoff.toFixed(1);
@@ -1011,7 +1023,7 @@ const HELP_CONTENT={
 </ul>
 <h3>Wichtige Hinweise</h3>
 <p>Statistische Signifikanz hängt stark von n ab. Bei großen Stichproben werden auch praktisch bedeutungslose Unterschiede signifikant. Immer Effektgröße (Δb₀, Δb₁) berichten. Die Testentscheidung betrifft <em>differentielle Prädiktion</em>, nicht direkt Testfairness im umfassenden Sinne.</p>
-<p class="ref">Referenzen: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-cleary-1968" target="_blank" rel="noopener">Cleary, T. A. (1968)</a>. <em>Educational and Psychological Measurement, 28</em>, 115–124. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-bartlett-1978" target="_blank" rel="noopener">Bartlett, C. J., Bobko, P., Mosier, S. B., &amp; Hannan, R. (1978)</a>. <em>Personnel Psychology, 31</em>, 233–248. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-linn-1984" target="_blank" rel="noopener">Linn, R. L. (1984)</a>. <em>Journal of Educational Measurement, 21</em>, 5–32.</p>`
+<p class="ref">Referenzen: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-cleary-1968" target="_blank" rel="noopener">Cleary, T. A. (1968)</a>. <em>Educational and Psychological Measurement, 28</em>, 115–124. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-bartlett-1978" target="_blank" rel="noopener">Bartlett, C. J., Bobko, P., Mosier, S. B., &amp; Hannan, R. (1978)</a>. <em>Personnel Psychology, 31</em>, 233–248. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-linn-1984" target="_blank" rel="noopener">Linn, R. L. (1984)</a>. <em>Journal of Educational Measurement, 21</em>, 5–32. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-petersen-2024" target="_blank" rel="noopener">Petersen, I. T. (2024)</a>. <em>Principles of Psychological Assessment: With Applied Examples in R.</em> Chapman &amp; Hall/CRC. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-de-ayala-2022" target="_blank" rel="noopener">de Ayala, R. J. (2022)</a>. <em>The Theory and Practice of Item Response Theory</em> (2. Aufl.). Guilford Press. · <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-tutz-2025" target="_blank" rel="noopener">Tutz, G. (2025)</a>. <em>A Short Guide to Item Response Theory Models.</em> Springer.</p>`
   },
   2:{
     title:'Modul 2 — Meade & Fetzer (2009): Diagnose der Ursache',
@@ -1099,6 +1111,11 @@ function recompute(){
 window.addEventListener('resize',()=>drawScatter());
 
 // Init
+if(localStorage.getItem('ml-cv-pin')==='0'){
+  const btn=document.getElementById('btn-pin');
+  if(btn){btn.classList.remove('active');btn.textContent='⊡ Gelöst';}
+  const sticky=document.querySelector('.plot-sticky');if(sticky)sticky.classList.add('unpinned');
+}
 setPreset('none');
 </script>
 </body>
