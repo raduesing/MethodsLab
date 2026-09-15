@@ -71,6 +71,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   border-top:1px solid var(--grid);margin-top:.5rem;padding-top:.5rem}
 .canvas-wrap{background:var(--panel);border:1px solid var(--grid);margin-bottom:.85rem;overflow:hidden}
 #plot-canvas{width:100%;display:block}
+#traj-canvas{width:100%;display:block}
 .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.85rem}
 .rb{background:var(--panel);border:1px solid var(--grid);padding:.85rem 1rem}
 .rb-method{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
@@ -257,11 +258,13 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div id="paradox-container"></div>
 
   <div class="sec-h">Visualization</div>
-  <div class="canvas-wrap" style="margin-bottom:.4rem;max-width:80%;margin-inline:auto">
-    <canvas id="plot-canvas" height="645"></canvas>
-  </div>
-  <div class="canvas-wrap">
-    <canvas id="traj-canvas" height="190"></canvas>
+  <div style="display:flex;gap:.85rem;align-items:stretch;margin-bottom:.85rem">
+    <div class="canvas-wrap" style="flex:0 0 62%;margin-bottom:0">
+      <canvas id="plot-canvas" height="645"></canvas>
+    </div>
+    <div class="canvas-wrap" style="flex:1;margin-bottom:0">
+      <canvas id="traj-canvas" height="645"></canvas>
+    </div>
   </div>
 
   <div class="sec-h">The Mathematical Relationship</div>
@@ -895,7 +898,7 @@ function drawTrajectory(){
   const canvas=document.getElementById('traj-canvas');
   if(!canvas) return;
   const w=canvas.offsetWidth||canvas.parentElement.offsetWidth||700;
-  canvas.width=w; canvas.height=190;
+  canvas.width=w; canvas.height=645;
   const W=canvas.width, H=canvas.height;
   const ctx=canvas.getContext('2d');
 
@@ -904,7 +907,7 @@ function drawTrajectory(){
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle=colPanel; ctx.fillRect(0,0,W,H);
 
-  const pL=88, pR=138, pT=30, pB=30;
+  const pL=100, pR=185, pT=42, pB=34;
   const xPre=pL, xPost=W-pR;
 
   // Y scale from the four group means
@@ -916,8 +919,8 @@ function drawTrajectory(){
   const ty2=v=>pT+(1-(v-yMin)/(yMax-yMin))*(H-pT-pB);
 
   // Title
-  ctx.fillStyle=colA6; ctx.font='bold 11px DM Mono,monospace'; ctx.textAlign='left';
-  ctx.fillText('DIFFERENCE SCORE — Mean Trajectories, Pre-Test to Post-Test',10,16);
+  ctx.fillStyle=colA6; ctx.font='bold 15px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('DIFFERENCE SCORE — Mean Trajectories, Pre-Test to Post-Test',12,24);
 
   // Vertical time-axis lines
   ctx.strokeStyle=colGrid; ctx.lineWidth=1;
@@ -925,12 +928,12 @@ function drawTrajectory(){
   ctx.beginPath(); ctx.moveTo(xPost,pT); ctx.lineTo(xPost,H-pB); ctx.stroke();
 
   // X labels
-  ctx.fillStyle=colInk2; ctx.font='12px DM Mono,monospace'; ctx.textAlign='center';
-  ctx.fillText('Pre-Test',xPre,H-8);
-  ctx.fillText('Post-Test',xPost,H-8);
+  ctx.fillStyle=colInk2; ctx.font='14px DM Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('Pre-Test',xPre,H-10);
+  ctx.fillText('Post-Test',xPost,H-10);
 
   // Trajectories A and B
-  ctx.lineWidth=2.5;
+  ctx.lineWidth=3;
   ctx.strokeStyle=colA;
   ctx.beginPath(); ctx.moveTo(xPre,ty2(ms.mPreA)); ctx.lineTo(xPost,ty2(ms.mPostA)); ctx.stroke();
   ctx.strokeStyle=colB;
@@ -939,44 +942,44 @@ function drawTrajectory(){
   // Points at the endpoints
   function dot(x,y,col){
     ctx.fillStyle=col; ctx.strokeStyle=colPaper; ctx.lineWidth=2;
-    ctx.beginPath(); ctx.arc(x,ty2(y),6,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x,ty2(y),8,0,Math.PI*2); ctx.fill(); ctx.stroke();
   }
   dot(xPre,ms.mPreA,colA); dot(xPost,ms.mPostA,colA);
   dot(xPre,ms.mPreB,colB); dot(xPost,ms.mPostB,colB);
 
   // Left labels (Course A / B)
   ctx.textAlign='right';
-  ctx.fillStyle=colA; ctx.font='bold 13px DM Mono,monospace';
-  ctx.fillText('Course A',xPre-12,ty2(ms.mPreA)+5);
+  ctx.fillStyle=colA; ctx.font='bold 16px DM Mono,monospace';
+  ctx.fillText('Course A',xPre-14,ty2(ms.mPreA)+6);
   ctx.fillStyle=colB;
-  ctx.fillText('Course B',xPre-12,ty2(ms.mPreB)+5);
+  ctx.fillText('Course B',xPre-14,ty2(ms.mPreB)+6);
 
   // Right: delta values
-  const labX=xPost+14;
+  const labX=xPost+16;
   const yDA=ty2(ms.mPostA), yDB=ty2(ms.mPostB);
   ctx.textAlign='left';
-  ctx.fillStyle=colA; ctx.font='bold 12px DM Mono,monospace';
-  ctx.fillText('DA '+( ms.mDA>=0?'+':'')+ms.mDA.toFixed(1),labX,yDA+4);
+  ctx.fillStyle=colA; ctx.font='bold 14px DM Mono,monospace';
+  ctx.fillText('DA '+( ms.mDA>=0?'+':'')+ms.mDA.toFixed(1),labX,yDA+5);
   ctx.fillStyle=colB;
-  ctx.fillText('DB '+(ms.mDB>=0?'+':'')+ms.mDB.toFixed(1),labX,yDB+4);
+  ctx.fillText('DB '+(ms.mDB>=0?'+':'')+ms.mDB.toFixed(1),labX,yDB+5);
 
   // Bracket for delta_Diff (when the gap is visible)
   const diffSig=stats.p_d<0.05;
   const diffCol=diffSig?(stats.delta_diff>0?colA3:colA1):colInk3;
   if(Math.abs(yDA-yDB)>6){
-    const bk2=labX+58;
-    ctx.strokeStyle=diffCol; ctx.lineWidth=1.5;
+    const bk2=labX+72;
+    ctx.strokeStyle=diffCol; ctx.lineWidth=2;
     ctx.beginPath();
-    ctx.moveTo(bk2,yDA); ctx.lineTo(bk2+7,yDA);
-    ctx.lineTo(bk2+7,yDB);
-    ctx.moveTo(bk2+7,yDB); ctx.lineTo(bk2,yDB);
+    ctx.moveTo(bk2,yDA); ctx.lineTo(bk2+9,yDA);
+    ctx.lineTo(bk2+9,yDB);
+    ctx.moveTo(bk2+9,yDB); ctx.lineTo(bk2,yDB);
     ctx.stroke();
     const mY2=(yDA+yDB)/2;
-    ctx.fillStyle=diffCol; ctx.font='bold 12px DM Mono,monospace';
-    ctx.fillText(fmt(stats.delta_diff,2),bk2+11,mY2-4);
-    ctx.font='10px DM Mono,monospace';
-    ctx.fillText('p='+fmtp(stats.p_d),bk2+11,mY2+9);
-    ctx.fillText(diffSig?'sig.':'n.s.',bk2+11,mY2+21);
+    ctx.fillStyle=diffCol; ctx.font='bold 15px DM Mono,monospace';
+    ctx.fillText(fmt(stats.delta_diff,2),bk2+13,mY2-5);
+    ctx.font='13px DM Mono,monospace';
+    ctx.fillText('p='+fmtp(stats.p_d),bk2+13,mY2+11);
+    ctx.fillText(diffSig?'sig.':'n.s.',bk2+13,mY2+28);
   }
 }
 
