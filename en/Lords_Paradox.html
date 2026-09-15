@@ -847,8 +847,8 @@ function draw(){
   ctx.fillStyle=colB; ctx.fillText('● Course B',pad.l+8,pad.t+37);
   ctx.fillStyle=colInk3; ctx.font='12px DM Mono,monospace';
   ctx.fillText('◆ Mean',pad.l+8,pad.t+56);
-  ctx.fillText('-- ANCOVA',pad.l+8,pad.t+73);
-  ctx.fillText('/ no change',pad.l+8,pad.t+90);
+  ctx.fillText('-- ANCOVA (b_w='+b_w.toFixed(2)+')',pad.l+8,pad.t+73);
+  ctx.fillText('/ no change (slope=1)',pad.l+8,pad.t+90);
 
   // Right-margin divider
   ctx.strokeStyle=colBord; ctx.lineWidth=1;
@@ -924,7 +924,7 @@ function drawTrajectory(){
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle=colPanel; ctx.fillRect(0,0,W,H);
 
-  const pL=100, pR=185, pT=42, pB=34;
+  const pL=185, pR=185, pT=42, pB=34;
   const xPre=pL, xPost=W-pR;
 
   // Y scale from the four group means
@@ -970,6 +970,22 @@ function drawTrajectory(){
   ctx.fillText('Course A',xPre-14,ty2(ms.mPreA)+6);
   ctx.fillStyle=colB;
   ctx.fillText('Course B',xPre-14,ty2(ms.mPreB)+6);
+
+  // Bracket for Δ_base (left — starting-level difference at pre-test)
+  const yPA=ty2(ms.mPreA), yPB=ty2(ms.mPreB);
+  if(Math.abs(yPA-yPB)>6){
+    const bkL=xPre-14-90;
+    ctx.strokeStyle=colA1; ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.moveTo(bkL,yPA); ctx.lineTo(bkL-9,yPA);
+    ctx.lineTo(bkL-9,yPB);
+    ctx.moveTo(bkL-9,yPB); ctx.lineTo(bkL,yPB);
+    ctx.stroke();
+    const mYL=(yPA+yPB)/2;
+    ctx.textAlign='right';
+    ctx.fillStyle=colA1; ctx.font='bold 14px DM Mono,monospace';
+    ctx.fillText(fmt(ms.mPreB-ms.mPreA,1),bkL-13,mYL+5);
+  }
 
   // Right: delta values
   const labX=xPost+16;
