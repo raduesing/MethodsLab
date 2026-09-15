@@ -257,8 +257,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div id="paradox-container"></div>
 
   <div class="sec-h">Visualization</div>
-  <div class="canvas-wrap" style="margin-bottom:.4rem">
-    <canvas id="plot-canvas" height="430"></canvas>
+  <div class="canvas-wrap" style="margin-bottom:.4rem;max-width:80%;margin-inline:auto">
+    <canvas id="plot-canvas" height="645"></canvas>
   </div>
   <div class="canvas-wrap">
     <canvas id="traj-canvas" height="190"></canvas>
@@ -733,7 +733,7 @@ function draw(){
   const {colA,colB,colGrid,colInk,colInk2,colInk3,colPaper,colPanel,colBord,colA1,colA3,colA4,colA6}=mkColors();
 
   // Right margin reserved for the ANCOVA schematic box
-  const pad={l:60,r:126,t:30,b:56};
+  const pad={l:60,r:190,t:30,b:56};
   const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
 
   const allV=[...dataA.map(d=>d.pre),...dataA.map(d=>d.post),...dataB.map(d=>d.pre),...dataB.map(d=>d.post)];
@@ -822,60 +822,59 @@ function draw(){
   ctx.fillText('Post-Test',0,0); ctx.restore();
 
   // Top-left legend
-  ctx.font='12px DM Mono,monospace'; ctx.textAlign='left';
-  ctx.fillStyle=colA; ctx.fillText('● Course A',pad.l+8,pad.t+16);
-  ctx.fillStyle=colB; ctx.fillText('● Course B',pad.l+8,pad.t+32);
-  ctx.fillStyle=colInk3; ctx.font='10px DM Mono,monospace';
-  ctx.fillText('◆ Mean',pad.l+8,pad.t+48);
-  ctx.fillText('-- ANCOVA',pad.l+8,pad.t+62);
-  ctx.fillText('/ no change',pad.l+8,pad.t+76);
+  ctx.font='14px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillStyle=colA; ctx.fillText('● Course A',pad.l+8,pad.t+18);
+  ctx.fillStyle=colB; ctx.fillText('● Course B',pad.l+8,pad.t+37);
+  ctx.fillStyle=colInk3; ctx.font='12px DM Mono,monospace';
+  ctx.fillText('◆ Mean',pad.l+8,pad.t+56);
+  ctx.fillText('-- ANCOVA',pad.l+8,pad.t+73);
+  ctx.fillText('/ no change',pad.l+8,pad.t+90);
 
   // Right-margin divider
   ctx.strokeStyle=colBord; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(W-pad.r,0); ctx.lineTo(W-pad.r,H); ctx.stroke();
 
   // ─── RIGHT MARGIN: ANCOVA schematic box ─────────────────────
-  const mx=W-pad.r+10;  // left edge of the box
-  const mw=pad.r-14;    // width of the box
+  const mx=W-pad.r+18;  // left edge of the box
 
   // Header
-  ctx.fillStyle=colA4; ctx.font='bold 11px DM Mono,monospace'; ctx.textAlign='left';
-  ctx.fillText('ANCOVA:',mx,18);
-  ctx.fillStyle=colInk3; ctx.font='9px DM Mono,monospace';
-  ctx.fillText('at the same',mx,30);
-  ctx.fillText('pre value:',mx,40);
+  ctx.fillStyle=colA4; ctx.font='bold 18px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('ANCOVA:',mx,38);
+  ctx.fillStyle=colInk3; ctx.font='14px DM Mono,monospace';
+  ctx.fillText('at the same',mx,62);
+  ctx.fillText('pre value:',mx,82);
 
   // Schematic line diagram
   const ancSig=stats.p_a<0.05;
   const ancCol=ancSig?(stats.delta_anc>0?colA3:colA1):colInk3;
 
-  const gapPx=Math.max(20, Math.min(Math.abs(stats.delta_anc)*5, 72));
-  const schY0=54;
+  const gapPx=Math.max(30, Math.min(Math.abs(stats.delta_anc)*8, 110));
+  const schY0=128;
   const yB_s=stats.delta_anc>=0 ? schY0       : schY0+gapPx;
   const yA_s=stats.delta_anc>=0 ? schY0+gapPx : schY0;
 
   // Group labels on the left (right-aligned, BEFORE the lines)
-  const lblX=mx+14;
-  const tickX0=mx+18;
-  const tickX1=mx+18+38;
+  const lblX=mx+18;
+  const tickX0=mx+26;
+  const tickX1=mx+26+50;
 
   ctx.textAlign='right';
-  ctx.fillStyle=colB; ctx.font='bold 11px DM Mono,monospace';
-  ctx.fillText('B',lblX,yB_s+4);
+  ctx.fillStyle=colB; ctx.font='bold 17px DM Mono,monospace';
+  ctx.fillText('B',lblX,yB_s+6);
   ctx.fillStyle=colA;
-  ctx.fillText('A',lblX,yA_s+4);
+  ctx.fillText('A',lblX,yA_s+6);
 
   // Lines
-  ctx.lineWidth=3; ctx.setLineDash([]);
+  ctx.lineWidth=3.5; ctx.setLineDash([]);
   ctx.strokeStyle=colB;
   ctx.beginPath(); ctx.moveTo(tickX0,yB_s); ctx.lineTo(tickX1,yB_s); ctx.stroke();
   ctx.strokeStyle=colA;
   ctx.beginPath(); ctx.moveTo(tickX0,yA_s); ctx.lineTo(tickX1,yA_s); ctx.stroke();
 
   // Bracket to the right of the lines
-  const bkX=tickX1+3;
-  const bkArm=7;
-  ctx.strokeStyle=ancCol; ctx.lineWidth=1.5;
+  const bkX=tickX1+4;
+  const bkArm=10;
+  ctx.strokeStyle=ancCol; ctx.lineWidth=2;
   ctx.beginPath();
   ctx.moveTo(bkX,yB_s); ctx.lineTo(bkX+bkArm,yB_s);
   ctx.lineTo(bkX+bkArm,yA_s);
@@ -883,13 +882,13 @@ function draw(){
   ctx.stroke();
 
   // Value + significance (below the bracket, left-aligned)
-  const valY=Math.max(yA_s,yB_s)+14;
+  const valY=Math.max(yA_s,yB_s)+34;
   ctx.fillStyle=ancCol; ctx.textAlign='left';
-  ctx.font='bold 12px DM Mono,monospace';
+  ctx.font='bold 22px DM Mono,monospace';
   ctx.fillText(fmt(stats.delta_anc,2),mx,valY);
-  ctx.font='9px DM Mono,monospace';
-  ctx.fillText('p = '+fmtp(stats.p_a),mx,valY+13);
-  ctx.fillText(ancSig?'sig.':'n.s.',mx,valY+25);
+  ctx.font='14px DM Mono,monospace';
+  ctx.fillText('p = '+fmtp(stats.p_a),mx,valY+22);
+  ctx.fillText(ancSig?'sig.':'n.s.',mx,valY+42);
 }
 
 function drawTrajectory(){
@@ -993,7 +992,7 @@ function resizeCanvas(){
   const canvas=document.getElementById('plot-canvas');
   const w=canvas.offsetWidth||canvas.parentElement.offsetWidth||700;
   canvas.width=w;
-  canvas.height=430;
+  canvas.height=645;
   update();
 }
 
