@@ -104,6 +104,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
 .lcard-body strong{color:var(--ink)}
 .xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
+.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
 .eq-section-lbl{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);margin-bottom:.4rem}
 .eq-divider{border-top:1px solid var(--grid);margin:.65rem 0 .55rem}
 .eq-legend{display:grid;grid-template-columns:1fr 1fr;gap:.35rem .7rem;margin-bottom:.1rem}
@@ -280,11 +281,11 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="eq-wrap">
 
     <div class="eq-note" style="margin:0 0 .7rem">
-      Beide Methoden schätzen denselben Gruppenunterschied — nur auf unterschiedliche Weise berechnet (Schritt ①). Der Trick: man kann δ<sub>ANCOVA</sub> algebraisch als δ<sub>Diff</sub> plus einen Korrekturterm schreiben (Schritt ②) — das erklärt <em>exakt</em>, wie groß die Kluft zwischen beiden ist und wovon sie abhängt (Schritt ③). Die vollständige Herleitung steht in der <a class="glo-link" onclick="toggleHelp()">Hilfe</a>.
+      Beide Methoden schätzen denselben Gruppenunterschied — nur auf unterschiedliche Weise berechnet (Schritt <span class="circ">①</span>). Der Trick: man kann δ<sub>ANCOVA</sub> algebraisch als δ<sub>Diff</sub> plus einen Korrekturterm schreiben (Schritt <span class="circ">②</span>) — das erklärt <em>exakt</em>, wie groß die Kluft zwischen beiden ist und wovon sie abhängt (Schritt <span class="circ">③</span>). Die vollständige Herleitung steht in der <a class="glo-link" onclick="toggleHelp()">Hilfe</a>.
     </div>
 
     <!-- A: Die zwei vollständigen Formeln -->
-    <div class="eq-section-lbl">① Die zwei Analysen — beide für sich genommen</div>
+    <div class="eq-section-lbl"><span class="circ">①</span> Die zwei Analysen — beide für sich genommen</div>
     <div class="eq-main">
       <span style="color:var(--a6)">δ<sub>Diff</sub></span>
       <span style="color:var(--ink3)"> = </span>
@@ -303,7 +304,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
     <!-- B: Schlüsselformel mit Live-Werten -->
     <div class="eq-divider"></div>
-    <div class="eq-section-lbl">② Ineinander umgeformt — warum sie divergieren</div>
+    <div class="eq-section-lbl"><span class="circ">②</span> Ineinander umgeformt — warum sie divergieren</div>
     <div class="eq-main">
       <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span>
       <span style="color:var(--ink3)"> = </span>
@@ -324,12 +325,12 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <span style="color:var(--a4)"> = <span id="eq-check">—</span></span>
     </div>
     <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);margin-top:.5rem;padding-top:.45rem;border-top:1px dashed var(--grid)">
-      → Die zwei Methoden weichen hier um <strong id="eq-methoddiff" style="color:var(--a4)">—</strong> Punkte voneinander ab — das <em>ist</em> die Größe des Paradoxons für die aktuelle Einstellung.
+      → Die zwei Methoden weichen hier um <strong id="eq-methoddiff" style="color:var(--ink)">—</strong> Punkte voneinander ab — das <em>ist</em> die Größe des Paradoxons für die aktuelle Einstellung.
     </div>
 
     <!-- C: Komponenten-Legende -->
     <div class="eq-divider"></div>
-    <div class="eq-section-lbl">③ Die zwei Zutaten des Korrekturterms</div>
+    <div class="eq-section-lbl"><span class="circ">③</span> Die zwei Zutaten des Korrekturterms</div>
     <div class="eq-legend">
       <div class="eq-comp">
         <span class="eq-comp-sym" style="color:var(--a6)">δ<sub>Diff</sub></span>
@@ -413,7 +414,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
       <!-- Y0 node: Prä-Test -->
       <circle cx="232" cy="85" r="32" fill="var(--panel)" stroke="var(--a2)" stroke-width="2"/>
-      <text x="232" y="79" text-anchor="middle" fill="var(--a2)" font-size="10" font-family="DM Mono,monospace">Pra-Test</text>
+      <text x="232" y="79" text-anchor="middle" fill="var(--a2)" font-size="10" font-family="DM Mono,monospace">Prä-Test</text>
       <text x="232" y="97" text-anchor="middle" fill="var(--a2)" font-size="18" font-family="DM Mono,monospace" font-weight="600">Y0</text>
 
       <!-- Y1 node: Post-Test -->
@@ -423,7 +424,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
       <!-- U node: Latente Variable -->
       <ellipse cx="345" cy="24" rx="58" ry="20" fill="var(--panel)" stroke="var(--ink3)" stroke-width="1.5" stroke-dasharray="5,3"/>
-      <text x="345" y="20" text-anchor="middle" fill="var(--ink3)" font-size="10" font-family="DM Mono,monospace">Fahigkeit U</text>
+      <text x="345" y="20" text-anchor="middle" fill="var(--ink3)" font-size="10" font-family="DM Mono,monospace">Fähigkeit U</text>
       <text x="345" y="33" text-anchor="middle" fill="var(--ink3)" font-size="10" font-family="DM Mono,monospace">(latent, unbeob.)</text>
 
       <!-- Bottom labels -->
@@ -835,7 +836,7 @@ function draw(){
 
   // Achsenbeschriftungen
   ctx.fillStyle=colInk; ctx.font='15px DM Mono,monospace'; ctx.textAlign='center';
-  ctx.fillText('Pra-Test',pad.l+pw/2,H-6);
+  ctx.fillText('Prä-Test',pad.l+pw/2,H-6);
   ctx.save(); ctx.translate(15,pad.t+ph/2); ctx.rotate(-Math.PI/2);
   ctx.fillText('Post-Test',0,0); ctx.restore();
 
@@ -860,7 +861,7 @@ function draw(){
   ctx.fillText('ANCOVA:',mx,38);
   ctx.fillStyle=colInk3; ctx.font='14px DM Mono,monospace';
   ctx.fillText('bei gleichem',mx,62);
-  ctx.fillText('Pra-Wert:',mx,82);
+  ctx.fillText('Prä-Wert:',mx,82);
 
   // Schematisches Liniendiagramm
   const ancSig=stats.p_a<0.05;
@@ -935,7 +936,7 @@ function drawTrajectory(){
 
   // Title
   ctx.fillStyle=colA6; ctx.font='bold 15px DM Mono,monospace'; ctx.textAlign='left';
-  ctx.fillText('DIFFERENZWERT — Mittlere Verlaufe Pra-Test zu Post-Test',12,24);
+  ctx.fillText('DIFFERENZWERT — Mittlere Verläufe Prä-Test zu Post-Test',12,24);
 
   // Vertikale Zeitachsen-Linien
   ctx.strokeStyle=colGrid; ctx.lineWidth=1;
@@ -944,7 +945,7 @@ function drawTrajectory(){
 
   // X-Beschriftungen
   ctx.fillStyle=colInk2; ctx.font='14px DM Mono,monospace'; ctx.textAlign='center';
-  ctx.fillText('Pra-Test',xPre,H-10);
+  ctx.fillText('Prä-Test',xPre,H-10);
   ctx.fillText('Post-Test',xPost,H-10);
 
   // Trajektorien A und B
@@ -974,9 +975,9 @@ function drawTrajectory(){
   const yDA=ty2(ms.mPostA), yDB=ty2(ms.mPostB);
   ctx.textAlign='left';
   ctx.fillStyle=colA; ctx.font='bold 14px DM Mono,monospace';
-  ctx.fillText('DA '+( ms.mDA>=0?'+':'')+ms.mDA.toFixed(1),labX,yDA+5);
+  ctx.fillText('ΔA '+( ms.mDA>=0?'+':'')+ms.mDA.toFixed(1),labX,yDA+5);
   ctx.fillStyle=colB;
-  ctx.fillText('DB '+(ms.mDB>=0?'+':'')+ms.mDB.toFixed(1),labX,yDB+5);
+  ctx.fillText('ΔB '+(ms.mDB>=0?'+':'')+ms.mDB.toFixed(1),labX,yDB+5);
 
   // Klammer für delta_Diff (wenn sichtbarer Abstand)
   const diffSig=stats.p_d<0.05;
