@@ -103,6 +103,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;font-weight:500}
 .lcard-body{font-size:.82rem;line-height:1.75;color:var(--ink2)}
 .lcard-body strong{color:var(--ink)}
+.xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
 .eq-section-lbl{font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);margin-bottom:.4rem}
 .eq-divider{border-top:1px solid var(--grid);margin:.65rem 0 .55rem}
 .eq-legend{display:grid;grid-template-columns:1fr 1fr;gap:.35rem .7rem;margin-bottom:.1rem}
@@ -118,6 +119,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   color:var(--a1);margin:1.1rem 0 .35rem}
 .help-p{font-size:.85rem;line-height:1.8;color:var(--ink2);margin-bottom:.6rem}
 .help-p code{font-family:'DM Mono',monospace;font-size:.8rem;background:var(--panel);padding:.1rem .35rem;color:var(--ink)}
+.help-formula{display:block;background:var(--panel);border:1px solid var(--border);padding:.55rem .8rem;
+  font-family:'DM Mono',monospace;font-size:.8rem;color:var(--a4);margin:.4rem 0 .6rem;white-space:pre-wrap;line-height:1.7}
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
@@ -147,17 +150,42 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="help-h3">The two analyses</div>
     <p class="help-p"><strong style="color:var(--ink)">Difference score (post − pre):</strong> how large is the mean improvement per course? If both courses improve by the same amount, the difference-score analysis finds no effect.</p>
     <p class="help-p"><strong style="color:var(--ink)">ANCOVA (post ~ course + pre):</strong> at the same starting level — does one course end up ahead? Because Course B starts at a higher level and regression to the mean dampens this, Course B looks better in the ANCOVA comparison.</p>
-    <div class="help-h3">The key formula</div>
-    <p class="help-p">The difference between the two estimators can be computed exactly:<br>
-    <code>delta_ANCOVA = delta_Diff + (1 - b_w) · (mean_pre_B - mean_pre_A)</code><br>
-    As long as <code>b_w = 1</code> (ρ·σ_post/σ_pre = 1) OR there's no baseline difference, the two agree.</p>
+    <div class="help-h3">The key formula — derivation</div>
+    <p class="help-p">Both analyses start from the same four summary numbers: the pre- and post-test means per course (ȳ<sub>pre,A</sub>, ȳ<sub>post,A</sub>, ȳ<sub>pre,B</sub>, ȳ<sub>post,B</sub>). A small rewrite shows exactly why the two methods diverge — no new assumption, just algebra.</p>
+    <p class="help-p"><strong style="color:var(--ink)">Step 1 — rewrite δ<sub>Diff</sub>:</strong> with Δ = mean(post − pre), δ<sub>Diff</sub> = Δ<sub>B</sub> − Δ<sub>A</sub> is the same as:</p>
+    <span class="help-formula">δ_Diff = (ȳ_post,B − ȳ_pre,B) − (ȳ_post,A − ȳ_pre,A)
+       = (ȳ_post,B − ȳ_post,A) − (ȳ_pre,B − ȳ_pre,A)
+       = (ȳ_post,B − ȳ_post,A) − Δ_base</span>
+    <p class="help-p">So δ<sub>Diff</sub> subtracts the <em>full</em> starting-level difference Δ<sub>base</sub> from the raw post-test difference — it implicitly assumes that one point of pre-test lead translates 1:1 into one point of post-test lead (a slope of 1).</p>
+    <p class="help-p"><strong style="color:var(--ink)">Step 2 — δ<sub>ANCOVA</sub> makes the same correction, but with an estimated rather than an assumed slope:</strong></p>
+    <span class="help-formula">δ_ANCOVA = (ȳ_post,B − ȳ_post,A) − b_w · Δ_base</span>
+    <p class="help-p">Instead of subtracting Δ<sub>base</sub> in full, ANCOVA weights it by the <em>estimated</em> within-group slope b<sub>w</sub> — how much a point of pre-test lead actually translates into a point of post-test lead, on average.</p>
+    <p class="help-p"><strong style="color:var(--ink)">Step 3 — subtract the two formulas</strong> (the raw post-test difference cancels out exactly):</p>
+    <span class="help-formula">δ_ANCOVA − δ_Diff = [(ȳ_post,B−ȳ_post,A) − b_w·Δ_base] −
+  [(ȳ_post,B−ȳ_post,A) − Δ_base]
+                   = (1 − b_w) · Δ_base
+
+  ⟹  δ_ANCOVA = δ_Diff + (1 − b_w) · Δ_base</span>
+    <p class="help-p">The correction term (1 − b<sub>w</sub>) · Δ<sub>base</sub> vanishes exactly when either b<sub>w</sub> = 1 (no regression to the mean) <em>or</em> Δ<sub>base</sub> = 0 (no starting-level difference, as is usually the case in an RCT).</p>
+
+    <div class="help-h3">What exactly is b<sub>w</sub> — and why ≈ ρ?</div>
+    <p class="help-p"><strong style="color:var(--ink)">b<sub>w</sub></strong> ("within-group slope", pooled) is the slope you get when you regress post on pre <em>separately within</em> each course and pool the two slopes across courses — exactly the slope that an ANCOVA with a common-slope assumption (<code>Post ~ Pre + Course</code>, no interaction) estimates internally.</p>
+    <p class="help-p">For a bivariate normal distribution, the general formula for the regression slope of Y on X is:</p>
+    <span class="help-formula">b = ρ · (σ_Y / σ_X)</span>
+    <p class="help-p">Here Y = post, X = pre, so b<sub>w</sub> = ρ · σ<sub>post</sub>/σ<sub>pre</sub>. If the spread barely changes from pre- to post-test (σ<sub>post</sub> ≈ σ<sub>pre</sub> — exactly how this tool simulates it, and realistic in many test-retest settings), this simplifies to <strong style="color:var(--ink)">b<sub>w</sub> ≈ ρ</strong>. That's why the ρ slider on the left acts almost directly on how far the two methods diverge.</p>
+
+    <div class="help-h3">The intuition: a difference score is ANCOVA with a fixed slope</div>
+    <p class="help-p">Comparing steps 1 and 2 reveals the core of the paradox: <strong style="color:var(--ink)">difference scores are mathematically nothing other than ANCOVA with b<sub>w</sub> not estimated, but stubbornly fixed at 1.</strong> Whether that's justified depends on the design — in an RCT, Δ<sub>base</sub> is already ≈ 0, so fixing the slope has essentially no consequence; in an observational study with a genuine starting-level difference, a wrongly fixed slope can account for the entire bias you incur.</p>
     <div class="help-h3">Controls</div>
     <p class="help-p"><strong style="color:var(--ink)">Δ starting level:</strong> difference in the pre-test (Course B minus Course A). <strong style="color:var(--ink)">True effect:</strong> additional improvement from the intensive course (beyond the semester's general improvement). <strong style="color:var(--ink)">ρ (pre-post corr.):</strong> the closer to 1, the more strongly the two methods agree. <strong style="color:var(--ink)">Scenarios:</strong> four preset situations showing different aspects of the paradox.</p>
     <div class="help-h3">Best practice: which tool when?</div>
     <p class="help-p"><strong style="color:var(--ink)"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rct" target="_blank" rel="noopener" title="A randomized controlled trial (RCT) assigns units of study to a treatment or control condition purely by chance.">RCT</a>:</strong> ANCOVA is preferable (higher power, random baseline differences get corrected). <strong style="color:var(--ink)">Observational study:</strong> the choice depends on the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-estimand" target="_blank" rel="noopener" title="The estimand is the theoretical target quantity one wants to estimate — the precisely defined question that the analysis is meant to answer.">estimand</a> — which causal question is to be answered? A <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dag" target="_blank" rel="noopener" title="A Directed Acyclic Graph (DAG) is a directed graph without cycles that makes causal assumptions about a system of variables explicit and testable.">DAG</a> is needed. Both methods can be legitimate — for different questions.</p>
 
     <div class="help-h3">References</div>
-    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-lord-1967" target="_blank" rel="noopener">Lord, F. M. (1967)</a>. A paradox in the interpretation of group comparisons. <em>Psychological Bulletin, 68</em>(5), 304–305.</p>
+    <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-lord-1967" target="_blank" rel="noopener">Lord, F. M. (1967)</a>. A paradox in the interpretation of group comparisons. <em>Psychological Bulletin, 68</em>(5), 304–305.<br>
+    <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-vickers-altman-2001" target="_blank" rel="noopener">Vickers, A. J. &amp; Altman, D. G. (2001)</a>. Statistics notes: Analysing controlled trials with baseline and follow up measurements. <em>BMJ, 323</em>(7321), 1123–1124.<br>
+    <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-senn-2006" target="_blank" rel="noopener">Senn, S. (2006)</a>. Change from baseline and analysis of covariance revisited. <em>Statistics in Medicine, 25</em>(24), 4334–4344.<br>
+    <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-pearl-2016-lord" target="_blank" rel="noopener">Pearl, J. (2016)</a>. Lord's Paradox Revisited – (Oh Lord! Kumbaya!). <em>Journal of Causal Inference, 4</em>(2).</p>
   </div>
 </div>
 
@@ -203,24 +231,6 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <input type="range" id="sl-n" min="30" max="300" step="10" value="100" oninput="onSl('n',this)">
     </div>
     <button class="seed-btn" onclick="newSeed()">⟳ New sample</button>
-  </div>
-
-  <div class="scard" style="font-family:'DM Mono',monospace;font-size:.76rem;line-height:1.8;color:var(--ink2)">
-    <div class="scard-title">Key Formula</div>
-    <div style="font-size:.79rem">
-      <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span>
-      <span style="color:var(--ink)"> = </span>
-      <span style="color:var(--a6)">δ<sub>Diff</sub></span>
-      <span style="color:var(--ink)"> + </span>
-    </div>
-    <div style="font-size:.79rem">
-      <span style="color:var(--ink3)">(1 − </span>
-      <span style="color:var(--a3)">b<sub>w</sub></span>
-      <span style="color:var(--ink3)">) · </span>
-      <span style="color:var(--a1)">Δ<sub>base</sub></span>
-    </div>
-    <div style="color:var(--ink3);margin-top:.35rem;font-size:.72rem">= 0 when <span style="color:var(--a3)">b<sub>w</sub></span>=1 or <span style="color:var(--a1)">Δ<sub>base</sub></span>=0</div>
-    <div style="font-size:.75rem;margin-top:.3rem;color:var(--ink2)">Difference: <span id="key-delta-anc" style="color:var(--a4)">—</span></div>
   </div>
 
 </div><!-- /sidebar -->
@@ -270,8 +280,12 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div class="sec-h">The Mathematical Relationship</div>
   <div class="eq-wrap">
 
+    <div class="eq-note" style="margin:0 0 .7rem">
+      Both methods estimate the same group difference — just computed differently (step ①). The trick: δ<sub>ANCOVA</sub> can be rewritten algebraically as δ<sub>Diff</sub> plus a correction term (step ②) — this explains <em>exactly</em> how large the gap between them is and what it depends on (step ③). The full derivation is in the <a class="glo-link" onclick="toggleHelp()">Help</a>.
+    </div>
+
     <!-- A: the two complete formulas -->
-    <div class="eq-section-lbl">The Two Analyses</div>
+    <div class="eq-section-lbl">① The Two Analyses — Each on Its Own</div>
     <div class="eq-main">
       <span style="color:var(--a6)">δ<sub>Diff</sub></span>
       <span style="color:var(--ink3)"> = </span>
@@ -290,7 +304,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
     <!-- B: key formula with live values -->
     <div class="eq-divider"></div>
-    <div class="eq-section-lbl">Key Formula — Why They Diverge</div>
+    <div class="eq-section-lbl">② Rewritten in Terms of Each Other — Why They Diverge</div>
     <div class="eq-main">
       <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span>
       <span style="color:var(--ink3)"> = </span>
@@ -310,10 +324,13 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <span style="color:var(--a1)"><span id="eq-dpre">—</span></span>
       <span style="color:var(--a4)"> = <span id="eq-check">—</span></span>
     </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);margin-top:.5rem;padding-top:.45rem;border-top:1px dashed var(--grid)">
+      → The two methods differ here by <strong id="eq-methoddiff" style="color:var(--a4)">—</strong> points — that <em>is</em> the size of the paradox for the current settings.
+    </div>
 
     <!-- C: component legend -->
     <div class="eq-divider"></div>
-    <div class="eq-section-lbl">Components Explained</div>
+    <div class="eq-section-lbl">③ The Two Ingredients of the Correction Term</div>
     <div class="eq-legend">
       <div class="eq-comp">
         <span class="eq-comp-sym" style="color:var(--a6)">δ<sub>Diff</sub></span>
@@ -328,7 +345,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <div class="eq-comp">
         <span class="eq-comp-sym" style="color:var(--a3)">b<sub>w</sub></span>
         <span class="eq-comp-val" id="comp-bw">—</span>
-        <span class="eq-comp-desc">Within-group slope of post on pre ≈ ρ · σ<sub>post</sub>/σ<sub>pre</sub></span>
+        <span class="eq-comp-desc">Within-group slope of post on pre — here ≈ ρ, since σ<sub>post</sub> ≈ σ<sub>pre</sub> (details in the Help)</span>
       </div>
       <div class="eq-comp">
         <span class="eq-comp-sym" style="color:var(--a1)">Δ<sub>base</sub></span>
@@ -338,7 +355,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     </div>
 
     <div class="eq-note">
-      Paradox only when <span style="color:var(--a3)">b<sub>w</sub></span> ≠ 1 <em>and</em> <span style="color:var(--a1)">Δ<sub>base</sub></span> ≠ 0 at the same time. In an RCT: <span style="color:var(--a1)">Δ<sub>base</sub></span> ≈ 0 by randomization → both methods agree.
+      The correction term (1 − <span style="color:var(--a3)">b<sub>w</sub></span>) · <span style="color:var(--a1)">Δ<sub>base</sub></span> vanishes only if <em>one</em> of its two factors is zero: <span style="color:var(--a3)">b<sub>w</sub></span> = 1 (no regression to the mean) <em>or</em> <span style="color:var(--a1)">Δ<sub>base</sub></span> = 0 (no baseline difference). In an RCT the latter holds approximately by randomization — which is why the two methods usually agree there.
     </div>
   </div>
 
@@ -428,7 +445,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="dcard" style="border-top:3px solid var(--a4)">
       <div class="dcard-h" style="color:var(--a4)">Prefer ANCOVA when:</div>
       <div class="dcard-body">
-        <strong>Randomized experiment (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rct" target="_blank" rel="noopener" title="A randomized controlled trial (RCT) assigns units of study to a treatment or control condition purely by chance.">RCT</a>)</strong> — baseline differences are random; ANCOVA notably increases statistical power without introducing bias. It's the modern standard (Vickers &amp; Altman 2001, EMA guidelines).<br><br>
+        <strong>Randomized experiment (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rct" target="_blank" rel="noopener" title="A randomized controlled trial (RCT) assigns units of study to a treatment or control condition purely by chance.">RCT</a>)</strong> — baseline differences are random; ANCOVA notably increases statistical power without introducing bias. It's the modern standard (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-vickers-altman-2001" target="_blank" rel="noopener">Vickers &amp; Altman, 2001</a>, EMA guidelines).<br><br>
         <strong>Observational study with a clearly defined <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Confounding arises when a third variable C is a common cause of both the treatment X and the outcome Y: C → X and C → Y.">confounder</a></strong> — when Y₀ (pre) is the only relevant covariate and G is not caused by Y₀ (i.e. G ⊥ Y₀ | U in the DAG).<br><br>
         The question is: <em>"What would the effect be if we had equal starting conditions?"</em>
       </div>
@@ -443,7 +460,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     </div>
   </div>
   <div class="insight-box">
-    <strong>Modern takeaway (Pearl 2016, Senn 2006):</strong> Lord's paradox is not an error — it's a mirror. The two methods answer different causal questions. Best practice today: <em>pin down the causal question first, draw a DAG, then choose the method.</em> In RCTs, ANCOVA is nearly always preferable. In observational studies, the answer depends on the estimand.
+    <strong>Modern takeaway (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-pearl-2016-lord" target="_blank" rel="noopener">Pearl, 2016</a>, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-senn-2006" target="_blank" rel="noopener">Senn, 2006</a>):</strong> Lord's paradox is not an error — it's a mirror. The two methods answer different causal questions. Best practice today: <em>pin down the causal question first, draw a DAG, then choose the method.</em> In RCTs, ANCOVA is nearly always preferable. In observational studies, the answer depends on the estimand.
   </div>
 
   <div class="learn-section">
@@ -463,19 +480,18 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       </div>
       <div class="lcard">
         <div class="lcard-h">RCT: ANCOVA almost always better</div>
-        <div class="lcard-body">In randomized experiments, ANCOVA is statistically superior to a plain t-test on difference scores: it reduces residual error by explaining variance through the pre value. The estimated group differences are unbiased and more precise. Vickers &amp; Altman (2001, BMJ) recommend ANCOVA as the standard for clinical trials. Difference scores are only equally good when ρ = 1 or there's no baseline variance.</div>
+        <div class="lcard-body">In randomized experiments, ANCOVA is statistically superior to a plain t-test on difference scores: it reduces residual error by explaining variance through the pre value. The estimated group differences are unbiased and more precise. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-vickers-altman-2001" target="_blank" rel="noopener">Vickers &amp; Altman (2001, BMJ)</a> recommend ANCOVA as the standard for clinical trials. Difference scores are only equally good when ρ = 1 or there's no baseline variance.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Observational studies: DAG first</div>
         <div class="lcard-body">In observational studies, ANCOVA on Y₀ (pre) can backfire: if Y₀ is a <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-mediator" target="_blank" rel="noopener" title="A mediator M is a variable on the causal path between treatment T and outcome Y: T → M → Y.">mediator</a></strong> of the G effect (G → Y₀ → Y₁), we adjust along the causal path and underestimate the effect. If Y₀ is a <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-collider" target="_blank" rel="noopener" title="A collider is a variable C in a DAG that has arrows from two or more other variables pointing into it: A → C ← B.">collider</a></strong> (G → Y₀ ← U → Y₁), adjusting opens a backdoor path. A DAG clarifies which case applies.</div>
       </div>
       <div class="lcard">
-        <div class="lcard-h">The paradox's formula</div>
+        <div class="lcard-h">You already know δ<sub>Diff</sub> — from other tools</div>
         <div class="lcard-body">
-          δ<sub>ANCOVA</sub> = δ<sub>Diff</sub> + <strong>(1 − b<sub>w</sub>) · Δ<sub>base</sub></strong><br><br>
-          <strong>b<sub>w</sub></strong> = pooled within-group slope ≈ ρ<br>
-          <strong>Δ<sub>base</sub></strong> = starting-level difference between groups<br><br>
-          The paradox disappears when ρ = 1 (no regression-to-the-mean effect) or Δ<sub>base</sub> = 0 (no baseline difference). In an RCT, Δ<sub>base</sub> ≈ 0 by randomization.
+          Treat pre/post as two time points and Course A/B as the control/treatment group, and δ<sub>Diff</sub> is exactly the <strong>difference-in-differences estimator</strong>. It's also the <strong>Group×Time interaction coefficient</strong> in a 2×2 repeated-measures ANOVA — and the <strong>coefficient of a dummy-coded group variable</strong> in a regression of (post − pre) on course. Three names for the same number, depending on your field.
+          <br><br>
+          <a class="xlink" href="DiD.html" target="_blank" rel="noopener">→ Difference-in-Differences</a> · <a class="xlink" href="ANOVA.html" target="_blank" rel="noopener">→ ANOVA (Dummy vs. Effect Coding)</a>
         </div>
       </div>
     </div>
@@ -698,9 +714,9 @@ function updateUI(){
   const check=s.delta_diff+(1-s.b_w)*(s.mPreB-s.mPreA);
   document.getElementById('eq-check').textContent=fmt(check,2);
 
-  // Key formula in sidebar
-  const keyDelta=s.delta_anc-s.delta_diff;
-  document.getElementById('key-delta-anc').textContent=fmt(keyDelta,2);
+  // Size of the paradox: how far the two estimators diverge
+  const keyDelta=Math.abs(s.delta_anc-s.delta_diff);
+  document.getElementById('eq-methoddiff').textContent=keyDelta.toFixed(2);
 
   // Component legend
   document.getElementById('comp-ddiff').textContent=fmt(s.delta_diff,2);
