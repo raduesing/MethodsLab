@@ -390,7 +390,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
         <p><strong>… nur Intercept (Gruppen­farben, durchgezogen) → aktivieren</strong><br>
         Die Gruppen-Intercepts werden zur Grand Mean geschrumpft, aber alle Gruppen teilen denselben Slope γ₁₀ (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-random-intercept" target="_blank" rel="noopener" title="Ein Random Intercept ist der Spezialfall eines Random Effect, bei dem nur der Achsenabschnitt zwischen Gruppen variiert, nicht aber die Slopes.">Random Intercepts</a>) — die Geraden sind daher <em>parallel</em>. Die blaue gestrichelte Gerade zeigt den <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-fixed-effects" target="_blank" rel="noopener" title="Fixed Effects sind Modellparameter, die für die gesamte Population konstant geschätzt werden — im Gegensatz zu Random Effects, die gruppenspezifisch variieren.">Fixed Effect</a> (γ₀₀ + γ₁₀·X). Korrekte Standard­fehler, Informations­austausch zwischen Gruppen.</p>
         <p><strong>… Intercept + Slope (Gruppen­farben, gestrichelt) → aktivieren</strong><br>
-        Zusätzlich zum Intercept wird jetzt auch die Steigung pro Gruppe geschrumpft (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-random-slope" target="_blank" rel="noopener" title="Ein Random Slope erlaubt zusätzlich zum Random Intercept, dass auch der Effekt eines Prädiktors zwischen Gruppen variiert.">Random Slopes</a>). Aktivieren Sie beide Modi gleichzeitig: dieselben (geschrumpften) Startpunkte, aber die Steigungen dürfen jetzt individuell abweichen. In diesem Modul ist die <em>wahre</em> Steigung für alle Klassen identisch (τ₁=0) — die Geraden bleiben daher meist nahe an parallel, und τ₁² wird korrekt auf ≈0 geschätzt (siehe Hinweis unter der Formel). Echte Steigungsheterogenität mit einstellbarem τ₁ und Intercept-Slope-Korrelation ρ erkunden Sie in Reiter <span class="circ">③</span>.</p>
+        Zusätzlich zum Intercept wird jetzt auch die Steigung pro Gruppe geschrumpft (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-random-slope" target="_blank" rel="noopener" title="Ein Random Slope erlaubt zusätzlich zum Random Intercept, dass auch der Effekt eines Prädiktors zwischen Gruppen variiert.">Random Slopes</a>). Aktivieren Sie beide Modi gleichzeitig: dieselben (geschrumpften) Startpunkte, aber die Steigungen dürfen jetzt individuell abweichen. Dieses Modul startet mit denselben Populationsparametern wie Reiter <span class="circ">③</span> — dieselben Datenpunkte, dieselbe wahre Steigungsvarianz τ₁. Wechseln Sie zu Reiter <span class="circ">③</span>, um τ₁ und die Intercept-Slope-Korrelation ρ frei zu verändern (das wirkt sich nur auf Reiter ③s eigene Anzeige aus, nicht rückwirkend auf diesen Reiter).</p>
         <p><strong>Was beobachten?</strong><br>
         · <em>Hohe <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-icc" target="_blank" rel="noopener" title="Der Intraklassen-Korrelationskoeffizient misst, welcher Anteil der Gesamtvarianz eines Outcomes auf Gruppenunterschiede zurückzuführen ist: ICC = τ₀² / (τ₀² + σ²).">ICC</a>:</em> CP- und NP-Geraden liegen weit auseinander. PP/RS liegen dazwischen.<br>
         · <em>Kleine Gruppen:</em> NP-Geraden schwanken stark, PP/RS-Geraden bleiben stabil.<br>
@@ -1147,14 +1147,17 @@ function updMod1Formula(){
     const t1sq=ST.rsFit?ST.rsFit.tau1Sq:0;
     d.innerHTML='<span class="rnd">u<sub>0j</sub></span> ~ N(0,τ₀²) &nbsp;·&nbsp; <span class="rnd">u<sub>1j</sub></span> ~ N(0,τ₁²='+t1sq.toFixed(2)+') &nbsp;·&nbsp; <span class="eps">ε<sub>ij</sub></span> ~ N(0,σ²) &nbsp;— <em>ergänzt den u<sub>1j</sub>-Term, sonst identisch zu oben</em>';
     if(warn){
-      if(t1sq<0.05){
-        warn.style.display='block';
-        warn.style.color=cvar('--a3');warn.style.borderColor=cvar('--a3');
-        warn.innerHTML='✓ τ₁² wird hier korrekt auf ≈0 geschätzt — in diesem Modul ist die wahre Steigung für alle Klassen identisch (τ₁=0), Random Slopes bringt entsprechend nichts zusätzlich. Echte Steigungsheterogenität (τ₁&gt;0) erkunden Sie in Reiter ③ „Random Slopes".';
-      }else{
+      const trueT1=ST.tau1;
+      if(t1sq<0.05 && trueT1>0.3){
         warn.style.display='block';
         warn.style.color=cvar('--a5');warn.style.borderColor=cvar('--a5');
-        warn.innerHTML='τ₁² wird hier auf '+t1sq.toFixed(2)+' geschätzt, obwohl die wahre Steigung in diesem Modul für alle Klassen identisch ist (τ₁=0) — reines Stichprobenrauschen bei nur J=5 Gruppen. Klicken Sie oben rechts "↻ Neue Daten" für eine andere Stichprobe.';
+        warn.innerHTML='⚠ τ₁² wird hier auf ≈0 geschätzt ("boundary fit") — die Geraden sehen deshalb (fast) parallel aus, obwohl der wahre Wert τ₁='+trueT1.toFixed(1)+' ist (dasselbe τ₁ wie aktuell in Reiter ③). Bei nur J=5 Gruppen und relativ hohem Restrauschen lässt sich echte Steigungsvariabilität manchmal nicht von Stichprobenrauschen unterscheiden — dasselbe Phänomen tritt auch in echten lme4-Fits auf. Klicken Sie oben rechts "↻ Neue Daten" für eine andere Stichprobe.';
+      }else if(t1sq<0.05){
+        warn.style.display='block';
+        warn.style.color=cvar('--a3');warn.style.borderColor=cvar('--a3');
+        warn.innerHTML='✓ τ₁² wird hier korrekt auf ≈0 geschätzt — die wahre Steigung ist in diesem Datensatz für alle Klassen (nahezu) identisch.';
+      }else{
+        warn.style.display='none';
       }
     }
   }else{
@@ -1417,9 +1420,11 @@ function runManySE(reps){
 
 /* ── Sim / Redraw ────────────────────────────────────────── */
 function runSim(){
-  // Modul 1 zeigt Random-Intercepts-Pooling (die Formel-Karte hat keinen u1j-Term) — die
-  // Daten werden daher bewusst mit tau1=0 erzeugt, unabhängig von Modul 3s eigenen Reglern.
-  ST.data=genData(ST.seed,ST.g00,ST.g10,ST.tau0,ST.sig,ST.J,ST.nj,0,0);
+  // Modul 1 nutzt dieselben Populationsparameter (inkl. tau1/rho) wie Modul 3s Default —
+  // beide starten mit identischen Datenpunkten, damit der Wechsel zwischen den Reitern
+  // optisch nicht "springt". Modul 3 lässt tau1/rho/g10 frei variieren (verändert dann nur
+  // Modul 3s eigene Wolke); Modul 1 selbst hat dafür keine Regler, nur die Pooling-Umschalter.
+  ST.data=genData(ST.seed,ST.g00,ST.g10,ST.tau0,ST.sig,ST.J,ST.nj,ST.tau1,ST.rho);
   ST.cpFit=fitCP(ST.data);ST.npFit=fitNP(ST.data);ST.ppFit=fitPP(ST.data,ST.npFit);
   ST.rsFit=fitPP_RS(ST.data,ST.npFit,ST.ppFit);
   document.getElementById('seed-info').textContent='Seed: '+ST.seed;

@@ -390,7 +390,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
         <p><strong>… intercept only (group colors, solid) → activate</strong><br>
         The group intercepts are shrunk toward the grand mean, but all groups share the same slope γ₁₀ (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-random-intercept" target="_blank" rel="noopener" title="A random intercept is the special case of a random effect in which only the intercept varies between groups, not the slopes.">Random Intercepts</a>) — the lines are therefore <em>parallel</em>. The blue dashed line shows the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-fixed-effects" target="_blank" rel="noopener" title="Fixed effects are model parameters estimated as constant for the entire population — as opposed to random effects, which vary by group.">fixed effect</a> (γ₀₀ + γ₁₀·X). Correct standard errors, information sharing between groups.</p>
         <p><strong>… intercept + slope (group colors, dashed) → activate</strong><br>
-        In addition to the intercept, the slope per group is now also shrunk (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-random-slope" target="_blank" rel="noopener" title="A random slope, in addition to a random intercept, lets the effect of a predictor also vary between groups.">Random Slopes</a>). Activate both modes at once: the same (shrunk) starting points, but slopes are now free to differ individually. In this module the <em>true</em> slope is identical for all classes (τ₁=0) — the lines therefore stay close to parallel, and τ₁² is correctly estimated at ≈0 (see the note under the formula). Explore genuine slope heterogeneity with an adjustable τ₁ and intercept-slope correlation ρ in Tab <span class="circ">③</span>.</p>
+        In addition to the intercept, the slope per group is now also shrunk (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-random-slope" target="_blank" rel="noopener" title="A random slope, in addition to a random intercept, lets the effect of a predictor also vary between groups.">Random Slopes</a>). Activate both modes at once: the same (shrunk) starting points, but slopes are now free to differ individually. This module starts with the same population parameters as Tab <span class="circ">③</span> — the same data points, the same true slope variance τ₁. Switch to Tab <span class="circ">③</span> to freely change τ₁ and the intercept-slope correlation ρ (that only affects Tab ③'s own display, not this tab retroactively).</p>
         <p><strong>What to observe</strong><br>
         · <em>High <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc" target="_blank" rel="noopener" title="The Intraclass Correlation Coefficient measures what proportion of the total variance of an outcome is attributable to group differences: ICC = τ₀² / (τ₀² + σ²).">ICC</a>:</em> CP and NP lines lie far apart. PP/RS lie in between.<br>
         · <em>Small groups:</em> NP lines fluctuate strongly, PP/RS lines stay stable.<br>
@@ -1147,14 +1147,17 @@ function updMod1Formula(){
     const t1sq=ST.rsFit?ST.rsFit.tau1Sq:0;
     d.innerHTML='<span class="rnd">u<sub>0j</sub></span> ~ N(0,τ₀²) &nbsp;·&nbsp; <span class="rnd">u<sub>1j</sub></span> ~ N(0,τ₁²='+t1sq.toFixed(2)+') &nbsp;·&nbsp; <span class="eps">ε<sub>ij</sub></span> ~ N(0,σ²) &nbsp;— <em>adds the u<sub>1j</sub> term, otherwise identical to above</em>';
     if(warn){
-      if(t1sq<0.05){
-        warn.style.display='block';
-        warn.style.color=cvar('--a3');warn.style.borderColor=cvar('--a3');
-        warn.innerHTML='✓ τ₁² is correctly estimated here at ≈0 — in this module the true slope is identical for all classes (τ₁=0), so Random Slopes adds nothing beyond Random Intercepts. Explore genuine slope heterogeneity (τ₁&gt;0) in Tab ③ "Random Slopes".';
-      }else{
+      const trueT1=ST.tau1;
+      if(t1sq<0.05 && trueT1>0.3){
         warn.style.display='block';
         warn.style.color=cvar('--a5');warn.style.borderColor=cvar('--a5');
-        warn.innerHTML='τ₁² is estimated here at '+t1sq.toFixed(2)+', even though the true slope in this module is identical for all classes (τ₁=0) — pure sampling noise with only J=5 groups. Click "↻ New Data" in the top right for a different sample.';
+        warn.innerHTML='⚠ τ₁² is estimated here at ≈0 ("boundary fit") — the lines therefore look (almost) parallel even though the true value is τ₁='+trueT1.toFixed(1)+' (the same τ₁ currently set in Tab ③). With only J=5 groups and relatively high residual noise, genuine slope variability can sometimes not be distinguished from sampling noise — the same phenomenon also occurs in real lme4 fits. Click "↻ New Data" in the top right for a different sample.';
+      }else if(t1sq<0.05){
+        warn.style.display='block';
+        warn.style.color=cvar('--a3');warn.style.borderColor=cvar('--a3');
+        warn.innerHTML='✓ τ₁² is correctly estimated here at ≈0 — the true slope is (nearly) identical for all classes in this dataset.';
+      }else{
+        warn.style.display='none';
       }
     }
   }else{
@@ -1417,9 +1420,11 @@ function runManySE(reps){
 
 /* ── Sim / Redraw ────────────────────────────────────────── */
 function runSim(){
-  // Module 1 shows random-intercepts pooling (the formula card has no u1j term) — the data
-  // is therefore deliberately generated with tau1=0, independent of Module 3's own sliders.
-  ST.data=genData(ST.seed,ST.g00,ST.g10,ST.tau0,ST.sig,ST.J,ST.nj,0,0);
+  // Module 1 uses the same population parameters (incl. tau1/rho) as Module 3's default —
+  // both start with identical data points, so switching tabs doesn't visually "jump". Module
+  // 3 lets tau1/rho/g10 vary freely (only changes Module 3's own cloud); Module 1 itself has
+  // no sliders for these, just the pooling toggles.
+  ST.data=genData(ST.seed,ST.g00,ST.g10,ST.tau0,ST.sig,ST.J,ST.nj,ST.tau1,ST.rho);
   ST.cpFit=fitCP(ST.data);ST.npFit=fitNP(ST.data);ST.ppFit=fitPP(ST.data,ST.npFit);
   ST.rsFit=fitPP_RS(ST.data,ST.npFit,ST.ppFit);
   document.getElementById('seed-info').textContent='Seed: '+ST.seed;
