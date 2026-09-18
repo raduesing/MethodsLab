@@ -524,8 +524,14 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
   <div class="cv-row" style="align-items:flex-start">
     <!-- Canvas -->
     <div>
-      <div class="cv-label">Gruppen-spezifische Steigungen (farbig durchgezogen = geschrumpfte Random-Slopes-Schätzung, farbig gepunktet = rohe NP-Gerade, grau = Fixed Slope über alle Punkte)</div>
       <div class="cv-wrap"><canvas id="cv3" width="860" height="650"></canvas></div>
+
+      <div style="margin-top:.7rem">
+        <div class="cv-label">No-Pooling-Geraden (de/aktivieren)</div>
+        <button class="btn primary" id="m3-np-btn" onclick="toggleNP3()" style="width:100%;text-align:left;opacity:0.35">
+          ● Rohe NP-Geraden einblenden (Vergleich zur Shrinkage)
+        </button>
+      </div>
     </div>
 
     <!-- Sidebar: Steuerung / Kennwerte als Sub-Tabs -->
@@ -591,12 +597,12 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
   <!-- Erklärung: volle Breite, unter Plot + Sidebar -->
   <div class="info-box explain-full">
     <div class="info-box-h">Was Sie sehen</div>
-    <p>Farbig durchgezogen = gruppenspezifische Random-Slopes-Schätzung (geschrumpft, dasselbe Modell wie Reiter ① im Modus „Intercept+Slope"). Farbig gepunktet = rohe NP-Gerade (eine pro Klasse, ungeschrumpft). Graue gestrichelte Gerade = Fixed Slope über alle Punkte. Schieben Sie τ₁ und ρ (Reiter „Steuerung"), um Steigungsvariabilität, Intercept-Slope-Korrelation und den Shrinkage-Effekt live zu erkunden.</p>
+    <p>Farbig durchgezogen = gruppenspezifische Random-Slopes-Schätzung (geschrumpft, dasselbe Modell wie Reiter ① im Modus „Intercept+Slope"). Graue gestrichelte Gerade = Fixed Slope über alle Punkte. Über den Button darunter lassen sich zusätzlich die rohen (ungeschrumpften) NP-Geraden einblenden. Schieben Sie τ₁ und ρ (Reiter „Steuerung"), um Steigungsvariabilität, Intercept-Slope-Korrelation und den Shrinkage-Effekt live zu erkunden.</p>
     <details class="details-box">
       <summary>▸ Mehr erklären</summary>
       <div class="details-inner">
         <p><strong>Was Sie sehen im Detail</strong><br>
-        Farbig gepunktet = gruppenspezifische NP-Geraden (eine pro Klasse, geschätzt nur aus den n_j Beobachtungen dieser Klasse). Farbig durchgezogen = dieselben Klassen nach Random-Slopes-Shrinkage — exakt dieselbe Schätzung, die Reiter ① im Modus „Intercept+Slope" für die dort synchronisierten Default-Daten zeigt. Graue gestrichelte Gerade = der geschätzte Fixed Slope (OLS über alle Punkte, N=J·n_j) — eine gute Annäherung an den wahren Wert γ₁₀, weil sie viel mehr Beobachtungen nutzt als jede einzelne farbige Gerade. Bei τ₁=0 sind die <em>wahren</em> Steigungen aller Klassen identisch — die gepunkteten NP-Geraden können trotzdem leicht unterschiedlich aussehen, weil jede einzelne nur aus n_j=10 verrauschten Beobachtungen geschätzt wird (reines Stichprobenrauschen, keine echte Heterogenität). Genau das ist der Grund für Random-Slopes-Shrinkage: Die durchgezogenen Geraden ziehen diese zufällig verrauschten NP-Steigungen zurück zu γ₁₀, statt sie für bare Münze zu nehmen — je kleiner τ₁ relativ zum Rauschen, desto stärker rückt die durchgezogene Gerade von der gepunkteten weg in Richtung des Fixed Slope.</p>
+        Farbig durchgezogen = gruppenspezifische Random-Slopes-Schätzung nach Shrinkage — exakt dieselbe Schätzung, die Reiter ① im Modus „Intercept+Slope" für die dort synchronisierten Default-Daten zeigt. Graue gestrichelte Gerade = der geschätzte Fixed Slope (OLS über alle Punkte, N=J·n_j) — eine gute Annäherung an den wahren Wert γ₁₀, weil sie viel mehr Beobachtungen nutzt als jede einzelne farbige Gerade. Über den Button unter dem Diagramm lassen sich zusätzlich die rohen NP-Geraden einblenden (eine pro Klasse, ungeschrumpft, geschätzt nur aus den n_j Beobachtungen dieser Klasse) — im Vergleich wird sichtbar, wie stark die durchgezogenen Geraden zurück zu γ₁₀ gezogen wurden. Bei τ₁=0 sind die <em>wahren</em> Steigungen aller Klassen identisch — die rohen NP-Geraden können trotzdem leicht unterschiedlich aussehen, weil jede einzelne nur aus n_j=10 verrauschten Beobachtungen geschätzt wird (reines Stichprobenrauschen, keine echte Heterogenität). Genau das ist der Grund für Random-Slopes-Shrinkage: Sie zieht diese zufällig verrauschten NP-Steigungen zurück zu γ₁₀, statt sie für bare Münze zu nehmen — je kleiner τ₁ relativ zum Rauschen, desto stärker weicht die geschrumpfte Gerade von der rohen NP-Geraden ab, in Richtung des Fixed Slope.</p>
         <p><strong>Schieber τ₁ (Steigungsvarianz)</strong><br>
         τ₁=0: Alle Klassen profitieren gleich von Lernzeit — Random Intercepts genügt.<br>
         τ₁&gt;0: Die Steigungen fächern auf (Fan-out oder -in). Inhaltliche Frage: Ist der Lernzeit-Effekt in manchen Klassen stärker als in anderen?</p>
@@ -893,6 +899,13 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
       </div>
     </div>
 
+    <div class="lcard">
+      <div class="lcard-h"><span class="circ">⑧</span> Weiterführend: (G)LMM — Mixed Models Interaktiv</div>
+      <div class="lcard-body">
+        Dieses Tool deckt die Kernideen ab — für eine deutlich umfangreichere Vertiefung (u.&nbsp;a. generalisierte lineare Mixed Models, GLMM, mit binären/zähldaten-Outcomes, weitere Zufallseffekt-Strukturen und Modellvergleiche) bietet das BTL-Schwesterprojekt das interaktive Tool <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/GLMM_interactive.html" target="_blank" rel="noopener">„(G)LMM — Mixed Models Interaktiv"</a> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/GLMM_interactive.html" target="_blank" rel="noopener">English version</a>).
+      </div>
+    </div>
+
   </div>
 </section>
 </div><!-- #scroll -->
@@ -962,7 +975,7 @@ const GC=['#e05a3a','#2a7fd8','#3aad7a','#d08030','#9b59d0'];
 const ST={
   seed:4, g00:50, g10:3, tau0:8, sig:8, J:5, nj:10,
   tau0_m2:8, sig_m2:8, nj_m2:10,
-  tau1:1.5, rho:0, g10_m3:3,
+  tau1:1.5, rho:0, g10_m3:3, showNP3:false,
   bw:3, bb:-6, xoff:7, simpShowFixed:false,
   se_seed:11, se_grand:50, se_tau:8, se_sig:15,
   activeModule:1,
@@ -1273,7 +1286,7 @@ function drawMod3(){
   g.forEach((grp,j)=>grp.pts.forEach(p=>drawDot(ctx,sc,p.x,p.y,GC[j%5])));
   const np=fitNP(g),cp=fitCP(g);
   const ppRI=fitPP(g,np),rs=fitPP_RS(g,np,ppRI);
-  np.forEach((grp,j)=>drawLine(ctx,sc,grp.a,grp.b,GC[j%5],1.5,[2,3]));
+  if(ST.showNP3)np.forEach((grp,j)=>drawLine(ctx,sc,grp.a,grp.b,GC[j%5],1.5,[2,3]));
   rs.ppSlopes.forEach((grp,j)=>drawLine(ctx,sc,grp.aPP,grp.bPP,GC[j%5],2.5));
   drawLine(ctx,sc,cp.a,cp.b,cvar('--ink3'),1.5,[6,4]);
   const slpRS=rs.ppSlopes.map(gr=>gr.bPP);
@@ -1479,6 +1492,12 @@ function updNj(v){ST.nj_m2=+v;document.getElementById('val-nj').textContent=v;dr
 function updTau1(v){ST.tau1=+v;document.getElementById('val-tau1').textContent=(+v).toFixed(1);drawMod3();}
 function updRho(v){ST.rho=+v;document.getElementById('val-rho').textContent=(+v).toFixed(2);drawMod3();}
 function updG10m3(v){ST.g10_m3=+v;document.getElementById('val-g10m3').textContent=(+v).toFixed(1);drawMod3();}
+function toggleNP3(){
+  ST.showNP3=!ST.showNP3;
+  const btn=document.getElementById('m3-np-btn');
+  if(btn)btn.style.opacity=ST.showNP3?'1':'0.35';
+  drawMod3();
+}
 function updBw(v){ST.bw=+v;document.getElementById('val-bw').textContent=(+v).toFixed(1);drawMod4();}
 function updBb(v){ST.bb=+v;document.getElementById('val-bb').textContent=(+v).toFixed(1);drawMod4();}
 function updXoff(v){ST.xoff=+v;document.getElementById('val-xoff').textContent=(+v).toFixed(1);drawMod4();}
