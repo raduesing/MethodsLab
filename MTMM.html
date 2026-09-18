@@ -67,16 +67,12 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .preset-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
 .preset-sub{display:block;font-size:.66rem;opacity:.8;margin-top:.1rem}
 
-.slider-row{margin-bottom:.55rem}
-.slider-row.disabled{opacity:.4;pointer-events:none}
-.slider-lbl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.18rem}
-.slider-name{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--ink)}
-.slider-val{font-family:'DM Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:500}
-input[type=range]{width:100%;appearance:none;height:3px;background:var(--grid);border-radius:2px;outline:none;cursor:pointer}
-input[type=range]::-webkit-slider-thumb{appearance:none;width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer}
-input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
-input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ink);border-radius:50%;cursor:pointer;border:none}
 .hint-mini{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);line-height:1.5;margin-top:.3rem}
+
+.explain-box{background:var(--paper);border:1.5px solid var(--border);padding:.9rem 1.1rem;margin-bottom:1.2rem}
+.explain-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem;font-weight:500}
+.explain-body{font-size:.92rem;line-height:1.75;color:var(--ink2)}
+.explain-body strong{color:var(--ink)}
 
 .sec-h{font-family:'DM Mono',monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink3);margin:1.5rem 0 .6rem;padding-bottom:.3rem;border-bottom:1px solid var(--grid)}
@@ -202,7 +198,7 @@ th.blockend-r{border-right:2px solid var(--border)}
 MTHM (Validität)  =  λ_T²
 HTHM             =  λ_T,t · λ_T,t' · ρ_tt'
 HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
-    <p class="help-p">Daraus folgt strukturell <strong>immer</strong> HTMM ≥ HTHM (Methodenvarianz addiert sich nur dazu) — genau Campbell &amp; Fiskes Beobachtung, dass Monomethod-Korrelationen meist inflationiert sind. Ob MTHM größer als HTMM bleibt, hängt von den zwei Reglern ab: <span class="gk">λ</span><sub>T</sub> (Trait-Ladung) und <span class="gk">λ</span><sub>M</sub> (Methoden-Ladung).</p>
+    <p class="help-p">Daraus folgt strukturell <strong>immer</strong> HTMM ≥ HTHM (Methodenvarianz addiert sich nur dazu) — genau Campbell &amp; Fiskes Beobachtung, dass Monomethod-Korrelationen meist inflationiert sind. Ob MTHM größer als HTMM bleibt, hängt vom Verhältnis der beiden Ladungen ab: <span class="gk">λ</span><sub>T</sub> (Trait-Ladung) und <span class="gk">λ</span><sub>M</sub> (Methoden-Ladung) — in Reiter <span class="circ">②</span> für jedes Szenario direkt an den Pfaden abzulesen.</p>
 
     <div class="help-sh">Grenzen dieses einfachen CT-CM-Modells</div>
     <p class="help-p">Dieses Tool nimmt <strong>unkorrelierte Methodenfaktoren</strong> an — die einfachste Variante des Correlated-Trait-Correlated-Method-Modells (CT-CM). Erlaubt man auch Korrelationen zwischen den Methodenfaktoren, wird das Modell oft empirisch nicht mehr identifiziert. Ein verbreiteter Ausweg ist das <strong>CTC(M−1)-Modell</strong> (ein Methodenfaktor wird als Referenz weggelassen) — hier nicht umgesetzt, aber Standard in der aktuellen MTMM-SEM-Literatur.</p>
@@ -225,21 +221,6 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
     <button class="preset-btn" id="pre-B" onclick="setPreset('B')">B — Ideal (synthetisch)<span class="preset-sub">hohe konvergente, gute diskriminante Validität</span></button>
     <button class="preset-btn" id="pre-C" onclick="setPreset('C')">C — Starker Methodeneffekt<span class="preset-sub">Halo — Diskriminanzvalidität verletzt</span></button>
     <button class="preset-btn" id="pre-D" onclick="setPreset('D')">D — Schwache konvergente Validität<span class="preset-sub">Validitätsdiagonale kaum erhöht</span></button>
-  </div>
-
-  <div class="scard">
-    <div class="scard-title">Modellparameter</div>
-    <div class="slider-row" id="row-lamT">
-      <div class="slider-lbl"><span class="slider-name"><span class="gk">λ</span><sub>T</sub> Trait-Ladung</span>
-        <span class="slider-val" id="v-lamT" style="color:var(--a3)">0.65</span></div>
-      <input type="range" id="sl-lamT" min="20" max="90" value="65" step="5" oninput="onSlider()">
-    </div>
-    <div class="slider-row" id="row-lamM">
-      <div class="slider-lbl"><span class="slider-name"><span class="gk">λ</span><sub>M</sub> Methoden-Ladung</span>
-        <span class="slider-val" id="v-lamM" style="color:var(--a5)">0.25</span></div>
-      <input type="range" id="sl-lamM" min="0" max="80" value="25" step="5" oninput="onSlider()">
-    </div>
-    <div class="hint-mini" id="slider-hint">Regler bewegen, um von Szenario A zu einem synthetischen Modell zu wechseln.</div>
   </div>
 
   <div class="scard" style="font-family:'DM Mono',monospace;font-size:.74rem;line-height:1.9;color:var(--ink2)">
@@ -314,7 +295,7 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
 
     <div class="story-box">
       <div class="story-lbl">📋 Von der Matrix zum Modell</div>
-      Dieselben 9 Messungen, dasselbe Beispiel — nur als <strong>Correlated-Trait-Correlated-Method-Modell (CT-CM)</strong> gezeichnet: 3 Trait-Faktoren, 3 Methoden-Faktoren, jede Messung lädt auf genau einen Trait <em>und</em> genau eine Methode. Bei den synthetischen Szenarien B–D steuern die Regler links direkt die Ladungen und erzeugen exakt die Matrix aus Reiter <span class="circ">①</span>. Bei Szenario A (echte Daten) sind λ_T und λ_M dagegen aus der empirischen Matrix <em>geschätzt</em> — der Modellfit unten zeigt, wie gut das einfache Modell die echten Daten trifft.
+      Dieselben 9 Messungen, dasselbe Beispiel — nur als <strong>Correlated-Trait-Correlated-Method-Modell (CT-CM)</strong> gezeichnet: 3 Trait-Faktoren, 3 Methoden-Faktoren, jede Messung lädt auf genau einen Trait <em>und</em> genau eine Methode. Die Ladungen sind hier nicht frei einstellbar, sondern für jedes Szenario direkt aus der Matrix in Reiter <span class="circ">①</span> abgelesen (per Momentenschätzung) — die Szenarien-Auswahl links steuert also beides zugleich.
     </div>
 
     <div class="sec-h"><span class="circ">③</span> Pfaddiagramm — Trait- und Methodenfaktoren</div>
@@ -325,16 +306,21 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
       Alle Trait-Pfade: <b><span class="gk">λ</span><sub>T</sub> = <span id="sem-lamT">—</span></b> &nbsp;·&nbsp;
       alle Methoden-Pfade: <b><span class="gk">λ</span><sub>M</sub> = <span id="sem-lamM">—</span></b> &nbsp;·&nbsp;
       Fehlervarianz je Item: <b><span class="gk">θ</span> = <span id="sem-theta">—</span></b>
-      <div class="hint-mini" style="margin-top:.4rem">Methodenfaktoren sind bewusst <strong>unkorreliert</strong> gezeichnet (Standardannahme des einfachen CT-CM-Modells — Details und Grenzen in der Hilfe). Traitfaktoren korrelieren fix gemäß den Werten oben in den Bögen.</div>
+      <div class="hint-mini" style="margin-top:.4rem">Methodenfaktoren sind bewusst <strong>unkorreliert</strong> gezeichnet (Standardannahme des einfachen CT-CM-Modells — Details und Grenzen in der Hilfe). Traitfaktoren korrelieren gemäß den Werten oben in den Bögen.</div>
       <div class="hint-mini" style="margin-top:.5rem">x1=Selbst×Depr. · x2=Selbst×Ängstl. · x3=Selbst×Komp. · x4=Peer×Depr. · x5=Peer×Ängstl. · x6=Peer×Komp. · x7=Eltern×Depr. · x8=Eltern×Ängstl. · x9=Eltern×Komp.</div>
     </div>
     <div class="verdict" id="sem-fit" style="margin-top:.6rem">—</div>
+
+    <div class="explain-box">
+      <div class="explain-h">Was zeigt dieses Szenario?</div>
+      <div class="explain-body" id="sem-explain">—</div>
+    </div>
 
     <div class="sec-h">Lernkarten</div>
     <div class="lcard-grid">
       <div class="lcard">
         <div class="lcard-h">Zwei Darstellungen, ein Modell</div>
-        <div class="lcard-body">Reiter <span class="circ">①</span> (Tabelle) und Reiter <span class="circ">②</span> (Pfaddiagramm) sind zwei Ansichten auf dasselbe Modell. Bei den synthetischen Szenarien B–D ist die implizierte Matrix des Pfaddiagramms exakt die Matrix aus Reiter <span class="circ">①</span> — ändere die Regler und wechsle zurück, die Zahlen stimmen überein. Bei Szenario A (echte Daten) weicht die implizierte Matrix dagegen vom echten Beispiel ab — der Modellfit unten zeigt, wie stark.</div>
+        <div class="lcard-body">Reiter <span class="circ">①</span> (Tabelle) und Reiter <span class="circ">②</span> (Pfaddiagramm) sind zwei Ansichten auf dasselbe Modell. Bei den synthetischen Szenarien B–D ist die implizierte Matrix des Pfaddiagramms exakt die Matrix aus Reiter <span class="circ">①</span> — beide wurden ja aus genau diesen Ladungen erzeugt. Bei Szenario A (echte Daten) weicht die implizierte Matrix dagegen vom echten Beispiel ab — der Modellfit oben zeigt, wie stark.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Warum zwei Faktoren pro Item?</div>
@@ -383,7 +369,7 @@ const PRESETS={
   C:{mode:'synthetic', lamT:.55, lamM:.65},
   D:{mode:'synthetic', lamT:.35, lamM:.15}
 };
-let ST={preset:'A', lamT:.65, lamM:.25};
+let ST={preset:'A'};
 
 function idxOf(i){ return {m:Math.floor(i/3), t:i%3}; }
 function cellType(i,j){
@@ -405,9 +391,11 @@ function syntheticMatrix(lamT,lamM,rho){
   return M;
 }
 
+function matrixForPreset(id){
+  return PRESETS[id].mode==='empirical' ? EMP_MATRIX : syntheticMatrix(PRESETS[id].lamT,PRESETS[id].lamM);
+}
 function currentMatrix(){
-  if(ST.preset==='A') return {M:EMP_MATRIX, isEmpirical:true};
-  return {M:syntheticMatrix(ST.lamT,ST.lamM), isEmpirical:false};
+  return {M:matrixForPreset(ST.preset), isEmpirical:ST.preset==='A'};
 }
 function clampCell(v,isDiag){
   if(isDiag) return Math.max(0,Math.min(.97,v));
@@ -446,6 +434,11 @@ function fitCTCM(M){
   return {lamT, lamM, rho, rmsr:Math.sqrt(sq/n)};
 }
 const EMP_FIT=fitCTCM(EMP_MATRIX);
+// Für jedes Szenario: Ladungen/Korrelationen per Momentenmethode aus der jeweils in Reiter ① gezeigten
+// Matrix abgelesen. Bei den synthetischen Szenarien (deren Matrix ja selbst aus λ_T/λ_M/ρ erzeugt wurde)
+// reproduziert das exakt die Presetwerte; bei Szenario A liefert es die echte Schätzung samt Fitmaß.
+const FIT_BY_PRESET={};
+Object.keys(PRESETS).forEach(id=>{ FIT_BY_PRESET[id] = id==='A' ? EMP_FIT : fitCTCM(matrixForPreset(id)); });
 
 // ══════════════════════════════════════════════════════════════════════
 // MATRIX-TABELLE
@@ -565,67 +558,47 @@ function renderCriteria(crit){
 // UI-HANDLER
 // ══════════════════════════════════════════════════════════════════════
 function setPreset(id){
-  const p=PRESETS[id];
   ST.preset=id;
-  if(p.mode==='synthetic'){ ST.lamT=p.lamT; ST.lamM=p.lamM; }
-  else { ST.lamT=EMP_FIT.lamT; ST.lamM=EMP_FIT.lamM; }
   document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('pre-'+id).classList.add('active');
-  syncSliders();
-  updateAll();
-}
-function syncSliders(){
-  document.getElementById('sl-lamT').value=Math.round(ST.lamT*100);
-  document.getElementById('sl-lamM').value=Math.round(ST.lamM*100);
-  document.getElementById('v-lamT').textContent=ST.lamT.toFixed(2);
-  document.getElementById('v-lamM').textContent=ST.lamM.toFixed(2);
-  const disabled = ST.preset==='A';
-  document.getElementById('row-lamT').classList.toggle('disabled',disabled);
-  document.getElementById('row-lamM').classList.toggle('disabled',disabled);
-  document.getElementById('slider-hint').textContent = disabled
-    ? 'Werte aus den echten Geiser-et-al.-Daten geschätzt (Momentenmethode) — Regler bewegen, um zu einem synthetischen Modell zu wechseln.'
-    : 'Synthetisches Modell aktiv — Matrix wird live aus den zwei Reglern berechnet.';
-}
-function onSlider(){
-  ST.lamT=parseInt(document.getElementById('sl-lamT').value)/100;
-  ST.lamM=parseInt(document.getElementById('sl-lamM').value)/100;
-  document.getElementById('v-lamT').textContent=ST.lamT.toFixed(2);
-  document.getElementById('v-lamM').textContent=ST.lamM.toFixed(2);
-  if(ST.preset==='A'){
-    ST.preset='__custom';
-    document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
-    document.getElementById('row-lamT').classList.remove('disabled');
-    document.getElementById('row-lamM').classList.remove('disabled');
-    document.getElementById('slider-hint').textContent='Synthetisches Modell aktiv — Matrix wird live aus den zwei Reglern berechnet.';
-  } else {
-    document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
-    ST.preset='__custom';
-  }
   updateAll();
 }
 
 function updateAll(){
   renderMatrix();
   drawSEM();
-  document.getElementById('sem-lamT').textContent=ST.lamT.toFixed(2);
-  document.getElementById('sem-lamM').textContent=ST.lamM.toFixed(2);
-  const theta=Math.max(.02, 1-(ST.lamT*ST.lamT+ST.lamM*ST.lamM));
+  const fit=FIT_BY_PRESET[ST.preset];
+  document.getElementById('sem-lamT').textContent=fit.lamT.toFixed(2);
+  document.getElementById('sem-lamM').textContent=fit.lamM.toFixed(2);
+  const theta=Math.max(.02, 1-(fit.lamT*fit.lamT+fit.lamM*fit.lamM));
   document.getElementById('sem-theta').textContent=theta.toFixed(2);
   updateSemFit();
+  updateSemExplain();
 }
 function updateSemFit(){
   const el=document.getElementById('sem-fit');
-  if(ST.preset==='A'){
-    const r=EMP_FIT.rmsr;
-    const cls = r<0.08 ? 'v-par' : (r<0.14 ? 'v-tau' : 'v-con');
-    const label = r<0.08 ? 'guter Fit' : (r<0.14 ? 'mittelmäßiger Fit' : 'schwacher Fit');
-    const why = r>=0.14 ? ' Ein Grund: Das Modell hat nur zwei freie Ladungen (λ_T, λ_M), die für alle 9 Items gleich sind — echte Daten streuen stärker zwischen einzelnen Item-Paaren, als sich mit so wenigen Parametern gleichzeitig treffen lässt.' : '';
-    el.className='verdict '+cls;
-    el.innerHTML='<strong>Modellfit (RMSR) = '+r.toFixed(3)+'</strong> — '+label+': So stark weicht die implizierte Matrix des vereinfachten CT-CM-Modells (λ_T, λ_M per Momentenmethode aus den Geiser-et-al.-Daten geschätzt) von der echten Matrix in Reiter ① ab.'+why;
-  } else {
+  const r=FIT_BY_PRESET[ST.preset].rmsr;
+  if(r<0.005){
     el.className='verdict v-par';
-    el.innerHTML='<strong>Modellfit (RMSR) = 0.000</strong> — exakt: Bei diesem synthetischen Szenario wird die Matrix in Reiter ① direkt aus λ_T und λ_M erzeugt, es gibt keine Abweichung.';
+    el.innerHTML='<strong>Modellfit (RMSR) = '+r.toFixed(3)+'</strong> — exakt: Bei diesem synthetischen Szenario wird die Matrix in Reiter ① direkt aus λ_T, λ_M und den Trait-Korrelationen erzeugt, es gibt keine Abweichung.';
+    return;
   }
+  const cls = r<0.08 ? 'v-par' : (r<0.14 ? 'v-tau' : 'v-con');
+  const label = r<0.08 ? 'guter Fit' : (r<0.14 ? 'mittelmäßiger Fit' : 'schwacher Fit');
+  const why = r>=0.14 ? ' Ein Grund: Das Modell hat nur zwei freie Ladungen (λ_T, λ_M), die für alle 9 Items gleich sind — echte Daten streuen stärker zwischen einzelnen Item-Paaren, als sich mit so wenigen Parametern gleichzeitig treffen lässt.' : '';
+  el.className='verdict '+cls;
+  el.innerHTML='<strong>Modellfit (RMSR) = '+r.toFixed(3)+'</strong> — '+label+': So stark weicht die implizierte Matrix des vereinfachten CT-CM-Modells (λ_T, λ_M per Momentenmethode aus den Geiser-et-al.-Daten geschätzt) von der echten Matrix in Reiter ① ab.'+why;
+}
+
+const LT='<span class="gk">'+String.fromCharCode(955)+'</span><sub>T</sub>', LM='<span class="gk">'+String.fromCharCode(955)+'</span><sub>M</sub>';
+const SEM_EXPLAIN={
+  A:`Diese neun Messungen sind keine Modellwerte, sondern die echten Korrelationen aus Geiser et al. (2010). <strong>${LT}, ${LM}</strong> und die drei Trait-Korrelationen oben wurden per Momentenschätzung aus genau dieser Matrix abgelesen — sie sind also keine freie Wahl, sondern die Werte, die dieses vereinfachte Zwei-Ladungs-Modell am besten zu den Daten passen lässt. Die verbleibende Abweichung (RMSR, siehe oben) zeigt ehrlich, wie viel echte Struktur in den Daten steckt, die ein Modell mit nur einer globalen Trait- und einer globalen Methodenladung nicht erklären kann — vor allem, weil reale Items nie exakt gleich stark laden.`,
+  B:`Diese Matrix ist nicht gemessen, sondern konstruiert: Sie entsteht exakt aus <strong>${LT}=0.75</strong> und <strong>${LM}=0.15</strong> (plus den festen Trait-Korrelationen). Die hohe Trait-Ladung und die niedrige Methodenladung sind der Idealfall — die Validitätsdiagonale (MTHM) bleibt deutlich über allen Methodeneffekten, konvergente und diskriminante Validität sind sauber erfüllt. Weil die Matrix direkt aus diesen Ladungen erzeugt wurde, trifft die Schätzung sie exakt — das Diagramm zeigt also genau das Modell, das Szenario B definiert.`,
+  C:`Konstruierte Matrix mit <strong>${LT}=0.55</strong> und einer bewusst hohen Methodenladung <strong>${LM}=0.65</strong>. Weil ${LM} größer als ${LT} ist, übersteigen die Heterotrait-Monomethod-Korrelationen (gleiche Methode, andere Traits) die Validitätsdiagonale — genau die Diskriminanzvaliditäts-Verletzung, die Reiter ① rot markiert. Ein klassischer Halo-Effekt: Eine Methode (z. B. ein Rater) lässt alle drei Traits gemeinsam höher oder niedriger ausfallen, unabhängig vom tatsächlichen Trait-Gehalt.`,
+  D:`Konstruierte Matrix mit niedriger Trait-Ladung <strong>${LT}=0.35</strong> bei moderater Methodenladung <strong>${LM}=0.15</strong>. Die Validitätsdiagonale bleibt hier insgesamt niedrig — verschiedene Methoden stimmen kaum überein, selbst wenn sie denselben Trait messen sollen. Das ist ein anderer Fehlertyp als Szenario C: nicht zu viel Methodenvarianz, sondern zu wenig geteilte Varianz durch den Trait selbst — ein Hinweis auf ein schwach reliables oder schlecht operationalisiertes Konstrukt.`
+};
+function updateSemExplain(){
+  document.getElementById('sem-explain').innerHTML=SEM_EXPLAIN[ST.preset]||SEM_EXPLAIN.A;
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -657,10 +630,10 @@ function drawSEM(){
   const itemX=(leftX+rightX)/2;
   const trR=32, itemW2=Math.max(54,Math.min(80,(rightX-leftX)*0.24)), itemH2=32;
   const trRx=trR+22, trRy=trR*.85, mRx=58, mRy=30;
-  const rhoActive = ST.preset==='A' ? EMP_FIT.rho : RHO_T;
+  const fit=FIT_BY_PRESET[ST.preset], lamT=fit.lamT, lamM=fit.lamM, rho=fit.rho;
 
   // Trait correlation arcs (right, bulge outward)
-  ctx.font='bold 11px DM Mono,monospace';
+  ctx.font='bold 13px DM Mono,monospace';
   function arcV(y1,y2,bulge,col,label){
     const midy=(y1+y2)/2, cpX=rightX+bulge, edgeX=rightX+trRx*.55;
     ctx.strokeStyle=col; ctx.lineWidth=1.8;
@@ -668,13 +641,13 @@ function drawSEM(){
     drawArrowHead(ctx,edgeX,y1,Math.atan2(y1-midy,edgeX-cpX),9,col);
     drawArrowHead(ctx,edgeX,y2,Math.atan2(y2-midy,edgeX-cpX),9,col);
     const lx=cpX+(bulge>50?10:6), ly=midy;
-    ctx.fillStyle=paper; ctx.globalAlpha=.9; ctx.fillRect(lx-4,ly-9,52,16); ctx.globalAlpha=1;
-    ctx.textAlign='left'; ctx.fillStyle=col; ctx.fillText(label,lx,ly+3);
+    ctx.fillStyle=paper; ctx.globalAlpha=.9; ctx.fillRect(lx-4,ly-10,58,19); ctx.globalAlpha=1;
+    ctx.textAlign='left'; ctx.fillStyle=col; ctx.fillText(label,lx,ly+4);
   }
   const shortBulge=Math.min(40,rightMargin-45), longBulge=Math.min(95,rightMargin-25);
-  arcV(sideY[0],sideY[1],shortBulge,ink2,'ρ='+rhoActive[0][1].toFixed(2));
-  arcV(sideY[1],sideY[2],shortBulge,ink2,'ρ='+rhoActive[1][2].toFixed(2));
-  arcV(sideY[0],sideY[2],longBulge,ink2,'ρ='+rhoActive[0][2].toFixed(2));
+  arcV(sideY[0],sideY[1],shortBulge,ink2,'ρ='+rho[0][1].toFixed(2));
+  arcV(sideY[1],sideY[2],shortBulge,ink2,'ρ='+rho[1][2].toFixed(2));
+  arcV(sideY[0],sideY[2],longBulge,ink2,'ρ='+rho[0][2].toFixed(2));
 
   // Trait factor ellipses (right)
   sideY.forEach((y,ti)=>{
@@ -691,33 +664,30 @@ function drawSEM(){
     ctx.fillStyle=methodColors[mi]; ctx.font='bold 12px DM Mono,monospace'; ctx.textAlign='center';
     ctx.fillText(METHODS_SHORT[mi],leftX,y+4);
   });
-  // Path-weight labels (uniform per side — shown once per node)
-  ctx.font='bold 10px DM Mono,monospace';
-  sideY.forEach((y,mi)=>{
-    ctx.fillStyle=paper; ctx.globalAlpha=.9; ctx.fillRect(leftX-30,y+mRy+3,60,15); ctx.globalAlpha=1;
-    ctx.fillStyle=methodColors[mi]; ctx.textAlign='center';
-    ctx.fillText('λM='+ST.lamM.toFixed(2),leftX,y+mRy+14);
-  });
-  sideY.forEach((y,ti)=>{
-    ctx.fillStyle=paper; ctx.globalAlpha=.9; ctx.fillRect(rightX-30,y-trRy-18,60,15); ctx.globalAlpha=1;
-    ctx.fillStyle=traitColors[ti]; ctx.textAlign='center';
-    ctx.fillText('λT='+ST.lamT.toFixed(2),rightX,y-trRy-7);
-  });
-
-  // Items + arrows
+  // Items + arrows, with the loading value written directly on each path
+  function pathLabel(px,py,col,text){
+    ctx.font='bold 12px DM Mono,monospace'; ctx.textAlign='center';
+    const w=ctx.measureText(text).width+10;
+    ctx.fillStyle=paper; ctx.globalAlpha=.92; ctx.fillRect(px-w/2,py-9,w,16); ctx.globalAlpha=1;
+    ctx.fillStyle=col; ctx.fillText(text,px,py+4);
+  }
   for(let i=0;i<9;i++){
     const a=idxOf(i), iy=itemY[i], mY=sideY[a.m], tY=sideY[a.t];
     // arrow from method (left)
     ctx.strokeStyle=ink2; ctx.lineWidth=1.4;
     const mAng=Math.atan2(iy-mY,(itemX-itemW2/2-8)-leftX);
     const x0=leftX+mRx*.92*Math.cos(mAng), y0=mY+mRy*.92*Math.sin(mAng);
-    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(itemX-itemW2/2-8,iy); ctx.stroke();
+    const mx1=itemX-itemW2/2-8;
+    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(mx1,iy); ctx.stroke();
     drawArrowHead(ctx,itemX-itemW2/2-7,iy,Math.atan2(iy-y0,(itemX-itemW2/2-7)-x0),8,ink2);
+    pathLabel(x0+(mx1-x0)*0.32, y0+(iy-y0)*0.32, methodColors[a.m], lamM.toFixed(2));
     // arrow from trait (right)
     const tAng=Math.atan2(iy-tY,(itemX+itemW2/2+8)-rightX);
     const x1=rightX+trRx*.92*Math.cos(tAng), y1=tY+trRy*.92*Math.sin(tAng);
-    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(itemX+itemW2/2+8,iy); ctx.stroke();
+    const tx1=itemX+itemW2/2+8;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(tx1,iy); ctx.stroke();
     drawArrowHead(ctx,itemX+itemW2/2+7,iy,Math.atan2(iy-y1,(itemX+itemW2/2+7)-x1),8,ink2);
+    pathLabel(x1+(tx1-x1)*0.32, y1+(iy-y1)*0.32, traitColors[a.t], lamT.toFixed(2));
     // item box
     ctx.fillStyle=paper; ctx.strokeStyle=ink; ctx.lineWidth=1.8;
     ctx.fillRect(itemX-itemW2/2,iy-itemH2/2,itemW2,itemH2); ctx.strokeRect(itemX-itemW2/2,iy-itemH2/2,itemW2,itemH2);
@@ -750,8 +720,6 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.getEleme
 if(document.documentElement.getAttribute('data-theme')==='light'){
   const tb=document.getElementById('theme-btn'); if(tb) tb.textContent='🌙 Dark';
 }
-ST.lamT=EMP_FIT.lamT; ST.lamM=EMP_FIT.lamM;
-syncSliders();
 updateAll();
 window.addEventListener('resize',()=>{ if(window._rt) clearTimeout(window._rt); window._rt=setTimeout(updateAll,120); });
 </script>
