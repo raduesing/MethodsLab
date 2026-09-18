@@ -46,7 +46,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .mod-tab:hover{color:var(--ink)}
 .mod-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 .tab-num{font-size:1.7rem;font-weight:600;line-height:1;vertical-align:-.15em}
-.circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
+.circ{font-size:1.5em;font-weight:600;vertical-align:-.12em;line-height:1;display:inline-block}
 
 #app{display:grid;grid-template-columns:290px 1fr;height:calc(100vh - var(--topbar-h) - var(--tabbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
@@ -90,13 +90,13 @@ input[type=range]::-moz-range-thumb{width:11px;height:11px;background:var(--ink)
 
 /* ── MTMM matrix table ──────────────────────────────────────────── */
 .mtmm-wrap{background:var(--panel);border:1px solid var(--grid);padding:.85rem;margin-bottom:.9rem;overflow-x:auto}
-table.mtmm{border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.76rem;margin:0 auto}
-table.mtmm th,table.mtmm td{padding:.35rem .55rem;text-align:center;white-space:nowrap}
-table.mtmm th{color:var(--ink3);font-weight:500;font-size:.68rem;letter-spacing:.03em}
-table.mtmm th.methodhead{font-size:.72rem;color:var(--ink);border-bottom:1px solid var(--border);letter-spacing:.06em;text-transform:uppercase}
-table.mtmm td.rowhead{text-align:right;color:var(--ink);font-weight:500;padding-right:.6rem;font-size:.72rem;border-right:1px solid var(--border)}
-table.mtmm td.methodrow{text-align:left;color:var(--ink3);font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle;padding-right:.4rem}
-table.mtmm td.cell{font-weight:600;border:1px solid var(--grid);min-width:2.6rem}
+table.mtmm{border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.92rem;margin:0 auto}
+table.mtmm th,table.mtmm td{padding:.5rem .8rem;text-align:center;white-space:nowrap}
+table.mtmm th{color:var(--ink3);font-weight:500;font-size:.8rem;letter-spacing:.03em}
+table.mtmm th.methodhead{font-size:.86rem;color:var(--ink);border-bottom:1px solid var(--border);letter-spacing:.06em;text-transform:uppercase}
+table.mtmm td.rowhead{text-align:right;color:var(--ink);font-weight:500;padding-right:.7rem;font-size:.86rem;border-right:1px solid var(--border)}
+table.mtmm td.methodrow{text-align:left;color:var(--ink3);font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle;padding-right:.5rem}
+table.mtmm td.cell{font-weight:600;border:1px solid var(--grid);min-width:3.1rem}
 table.mtmm td.cell.blank{border:none;background:transparent}
 table.mtmm td.cell.diag{background:color-mix(in srgb,var(--ink3) 22%,transparent);color:var(--ink)}
 table.mtmm td.cell.mthm{background:color-mix(in srgb,var(--a3) 30%,transparent);color:var(--ink)}
@@ -394,11 +394,12 @@ function cellType(i,j){
   return 'hthm';
 }
 
-function syntheticMatrix(lamT,lamM){
+function syntheticMatrix(lamT,lamM,rho){
+  rho=rho||RHO_T;
   const M=Array.from({length:9},()=>Array(9).fill(0));
   for(let i=0;i<9;i++) for(let j=0;j<9;j++){
     const a=idxOf(i), b=idxOf(j);
-    let v=lamT*lamT*RHO_T[a.t][b.t] + (a.m===b.m ? lamM*lamM : 0);
+    let v=lamT*lamT*rho[a.t][b.t] + (a.m===b.m ? lamM*lamM : 0);
     M[i][j]=v;
   }
   return M;
@@ -425,10 +426,24 @@ function fitCTCM(M){
   const meanDiag=diagVals.reduce((s,x)=>s+x,0)/diagVals.length;
   const lamM2=Math.max(0,meanDiag-lamT2);
   const lamT=Math.sqrt(Math.max(0,lamT2)), lamM=Math.sqrt(lamM2);
-  const implied=syntheticMatrix(lamT,lamM);
+
+  // Trait-Korrelationen aus den HTHM-Zellen schätzen (reines Trait-Signal, ohne Methodenanteil)
+  const rho=[[1,0,0],[0,1,0],[0,0,1]];
+  for(let ta=0;ta<3;ta++) for(let tb=ta+1;tb<3;tb++){
+    const vals=[];
+    for(let i=0;i<9;i++) for(let j=0;j<9;j++){
+      const a=idxOf(i), b=idxOf(j);
+      if(a.t===ta && b.t===tb && a.m!==b.m) vals.push(M[i][j]);
+    }
+    const r=lamT2>0 ? (vals.reduce((s,x)=>s+x,0)/vals.length)/lamT2 : 0;
+    const rc=Math.max(-.99,Math.min(.99,r));
+    rho[ta][tb]=rc; rho[tb][ta]=rc;
+  }
+
+  const implied=syntheticMatrix(lamT,lamM,rho);
   let sq=0,n=0;
   for(let i=0;i<9;i++) for(let j=i+1;j<9;j++){ const d=M[i][j]-implied[i][j]; sq+=d*d; n++; }
-  return {lamT, lamM, rmsr:Math.sqrt(sq/n)};
+  return {lamT, lamM, rho, rmsr:Math.sqrt(sq/n)};
 }
 const EMP_FIT=fitCTCM(EMP_MATRIX);
 
@@ -604,7 +619,7 @@ function updateSemFit(){
     const r=EMP_FIT.rmsr;
     const cls = r<0.08 ? 'v-par' : (r<0.14 ? 'v-tau' : 'v-con');
     const label = r<0.08 ? 'guter Fit' : (r<0.14 ? 'mittelmäßiger Fit' : 'schwacher Fit');
-    const why = r>=0.14 ? ' Ein Grund: Eine einzige globale Methodenladung λ_M nimmt überall gleich positive Kontamination an — bei negativ korrelierten Traits (z. B. Depressivität–Kompetenz, ρ=−0.35) sagt das Modell damit deutlich zu hohe Heterotrait-Monomethod-Werte voraus.' : '';
+    const why = r>=0.14 ? ' Ein Grund: Das Modell hat nur zwei freie Ladungen (λ_T, λ_M), die für alle 9 Items gleich sind — echte Daten streuen stärker zwischen einzelnen Item-Paaren, als sich mit so wenigen Parametern gleichzeitig treffen lässt.' : '';
     el.className='verdict '+cls;
     el.innerHTML='<strong>Modellfit (RMSR) = '+r.toFixed(3)+'</strong> — '+label+': So stark weicht die implizierte Matrix des vereinfachten CT-CM-Modells (λ_T, λ_M per Momentenmethode aus den Geiser-et-al.-Daten geschätzt) von der echten Matrix in Reiter ① ab.'+why;
   } else {
@@ -642,6 +657,7 @@ function drawSEM(){
   const itemX=(leftX+rightX)/2;
   const trR=32, itemW2=Math.max(54,Math.min(80,(rightX-leftX)*0.24)), itemH2=32;
   const trRx=trR+22, trRy=trR*.85, mRx=58, mRy=30;
+  const rhoActive = ST.preset==='A' ? EMP_FIT.rho : RHO_T;
 
   // Trait correlation arcs (right, bulge outward)
   ctx.font='bold 11px DM Mono,monospace';
@@ -656,9 +672,9 @@ function drawSEM(){
     ctx.textAlign='left'; ctx.fillStyle=col; ctx.fillText(label,lx,ly+3);
   }
   const shortBulge=Math.min(40,rightMargin-45), longBulge=Math.min(95,rightMargin-25);
-  arcV(sideY[0],sideY[1],shortBulge,ink2,'ρ='+RHO_T[0][1].toFixed(2));
-  arcV(sideY[1],sideY[2],shortBulge,ink2,'ρ='+RHO_T[1][2].toFixed(2));
-  arcV(sideY[0],sideY[2],longBulge,ink2,'ρ='+RHO_T[0][2].toFixed(2));
+  arcV(sideY[0],sideY[1],shortBulge,ink2,'ρ='+rhoActive[0][1].toFixed(2));
+  arcV(sideY[1],sideY[2],shortBulge,ink2,'ρ='+rhoActive[1][2].toFixed(2));
+  arcV(sideY[0],sideY[2],longBulge,ink2,'ρ='+rhoActive[0][2].toFixed(2));
 
   // Trait factor ellipses (right)
   sideY.forEach((y,ti)=>{
