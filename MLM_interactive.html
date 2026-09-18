@@ -161,10 +161,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 .rnd{color:var(--a2);font-weight:600}
 .eps{color:var(--ink3)}
 
-/* ── Erkläer Box ───────────────────────────────────────────────── */
-.erklaer{background:var(--panel);border-left:3px solid var(--accent);padding:.8rem 1rem;margin-bottom:.85rem;max-width:1100px;font-family:'DM Mono',monospace;font-size:.80rem;color:var(--ink2);line-height:1.95}
-.erklaer strong{color:var(--ink)}
-
 /* ── Info Box ──────────────────────────────────────────────────── */
 .info-box{background:color-mix(in srgb,var(--a2) 5%,var(--panel));border:1px solid var(--border);border-left:3px solid var(--a2);padding:.85rem 1rem;font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2);line-height:1.9}
 .info-box-h{font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:var(--a2);margin-bottom:.6rem;padding-bottom:.38rem;border-bottom:1px solid var(--border)}
@@ -173,17 +169,20 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 .info-box strong{color:var(--ink)}
 .info-box em{font-style:italic;color:var(--a2)}
 .info-box code{font-family:'DM Mono',monospace;font-size:.88em;color:var(--a2)}
+.info-box .details-box{margin-top:.7rem;margin-bottom:0}
 
-/* ── Accordion ─────────────────────────────────────────────────── */
-.acc-wrap{margin-bottom:.85rem;max-width:1100px}
-.acc-item{border:1px solid var(--border);margin-bottom:.4rem}
-.acc-trigger{width:100%;text-align:left;background:var(--panel);border:none;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);padding:.65rem 1rem;cursor:pointer;display:flex;align-items:center;gap:.6rem;transition:color .15s}
-.acc-trigger:hover{color:var(--ink)}
-.acc-trigger.open{color:var(--a2)}
-.acc-arrow{font-size:.7rem;color:var(--ink3);transition:transform .2s;flex-shrink:0;margin-left:auto}
-.acc-trigger.open .acc-arrow{transform:rotate(90deg)}
-.acc-body{display:none;padding:.8rem 1rem;border-top:1px solid var(--border)}
-.acc-body.open{display:block}
+/* ── Sidebar sub-tabs (Steuerung / Kennwerte) ─────────────────────── */
+.subtab-bar{display:flex;border:1px solid var(--border);border-bottom:none}
+.subtab{flex:1;font-family:'DM Mono',monospace;font-size:.72rem;text-align:center;padding:.5rem .4rem;
+  color:var(--ink3);background:none;border:none;border-right:1px solid var(--border);cursor:pointer;transition:color .15s}
+.subtab:last-child{border-right:none}
+.subtab:hover{color:var(--ink)}
+.subtab.active{color:var(--a2);background:var(--panel)}
+.subtab-panel{display:none;border:1px solid var(--border);padding:.85rem .9rem}
+.subtab-panel.active{display:block}
+.explain-full{margin-top:.9rem}
+.side-tabs{width:300px;flex-shrink:0}
+@media(max-width:900px){.side-tabs{width:100%}}
 
 /* ── Lernkarten ────────────────────────────────────────────────── */
 #lernkarten{padding:1.4rem 1.4rem 2.5rem;border-top:1px solid var(--border);background:var(--bg)}
@@ -282,7 +281,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
     <!-- Canvas -->
     <div>
       <div class="cv-label">Daten nach Klasse &amp; Regressionsgeraden</div>
-      <div class="cv-wrap"><canvas id="cv1" width="740" height="560"></canvas></div>
+      <div class="cv-wrap"><canvas id="cv1" width="860" height="650"></canvas></div>
 
       <!-- Szenario-Buttons unterhalb Canvas -->
       <div style="margin-top:.7rem">
@@ -296,36 +295,39 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
       </div>
     </div>
 
-    <!-- Rechtes Panel: Steuerung | Info nebeneinander -->
-    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+    <!-- Sidebar: Steuerung / Kennwerte als Sub-Tabs -->
+    <div class="side-tabs" id="side1">
 
-      <!-- Steuerungsspalte -->
-      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+      <div class="subtab-bar">
+        <button class="subtab active" data-tab="steuerung" onclick="setSideTab('side1',this,'steuerung')">Steuerung</button>
+        <button class="subtab" data-tab="kennwerte" onclick="setSideTab('side1',this,'kennwerte')">Kennwerte</button>
+      </div>
 
-        <!-- Pooling-Modus -->
-        <div>
-          <div class="cv-label" style="margin-bottom:.4rem">Pooling-Modus (de/aktivieren)</div>
-          <div style="font-size:.66rem;color:var(--ink3);margin-bottom:.3rem">Zwei Extreme ohne Shrinkage:</div>
-          <div class="btn-row" style="flex-direction:column;gap:.35rem;margin-bottom:0">
-            <button class="btn primary" id="pool-cp-btn" onclick="togglePool('cp')" style="width:100%;text-align:left;opacity:0.35">
-              ● Complete Pooling
-            </button>
-            <button class="btn primary" id="pool-np-btn" onclick="togglePool('np')" style="width:100%;text-align:left;opacity:0.35">
-              ● No Pooling
-            </button>
-          </div>
-          <div style="font-size:.66rem;color:var(--ink3);margin:.6rem 0 .3rem;padding-top:.5rem;border-top:1px solid var(--grid)">Partial Pooling (LMM) — dieselbe Schrumpfung, zwei Varianten je nachdem, <em>was</em> geschrumpft wird:</div>
-          <div class="btn-row" style="flex-direction:column;gap:.35rem;margin-bottom:0">
-            <button class="btn primary" id="pool-pp-btn" onclick="togglePool('pp')" style="width:100%;text-align:left;opacity:0.35">
-              ● … nur Intercept (Random Intercepts)
-            </button>
-            <button class="btn primary" id="pool-rs-btn" onclick="togglePool('rs')" style="width:100%;text-align:left;opacity:0.35">
-              ● … Intercept + Slope (Random Slopes)
-            </button>
-          </div>
+      <!-- Steuerung -->
+      <div class="subtab-panel active" data-tab="steuerung">
+        <div class="cv-label" style="margin-bottom:.4rem">Pooling-Modus (de/aktivieren)</div>
+        <div style="font-size:.66rem;color:var(--ink3);margin-bottom:.3rem">Zwei Extreme ohne Shrinkage:</div>
+        <div class="btn-row" style="flex-direction:column;gap:.35rem;margin-bottom:0">
+          <button class="btn primary" id="pool-cp-btn" onclick="togglePool('cp')" style="width:100%;text-align:left;opacity:0.35">
+            ● Complete Pooling
+          </button>
+          <button class="btn primary" id="pool-np-btn" onclick="togglePool('np')" style="width:100%;text-align:left;opacity:0.35">
+            ● No Pooling
+          </button>
         </div>
+        <div style="font-size:.66rem;color:var(--ink3);margin:.6rem 0 .3rem;padding-top:.5rem;border-top:1px solid var(--grid)">Partial Pooling (LMM) — dieselbe Schrumpfung, zwei Varianten je nachdem, <em>was</em> geschrumpft wird:</div>
+        <div class="btn-row" style="flex-direction:column;gap:.35rem;margin-bottom:0">
+          <button class="btn primary" id="pool-pp-btn" onclick="togglePool('pp')" style="width:100%;text-align:left;opacity:0.35">
+            ● … nur Intercept (Random Intercepts)
+          </button>
+          <button class="btn primary" id="pool-rs-btn" onclick="togglePool('rs')" style="width:100%;text-align:left;opacity:0.35">
+            ● … Intercept + Slope (Random Slopes)
+          </button>
+        </div>
+      </div>
 
-        <!-- ICC-Balken -->
+      <!-- Kennwerte -->
+      <div class="subtab-panel" data-tab="kennwerte">
         <div class="icc-wrap">
           <div class="icc-bar-label">Varianzzerlegung</div>
           <div class="icc-bar">
@@ -342,7 +344,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
           </div>
         </div>
 
-        <!-- Koeffizienten -->
         <div class="coef-grid g2">
           <div class="coef-cell">
             <div class="coef-cell-lbl">γ₀₀</div>
@@ -362,27 +363,30 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
           </div>
         </div>
 
-        <!-- Formel -->
         <div class="formula-card">
           <div class="fc-level" id="c1-fc-level">LMM — Random Intercepts</div>
           <div style="margin-bottom:.18rem" id="c1-fc-formula">Y<sub>ij</sub> = <span class="fxd">γ₀₀</span> + <span class="fxd">γ₁₀</span>·X<sub>ij</sub> + <span class="rnd">u<sub>0j</sub></span> + <span class="eps">ε<sub>ij</sub></span></div>
           <div style="font-size:.66rem;color:var(--ink3)" id="c1-fc-dist"><span class="rnd">u<sub>0j</sub></span> ~ N(0,τ₀²) &nbsp;·&nbsp; <span class="eps">ε<sub>ij</sub></span> ~ N(0,σ²)</div>
         </div>
         <div id="c1-rs-warn" style="display:none;font-size:.7rem;color:var(--a5);background:var(--panel);border:1px solid var(--a5);padding:.45rem .6rem;line-height:1.5"></div>
+      </div>
 
-      </div><!-- /Steuerungsspalte -->
+    </div><!-- /side1 -->
+  </div><!-- /cv-row -->
 
-      <!-- Info-Spalte -->
-      <div class="info-box" style="flex:1">
-        <div class="info-box-h">Tutorial — Warum Multilevel?</div>
-        <p><strong>Aufgabe — klicken Sie sich durch</strong><br>
-        J=5 Schulklassen (Farben), n_j=10 Schüler, X = Lernzeit, Y = Klausurpunkte. Die Regressionsgeraden sind zunächst <em>ausgeblendet</em>. <strong>Aktivieren Sie die Pooling-Modi einzeln</strong> (Buttons links), um die Geraden einzublenden — zuerst einen allein, dann im Vergleich. Was fällt auf?</p>
+  <!-- Erklärung: volle Breite, unter Plot + Sidebar -->
+  <div class="info-box explain-full">
+    <div class="info-box-h">Was Sie sehen</div>
+    <p>J=5 Schulklassen (Farben), n_j=10 Schüler, X = Lernzeit, Y = Klausurpunkte. Die Regressionsgeraden sind zunächst <em>ausgeblendet</em> — aktivieren Sie die Pooling-Modi einzeln (Reiter „Steuerung"), um sie einzublenden: zuerst einen allein, dann im Vergleich.</p>
+    <details class="details-box">
+      <summary>▸ Mehr erklären</summary>
+      <div class="details-inner">
         <p><strong>Complete Pooling (rot, gestrichelt) → aktivieren</strong><br>
         Eine globale OLS-Gerade durch alle N=50 Datenpunkte. Gruppenstruktur wird vollständig ignoriert. Vorteil: einfach. Problem: Standard­fehler werden unterschätzt, weil Beobachtungen innerhalb einer Klasse nicht unabhängig sind.</p>
         <p><strong>No Pooling (Gruppen­farben, gepunktet) → aktivieren</strong><br>
         Jede Klasse bekommt eine eigene Regressionsgerade. In der Praxis: ein Modell mit Gruppe × Prädiktor-Interaktion — bei J Gruppen entstehen so 2J Parameter (J Intercepts + J Slopes). Bei großem J wird das schnell unhandlich; kein Informationsaustausch zwischen Gruppen. Bei n_j=4 werden Schätzungen instabil.</p>
         <p><strong>Partial Pooling passiert zweimal — merken Sie sich das Prinzip, nicht zwei Methoden</strong><br>
-        Beide folgenden Modi sind Partial Pooling: eine Schätzung wird zu ihrem Gesamtmittel <em>geschrumpft</em>, gewichtet danach, wie viel eigene Evidenz die Gruppe hat (siehe Akkordeon unten). Der einzige Unterschied ist, <em>welche</em> Schätzung geschrumpft wird — nur der Intercept, oder Intercept und Steigung zusammen. No Pooling liefert in beiden Fällen den ungeschrumpften Ausgangspunkt.</p>
+        Beide folgenden Modi sind Partial Pooling: eine Schätzung wird zu ihrem Gesamtmittel <em>geschrumpft</em>, gewichtet danach, wie viel eigene Evidenz die Gruppe hat (siehe Formel unten). Der einzige Unterschied ist, <em>welche</em> Schätzung geschrumpft wird — nur der Intercept, oder Intercept und Steigung zusammen. No Pooling liefert in beiden Fällen den ungeschrumpften Ausgangspunkt.</p>
         <p><strong>… nur Intercept (Gruppen­farben, durchgezogen) → aktivieren</strong><br>
         Die Gruppen-Intercepts werden zur Grand Mean geschrumpft, aber alle Gruppen teilen denselben Slope γ₁₀ (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-random-intercept" target="_blank" rel="noopener" title="Ein Random Intercept ist der Spezialfall eines Random Effect, bei dem nur der Achsenabschnitt zwischen Gruppen variiert, nicht aber die Slopes.">Random Intercepts</a>) — die Geraden sind daher <em>parallel</em>. Die blaue gestrichelte Gerade zeigt den <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-fixed-effects" target="_blank" rel="noopener" title="Fixed Effects sind Modellparameter, die für die gesamte Population konstant geschätzt werden — im Gegensatz zu Random Effects, die gruppenspezifisch variieren.">Fixed Effect</a> (γ₀₀ + γ₁₀·X). Korrekte Standard­fehler, Informations­austausch zwischen Gruppen.</p>
         <p><strong>… Intercept + Slope (Gruppen­farben, gestrichelt) → aktivieren</strong><br>
@@ -391,28 +395,10 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
         · <em>Hohe <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-icc" target="_blank" rel="noopener" title="Der Intraklassen-Korrelationskoeffizient misst, welcher Anteil der Gesamtvarianz eines Outcomes auf Gruppenunterschiede zurückzuführen ist: ICC = τ₀² / (τ₀² + σ²).">ICC</a>:</em> CP- und NP-Geraden liegen weit auseinander. PP/RS liegen dazwischen.<br>
         · <em>Kleine Gruppen:</em> NP-Geraden schwanken stark, PP/RS-Geraden bleiben stabil.<br>
         · <em>Simpson:</em> CP-Gerade zeigt negativen Trend, NP/PP zeigen positiven Within-Effekt. Modul&nbsp;④ erklärt warum.</p>
+        <p><strong>Empirical Bayes Shrinkage — die Mathe dahinter</strong><br>
+        Der Partial-Pooling-Intercept der Gruppe j ist ein gewichtetes Mittel aus No-Pooling-Schätzwert und Grand Mean: <strong>α̂_j<sup>PP</sup> = λ_j · α̂_j<sup>NP</sup> + (1–λ_j) · γ̂₀₀</strong>, wobei der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage bezeichnet das Phänomen, dass gruppenspezifische Schätzer in hierarchischen Modellen systematisch zum Gesamtmittelwert hin geschrumpft werden, statt jede Gruppe unabhängig zu schätzen.">Shrinkage-Faktor</a> <strong>λ_j = τ₀² / (τ₀² + σ²/n_j)</strong> ist. λ → 1 (kein Shrinkage): große Gruppen (n_j↑) oder starke Zwischen-Varianz (τ₀²↑) — die Gruppe hat genug eigene Evidenz. λ → 0 (starkes Shrinkage): kleine Gruppen oder dominante Within-Varianz — der Prior (Grand Mean) dominiert.</p>
       </div>
-
-    </div><!-- /rechtes Panel -->
-  </div><!-- /cv-row -->
-
-  <!-- Akkordeon: Konzept-Details -->
-  <div class="acc-wrap" style="margin-top:.9rem">
-    <div class="acc-item">
-      <button class="acc-trigger" onclick="toggleAcc(this)">
-        📐 Empirical Bayes Shrinkage — die Mathe dahinter
-        <span class="acc-arrow">▶</span>
-      </button>
-      <div class="acc-body">
-        <div class="erklaer" style="margin-bottom:0">
-          Der Partial-Pooling-Intercept der Gruppe j ist ein gewichtetes Mittel aus No-Pooling-Schätzwert und Grand Mean:<br>
-          <strong>α̂_j<sup>PP</sup> = λ_j · α̂_j<sup>NP</sup> + (1–λ_j) · γ̂₀₀</strong><br>
-          wobei der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage bezeichnet das Phänomen, dass gruppenspezifische Schätzer in hierarchischen Modellen systematisch zum Gesamtmittelwert hin geschrumpft werden, statt jede Gruppe unabhängig zu schätzen.">Shrinkage-Faktor</a> <strong>λ_j = τ₀² / (τ₀² + σ²/n_j)</strong>.<br><br>
-          λ → 1 (kein Shrinkage): große Gruppen (n_j↑) oder starke Zwischen-Varianz (τ₀²↑) — die Gruppe hat genug eigene Evidenz.<br>
-          λ → 0 (starkes Shrinkage): kleine Gruppen oder dominante Within-Varianz — der Prior (Grand Mean) dominiert.
-        </div>
-      </div>
-    </div>
+    </details>
   </div>
 </div>
 
@@ -425,17 +411,21 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
     <!-- Linke Seite: zwei Canvas übereinander -->
     <div>
       <div class="cv-label">Caterpillar-Plot — Gruppen-Intercepts (95% CI)</div>
-      <div class="cv-wrap"><canvas id="cv2cat" width="560" height="320"></canvas></div>
+      <div class="cv-wrap"><canvas id="cv2cat" width="640" height="360"></canvas></div>
       <div class="cv-label" style="margin-top:.7rem">Shrinkage: No Pooling → Partial Pooling</div>
-      <div class="cv-wrap"><canvas id="cv2shr" width="560" height="220"></canvas></div>
+      <div class="cv-wrap"><canvas id="cv2shr" width="640" height="240"></canvas></div>
     </div>
 
-    <!-- Rechtes Panel -->
-    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+    <!-- Sidebar: Steuerung / Kennwerte als Sub-Tabs -->
+    <div class="side-tabs" id="side2">
 
-      <!-- Steuerungsspalte -->
-      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+      <div class="subtab-bar">
+        <button class="subtab active" data-tab="steuerung" onclick="setSideTab('side2',this,'steuerung')">Steuerung</button>
+        <button class="subtab" data-tab="kennwerte" onclick="setSideTab('side2',this,'kennwerte')">Kennwerte</button>
+      </div>
 
+      <!-- Steuerung -->
+      <div class="subtab-panel active" data-tab="steuerung">
         <div class="ctrl-block">
           <div class="ctrl-row">
             <span class="ctrl-label">Zwischen-SD τ₀</span>
@@ -453,8 +443,10 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
             <span class="ctrl-val" id="val-nj">10</span>
           </div>
         </div>
+      </div>
 
-        <!-- ICC Balken -->
+      <!-- Kennwerte -->
+      <div class="subtab-panel" data-tab="kennwerte">
         <div class="icc-wrap">
           <div class="icc-bar-label">ICC = τ₀² / (τ₀² + σ²)</div>
           <div class="icc-bar">
@@ -471,7 +463,6 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
           </div>
         </div>
 
-        <!-- Kennwerte -->
         <div class="coef-grid g2">
           <div class="coef-cell">
             <div class="coef-cell-lbl">ICC</div>
@@ -491,18 +482,23 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
           </div>
         </div>
 
-        <!-- Formel -->
         <div class="formula-card">
           <div class="fc-level">Shrinkage-Formel</div>
           <div style="margin-bottom:.18rem">λ_j = <span class="rnd">τ₀²</span> / (<span class="rnd">τ₀²</span> + <span class="eps">σ²</span>/n_j)</div>
           <div>α̂_j<sup>PP</sup> = λ_j·α̂_j<sup>NP</sup> + (1–λ_j)·<span class="fxd">γ̂₀₀</span></div>
         </div>
+      </div>
 
-      </div><!-- /Steuerungsspalte -->
+    </div><!-- /side2 -->
+  </div><!-- /cv-row -->
 
-      <!-- Info-Spalte -->
-      <div class="info-box" style="flex:1">
-        <div class="info-box-h">Tutorial — Shrinkage &amp; ICC verstehen</div>
+  <!-- Erklärung: volle Breite, unter Plot + Sidebar -->
+  <div class="info-box explain-full">
+    <div class="info-box-h">Was Sie sehen</div>
+    <p>Caterpillar-Plot (oben): jede Klasse ein Punkt (◆ = Partial Pooling, ○ = No Pooling) mit 95%-KI, gestrichelte Linie = γ̂₀₀. Shrinkage-Diagramm (unten): Pfeile zeigen die Verschiebung NP → PP. Schieben Sie τ₀, σ und n_j (Reiter „Steuerung"), um den Effekt live zu beobachten.</p>
+    <details class="details-box">
+      <summary>▸ Mehr erklären</summary>
+      <div class="details-inner">
         <p><strong>Caterpillar-Plot (oben)</strong><br>
         Jede Klasse hat einen Punkt (◆ = <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-partial-pooling" target="_blank" rel="noopener" title="Partial Pooling ist die Schätzstrategie in hierarchischen Modellen: weder komplett getrennt (No Pooling) noch komplett zusammengefasst (Complete Pooling), sondern als aus einer gemeinsamen Verteilung stammend modelliert.">Partial Pooling</a>, ○ = No Pooling) und ein 95%-KI. Die gestrichelte Linie ist γ̂₀₀ (Grand Mean). Beobachten Sie: PP-Punkte liegen immer <em>näher</em> an der gestrichelten Linie als NP-Punkte — das ist Shrinkage.</p>
         <p><strong>Shrinkage-Diagramm (unten)</strong><br>
@@ -516,9 +512,8 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
         <p><strong>ICC-Daumenregeln</strong><br>
         ICC &lt; 0.05: Gruppenstruktur vernachlässigbar. · ICC 0.05–0.20: Moderate Cluster-Effekte, LMM empfohlen. · ICC &gt; 0.20: Starke Effekte, LMM zwingend. Bildungskontext: typisch ICC ≈ 0.10–0.20.</p>
       </div>
-
-    </div><!-- /rechtes Panel -->
-  </div><!-- /cv-row -->
+    </details>
+  </div>
 </div>
 
 <!-- ══ MODULE 3: RANDOM SLOPES ═══════════════════════════════════════ -->
@@ -530,15 +525,19 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
     <!-- Canvas -->
     <div>
       <div class="cv-label">Gruppen-spezifische Steigungen (farbig = NP, grau = geschätzter Fixed Slope über alle Punkte)</div>
-      <div class="cv-wrap"><canvas id="cv3" width="740" height="560"></canvas></div>
+      <div class="cv-wrap"><canvas id="cv3" width="860" height="650"></canvas></div>
     </div>
 
-    <!-- Rechtes Panel -->
-    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+    <!-- Sidebar: Steuerung / Kennwerte als Sub-Tabs -->
+    <div class="side-tabs" id="side3">
 
-      <!-- Steuerungsspalte -->
-      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+      <div class="subtab-bar">
+        <button class="subtab active" data-tab="steuerung" onclick="setSideTab('side3',this,'steuerung')">Steuerung</button>
+        <button class="subtab" data-tab="kennwerte" onclick="setSideTab('side3',this,'kennwerte')">Kennwerte</button>
+      </div>
 
+      <!-- Steuerung -->
+      <div class="subtab-panel active" data-tab="steuerung">
         <div class="ctrl-block">
           <div class="ctrl-row">
             <span class="ctrl-label">Steigungsvar. τ₁</span>
@@ -556,8 +555,10 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
             <span class="ctrl-val" id="val-g10m3">3.0</span>
           </div>
         </div>
+      </div>
 
-        <!-- Kennwerte -->
+      <!-- Kennwerte -->
+      <div class="subtab-panel" data-tab="kennwerte">
         <div class="coef-grid g2">
           <div class="coef-cell">
             <div class="coef-cell-lbl">γ₁₀ (Ø Steigung)</div>
@@ -577,19 +578,24 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
           </div>
         </div>
 
-        <!-- Formel -->
         <div class="formula-card">
           <div class="fc-level">Random Intercepts + Slopes</div>
           <div style="margin-bottom:.18rem">Y<sub>ij</sub> = (<span class="fxd">γ₀₀</span>+<span class="rnd">u<sub>0j</sub></span>) + (<span class="fxd">γ₁₀</span>+<span class="rnd">u<sub>1j</sub></span>)·X + <span class="eps">ε</span></div>
           <div style="font-size:.66rem;color:var(--ink3)">Σ = [[τ₀²,ρτ₀τ₁],[ρτ₀τ₁,τ₁²]]</div>
         </div>
+      </div>
 
-      </div><!-- /Steuerungsspalte -->
+    </div><!-- /side3 -->
+  </div><!-- /cv-row -->
 
-      <!-- Info-Spalte -->
-      <div class="info-box" style="flex:1">
-        <div class="info-box-h">Tutorial — Random Slopes verstehen</div>
-        <p><strong>Was Sie sehen</strong><br>
+  <!-- Erklärung: volle Breite, unter Plot + Sidebar -->
+  <div class="info-box explain-full">
+    <div class="info-box-h">Was Sie sehen</div>
+    <p>Farbige Geraden = gruppenspezifische NP-Geraden (eine pro Klasse). Graue gestrichelte Gerade = der geschätzte Fixed Slope über alle Punkte. Schieben Sie τ₁ und ρ (Reiter „Steuerung"), um Steigungsvariabilität und Intercept-Slope-Korrelation live zu erkunden.</p>
+    <details class="details-box">
+      <summary>▸ Mehr erklären</summary>
+      <div class="details-inner">
+        <p><strong>Was Sie sehen im Detail</strong><br>
         Farbige Geraden = gruppenspezifische NP-Geraden (eine pro Klasse, geschätzt nur aus den n_j Beobachtungen dieser Klasse). Graue gestrichelte Gerade = der geschätzte Fixed Slope (OLS über alle Punkte, N=J·n_j) — eine gute Annäherung an den wahren Wert γ₁₀, weil sie viel mehr Beobachtungen nutzt als jede einzelne farbige Gerade. Bei τ₁=0 sind die <em>wahren</em> Steigungen aller Klassen identisch — die farbigen NP-Geraden können trotzdem leicht unterschiedlich aussehen, weil jede einzelne nur aus n_j=10 verrauschten Beobachtungen geschätzt wird (reines Stichprobenrauschen, keine echte Heterogenität). Genau das ist ein Grund für Random-Slopes-Shrinkage: Sie zieht diese zufällig verrauschten NP-Steigungen zurück zu γ₁₀, statt sie für bare Münze zu nehmen.</p>
         <p><strong>Schieber τ₁ (Steigungsvarianz)</strong><br>
         τ₁=0: Alle Klassen profitieren gleich von Lernzeit — Random Intercepts genügt.<br>
@@ -603,31 +609,13 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
         Statistisch: Modellvergleich via LRT oder LOOIC. Aber: Random-Slope-Modelle brauchen mehr Daten (bes. große n_j) und können numerisch instabil sein. Im Zweifel: Random Intercepts as default.</p>
         <p><strong>Tipp: Uncorrelated RE (<code>||</code>)</strong><br>
         Wenn ρ schwer identifizierbar ist (kleine J), können Sie Intercept- und Slope-Random-Effects entkoppeln. In lme4: <code>(1 + X || Klasse)</code>. In brms: <code>(1 | Klasse) + (0 + X | Klasse)</code>. Das reduziert Parameter und verbessert Konvergenz.</p>
+        <p><strong>R-Code (lme4 / brms)</strong><br>
+        <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-random-intercept" target="_blank" rel="noopener" title="Ein Random Intercept ist der Spezialfall eines Random Effect, bei dem nur der Achsenabschnitt zwischen Gruppen variiert, nicht aber die Slopes.">Random Intercepts</a>: <code>lmer(Y ~ X + (1 | Klasse), data=df)</code><br>
+        Random Slopes (korreliert): <code>lmer(Y ~ X + (1 + X | Klasse), data=df)</code><br>
+        Unkorreliert (<code>||</code>): <code>lmer(Y ~ X + (1 + X || Klasse), data=df)</code><br>
+        Bayesianisch: <code>brm(Y ~ X + (1 + X | Klasse), family=gaussian(), data=df)</code></p>
       </div>
-
-    </div><!-- /rechtes Panel -->
-  </div><!-- /cv-row -->
-
-  <!-- Akkordeon: R-Code -->
-  <div class="acc-wrap" style="margin-top:.9rem">
-    <div class="acc-item">
-      <button class="acc-trigger" onclick="toggleAcc(this)">
-        📦 R-Code (lme4 / brms)
-        <span class="acc-arrow">▶</span>
-      </button>
-      <div class="acc-body">
-        <div class="erklaer" style="margin-bottom:0">
-          <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-random-intercept" target="_blank" rel="noopener" title="Ein Random Intercept ist der Spezialfall eines Random Effect, bei dem nur der Achsenabschnitt zwischen Gruppen variiert, nicht aber die Slopes.">Random Intercepts</a>:<br>
-          <code>lmer(Y ~ X + (1 | Klasse), data=df)</code><br><br>
-          Random Slopes (korreliert):<br>
-          <code>lmer(Y ~ X + (1 + X | Klasse), data=df)</code><br><br>
-          Unkorreliert (<code>||</code>):<br>
-          <code>lmer(Y ~ X + (1 + X || Klasse), data=df)</code><br><br>
-          Bayesianisch:<br>
-          <code>brm(Y ~ X + (1 + X | Klasse), family=gaussian(), data=df)</code>
-        </div>
-      </div>
-    </div>
+    </details>
   </div>
 </div>
 
@@ -640,7 +628,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
     <!-- Canvas -->
     <div>
       <div class="cv-label">Within-Effekt (gepunktet) vs. OLS gesamt = Complete Pooling (gestrichelt)</div>
-      <div class="cv-wrap"><canvas id="cv4" width="740" height="560"></canvas></div>
+      <div class="cv-wrap"><canvas id="cv4" width="860" height="650"></canvas></div>
 
       <!-- Szenarien -->
       <div style="margin-top:.7rem">
@@ -660,12 +648,16 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
       </div>
     </div>
 
-    <!-- Rechtes Panel -->
-    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+    <!-- Sidebar: Steuerung / Kennwerte als Sub-Tabs -->
+    <div class="side-tabs" id="side4">
 
-      <!-- Steuerungsspalte -->
-      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+      <div class="subtab-bar">
+        <button class="subtab active" data-tab="steuerung" onclick="setSideTab('side4',this,'steuerung')">Steuerung</button>
+        <button class="subtab" data-tab="kennwerte" onclick="setSideTab('side4',this,'kennwerte')">Kennwerte</button>
+      </div>
 
+      <!-- Steuerung -->
+      <div class="subtab-panel active" data-tab="steuerung">
         <div class="ctrl-block">
           <div class="ctrl-row">
             <span class="ctrl-label">Within-Effekt β_W</span>
@@ -683,8 +675,10 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
             <span class="ctrl-val" id="val-xoff">7.0</span>
           </div>
         </div>
+      </div>
 
-        <!-- Kennwerte -->
+      <!-- Kennwerte -->
+      <div class="subtab-panel" data-tab="kennwerte">
         <div class="coef-grid g2">
           <div class="coef-cell">
             <div class="coef-cell-lbl">β OLS gesamt (= Complete Pooling)</div>
@@ -700,21 +694,24 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
           </div>
         </div>
 
-        <!-- Formel -->
         <div class="formula-card">
           <div class="fc-level">Zerlegung des OLS-Koeffizienten</div>
           <div style="margin-bottom:.18rem"><span class="fxd">β_OLS</span> = β_W·w_W + β_B·w_B</div>
           <div style="font-size:.66rem;color:var(--ink3)">w_W = Anteil Within-Varianz in X</div>
           <div style="font-size:.66rem;color:var(--ink3)">β_OLS = −: obwohl β_W &gt; 0 !</div>
         </div>
+      </div>
 
-      </div><!-- /Steuerungsspalte -->
+    </div><!-- /side4 -->
+  </div><!-- /cv-row -->
 
-      <!-- Info-Spalte -->
-      <div class="info-box" style="flex:1">
-        <div class="info-box-h">Tutorial — Simpson-Paradoxon &amp; LMM-Lösung</div>
-        <p><strong>Was Sie sehen</strong><br>
-        5 Klassen (Farben). Innerhalb jeder Klasse: positiver Trend (β_W &gt; 0) — mehr Lernen, bessere Note. Zwischen den Klassen: negativer Trend (β_B &lt; 0) — Klassen mit generell mehr Lernzeit haben schlechtere Ausgangsnoten. Die gestrichelte OLS-Linie sieht den negativen Between-Trend und schätzt β &lt; 0.</p>
+  <!-- Erklärung: volle Breite, unter Plot + Sidebar -->
+  <div class="info-box explain-full">
+    <div class="info-box-h">Was Sie sehen</div>
+    <p>5 Klassen (Farben). Innerhalb jeder Klasse: positiver Trend (β_W &gt; 0). Zwischen den Klassen: negativer Trend (β_B &lt; 0) — die gestrichelte OLS-Linie sieht nur den negativen Between-Trend und schätzt β &lt; 0. Schieben Sie β_W, β_B und den Gruppen-Abstand (Reiter „Steuerung"), um den Vorzeichen-Flip live zu erkunden.</p>
+    <details class="details-box">
+      <summary>▸ Mehr erklären</summary>
+      <div class="details-inner">
         <p><strong>Wie entsteht das Paradox?</strong><br>
         OLS vermischt zwei verschiedene Effekte: den Within-Gruppen-Effekt (interessant!) und den Between-Gruppen-Effekt (konfundiert!). Wenn der Between-Effekt das Vorzeichen dominiert <em>und</em> Between-Varianz in X groß ist, kehrt sich das Vorzeichen um.</p>
         <p><strong>Wie löst LMM das Problem?</strong><br>
@@ -727,25 +724,11 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
         In der Ökonometrie: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-fixed-effects" target="_blank" rel="noopener" title="In Panel-Daten-Modellen der Ökonometrie bezeichnet 'Fixed Effects' eine Schätzmethode, bei der individuelle Mittelwerte subtrahiert werden, um alle zeitstabilen Confounder zu eliminieren.">Fixed-Effects-Modell</a> (within-group demeaning) schätzt ebenfalls nur Within-Effekte. LMM (Partial Pooling) liegt dazwischen: berücksichtigt Within-Effekte, erlaubt aber auch Level-2-Prädiktoren (Between-Effekte explizit modellieren).</p>
         <p><strong>Referenzlinie "Fixed Effect / Grand Mean"</strong><br>
         Aktivieren Sie die Linie unter den Szenarien, um den korrekt spezifizierten Within-Effekt (Steigung β_W, verankert am Gesamtmittelwert) direkt neben der irreführenden OLS-gesamt-Linie zu sehen — der Kontrast, um den es hier eigentlich geht: <strong>OLS gesamt</strong> in diesem Plot <em>ist</em> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-partial-pooling" target="_blank" rel="noopener" title="Partial Pooling ist die Schätzstrategie in hierarchischen Modellen: weder komplett getrennt (No Pooling) noch komplett zusammengefasst (Complete Pooling), sondern als aus einer gemeinsamen Verteilung stammend modelliert.">Complete Pooling</a> (dieselbe globale Gerade, ignoriert die Gruppenstruktur vollständig), nur unter anderem Namen.</p>
+        <p><strong>Historische Beispiele</strong><br>
+        <strong>UC-Berkeley (1973):</strong> Frauen hatten aggregiert niedrigere Aufnahmequoten. Stratifiziert nach Fach: in den meisten Fächern gleich oder besser. Frauen bewarben sich häufiger für kompetitive Fächer.<br>
+        <strong>Nierenstein-Behandlung:</strong> Behandlung A sieht schlechter aus als B. Stratifiziert nach Steingröße: A ist in beiden Gruppen besser. B wurde für einfachere Fälle bevorzugt — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Eine Konfundierungsvariable (Confounder) ist eine Variable, die sowohl mit dem Treatment T als auch mit dem Outcome Y assoziiert ist und nicht auf dem kausalen Pfad von T nach Y liegt.">Confounding</a> by indication.</p>
       </div>
-
-    </div><!-- /rechtes Panel -->
-  </div><!-- /cv-row -->
-
-  <!-- Akkordeon: Historische Beispiele -->
-  <div class="acc-wrap" style="margin-top:.9rem">
-    <div class="acc-item">
-      <button class="acc-trigger" onclick="toggleAcc(this)">
-        🔬 Historische Beispiele
-        <span class="acc-arrow">▶</span>
-      </button>
-      <div class="acc-body">
-        <div class="erklaer" style="margin-bottom:0">
-          <strong>UC-Berkeley (1973):</strong> Frauen hatten aggregiert niedrigere Aufnahmequoten. Stratifiziert nach Fach: in den meisten Fächern gleich oder besser. Frauen bewarben sich häufiger für kompetitive Fächer.<br><br>
-          <strong>Nierenstein-Behandlung:</strong> Behandlung A sieht schlechter aus als B. Stratifiziert nach Steingröße: A ist in beiden Gruppen besser. B wurde für einfachere Fälle bevorzugt — <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Eine Konfundierungsvariable (Confounder) ist eine Variable, die sowohl mit dem Treatment T als auch mit dem Outcome Y assoziiert ist und nicht auf dem kausalen Pfad von T nach Y liegt.">Confounding</a> by indication.
-        </div>
-      </div>
-    </div>
+    </details>
   </div>
 </div>
 
@@ -760,7 +743,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
     <!-- Canvas -->
     <div>
       <div class="cv-label">Schätzung nach Gruppengröße (Funnel-Plot)</div>
-      <div class="cv-wrap"><canvas id="cv5" width="740" height="560"></canvas></div>
+      <div class="cv-wrap"><canvas id="cv5" width="860" height="650"></canvas></div>
 
       <div class="btn-row" style="margin-top:.7rem">
         <button class="btn primary" onclick="newSE()">🎲 Neue Simulation</button>
@@ -769,12 +752,16 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
       <div class="ctrl-block" id="se-many-result" style="font-family:'DM Mono',monospace;font-size:.78rem;line-height:1.7">Noch keine Wiederholungen gelaufen.</div>
     </div>
 
-    <!-- Rechtes Panel -->
-    <div style="display:flex;flex:1;min-width:300px;gap:.85rem;align-items:flex-start">
+    <!-- Sidebar: Steuerung / Kennwerte als Sub-Tabs -->
+    <div class="side-tabs" id="side5">
 
-      <!-- Steuerungsspalte -->
-      <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:.75rem">
+      <div class="subtab-bar">
+        <button class="subtab active" data-tab="steuerung" onclick="setSideTab('side5',this,'steuerung')">Steuerung</button>
+        <button class="subtab" data-tab="kennwerte" onclick="setSideTab('side5',this,'kennwerte')">Kennwerte</button>
+      </div>
 
+      <!-- Steuerung -->
+      <div class="subtab-panel active" data-tab="steuerung">
         <div class="ctrl-block">
           <div class="ctrl-row">
             <span class="ctrl-label">Wahre SD τ</span>
@@ -787,8 +774,10 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
             <span class="ctrl-val" id="val-se-sig">15.0</span>
           </div>
         </div>
+      </div>
 
-        <!-- Fehlervergleich -->
+      <!-- Kennwerte -->
+      <div class="subtab-panel" data-tab="kennwerte">
         <div class="coef-grid g2">
           <div class="coef-cell">
             <div class="coef-cell-lbl">Ø Fehler No Pooling</div>
@@ -814,19 +803,24 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
           </div>
         </div>
 
-        <!-- Formel -->
         <div class="formula-card">
           <div class="fc-level"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage bezeichnet das Phänomen, dass gruppenspezifische Schätzer in hierarchischen Modellen systematisch zum Gesamtmittelwert hin geschrumpft werden — formal ein empirischer Bayes-Schätzer / James-Stein-Schätzer.">Empirical-Bayes-Schätzung</a> des Gruppenmittels</div>
           <div style="margin-bottom:.18rem">ŷ_j = λ_j·ȳ_j + (1−λ_j)·γ̂</div>
           <div style="font-size:.66rem;color:var(--ink3)">λ_j = τ̂² / (τ̂² + σ²/n_j) — dieselbe Formel wie in Modul ②, hier ohne Steigung, nur für Gruppenmittelwerte</div>
         </div>
+      </div>
 
-      </div><!-- /Steuerungsspalte -->
+    </div><!-- /side5 -->
+  </div><!-- /cv-row -->
 
-      <!-- Info-Spalte -->
-      <div class="info-box" style="flex:1">
-        <div class="info-box-h">Tutorial — Warum Shrinkage bei kleinen Gruppen am meisten hilft</div>
-        <p><strong>Was Sie sehen</strong><br>
+  <!-- Erklärung: volle Breite, unter Plot + Sidebar -->
+  <div class="info-box explain-full">
+    <div class="info-box-h">Was Sie sehen</div>
+    <p>20 Klassen, sortiert nach Gruppengröße (x-Achse). Grauer Kreis = wahrer Mittelwert (nur hier bekannt, weil simuliert). Oranger Kreis = No Pooling. Blauer Punkt = Partial Pooling (geschrumpft). Links (kleine n) streuen die orangen Punkte viel weiter — eine klassische „Funnel"-Form.</p>
+    <details class="details-box">
+      <summary>▸ Mehr erklären</summary>
+      <div class="details-inner">
+        <p><strong>Was Sie sehen im Detail</strong><br>
         20 Klassen, sortiert nach Gruppengröße (x-Achse). Grauer Kreis = wahrer Mittelwert (nur hier bekannt, weil simuliert). Oranger Kreis = No Pooling (roher Klassenmittelwert). Blauer Punkt = Partial Pooling (geschrumpft). Die gepunktete Linie verbindet No Pooling und Partial Pooling derselben Klasse.</p>
         <p><strong>Der Trichter</strong><br>
         Links (kleine n) streuen die orangen No-Pooling-Punkte viel weiter um γ̂ als rechts (große n) — eine klassische "Funnel"-Form. Das liegt einzig an der Stichprobengröße: derselbe wahre Unterschied τ erzeugt bei kleinem n_j eine viel größere Schätzunsicherheit (SE = σ/√n_j).</p>
@@ -835,25 +829,10 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
         <p><strong>Schieber</strong><br>
         · τ (wahre SD) ↓: Klassen unterscheiden sich in Wahrheit kaum → jede Abweichung ist eher Rauschen → mehr Shrinkage lohnt sich.<br>
         · σ (Rauschen) ↑: Einzelmessungen werden unzuverlässiger → Shrinkage nimmt bei allen Gruppen zu, bei kleinen am stärksten.</p>
+        <p><strong>Gelmans Argument</strong><br>
+        Andrew Gelman verwendet dieses Muster u.&nbsp;a. am Beispiel von Nierenkrebsraten pro US-Landkreis: Landkreise mit den <em>höchsten</em> Raten sind fast immer dünn besiedelt — aber Landkreise mit den <em>niedrigsten</em> Raten sind es ebenfalls. Das ist kein inhaltlicher Widerspruch, sondern reines Stichprobenrauschen: kleine Landkreise (kleines n) haben schlicht die größte Schätzvarianz und produzieren dadurch überproportional oft <em>beide</em> Extreme. Dieselbe Logik gilt für kleine Schulklassen, kleine Filialen, kurze Baseball-Saisons usw. Partial Pooling nutzt diese Erkenntnis aktiv: extreme Schätzungen aus kleinen Gruppen werden stärker zur Grand Mean gezogen, weil sie a priori am unplausibelsten sind. Referenz: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-gelman-hill-2007" target="_blank" rel="noopener">Gelman &amp; Hill (2007)</a>, <em>Data Analysis Using Regression and Multilevel/Hierarchical Models</em>, Kap. 12. Genau dieses "Rekord-Gemeinden sind winzig"-Muster — unabhängig von Partial Pooling, rein als Wahrscheinlichkeits-Phänomen — wird in einem eigenen Tool vertieft: <a href="Gesetz_kleine_Zahlen.html">→ Gesetz der kleinen Zahlen</a>.</p>
       </div>
-
-    </div><!-- /rechtes Panel -->
-  </div><!-- /cv-row -->
-
-  <!-- Akkordeon: Gelmans Argument -->
-  <div class="acc-wrap" style="margin-top:.9rem">
-    <div class="acc-item">
-      <button class="acc-trigger" onclick="toggleAcc(this)">
-        📚 Gelmans Argument
-        <span class="acc-arrow">▶</span>
-      </button>
-      <div class="acc-body">
-        <div class="erklaer" style="margin-bottom:0">
-          Andrew Gelman verwendet dieses Muster u.&nbsp;a. am Beispiel von Nierenkrebsraten pro US-Landkreis: Landkreise mit den <em>höchsten</em> Raten sind fast immer dünn besiedelt — aber Landkreise mit den <em>niedrigsten</em> Raten sind es ebenfalls. Das ist kein inhaltlicher Widerspruch, sondern reines Stichprobenrauschen: kleine Landkreise (kleines n) haben schlicht die größte Schätzvarianz und produzieren dadurch überproportional oft <em>beide</em> Extreme. Dieselbe Logik gilt für kleine Schulklassen, kleine Filialen, kurze Baseball-Saisons usw. Partial Pooling nutzt diese Erkenntnis aktiv: extreme Schätzungen aus kleinen Gruppen werden stärker zur Grand Mean gezogen, weil sie a priori am unplausibelsten sind. Referenz: <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-gelman-hill-2007" target="_blank" rel="noopener">Gelman &amp; Hill (2007)</a>, <em>Data Analysis Using Regression and Multilevel/Hierarchical Models</em>, Kap. 12.<br><br>
-          Genau dieses "Rekord-Gemeinden sind winzig"-Muster — unabhängig von Partial Pooling, rein als Wahrscheinlichkeits-Phänomen — wird in einem eigenen Tool vertieft: <a href="Gesetz_kleine_Zahlen.html">→ Gesetz der kleinen Zahlen</a>.
-        </div>
-      </div>
-    </div>
+    </details>
   </div>
 </div>
 
@@ -1193,6 +1172,13 @@ function togglePool(m){
   drawMod1();
 }
 
+/* ── Sidebar sub-tabs (Steuerung / Kennwerte), used by every module ── */
+function setSideTab(scopeId,btn,which){
+  const scope=document.getElementById(scopeId);if(!scope)return;
+  scope.querySelectorAll(':scope > .subtab-bar > .subtab').forEach(t=>t.classList.toggle('active',t===btn));
+  scope.querySelectorAll(':scope > .subtab-panel').forEach(p=>p.classList.toggle('active',p.dataset.tab===which));
+}
+
 /* ── MODULE 2 ────────────────────────────────────────────── */
 function drawMod2(){
   const g2=genData(ST.seed,ST.g00,ST.g10,ST.tau0_m2,ST.sig_m2,ST.J,ST.nj_m2,0,0);
@@ -1499,7 +1485,6 @@ function neueDaten(){
   runSE();
   runSim();
 }
-function toggleAcc(btn){const b=btn.nextElementSibling;const o=b.classList.toggle('open');btn.classList.toggle('open',o);}
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.ml-modal.open').forEach(m=>m.classList.remove('open'));});
