@@ -524,7 +524,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
   <div class="cv-row" style="align-items:flex-start">
     <!-- Canvas -->
     <div>
-      <div class="cv-label">Gruppen-spezifische Steigungen (farbig = NP, grau = geschätzter Fixed Slope über alle Punkte)</div>
+      <div class="cv-label">Gruppen-spezifische Steigungen (farbig durchgezogen = geschrumpfte Random-Slopes-Schätzung, farbig gepunktet = rohe NP-Gerade, grau = Fixed Slope über alle Punkte)</div>
       <div class="cv-wrap"><canvas id="cv3" width="860" height="650"></canvas></div>
     </div>
 
@@ -573,7 +573,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
             <div class="coef-cell-val" id="c3-rho">—</div>
           </div>
           <div class="coef-cell">
-            <div class="coef-cell-lbl">Steigungsbereich</div>
+            <div class="coef-cell-lbl">Steigungsbereich (RS)</div>
             <div class="coef-cell-val c3" id="c3-range">—</div>
           </div>
         </div>
@@ -591,12 +591,12 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
   <!-- Erklärung: volle Breite, unter Plot + Sidebar -->
   <div class="info-box explain-full">
     <div class="info-box-h">Was Sie sehen</div>
-    <p>Farbige Geraden = gruppenspezifische NP-Geraden (eine pro Klasse). Graue gestrichelte Gerade = der geschätzte Fixed Slope über alle Punkte. Schieben Sie τ₁ und ρ (Reiter „Steuerung"), um Steigungsvariabilität und Intercept-Slope-Korrelation live zu erkunden.</p>
+    <p>Farbig durchgezogen = gruppenspezifische Random-Slopes-Schätzung (geschrumpft, dasselbe Modell wie Reiter ① im Modus „Intercept+Slope"). Farbig gepunktet = rohe NP-Gerade (eine pro Klasse, ungeschrumpft). Graue gestrichelte Gerade = Fixed Slope über alle Punkte. Schieben Sie τ₁ und ρ (Reiter „Steuerung"), um Steigungsvariabilität, Intercept-Slope-Korrelation und den Shrinkage-Effekt live zu erkunden.</p>
     <details class="details-box">
       <summary>▸ Mehr erklären</summary>
       <div class="details-inner">
         <p><strong>Was Sie sehen im Detail</strong><br>
-        Farbige Geraden = gruppenspezifische NP-Geraden (eine pro Klasse, geschätzt nur aus den n_j Beobachtungen dieser Klasse). Graue gestrichelte Gerade = der geschätzte Fixed Slope (OLS über alle Punkte, N=J·n_j) — eine gute Annäherung an den wahren Wert γ₁₀, weil sie viel mehr Beobachtungen nutzt als jede einzelne farbige Gerade. Bei τ₁=0 sind die <em>wahren</em> Steigungen aller Klassen identisch — die farbigen NP-Geraden können trotzdem leicht unterschiedlich aussehen, weil jede einzelne nur aus n_j=10 verrauschten Beobachtungen geschätzt wird (reines Stichprobenrauschen, keine echte Heterogenität). Genau das ist ein Grund für Random-Slopes-Shrinkage: Sie zieht diese zufällig verrauschten NP-Steigungen zurück zu γ₁₀, statt sie für bare Münze zu nehmen.</p>
+        Farbig gepunktet = gruppenspezifische NP-Geraden (eine pro Klasse, geschätzt nur aus den n_j Beobachtungen dieser Klasse). Farbig durchgezogen = dieselben Klassen nach Random-Slopes-Shrinkage — exakt dieselbe Schätzung, die Reiter ① im Modus „Intercept+Slope" für die dort synchronisierten Default-Daten zeigt. Graue gestrichelte Gerade = der geschätzte Fixed Slope (OLS über alle Punkte, N=J·n_j) — eine gute Annäherung an den wahren Wert γ₁₀, weil sie viel mehr Beobachtungen nutzt als jede einzelne farbige Gerade. Bei τ₁=0 sind die <em>wahren</em> Steigungen aller Klassen identisch — die gepunkteten NP-Geraden können trotzdem leicht unterschiedlich aussehen, weil jede einzelne nur aus n_j=10 verrauschten Beobachtungen geschätzt wird (reines Stichprobenrauschen, keine echte Heterogenität). Genau das ist der Grund für Random-Slopes-Shrinkage: Die durchgezogenen Geraden ziehen diese zufällig verrauschten NP-Steigungen zurück zu γ₁₀, statt sie für bare Münze zu nehmen — je kleiner τ₁ relativ zum Rauschen, desto stärker rückt die durchgezogene Gerade von der gepunkteten weg in Richtung des Fixed Slope.</p>
         <p><strong>Schieber τ₁ (Steigungsvarianz)</strong><br>
         τ₁=0: Alle Klassen profitieren gleich von Lernzeit — Random Intercepts genügt.<br>
         τ₁&gt;0: Die Steigungen fächern auf (Fan-out oder -in). Inhaltliche Frage: Ist der Lernzeit-Effekt in manchen Klassen stärker als in anderen?</p>
@@ -1272,13 +1272,15 @@ function drawMod3(){
   drawGrid(ctx,sc);drawAxes(ctx,sc,'Lernzeit (h/Woche)','Klausurpunkte');
   g.forEach((grp,j)=>grp.pts.forEach(p=>drawDot(ctx,sc,p.x,p.y,GC[j%5])));
   const np=fitNP(g),cp=fitCP(g);
-  np.forEach((grp,j)=>drawLine(ctx,sc,grp.a,grp.b,GC[j%5],2.5));
+  const ppRI=fitPP(g,np),rs=fitPP_RS(g,np,ppRI);
+  np.forEach((grp,j)=>drawLine(ctx,sc,grp.a,grp.b,GC[j%5],1.5,[2,3]));
+  rs.ppSlopes.forEach((grp,j)=>drawLine(ctx,sc,grp.aPP,grp.bPP,GC[j%5],2.5));
   drawLine(ctx,sc,cp.a,cp.b,cvar('--ink3'),1.5,[6,4]);
-  const slp=np.map(gr=>gr.b);
+  const slpRS=rs.ppSlopes.map(gr=>gr.bPP);
   document.getElementById('c3-g10').textContent=ST.g10_m3.toFixed(2);
   document.getElementById('c3-tau1').textContent=ST.tau1.toFixed(2);
   document.getElementById('c3-rho').textContent=ST.rho.toFixed(2);
-  document.getElementById('c3-range').textContent=(Math.max(...slp)-Math.min(...slp)).toFixed(2);
+  document.getElementById('c3-range').textContent=(Math.max(...slpRS)-Math.min(...slpRS)).toFixed(2);
 }
 
 /* ── MODULE 4 ────────────────────────────────────────────── */

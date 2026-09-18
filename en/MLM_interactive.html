@@ -524,7 +524,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
   <div class="cv-row" style="align-items:flex-start">
     <!-- Canvas -->
     <div>
-      <div class="cv-label">Class-specific slopes (colored = NP, gray = estimated fixed slope across all points)</div>
+      <div class="cv-label">Class-specific slopes (colored solid = shrunk random-slopes estimate, colored dotted = raw NP line, gray = fixed slope across all points)</div>
       <div class="cv-wrap"><canvas id="cv3" width="860" height="650"></canvas></div>
     </div>
 
@@ -573,7 +573,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
             <div class="coef-cell-val" id="c3-rho">—</div>
           </div>
           <div class="coef-cell">
-            <div class="coef-cell-lbl">Slope range</div>
+            <div class="coef-cell-lbl">Slope range (RS)</div>
             <div class="coef-cell-val c3" id="c3-range">—</div>
           </div>
         </div>
@@ -591,12 +591,12 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
   <!-- Explanation: full width, below plot + sidebar -->
   <div class="info-box explain-full">
     <div class="info-box-h">What you see</div>
-    <p>Colored lines = class-specific NP lines (one per class). Gray dashed line = the estimated fixed slope across all points. Slide τ₁ and ρ (the "Controls" tab) to explore slope variability and the intercept-slope correlation live.</p>
+    <p>Colored solid = shrunk random-slopes estimate per class (the same model shown on tab ① in "Intercept+Slope" mode). Colored dotted = raw NP line per class (unshrunk). Gray dashed line = the fixed slope across all points. Slide τ₁ and ρ (the "Controls" tab) to explore slope variability, the intercept-slope correlation, and the shrinkage effect live.</p>
     <details class="details-box">
       <summary>▸ Learn more</summary>
       <div class="details-inner">
         <p><strong>What you're seeing in detail</strong><br>
-        Colored lines = class-specific NP lines (one per class, estimated only from the n_j observations of that class). Gray dashed line = the estimated fixed slope (OLS across all points, N=J·n_j) — a good approximation of the true value γ₁₀, because it uses far more observations than any single colored line. At τ₁=0, the <em>true</em> slopes of all classes are identical — the colored NP lines can still look slightly different, because each one is estimated from only n_j=10 noisy observations (pure sampling noise, not real heterogeneity). That's exactly one reason for random-slope shrinkage: it pulls these randomly noisy NP slopes back toward γ₁₀ instead of taking them at face value.</p>
+        Colored dotted = class-specific NP lines (one per class, estimated only from the n_j observations of that class). Colored solid = the same classes after random-slope shrinkage — exactly the estimate tab ① shows in "Intercept+Slope" mode for the data synced there by default. Gray dashed line = the estimated fixed slope (OLS across all points, N=J·n_j) — a good approximation of the true value γ₁₀, because it uses far more observations than any single colored line. At τ₁=0, the <em>true</em> slopes of all classes are identical — the dotted NP lines can still look slightly different, because each one is estimated from only n_j=10 noisy observations (pure sampling noise, not real heterogeneity). That's exactly why random-slope shrinkage exists: the solid lines pull these randomly noisy NP slopes back toward γ₁₀ instead of taking them at face value — the smaller τ₁ is relative to the noise, the further the solid line moves from the dotted one, toward the fixed slope.</p>
         <p><strong>Slider τ₁ (slope variance)</strong><br>
         τ₁=0: all classes benefit equally from study time — Random Intercepts suffices.<br>
         τ₁&gt;0: the slopes fan out (or in). Substantive question: is the study-time effect stronger in some classes than in others?</p>
@@ -1272,13 +1272,15 @@ function drawMod3(){
   drawGrid(ctx,sc);drawAxes(ctx,sc,'Study time (h/week)','Exam points');
   g.forEach((grp,j)=>grp.pts.forEach(p=>drawDot(ctx,sc,p.x,p.y,GC[j%5])));
   const np=fitNP(g),cp=fitCP(g);
-  np.forEach((grp,j)=>drawLine(ctx,sc,grp.a,grp.b,GC[j%5],2.5));
+  const ppRI=fitPP(g,np),rs=fitPP_RS(g,np,ppRI);
+  np.forEach((grp,j)=>drawLine(ctx,sc,grp.a,grp.b,GC[j%5],1.5,[2,3]));
+  rs.ppSlopes.forEach((grp,j)=>drawLine(ctx,sc,grp.aPP,grp.bPP,GC[j%5],2.5));
   drawLine(ctx,sc,cp.a,cp.b,cvar('--ink3'),1.5,[6,4]);
-  const slp=np.map(gr=>gr.b);
+  const slpRS=rs.ppSlopes.map(gr=>gr.bPP);
   document.getElementById('c3-g10').textContent=ST.g10_m3.toFixed(2);
   document.getElementById('c3-tau1').textContent=ST.tau1.toFixed(2);
   document.getElementById('c3-rho').textContent=ST.rho.toFixed(2);
-  document.getElementById('c3-range').textContent=(Math.max(...slp)-Math.min(...slp)).toFixed(2);
+  document.getElementById('c3-range').textContent=(Math.max(...slpRS)-Math.min(...slpRS)).toFixed(2);
 }
 
 /* ── MODULE 4 ────────────────────────────────────────────── */
