@@ -139,7 +139,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 .icc-bar-label{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);margin-bottom:.3rem}
 .icc-bar{height:20px;display:flex;border:1px solid var(--border);overflow:hidden}
 .icc-seg-btw{background:color-mix(in srgb,var(--a2) 45%,transparent);transition:width .3s;display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden}
-.icc-seg-wit{background:color-mix(in srgb,var(--grid) 60%,transparent);flex:1}
+.icc-seg-wit{background:color-mix(in srgb,var(--grid) 60%,transparent);flex:1;display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden}
 .icc-bar-txt{font-family:'DM Mono',monospace;font-size:.6rem;padding:0 .3rem;white-space:nowrap}
 .icc-bar-vals{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.62rem;color:var(--ink3);margin-top:.16rem}
 
@@ -1185,7 +1185,11 @@ function drawMod2(){
   const np2=fitNP(g2),pp2=fitPP(g2,np2);
   _drawCat(pp2,pp2.sig,ST.nj_m2);
   _drawShr(pp2);
-  const icc=pp2.icc,lam=pp2.pp[0].lam;
+  // ICC and lambda shown here follow directly from the slider-set tau0/sigma (the formula
+  // above), not from a re-estimate off the small (J=5) simulated sample — otherwise the
+  // displayed number would drift from the formula the bar is supposed to illustrate.
+  const tau0Sq=ST.tau0_m2*ST.tau0_m2, sigSq=ST.sig_m2*ST.sig_m2;
+  const icc=tau0Sq/(tau0Sq+sigSq), lam=tau0Sq/(tau0Sq+sigSq/ST.nj_m2);
   const shr=pp2.pp.map(g=>Math.abs(g.aPP-g.aNP));
   document.getElementById('icc2-val').textContent=icc.toFixed(3);
   document.getElementById('lambda-val').textContent=lam.toFixed(3);
