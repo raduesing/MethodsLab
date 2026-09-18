@@ -1038,14 +1038,20 @@ function fitPP(groups,np){
 }
 
 function fitPP_RS(groups,np,ppRI){
-  const g10=ppRI.g10,sigSq=ppRI.sigSq;
+  const g10=ppRI.g10,g00=ppRI.g00,sigSq=ppRI.sigSq;
   const Sxx=groups.map((g,j)=>Math.max(0.01,g.pts.reduce((s,p)=>s+(p.x-np[j].xm)**2,0)));
   const bNP=np.map(g=>g.b);
   const bVar=bNP.reduce((s,b)=>s+(b-g10)**2,0)/Math.max(1,bNP.length-1);
   const tau1Sq=Math.max(0,bVar-sigSq*Sxx.reduce((s,v)=>s+1/v,0)/Sxx.length);
   const ppSlopes=np.map((g,j)=>{
     const lam1=tau1Sq/(tau1Sq+sigSq/Sxx[j]+1e-10);
-    return{j,aPP:ppRI.pp[j].aPP,bPP:lam1*g.b+(1-lam1)*g10,lam1};
+    const bPP=lam1*g.b+(1-lam1)*g10;
+    // Intercept must be recomputed for the (shrunk) slope, otherwise the line
+    // no longer passes through the group's shrunk anchor point.
+    const lam0=ppRI.pp[j].lam;
+    const aNPforSlope=np[j].ym-bPP*np[j].xm;
+    const aPP=lam0*aNPforSlope+(1-lam0)*g00;
+    return{j,aPP,bPP,lam1};
   });
   return{g10,ppSlopes,tau1Sq};
 }
