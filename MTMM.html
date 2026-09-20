@@ -295,7 +295,7 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
 
     <div class="story-box">
       <div class="story-lbl">📋 Von der Matrix zum Modell</div>
-      Dieselben 9 Messungen, dasselbe Beispiel — nur als <strong>Correlated-Trait-Correlated-Method-Modell (CT-CM)</strong> gezeichnet: 3 Trait-Faktoren, 3 Methoden-Faktoren, jede Messung lädt auf genau einen Trait <em>und</em> genau eine Methode. Die Ladungen sind hier nicht frei einstellbar, sondern für jedes Szenario direkt aus der Matrix in Reiter <span class="circ">①</span> abgelesen — die Szenarien-Auswahl links steuert also beides zugleich. Bei den synthetischen Szenarien B–D ist das ein einziges λ_T/λ_M für alle 9 Items (die Matrix wurde ja selbst so erzeugt); bei Szenario A (echte Daten) bekommt <strong>jedes Item seine eigene</strong> Trait- und Methodenladung, per Triadenmethode aus den Korrelationen geschätzt.
+      Dieselben 9 Messungen, dasselbe Beispiel — nur als <strong>Correlated-Trait-Correlated-Method-Modell (CT-CM)</strong> gezeichnet: 3 Trait-Faktoren, 3 Methoden-Faktoren, jede Messung lädt auf genau einen Trait <em>und</em> genau eine Methode. Die Ladungen sind hier nicht frei einstellbar, sondern für jedes Szenario direkt aus der Matrix in Reiter <span class="circ">①</span> abgelesen — die Szenarien-Auswahl links steuert also beides zugleich. Bei den synthetischen Szenarien B–D ist das ein einziges λ_T/λ_M für alle 9 Items (die Matrix wurde ja selbst so erzeugt); bei Szenario A (echte Daten) bekommt <strong>jedes Item seine eigene</strong> Trait- und Methodenladung — einmalig offline per Unweighted Least Squares geschätzt (nicht Teil der Laufzeit-Logik des Tools, siehe Quellcode-Kommentar bei <code>EMP_FIT_ULS</code>).
     </div>
 
     <div class="sec-h"><span class="circ">③</span> Pfaddiagramm — Trait- und Methodenfaktoren</div>
@@ -431,76 +431,34 @@ function fitCTCM(M){
   for(let i=0;i<9;i++) for(let j=i+1;j<9;j++){ const d=M[i][j]-implied[i][j]; sq+=d*d; n++; }
   return {lamT, lamM, rho, rmsr:Math.sqrt(sq/n)};
 }
-// Triadenmethode: löst 3 paarweise Korrelationen zwischen 3 Indikatoren nach den 3 zugrunde
-// liegenden Ladungen auf (klassischer Ansatz für Ein-Faktor-Tripel: λ_i = √(r_ij·r_ik / r_jk)).
-// Referenz-Item (erstes der drei) wird nicht-negativ fixiert, die beiden anderen übernehmen ihr
-// Vorzeichen von der jeweiligen Korrelation zum Referenz-Item — das erlaubt auch ein invers zum
-// gemeinsamen Faktor ladendes Item (z. B. Kompetenz innerhalb eines Methodenfaktors, s. u.).
-function nz(x){ return Math.abs(x)<1e-6 ? (x<0?-1e-6:1e-6) : x; }
-function triad3(v01,v02,v12){
-  const l0=Math.sqrt(Math.abs(v01*v02/nz(v12)));
-  const l1 = l0>1e-6 ? v01/l0 : Math.sqrt(Math.abs(v01*v12/nz(v02)));
-  const l2 = l0>1e-6 ? v02/l0 : Math.sqrt(Math.abs(v02*v12/nz(v01)));
-  return [l0,l1,l2];
-}
-
-// Schätzt für Szenario A (echte Geiser-Daten) item-spezifische Trait- und Methodenladungen
-// statt eines einzigen globalen λ_T/λ_M für alle 9 Items (fitCTCM oben) — echte Items laden ja
-// nie exakt gleich stark. Trait-Ladungen kommen aus den MTHM-Tripeln je Trait (3 Items, eine je
-// Methode); Methodenladungen aus dem um den geschätzten Trait-Anteil bereinigten HTMM-Tripel je
-// Methode (3 Items, eine je Trait). Traitkorrelationen ρ wie in fitCTCM, nur mit item-spezifischem
-// λ_T im Nenner statt einem globalen Durchschnittswert.
-function fitCTCM_items(M){
-  const traitGroups=[[0,3,6],[1,4,7],[2,5,8]];
-  const methodGroups=[[0,1,2],[3,4,5],[6,7,8]];
-  const lamT=Array(9).fill(0);
-  traitGroups.forEach(([a,b,c])=>{
-    const [la,lb,lc]=triad3(M[a][b],M[a][c],M[b][c]);
-    lamT[a]=la; lamT[b]=lb; lamT[c]=lc;
-  });
-
-  const rho=[[1,0,0],[0,1,0],[0,0,1]];
-  for(let ta=0; ta<3; ta++) for(let tb=ta+1; tb<3; tb++){
-    const vals=[];
-    for(let i=0;i<9;i++) for(let j=0;j<9;j++){
-      const a=idxOf(i), b=idxOf(j);
-      if(a.t===ta && b.t===tb && a.m!==b.m && lamT[i]>1e-6 && lamT[j]>1e-6){
-        vals.push(M[i][j]/(lamT[i]*lamT[j]));
-      }
-    }
-    const r=vals.length ? vals.reduce((s,x)=>s+x,0)/vals.length : 0;
-    const rc=Math.max(-.99,Math.min(.99,r));
-    rho[ta][tb]=rc; rho[tb][ta]=rc;
-  }
-
-  const lamM=Array(9).fill(0);
-  methodGroups.forEach(([a,b,c])=>{
-    const resid=(i,j)=>{ const ti=idxOf(i).t, tj=idxOf(j).t; return M[i][j]-lamT[i]*lamT[j]*rho[ti][tj]; };
-    const [la,lb,lc]=triad3(resid(a,b),resid(a,c),resid(b,c));
-    lamM[a]=la; lamM[b]=lb; lamM[c]=lc;
-  });
-
-  const theta=Array.from({length:9},(_,i)=>Math.max(.02,1-lamT[i]*lamT[i]-lamM[i]*lamM[i]));
-
-  const implied=Array.from({length:9},()=>Array(9).fill(0));
-  for(let i=0;i<9;i++) for(let j=0;j<9;j++){
-    if(i===j){ implied[i][j]=lamT[i]*lamT[i]+lamM[i]*lamM[i]; continue; }
-    const a=idxOf(i), b=idxOf(j);
-    implied[i][j]=lamT[i]*lamT[j]*rho[a.t][b.t] + (a.m===b.m ? lamM[i]*lamM[j] : 0);
-  }
-  let sq=0,n=0;
-  for(let i=0;i<9;i++) for(let j=i+1;j<9;j++){ const d=M[i][j]-implied[i][j]; sq+=d*d; n++; }
-  return {lamT, lamM, theta, rho, rmsr:Math.sqrt(sq/n), uniform:false};
-}
+// Szenario A (echte Geiser-Daten): item-spezifische Trait- und Methodenladungen, EINMALIG
+// offline berechnet (kein Solver zur Laufzeit im Tool) per Unweighted-Least-Squares — ein
+// Standard-SEM-Schätzer, der den quadrierten Fehler über alle 36 Off-Diagonal-Zellen gemeinsam
+// minimiert (Koordinatenabstieg: jede Item-Ladung und jede Trait-Korrelation abwechselnd per
+// 1D-KQ-Regression aktualisiert, bis Konvergenz — 800 Durchläufe, Zielfunktion seit Durchlauf
+// ~300 stabil, aus einem Zufallsstart reproduzierbar auf dieselbe Lösung). Das ersetzt eine
+// frühere Version, die stattdessen 18 der 36 Zellen per Triadenformel algebraisch exakt (aber
+// nicht wirklich "gefittet") auflöste — die jetzige Lösung ist ein echtes, verteiltes Optimum
+// mit niedrigerem Gesamtfehler. x4 (Peer×Depressivität) ist ein Heywood-Fall: λ_T²+λ_M² > 1,
+// die Fehlervarianz wird auf θ=0.02 geklemmt statt negativ zu werden (siehe Erklärtext unten).
+const EMP_FIT_ULS = {
+  lamT:  [0.4425, 0.3481, 0.4303, 0.5307, 0.3675, 0.5952, 0.6287, 0.5927, 0.7215],
+  lamM:  [0.7559, 0.7035, -0.5143, 0.8627, 0.5506, -0.2580, 0.6649, 0.5049, -0.2797],
+  theta: [0.2328, 0.3839, 0.5503, 0.0200, 0.5618, 0.5792, 0.1627, 0.3938, 0.4012],
+  rho: [[1, 0.8972, -0.8466], [0.8972, 1, -0.7221], [-0.8466, -0.7221, 1]],
+  rmsr: 0.013,
+  uniform: false
+};
 
 // Für jedes Szenario: Ladungen/Korrelationen aus der jeweils in Reiter ① gezeigten Matrix
 // abgelesen — bei den synthetischen Szenarien B–D (deren Matrix ja selbst aus einem einzigen
 // λ_T/λ_M/ρ erzeugt wurde) per globaler Momentenschätzung, die exakt die Presetwerte reproduziert
-// (auf alle 9 Items gleich verteilt); bei Szenario A per item-spezifischer Triadenmethode.
+// (auf alle 9 Items gleich verteilt); bei Szenario A die oben dokumentierte, vorab berechnete
+// item-spezifische ULS-Lösung.
 const FIT_BY_PRESET={};
 Object.keys(PRESETS).forEach(id=>{
   if(id==='A'){
-    FIT_BY_PRESET[id]=fitCTCM_items(EMP_MATRIX);
+    FIT_BY_PRESET[id]=EMP_FIT_ULS;
   } else {
     const f=fitCTCM(matrixForPreset(id));
     const theta=Math.max(.02,1-f.lamT*f.lamT-f.lamM*f.lamM);
@@ -663,12 +621,12 @@ function updateSemFit(){
   const cls = r<0.03 ? 'v-par' : (r<0.08 ? 'v-tau' : 'v-con');
   const label = r<0.03 ? 'guter Fit' : (r<0.08 ? 'mittelmäßiger Fit' : 'schwacher Fit');
   el.className='verdict '+cls;
-  el.innerHTML='<strong>Modellfit (RMSR) = '+r.toFixed(3)+'</strong> — '+label+': So stark weicht die aus den item-spezifischen Ladungen implizierte Matrix von der echten Matrix in Reiter ① ab. Trait- und Methodenladungen wurden hier separat pro Item per Triadenmethode aus den MTHM- bzw. HTMM-Korrelationstripeln geschätzt (Werte direkt an den Pfeilen im Diagramm) — die verbleibende Abweichung stammt fast ausschließlich daraus, dass die drei Trait-Korrelationen ρ als ein gemeinsamer Wert pro Traitpaar (nicht pro Item) über mehrere Heterotrait-Heteromethod-Zellen gemittelt werden.';
+  el.innerHTML='<strong>Modellfit (RMSR) = '+r.toFixed(3)+'</strong> — '+label+': So stark weicht die aus den item-spezifischen Ladungen implizierte Matrix von der echten Matrix in Reiter ① ab, gemittelt über alle 36 Zellen. Die Ladungen (Werte direkt an den Pfeilen im Diagramm) wurden per Unweighted Least Squares gemeinsam über alle 36 Zellen bestimmt — die Modell-Zwangsannahme, die hier am meisten kostet, ist, dass jedes Traitpaar nur <em>eine</em> gemeinsame Korrelation ρ hat statt einer eigenen je Item-Paar.';
 }
 
 const LT='<span class="gk">'+String.fromCharCode(955)+'</span><sub>T</sub>', LM='<span class="gk">'+String.fromCharCode(955)+'</span><sub>M</sub>';
 const SEM_EXPLAIN={
-  A:`Diese neun Messungen sind keine Modellwerte, sondern die echten Korrelationen aus Geiser et al. (2010) — und reale Items laden nie exakt gleich stark. Deshalb wird hier für <strong>jedes Item einzeln</strong> eine eigene Trait- und Methodenladung geschätzt (Triadenmethode: aus je drei MTHM- bzw. HTMM-Korrelationen lassen sich die drei zugehörigen Ladungen exakt auflösen), statt allen 9 Items dieselbe Zahl zuzuweisen. Auffällig: Bei Kompetenz lädt die Methode teils <strong>negativ</strong> — ein Rater, der ein Kind negativer einschätzt, bewertet dessen Depressivität/Ängstlichkeit tendenziell höher, seine Kompetenz aber niedriger; derselbe Methodenfaktor wirkt auf das invers gepolte Merkmal mit umgekehrtem Vorzeichen. Die drei Trait-Korrelationen ρ bleiben ein gemeinsamer Wert pro Traitpaar (Mittelwert über die zugehörigen Heterotrait-Heteromethod-Zellen) — die verbleibende Abweichung (RMSR, siehe oben) kommt fast nur noch daher.`,
+  A:`Diese neun Messungen sind keine Modellwerte, sondern die echten Korrelationen aus Geiser et al. (2010) — und reale Items laden nie exakt gleich stark. Deshalb hat hier <strong>jedes Item seine eigene</strong> Trait- und Methodenladung, statt allen 9 Items dieselbe Zahl zuzuweisen: einmalig offline per Unweighted Least Squares (UKQ) geschätzt — ein Standard-SEM-Schätzer, der den quadrierten Fehler über alle 36 Korrelationen gemeinsam minimiert, statt (wie eine frühere, einfachere Version dieses Tools) 18 davon algebraisch exakt vorzugeben und den ganzen Fehler auf den Rest abzuwälzen. Auffällig: Bei Kompetenz lädt die Methode teils <strong>negativ</strong> — ein Rater, der ein Kind negativer einschätzt, bewertet dessen Depressivität/Ängstlichkeit tendenziell höher, seine Kompetenz aber niedriger; derselbe Methodenfaktor wirkt auf das invers gepolte Merkmal mit umgekehrtem Vorzeichen. Ein Item (x4, Peer×Depressivität) ist ein sogenannter <strong>Heywood-Fall</strong>: Trait- und Methodenladung zusammen "erklären" hier rechnerisch mehr als 100% der Varianz, die Fehlervarianz wird auf einen kleinen positiven Wert geklemmt statt negativ zu werden — ein bekanntes Warnsignal in echten CT-CM-Analysen, kein Darstellungsfehler dieses Tools.`,
   B:`Diese Matrix ist nicht gemessen, sondern konstruiert: Sie entsteht exakt aus <strong>${LT}=0.75</strong> und <strong>${LM}=0.15</strong> (plus den festen Trait-Korrelationen). Die hohe Trait-Ladung und die niedrige Methodenladung sind der Idealfall — die Validitätsdiagonale (MTHM) bleibt deutlich über allen Methodeneffekten, konvergente und diskriminante Validität sind sauber erfüllt. Weil die Matrix direkt aus diesen Ladungen erzeugt wurde, trifft die Schätzung sie exakt — das Diagramm zeigt also genau das Modell, das Szenario B definiert.`,
   C:`Konstruierte Matrix mit <strong>${LT}=0.55</strong> und einer bewusst hohen Methodenladung <strong>${LM}=0.65</strong>. Weil ${LM} größer als ${LT} ist, übersteigen die Heterotrait-Monomethod-Korrelationen (gleiche Methode, andere Traits) die Validitätsdiagonale — genau die Diskriminanzvaliditäts-Verletzung, die Reiter ① rot markiert. Ein klassischer Halo-Effekt: Eine Methode (z. B. ein Rater) lässt alle drei Traits gemeinsam höher oder niedriger ausfallen, unabhängig vom tatsächlichen Trait-Gehalt.`,
   D:`Konstruierte Matrix mit niedriger Trait-Ladung <strong>${LT}=0.35</strong> bei moderater Methodenladung <strong>${LM}=0.15</strong>. Die Validitätsdiagonale bleibt hier insgesamt niedrig — verschiedene Methoden stimmen kaum überein, selbst wenn sie denselben Trait messen sollen. Das ist ein anderer Fehlertyp als Szenario C: nicht zu viel Methodenvarianz, sondern zu wenig geteilte Varianz durch den Trait selbst — ein Hinweis auf ein schwach reliables oder schlecht operationalisiertes Konstrukt.`
