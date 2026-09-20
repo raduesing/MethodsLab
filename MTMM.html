@@ -295,7 +295,7 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
 
     <div class="story-box">
       <div class="story-lbl">📋 Von der Matrix zum Modell</div>
-      Dieselben 9 Messungen, dasselbe Beispiel — nur als <strong>Correlated-Trait-Correlated-Method-Modell (CT-CM)</strong> gezeichnet: 3 Trait-Faktoren, 3 Methoden-Faktoren, jede Messung lädt auf genau einen Trait <em>und</em> genau eine Methode. Die Ladungen sind hier nicht frei einstellbar, sondern für jedes Szenario direkt aus der Matrix in Reiter <span class="circ">①</span> abgelesen (per Momentenschätzung) — die Szenarien-Auswahl links steuert also beides zugleich.
+      Dieselben 9 Messungen, dasselbe Beispiel — nur als <strong>Correlated-Trait-Correlated-Method-Modell (CT-CM)</strong> gezeichnet: 3 Trait-Faktoren, 3 Methoden-Faktoren, jede Messung lädt auf genau einen Trait <em>und</em> genau eine Methode. Die Ladungen sind hier nicht frei einstellbar, sondern für jedes Szenario direkt aus der Matrix in Reiter <span class="circ">①</span> abgelesen — die Szenarien-Auswahl links steuert also beides zugleich. Bei den synthetischen Szenarien B–D ist das ein einziges λ_T/λ_M für alle 9 Items (die Matrix wurde ja selbst so erzeugt); bei Szenario A (echte Daten) bekommt <strong>jedes Item seine eigene</strong> Trait- und Methodenladung, per Triadenmethode aus den Korrelationen geschätzt.
     </div>
 
     <div class="sec-h"><span class="circ">③</span> Pfaddiagramm — Trait- und Methodenfaktoren</div>
@@ -303,9 +303,7 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
       <canvas id="cv-sem" height="620"></canvas>
     </div>
     <div class="sem-legend">
-      Alle Trait-Pfade: <b><span class="gk">λ</span><sub>T</sub> = <span id="sem-lamT">—</span></b> &nbsp;·&nbsp;
-      alle Methoden-Pfade: <b><span class="gk">λ</span><sub>M</sub> = <span id="sem-lamM">—</span></b> &nbsp;·&nbsp;
-      Fehlervarianz je Item: <b><span class="gk">θ</span> = <span id="sem-theta">—</span></b>
+      <div id="sem-loadings-line">—</div>
       <div class="hint-mini" style="margin-top:.4rem">Methodenfaktoren sind bewusst <strong>unkorreliert</strong> gezeichnet (Standardannahme des einfachen CT-CM-Modells — Details und Grenzen in der Hilfe). Traitfaktoren korrelieren gemäß den Werten oben in den Bögen.</div>
       <div class="hint-mini" style="margin-top:.5rem">x1=Selbst×Depr. · x2=Selbst×Ängstl. · x3=Selbst×Komp. · x4=Peer×Depr. · x5=Peer×Ängstl. · x6=Peer×Komp. · x7=Eltern×Depr. · x8=Eltern×Ängstl. · x9=Eltern×Komp.</div>
     </div>
@@ -433,12 +431,82 @@ function fitCTCM(M){
   for(let i=0;i<9;i++) for(let j=i+1;j<9;j++){ const d=M[i][j]-implied[i][j]; sq+=d*d; n++; }
   return {lamT, lamM, rho, rmsr:Math.sqrt(sq/n)};
 }
-const EMP_FIT=fitCTCM(EMP_MATRIX);
-// Für jedes Szenario: Ladungen/Korrelationen per Momentenmethode aus der jeweils in Reiter ① gezeigten
-// Matrix abgelesen. Bei den synthetischen Szenarien (deren Matrix ja selbst aus λ_T/λ_M/ρ erzeugt wurde)
-// reproduziert das exakt die Presetwerte; bei Szenario A liefert es die echte Schätzung samt Fitmaß.
+// Triadenmethode: löst 3 paarweise Korrelationen zwischen 3 Indikatoren nach den 3 zugrunde
+// liegenden Ladungen auf (klassischer Ansatz für Ein-Faktor-Tripel: λ_i = √(r_ij·r_ik / r_jk)).
+// Referenz-Item (erstes der drei) wird nicht-negativ fixiert, die beiden anderen übernehmen ihr
+// Vorzeichen von der jeweiligen Korrelation zum Referenz-Item — das erlaubt auch ein invers zum
+// gemeinsamen Faktor ladendes Item (z. B. Kompetenz innerhalb eines Methodenfaktors, s. u.).
+function nz(x){ return Math.abs(x)<1e-6 ? (x<0?-1e-6:1e-6) : x; }
+function triad3(v01,v02,v12){
+  const l0=Math.sqrt(Math.abs(v01*v02/nz(v12)));
+  const l1 = l0>1e-6 ? v01/l0 : Math.sqrt(Math.abs(v01*v12/nz(v02)));
+  const l2 = l0>1e-6 ? v02/l0 : Math.sqrt(Math.abs(v02*v12/nz(v01)));
+  return [l0,l1,l2];
+}
+
+// Schätzt für Szenario A (echte Geiser-Daten) item-spezifische Trait- und Methodenladungen
+// statt eines einzigen globalen λ_T/λ_M für alle 9 Items (fitCTCM oben) — echte Items laden ja
+// nie exakt gleich stark. Trait-Ladungen kommen aus den MTHM-Tripeln je Trait (3 Items, eine je
+// Methode); Methodenladungen aus dem um den geschätzten Trait-Anteil bereinigten HTMM-Tripel je
+// Methode (3 Items, eine je Trait). Traitkorrelationen ρ wie in fitCTCM, nur mit item-spezifischem
+// λ_T im Nenner statt einem globalen Durchschnittswert.
+function fitCTCM_items(M){
+  const traitGroups=[[0,3,6],[1,4,7],[2,5,8]];
+  const methodGroups=[[0,1,2],[3,4,5],[6,7,8]];
+  const lamT=Array(9).fill(0);
+  traitGroups.forEach(([a,b,c])=>{
+    const [la,lb,lc]=triad3(M[a][b],M[a][c],M[b][c]);
+    lamT[a]=la; lamT[b]=lb; lamT[c]=lc;
+  });
+
+  const rho=[[1,0,0],[0,1,0],[0,0,1]];
+  for(let ta=0; ta<3; ta++) for(let tb=ta+1; tb<3; tb++){
+    const vals=[];
+    for(let i=0;i<9;i++) for(let j=0;j<9;j++){
+      const a=idxOf(i), b=idxOf(j);
+      if(a.t===ta && b.t===tb && a.m!==b.m && lamT[i]>1e-6 && lamT[j]>1e-6){
+        vals.push(M[i][j]/(lamT[i]*lamT[j]));
+      }
+    }
+    const r=vals.length ? vals.reduce((s,x)=>s+x,0)/vals.length : 0;
+    const rc=Math.max(-.99,Math.min(.99,r));
+    rho[ta][tb]=rc; rho[tb][ta]=rc;
+  }
+
+  const lamM=Array(9).fill(0);
+  methodGroups.forEach(([a,b,c])=>{
+    const resid=(i,j)=>{ const ti=idxOf(i).t, tj=idxOf(j).t; return M[i][j]-lamT[i]*lamT[j]*rho[ti][tj]; };
+    const [la,lb,lc]=triad3(resid(a,b),resid(a,c),resid(b,c));
+    lamM[a]=la; lamM[b]=lb; lamM[c]=lc;
+  });
+
+  const theta=Array.from({length:9},(_,i)=>Math.max(.02,1-lamT[i]*lamT[i]-lamM[i]*lamM[i]));
+
+  const implied=Array.from({length:9},()=>Array(9).fill(0));
+  for(let i=0;i<9;i++) for(let j=0;j<9;j++){
+    if(i===j){ implied[i][j]=lamT[i]*lamT[i]+lamM[i]*lamM[i]; continue; }
+    const a=idxOf(i), b=idxOf(j);
+    implied[i][j]=lamT[i]*lamT[j]*rho[a.t][b.t] + (a.m===b.m ? lamM[i]*lamM[j] : 0);
+  }
+  let sq=0,n=0;
+  for(let i=0;i<9;i++) for(let j=i+1;j<9;j++){ const d=M[i][j]-implied[i][j]; sq+=d*d; n++; }
+  return {lamT, lamM, theta, rho, rmsr:Math.sqrt(sq/n), uniform:false};
+}
+
+// Für jedes Szenario: Ladungen/Korrelationen aus der jeweils in Reiter ① gezeigten Matrix
+// abgelesen — bei den synthetischen Szenarien B–D (deren Matrix ja selbst aus einem einzigen
+// λ_T/λ_M/ρ erzeugt wurde) per globaler Momentenschätzung, die exakt die Presetwerte reproduziert
+// (auf alle 9 Items gleich verteilt); bei Szenario A per item-spezifischer Triadenmethode.
 const FIT_BY_PRESET={};
-Object.keys(PRESETS).forEach(id=>{ FIT_BY_PRESET[id] = id==='A' ? EMP_FIT : fitCTCM(matrixForPreset(id)); });
+Object.keys(PRESETS).forEach(id=>{
+  if(id==='A'){
+    FIT_BY_PRESET[id]=fitCTCM_items(EMP_MATRIX);
+  } else {
+    const f=fitCTCM(matrixForPreset(id));
+    const theta=Math.max(.02,1-f.lamT*f.lamT-f.lamM*f.lamM);
+    FIT_BY_PRESET[id]={lamT:Array(9).fill(f.lamT), lamM:Array(9).fill(f.lamM), theta:Array(9).fill(theta), rho:f.rho, rmsr:f.rmsr, uniform:true};
+  }
+});
 
 // ══════════════════════════════════════════════════════════════════════
 // MATRIX-TABELLE
@@ -567,13 +635,22 @@ function setPreset(id){
 function updateAll(){
   renderMatrix();
   drawSEM();
-  const fit=FIT_BY_PRESET[ST.preset];
-  document.getElementById('sem-lamT').textContent=fit.lamT.toFixed(2);
-  document.getElementById('sem-lamM').textContent=fit.lamM.toFixed(2);
-  const theta=Math.max(.02, 1-(fit.lamT*fit.lamT+fit.lamM*fit.lamM));
-  document.getElementById('sem-theta').textContent=theta.toFixed(2);
+  updateSemLegend();
   updateSemFit();
   updateSemExplain();
+}
+function fmtRange(arr){
+  const mn=Math.min(...arr), mx=Math.max(...arr);
+  if(mx-mn<0.005) return fmt2(mn);
+  return fmt2(mn)+'–'+fmt2(mx);
+}
+function updateSemLegend(){
+  const fit=FIT_BY_PRESET[ST.preset], el=document.getElementById('sem-loadings-line');
+  if(fit.uniform){
+    el.innerHTML='Alle Trait-Pfade: <b>'+LT+' = '+fmt2(fit.lamT[0])+'</b> &nbsp;·&nbsp; alle Methoden-Pfade: <b>'+LM+' = '+fmt2(fit.lamM[0])+'</b> &nbsp;·&nbsp; Fehlervarianz je Item: <b><span class="gk">θ</span> = '+fmt2(fit.theta[0])+'</b>';
+  } else {
+    el.innerHTML='Trait-Pfade variieren <strong>je Item</strong>: <b>'+LT+' = '+fmtRange(fit.lamT)+'</b> &nbsp;·&nbsp; Methoden-Pfade variieren: <b>'+LM+' = '+fmtRange(fit.lamM)+'</b> &nbsp;·&nbsp; Fehlervarianz variiert: <b><span class="gk">θ</span> = '+fmtRange(fit.theta)+'</b> — genaue Werte an den Pfeilen im Diagramm.';
+  }
 }
 function updateSemFit(){
   const el=document.getElementById('sem-fit');
@@ -583,16 +660,15 @@ function updateSemFit(){
     el.innerHTML='<strong>Modellfit (RMSR) = '+r.toFixed(3)+'</strong> — exakt: Bei diesem synthetischen Szenario wird die Matrix in Reiter ① direkt aus λ_T, λ_M und den Trait-Korrelationen erzeugt, es gibt keine Abweichung.';
     return;
   }
-  const cls = r<0.08 ? 'v-par' : (r<0.14 ? 'v-tau' : 'v-con');
-  const label = r<0.08 ? 'guter Fit' : (r<0.14 ? 'mittelmäßiger Fit' : 'schwacher Fit');
-  const why = r>=0.14 ? ' Ein Grund: Das Modell hat nur zwei freie Ladungen (λ_T, λ_M), die für alle 9 Items gleich sind — echte Daten streuen stärker zwischen einzelnen Item-Paaren, als sich mit so wenigen Parametern gleichzeitig treffen lässt.' : '';
+  const cls = r<0.03 ? 'v-par' : (r<0.08 ? 'v-tau' : 'v-con');
+  const label = r<0.03 ? 'guter Fit' : (r<0.08 ? 'mittelmäßiger Fit' : 'schwacher Fit');
   el.className='verdict '+cls;
-  el.innerHTML='<strong>Modellfit (RMSR) = '+r.toFixed(3)+'</strong> — '+label+': So stark weicht die implizierte Matrix des vereinfachten CT-CM-Modells (λ_T, λ_M per Momentenmethode aus den Geiser-et-al.-Daten geschätzt) von der echten Matrix in Reiter ① ab.'+why;
+  el.innerHTML='<strong>Modellfit (RMSR) = '+r.toFixed(3)+'</strong> — '+label+': So stark weicht die aus den item-spezifischen Ladungen implizierte Matrix von der echten Matrix in Reiter ① ab. Trait- und Methodenladungen wurden hier separat pro Item per Triadenmethode aus den MTHM- bzw. HTMM-Korrelationstripeln geschätzt (Werte direkt an den Pfeilen im Diagramm) — die verbleibende Abweichung stammt fast ausschließlich daraus, dass die drei Trait-Korrelationen ρ als ein gemeinsamer Wert pro Traitpaar (nicht pro Item) über mehrere Heterotrait-Heteromethod-Zellen gemittelt werden.';
 }
 
 const LT='<span class="gk">'+String.fromCharCode(955)+'</span><sub>T</sub>', LM='<span class="gk">'+String.fromCharCode(955)+'</span><sub>M</sub>';
 const SEM_EXPLAIN={
-  A:`Diese neun Messungen sind keine Modellwerte, sondern die echten Korrelationen aus Geiser et al. (2010). <strong>${LT}, ${LM}</strong> und die drei Trait-Korrelationen oben wurden per Momentenschätzung aus genau dieser Matrix abgelesen — sie sind also keine freie Wahl, sondern die Werte, die dieses vereinfachte Zwei-Ladungs-Modell am besten zu den Daten passen lässt. Die verbleibende Abweichung (RMSR, siehe oben) zeigt ehrlich, wie viel echte Struktur in den Daten steckt, die ein Modell mit nur einer globalen Trait- und einer globalen Methodenladung nicht erklären kann — vor allem, weil reale Items nie exakt gleich stark laden.`,
+  A:`Diese neun Messungen sind keine Modellwerte, sondern die echten Korrelationen aus Geiser et al. (2010) — und reale Items laden nie exakt gleich stark. Deshalb wird hier für <strong>jedes Item einzeln</strong> eine eigene Trait- und Methodenladung geschätzt (Triadenmethode: aus je drei MTHM- bzw. HTMM-Korrelationen lassen sich die drei zugehörigen Ladungen exakt auflösen), statt allen 9 Items dieselbe Zahl zuzuweisen. Auffällig: Bei Kompetenz lädt die Methode teils <strong>negativ</strong> — ein Rater, der ein Kind negativer einschätzt, bewertet dessen Depressivität/Ängstlichkeit tendenziell höher, seine Kompetenz aber niedriger; derselbe Methodenfaktor wirkt auf das invers gepolte Merkmal mit umgekehrtem Vorzeichen. Die drei Trait-Korrelationen ρ bleiben ein gemeinsamer Wert pro Traitpaar (Mittelwert über die zugehörigen Heterotrait-Heteromethod-Zellen) — die verbleibende Abweichung (RMSR, siehe oben) kommt fast nur noch daher.`,
   B:`Diese Matrix ist nicht gemessen, sondern konstruiert: Sie entsteht exakt aus <strong>${LT}=0.75</strong> und <strong>${LM}=0.15</strong> (plus den festen Trait-Korrelationen). Die hohe Trait-Ladung und die niedrige Methodenladung sind der Idealfall — die Validitätsdiagonale (MTHM) bleibt deutlich über allen Methodeneffekten, konvergente und diskriminante Validität sind sauber erfüllt. Weil die Matrix direkt aus diesen Ladungen erzeugt wurde, trifft die Schätzung sie exakt — das Diagramm zeigt also genau das Modell, das Szenario B definiert.`,
   C:`Konstruierte Matrix mit <strong>${LT}=0.55</strong> und einer bewusst hohen Methodenladung <strong>${LM}=0.65</strong>. Weil ${LM} größer als ${LT} ist, übersteigen die Heterotrait-Monomethod-Korrelationen (gleiche Methode, andere Traits) die Validitätsdiagonale — genau die Diskriminanzvaliditäts-Verletzung, die Reiter ① rot markiert. Ein klassischer Halo-Effekt: Eine Methode (z. B. ein Rater) lässt alle drei Traits gemeinsam höher oder niedriger ausfallen, unabhängig vom tatsächlichen Trait-Gehalt.`,
   D:`Konstruierte Matrix mit niedriger Trait-Ladung <strong>${LT}=0.35</strong> bei moderater Methodenladung <strong>${LM}=0.15</strong>. Die Validitätsdiagonale bleibt hier insgesamt niedrig — verschiedene Methoden stimmen kaum überein, selbst wenn sie denselben Trait messen sollen. Das ist ein anderer Fehlertyp als Szenario C: nicht zu viel Methodenvarianz, sondern zu wenig geteilte Varianz durch den Trait selbst — ein Hinweis auf ein schwach reliables oder schlecht operationalisiertes Konstrukt.`
@@ -680,14 +756,14 @@ function drawSEM(){
     const mx1=itemX-itemW2/2-8;
     ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(mx1,iy); ctx.stroke();
     drawArrowHead(ctx,itemX-itemW2/2-7,iy,Math.atan2(iy-y0,(itemX-itemW2/2-7)-x0),8,ink2);
-    pathLabel(x0+(mx1-x0)*0.32, y0+(iy-y0)*0.32, methodColors[a.m], lamM.toFixed(2));
+    pathLabel(x0+(mx1-x0)*0.32, y0+(iy-y0)*0.32, methodColors[a.m], fmt2(lamM[i]));
     // arrow from trait (right)
     const tAng=Math.atan2(iy-tY,(itemX+itemW2/2+8)-rightX);
     const x1=rightX+trRx*.92*Math.cos(tAng), y1=tY+trRy*.92*Math.sin(tAng);
     const tx1=itemX+itemW2/2+8;
     ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(tx1,iy); ctx.stroke();
     drawArrowHead(ctx,itemX+itemW2/2+7,iy,Math.atan2(iy-y1,(itemX+itemW2/2+7)-x1),8,ink2);
-    pathLabel(x1+(tx1-x1)*0.32, y1+(iy-y1)*0.32, traitColors[a.t], lamT.toFixed(2));
+    pathLabel(x1+(tx1-x1)*0.32, y1+(iy-y1)*0.32, traitColors[a.t], fmt2(lamT[i]));
     // item box
     ctx.fillStyle=paper; ctx.strokeStyle=ink; ctx.lineWidth=1.8;
     ctx.fillRect(itemX-itemW2/2,iy-itemH2/2,itemW2,itemH2); ctx.strokeRect(itemX-itemW2/2,iy-itemH2/2,itemW2,itemH2);
