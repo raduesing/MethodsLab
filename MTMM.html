@@ -309,16 +309,22 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
 
     <div class="story-box">
       <div class="story-lbl">📋 Von der Matrix zum Modell</div>
-      Dieselben 9 Messungen, dasselbe Beispiel — nur als <strong>Correlated-Trait-Uncorrelated-Methods-Modell (CT-UM)</strong> gezeichnet: 3 Trait-Faktoren, 3 Methoden-Faktoren, jede Messung lädt auf genau einen Trait <em>und</em> genau eine Methode; die Methodenfaktoren korrelieren bewusst <em>nicht</em> untereinander (anders als beim allgemeineren CT-CM-Modell — Details und weitere Modellvarianten in Reiter <span class="circ">③</span>). Die Ladungen sind hier nicht frei einstellbar, sondern für jedes Szenario direkt aus der Matrix in Reiter <span class="circ">①</span> abgelesen — die Szenarien-Auswahl links steuert also beides zugleich. Bei den synthetischen Szenarien B–D ist das ein einziges λ_T/λ_M für alle 9 Items (die Matrix wurde ja selbst so erzeugt); bei Szenario A (echte Daten) bekommt <strong>jedes Item seine eigene</strong> Trait- und Methodenladung — einmalig offline per Unweighted Least Squares geschätzt (nicht Teil der Laufzeit-Logik des Tools, siehe Quellcode-Kommentar bei <code>EMP_FIT_ULS</code>).
+      Dieselben 9 Messungen, dasselbe Beispiel — standardmäßig als <strong>Correlated-Trait-Uncorrelated-Methods-Modell (CT-UM)</strong> gezeichnet: 3 Trait-Faktoren, 3 Methoden-Faktoren, jede Messung lädt auf genau einen Trait <em>und</em> genau eine Methode; die Methodenfaktoren korrelieren per Default <em>nicht</em> untereinander (per Toggle unten auch als CT-CM mit korrelierten Methodenfaktoren — Details und weitere Modellvarianten in Reiter <span class="circ">③</span>). Die Ladungen sind hier nicht frei einstellbar, sondern für jedes Szenario direkt aus der Matrix in Reiter <span class="circ">①</span> abgelesen — die Szenarien-Auswahl links steuert also beides zugleich. Bei den synthetischen Szenarien B–D ist das ein einziges λ_T/λ_M für alle 9 Items (die Matrix wurde ja selbst so erzeugt); bei Szenario A (echte Daten) bekommt <strong>jedes Item seine eigene</strong> Trait- und Methodenladung — einmalig offline per echter ML-Schätzung mit R/lavaan berechnet (nicht Teil der Laufzeit-Logik des Tools, siehe Quellcode-Kommentar bei <code>EMP_FIT_CTUM</code>/<code>EMP_FIT_CTCM</code>).
     </div>
 
     <div class="sec-h"><span class="circ">③</span> Pfaddiagramm — Trait- und Methodenfaktoren</div>
     <div class="canvas-wrap">
       <canvas id="cv-sem" height="620"></canvas>
     </div>
+
+    <div id="ctcm-toggle-wrap" style="margin-bottom:.9rem">
+      <div class="hint-mini" style="margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.08em">CT-UM ↔ CT-CM (nur Szenario A — echte ML-Werte, per R/lavaan einmalig offline berechnet)</div>
+      <button class="preset-btn" id="ctcm-toggle-btn" onclick="toggleCTCM()">○ CT-CM anzeigen (Methodenfaktoren korrelieren lassen)</button>
+    </div>
+
     <div class="sem-legend">
       <div id="sem-loadings-line">—</div>
-      <div class="hint-mini" style="margin-top:.4rem">Methodenfaktoren sind bewusst <strong>unkorreliert</strong> gezeichnet — das definiert genau das CT-UM-Modell (Details, Grenzen und Alternativen wie CT-CM/CT-C(M−1) in Reiter <span class="circ">③</span> und der Hilfe). Traitfaktoren korrelieren gemäß den Werten oben in den Bögen.</div>
+      <div class="hint-mini" style="margin-top:.4rem">Methodenfaktoren sind hier per Default <strong>unkorreliert</strong> gezeichnet (CT-UM-Modell) — mit dem Button oben lassen sie sich (nur für Szenario A) mit echten ML-Werten <strong>korreliert</strong> zeichnen (CT-CM). Details, Grenzen und weitere Modellvarianten wie CT-C(M−1) in Reiter <span class="circ">③</span> und der Hilfe. Traitfaktoren korrelieren gemäß den Werten oben in den Bögen.</div>
       <div class="hint-mini" style="margin-top:.5rem">x1=Selbst×Depr. · x2=Selbst×Ängstl. · x3=Selbst×Komp. · x4=Peer×Depr. · x5=Peer×Ängstl. · x6=Peer×Komp. · x7=Eltern×Depr. · x8=Eltern×Ängstl. · x9=Eltern×Komp.</div>
     </div>
     <div class="verdict" id="sem-fit" style="margin-top:.6rem">—</div>
@@ -340,7 +346,7 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
       </div>
       <div class="lcard" style="grid-column:1/-1">
         <div class="lcard-h">Modellfit ≠ Validität</div>
-        <div class="lcard-body">Ein guter Modellfit (RMSR oben) sagt nur: Die <em>Form</em> des Modells — korrelierte Traits, unkorrelierte Methoden, einfache Ladungsstruktur — passt zur beobachteten Korrelationsstruktur. Er sagt nichts darüber, ob die geschätzten Werte selbst gut sind. Im Geiser-Beispiel (Szenario A) passt das Modell gut — und <em>deshalb</em> können wir den geschätzten Parametern trauen. Die zeigen dann aber genau das Problem, das Reiter <span class="circ">①</span> als Verletzung von Kriterium <span class="circ">③</span> markiert: Eine Trait-Korrelation von ρ=0.90 (Depressivität–Ängstlichkeit) plus ein Heywood-Fall bei x4. Guter Fit macht eine schlechte Validitätsdiagnose also glaubwürdiger, nicht falscher — ein schlecht passendes Modell hätte diesen Zahlen gar nicht erst vertraut werden können. Fit und Validität sind unabhängige Fragen: Man kann ein Modell haben, das die Daten strukturell exakt trifft und trotzdem inhaltlich schlecht gemessene Konstrukte offenlegt — oder umgekehrt ein schlecht passendes Modell, dessen (unzuverlässige) Parameter zufällig gut aussehen.</div>
+        <div class="lcard-body">Ein guter Modellfit (SRMR oben) sagt nur: Die <em>Form</em> des Modells — korrelierte Traits, unkorrelierte Methoden, einfache Ladungsstruktur — passt zur beobachteten Korrelationsstruktur. Er sagt nichts darüber, ob die geschätzten Werte selbst gut sind. Im Geiser-Beispiel (Szenario A) passt das Modell gut — und <em>deshalb</em> können wir den geschätzten Parametern trauen. Die zeigen dann aber genau das Problem, das Reiter <span class="circ">①</span> als Verletzung von Kriterium <span class="circ">③</span> markiert: Eine Trait-Korrelation von ρ=0.90 (Depressivität–Ängstlichkeit) plus ein Heywood-Fall bei x4. Guter Fit macht eine schlechte Validitätsdiagnose also glaubwürdiger, nicht falscher — ein schlecht passendes Modell hätte diesen Zahlen gar nicht erst vertraut werden können. Fit und Validität sind unabhängige Fragen: Man kann ein Modell haben, das die Daten strukturell exakt trifft und trotzdem inhaltlich schlecht gemessene Konstrukte offenlegt — oder umgekehrt ein schlecht passendes Modell, dessen (unzuverlässige) Parameter zufällig gut aussehen.</div>
       </div>
     </div>
 
@@ -365,13 +371,13 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
         <canvas id="cv-mf-cm"></canvas>
         <div class="model-card-sub">Jöreskog, 1971</div>
         <div class="model-card-h">B — Correlated-Trait-Correlated-Method (CT-CM)</div>
-        <div class="model-card-body">Jedes Item lädt auf <strong>einen Trait­faktor und einen Methodenfaktor</strong>. Alle Traitfaktoren dürfen korrelieren, alle Methodenfaktoren dürfen <strong>ebenfalls</strong> korrelieren (nur Trait↔Methode nicht). Vorteil gegenüber CT-CU: Methodeneffekte sind explizit modelliert, Zerlegung in Trait-/Methoden-/Fehlervarianz wird möglich. Nachteil: führt in der Praxis häufig zu unzulässigen Lösungen (z. B. negative Fehlervarianzen) und Identifikationsproblemen — besonders wenn die Methodenfaktoren stark korrelieren.</div>
+        <div class="model-card-body">Jedes Item lädt auf <strong>einen Trait­faktor und einen Methodenfaktor</strong>. Alle Traitfaktoren dürfen korrelieren, alle Methodenfaktoren dürfen <strong>ebenfalls</strong> korrelieren (nur Trait↔Methode nicht). Vorteil gegenüber CT-CU: Methodeneffekte sind explizit modelliert, Zerlegung in Trait-/Methoden-/Fehlervarianz wird möglich. Nachteil: führt in der Praxis häufig zu unzulässigen Lösungen (z. B. negative Fehlervarianzen) und Identifikationsproblemen — besonders wenn die Methodenfaktoren stark korrelieren. <strong>Per Toggle in Reiter <span class="circ">②</span> mit echten ML-Werten (R/lavaan) für das Geiser-Beispiel verfügbar</strong> — dort live zu sehen: der Heywood-Fall bei x4 wird unter CT-CM sogar noch extremer als unter CT-UM.</div>
       </div>
       <div class="model-card">
         <canvas id="cv-mf-um"></canvas>
         <div class="model-card-sub">Spezialfall von CT-CM</div>
         <div class="model-card-h">C — Correlated-Trait-Uncorrelated-Methods (CT-UM)</div>
-        <div class="model-card-body"><strong>Das Modell aus Reiter <span class="circ">②</span> dieses Tools.</strong> Wie CT-CM, aber die Methodenfaktoren dürfen <strong>nicht</strong> miteinander korrelieren. Vermeidet die meisten Schätzprobleme von CT-CM. Besonders geeignet bei <strong>austauschbaren Methoden</strong> — z. B. zufällig gezogene Rater aus einer größeren Population (nicht: <em>welche</em> Rater, sondern <em>dass</em> sie eine repräsentative Stichprobe darstellen). Bei <strong>strukturell unterschiedlichen</strong> Methoden (Selbst-, Eltern-, physiologisches Maß — wie im Geiser-Beispiel) ist die Unkorreliertheits-Annahme eine Vereinfachung, kein exaktes Abbild der Realität.</div>
+        <div class="model-card-body"><strong>Das Standardmodell aus Reiter <span class="circ">②</span> dieses Tools.</strong> Wie CT-CM, aber die Methodenfaktoren dürfen <strong>nicht</strong> miteinander korrelieren. Vermeidet die meisten Schätzprobleme von CT-CM. Besonders geeignet bei <strong>austauschbaren Methoden</strong> — z. B. zufällig gezogene Rater aus einer größeren Population (nicht: <em>welche</em> Rater, sondern <em>dass</em> sie eine repräsentative Stichprobe darstellen). Bei <strong>strukturell unterschiedlichen</strong> Methoden (Selbst-, Eltern-, physiologisches Maß — wie im Geiser-Beispiel) ist die Unkorreliertheits-Annahme eine Vereinfachung, kein exaktes Abbild der Realität.</div>
       </div>
       <div class="model-card">
         <canvas id="cv-mf-cm1"></canvas>
@@ -427,7 +433,8 @@ const PRESETS={
   C:{mode:'synthetic', lamT:.55, lamM:.65},
   D:{mode:'synthetic', lamT:.35, lamM:.15}
 };
-let ST={preset:'A'};
+let ST={preset:'A', showCTCM:false};
+function currentFit(){ return (ST.preset==='A' && ST.showCTCM) ? EMP_FIT_CTCM : FIT_BY_PRESET[ST.preset]; }
 
 function idxOf(i){ return {m:Math.floor(i/3), t:i%3}; }
 function cellType(i,j){
@@ -461,7 +468,9 @@ function clampCell(v,isDiag){
 }
 
 // Schätzt λ_T, λ_M per Momentenmethode aus einer Matrix (hier: den echten Geiser-Daten)
-// und berechnet den Fit (RMSR) des CT-UM-Modells (unkorrelierte Methodenfaktoren) gegen diese Matrix.
+// und berechnet den Fit (SRMR) des CT-UM-Modells (unkorrelierte Methodenfaktoren) gegen diese Matrix.
+// (Nur für die synthetischen Szenarien B–D genutzt; Szenario A nutzt die per lavaan vorab
+// berechneten EMP_FIT_CTUM/EMP_FIT_CTCM-Konstanten oben.)
 function fitCTCM(M){
   const mthmVals=[], diagVals=[];
   for(let i=0;i<9;i++) diagVals.push(M[i][i]);
@@ -492,33 +501,43 @@ function fitCTCM(M){
   return {lamT, lamM, rho, rmsr:Math.sqrt(sq/n)};
 }
 // Szenario A (echte Geiser-Daten): item-spezifische Trait- und Methodenladungen, EINMALIG
-// offline berechnet (kein Solver zur Laufzeit im Tool) per Unweighted-Least-Squares — ein
-// Standard-SEM-Schätzer, der den quadrierten Fehler über alle 36 Off-Diagonal-Zellen gemeinsam
-// minimiert (Koordinatenabstieg: jede Item-Ladung und jede Trait-Korrelation abwechselnd per
-// 1D-KQ-Regression aktualisiert, bis Konvergenz — 800 Durchläufe, Zielfunktion seit Durchlauf
-// ~300 stabil, aus einem Zufallsstart reproduzierbar auf dieselbe Lösung). Das ersetzt eine
-// frühere Version, die stattdessen 18 der 36 Zellen per Triadenformel algebraisch exakt (aber
-// nicht wirklich "gefittet") auflöste — die jetzige Lösung ist ein echtes, verteiltes Optimum
-// mit niedrigerem Gesamtfehler. x4 (Peer×Depressivität) ist ein Heywood-Fall: λ_T²+λ_M² > 1,
-// die Fehlervarianz wird auf θ=0.02 geklemmt statt negativ zu werden (siehe Erklärtext unten).
-const EMP_FIT_ULS = {
-  lamT:  [0.4425, 0.3481, 0.4303, 0.5307, 0.3675, 0.5952, 0.6287, 0.5927, 0.7215],
-  lamM:  [0.7559, 0.7035, -0.5143, 0.8627, 0.5506, -0.2580, 0.6649, 0.5049, -0.2797],
-  theta: [0.2328, 0.3839, 0.5503, 0.0200, 0.5618, 0.5792, 0.1627, 0.3938, 0.4012],
-  rho: [[1, 0.8972, -0.8466], [0.8972, 1, -0.7221], [-0.8466, -0.7221, 1]],
-  rmsr: 0.013,
+// offline berechnet (kein Solver zur Laufzeit im Tool) — echte ML-Schätzung mit R/lavaan
+// (cfa(), std.lv=TRUE, sample.cov = Geiser-et-al.-Korrelationsmatrix mit Einsen auf der
+// Diagonale, sample.nobs=564), nicht mehr approximiert. Zwei Modellvarianten, je einmal
+// gerechnet: CT-UM (Methodenfaktoren fix unkorreliert: M~~0*M, T~~0*M) und CT-CM (auch
+// Methodenfaktoren frei korreliert). Beide konvergieren; x4 (Peer×Depressivität) ist in
+// BEIDEN ein echter Heywood-Fall — lavaan meldet "some estimated ov variances are negative"
+// (θ_x4 = −0.066 bzw. −0.227), hier bewusst ungeklemmt gezeigt (siehe Erklärtext unten),
+// nicht auf einen kleinen positiven Wert geklemmt wie in einer früheren Version dieses Tools.
+const EMP_FIT_CTUM = {
+  lamT:  [0.45128, 0.36391, 0.43015, 0.51177, 0.34542, 0.59735, 0.64201, 0.60753, 0.71950],
+  lamM:  [0.74680, 0.70734, -0.51610, 0.89671, 0.54186, -0.25656, 0.65612, 0.49532, -0.28202],
+  theta: [0.23863, 0.36724, 0.54860, -0.06600, 0.58707, 0.57734, 0.15732, 0.38557, 0.40278],
+  rho: [[1, 0.8885, -0.8394], [0.8885, 1, -0.71044], [-0.8394, -0.71044, 1]],
+  rmsr: 0.014,
+  fitInfo: {chisq:12.961, df:15, p:0.605, cfi:1.000, rmsea:0.000},
+  uniform: false
+};
+const EMP_FIT_CTCM = {
+  lamT:  [0.38984, 0.27368, 0.41675, 0.35926, 0.31285, 0.62334, 0.44504, 0.43471, 0.64749],
+  lamM:  [0.77675, 0.75653, -0.51851, 1.04792, 0.52717, -0.26347, 0.78791, 0.65358, -0.38669],
+  theta: [0.24468, 0.35276, 0.55747, -0.22720, 0.62421, 0.54203, 0.18114, 0.38386, 0.43122],
+  rho: [[1, 0.81206, -0.92239], [0.81206, 1, -0.73149], [-0.92239, -0.73149, 1]],
+  rhoM: [[1, 0.09216, 0.19139], [0.09216, 1, 0.22474], [0.19139, 0.22474, 1]],
+  rmsr: 0.012,
+  fitInfo: {chisq:9.433, df:12, p:0.666, cfi:1.000, rmsea:0.000},
   uniform: false
 };
 
 // Für jedes Szenario: Ladungen/Korrelationen aus der jeweils in Reiter ① gezeigten Matrix
 // abgelesen — bei den synthetischen Szenarien B–D (deren Matrix ja selbst aus einem einzigen
 // λ_T/λ_M/ρ erzeugt wurde) per globaler Momentenschätzung, die exakt die Presetwerte reproduziert
-// (auf alle 9 Items gleich verteilt); bei Szenario A die oben dokumentierte, vorab berechnete
-// item-spezifische ULS-Lösung.
+// (auf alle 9 Items gleich verteilt); bei Szenario A die oben dokumentierte, per lavaan
+// vorab berechnete item-spezifische ML-Lösung (CT-UM per Default, CT-CM per Toggle).
 const FIT_BY_PRESET={};
 Object.keys(PRESETS).forEach(id=>{
   if(id==='A'){
-    FIT_BY_PRESET[id]=EMP_FIT_ULS;
+    FIT_BY_PRESET[id]=EMP_FIT_CTUM;
   } else {
     const f=fitCTCM(matrixForPreset(id));
     const theta=Math.max(.02,1-f.lamT*f.lamT-f.lamM*f.lamM);
@@ -647,6 +666,14 @@ function setPreset(id){
   ST.preset=id;
   document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('pre-'+id).classList.add('active');
+  const toggleWrap=document.getElementById('ctcm-toggle-wrap');
+  if(toggleWrap) toggleWrap.style.display = (id==='A') ? '' : 'none';
+  updateAll();
+}
+function toggleCTCM(){
+  ST.showCTCM=!ST.showCTCM;
+  const btn=document.getElementById('ctcm-toggle-btn');
+  if(btn){ btn.classList.toggle('active',ST.showCTCM); btn.textContent = ST.showCTCM ? '● CT-CM aktiv (Methodenfaktoren korrelieren)' : '○ CT-CM anzeigen (Methodenfaktoren korrelieren lassen)'; }
   updateAll();
 }
 
@@ -663,36 +690,46 @@ function fmtRange(arr){
   return fmt2(mn)+'–'+fmt2(mx);
 }
 function updateSemLegend(){
-  const fit=FIT_BY_PRESET[ST.preset], el=document.getElementById('sem-loadings-line');
+  const fit=currentFit(), el=document.getElementById('sem-loadings-line');
+  let html;
   if(fit.uniform){
-    el.innerHTML='Alle Trait-Pfade: <b>'+LT+' = '+fmt2(fit.lamT[0])+'</b> &nbsp;·&nbsp; alle Methoden-Pfade: <b>'+LM+' = '+fmt2(fit.lamM[0])+'</b> &nbsp;·&nbsp; Fehlervarianz je Item: <b><span class="gk">θ</span> = '+fmt2(fit.theta[0])+'</b>';
+    html='Alle Trait-Pfade: <b>'+LT+' = '+fmt2(fit.lamT[0])+'</b> &nbsp;·&nbsp; alle Methoden-Pfade: <b>'+LM+' = '+fmt2(fit.lamM[0])+'</b> &nbsp;·&nbsp; Fehlervarianz je Item: <b><span class="gk">θ</span> = '+fmt2(fit.theta[0])+'</b>';
   } else {
-    el.innerHTML='Trait-Pfade variieren <strong>je Item</strong>: <b>'+LT+' = '+fmtRange(fit.lamT)+'</b> &nbsp;·&nbsp; Methoden-Pfade variieren: <b>'+LM+' = '+fmtRange(fit.lamM)+'</b> &nbsp;·&nbsp; Fehlervarianz variiert: <b><span class="gk">θ</span> = '+fmtRange(fit.theta)+'</b> — genaue Werte an den Pfeilen im Diagramm.';
+    html='Trait-Pfade variieren <strong>je Item</strong>: <b>'+LT+' = '+fmtRange(fit.lamT)+'</b> &nbsp;·&nbsp; Methoden-Pfade variieren: <b>'+LM+' = '+fmtRange(fit.lamM)+'</b> &nbsp;·&nbsp; Fehlervarianz variiert: <b><span class="gk">θ</span> = '+fmtRange(fit.theta)+'</b> — genaue Werte an den Pfeilen im Diagramm.';
   }
+  if(fit.rhoM){
+    html += '<br>Methodenfaktoren korrelieren jetzt (CT-CM): M1↔M2='+fmt2(fit.rhoM[0][1])+' &nbsp;·&nbsp; M1↔M3='+fmt2(fit.rhoM[0][2])+' &nbsp;·&nbsp; M2↔M3='+fmt2(fit.rhoM[1][2])+'.';
+  }
+  el.innerHTML=html;
 }
 function updateSemFit(){
   const el=document.getElementById('sem-fit');
-  const r=FIT_BY_PRESET[ST.preset].rmsr;
+  const fit=currentFit(), r=fit.rmsr;
   if(r<0.005){
     el.className='verdict v-par';
-    el.innerHTML='<strong>Modellfit (RMSR) = '+r.toFixed(3)+'</strong> — exakt: Bei diesem synthetischen Szenario wird die Matrix in Reiter ① direkt aus λ_T, λ_M und den Trait-Korrelationen erzeugt, es gibt keine Abweichung.';
+    el.innerHTML='<strong>Modellfit (SRMR) = '+r.toFixed(3)+'</strong> — exakt: Bei diesem synthetischen Szenario wird die Matrix in Reiter ① direkt aus λ_T, λ_M und den Trait-Korrelationen erzeugt, es gibt keine Abweichung.';
     return;
   }
   const cls = r<0.03 ? 'v-par' : (r<0.08 ? 'v-tau' : 'v-con');
   const label = r<0.03 ? 'guter Fit' : (r<0.08 ? 'mittelmäßiger Fit' : 'schwacher Fit');
+  const fi=fit.fitInfo, modelName = fit.rhoM ? 'CT-CM' : 'CT-UM';
   el.className='verdict '+cls;
-  el.innerHTML='<strong>Modellfit (RMSR) = '+r.toFixed(3)+'</strong> — '+label+': So stark weicht die aus den item-spezifischen Ladungen implizierte Matrix von der echten Matrix in Reiter ① ab, gemittelt über alle 36 Zellen. Die Ladungen (Werte direkt an den Pfeilen im Diagramm) wurden per Unweighted Least Squares gemeinsam über alle 36 Zellen bestimmt — die Modell-Zwangsannahme, die hier am meisten kostet, ist, dass jedes Traitpaar nur <em>eine</em> gemeinsame Korrelation ρ hat statt einer eigenen je Item-Paar.';
+  el.innerHTML = fi
+    ? '<strong>Modellfit (SRMR) = '+r.toFixed(3)+'</strong> — '+label+' ('+modelName+', echte ML-Schätzung mit R/lavaan): χ²('+fi.df+')='+fi.chisq.toFixed(2)+', <em>p</em>='+fi.p.toFixed(3)+', CFI='+fi.cfi.toFixed(3)+', RMSEA='+fi.rmsea.toFixed(3)+'. Ladungen direkt an den Pfeilen im Diagramm — die verbleibende Abweichung entsteht dadurch, dass jedes Traitpaar nur <em>eine</em> gemeinsame Korrelation ρ hat statt einer eigenen je Item-Paar.'
+    : '<strong>Modellfit (SRMR) = '+r.toFixed(3)+'</strong> — '+label+': So stark weicht die implizierte Matrix von der echten Matrix in Reiter ① ab.';
 }
 
 const LT='<span class="gk">'+String.fromCharCode(955)+'</span><sub>T</sub>', LM='<span class="gk">'+String.fromCharCode(955)+'</span><sub>M</sub>';
 const SEM_EXPLAIN={
-  A:`Diese neun Messungen sind keine Modellwerte, sondern die echten Korrelationen aus Geiser et al. (2010) — und reale Items laden nie exakt gleich stark. Deshalb hat hier <strong>jedes Item seine eigene</strong> Trait- und Methodenladung, statt allen 9 Items dieselbe Zahl zuzuweisen: einmalig offline per Unweighted Least Squares (UKQ) geschätzt — ein Standard-SEM-Schätzer, der den quadrierten Fehler über alle 36 Korrelationen gemeinsam minimiert, statt (wie eine frühere, einfachere Version dieses Tools) 18 davon algebraisch exakt vorzugeben und den ganzen Fehler auf den Rest abzuwälzen. Auffällig: Bei Kompetenz lädt die Methode teils <strong>negativ</strong> — ein Rater, der ein Kind negativer einschätzt, bewertet dessen Depressivität/Ängstlichkeit tendenziell höher, seine Kompetenz aber niedriger; derselbe Methodenfaktor wirkt auf das invers gepolte Merkmal mit umgekehrtem Vorzeichen. Ein Item (x4, Peer×Depressivität) ist ein sogenannter <strong>Heywood-Fall</strong>: Trait- und Methodenladung zusammen "erklären" hier rechnerisch mehr als 100% der Varianz, die Fehlervarianz wird auf einen kleinen positiven Wert geklemmt statt negativ zu werden — ein bekanntes Warnsignal in echten CT-UM- und CT-CM-Analysen, kein Darstellungsfehler dieses Tools. <strong>Guter Fit widerspricht der schwachen Diskriminanzvalidität aus Reiter ① nicht</strong> — im Gegenteil: Weil das Modell gut passt, können wir den geschätzten Trait-Korrelationen oben in den Bögen trauen, und die zeigen das eigentliche Problem — ρ(Depressivität,Ängstlichkeit)=0.90 ist so hoch, dass beide Traits auf latenter Ebene kaum trennbar sind. Ein schlecht passendes Modell hätte diese Diagnose gar nicht erst hergegeben.`,
+  A:`Diese neun Messungen sind keine Modellwerte, sondern die echten Korrelationen aus Geiser et al. (2010) — und reale Items laden nie exakt gleich stark. Deshalb hat hier <strong>jedes Item seine eigene</strong> Trait- und Methodenladung: eine echte <strong>Maximum-Likelihood-Schätzung mit R und lavaan</strong> (<code>cfa()</code>, <code>std.lv=TRUE</code>), einmalig offline berechnet und hier als feste Werte hinterlegt — im Browser läuft kein Solver. Auffällig: Bei Kompetenz lädt die Methode teils <strong>negativ</strong> — ein Rater, der ein Kind negativer einschätzt, bewertet dessen Depressivität/Ängstlichkeit tendenziell höher, seine Kompetenz aber niedriger; derselbe Methodenfaktor wirkt auf das invers gepolte Merkmal mit umgekehrtem Vorzeichen. Ein Item (x4, Peer×Depressivität) ist ein echter <strong>Heywood-Fall</strong>: lavaan selbst meldet "some estimated ov variances are negative" — die Fehlervarianz wird hier bewusst <em>nicht</em> auf einen positiven Wert geklemmt, sondern als das gezeigt, was die ML-Schätzung tatsächlich liefert (θ=−0.07). <strong>Guter Fit widerspricht der schwachen Diskriminanzvalidität aus Reiter ① nicht</strong> — im Gegenteil: Weil das Modell gut passt, können wir den geschätzten Trait-Korrelationen oben in den Bögen trauen, und die zeigen das eigentliche Problem — ρ(Depressivität,Ängstlichkeit)=0.89 ist so hoch, dass beide Traits auf latenter Ebene kaum trennbar sind. Ein schlecht passendes Modell hätte diese Diagnose gar nicht erst hergegeben. Probieren Sie oben den <strong>CT-CM-Toggle</strong>: korrelierte Methodenfaktoren statt fix unkorrelierter — ebenfalls eine echte ML-Schätzung.`,
+  A_CTCM:`Jetzt mit <strong>korrelierten Methodenfaktoren</strong> (CT-CM statt CT-UM) — ebenfalls eine echte ML-Schätzung mit R/lavaan, nicht approximiert. Die drei Methodenfaktoren korrelieren leicht positiv (ρ zwischen 0.09 und 0.22, siehe Bögen links): Selbst-, Peer- und Elternurteile teilen sich einen kleinen gemeinsamen "Rater-Stil"-Anteil, unabhängig vom Trait. Der Modellfit verbessert sich dadurch geringfügig (SRMR sinkt von 0.014 auf 0.012 — erwartbar, CT-CM hat 3 zusätzliche freie Parameter) — aber der Heywood-Fall bei x4 bleibt nicht nur bestehen, er wird <strong>deutlich extremer</strong> (θ=−0.23 statt −0.07): Mit mehr freien Parametern kann sich das Modell noch enger an die Daten schmiegen, was hier zulasten der Stabilität der Schätzung geht — auch M2s Ladung auf x4 übersteigt mit 1.05 den zulässigen Bereich [−1,1]. Genau das beschreibt Geiser et al. (2010, S. 683): CT-CM führt in der Praxis häufig zu unzulässigen Lösungen — dieses Beispiel zeigt live, warum CT-UM trotz seiner (unrealistischen) Unkorreliertheits-Annahme oft die robustere Wahl ist.`,
   B:`Diese Matrix ist nicht gemessen, sondern konstruiert: Sie entsteht exakt aus <strong>${LT}=0.75</strong> und <strong>${LM}=0.15</strong> (plus den festen Trait-Korrelationen). Die hohe Trait-Ladung und die niedrige Methodenladung sind der Idealfall — die Validitätsdiagonale (MTHM) bleibt deutlich über allen Methodeneffekten, konvergente und diskriminante Validität sind sauber erfüllt. Weil die Matrix direkt aus diesen Ladungen erzeugt wurde, trifft die Schätzung sie exakt — das Diagramm zeigt also genau das Modell, das Szenario B definiert.`,
   C:`Konstruierte Matrix mit <strong>${LT}=0.55</strong> und einer bewusst hohen Methodenladung <strong>${LM}=0.65</strong>. Weil ${LM} größer als ${LT} ist, übersteigen die Heterotrait-Monomethod-Korrelationen (gleiche Methode, andere Traits) die Validitätsdiagonale — genau die Diskriminanzvaliditäts-Verletzung, die Reiter ① rot markiert. Ein klassischer Halo-Effekt: Eine Methode (z. B. ein Rater) lässt alle drei Traits gemeinsam höher oder niedriger ausfallen, unabhängig vom tatsächlichen Trait-Gehalt.`,
   D:`Konstruierte Matrix mit niedriger Trait-Ladung <strong>${LT}=0.35</strong> bei moderater Methodenladung <strong>${LM}=0.15</strong>. Die Validitätsdiagonale bleibt hier insgesamt niedrig — verschiedene Methoden stimmen kaum überein, selbst wenn sie denselben Trait messen sollen. Das ist ein anderer Fehlertyp als Szenario C: nicht zu viel Methodenvarianz, sondern zu wenig geteilte Varianz durch den Trait selbst — ein Hinweis auf ein schwach reliables oder schlecht operationalisiertes Konstrukt.`
 };
 function updateSemExplain(){
-  document.getElementById('sem-explain').innerHTML=SEM_EXPLAIN[ST.preset]||SEM_EXPLAIN.A;
+  const key = (ST.preset==='A' && ST.showCTCM) ? 'A_CTCM' : ST.preset;
+  document.getElementById('sem-explain').innerHTML=SEM_EXPLAIN[key]||SEM_EXPLAIN.A;
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -719,12 +756,14 @@ function drawSEM(){
   const marginY=55;
   const itemY=[...Array(9)].map((_,i)=>marginY+i*(H-2*marginY)/8);
   const sideY=[itemY[0],itemY[4],itemY[8]];
-  const sideMargin=Math.max(95,W*0.13), rightMargin=Math.max(150,W*0.19);
+  const fit=currentFit(), lamT=fit.lamT, lamM=fit.lamM, rho=fit.rho;
+  // Bei CT-CM (Methodenfaktoren korreliert) braucht die linke Seite genauso viel Platz für
+  // Korrelationsbögen wie die rechte — sideMargin dann wie rightMargin bemessen.
+  const sideMargin=fit.rhoM ? Math.max(150,W*0.19) : Math.max(95,W*0.13), rightMargin=Math.max(150,W*0.19);
   const leftX=sideMargin, rightX=W-rightMargin;
   const itemX=(leftX+rightX)/2;
   const trR=32, itemW2=Math.max(54,Math.min(80,(rightX-leftX)*0.24)), itemH2=32;
   const trRx=trR+22, trRy=trR*.85, mRx=58, mRy=30;
-  const fit=FIT_BY_PRESET[ST.preset], lamT=fit.lamT, lamM=fit.lamM, rho=fit.rho;
 
   // Trait correlation arcs (right, bulge outward)
   ctx.font='bold 13px DM Mono,monospace';
@@ -750,6 +789,24 @@ function drawSEM(){
     ctx.fillStyle=traitColors[ti]; ctx.font='bold 12px DM Mono,monospace'; ctx.textAlign='center';
     ctx.fillText(TRAITS[ti],rightX,y+4);
   });
+
+  // Methoden-Korrelationsbögen (links, nur im CT-CM-Modus — CT-UM hat rhoM===undefined)
+  if(fit.rhoM){
+    const rhoM=fit.rhoM;
+    function arcVLeft(y1,y2,bulge,col,label){
+      const midy=(y1+y2)/2, cpX=leftX-bulge, edgeX=leftX-mRx*.55;
+      ctx.strokeStyle=col; ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.moveTo(edgeX,y1); ctx.quadraticCurveTo(cpX,midy,edgeX,y2); ctx.stroke();
+      drawArrowHead(ctx,edgeX,y1,Math.atan2(y1-midy,edgeX-cpX),9,col);
+      drawArrowHead(ctx,edgeX,y2,Math.atan2(y2-midy,edgeX-cpX),9,col);
+      const lx=cpX-(bulge>50?10:6), ly=midy;
+      ctx.fillStyle=paper; ctx.globalAlpha=.9; ctx.fillRect(lx-58,ly-10,58,19); ctx.globalAlpha=1;
+      ctx.textAlign='right'; ctx.fillStyle=col; ctx.fillText(label,lx,ly+4);
+    }
+    arcVLeft(sideY[0],sideY[1],shortBulge,ink2,'ρ='+rhoM[0][1].toFixed(2));
+    arcVLeft(sideY[1],sideY[2],shortBulge,ink2,'ρ='+rhoM[1][2].toFixed(2));
+    arcVLeft(sideY[0],sideY[2],longBulge,ink2,'ρ='+rhoM[0][2].toFixed(2));
+  }
 
   // Method factor ellipses (left)
   sideY.forEach((y,mi)=>{
