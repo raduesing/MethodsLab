@@ -137,6 +137,15 @@ th.blockend-r{border-right:2px solid var(--border)}
 .lcard-body strong{color:var(--ink)}
 @media(max-width:900px){.lcard-grid{grid-template-columns:1fr}}
 
+.model-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0 1.4rem}
+.model-card{background:var(--paper);border:1.5px solid var(--border);padding:.85rem .95rem}
+.model-card canvas{width:100%;height:250px;display:block;margin-bottom:.5rem}
+.model-card-h{font-family:'DM Mono',monospace;font-size:.8rem;font-weight:700;color:var(--ink);margin-bottom:.15rem}
+.model-card-sub{font-size:.66rem;color:var(--ink3);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em}
+.model-card-body{font-size:.81rem;line-height:1.7;color:var(--ink2)}
+.model-card-body strong{color:var(--ink)}
+@media(max-width:900px){.model-grid{grid-template-columns:1fr}}
+
 .help-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;overflow-y:auto}
 .help-overlay.open{display:block}
 .help-box{background:var(--paper);border:1px solid var(--border);margin:2rem auto;
@@ -167,6 +176,7 @@ th.blockend-r{border-right:2px solid var(--border)}
 <div id="tab-bar">
   <button class="mod-tab active" data-tab="1" onclick="showTab(1)"><span class="tab-num">①</span> MTMM-Matrix</button>
   <button class="mod-tab" data-tab="2" onclick="showTab(2)"><span class="tab-num">②</span> Als SEM</button>
+  <button class="mod-tab" data-tab="3" onclick="showTab(3)"><span class="tab-num">③</span> Modellfamilie</button>
 </div>
 
 <!-- ══ HELP ══════════════════════════════════════════════════════════════════ -->
@@ -200,13 +210,17 @@ HTHM             =  λ_T,t · λ_T,t' · ρ_tt'
 HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
     <p class="help-p">Daraus folgt strukturell <strong>immer</strong> HTMM ≥ HTHM (Methodenvarianz addiert sich nur dazu) — genau Campbell &amp; Fiskes Beobachtung, dass Monomethod-Korrelationen meist inflationiert sind. Ob MTHM größer als HTMM bleibt, hängt vom Verhältnis der beiden Ladungen ab: <span class="gk">λ</span><sub>T</sub> (Trait-Ladung) und <span class="gk">λ</span><sub>M</sub> (Methoden-Ladung) — in Reiter <span class="circ">②</span> für jedes Szenario direkt an den Pfaden abzulesen.</p>
 
-    <div class="help-sh">Grenzen dieses einfachen CT-CM-Modells</div>
-    <p class="help-p">Dieses Tool nimmt <strong>unkorrelierte Methodenfaktoren</strong> an — die einfachste Variante des Correlated-Trait-Correlated-Method-Modells (CT-CM). Erlaubt man auch Korrelationen zwischen den Methodenfaktoren, wird das Modell oft empirisch nicht mehr identifiziert. Ein verbreiteter Ausweg ist das <strong>CTC(M−1)-Modell</strong> (ein Methodenfaktor wird als Referenz weggelassen) — hier nicht umgesetzt, aber Standard in der aktuellen MTMM-SEM-Literatur.</p>
+    <div class="help-sh">Grenzen dieses CT-UM-Modells</div>
+    <p class="help-p">Dieses Tool nimmt <strong>unkorrelierte Methodenfaktoren</strong> an — das ist nicht die "einfachste Variante" des Correlated-Trait-Correlated-Method-Modells (CT-CM), sondern ein eigenständig benanntes Modell: das <strong>Correlated-Trait-Uncorrelated-Methods-Modell (CT-UM)</strong>, ein Spezialfall des CT-CM-Modells (Eid et al., 2008). Erlaubt man stattdessen auch Korrelationen zwischen den Methodenfaktoren (echtes CT-CM), führt das in der Praxis häufig zu unzulässigen Lösungen (z. B. negative Fehlervarianzen) und Identifikationsproblemen. Ein verbreiteter Ausweg ist das <strong>CT-C(M−1)-Modell</strong> (ein Methodenfaktor wird als Referenz weggelassen) — Details, Diagramme und wann welches Modell passt: Reiter <span class="circ">③</span>.</p>
 
     <div class="help-sh">Literatur</div>
     <p class="help-p"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-campbell-fiske-1959" target="_blank" rel="noopener">Campbell, D. T. &amp; Fiske, D. W. (1959)</a>. Convergent and discriminant validation by the multitrait-multimethod matrix. <em>Psychological Bulletin, 56</em>(2), 81–105.<br>
       <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-geiser-2010-mtmm" target="_blank" rel="noopener">Geiser, C., Eid, M., Nussbeck, F. W., Lischetzke, T. &amp; Cole, D. A. (2010)</a>. Multitrait-Multimethod-Analyse. In H. Holling &amp; B. Schmitz (Hrsg.), <em>Handbuch Statistik, Methoden und Evaluation</em> (S. 679–685). Hogrefe.<br>
-      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-widaman-1985" target="_blank" rel="noopener">Widaman, K. F. (1985)</a>. Hierarchically nested covariance structure models for multitrait-multimethod data. <em>Applied Psychological Measurement, 9</em>(1), 1–26.</p>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-widaman-1985" target="_blank" rel="noopener">Widaman, K. F. (1985)</a>. Hierarchically nested covariance structure models for multitrait-multimethod data. <em>Applied Psychological Measurement, 9</em>(1), 1–26.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-kenny-1976" target="_blank" rel="noopener">Kenny, D. A. (1976)</a>. An empirical application of confirmatory factor analysis to the multitrait-multimethod matrix. <em>Journal of Experimental Social Psychology, 12</em>(3), 247–252.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-joreskog-1971" target="_blank" rel="noopener">Jöreskog, K. G. (1971)</a>. Statistical analysis of sets of congeneric tests. <em>Psychometrika, 36</em>(2), 109–133.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-eid-2000" target="_blank" rel="noopener">Eid, M. (2000)</a>. A multitrait-multimethod model with minimal assumptions. <em>Psychometrika, 65</em>(2), 241–261.<br>
+      <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-eid-2008-mtmm-sem" target="_blank" rel="noopener">Eid, M., Nussbeck, F. W., Geiser, C., Cole, D. A., Gollwitzer, M. &amp; Lischetzke, T. (2008)</a>. Structural equation modeling of multitrait-multimethod data: Different models for different types of methods. <em>Psychological Methods, 13</em>(3), 230–253.</p>
   </div>
 </div>
 
@@ -276,7 +290,7 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
       </div>
       <div class="lcard">
         <div class="lcard-h">Das strengste Kriterium</div>
-        <div class="lcard-body">Kriterium <span class="circ">③</span> (MTHM &gt; HTMM) scheitert am häufigsten in echten Daten — auch im Beispiel von Geiser et al. (2010): Die Selbst-Peer- und Selbst-Eltern-Korrelationen für Depressivität (.20–.30) sind deutlich <em>kleiner</em> als die Selbstbericht-interne Korrelation zwischen Depressivität und Ängstlichkeit (.67). Diskriminante Validität ist damit dort nicht sauber gegeben. Trotzdem passt das CT-CM-Modell in Reiter <span class="circ">②</span> insgesamt gut zu genau diesen Daten — kein Widerspruch, sondern zwei verschiedene Fragen (Details dort).</div>
+        <div class="lcard-body">Kriterium <span class="circ">③</span> (MTHM &gt; HTMM) scheitert am häufigsten in echten Daten — auch im Beispiel von Geiser et al. (2010): Die Selbst-Peer- und Selbst-Eltern-Korrelationen für Depressivität (.20–.30) sind deutlich <em>kleiner</em> als die Selbstbericht-interne Korrelation zwischen Depressivität und Ängstlichkeit (.67). Diskriminante Validität ist damit dort nicht sauber gegeben. Trotzdem passt das CT-UM-Modell in Reiter <span class="circ">②</span> insgesamt gut zu genau diesen Daten — kein Widerspruch, sondern zwei verschiedene Fragen (Details dort).</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Woher kommt Methodenvarianz?</div>
@@ -295,7 +309,7 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
 
     <div class="story-box">
       <div class="story-lbl">📋 Von der Matrix zum Modell</div>
-      Dieselben 9 Messungen, dasselbe Beispiel — nur als <strong>Correlated-Trait-Correlated-Method-Modell (CT-CM)</strong> gezeichnet: 3 Trait-Faktoren, 3 Methoden-Faktoren, jede Messung lädt auf genau einen Trait <em>und</em> genau eine Methode. Die Ladungen sind hier nicht frei einstellbar, sondern für jedes Szenario direkt aus der Matrix in Reiter <span class="circ">①</span> abgelesen — die Szenarien-Auswahl links steuert also beides zugleich. Bei den synthetischen Szenarien B–D ist das ein einziges λ_T/λ_M für alle 9 Items (die Matrix wurde ja selbst so erzeugt); bei Szenario A (echte Daten) bekommt <strong>jedes Item seine eigene</strong> Trait- und Methodenladung — einmalig offline per Unweighted Least Squares geschätzt (nicht Teil der Laufzeit-Logik des Tools, siehe Quellcode-Kommentar bei <code>EMP_FIT_ULS</code>).
+      Dieselben 9 Messungen, dasselbe Beispiel — nur als <strong>Correlated-Trait-Uncorrelated-Methods-Modell (CT-UM)</strong> gezeichnet: 3 Trait-Faktoren, 3 Methoden-Faktoren, jede Messung lädt auf genau einen Trait <em>und</em> genau eine Methode; die Methodenfaktoren korrelieren bewusst <em>nicht</em> untereinander (anders als beim allgemeineren CT-CM-Modell — Details und weitere Modellvarianten in Reiter <span class="circ">③</span>). Die Ladungen sind hier nicht frei einstellbar, sondern für jedes Szenario direkt aus der Matrix in Reiter <span class="circ">①</span> abgelesen — die Szenarien-Auswahl links steuert also beides zugleich. Bei den synthetischen Szenarien B–D ist das ein einziges λ_T/λ_M für alle 9 Items (die Matrix wurde ja selbst so erzeugt); bei Szenario A (echte Daten) bekommt <strong>jedes Item seine eigene</strong> Trait- und Methodenladung — einmalig offline per Unweighted Least Squares geschätzt (nicht Teil der Laufzeit-Logik des Tools, siehe Quellcode-Kommentar bei <code>EMP_FIT_ULS</code>).
     </div>
 
     <div class="sec-h"><span class="circ">③</span> Pfaddiagramm — Trait- und Methodenfaktoren</div>
@@ -304,7 +318,7 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
     </div>
     <div class="sem-legend">
       <div id="sem-loadings-line">—</div>
-      <div class="hint-mini" style="margin-top:.4rem">Methodenfaktoren sind bewusst <strong>unkorreliert</strong> gezeichnet (Standardannahme des einfachen CT-CM-Modells — Details und Grenzen in der Hilfe). Traitfaktoren korrelieren gemäß den Werten oben in den Bögen.</div>
+      <div class="hint-mini" style="margin-top:.4rem">Methodenfaktoren sind bewusst <strong>unkorreliert</strong> gezeichnet — das definiert genau das CT-UM-Modell (Details, Grenzen und Alternativen wie CT-CM/CT-C(M−1) in Reiter <span class="circ">③</span> und der Hilfe). Traitfaktoren korrelieren gemäß den Werten oben in den Bögen.</div>
       <div class="hint-mini" style="margin-top:.5rem">x1=Selbst×Depr. · x2=Selbst×Ängstl. · x3=Selbst×Komp. · x4=Peer×Depr. · x5=Peer×Ängstl. · x6=Peer×Komp. · x7=Eltern×Depr. · x8=Eltern×Ängstl. · x9=Eltern×Komp.</div>
     </div>
     <div class="verdict" id="sem-fit" style="margin-top:.6rem">—</div>
@@ -322,7 +336,7 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
       </div>
       <div class="lcard">
         <div class="lcard-h">Warum zwei Faktoren pro Item?</div>
-        <div class="lcard-body">In einer normalen CFA lädt jedes Item nur auf <em>einen</em> Faktor. Im CT-CM-Modell lädt jedes Item auf <em>zwei</em>: seinen Trait (was es eigentlich messen soll) und seine Methode (wie es gemessen wurde). Genau das trennt „echte" Konstruktvarianz von Methodenartefakten — algebraisch dieselbe Trennung, die die vier MTMM-Zelltypen in Reiter <span class="circ">①</span> sichtbar machen.</div>
+        <div class="lcard-body">In einer normalen CFA lädt jedes Item nur auf <em>einen</em> Faktor. Im CT-UM-Modell (wie hier) und im allgemeineren CT-CM-Modell lädt jedes Item auf <em>zwei</em>: seinen Trait (was es eigentlich messen soll) und seine Methode (wie es gemessen wurde). Genau das trennt „echte" Konstruktvarianz von Methodenartefakten — algebraisch dieselbe Trennung, die die vier MTMM-Zelltypen in Reiter <span class="circ">①</span> sichtbar machen.</div>
       </div>
       <div class="lcard" style="grid-column:1/-1">
         <div class="lcard-h">Modellfit ≠ Validität</div>
@@ -331,6 +345,48 @@ HTMM             =  λ_T,t · λ_T,t' · ρ_tt'  +  λ_M²</span>
     </div>
 
   </div><!-- /panel-tab2 -->
+
+  <!-- ══ TAB 3 — MODELLFAMILIE ══ -->
+  <div id="panel-tab3" class="mod-panel">
+
+    <div class="story-box">
+      <div class="story-lbl">📋 Eine Modellfamilie, vier Varianten</div>
+      Reiter <span class="circ">②</span> zeigt nur <em>eine</em> Art, Trait- und Methodeneffekte als SEM zu formalisieren (CT-UM). Das ist keine beliebige Wahl, sondern eine von vier klassischen CFA-MTMM-Modellen, die sich einzig darin unterscheiden, <strong>welche Korrelationen zwischen Fehler-/Methodenfaktoren zugelassen werden</strong> — und wie mit „schwierigen" Methodenfaktoren umgegangen wird. Kein Modell hier ist mit Werten aus dem Geiser-Beispiel befüllt (dafür Reiter <span class="circ">①</span>/<span class="circ">②</span>) — es geht nur um die <em>Struktur</em>.
+    </div>
+
+    <div class="model-grid">
+      <div class="model-card">
+        <canvas id="cv-mf-cu"></canvas>
+        <div class="model-card-sub">Kenny, 1976</div>
+        <div class="model-card-h">A — Correlated-Trait-Correlated-Uniqueness (CT-CU)</div>
+        <div class="model-card-body">Jedes Item lädt nur auf <strong>einen</strong> Traitfaktor. Methodeneffekte werden nicht als eigener Faktor modelliert, sondern über <strong>korrelierte Fehlervariablen</strong> ("Uniqueness") zwischen Items derselben Methode abgebildet. Nachteil: Methodeneffekte sind mit Messfehler konfundiert (Reliabilität wird unterschätzt), und bei vielen Variablen müssen viele Fehlerkorrelationen geschätzt werden — wenig sparsam. Keine Zerlegung in Trait-, Methoden- und Fehlervarianz möglich.</div>
+      </div>
+      <div class="model-card">
+        <canvas id="cv-mf-cm"></canvas>
+        <div class="model-card-sub">Jöreskog, 1971</div>
+        <div class="model-card-h">B — Correlated-Trait-Correlated-Method (CT-CM)</div>
+        <div class="model-card-body">Jedes Item lädt auf <strong>einen Trait­faktor und einen Methodenfaktor</strong>. Alle Traitfaktoren dürfen korrelieren, alle Methodenfaktoren dürfen <strong>ebenfalls</strong> korrelieren (nur Trait↔Methode nicht). Vorteil gegenüber CT-CU: Methodeneffekte sind explizit modelliert, Zerlegung in Trait-/Methoden-/Fehlervarianz wird möglich. Nachteil: führt in der Praxis häufig zu unzulässigen Lösungen (z. B. negative Fehlervarianzen) und Identifikationsproblemen — besonders wenn die Methodenfaktoren stark korrelieren.</div>
+      </div>
+      <div class="model-card">
+        <canvas id="cv-mf-um"></canvas>
+        <div class="model-card-sub">Spezialfall von CT-CM</div>
+        <div class="model-card-h">C — Correlated-Trait-Uncorrelated-Methods (CT-UM)</div>
+        <div class="model-card-body"><strong>Das Modell aus Reiter <span class="circ">②</span> dieses Tools.</strong> Wie CT-CM, aber die Methodenfaktoren dürfen <strong>nicht</strong> miteinander korrelieren. Vermeidet die meisten Schätzprobleme von CT-CM. Besonders geeignet bei <strong>austauschbaren Methoden</strong> — z. B. zufällig gezogene Rater aus einer größeren Population (nicht: <em>welche</em> Rater, sondern <em>dass</em> sie eine repräsentative Stichprobe darstellen). Bei <strong>strukturell unterschiedlichen</strong> Methoden (Selbst-, Eltern-, physiologisches Maß — wie im Geiser-Beispiel) ist die Unkorreliertheits-Annahme eine Vereinfachung, kein exaktes Abbild der Realität.</div>
+      </div>
+      <div class="model-card">
+        <canvas id="cv-mf-cm1"></canvas>
+        <div class="model-card-sub">Eid, 2000; Eid et al., 2008</div>
+        <div class="model-card-h">D — Correlated-Trait-Correlated-(Methods-Minus-One) [CT-C(M−1)]</div>
+        <div class="model-card-body">Eine Methode wird als <strong>Referenz</strong> gewählt (hier M1) — ihre Items laden nur auf ihren Trait, bekommen <strong>keinen</strong> eigenen Methodenfaktor. Für jede andere Methode wird ein Methodenfaktor spezifiziert, der die <strong>Abweichung von der Referenzmethode</strong> darstellt; diese Methodenfaktoren dürfen untereinander korrelieren. Vermeidet die CT-CM-Probleme, ohne die (oft unrealistische) Unkorreliertheits-Annahme von CT-UM zu brauchen — Standard in der aktuellen MTMM-SEM-Literatur, wenn eine sinnvolle Referenzmethode existiert (z. B. die etablierteste oder objektivste Methode).</div>
+      </div>
+    </div>
+
+    <div class="explain-box">
+      <div class="explain-h">Und wenn ich mehrere Items pro Trait-Methode-Kombination habe?</div>
+      <div class="explain-body">Alle vier Modelle oben gehen von <strong>genau einem</strong> Indikator pro Trait-Methoden-Einheit aus (so wie im Geiser-Beispiel: 3 Traits × 3 Methoden = 9 Einzelitems) — das setzt implizit voraus, dass der Methodeneffekt für jeden Trait gleich stark ist. Mit <strong>mehreren</strong> Indikatoren pro Kombination (z. B. mehrere Items pro Trait und Methode) lassen sich stattdessen <em>traitspezifische</em> Methodeneffekte modellieren — der Methodeneffekt darf dann von Trait zu Trait unterschiedlich stark ausfallen. Solche Erweiterungen sind in Eid, Nussbeck, Geiser, Cole, Gollwitzer &amp; Lischetzke (2008) ausführlich dargestellt, hier aber nicht umgesetzt.</div>
+    </div>
+
+  </div><!-- /panel-tab3 -->
 
 </div><!-- /main -->
 </div><!-- /app -->
@@ -405,7 +461,7 @@ function clampCell(v,isDiag){
 }
 
 // Schätzt λ_T, λ_M per Momentenmethode aus einer Matrix (hier: den echten Geiser-Daten)
-// und berechnet den Fit (RMSR) des vereinfachten CT-CM-Modells gegen diese Matrix.
+// und berechnet den Fit (RMSR) des CT-UM-Modells (unkorrelierte Methodenfaktoren) gegen diese Matrix.
 function fitCTCM(M){
   const mthmVals=[], diagVals=[];
   for(let i=0;i<9;i++) diagVals.push(M[i][i]);
@@ -630,7 +686,7 @@ function updateSemFit(){
 
 const LT='<span class="gk">'+String.fromCharCode(955)+'</span><sub>T</sub>', LM='<span class="gk">'+String.fromCharCode(955)+'</span><sub>M</sub>';
 const SEM_EXPLAIN={
-  A:`Diese neun Messungen sind keine Modellwerte, sondern die echten Korrelationen aus Geiser et al. (2010) — und reale Items laden nie exakt gleich stark. Deshalb hat hier <strong>jedes Item seine eigene</strong> Trait- und Methodenladung, statt allen 9 Items dieselbe Zahl zuzuweisen: einmalig offline per Unweighted Least Squares (UKQ) geschätzt — ein Standard-SEM-Schätzer, der den quadrierten Fehler über alle 36 Korrelationen gemeinsam minimiert, statt (wie eine frühere, einfachere Version dieses Tools) 18 davon algebraisch exakt vorzugeben und den ganzen Fehler auf den Rest abzuwälzen. Auffällig: Bei Kompetenz lädt die Methode teils <strong>negativ</strong> — ein Rater, der ein Kind negativer einschätzt, bewertet dessen Depressivität/Ängstlichkeit tendenziell höher, seine Kompetenz aber niedriger; derselbe Methodenfaktor wirkt auf das invers gepolte Merkmal mit umgekehrtem Vorzeichen. Ein Item (x4, Peer×Depressivität) ist ein sogenannter <strong>Heywood-Fall</strong>: Trait- und Methodenladung zusammen "erklären" hier rechnerisch mehr als 100% der Varianz, die Fehlervarianz wird auf einen kleinen positiven Wert geklemmt statt negativ zu werden — ein bekanntes Warnsignal in echten CT-CM-Analysen, kein Darstellungsfehler dieses Tools. <strong>Guter Fit widerspricht der schwachen Diskriminanzvalidität aus Reiter ① nicht</strong> — im Gegenteil: Weil das Modell gut passt, können wir den geschätzten Trait-Korrelationen oben in den Bögen trauen, und die zeigen das eigentliche Problem — ρ(Depressivität,Ängstlichkeit)=0.90 ist so hoch, dass beide Traits auf latenter Ebene kaum trennbar sind. Ein schlecht passendes Modell hätte diese Diagnose gar nicht erst hergegeben.`,
+  A:`Diese neun Messungen sind keine Modellwerte, sondern die echten Korrelationen aus Geiser et al. (2010) — und reale Items laden nie exakt gleich stark. Deshalb hat hier <strong>jedes Item seine eigene</strong> Trait- und Methodenladung, statt allen 9 Items dieselbe Zahl zuzuweisen: einmalig offline per Unweighted Least Squares (UKQ) geschätzt — ein Standard-SEM-Schätzer, der den quadrierten Fehler über alle 36 Korrelationen gemeinsam minimiert, statt (wie eine frühere, einfachere Version dieses Tools) 18 davon algebraisch exakt vorzugeben und den ganzen Fehler auf den Rest abzuwälzen. Auffällig: Bei Kompetenz lädt die Methode teils <strong>negativ</strong> — ein Rater, der ein Kind negativer einschätzt, bewertet dessen Depressivität/Ängstlichkeit tendenziell höher, seine Kompetenz aber niedriger; derselbe Methodenfaktor wirkt auf das invers gepolte Merkmal mit umgekehrtem Vorzeichen. Ein Item (x4, Peer×Depressivität) ist ein sogenannter <strong>Heywood-Fall</strong>: Trait- und Methodenladung zusammen "erklären" hier rechnerisch mehr als 100% der Varianz, die Fehlervarianz wird auf einen kleinen positiven Wert geklemmt statt negativ zu werden — ein bekanntes Warnsignal in echten CT-UM- und CT-CM-Analysen, kein Darstellungsfehler dieses Tools. <strong>Guter Fit widerspricht der schwachen Diskriminanzvalidität aus Reiter ① nicht</strong> — im Gegenteil: Weil das Modell gut passt, können wir den geschätzten Trait-Korrelationen oben in den Bögen trauen, und die zeigen das eigentliche Problem — ρ(Depressivität,Ängstlichkeit)=0.90 ist so hoch, dass beide Traits auf latenter Ebene kaum trennbar sind. Ein schlecht passendes Modell hätte diese Diagnose gar nicht erst hergegeben.`,
   B:`Diese Matrix ist nicht gemessen, sondern konstruiert: Sie entsteht exakt aus <strong>${LT}=0.75</strong> und <strong>${LM}=0.15</strong> (plus den festen Trait-Korrelationen). Die hohe Trait-Ladung und die niedrige Methodenladung sind der Idealfall — die Validitätsdiagonale (MTHM) bleibt deutlich über allen Methodeneffekten, konvergente und diskriminante Validität sind sauber erfüllt. Weil die Matrix direkt aus diesen Ladungen erzeugt wurde, trifft die Schätzung sie exakt — das Diagramm zeigt also genau das Modell, das Szenario B definiert.`,
   C:`Konstruierte Matrix mit <strong>${LT}=0.55</strong> und einer bewusst hohen Methodenladung <strong>${LM}=0.65</strong>. Weil ${LM} größer als ${LT} ist, übersteigen die Heterotrait-Monomethod-Korrelationen (gleiche Methode, andere Traits) die Validitätsdiagonale — genau die Diskriminanzvaliditäts-Verletzung, die Reiter ① rot markiert. Ein klassischer Halo-Effekt: Eine Methode (z. B. ein Rater) lässt alle drei Traits gemeinsam höher oder niedriger ausfallen, unabhängig vom tatsächlichen Trait-Gehalt.`,
   D:`Konstruierte Matrix mit niedriger Trait-Ladung <strong>${LT}=0.35</strong> bei moderater Methodenladung <strong>${LM}=0.15</strong>. Die Validitätsdiagonale bleibt hier insgesamt niedrig — verschiedene Methoden stimmen kaum überein, selbst wenn sie denselben Trait messen sollen. Das ist ein anderer Fehlertyp als Szenario C: nicht zu viel Methodenvarianz, sondern zu wenig geteilte Varianz durch den Trait selbst — ein Hinweis auf ein schwach reliables oder schlecht operationalisiertes Konstrukt.`
@@ -735,6 +791,98 @@ function drawSEM(){
 }
 
 // ══════════════════════════════════════════════════════════════════════
+// MODELLFAMILIE — SCHEMATISCHE MINI-PFADDIAGRAMME (REITER 3, KEINE ZAHLEN)
+// ══════════════════════════════════════════════════════════════════════
+function drawModelDiagram(canvasId, variant){
+  const c=document.getElementById(canvasId); if(!c) return;
+  const W=c.clientWidth; if(!W) return;
+  c.width=W; const H=c.height=250;
+  const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const ink=cv('--ink'), ink2=cv('--ink2'), ink3=cv('--ink3'), paper=cv('--paper');
+  const traitColors=[cv('--a3'),cv('--a2'),cv('--a4')];
+  const methodColors=[cv('--a5'),cv('--a6'),cv('--a1')];
+  const marginY=22;
+  const itemY=[...Array(9)].map((_,i)=>marginY+i*(H-2*marginY)/8);
+  const sideY=[itemY[0],itemY[4],itemY[8]];
+  const leftX=W*0.15, rightX=W*0.85, itemX=W*0.5;
+  const trRx=19, trRy=14, mRx=25, mRy=12;
+  const sb=Math.min(14,W*0.045), lb=Math.min(30,W*0.08);
+
+  function arc(x,y1,y2,bulge,col,dir){
+    const midy=(y1+y2)/2, cpX=x+dir*bulge, edgeX=x+dir*(dir>0?trRx:mRx)*.6;
+    ctx.strokeStyle=col; ctx.lineWidth=1; ctx.globalAlpha=.8;
+    ctx.beginPath(); ctx.moveTo(edgeX,y1); ctx.quadraticCurveTo(cpX,midy,edgeX,y2); ctx.stroke();
+    ctx.globalAlpha=1;
+  }
+
+  // Trait-Korrelationsbögen + Ellipsen (in allen vier Modellen identisch)
+  arc(rightX,sideY[0],sideY[1],sb,ink3,1); arc(rightX,sideY[1],sideY[2],sb,ink3,1); arc(rightX,sideY[0],sideY[2],lb,ink3,1);
+  sideY.forEach((y,ti)=>{
+    ctx.beginPath(); ctx.ellipse(rightX,y,trRx,trRy,0,0,2*Math.PI);
+    ctx.fillStyle=paper; ctx.fill(); ctx.strokeStyle=traitColors[ti]; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle=traitColors[ti]; ctx.font='bold 9px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText('T'+(ti+1),rightX,y+3);
+  });
+
+  // Items (kleine Kästchen) + Pfeil zum Trait (immer vorhanden)
+  for(let i=0;i<9;i++){
+    const a=idxOf(i), iy=itemY[i];
+    ctx.strokeStyle=ink2; ctx.lineWidth=.9;
+    const tAng=Math.atan2(iy-sideY[a.t],(itemX+9)-rightX);
+    const x1=rightX+trRx*.9*Math.cos(tAng), y1=sideY[a.t]+trRy*.9*Math.sin(tAng);
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(itemX+9,iy); ctx.stroke();
+    ctx.fillStyle=paper; ctx.strokeStyle=ink; ctx.lineWidth=1;
+    ctx.fillRect(itemX-9,iy-5.5,18,11); ctx.strokeRect(itemX-9,iy-5.5,18,11);
+  }
+
+  if(variant==='cu'){
+    // Kein Methodenfaktor — korrelierte Fehlervariablen je Methoden-Triplett
+    const methodGroups=[[0,1,2],[3,4,5],[6,7,8]];
+    methodGroups.forEach(grp=>{
+      grp.forEach(i=>{
+        const iy=itemY[i];
+        ctx.strokeStyle=ink3; ctx.lineWidth=.85;
+        ctx.beginPath(); ctx.moveTo(itemX-26,iy-13); ctx.lineTo(itemX-10,iy-4); ctx.stroke();
+        ctx.beginPath(); ctx.arc(itemX-26,iy-13,4.5,0,2*Math.PI);
+        ctx.fillStyle=paper; ctx.fill(); ctx.strokeStyle=ink3; ctx.lineWidth=.9; ctx.stroke();
+      });
+      for(let p=0;p<grp.length;p++) for(let q=p+1;q<grp.length;q++){
+        const y1=itemY[grp[p]]-13, y2=itemY[grp[q]]-13, midy=(y1+y2)/2;
+        ctx.strokeStyle=ink3; ctx.lineWidth=.8; ctx.globalAlpha=.7;
+        ctx.beginPath(); ctx.moveTo(itemX-30,y1); ctx.quadraticCurveTo(itemX-46,midy,itemX-30,y2); ctx.stroke();
+        ctx.globalAlpha=1;
+      }
+    });
+  } else {
+    const active = variant==='cm1' ? [1,2] : [0,1,2];
+    sideY.forEach((y,mi)=>{
+      if(!active.includes(mi)) return;
+      ctx.beginPath(); ctx.ellipse(leftX,y,mRx,mRy,0,0,2*Math.PI);
+      ctx.fillStyle=paper; ctx.fill(); ctx.strokeStyle=methodColors[mi]; ctx.lineWidth=1.5; ctx.stroke();
+      ctx.fillStyle=methodColors[mi]; ctx.font='bold 9px DM Mono,monospace'; ctx.textAlign='center';
+      ctx.fillText('M'+(mi+1),leftX,y+3);
+    });
+    for(let i=0;i<9;i++){
+      const a=idxOf(i), iy=itemY[i];
+      if(!active.includes(a.m)) continue;
+      ctx.strokeStyle=ink2; ctx.lineWidth=.9;
+      const mAng=Math.atan2(iy-sideY[a.m],(itemX-9)-leftX);
+      const x0=leftX+mRx*.9*Math.cos(mAng), y0=sideY[a.m]+mRy*.9*Math.sin(mAng);
+      ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(itemX-9,iy); ctx.stroke();
+    }
+    if(variant==='cm'){
+      arc(leftX,sideY[0],sideY[1],sb,ink3,-1); arc(leftX,sideY[1],sideY[2],sb,ink3,-1); arc(leftX,sideY[0],sideY[2],lb,ink3,-1);
+    } else if(variant==='cm1'){
+      arc(leftX,sideY[1],sideY[2],sb,ink3,-1);
+    }
+  }
+}
+function drawModelFamily(){
+  ['cu','cm','um','cm1'].forEach(v=>drawModelDiagram('cv-mf-'+v, v));
+}
+
+// ══════════════════════════════════════════════════════════════════════
 // TABS / THEME / INIT
 // ══════════════════════════════════════════════════════════════════════
 function showTab(n){
@@ -742,6 +890,7 @@ function showTab(n){
   document.querySelectorAll('.mod-panel').forEach((p,i)=>p.classList.toggle('active', i===n-1));
   document.getElementById('main').scrollTop=0;
   if(n===2) drawSEM();
+  if(n===3) drawModelFamily();
 }
 function toggleTheme(){
   const d=document.documentElement;
@@ -750,7 +899,7 @@ function toggleTheme(){
   d.setAttribute('data-theme',next);
   localStorage.setItem('ml-theme',next);
   document.getElementById('theme-btn').textContent=dark?'🌙 Dark':'☀ Light';
-  requestAnimationFrame(updateAll);
+  requestAnimationFrame(()=>{ updateAll(); drawModelFamily(); });
 }
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ document.getElementById('help-overlay').classList.remove('open'); } });
@@ -759,7 +908,7 @@ if(document.documentElement.getAttribute('data-theme')==='light'){
   const tb=document.getElementById('theme-btn'); if(tb) tb.textContent='🌙 Dark';
 }
 updateAll();
-window.addEventListener('resize',()=>{ if(window._rt) clearTimeout(window._rt); window._rt=setTimeout(updateAll,120); });
+window.addEventListener('resize',()=>{ if(window._rt) clearTimeout(window._rt); window._rt=setTimeout(()=>{ updateAll(); drawModelFamily(); },120); });
 </script>
 </body>
 </html>
