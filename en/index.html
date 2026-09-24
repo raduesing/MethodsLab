@@ -136,11 +136,11 @@ a:hover{text-decoration:underline}
   padding:3.5rem 0 2.8rem;
   border-bottom:1px solid var(--border);
   margin-bottom:3rem;
-  display:flex;align-items:center;gap:2.8rem;
+  display:flex;align-items:flex-start;gap:2.8rem;
 }
 .hero-text{flex:0 1 660px;min-width:0}
-.hero-logo{flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.hero-logo img{height:clamp(270px,32vw,414px);width:auto;display:block}
+.hero-logo{flex-shrink:0;display:flex;align-items:flex-start;justify-content:center}
+.hero-logo img{height:clamp(270px,32vw,414px);width:auto;object-fit:contain;display:block}
 @media(max-width:720px){
   #hero{flex-direction:column-reverse;align-items:flex-start;gap:1.6rem}
   .hero-logo img{height:250px}
@@ -385,8 +385,8 @@ a:hover{text-decoration:underline}
   <div class="toc-head">Topics</div>
   <ul>
     <li><a href="#sec1" style="--toc-accent:var(--a2)"><span class="toc-num">01</span>Regression &amp; Association</a></li>
-    <li><a href="#sec2" style="--toc-accent:var(--a3)"><span class="toc-num">02</span>Inference &amp; Planning</a></li>
-    <li><a href="#sec3" style="--toc-accent:var(--a1)"><span class="toc-num">03</span>Statistical Paradoxes</a></li>
+    <li><a href="#sec2" style="--toc-accent:var(--a1)"><span class="toc-num">02</span>Inference &amp; Planning</a></li>
+    <li><a href="#sec3" style="--toc-accent:var(--a3)"><span class="toc-num">03</span>Statistical Paradoxes</a></li>
     <li><a href="#sec4" style="--toc-accent:var(--a5)"><span class="toc-num">04</span>Causal Inference</a></li>
     <li><a href="#sec5" style="--toc-accent:var(--a4)"><span class="toc-num">05</span>Test Theory &amp; Measurement</a></li>
     <li><a href="#sec6" style="--toc-accent:var(--a6)"><span class="toc-num">06</span>Diagnostics</a></li>
@@ -516,7 +516,7 @@ a:hover{text-decoration:underline}
 <!-- ══════════════════════════════════════════════════════════════════
      SECTION 2 — Inference & Planning
      ══════════════════════════════════════════════════════════════════ -->
-<section id="sec2" class="ml-section" style="--sec-color:var(--a3)">
+<section id="sec2" class="ml-section" style="--sec-color:var(--a1)">
   <div class="sec-header">
     <span class="sec-num">02</span>
     <h2 class="sec-title">Inference &amp; <em>Planning</em></h2>
@@ -566,7 +566,7 @@ a:hover{text-decoration:underline}
 <!-- ══════════════════════════════════════════════════════════════════
      SECTION 3 — Statistical Paradoxes & Effects
      ══════════════════════════════════════════════════════════════════ -->
-<section id="sec3" class="ml-section" style="--sec-color:var(--a1)">
+<section id="sec3" class="ml-section" style="--sec-color:var(--a3)">
   <div class="sec-header">
     <span class="sec-num">03</span>
     <h2 class="sec-title">Statistical <em>Paradoxes</em></h2>
@@ -983,6 +983,22 @@ function toggleTheme(){
   }
   window.addEventListener('scroll',onScroll,{passive:true});
   onScroll();
+})();
+
+// ── Hero logo: match its height exactly to the text next to it ───────
+// (top flush with the eyebrow text, bottom flush with the references box)
+(function(){
+  const heroText=document.querySelector('.hero-text');
+  const logoImgs=document.querySelectorAll('.hero-logo img');
+  if(!heroText||!logoImgs.length) return;
+  function syncHeight(){
+    if(window.innerWidth<=720){ logoImgs.forEach(img=>img.style.height=''); return; }
+    const h=heroText.getBoundingClientRect().height;
+    logoImgs.forEach(img=>img.style.height=h+'px');
+  }
+  window.addEventListener('load',syncHeight);
+  window.addEventListener('resize',syncHeight);
+  syncHeight();
 })();
 </script>
 </body>
