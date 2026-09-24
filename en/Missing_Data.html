@@ -260,6 +260,7 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (between variance)</span>
     </div>
     <button class="regen-btn" onclick="newSeed()">⟳ New sample</button>
     <button class="regen-btn" id="btn-mi-toggle" onclick="toggleMI()" style="margin-top:.25rem">◇ Show MI</button>
+    <button class="regen-btn" id="btn-grad-toggle" onclick="toggleGrad()" style="margin-top:.25rem">▦ Show missingness gradient</button>
     <button class="regen-btn" onclick="downloadCSV()" style="margin-top:.25rem">⬇ CSV download</button>
   </div>
 
@@ -385,6 +386,15 @@ function toggleMI(){
   btn.textContent=showMI?'◇ Hide MI':'◇ Show MI';
   drawPlot();
 }
+let showGrad=false;
+function toggleGrad(){
+  showGrad=!showGrad;
+  const btn=document.getElementById('btn-grad-toggle');
+  btn.style.color=showGrad?'var(--accent)':'';
+  btn.style.borderColor=showGrad?'var(--accent)':'';
+  btn.textContent=showGrad?'▦ Hide missingness gradient':'▦ Show missingness gradient';
+  drawPlot();
+}
 
 // ── PRNG ──────────────────────────────────────────────────────────────────────
 function mulberry32(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};}
@@ -437,8 +447,8 @@ function generate(){
     const yTrue=Math.max(0,Math.min(100,TRUE_A+trueBX()*x+TRUE_BZ*z+rng_n()*TRUE_S));
     let logitP;
     if(ST.mech==='mcar')     logitP=lp;
-    else if(ST.mech==='mar') logitP=lp+1.0*x-3.5*z;  // niedrige Unterstützung (Z↓, dominant) + hoher Stress (X↑) → mehr Fehlend
-    else                     logitP=lp-(yTrue-60)/8; // niedriges Y → mehr Fehlend (MNAR)
+    else if(ST.mech==='mar') logitP=lp+2.5*x-2.0*z;  // high stress (X↑, dominant in the scatter) + low support (Z↓) → more missing
+    else                     logitP=lp-(yTrue-60)/4; // low Y → more missing (MNAR), clearly visible across the core range
     const p=1/(1+Math.exp(-logitP));
     const miss=rng_u()<p;   // Uniform-Vergleich, nicht Normal!
     ST.data.push({x,z,yTrue,y:miss?null:yTrue,miss,yMImp:null});
@@ -713,7 +723,8 @@ function drawPlot(){
   const cy=v=>Math.max(pad.t,Math.min(pad.t+cH,sy(v)));
 
   // Missingness gradient in the background (MAR: by X, MNAR: by Y — before grid/points)
-  drawMissRateBackground(ctx,pad,cW,cH,sx,sy,xMin,xMax,yMin,yMax);
+  // Optional add-on visualization only, toggled via button (default: off)
+  if(showGrad) drawMissRateBackground(ctx,pad,cW,cH,sx,sy,xMin,xMax,yMin,yMax);
 
   // Grid
   [-3,-2,-1,0,1,2,3].forEach(xv=>{
@@ -983,8 +994,8 @@ function updateDGPDisplay(){
   const mechLabel={mcar:'MCAR',mar:'MAR',mnar:'MNAR'};
   const mechEq={
     mcar:`P(R=1) = ${p.toFixed(2)}  (constant, independent of X, Y, Z)`,
-    mar: `logit P(R=1) = logit(${p.toFixed(2)}) + 1.0·X − 3.5·Z`,
-    mnar:`logit P(R=1) = logit(${p.toFixed(2)}) − (Y − 60)/8`
+    mar: `logit P(R=1) = logit(${p.toFixed(2)}) + 2.5·X − 2.0·Z`,
+    mnar:`logit P(R=1) = logit(${p.toFixed(2)}) − (Y − 60)/4`
   };
   const yFml=bxMag===0?'Y = 60 + 3·Z + ε':`Y = 60 − ${bxMag.toFixed(1)}·X + 3·Z + ε`;
   const bar=document.getElementById('dgp-bar');
