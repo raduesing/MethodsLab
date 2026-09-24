@@ -233,9 +233,9 @@ B = Σ(θ̂_m − θ̂_MI)²/(M−1) (Between-Varianz)</span>
     <div class="slider-row">
       <div class="slider-lbl">
         <span class="slider-name">n · Stichprobengröße</span>
-        <span class="slider-val" id="v-n">150</span>
+        <span class="slider-val" id="v-n">400</span>
       </div>
-      <input type="range" id="s-n" min="50" max="400" step="10" value="150" oninput="onSl()">
+      <input type="range" id="s-n" min="50" max="750" step="25" value="400" oninput="onSl()">
     </div>
     <div class="slider-row">
       <div class="slider-lbl">
@@ -374,7 +374,7 @@ const TRUE_A=60, TRUE_BZ=3, TRUE_S=9, RXZ=-0.40;
 function trueBX(){ return -ST.bxMag; }                         // z.B. −6
 function trueBX_MARG(){ return trueBX()+TRUE_BZ*RXZ; }         // z.B. −7.20
 function trueSDY(){ const bx=trueBX(); return Math.sqrt(bx**2+TRUE_BZ**2+2*bx*TRUE_BZ*RXZ+TRUE_S**2); }
-const ST={mech:'mcar',pMiss:.30,n:150,m:10,bxMag:6,seed:42,data:null,res:null};
+const ST={mech:'mcar',pMiss:.30,n:400,m:10,bxMag:6,seed:42,data:null,res:null};
 
 let showMI=false;
 function toggleMI(){
@@ -638,6 +638,60 @@ function drawDensity(){
 // ── Canvas ─────────────────────────────────────────────────────────────────────
 function cv(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
 
+// Nadaraya-Watson-Kernel-Glättung von 0/1-Missing-Indikatoren entlang einer Achse
+// (X für MAR, Y für MNAR) — zeigt den TATSÄCHLICHEN, aus der Stichprobe berechneten
+// lokalen Anteil fehlender Werte, nicht nur eine gedachte Tendenz.
+function kernelMissRate(xi,mi,xs,h){
+  return xs.map(x=>{
+    let num=0,den=0;
+    for(let i=0;i<xi.length;i++){
+      const w=Math.exp(-0.5*((x-xi[i])/h)**2);
+      num+=w*mi[i];den+=w;
+    }
+    return den>1e-9?num/den:0;
+  });
+}
+// Hintergrund-Verlauf, der optisch zeigt, WO Missingness gehäuft auftritt:
+// MAR → Verlauf entlang X (mehr Missing nach rechts), MNAR → Verlauf entlang Y
+// (mehr Missing nach unten). Bei MCAR bewusst kein Verlauf (kein Muster vorhanden).
+function drawMissRateBackground(ctx,pad,cW,cH,sx,sy,xMin,xMax,yMin,yMax){
+  if(ST.mech==='mcar')return;
+  const xi=ST.data.map(d=>d.x),yi=ST.data.map(d=>d.yTrue),mi=ST.data.map(d=>d.miss?1:0);
+  const col=ST.mech==='mar'?cv('--a5'):cv('--a1');
+  const rgb=hexToRgb(col);
+  if(ST.mech==='mar'){
+    const h=(xMax-xMin)/7;
+    const NX=Math.max(1,Math.round(cW));
+    const xs=Array.from({length:NX},(_,i)=>xMin+i*(xMax-xMin)/(NX-1));
+    const rates=kernelMissRate(xi,mi,xs,h);
+    for(let i=0;i<NX;i++){
+      const alpha=Math.min(0.4,rates[i]*0.6);
+      ctx.fillStyle=`rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
+      ctx.fillRect(pad.l+i,pad.t,1,cH);
+    }
+    ctx.fillStyle=col;ctx.font='11px DM Mono,monospace';ctx.textAlign='right';
+    ctx.fillText('→ mehr Missing',pad.l+cW-4,pad.t+cH-6);
+  } else if(ST.mech==='mnar'){
+    const h=(yMax-yMin)/7;
+    const NY=Math.max(1,Math.round(cH));
+    const ys=Array.from({length:NY},(_,i)=>yMax-i*(yMax-yMin)/(NY-1)); // top→bottom = hoch→niedrig Y
+    const rates=kernelMissRate(yi,mi,ys,h);
+    for(let i=0;i<NY;i++){
+      const alpha=Math.min(0.4,rates[i]*0.6);
+      ctx.fillStyle=`rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
+      ctx.fillRect(pad.l,pad.t+i,cW,1);
+    }
+    ctx.fillStyle=col;ctx.font='11px DM Mono,monospace';ctx.textAlign='left';
+    ctx.fillText('↓ mehr Missing',pad.l+6,pad.t+cH-6);
+  }
+}
+function hexToRgb(hex){
+  hex=hex.trim().replace('#','');
+  if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');
+  const n=parseInt(hex,16);
+  return{r:(n>>16)&255,g:(n>>8)&255,b:n&255};
+}
+
 function drawPlot(){
   const canvas=document.getElementById('cv-miss');
   const W=canvas.clientWidth;canvas.width=W;const H=canvas.height;
@@ -656,6 +710,9 @@ function drawPlot(){
   const sy=v=>pad.t+cH*(1-(v-yMin)/(yMax-yMin));
   const cx=v=>Math.max(pad.l,Math.min(pad.l+cW,sx(v)));
   const cy=v=>Math.max(pad.t,Math.min(pad.t+cH,sy(v)));
+
+  // Missingness-Verlauf im Hintergrund (MAR: nach X, MNAR: nach Y — vor Grid/Punkten)
+  drawMissRateBackground(ctx,pad,cW,cH,sx,sy,xMin,xMax,yMin,yMax);
 
   // Grid
   [-3,-2,-1,0,1,2,3].forEach(xv=>{
