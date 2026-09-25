@@ -74,6 +74,14 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .cv-lbl{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.3rem;
   letter-spacing:.05em;text-transform:uppercase}
 canvas{display:block;width:100%}
+.cv-caption{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);margin-top:.35rem;line-height:1.4}
+.cv-caption strong{color:var(--ink)}
+.venn-switch{display:flex;gap:.4rem;margin-bottom:.6rem}
+.venn-btn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.32rem .5rem;
+  border:1.5px solid var(--border);background:transparent;cursor:pointer;color:var(--ink2);
+  transition:all .15s;flex:1;text-align:center}
+.venn-btn:hover{border-color:var(--accent);color:var(--accent)}
+.venn-btn.active{border-color:var(--accent);background:var(--accent);color:var(--bg)}
 .warn-box{background:var(--panel);border:1px solid var(--a1);border-left:3px solid var(--a1);
   padding:.45rem .7rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a1);
   margin-bottom:.5rem;display:none}
@@ -137,8 +145,8 @@ canvas{display:block;width:100%}
   <div class="scard">
     <div class="scard-title">Simulation</div>
     <div class="slider-row">
-      <div class="slider-lbl"><span class="slider-name">n</span><span class="slider-val" id="val-n">200</span></div>
-      <input type="range" id="sl-n" min="30" max="500" step="10" value="200" oninput="onSl('n',this)">
+      <div class="slider-lbl"><span class="slider-name">n</span><span class="slider-val" id="val-n">400</span></div>
+      <input type="range" id="sl-n" min="30" max="500" step="10" value="400" oninput="onSl('n',this)">
     </div>
     <button class="seed-btn" onclick="newSeed()">⟳ Neue Stichprobe</button>
     <button class="seed-btn" onclick="downloadCSV()" style="margin-top:.25rem">↓ Daten als CSV</button>
@@ -159,8 +167,18 @@ canvas{display:block;width:100%}
       <div class="slider-lbl"><span class="slider-name" style="color:var(--a5)">ρ(X₁, X₂)</span><span class="slider-val" id="val-r12">0.00</span></div>
       <input type="range" id="sl-r12" min="-0.95" max="0.95" step="0.05" value="0.0" oninput="onSl('r12',this)">
     </div>
-    <div style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink3);margin-top:.4rem">
-      Punkte gefärbt nach X₂-Rang (blau→rot)
+    <div class="x2-legend-row" style="margin-top:.55rem">
+      <label style="display:flex;align-items:center;gap:.45rem;font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);cursor:pointer">
+        <input type="checkbox" id="chk-colorx2" checked onchange="onToggleColor(this)">
+        Punkte nach X₂ einfärben
+      </label>
+      <div id="x2-legend-bar" style="height:8px;border-radius:4px;margin-top:.4rem"></div>
+      <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.68rem;color:var(--ink3);margin-top:.15rem">
+        <span>X₂ niedrig</span><span>X₂ hoch</span>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);margin-top:.5rem;line-height:1.5">
+        Die farbigen Streifen in den Diagrammen zeigen ±1 SD auf beiden Achsen — schrumpft ein Streifen zwischen zwei Diagrammen, wurde dort tatsächlich Varianz herauspartialisiert.
+      </div>
     </div>
   </div>
 
@@ -192,22 +210,31 @@ canvas{display:block;width:100%}
         <div class="cv-panel">
           <div class="cv-lbl">1 · X₁ vs Y &nbsp;<span style="color:var(--a2)" id="lbl-r1">ρ=—&nbsp;r̂=—</span></div>
           <canvas id="cv1" height="240"></canvas>
+          <div class="cv-caption">Rohdaten, unkontrolliert. Achte auf den Farbverlauf entlang der X-Achse — er zeigt, dass X₁ und X₂ zusammenhängen.</div>
         </div>
         <div class="cv-panel">
           <div class="cv-lbl">2 · e(X₁|X₂) vs Y &nbsp;<span style="color:var(--a6)" id="lbl-rsemi">semi=—</span></div>
           <canvas id="cv2" height="240"></canvas>
+          <div class="cv-caption">X₂ wurde aus X₁ herausgerechnet. Der Farbverlauf entlang der X-Achse ist verschwunden — und der orangene SDₓ-Streifen ist schmaler geworden.</div>
         </div>
         <div class="cv-panel">
           <div class="cv-lbl">3 · e(X₁|X₂) vs e(Y|X₂) &nbsp;<span style="color:var(--a4)" id="lbl-rpart">part=—</span></div>
           <canvas id="cv3" height="240"></canvas>
+          <div class="cv-caption">X₂ wurde zusätzlich aus Y herausgerechnet — jetzt schrumpft auch der blaue SDᵧ-Streifen.</div>
         </div>
       </div>
     </div>
     <div>
       <div class="sec-h"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ballantine-diagramm" target="_blank" rel="noopener" title="Das Ballantine-Diagramm stellt die Varianz von Y sowie die Varianzen der Prädiktoren als überlappende Kreise dar, wobei die Überlappungsflächen gemeinsam erklärte Varianz (R²-Anteile) repräsentieren.">Ballantine-Diagramm</a> — Varianzzerlegung</div>
+      <div class="venn-switch">
+        <button class="venn-btn active" data-mode="bivar" onclick="setVennMode('bivar')">Bivariat</button>
+        <button class="venn-btn" data-mode="semi" onclick="setVennMode('semi')">Semipartial</button>
+        <button class="venn-btn" data-mode="part" onclick="setVennMode('part')">Partial</button>
+      </div>
       <div class="cv-panel" style="padding:.75rem 1rem 1rem">
         <canvas id="cv-venn" height="770"></canvas>
       </div>
+      <div id="venn-mode-caption" class="cv-caption" style="margin-top:.5rem"></div>
       <div id="supp-note" class="supp" style="margin-top:.4rem;display:none"></div>
     </div>
   </div>
@@ -239,11 +266,11 @@ canvas{display:block;width:100%}
       </div>
       <div class="lcard">
         <div class="lcard-h">Residualisierung — was passiert geometrisch?</div>
-        <div class="lcard-body">„Herauspartialisieren" bedeutet: Vorhersage durch X₂ entfernen. Man regressiert X₁ auf X₂ und nimmt die Residuen e(X₁|X₂) — den Teil von X₁, den X₂ <em>nicht</em> erklärt. Im Streudiagramm-Triptychon sieht man, wie die Punktwolke auf X-Achse „bereinigt" wird (Plot 2), und in Plot 3 auch auf Y-Achse. Die Punktfärbung nach X₂ zeigt: nach Residualisierung gibt es keine X₂-Muster mehr in der X-Achsen-Streuung.</div>
+        <div class="lcard-body">„Herauspartialisieren" bedeutet: Vorhersage durch X₂ entfernen. Man regressiert X₁ auf X₂ und nimmt die Residuen e(X₁|X₂) — den Teil von X₁, den X₂ <em>nicht</em> erklärt. Im Streudiagramm-Triptychon sieht man, wie die Punktwolke auf der X-Achse „bereinigt" wird (Plot 2), und in Plot 3 auch auf der Y-Achse — alle drei Plots nutzen dieselbe Achsenskala, damit dieses Schrumpfen direkt sichtbar wird. Die Punktfärbung nach X₂ zeigt: Nach Residualisierung gibt es keinen X₂-Farbverlauf mehr in der X-Achsen-Streuung. Die eingezeichneten ±1-SD-Streifen beziffern das Schrumpfen direkt: SDₓ sinkt von Plot 1 zu Plot 2 auf √(1−ρ₁₂²), SDᵧ von Plot 2 zu Plot 3 auf √(1−ρ₂y²).</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Das Ballantine-Diagramm</div>
-        <div class="lcard-body">Drei überlappende Kreise (X₁, X₂, Y) visualisieren die R²-Zerlegung. Die <strong>blaue Zone b</strong> = ΔR²(X₁) = Semipartial² — einzigartiger X₁-Anteil. Die <strong>grüne Zone d</strong> = ΔR²(X₂). Die <strong>lila Zone c</strong> = geteilte Varianz, die beiden Prädiktoren zugleich zugeordnet werden könnte. <strong>c kann negativ werden</strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-suppression" target="_blank" rel="noopener" title="Suppression liegt vor, wenn die Aufnahme eines Prädiktors Z den Regressionskoeffizienten eines anderen Prädiktors X betragsmäßig vergrößert, obwohl Z selbst kaum mit dem Outcome Y korreliert.">Suppression</a>) — dann bricht das Venn-Diagramm geometrisch zusammen, die Werte bleiben aber gültig. Grauer Bereich a = unerklärte Y-Varianz (1−R²).</div>
+        <div class="lcard-body">Drei überlappende Kreise (X₁, X₂, Y) visualisieren die R²-Zerlegung. Die <strong>blaue Zone b</strong> = ΔR²(X₁) = Semipartial² — einzigartiger X₁-Anteil. Die <strong>grüne Zone d</strong> = ΔR²(X₂). Die <strong>lila Zone c</strong> = geteilte Varianz, die beiden Prädiktoren zugleich zugeordnet werden könnte. <strong>c kann negativ werden</strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-suppression" target="_blank" rel="noopener" title="Suppression liegt vor, wenn die Aufnahme eines Prädiktors Z den Regressionskoeffizienten eines anderen Prädiktors X betragsmäßig vergrößert, obwohl Z selbst kaum mit dem Outcome Y korreliert.">Suppression</a>) — dann bricht das Venn-Diagramm geometrisch zusammen, die Werte bleiben aber gültig (siehe Warnhinweis). Grauer Bereich a = unerklärte Y-Varianz (1−R²). Über die Schalter <strong>Bivariat/Semipartial/Partial</strong> lässt sich zeigen, welche Fläche für welchen Koeffizienten überhaupt zählt: schraffierte Bereiche sind für den jeweils gewählten Koeffizienten herauspartialisiert.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Suppression — drei Varianten</div>
@@ -310,7 +337,9 @@ canvas{display:block;width:100%}
       <em>Im Beispiel (Szenario B, Kollinearität):</em> Klügere lernen auch mehr (ρ₁₂ = 0.80).
       Die Punktfärbung nach IQ-Rang zeigt in Plot 1 einen starken IQ-Gradienten entlang der X-Achse.
       Nach Residualisierung (Plot 2/3) ist dieser Gradient verschwunden — was bleibt, ist der reine
-      Lernzeit-Effekt unabhängig von IQ. Er ist deutlich kleiner als die bivariate r.
+      Lernzeit-Effekt unabhängig von IQ. Er ist deutlich kleiner als die bivariate r. Der orangene
+      SDₓ-Streifen macht das beziffert sichtbar: Bei ρ₁₂ = 0.80 schrumpft er von Plot 1 zu Plot 2 auf
+      √(1−0.80²) ≈ 0.60 seiner ursprünglichen Breite.
     </p>
 
     <div class="help-sh"><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ballantine-diagramm" target="_blank" rel="noopener" title="Das Ballantine-Diagramm stellt die Varianz von Y sowie die Varianzen der Prädiktoren als überlappende Kreise dar, wobei die Überlappungsflächen gemeinsam erklärte Varianz (R²-Anteile) repräsentieren.">Ballantine-Diagramm</a> — Varianzzerlegung</div>
@@ -438,7 +467,7 @@ canvas{display:block;width:100%}
 
 <script>
 // ─── State ────────────────────────────────────────────────────────────────────
-const ST={n:200,r1y:0.5,r2y:0.4,r12:0.0,seed:42,data:null};
+const ST={n:400,r1y:0.5,r2y:0.4,r12:0.0,seed:42,data:null,colorX2:true,vennMode:'bivar'};
 
 // ─── PRNG ─────────────────────────────────────────────────────────────────────
 function mulberry32(a){
@@ -568,11 +597,16 @@ function lerpRGB(c1,c2,t){
          Math.round(c1[1]+(c2[1]-c1[1])*t),
          Math.round(c1[2]+(c2[2]-c1[2])*t)];
 }
-function x2Colors(pts){
+function x2ColorStops(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  const lo_col=dark?[74,176,216]:[42,110,138];
-  const hi_col=dark?[232,97,74]:[201,74,42];
-  const mid_col=dark?[232,212,77]:[184,150,10];
+  return{
+    lo:dark?[74,176,216]:[42,110,138],
+    hi:dark?[232,97,74]:[201,74,42],
+    mid:dark?[232,212,77]:[184,150,10]
+  };
+}
+function x2Colors(pts){
+  const{lo:lo_col,hi:hi_col,mid:mid_col}=x2ColorStops();
   const x2s=pts.map(p=>p.x2);
   const lo=Math.min(...x2s),hi=Math.max(...x2s),rng=hi-lo||1;
   return pts.map(p=>{
@@ -581,28 +615,57 @@ function x2Colors(pts){
     return`rgba(${r},${g},${b},0.65)`;
   });
 }
-
+function updateLegendBar(){
+  const bar=document.getElementById('x2-legend-bar');if(!bar)return;
+  const{lo,mid,hi}=x2ColorStops();
+  bar.style.background=`linear-gradient(to right, rgb(${lo.join(',')}), rgb(${mid.join(',')}), rgb(${hi.join(',')}))`;
+}
 // ─── Scatter drawing ──────────────────────────────────────────────────────────
-function drawScatter(cvId,xs,ys,r_pop,r_hat){
+function drawScatter(cvId,xs,ys,r_pop,r_hat,ext,allCols,showColor){
   const cv=document.getElementById(cvId);
   const W=cv.offsetWidth;if(!W)return;
   cv.width=W;const H=cv.height;
   const ctx=cv.getContext('2d');
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  const pad={l:30,r:10,t:10,b:28};
+  const pad={l:36,r:10,t:10,b:30};
   const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
 
   ctx.fillStyle=css('--bg');ctx.fillRect(0,0,W,H);
 
-  const allV=[...xs,...ys];
-  const ext=Math.max(Math.max(...allV.map(Math.abs))*1.15,1.5);
   function sx(v){return pad.l+(v+ext)/(2*ext)*cW;}
   function sy(v){return pad.t+cH-(v+ext)/(2*ext)*cH;}
 
-  // Grid lines
+  // Streuungsband: ±1 SD um den Mittelwert auf beiden Achsen. Macht die
+  // Varianzreduktion durchs Herauspartialisieren direkt sichtbar UND
+  // bezifferbar — schrumpft die Bande sichtbar, wurde tatsächlich Varianz
+  // entfernt; bleibt sie gleich groß (z.B. Szenario A), hat die Kontrolle
+  // hier nichts bewirkt. Funktioniert unabhängig vom Szenario.
+  const mx=mean(xs),my=mean(ys);
+  const sdx=Math.sqrt(xs.reduce((s,v)=>s+(v-mx)**2,0)/xs.length);
+  const sdy=Math.sqrt(ys.reduce((s,v)=>s+(v-my)**2,0)/ys.length);
+  ctx.fillStyle=dark?'rgba(224,120,48,0.14)':'rgba(184,92,0,0.10)';
+  ctx.fillRect(sx(mx-sdx),pad.t,sx(mx+sdx)-sx(mx-sdx),cH);
+  ctx.fillStyle=dark?'rgba(74,176,216,0.12)':'rgba(42,110,138,0.08)';
+  ctx.fillRect(pad.l,sy(my+sdy),cW,sy(my-sdy)-sy(my+sdy));
+  ctx.font='9px DM Mono, monospace';ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillStyle=dark?'#e07830':'#b85c00';ctx.fillText('SDₓ='+sdx.toFixed(2),pad.l+3,pad.t+2);
+  ctx.fillStyle=dark?'#4ab0d8':'#2a6e8a';ctx.fillText('SDᵧ='+sdy.toFixed(2),pad.l+3,pad.t+12);
+
+  // Grid lines (Nullpunkt)
   ctx.strokeStyle=css('--grid');ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(sx(0),pad.t);ctx.lineTo(sx(0),pad.t+cH);ctx.stroke();
   ctx.beginPath();ctx.moveTo(pad.l,sy(0));ctx.lineTo(pad.l+cW,sy(0));ctx.stroke();
+
+  // Achsen-Zahlen (Standardisierte Skala, da Simulation z-standardisiert ist)
+  ctx.font='9px DM Mono, monospace';ctx.fillStyle=css('--ink3');
+  ctx.textBaseline='top';
+  ctx.textAlign='left';  ctx.fillText((-ext).toFixed(1),pad.l,pad.t+cH+4);
+  ctx.textAlign='center';ctx.fillText('0',sx(0),pad.t+cH+4);
+  ctx.textAlign='right'; ctx.fillText(ext.toFixed(1),pad.l+cW,pad.t+cH+4);
+  ctx.textAlign='right';
+  ctx.textBaseline='top';   ctx.fillText(ext.toFixed(1),pad.l-4,pad.t);
+  ctx.textBaseline='middle';ctx.fillText('0',pad.l-4,sy(0));
+  ctx.textBaseline='bottom';ctx.fillText((-ext).toFixed(1),pad.l-4,pad.t+cH);
 
   // Regression line
   const {a:ra,b:rb}=simpleReg(xs,ys);
@@ -610,18 +673,18 @@ function drawScatter(cvId,xs,ys,r_pop,r_hat){
   ctx.lineWidth=1.8;
   ctx.beginPath();ctx.moveTo(sx(-ext),sy(ra+rb*(-ext)));ctx.lineTo(sx(ext),sy(ra+rb*ext));ctx.stroke();
 
-  // Dots colored by X2
-  const cols=ST.data?x2Colors(ST.data):null;
+  // Punkte — farbig nach X₂ (falls aktiviert) oder neutral
+  const neutralCol=dark?'rgba(133,124,104,0.5)':'rgba(138,127,114,0.5)';
   for(let i=0;i<xs.length;i++){
     ctx.beginPath();ctx.arc(sx(xs[i]),sy(ys[i]),2.2,0,2*Math.PI);
-    ctx.fillStyle=cols?cols[i]:(dark?'rgba(74,176,216,0.6)':'rgba(42,110,138,0.6)');
+    ctx.fillStyle=(showColor&&allCols)?allCols[i]:neutralCol;
     ctx.fill();
   }
 
   // Correlation labels in header
   ctx.font='11px DM Mono, monospace';
   ctx.fillStyle=dark?'#ece6d8':'#18130e';
-  ctx.textAlign='right';
+  ctx.textAlign='right';ctx.textBaseline='alphabetic';
   ctx.fillText(`ρ=${f3(r_pop)}  r̂=${f3(r_hat)}`,W-pad.r,pad.t+12);
 }
 
@@ -673,6 +736,22 @@ function vennPositions(W,H,r1y,r2y,r12){
   return{R,Yc:tr(Yn),X1c:tr(X1n),X2c:tr(X2n)};
 }
 
+function setVennMode(m){
+  ST.vennMode=m;
+  document.querySelectorAll('.venn-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));
+  drawVenn();
+}
+function updateVennCaption(stats){
+  const el=document.getElementById('venn-mode-caption');if(!el)return;
+  const bivarR2=ST.r1y*ST.r1y;
+  const partR2=isFinite(stats.r_part1)?stats.r_part1*stats.r_part1:NaN;
+  const texts={
+    bivar:`<strong>Bivariat:</strong> r(X₁,Y)² = b+c = ${f3(bivarR2)} — die gesamte X₁∩Y-Fläche zählt, X₂ bleibt komplett unberücksichtigt (schraffiert).`,
+    semi:`<strong>Semipartial:</strong> r_semi² = b = ${f3(stats.dR2_1)} — nur der X₁-exklusive Anteil zählt; der mit X₂ geteilte Anteil c ist jetzt ausgeschlossen (schraffiert).`,
+    part:`<strong>Partial:</strong> r_partial² = b/(a+b) = ${f3(partR2)} — dieselbe Fläche b wie bei Semipartial, aber bezogen auf die um X₂ bereinigte Y-Fläche (a+b) statt auf die gesamte Y-Fläche.`
+  };
+  el.innerHTML=texts[ST.vennMode]||'';
+}
 function drawVenn(){
   const cv=document.getElementById('cv-venn');
   const W=cv.offsetWidth;if(!W)return;
@@ -700,21 +779,39 @@ function drawVenn(){
     X1Y:[42,110,138,155],   X2Y:[90,138,42,155],
     X1X2:[190,160,90,100],  X1X2Y:[14,124,123,170]
   };
+  // Welche Regionen sind für den aktuell gewählten Koeffizienten "herauspartialisiert"
+  // (werden schraffiert statt voll eingefärbt)? f/g/d = jeglicher X₂-Anteil außerhalb
+  // der X₁∩Y-Linse zählt nie; c kommt bei Semipartial/Partial zusätzlich dazu, weil
+  // der mit X₂ geteilte Anteil dann nicht mehr als "eigenständig" gilt.
+  const EXCLUDE={
+    bivar:new Set(['f','g','d']),
+    semi: new Set(['f','g','d','c']),
+    part: new Set(['f','g','d','c'])
+  }[ST.vennMode]||new Set();
+
   const R2=R*R;
   for(let py=0;py<H;py++){
     for(let px=0;px<W;px++){
       const inX1=(px-X1c.x)**2+(py-X1c.y)**2<=R2;
       const inX2=(px-X2c.x)**2+(py-X2c.y)**2<=R2;
       const inY =(px-Yc.x )**2+(py-Yc.y )**2<=R2;
-      let col=null;
-      if(inX1&&inX2&&inY) col=COL.X1X2Y;
-      else if(inX1&&inY)   col=COL.X1Y;
-      else if(inX2&&inY)   col=COL.X2Y;
-      else if(inY)         col=COL.Yonly;
-      else if(inX1&&inX2)  col=COL.X1X2;
-      else if(inX1)        col=COL.X1only;
-      else if(inX2)        col=COL.X2only;
-      if(col){const i=(py*W+px)*4;d[i]=col[0];d[i+1]=col[1];d[i+2]=col[2];d[i+3]=col[3];}
+      let col=null,region=null;
+      if(inX1&&inX2&&inY){region='c';col=COL.X1X2Y;}
+      else if(inX1&&inY)  {region='b';col=COL.X1Y;}
+      else if(inX2&&inY)  {region='d';col=COL.X2Y;}
+      else if(inY)        {region='a';col=COL.Yonly;}
+      else if(inX1&&inX2) {region='f';col=COL.X1X2;}
+      else if(inX1)       {region='e';col=COL.X1only;}
+      else if(inX2)       {region='g';col=COL.X2only;}
+      if(!col)continue;
+      const i=(py*W+px)*4;
+      if(region&&EXCLUDE.has(region)){
+        // Schraffur: nur einen Teil der Pixel diagonal einfärben, Rest bleibt Hintergrund
+        if(((px+py)&7)>=3)continue;
+        d[i]=col[0];d[i+1]=col[1];d[i+2]=col[2];d[i+3]=Math.round(col[3]*0.6);
+      } else {
+        d[i]=col[0];d[i+1]=col[1];d[i+2]=col[2];d[i+3]=col[3];
+      }
     }
   }
   ctx.putImageData(img,0,0);
@@ -745,16 +842,20 @@ function drawVenn(){
   const mYonly={x:Yc.x,y:Yc.y+R*0.35};
 
   ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.globalAlpha=EXCLUDE.has('b')?0.35:1;
   ctx.fillStyle=dark?'#4ab0d8':'#2a6e8a';
   ctx.fillText('b='+f3(stats.dR2_1),mX1Y.x,mX1Y.y);
+  ctx.globalAlpha=EXCLUDE.has('d')?0.35:1;
   ctx.fillStyle=dark?'#80cb52':'#5a8a2a';
   ctx.fillText('d='+f3(stats.dR2_2),mX2Y.x,mX2Y.y);
 
   // Triple region label (c) — red if negative
   const cNeg=stats.c_shared<-0.001;
+  ctx.globalAlpha=EXCLUDE.has('c')?0.35:1;
   ctx.fillStyle=cNeg?(dark?'#e8614a':'#c94a2a'):(dark?'#2bc7c4':'#0e7c7b');
   ctx.fillText('c='+f3(stats.c_shared),mTri.x,mTri.y);
 
+  ctx.globalAlpha=1;
   ctx.fillStyle=dark?'#857c68':'#8a7f72';
   ctx.fillText('a='+f3(1-Math.max(0,stats.R2)),mYonly.x,mYonly.y);
 
@@ -762,6 +863,8 @@ function drawVenn(){
   ctx.font='13px DM Mono,monospace';ctx.textAlign='left';ctx.fillStyle=dark?'#857c68':'#8a7f72';
   ctx.fillText('b=ΔR²(X₁)  d=ΔR²(X₂)  c=geteilte Var.  a=1−R²',8,H-22);
   ctx.fillText('R²='+f3(Math.max(0,stats.R2))+'  b+c+d=R²',8,H-8);
+
+  updateVennCaption(stats);
 
   // Suppression note
   const note=document.getElementById('supp-note');
@@ -902,12 +1005,22 @@ function recompute(){
   const ey =residuals(pts,p=>p.x2,p=>p.y);
   const x1s=pts.map(p=>p.x1),ys=pts.map(p=>p.y);
 
-  drawScatter('cv1',x1s,ys,r1y,sampleCorr(x1s,ys));
-  drawScatter('cv2',ex1,ys,stats.r_semi1,sampleCorr(ex1,ys));
-  drawScatter('cv3',ex1,ey,stats.r_part1,sampleCorr(ex1,ey));
+  // Gemeinsame Achsenskala für alle drei Streudiagramme — sonst sieht man
+  // die Varianzreduktion durch das Herauspartialisieren nicht als Schrumpfen
+  // derselben Punktwolke, sondern jedes Mal eine "neue", anders skalierte Wolke.
+  const allVals=[...x1s,...ys,...ex1,...ey];
+  const ext=Math.max(Math.max(...allVals.map(Math.abs))*1.15,1.5);
+  const allCols=x2Colors(pts);
+  updateLegendBar();
+
+  drawScatter('cv1',x1s,ys,r1y,sampleCorr(x1s,ys),ext,allCols,ST.colorX2);
+  drawScatter('cv2',ex1,ys,stats.r_semi1,sampleCorr(ex1,ys),ext,allCols,ST.colorX2);
+  drawScatter('cv3',ex1,ey,stats.r_part1,sampleCorr(ex1,ey),ext,allCols,ST.colorX2);
   drawVenn();
   updateStatsTable(pts,stats);
 }
+
+function onToggleColor(el){ST.colorX2=el.checked;recompute();}
 
 // ─── Controls ────────────────────────────────────────────────────────────────
 function onSl(key,el){
