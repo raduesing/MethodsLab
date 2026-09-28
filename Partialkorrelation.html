@@ -177,7 +177,7 @@ canvas{display:block;width:100%}
         <span>X₂ niedrig</span><span>X₂ hoch</span>
       </div>
       <div style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);margin-top:.5rem;line-height:1.5">
-        Die farbigen Streifen in den Diagrammen zeigen ±1 SD auf beiden Achsen — schrumpft ein Streifen zwischen zwei Diagrammen, wurde dort tatsächlich Varianz herauspartialisiert.
+        Der orangene Streifen (SDₓ) und der hellblaue Streifen (SDᵧ) zeigen ±1 SD auf der jeweiligen Achse — schrumpft ein Streifen zwischen zwei Diagrammen, wurde dort tatsächlich Varianz herauspartialisiert.
       </div>
     </div>
   </div>
@@ -607,12 +607,18 @@ function x2ColorStops(){
 }
 function x2Colors(pts){
   const{lo:lo_col,hi:hi_col,mid:mid_col}=x2ColorStops();
-  const x2s=pts.map(p=>p.x2);
-  const lo=Math.min(...x2s),hi=Math.max(...x2s),rng=hi-lo||1;
-  return pts.map(p=>{
-    const t=(p.x2-lo)/rng;
+  // Rang-/Perzentilbasiert statt Min-Max: bei normalverteiltem X₂ bündelt
+  // sich sonst der Großteil der Punkte um die Mittelfarbe (nur die seltenen
+  // Extremwerte wären klar blau/rot) — der Farbverlauf wirkt dann matschig.
+  // Über den Rang wird die Palette gleichmäßig auf alle Punkte verteilt.
+  const order=pts.map((_,i)=>i).sort((i,j)=>pts[i].x2-pts[j].x2);
+  const rank=new Array(pts.length);
+  order.forEach((origIdx,pos)=>{rank[origIdx]=pos;});
+  const nm1=Math.max(1,pts.length-1);
+  return pts.map((p,i)=>{
+    const t=rank[i]/nm1;
     const [r,g,b]=t<0.5?lerpRGB(lo_col,mid_col,t*2):lerpRGB(mid_col,hi_col,(t-0.5)*2);
-    return`rgba(${r},${g},${b},0.65)`;
+    return`rgba(${r},${g},${b},0.85)`;
   });
 }
 function updateLegendBar(){
@@ -643,10 +649,20 @@ function drawScatter(cvId,xs,ys,r_pop,r_hat,ext,allCols,showColor){
   const mx=mean(xs),my=mean(ys);
   const sdx=Math.sqrt(xs.reduce((s,v)=>s+(v-mx)**2,0)/xs.length);
   const sdy=Math.sqrt(ys.reduce((s,v)=>s+(v-my)**2,0)/ys.length);
-  ctx.fillStyle=dark?'rgba(224,120,48,0.14)':'rgba(184,92,0,0.10)';
-  ctx.fillRect(sx(mx-sdx),pad.t,sx(mx+sdx)-sx(mx-sdx),cH);
-  ctx.fillStyle=dark?'rgba(74,176,216,0.12)':'rgba(42,110,138,0.08)';
-  ctx.fillRect(pad.l,sy(my+sdy),cW,sy(my-sdy)-sy(my+sdy));
+  const xL=sx(mx-sdx),xR=sx(mx+sdx),yT=sy(my+sdy),yB=sy(my-sdy);
+  ctx.fillStyle=dark?'rgba(224,120,48,0.24)':'rgba(184,92,0,0.16)';
+  ctx.fillRect(xL,pad.t,xR-xL,cH);
+  ctx.fillStyle=dark?'rgba(74,176,216,0.22)':'rgba(42,110,138,0.14)';
+  ctx.fillRect(pad.l,yT,cW,yB-yT);
+  // Gestrichelte Kanten an den exakten ±1-SD-Grenzen — macht das Schrumpfen
+  // der Bande zwischen zwei Plots klar erkennbar (reine Flächenfarbe allein
+  // ist zu subtil, um eine Breitenänderung sicher wahrzunehmen).
+  ctx.setLineDash([3,3]);ctx.lineWidth=1.2;
+  ctx.strokeStyle=dark?'rgba(224,120,48,0.85)':'rgba(184,92,0,0.75)';
+  ctx.beginPath();ctx.moveTo(xL,pad.t);ctx.lineTo(xL,pad.t+cH);ctx.moveTo(xR,pad.t);ctx.lineTo(xR,pad.t+cH);ctx.stroke();
+  ctx.strokeStyle=dark?'rgba(74,176,216,0.85)':'rgba(42,110,138,0.75)';
+  ctx.beginPath();ctx.moveTo(pad.l,yT);ctx.lineTo(pad.l+cW,yT);ctx.moveTo(pad.l,yB);ctx.lineTo(pad.l+cW,yB);ctx.stroke();
+  ctx.setLineDash([]);
   ctx.font='9px DM Mono, monospace';ctx.textAlign='left';ctx.textBaseline='top';
   ctx.fillStyle=dark?'#e07830':'#b85c00';ctx.fillText('SDₓ='+sdx.toFixed(2),pad.l+3,pad.t+2);
   ctx.fillStyle=dark?'#4ab0d8':'#2a6e8a';ctx.fillText('SDᵧ='+sdy.toFixed(2),pad.l+3,pad.t+12);
@@ -676,7 +692,7 @@ function drawScatter(cvId,xs,ys,r_pop,r_hat,ext,allCols,showColor){
   // Punkte — farbig nach X₂ (falls aktiviert) oder neutral
   const neutralCol=dark?'rgba(133,124,104,0.5)':'rgba(138,127,114,0.5)';
   for(let i=0;i<xs.length;i++){
-    ctx.beginPath();ctx.arc(sx(xs[i]),sy(ys[i]),2.2,0,2*Math.PI);
+    ctx.beginPath();ctx.arc(sx(xs[i]),sy(ys[i]),(showColor&&allCols)?2.6:2.2,0,2*Math.PI);
     ctx.fillStyle=(showColor&&allCols)?allCols[i]:neutralCol;
     ctx.fill();
   }
@@ -748,7 +764,7 @@ function updateVennCaption(stats){
   const texts={
     bivar:`<strong>Bivariat:</strong> r(X₁,Y)² = b+c = ${f3(bivarR2)} — die gesamte X₁∩Y-Fläche zählt, X₂ bleibt komplett unberücksichtigt (schraffiert).`,
     semi:`<strong>Semipartial:</strong> r_semi² = b = ${f3(stats.dR2_1)} — nur der X₁-exklusive Anteil zählt; der mit X₂ geteilte Anteil c ist jetzt ausgeschlossen (schraffiert).`,
-    part:`<strong>Partial:</strong> r_partial² = b/(a+b) = ${f3(partR2)} — dieselbe Fläche b wie bei Semipartial, aber bezogen auf die um X₂ bereinigte Y-Fläche (a+b) statt auf die gesamte Y-Fläche.`
+    part:`<strong>Partial:</strong> r_partial² = b/(a+b) = ${f3(partR2)} — dieselbe Fläche b wie bei Semipartial, aber bezogen auf die um X₂ bereinigte Y-Fläche (a+b) statt auf die gesamte Y-Fläche. Die gestrichelte Linie markiert diese neue, kleinere Bezugsfläche.`
   };
   el.innerHTML=texts[ST.vennMode]||'';
 }
@@ -820,6 +836,24 @@ function drawVenn(){
   const ink=css('--ink');
   ctx.strokeStyle=ink;ctx.lineWidth=1.5;ctx.setLineDash([]);
   [X1c,X2c,Yc].forEach(c=>{ctx.beginPath();ctx.arc(c.x,c.y,R,0,2*Math.PI);ctx.stroke();});
+
+  // Bezugsflächen-Grenze für Partial: r_semi² und r_partial² haben dasselbe
+  // Zählerfeld (b), aber einen unterschiedlichen Nenner — r_semi² bezieht
+  // sich auf den GESAMTEN Y-Kreis (a+b+c+d), r_partial² nur auf die Teilfläche
+  // (a+b). Reine Schraffur von c/d kann das nicht zeigen (b bleibt in beiden
+  // Modi pixelgleich) — deshalb zusätzlich die exakte Trennlinie zwischen
+  // (a+b) und (c+d) einzeichnen: das ist genau der Bogen, den der X₂-Kreis
+  // innerhalb des Y-Kreises zieht.
+  if(ST.vennMode==='part'){
+    ctx.save();
+    ctx.beginPath();ctx.arc(Yc.x,Yc.y,R,0,2*Math.PI);ctx.clip();
+    ctx.strokeStyle=dark?'#c87ad8':'#7a3a8a';
+    ctx.lineWidth=2.5;
+    ctx.setLineDash([6,5]);
+    ctx.beginPath();ctx.arc(X2c.x,X2c.y,R,0,2*Math.PI);ctx.stroke();
+    ctx.restore();
+    ctx.setLineDash([]);
+  }
 
   // Node labels
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 17px DM Mono,monospace';
