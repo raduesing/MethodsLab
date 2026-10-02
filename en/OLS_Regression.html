@@ -396,7 +396,22 @@ input[type=range]::-moz-range-thumb{
   font-family:'DM Mono',monospace;font-size:.7rem;
   text-transform:uppercase;letter-spacing:.1em;
   color:var(--a2);margin-bottom:.55rem;
+  display:flex;align-items:center;gap:.4rem;
 }
+/* Plain digit + CSS circle badge, same construction as .mod-tab .tab-num above —
+   NOT the .circ big-glyph treatment used elsewhere in this file, which renders the
+   circled-digit unicode glyph (①②③…) oversized but still visually inconsistent at
+   this inline-heading scale. */
+.lcard-h .tab-num{
+  flex-shrink:0;width:1.4rem;height:1.4rem;border-radius:50%;
+  border:1.5px solid var(--a2);color:var(--a2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.68rem;line-height:1;
+}
+/* text-transform:uppercase on a lowercase Greek β turns it into Β, which is visually
+   identical to a Latin "B" — defeats the point of using β to mean "standardized".
+   Keep it lowercase regardless of the heading's uppercase styling. */
+.lcard-h .keep-case{text-transform:none}
 .lcard-body{font-size:.875rem;color:var(--ink2);line-height:1.7}
 .lcard-body strong{color:var(--ink)}
 .lcard-body code{
@@ -1104,7 +1119,7 @@ input[type=range]::-moz-range-thumb{
   <div class="lcard-grid">
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">①</span> OLS criterion</div>
+      <div class="lcard-h"><span class="tab-num">1</span> OLS criterion</div>
       <div class="lcard-body">
         <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS is the standard method for estimating linear regression coefficients: it minimizes the sum of squared residuals RSS = Σ(yᵢ − ŷᵢ)².">OLS</a> minimizes the <strong>sum of squared residuals</strong>:
         <code>min Σ(yᵢ − ŷᵢ)²</code>.
@@ -1115,7 +1130,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">②</span> Coefficient b₁</div>
+      <div class="lcard-h"><span class="tab-num">2</span> Coefficient b₁</div>
       <div class="lcard-body">
         <strong>Interpretation:</strong> "Per +1 unit of X, the expected
         value of Y rises by b₁ units — all other predictors held constant
@@ -1126,7 +1141,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">③</span> Intercept b₀</div>
+      <div class="lcard-h"><span class="tab-num">3</span> Intercept b₀</div>
       <div class="lcard-body">
         b₀ is the expected Y value <strong>when all predictors equal 0</strong>.
         This is often not meaningful substantively (e.g. 0 hours of study, 0 sleep).
@@ -1136,7 +1151,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">④</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-r2" target="_blank" rel="noopener" title="The coefficient of determination R² indicates the proportion of total variance in Y explained by the model: R² = 1 − RSS/TSS. Adjusted R² accounts for the number of predictors.">R² and adj. R²</a></div>
+      <div class="lcard-h"><span class="tab-num">4</span> <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-r2" target="_blank" rel="noopener" title="The coefficient of determination R² indicates the proportion of total variance in Y explained by the model: R² = 1 − RSS/TSS. Adjusted R² accounts for the number of predictors.">R² and adj. R²</a></div>
       <div class="lcard-body">
         <code>R² = SSM/SST ∈ [0, 1]</code> — proportion of explained variance.
         R² increases with every added predictor, even useless ones.
@@ -1147,7 +1162,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">⑤</span> Partial slope</div>
+      <div class="lcard-h"><span class="tab-num">5</span> Partial slope</div>
       <div class="lcard-body">
         b₁ in the multiple model is <strong>not</strong> the same as in the bivariate model —
         it is the slope in the <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-added-variable-plot" target="_blank" rel="noopener" title="An Added Variable Plot visualizes the partial effect of a predictor, controlling for other predictors — the slope equals exactly the partial regression coefficient from the full multiple model.">Added Variable Plot</a></em> (AVP):
@@ -1158,7 +1173,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="lcard">
-      <div class="lcard-h"><span class="circ">⑥</span> Standardization β</div>
+      <div class="lcard-h"><span class="tab-num">6</span> Standardization <span class="keep-case">β</span></div>
       <div class="lcard-body">
         <code>β = b · (SD_X / SD_Y)</code> — the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardisierter-koeffizient" target="_blank" rel="noopener" title="The standardized regression coefficient β results from z-standardizing all variables: β = b · (SD_X / SD_Y). In the bivariate model, β always equals r.">standardized regression coefficient</a>.
         β indicates how many <strong>standard deviations</strong> Y rises
