@@ -70,8 +70,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .circ{font-size:2em;font-weight:600;vertical-align:-.15em;line-height:1;display:inline-block}
 .sec-h:first-child{margin-top:0}
 .story-box{background:var(--panel);border:1px solid var(--grid);border-left:3px solid var(--a2);
-  padding:.75rem .9rem;margin-bottom:.85rem}
-.story-lbl{font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:.8rem .95rem;margin-bottom:.85rem;line-height:1.6;font-size:.95rem}
+.story-lbl{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--a2);margin-bottom:.45rem}
 .xlink{display:inline-block;margin-top:.5rem;margin-right:.4rem;font-family:'DM Mono',monospace;font-size:.73rem;
   padding:.3rem .7rem;border:1.5px solid var(--a4);color:var(--a4);text-decoration:none;transition:all .15s}
@@ -201,6 +201,15 @@ canvas{width:100%;display:block}
     <div style="margin-top:.6rem">
       <a class="xlink" href="Messinvarianz.html" target="_blank">Does the same norm hold across groups too? → Measurement Invariance</a>
     </div>
+  </div>
+
+  <div class="story-box" style="margin-bottom:.7rem;border-left-color:var(--a5)">
+    <div class="story-lbl" style="color:var(--a5)">🧮 Concrete Example — a person with raw score = mean + 1 SD</div>
+    A person scores <strong id="ex-rawx">…</strong> points — exactly <strong>one standard deviation above the mean</strong>.
+    No matter how skewed the distribution is, the <strong>linear</strong> T formula always gives this person <strong style="color:var(--a5)">T = 60</strong> (nominally: the 84.1st percentile, since Φ(1)=0.841).
+    In reality, though, they fall at the <strong id="ex-truepr" style="color:var(--a2)">…</strong>th percentile of the norm sample — for a right-skewed distribution like this one, typically <em>higher</em>, since fewer people sit above the mean than a normal distribution would assume.
+    The <strong>area transformation</strong> recognizes this and correctly assigns <strong id="ex-tf" style="color:var(--a3)">…</strong> instead —
+    a difference of <strong id="ex-dt">…</strong> points from the linear norm. This same raw score is also marked in density chart ① as the red "T=60" line.
   </div>
 
   <div class="plot-box plot-sticky">
@@ -888,6 +897,24 @@ function updateStats() {
   document.getElementById('st-sd').textContent    = D.sd.toFixed(2);
   document.getElementById('st-skew').textContent  = D.skewness.toFixed(2);
   document.getElementById('sb-pr').textContent    = `PR ${prM.toFixed(1)} %`;
+
+  // Concrete worked example: a person exactly 1 SD above the mean —
+  // linear T-formula always gives T=60 / nominal PR=84.1% here, by construction,
+  // regardless of distribution shape. Only the true empirical PR (and thus T_F) varies.
+  const rawEx = D.mean + D.sd;
+  const truePR = empPR(Math.min(X_MAX, rawEx));
+  document.getElementById('ex-rawx').textContent = Math.min(X_MAX, rawEx).toFixed(1);
+  document.getElementById('ex-truepr').textContent = truePR.toFixed(1);
+  const prFracEx = truePR / 100;
+  if (prFracEx > 0.001 && prFracEx < 0.999) {
+    const tfEx = 50 + 10 * normalCDFInv(prFracEx);
+    const dtEx = tfEx - 60;
+    document.getElementById('ex-tf').textContent = tfEx.toFixed(1);
+    document.getElementById('ex-dt').textContent = (dtEx > 0 ? '+' : '') + dtEx.toFixed(1);
+  } else {
+    document.getElementById('ex-tf').textContent = truePR >= 99.9 ? '> 80' : '< 20';
+    document.getElementById('ex-dt').textContent = '—';
+  }
 
   // Mini PR table
   const T_LIST = [40, 50, 60, 70];
