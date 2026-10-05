@@ -197,7 +197,7 @@ canvas{width:100%;display:block}
     Die SCL-90-R (Items 0–4, hier 10 Items → Summenwert 0–40) hat eine <strong>stark rechtsschiefe</strong> Normierungsverteilung.
     Die Autoren haben dies korrekt gelöst und die T-Werte über die <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="Die Flächentransformation überführt jeden Rohwert über seinen empirischen Prozentrang statt über eine lineare Formel in einen Normwert.">Flächentransformation</a></strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Referenzen.html#ref-lienert-raatz-1998" target="_blank" rel="noopener">Lienert &amp; Raatz</a>) berechnet — also percentiläquivalent.
     Dieses Tool stellt die Gegenfrage: <em>Wie stark wäre die Verzerrung, wenn man stattdessen lineare T-Werte (M=50, SD=10) verwendet hätte?</em>
-    Ein lineares T=50 läge empirisch bei <strong id="sb-pr">…</strong> der Normstichprobe.
+    Ein lineares T = 50 läge empirisch bei <strong id="sb-pr">…</strong> der Normstichprobe.
     <div style="margin-top:.6rem">
       <a class="xlink" href="Messinvarianz.html" target="_blank">Gilt dieselbe Norm auch über Gruppen hinweg? → Messinvarianz</a>
     </div>
@@ -206,10 +206,10 @@ canvas{width:100%;display:block}
   <div class="story-box" style="margin-bottom:.7rem;border-left-color:var(--a5)">
     <div class="story-lbl" style="color:var(--a5)">🧮 Konkretes Beispiel — eine Person mit Rohwert = Mittelwert + 1 SD</div>
     Eine Person erreicht einen Rohwert von <strong id="ex-rawx">…</strong> Punkten — das liegt exakt <strong>eine Standardabweichung über dem Mittelwert</strong>.
-    Egal wie schief die Verteilung ist: die <strong>lineare</strong> T-Formel gibt dieser Person deshalb immer <strong style="color:var(--a5)">T = 60</strong> (nominal: 84,1. Perzentil, denn Φ(1)=0,841).
-    Tatsächlich liegt sie aber beim <strong id="ex-truepr" style="color:var(--a2)">…</strong>. Perzentil der Normstichprobe — bei einer rechtsschiefen Verteilung wie hier typischerweise <em>höher</em>, da rechts vom Mittelwert weniger Menschen liegen als eine Normalverteilung unterstellt.
+    Egal wie schief die Verteilung ist: die <strong>lineare</strong> T-Formel gibt dieser Person deshalb immer <strong style="color:var(--a5)">T = 60</strong> (nominal <strong style="color:var(--a5)">PR = 84,1</strong>, denn Φ(1)=0,841).
+    Tatsächlich liegt sie aber bei <strong id="ex-truepr" style="color:var(--a2)">…</strong> der Normstichprobe — bei einer rechtsschiefen Verteilung wie hier typischerweise <em>höher</em>, da rechts vom Mittelwert weniger Menschen liegen als eine Normalverteilung unterstellt.
     Die <strong>Flächentransformation</strong> erkennt das und weist ihr stattdessen korrekt <strong id="ex-tf" style="color:var(--a3)">…</strong> zu —
-    eine Abweichung von <strong id="ex-dt">…</strong> Punkten gegenüber der linearen Norm. Genau dieser Rohwert ist übrigens auch in der Dichteverteilung ① als rote „T=60"-Linie markiert.
+    eine Abweichung von <strong id="ex-dt">…</strong> gegenüber der linearen Norm. Genau dieser Rohwert ist übrigens auch in der Dichteverteilung ① als rote „T=60"-Linie markiert.
   </div>
 
   <div class="plot-box plot-sticky">
@@ -895,7 +895,7 @@ function updateStats() {
   document.getElementById('st-mean').textContent  = D.mean.toFixed(2);
   document.getElementById('st-sd').textContent    = D.sd.toFixed(2);
   document.getElementById('st-skew').textContent  = D.skewness.toFixed(2);
-  document.getElementById('sb-pr').textContent    = `PR ${prM.toFixed(1)} %`;
+  document.getElementById('sb-pr').textContent    = `PR = ${prM.toFixed(1)} %`;
 
   // Concrete worked example: a person exactly 1 SD above the mean —
   // linear T-formula always gives T=60 / nominal PR=84.1% here, by construction,
@@ -903,16 +903,16 @@ function updateStats() {
   const rawEx = D.mean + D.sd;
   const truePR = empPR(Math.min(X_MAX, rawEx));
   document.getElementById('ex-rawx').textContent = Math.min(X_MAX, rawEx).toFixed(1);
-  document.getElementById('ex-truepr').textContent = truePR.toFixed(1);
+  document.getElementById('ex-truepr').textContent = `PR = ${truePR.toFixed(1)}`;
   const prFracEx = truePR / 100;
   if (prFracEx > 0.001 && prFracEx < 0.999) {
     const tfEx = 50 + 10 * normalCDFInv(prFracEx);
     const dtEx = tfEx - 60;
-    document.getElementById('ex-tf').textContent = tfEx.toFixed(1);
-    document.getElementById('ex-dt').textContent = (dtEx > 0 ? '+' : '') + dtEx.toFixed(1);
+    document.getElementById('ex-tf').textContent = `T_F = ${tfEx.toFixed(1)}`;
+    document.getElementById('ex-dt').textContent = `ΔT = ${dtEx > 0 ? '+' : ''}${dtEx.toFixed(1)}`;
   } else {
-    document.getElementById('ex-tf').textContent = truePR >= 99.9 ? '> 80' : '< 20';
-    document.getElementById('ex-dt').textContent = '—';
+    document.getElementById('ex-tf').textContent = truePR >= 99.9 ? 'T_F > 80' : 'T_F < 20';
+    document.getElementById('ex-dt').textContent = 'ΔT = —';
   }
 
   // Mini PR table

@@ -197,7 +197,7 @@ canvas{width:100%;display:block}
     The SCL-90-R (items 0–4, here 10 items → sum score 0–40) has a <strong>strongly right-skewed</strong> norming distribution.
     The authors solved this correctly and computed T scores via the <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-flaechentransformation" target="_blank" rel="noopener" title="The area transformation converts each raw score into a norm score via its empirical percentile rank rather than via a linear formula.">area transformation</a></strong> (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-lienert-raatz-1998" target="_blank" rel="noopener">Lienert &amp; Raatz</a>) — i.e. percentile-equivalent.
     This tool asks the opposite question: <em>how strong would the bias be if linear T scores (M=50, SD=10) had been used instead?</em>
-    A linear T=50 would empirically fall at <strong id="sb-pr">…</strong> of the norm sample.
+    A linear T = 50 would empirically fall at <strong id="sb-pr">…</strong> of the norm sample.
     <div style="margin-top:.6rem">
       <a class="xlink" href="Messinvarianz.html" target="_blank">Does the same norm hold across groups too? → Measurement Invariance</a>
     </div>
@@ -206,10 +206,10 @@ canvas{width:100%;display:block}
   <div class="story-box" style="margin-bottom:.7rem;border-left-color:var(--a5)">
     <div class="story-lbl" style="color:var(--a5)">🧮 Concrete Example — a person with raw score = mean + 1 SD</div>
     A person scores <strong id="ex-rawx">…</strong> points — exactly <strong>one standard deviation above the mean</strong>.
-    No matter how skewed the distribution is, the <strong>linear</strong> T formula always gives this person <strong style="color:var(--a5)">T = 60</strong> (nominally: the 84.1st percentile, since Φ(1)=0.841).
-    In reality, though, they fall at the <strong id="ex-truepr" style="color:var(--a2)">…</strong>th percentile of the norm sample — for a right-skewed distribution like this one, typically <em>higher</em>, since fewer people sit above the mean than a normal distribution would assume.
+    No matter how skewed the distribution is, the <strong>linear</strong> T formula always gives this person <strong style="color:var(--a5)">T = 60</strong> (nominally <strong style="color:var(--a5)">PR = 84.1</strong>, since Φ(1)=0.841).
+    In reality, though, they fall at <strong id="ex-truepr" style="color:var(--a2)">…</strong> of the norm sample — for a right-skewed distribution like this one, typically <em>higher</em>, since fewer people sit above the mean than a normal distribution would assume.
     The <strong>area transformation</strong> recognizes this and correctly assigns <strong id="ex-tf" style="color:var(--a3)">…</strong> instead —
-    a difference of <strong id="ex-dt">…</strong> points from the linear norm. This same raw score is also marked in density chart ① as the red "T=60" line.
+    a difference of <strong id="ex-dt">…</strong> from the linear norm. This same raw score is also marked in density chart ① as the red "T=60" line.
   </div>
 
   <div class="plot-box plot-sticky">
@@ -896,7 +896,7 @@ function updateStats() {
   document.getElementById('st-mean').textContent  = D.mean.toFixed(2);
   document.getElementById('st-sd').textContent    = D.sd.toFixed(2);
   document.getElementById('st-skew').textContent  = D.skewness.toFixed(2);
-  document.getElementById('sb-pr').textContent    = `PR ${prM.toFixed(1)} %`;
+  document.getElementById('sb-pr').textContent    = `PR = ${prM.toFixed(1)} %`;
 
   // Concrete worked example: a person exactly 1 SD above the mean —
   // linear T-formula always gives T=60 / nominal PR=84.1% here, by construction,
@@ -904,16 +904,16 @@ function updateStats() {
   const rawEx = D.mean + D.sd;
   const truePR = empPR(Math.min(X_MAX, rawEx));
   document.getElementById('ex-rawx').textContent = Math.min(X_MAX, rawEx).toFixed(1);
-  document.getElementById('ex-truepr').textContent = truePR.toFixed(1);
+  document.getElementById('ex-truepr').textContent = `PR = ${truePR.toFixed(1)}`;
   const prFracEx = truePR / 100;
   if (prFracEx > 0.001 && prFracEx < 0.999) {
     const tfEx = 50 + 10 * normalCDFInv(prFracEx);
     const dtEx = tfEx - 60;
-    document.getElementById('ex-tf').textContent = tfEx.toFixed(1);
-    document.getElementById('ex-dt').textContent = (dtEx > 0 ? '+' : '') + dtEx.toFixed(1);
+    document.getElementById('ex-tf').textContent = `T_F = ${tfEx.toFixed(1)}`;
+    document.getElementById('ex-dt').textContent = `ΔT = ${dtEx > 0 ? '+' : ''}${dtEx.toFixed(1)}`;
   } else {
-    document.getElementById('ex-tf').textContent = truePR >= 99.9 ? '> 80' : '< 20';
-    document.getElementById('ex-dt').textContent = '—';
+    document.getElementById('ex-tf').textContent = truePR >= 99.9 ? 'T_F > 80' : 'T_F < 20';
+    document.getElementById('ex-dt').textContent = 'ΔT = —';
   }
 
   // Mini PR table
