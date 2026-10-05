@@ -25,11 +25,13 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 #topbar h1{font-size:1.05rem;font-weight:300;letter-spacing:-.01em;flex:1}
 #topbar h1 em{color:var(--accent);font-style:italic}
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
-  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
+  background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em;text-transform:none}
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .tbtn.active{border-color:var(--a3)!important;background:var(--a3)!important;color:var(--bg)!important}
 .tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
+.tbtn-green{border-color:var(--a3)!important;color:var(--a3)!important}
+.tbtn-green:hover{background:var(--a3)!important;color:var(--bg)!important}
 #app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
@@ -134,7 +136,6 @@ canvas{width:100%;display:block}
 <div id="topbar">
   <h1>Norming Bias — <em>T Scores Under Skewed Distributions</em></h1>
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
-  <button class="tbtn" id="btn-areaT" onclick="toggleAreaT()">Area Transf. Off</button>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
 </div>
@@ -203,7 +204,10 @@ canvas{width:100%;display:block}
   </div>
 
   <div class="plot-box plot-sticky">
-    <div class="plot-title"><span class="circ">①</span> Density Distribution — Empirical (blue) vs. Implied Normal Distribution (orange)</div>
+    <div class="plot-title" style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap">
+      <span><span class="circ">①</span> Density Distribution — Empirical (blue) vs. Implied Normal Distribution (orange)</span>
+      <button class="tbtn tbtn-green" id="btn-areaT" onclick="toggleAreaT()">+ Show area transf.</button>
+    </div>
     <div class="cv-legend">
       <span class="cv-legend-item" style="color:var(--a2)"><span class="cv-legend-sw"></span>Empir. distribution</span>
       <span class="cv-legend-item" style="color:var(--a5)"><span class="cv-legend-sw dashed"></span>Implied normal dist.</span>
@@ -1034,7 +1038,7 @@ function setDist(type) {
 function toggleAreaT() {
   showAreaT = !showAreaT;
   const btn = document.getElementById('btn-areaT');
-  btn.textContent = showAreaT ? 'Area Transf. On' : 'Area Transf. Off';
+  btn.textContent = showAreaT ? '− Hide area transf.' : '+ Show area transf.';
   btn.classList.toggle('active', showAreaT);
   document.getElementById('legend-areaT').style.display = showAreaT ? 'flex' : 'none';
   drawDensity();
