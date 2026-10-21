@@ -6,12 +6,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Static Badge](https://img.shields.io/badge/Status-Academic_Project-blue)]()
 [![Static Badge](https://img.shields.io/badge/Tech-Vanilla_JS-orange)]()
-[![Static Badge](https://img.shields.io/badge/Tools-50_interactive-green)]()
+[![Static Badge](https://img.shields.io/badge/Tools-51_interactive-green)]()
 [![Static Badge](https://img.shields.io/badge/Version-0.7_beta-lightgrey)]()
 
 ### 🌐 [www.methodslab.uni-osnabrueck.de](https://www.methodslab.uni-osnabrueck.de/)
 
-**A suite of 50 interactive tools that build statistical intuition from the ground up — from OLS and logistic regression, ANOVA and multilevel models, through the counter-intuitive paradoxes that trip up even seasoned researchers, into modern causal inference, psychometrics (classical test theory, factor analysis, CFA/SEM, reliability, IRT), and clinical diagnostics. Everything runs entirely in the browser. No code, no server, no data ever leaves your machine.**
+**A suite of 51 interactive tools that build statistical intuition from the ground up — from OLS and logistic regression, ANOVA and multilevel models, through the counter-intuitive paradoxes that trip up even seasoned researchers, into modern causal inference, psychometrics (classical test theory, factor analysis, CFA/SEM, reliability, IRT), and clinical diagnostics. Everything runs entirely in the browser. No code, no server, no data ever leaves your machine.**
 
 [ [Learning Path](#-the-learning-path) ] • [ [Ecosystem](#-the-ecosystem) ] • [ [Philosophy](#-scientific-philosophy) ] • [ [Usage](#-getting-started) ] • [ [Sister Project](#-sister-project--bayes-thinking-lab) ]
 
@@ -19,7 +19,7 @@
 
 </div>
 
-> **Language note:** The lab was built for teaching at the University of Osnabrück, so its primary interface is **German** — but every one of the 50 tools now also has a complete **English** translation, reachable via the 🇬🇧 flag in each tool's top bar or directly at [methodslab.uni-osnabrueck.de/en](https://www.methodslab.uni-osnabrueck.de/en/). The methods and code are, of course, language-independent.
+> **Language note:** The lab was built for teaching at the University of Osnabrück, so its primary interface is **German** — but every one of the 51 tools now also has a complete **English** translation, reachable via the 🇬🇧 flag in each tool's top bar or directly at [methodslab.uni-osnabrueck.de/en](https://www.methodslab.uni-osnabrueck.de/en/). The methods and code are, of course, language-independent.
 
 ---
 
@@ -44,7 +44,7 @@ The lab is organized into six sections that build on one another. Work through t
 | **2 · Inference & Planning** | What a p-value actually claims, how big a sample needs to be, what counts as a meaningful effect, and what missing data does | Significance Tests · Effect Sizes · Power & Sample Size · Missing Data |
 | **3 · Statistical Paradoxes** | Why counter-intuitive results are, in fact, plain regression or sampling logic | Regression to the Mean · Attenuation · Berkson · Lord · Simpson · Law of Small Numbers |
 | **4 · Causal Inference** | When association may be read as causation — and the toolkit of modern causal analysis | Causal Foundations · RDD · Difference-in-Differences · Propensity Score Matching |
-| **5 · Test Theory & Measurement** | How psychological constructs are measured and how well | Classical Test Theory · Factor Analysis · Measurement Models · CFA · SEM · Reliability (α vs. ω) · IRT · DIF |
+| **5 · Test Theory & Measurement** | How psychological constructs are measured and how well | Classical Test Theory · Factor Analysis · Measurement Models · CFA · SEM · MTMM · Reliability (α vs. ω) · IRT · DIF |
 | **6 · Diagnostics & Test Quality** | How accurately an instrument detects what it should — at the level of the individual | Sensitivity/Specificity · Diagnostic Validity · Taylor-Russell · ICC · Diagnostic Intervals · Norm-Score Distortion · Jacobson-Truax · Single Case Designs |
 
 ---
@@ -106,6 +106,7 @@ Legend: **✓** finished · **◷** planned
 * **✓ Measurement Models (CFA intro)** — Parallel, tau-equivalent, congeneric: path diagram, implied covariance matrix, automatic model classification, ω_total vs. α live, optional intercepts for essential equivalence. The bridge from factor analysis to reliability.
 * **✓ Confirmatory Factor Analysis (CFA)** — A real 2-factor CFA fit by genuine maximum likelihood (no shortcut formula): specify orthogonal vs. oblique, model or ignore a cross-loading, and watch χ², CFI, TLI, RMSEA, SRMR react to misspecification. Live `lavaan` syntax alongside.
 * **✓ Structural Equation Model (SEM)** — From measurement model to structural model: a directed regression path between latent factors (or a full X→M→Y mediation model), fit by the same ML machinery as the CFA tool. Live comparison against the attenuation-prone manifest sum-score approach.
+* **✓ Multitrait-Multimethod Matrix (MTMM)** — Self-, peer-, and parent-report × three traits: the MTMM matrix decomposed by cell type (reliability, MTHM, HTMM, HTHM) and color-coded, automatic Campbell-Fiske criteria check, the same analysis as a CT-UM/CT-CM SEM toggle, plus an overview of the four CFA-MTMM model variants.
 * **✓ Reliability: α vs. ω** — Cronbach's α vs. McDonald's ω_total / ω_hierarchical: when α *underestimates* (congeneric) and when it *feigns unidimensionality* (multidimensional). Variance decomposition, split-half distribution, three scenarios.
 * **✓ Measurement Invariance** — Configural / metric / scalar: the CFA twin of DIF. Set a true difference and a degree of non-invariance and see how much of a group difference is real vs. a measurement artifact.
 * **✓ IRT — Dichotomous Models** — 1PL/2PL/3PL/4PL + Rasch: ICC, TIF, Wright map, MLE person estimation. The Rasch-vs-1PL distinction made explicit.
@@ -163,7 +164,7 @@ Vanilla JS · HTML5 Canvas · No framework · No build step · Runs entirely in 
 
 ## 🔗 Sister Project — Bayes Thinking Lab
 
-Frequentist methods are at home here — but for priors, posterior distributions, ROPE decisions, Bayes factors, and `brms` model building there is the **[Bayes Thinking Lab](https://www.bayes-thinking-lab.uni-osnabrueck.de/)**: 21 interactive tools that teach Bayesian thinking from the ground up. The two labs complement each other — *Lindley's Paradox*, for instance, needs both perspectives.
+Frequentist methods are at home here — but for priors, posterior distributions, ROPE decisions, Bayes factors, and `brms` model building there is the **[Bayes Thinking Lab](https://www.bayes-thinking-lab.uni-osnabrueck.de/)**: 24 interactive tools that teach Bayesian thinking from the ground up. The two labs complement each other — *Lindley's Paradox*, for instance, needs both perspectives.
 
 🌐 [www.bayes-thinking-lab.uni-osnabrueck.de](https://www.bayes-thinking-lab.uni-osnabrueck.de/) · 💻 [github.com/raduesing/Bayes_Thinking_Lab](https://github.com/raduesing/Bayes_Thinking_Lab)
 
