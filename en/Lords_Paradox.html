@@ -9,13 +9,13 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,400&display=swap');
 :root{
   --bg:#f0ead8;--paper:#f8f3e8;--ink:#18130e;--ink2:#5a4f42;--ink3:#8a7f72;
-  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;
+  --a1:#c94a2a;--a2:#2a6e8a;--a3:#5a8a2a;--a4:#7a3a8a;--a5:#b85c00;--a6:#0e7c7b;--a7:#3a4a9a;
   --grid:#ddd5c5;--panel:#e8e0ce;--border:#c8bfaa;
   --accent:var(--a6);--topbar-h:54px;
 }
 [data-theme="dark"]{
   --bg:#0c0f14;--paper:#111520;--ink:#ece6d8;--ink2:#8a8070;--ink3:#857c68;
-  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;
+  --a1:#e8614a;--a2:#4ab0d8;--a3:#80cb52;--a4:#c87ad8;--a5:#e07830;--a6:#2bc7c4;--a7:#8a9af0;
   --grid:#1e242e;--panel:#171d28;--border:#2a3040;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -347,15 +347,15 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <div class="eq-main" style="margin-top:.28rem">
       <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span>
       <span style="color:var(--ink3)"> = (ȳ<sub>post,B</sub> − ȳ<sub>post,A</sub>) − </span>
-      <span style="color:var(--a3)">b<sub>w</sub></span>
+      <span style="color:var(--a7)">b<sub>w</sub></span>
       <span style="color:var(--ink3)"> · </span>
       <span style="color:var(--a1)">Δ<sub>base</sub></span>
     </div>
     <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);margin-top:.5rem;padding-top:.45rem;border-top:1px dashed var(--grid);line-height:2">
       <span style="color:var(--a6)">δ<sub>Diff</sub></span> = Δ<sub>B</sub> − Δ<sub>A</sub> = (ȳ<sub>post,B</sub>−ȳ<sub>pre,B</sub>) − (ȳ<sub>post,A</sub>−ȳ<sub>pre,A</sub>) = (ȳ<sub>post,B</sub>−ȳ<sub>post,A</sub>) − <span style="color:var(--a1)">Δ<sub>base</sub></span><br>
       ⟹&ensp;ȳ<sub>post,B</sub> − ȳ<sub>post,A</sub> = <span style="color:var(--a6)">δ<sub>Diff</sub></span> + <span style="color:var(--a1)">Δ<sub>base</sub></span><br>
-      substituted into <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span> = (ȳ<sub>post,B</sub>−ȳ<sub>post,A</sub>) − <span style="color:var(--a3)">b<sub>w</sub></span>·<span style="color:var(--a1)">Δ<sub>base</sub></span>:<br>
-      <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span> = (<span style="color:var(--a6)">δ<sub>Diff</sub></span> + <span style="color:var(--a1)">Δ<sub>base</sub></span>) − <span style="color:var(--a3)">b<sub>w</sub></span>·<span style="color:var(--a1)">Δ<sub>base</sub></span> = <span style="color:var(--a6)">δ<sub>Diff</sub></span> + (1−<span style="color:var(--a3)">b<sub>w</sub></span>)·<span style="color:var(--a1)">Δ<sub>base</sub></span>
+      substituted into <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span> = (ȳ<sub>post,B</sub>−ȳ<sub>post,A</sub>) − <span style="color:var(--a7)">b<sub>w</sub></span>·<span style="color:var(--a1)">Δ<sub>base</sub></span>:<br>
+      <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span> = (<span style="color:var(--a6)">δ<sub>Diff</sub></span> + <span style="color:var(--a1)">Δ<sub>base</sub></span>) − <span style="color:var(--a7)">b<sub>w</sub></span>·<span style="color:var(--a1)">Δ<sub>base</sub></span> = <span style="color:var(--a6)">δ<sub>Diff</sub></span> + (1−<span style="color:var(--a7)">b<sub>w</sub></span>)·<span style="color:var(--a1)">Δ<sub>base</sub></span>
     </div>
 
     <!-- B: key formula with live values -->
@@ -366,7 +366,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <span style="color:var(--ink3)"> = </span>
       <span style="color:var(--a6)">δ<sub>Diff</sub></span>
       <span style="color:var(--ink3)"> + (1 − </span>
-      <span style="color:var(--a3)">b<sub>w</sub></span>
+      <span style="color:var(--a7)">b<sub>w</sub></span>
       <span style="color:var(--ink3)">) · </span>
       <span style="color:var(--a1)">Δ<sub>base</sub></span>
     </div>
@@ -375,7 +375,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <span style="color:var(--ink3)"> = </span>
       <span style="color:var(--a6)"><span id="eq-dif">—</span></span>
       <span style="color:var(--ink3)"> + (1 − </span>
-      <span style="color:var(--a3)"><span id="eq-bw">—</span></span>
+      <span style="color:var(--a7)"><span id="eq-bw">—</span></span>
       <span style="color:var(--ink3)">) · </span>
       <span style="color:var(--a1)"><span id="eq-dpre">—</span></span>
       <span style="color:var(--a4)"> = <span id="eq-check">—</span></span>
@@ -399,7 +399,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
         <span class="eq-comp-desc">Group coefficient from Post ~ Pre + Course</span>
       </div>
       <div class="eq-comp">
-        <span class="eq-comp-sym" style="color:var(--a3)">b<sub>w</sub></span>
+        <span class="eq-comp-sym" style="color:var(--a7)">b<sub>w</sub></span>
         <span class="eq-comp-val" id="comp-bw">—</span>
         <span class="eq-comp-desc">Within-group slope of post on pre — here ≈ ρ, since σ<sub>post</sub> ≈ σ<sub>pre</sub> (details in the Help)</span>
       </div>
@@ -411,7 +411,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     </div>
 
     <div class="eq-note">
-      The correction term (1 − <span style="color:var(--a3)">b<sub>w</sub></span>) · <span style="color:var(--a1)">Δ<sub>base</sub></span> vanishes only if <em>one</em> of its two factors is zero: <span style="color:var(--a3)">b<sub>w</sub></span> = 1 (no regression to the mean) <em>or</em> <span style="color:var(--a1)">Δ<sub>base</sub></span> = 0 (no baseline difference). In an RCT the latter holds approximately by randomization — which is why the two methods usually agree there.
+      The correction term (1 − <span style="color:var(--a7)">b<sub>w</sub></span>) · <span style="color:var(--a1)">Δ<sub>base</sub></span> vanishes only if <em>one</em> of its two factors is zero: <span style="color:var(--a7)">b<sub>w</sub></span> = 1 (no regression to the mean) <em>or</em> <span style="color:var(--a1)">Δ<sub>base</sub></span> = 0 (no baseline difference). In an RCT the latter holds approximately by randomization — which is why the two methods usually agree there.
     </div>
 
     <!-- D: the raw post-test difference (a third, uninteresting quantity) -->
