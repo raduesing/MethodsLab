@@ -30,6 +30,22 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+
+/* ── Concept Teaser (collapsible) ─────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 .tbtn-red{border-color:var(--a1)!important;color:var(--a1)!important}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 #app{display:grid;grid-template-columns:272px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
@@ -117,6 +133,41 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    A p-value only says whether a difference is nonzero — an effect size says <em>how big</em>
+    it is, independent of scale and sample size.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    The most common effect size for mean comparisons is Cohen's d: the difference between two
+    means, standardized by a spread. d = 0.5 means: the two distributions are, on average, half
+    a standard deviation apart — regardless of whether the measure is test points or height.
+    That makes effects comparable across studies and measures. With repeated measures it's also
+    unclear <em>whose</em> spread should be standardized — which is why there are three
+    conventions (d<sub>z</sub>, d<sub>rm</sub>, d<sub>av</sub>) instead of one.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Choose a design</strong> — between (independent groups) or within (repeated
+    measures), set parameters with sliders.<br>
+    <strong>2. Visualization</strong> — see both population distributions and their overlap on
+    the running example.<br>
+    <strong>3. What do these numbers mean?</strong> — d, conversion to r, η², odds ratio,
+    Cohen's U₃, and CLES.<br>
+    <strong>4. Concepts &amp; limitations</strong> — small-sample corrections, sign
+    conventions, limits of the small/medium/large classification.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    For exact computation with your own data (CSV upload, confidence intervals), see the
+    <strong>Effect Size Calculator</strong>.
+  </div>
 </div>
 
 <!-- HELP OVERLAY -->
@@ -324,6 +375,13 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 let state = { mode: 'between' };
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
+
 function toggleTheme(){
   const d=document.documentElement;
   const dark=d.getAttribute('data-theme')==='dark';

@@ -99,6 +99,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close:hover{background:var(--a1);color:var(--bg)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a4)}
+
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -108,6 +124,41 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Wer bei T1 extrem gemessen wird, liegt bei T2 im Schnitt näher an der Mitte — auch ganz
+    ohne Intervention.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Personen, die bei einer ersten Messung extrem hohe oder niedrige Werte erzielen, liegen
+    beim zweiten Messen im Durchschnitt näher am Mittelwert — ein rein statistisches Phänomen,
+    keine echte Veränderung. Bei bivariat normalverteilten Messzeitpunkten X (T1) und Y (T2)
+    mit Korrelation r gilt <code>E[Y|X=x] = μ + r·(x−μ)</code>; der Regressionseffekt
+    <code>(1−r)·(x−μ)</code> ist proportional zur Extremheit und zu (1−r). Bei perfekter
+    Messung (r = 1) gibt es keinen Effekt — je größer die Messunsicherheit, desto stärker die
+    Regression zur Mitte.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Szenario wählen</strong> — von perfekter Reliabilität bis schlechter Messung.<br>
+    <strong>2. Grundprinzip</strong> — die Formel E[Y|X] live am Regler nachvollziehen.<br>
+    <strong>3. Streudiagramm T1 vs. T2</strong> — hochselektierte (rot) und niedrigselektierte
+    (blau) Personen im Vergleich zur Y=X-Linie.<br>
+    <strong>4. Konzepte</strong> — warum RTM eine echte Behandlungswirkung vortäuschen kann und
+    wieso nur randomisierte Kontrollgruppen dagegen helfen.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    <strong>Messfehler-Attenuation</strong> zeigt dieselbe zugrunde liegende Mechanik —
+    Messungenauigkeit — aus einer anderen Perspektive: wie sie Korrelationen systematisch
+    unterschätzt, statt Extremwerte zu verzerren.
+  </div>
 </div>
 
 <!-- Help Modal -->
@@ -544,6 +595,13 @@ function setPreset(k){
 function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
 
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
 
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';

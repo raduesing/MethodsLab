@@ -124,6 +124,22 @@ canvas{width:100%;display:block}
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -134,6 +150,40 @@ canvas{width:100%;display:block}
   <button class="tbtn" id="btn-means" onclick="toggleMeans()">Gruppen-Mittel</button>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Ein Zusammenhang kann in jeder Teilgruppe positiv sein und trotzdem negativ werden, sobald
+    man die Gruppen zusammenfasst.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Die gepoolte (aggregierte) Steigung vermischt zwei Quellen von Kovarianz: Within-Gruppen-
+    und Between-Gruppen-Variation. Sind die Gruppen entlang einer gegenläufigen Richtung
+    verschoben (Konfundierung), kann der Between-Anteil den Within-Anteil überstimmen und das
+    Vorzeichen kippen — kein Rechenfehler, beide Trends sind real und beantworten nur
+    verschiedene Fragen. Ob man aufschlüsseln oder poolen sollte, hängt von der kausalen
+    Struktur ab: ist die Gruppenvariable ein Confounder, muss man für sie adjustieren; ist sie
+    ein Mediator auf dem Wirkpfad, würde Adjustieren den Effekt fälschlich wegrechnen.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Vorzeichen-Check</strong> — Within-Slope, Zwischen-Trend und Gruppen-Versatz
+    einstellen und beobachten, wann das Vorzeichen kippt.<br>
+    <strong>2. Streudiagramm</strong> — Within vs. Pooled direkt im Plot vergleichen.<br>
+    <strong>3. Konzepte</strong> — drei Szenarien (Umkehr, keine Konfundierung, Verstärkung)
+    und die Entscheidung Confounder vs. Mediator.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Dieselbe Pooling-Logik, nur konstruktiv eingesetzt, steckt in <strong>Multilevel &amp;
+    Mixed Models</strong> (Sektion 1) — dort zeigt Partial Pooling, wie man Within- und
+    Between-Information sinnvoll kombiniert, statt sie zu verwechseln.
+  </div>
 </div>
 
 <div id="app">
@@ -557,6 +607,12 @@ function preset(name){
   simulate(); update();
 }
 
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 

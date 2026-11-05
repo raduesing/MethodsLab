@@ -28,6 +28,22 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 #topbar h1 em{color:var(--accent);font-style:italic}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+
+/* ── Concept Teaser (collapsible) ─────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
@@ -137,6 +153,37 @@ canvas{width:100%;display:block}
   <button class="tbtn" id="btn-cohen" onclick="toggleCohen()">Cohen conventions</button>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Power isn't a single number but a curve — a different true δ gives a different probability
+    of detection.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    Power (1−β) is the probability of detecting a true effect — i.e., correctly rejecting H₀
+    when H₁ holds. Power depends on four quantities: effect size δ, sample size n,
+    significance level α, and test direction. At δ = 0, power equals the α level
+    (false-positive); as δ grows, power rises toward 1. The often-cited "80% power" therefore
+    always holds for just <em>one</em> specific δ — not for the effect itself.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Power is a curve</strong> — not a value: see how the curve shifts with n.<br>
+    <strong>2. The power landscape</strong> — n × d × power as a heatmap and sensitivity
+    curve.<br>
+    <strong>3. What if the true δ is smaller?</strong> — the consequence of an overly
+    optimistic effect-size estimate.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    Power and missing data together determine how many complete, analyzable observations
+    actually remain — <strong>Missing Data</strong> shows the other half of that equation.
+  </div>
 </div>
 
 <div id="app">
@@ -328,6 +375,13 @@ Power ≈ Φ(|d| · √n    − z_{α/2})   [two-tailed, 1 group]</span>
 
 <script>
 // ── Theme / Help ───────────────────────────────────────────────────────────
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
+
 function toggleTheme(){
   const h=document.documentElement;
   const dark=h.getAttribute('data-theme')==='dark';

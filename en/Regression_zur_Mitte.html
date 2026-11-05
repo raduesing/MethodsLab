@@ -99,6 +99,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close:hover{background:var(--a1);color:var(--bg)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a4)}
+
+/* ── Concept Teaser (collapsible) ─────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -108,6 +124,40 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Score extreme at T1, and you'll on average be closer to the middle at T2 — even with zero
+    intervention.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    People who score extremely high or low on a first measurement tend to be closer to the
+    mean on a second measurement — a purely statistical phenomenon, not a real change. For
+    bivariate normally distributed time points X (T1) and Y (T2) with correlation r,
+    <code>E[Y|X=x] = μ + r·(x−μ)</code>; the regression effect <code>(1−r)·(x−μ)</code> is
+    proportional to how extreme x is and to (1−r). At perfect measurement (r = 1) there's no
+    effect at all — the more measurement noise, the stronger the regression to the mean.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Pick a scenario</strong> — from perfect reliability to poor measurement.<br>
+    <strong>2. Basic principle</strong> — follow the E[Y|X] formula live on the slider.<br>
+    <strong>3. Scatterplot T1 vs. T2</strong> — high-selected (red) and low-selected (blue)
+    people compared against the Y=X line.<br>
+    <strong>4. Concepts</strong> — why RTM can mimic a real treatment effect, and why only a
+    randomized control group protects against it.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    <strong>Measurement-Error Attenuation</strong> shows the same underlying mechanism —
+    measurement noise — from a different angle: how it systematically underestimates
+    correlations instead of distorting extreme scores.
+  </div>
 </div>
 
 <!-- Help Modal -->
@@ -544,6 +594,13 @@ function setPreset(k){
 function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
 
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';

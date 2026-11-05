@@ -127,6 +127,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close:hover{background:var(--a1);color:var(--bg)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a6)}
+
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -136,6 +152,41 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Zwei korrekte statistische Analysen — Differenzwert und ANCOVA — können bei denselben
+    Daten zu entgegengesetzten Schlüssen kommen.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Lord's Paradox (1967) ist die Beobachtung, dass die Differenzwert-Methode (Post − Prä) und
+    ANCOVA (Post ~ Kurs + Prä) bei identischen Daten gegensätzliche Schlussfolgerungen liefern
+    können — nicht durch einen Fehler, sondern weil beide Methoden verschiedene kausale Fragen
+    beantworten. Die Schlüsselformel macht den Unterschied als reine Algebra sichtbar:
+    <code>δ_ANCOVA = δ_Diff + (1−b_w)·Δ_base</code>. Der Korrekturterm verschwindet nur, wenn
+    entweder b_w = 1 ist (keine Regression zur Mitte) oder Δ_base = 0 ist (kein
+    Ausgangsniveau-Unterschied, wie meist im RCT).
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Ergebnisse der zwei Analysen</strong> — Differenzwert vs. ANCOVA am selben
+    Datensatz.<br>
+    <strong>2. Mathematischer Zusammenhang</strong> — die Schlüsselformel Schritt für Schritt
+    nachvollziehen.<br>
+    <strong>3. DAG</strong> — kausale Struktur hinter beiden Methoden.<br>
+    <strong>4. Lege Artis</strong> — wann welches Werkzeug: RCT vs. Beobachtungsstudie.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    <strong>Simpson's Paradox</strong> treibt dieselbe Grundidee — dass Aggregation die Antwort
+    verändert — noch weiter: hier kann sich sogar das Vorzeichen eines Zusammenhangs komplett
+    umkehren.
+  </div>
 </div>
 
 <div class="help-overlay" id="help-overlay">
@@ -269,11 +320,11 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
   <div class="sec-h">Visualisierung</div>
   <div style="display:flex;gap:.85rem;align-items:stretch;margin-bottom:.85rem">
-    <div class="canvas-wrap" style="flex:0 0 62%;margin-bottom:0">
-      <canvas id="plot-canvas" height="645"></canvas>
-    </div>
     <div class="canvas-wrap" style="flex:1;margin-bottom:0">
       <canvas id="traj-canvas" height="645"></canvas>
+    </div>
+    <div class="canvas-wrap" style="flex:0 0 62%;margin-bottom:0">
+      <canvas id="plot-canvas" height="645"></canvas>
     </div>
   </div>
 
@@ -300,6 +351,12 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <span style="color:var(--a3)">b<sub>w</sub></span>
       <span style="color:var(--ink3)"> · </span>
       <span style="color:var(--a1)">Δ<sub>base</sub></span>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);margin-top:.5rem;padding-top:.45rem;border-top:1px dashed var(--grid);line-height:2">
+      <span style="color:var(--a6)">δ<sub>Diff</sub></span> = Δ<sub>B</sub> − Δ<sub>A</sub> = (ȳ<sub>post,B</sub>−ȳ<sub>pre,B</sub>) − (ȳ<sub>post,A</sub>−ȳ<sub>pre,A</sub>) = (ȳ<sub>post,B</sub>−ȳ<sub>post,A</sub>) − <span style="color:var(--a1)">Δ<sub>base</sub></span><br>
+      ⟹&ensp;ȳ<sub>post,B</sub> − ȳ<sub>post,A</sub> = <span style="color:var(--a6)">δ<sub>Diff</sub></span> + <span style="color:var(--a1)">Δ<sub>base</sub></span><br>
+      eingesetzt in <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span> = (ȳ<sub>post,B</sub>−ȳ<sub>post,A</sub>) − <span style="color:var(--a3)">b<sub>w</sub></span>·<span style="color:var(--a1)">Δ<sub>base</sub></span>:<br>
+      <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span> = (<span style="color:var(--a6)">δ<sub>Diff</sub></span> + <span style="color:var(--a1)">Δ<sub>base</sub></span>) − <span style="color:var(--a3)">b<sub>w</sub></span>·<span style="color:var(--a1)">Δ<sub>base</sub></span> = <span style="color:var(--a6)">δ<sub>Diff</sub></span> + (1−<span style="color:var(--a3)">b<sub>w</sub></span>)·<span style="color:var(--a1)">Δ<sub>base</sub></span>
     </div>
 
     <!-- B: Schlüsselformel mit Live-Werten -->
@@ -356,6 +413,21 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
     <div class="eq-note">
       Der Korrekturterm (1 − <span style="color:var(--a3)">b<sub>w</sub></span>) · <span style="color:var(--a1)">Δ<sub>base</sub></span> verschwindet nur, wenn <em>einer</em> seiner beiden Faktoren null wird: <span style="color:var(--a3)">b<sub>w</sub></span> = 1 (keine Regression zur Mitte) <em>oder</em> <span style="color:var(--a1)">Δ<sub>base</sub></span> = 0 (keine Baseline-Differenz). Im RCT gilt Letzteres näherungsweise per Randomisierung — deshalb stimmen dort beide Methoden meist überein.
+    </div>
+
+    <!-- D: Die rohe Post-Differenz (dritte, uninteressante Größe) -->
+    <div class="eq-divider"></div>
+    <div class="eq-section-lbl"><span class="circ">④</span> Die rohe Post-Differenz — eine dritte Größe, aber keine Antwort</div>
+    <div class="eq-main">
+      <span style="color:var(--ink3)">ȳ<sub>post,B</sub> − ȳ<sub>post,A</sub></span>
+      <span style="color:var(--ink3)"> = </span>
+      <span style="color:var(--a6)">δ<sub>Diff</sub></span>
+      <span style="color:var(--ink3)"> + </span>
+      <span style="color:var(--a1)">Δ<sub>base</sub></span>
+      <span style="color:var(--ink3)"> = <span id="eq-rawpost">—</span></span>
+    </div>
+    <div style="font-family:'DM Mono',monospace;font-size:.78rem;color:var(--ink2);margin-top:.5rem;padding-top:.45rem;border-top:1px dashed var(--grid)">
+      Das ist die im Plot oben eingezeichnete Differenz — einfach die beiden Post-Mittelwerte unverändert abgelesen, ohne jede Anpassung. Sie vermischt den tatsächlichen Verbesserungs-Effekt (<span style="color:var(--a6)">δ<sub>Diff</sub></span>) mit dem Ausgangsniveau-Unterschied (<span style="color:var(--a1)">Δ<sub>base</sub></span>): Nur wenn <span style="color:var(--a1)">Δ<sub>base</sub></span> = 0 ist, fallen rohe Differenz, <span style="color:var(--a6)">δ<sub>Diff</sub></span> und <span style="color:var(--a4)">δ<sub>ANCOVA</sub></span> zusammen und sie beantwortet beide Fragen zugleich. Sobald ein echter Ausgangsunterschied besteht — der hier interessante Fall —, beantwortet sie <strong>keine</strong> von beiden.
     </div>
   </div>
 
@@ -723,6 +795,9 @@ function updateUI(){
   document.getElementById('comp-danc').textContent=fmt(s.delta_anc,2);
   document.getElementById('comp-bw').textContent=s.b_w.toFixed(2);
   document.getElementById('comp-dbase').textContent=fmt(s.mPreB-s.mPreA,1);
+
+  // Raw post-test difference (not an estimand we care about)
+  document.getElementById('eq-rawpost').textContent=fmt(s.mPostB-s.mPostA,2);
 }
 
 function mkColors(){
@@ -817,6 +892,25 @@ function draw(){
   }
   drawMean(mPreA,mPostA,colA,'x A');
   drawMean(mPreB,mPostB,colB,'x B');
+
+  // Horizontale Linien von den Mittelwerten zur y-Achse + rohe Post-Differenz
+  const yA_lvl=ty(mPostA), yB_lvl=ty(mPostB);
+  ctx.setLineDash([4,3]); ctx.lineWidth=1.8;
+  ctx.strokeStyle=colA;
+  ctx.beginPath(); ctx.moveTo(pad.l,yA_lvl); ctx.lineTo(tx(mPreA),yA_lvl); ctx.stroke();
+  ctx.strokeStyle=colB;
+  ctx.beginPath(); ctx.moveTo(pad.l,yB_lvl); ctx.lineTo(tx(mPreB),yB_lvl); ctx.stroke();
+  ctx.setLineDash([]);
+
+  const bx=pad.l+14, bTop=Math.min(yA_lvl,yB_lvl), bBot=Math.max(yA_lvl,yB_lvl);
+  ctx.strokeStyle=colInk2; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(bx,bTop); ctx.lineTo(bx+8,bTop);
+  ctx.lineTo(bx+8,bBot);
+  ctx.moveTo(bx+8,bBot); ctx.lineTo(bx,bBot);
+  ctx.stroke();
+  ctx.fillStyle=colInk; ctx.font='bold 12px DM Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText(fmt(mPostB-mPostA,2),bx+12,(bTop+bBot)/2+4);
 
   // Achsen
   ctx.strokeStyle=colInk2; ctx.lineWidth=1.5;
@@ -1067,6 +1161,13 @@ function setPreset(id){
 }
 
 function newSeed(){ P.seed=Math.floor(Math.random()*1e8); clearActivePresets(); update(); }
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
+
 function toggleTheme(){
   const d=document.documentElement;
   const dark=d.getAttribute('data-theme')==='dark';

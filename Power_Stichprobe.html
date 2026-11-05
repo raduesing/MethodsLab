@@ -28,6 +28,22 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 #topbar h1 em{color:var(--accent);font-style:italic}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 .tbtn{font-family:'DM Mono',monospace;font-size:.72rem;padding:.28rem .7rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink2);transition:all .15s;letter-spacing:.04em}
 .tbtn:hover,.tbtn.active{background:var(--ink);color:var(--bg)}
@@ -137,6 +153,39 @@ canvas{width:100%;display:block}
   <button class="tbtn" id="btn-cohen" onclick="toggleCohen()">Cohen-Konventionen</button>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Power ist keine einzelne Zahl, sondern eine Kurve — für jedes mögliche wahre δ ergibt sich
+    eine andere Entdeckungswahrscheinlichkeit.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Power (1−β) ist die Wahrscheinlichkeit, einen wahren Effekt zu entdecken — also H₀ korrekt
+    abzulehnen, wenn H₁ gilt. Power hängt von vier Größen ab: Effektgröße δ, Stichprobengröße n,
+    Signifikanzniveau α und Testrichtung. Bei δ = 0 entspricht Power dem α-Niveau
+    (falsch-positiv); mit wachsendem δ steigt Power gegen 1. Die oft zitierte „80%-Power" gilt
+    deshalb immer nur für <em>ein</em> bestimmtes δ — nicht für den Effekt an sich.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Power ist eine Kurve</strong> — nicht ein Wert: sieh, wie sich die Kurve mit n
+    verschiebt.<br>
+    <strong>2. Die Power-Landschaft</strong> — n × d × Power als Heatmap und
+    Sensitivitätskurve.<br>
+    <strong>3. Was, wenn das wahre δ kleiner ist?</strong> — die Konsequenz einer zu optimistisch
+    geschätzten Effektgröße.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Power und fehlende Daten bestimmen zusammen, wie viele vollständige, auswertbare
+    Beobachtungen am Ende wirklich vorliegen — <strong>Missing Data</strong> zeigt die zweite
+    Hälfte dieser Rechnung.
+  </div>
 </div>
 
 <div id="app">
@@ -328,6 +377,13 @@ Power ≈ Φ(|d| · √n    − z_{α/2})   [zweiseitig, 1 Gruppe]</span>
 
 <script>
 // ── Theme / Help ───────────────────────────────────────────────────────────
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
+
 function toggleTheme(){
   const h=document.documentElement;
   const dark=h.getAttribute('data-theme')==='dark';

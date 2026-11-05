@@ -124,6 +124,22 @@ canvas{width:100%;display:block}
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+
+/* ── Concept Teaser (collapsible) ─────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -134,6 +150,40 @@ canvas{width:100%;display:block}
   <button class="tbtn" id="btn-means" onclick="toggleMeans()">Group means</button>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    A relationship can be positive within every subgroup and still turn negative once you pool
+    the groups together.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    The pooled (aggregated) slope mixes two sources of covariance: within-group and
+    between-group variation. If the groups are shifted along an opposing direction
+    (confounding), the between component can dominate the within component and flip the sign —
+    not a computational error; both trends are real and simply answer different questions.
+    Whether to pool or split depends on the causal structure: if the grouping variable is a
+    confounder, you must adjust for it; if it's a mediator on the causal path, adjusting would
+    wrongly remove the effect.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Sign check</strong> — set the within slope, between trend, and group offset and
+    watch when the sign flips.<br>
+    <strong>2. Scatterplot</strong> — compare within vs. pooled directly in the plot.<br>
+    <strong>3. Concepts</strong> — three scenarios (reversal, no confounding, amplification)
+    and the confounder-vs-mediator decision.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    The same pooling logic, used constructively, appears in <strong>Multilevel &amp; Mixed
+    Models</strong> (Section 1) — there, partial pooling shows how to combine within- and
+    between-group information sensibly instead of confusing them.
+  </div>
 </div>
 
 <div id="app">
@@ -558,6 +608,12 @@ function preset(name){
   simulate(); update();
 }
 
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 

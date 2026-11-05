@@ -139,6 +139,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -149,6 +165,41 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Warum Werte fehlen, entscheidet darüber, welche Umgangsstrategie noch unverzerrte Schätzer
+    liefert — Zufall, andere beobachtete Variablen, oder der fehlende Wert selbst.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Bevor man mit fehlenden Werten irgendetwas rechnet, muss man klären: <strong>Warum</strong>
+    fehlen sie — hängt das vom Zufall ab (MCAR), von anderen beobachteten Variablen (MAR), oder
+    vom fehlenden Wert selbst (MNAR)? Davon hängt ab, welche der drei gängigen Strategien
+    überhaupt unverzerrte Schätzer liefert: <strong>Listwise Deletion</strong> (unvollständige
+    Fälle streichen), <strong>Single Imputation</strong> (einen Schätzwert einsetzen, z.&nbsp;B.
+    den Mittelwert) oder <strong>Multiple Imputation</strong> (mehrere plausible Werte ziehen und
+    die Ergebnisse poolen).
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Grundlagen</strong> — MCAR, MAR und MNAR am selben Beispiel (Stresslevel X,
+    Soziale Unterstützung Z, teilweise fehlendes Wohlbefinden Y) unterscheiden.<br>
+    <strong>2. Ausprobieren</strong> — wähle links einen Mechanismus und eine Strategie.<br>
+    <strong>3. Scatter &amp; Dichteverteilung</strong> — sieh direkt, wie stark jede Strategie
+    den geschätzten Zusammenhang und die Y-Verteilung verzerrt.<br>
+    <strong>4. Konzepte</strong> — wann Multiple Imputation gut funktioniert und wann nicht.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Eine unpassend gehandhabte Missingness kann denselben p-Wert und dieselbe Effektgröße
+    verzerren, die <strong>Signifikanztests</strong> und <strong>Effektgrößen</strong> weiter
+    vorne in diesem Abschnitt als unverzerrt voraussetzen.
+  </div>
 </div>
 
 <!-- Help Overlay -->
@@ -1014,6 +1065,13 @@ function updateDGPDisplay(){
     `</div>`;
 }
 function recompute(){generate();computeAll();drawPlot();drawDensity();updateTable();updateDGPDisplay();}
+
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
 
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';

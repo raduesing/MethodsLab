@@ -139,6 +139,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .xlink{color:var(--a2);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a2)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+
+/* ── Concept Teaser (collapsible) ─────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -149,6 +165,40 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Why values are missing determines which handling strategy still gives unbiased estimates —
+    chance, other observed variables, or the missing value itself.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    Before computing anything with missing values, you have to clarify: <strong>why</strong>
+    are they missing — does it depend on chance (MCAR), on other observed variables (MAR), or on
+    the missing value itself (MNAR)? That determines which of the three common strategies even
+    gives unbiased estimators: <strong>listwise deletion</strong> (drop incomplete cases),
+    <strong>single imputation</strong> (plug in one estimate, e.g. the mean), or
+    <strong>multiple imputation</strong> (draw several plausible values and pool the results).
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Fundamentals</strong> — distinguish MCAR, MAR, and MNAR on the same example
+    (stress level X, social support Z, partially missing well-being Y).<br>
+    <strong>2. Try it</strong> — pick a mechanism and a strategy on the left.<br>
+    <strong>3. Scatter &amp; density distribution</strong> — see directly how much each strategy
+    distorts the estimated relationship and the Y distribution.<br>
+    <strong>4. Concepts</strong> — when multiple imputation works well and when it doesn't.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    Mishandled missingness can distort the very p-value and effect size that
+    <strong>Significance Tests</strong> and <strong>Effect Sizes</strong> earlier in this
+    section assume to be unbiased.
+  </div>
 </div>
 
 <!-- Help Overlay -->
@@ -1015,6 +1065,13 @@ function updateDGPDisplay(){
     `</div>`;
 }
 function recompute(){generate();computeAll();drawPlot();drawDensity();updateTable();updateDGPDisplay();}
+
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
