@@ -52,6 +52,22 @@ a:hover{text-decoration:underline}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 .tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
 #scroll{height:calc(100vh - var(--topbar-h));overflow-y:scroll;margin-top:var(--topbar-h)}
+
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 /* ── Story Banner ──────────────────────────────────────────────── */
 #story{
   background:var(--panel);border-bottom:1px solid var(--border);
@@ -269,6 +285,43 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 </div>
 
 <div id="scroll">
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Schüler:innen in Klassen, Patient:innen in Kliniken — wenn Beobachtungen genestet sind,
+    verletzt eine einfache Regression ihre Unabhängigkeitsannahme. Multilevel-Modelle korrigieren das.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Wenn Beobachtungen in Gruppen geschachtelt sind (z.&nbsp;B. Schüler:innen in Klassen), sind
+    sie nicht mehr unabhängig — eine zentrale Annahme der einfachen Regression. Multilevel-/Mixed-
+    Modelle (LMM) modellieren das explizit: <strong>Partial Pooling</strong> zieht
+    Gruppenschätzungen adaptiv in Richtung des Gesamtmittels (Shrinkage), je nach Gruppengröße und
+    Varianzaufteilung (ICC) — ein Kompromiss zwischen No Pooling (jede Gruppe für sich) und
+    Complete Pooling (Gruppen ignorieren).
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Pooling-Vergleich</strong> — Complete, No und Partial Pooling live an denselben
+    Daten vergleichen.<br>
+    <strong>2. Shrinkage &amp; ICC</strong> — τ₀, σ und n_j regeln, wie stark der Shrinkage-Faktor
+    λ zieht.<br>
+    <strong>3. Random Slopes</strong> — τ₁ und ρ: auch Steigungen können zwischen Gruppen
+    variieren.<br>
+    <strong>4. Simpson-Paradoxon</strong> — Within- und Between-Effekte trennen und den
+    Vorzeichen-Flip live erleben.<br>
+    <strong>5. Shrinkage Extrem</strong> — 20 Gruppen, sichtbare wahre Werte: Partial Pooling
+    liegt im Schnitt näher an der Wahrheit als No Pooling.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Modul ④ führt direkt in Sektion 3 (Statistische Paradoxe) weiter — <strong>Simpson's
+    Paradox</strong> ist dort mit eigenem Tool noch vertiefbar.
+  </div>
+</div>
+
 <!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
 <div id="story">
   <span class="story-label">Beispiel</span>
@@ -1569,6 +1622,13 @@ function neueDaten(){
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.ml-modal.open').forEach(m=>m.classList.remove('open'));});
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
+
 function toggleTheme(){
   const ct=document.documentElement.getAttribute('data-theme')||'dark';
   const nt=ct==='dark'?'light':'dark';

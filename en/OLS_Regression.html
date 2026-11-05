@@ -66,6 +66,22 @@ a:hover{text-decoration:underline}
 .tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
 #scroll{height:calc(100vh - var(--topbar-h));overflow-y:scroll;margin-top:var(--topbar-h)}
 
+/* ── Concept Teaser (collapsible) ─────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
+
 /* ── Story Banner ──────────────────────────────────────────────── */
 #story{
   background:var(--panel);border-bottom:1px solid var(--border);
@@ -511,6 +527,41 @@ input[type=range]::-moz-range-thumb{
 </div>
 
 <div id="scroll">
+<!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    OLS finds the line that minimizes the sum of squared residuals — and b₁ is only "the"
+    effect of X when all other predictors are held constant.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    <em>Ordinary Least Squares</em> (OLS) is the standard method for estimating a linear
+    relationship between predictor(s) X and a continuous outcome Y — it picks exactly the line
+    that minimizes <code>Σ(yᵢ−ŷᵢ)²</code>. With multiple predictors, each coefficient becomes a
+    <strong>partial</strong> effect: "b₁ units per +1 X₁, holding all other predictors
+    constant" — not the same value as in the bivariate model without control.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Least Squares</strong> — see how OLS minimizes the squared residuals and why
+    this exact line is the best one.<br>
+    <strong>2. Coefficients</strong> — understand b₀/b₁ (unstandardized) and β (standardized)
+    using the study-time/exam-grade story.<br>
+    <strong>3. Model Fit</strong> — R² and the decomposition of variance into explained vs.
+    residual.<br>
+    <strong>4. Multiple Regression</strong> — add a second predictor and observe how b₁ changes
+    through "ceteris paribus" control.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    What "ceteris paribus" means geometrically is shown in detail by <strong>Partial &amp;
+    Semipartial Correlation</strong>; with a binary instead of continuous outcome, continue with
+    <strong>Logistic Regression</strong>.
+  </div>
+</div>
+
 <!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
 <div id="story">
   <span class="story-label">Example</span>
@@ -2439,6 +2490,13 @@ function drawAxes(ctx,pad,W,H,xLabel,yLabel,xTicks,yTicks,xScale,yScale,fontSize
 }
 
 /* ── Theme Toggle ─────────────────────────────────────────────────── */
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
+
 function toggleTheme(){
   const h=document.documentElement;
   const isDark=h.getAttribute('data-theme')==='dark';

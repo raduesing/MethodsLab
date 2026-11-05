@@ -30,6 +30,22 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tbtn:hover{background:var(--ink);color:var(--bg)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a4)}
+
+/* ── Concept Teaser (collapsible) ─────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 #app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
@@ -122,6 +138,36 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
   <button class="tbtn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Help</button>
+</div>
+
+<!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Mediation asks: WHY/THROUGH WHAT does X affect Y? The effect is split into a direct path
+    and one transmitted through M.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    A mediation analysis (Hayes/PROCESS Model 4) decomposes the total effect c of X on Y into
+    two paths: the <strong>indirect effect</strong> a·b (X→M→Y) and the <strong>direct
+    effect</strong> c′ (X→Y holding M constant), with c = c′ + a·b. The tool simulates a sample
+    from freely chosen true population effects and estimates a, b, and c′ via regression.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Look at the DAG</strong> — X→M→Y as a path diagram.<br>
+    <strong>2. Pick a scenario</strong> — from no mediation to full mediation.<br>
+    <strong>3. Read off a, b, c′</strong> — and test the indirect effect a·b for significance
+    via Sobel test or bootstrap.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    <strong>Moderation Analysis</strong> answers a different, related question — not WHY, but
+    WHEN/FOR WHOM an effect is stronger or weaker. The two are easily confused, even though
+    they are different models.
+  </div>
 </div>
 
 <div id="app">
@@ -772,6 +818,13 @@ function setPreset(k){
 }
 
 function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
+
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';

@@ -66,6 +66,22 @@ a:hover{text-decoration:underline}
 .tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
 #scroll{height:calc(100vh - var(--topbar-h));overflow-y:scroll;margin-top:var(--topbar-h)}
 
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
+
 /* ── Story Banner ──────────────────────────────────────────────── */
 #story{
   background:var(--panel);border-bottom:1px solid var(--border);
@@ -511,6 +527,41 @@ input[type=range]::-moz-range-thumb{
 </div>
 
 <div id="scroll">
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    OLS findet die Gerade, die die Summe der quadrierten Residuen minimiert — und b₁ ist nur
+    dann „der" Effekt von X, wenn alle anderen Prädiktoren konstant gehalten werden.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    <em>Ordinary Least Squares</em> (OLS) ist das Standardverfahren, um einen linearen Zusammenhang
+    zwischen Prädiktor(en) X und einer stetigen Zielgröße Y zu schätzen — es wählt genau die
+    Gerade, die <code>Σ(yᵢ−ŷᵢ)²</code> minimiert. Bei mehreren Prädiktoren wird jeder Koeffizient
+    zu einem <strong>partiellen</strong> Effekt: „b₁ Einheiten pro +1 X₁, wenn alle anderen
+    Prädiktoren konstant gehalten werden" — nicht derselbe Wert wie im bivariaten Modell ohne
+    Kontrolle.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Least Squares</strong> — sieh, wie OLS die Residuenquadrate minimiert und warum
+    genau diese Gerade die beste ist.<br>
+    <strong>2. Koeffizienten</strong> — verstehe b₀/b₁ (unstandardisiert) und β (standardisiert)
+    an der Lernzeit/Klausurnote-Story.<br>
+    <strong>3. Modellgüte</strong> — R² und die Zerlegung der Varianz in erklärt vs. Residual.<br>
+    <strong>4. Multiple Regression</strong> — füge einen zweiten Prädiktor hinzu und beobachte,
+    wie sich b₁ durch „ceteris paribus"-Kontrolle verändert.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Was „ceteris paribus" geometrisch bedeutet, zeigt <strong>Partialkorrelation</strong> im
+    Detail; mit binärer statt stetiger Zielgröße geht's bei <strong>Logistische Regression</strong>
+    weiter.
+  </div>
+</div>
+
 <!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
 <div id="story">
   <span class="story-label">Beispiel</span>
@@ -2437,6 +2488,14 @@ function drawAxes(ctx,pad,W,H,xLabel,yLabel,xTicks,yTicks,xScale,yScale,fontSize
   ctx.fillText(xLabel,pad.l+(W-pad.l-pad.r)/2,H-2);
   ctx.save();ctx.translate(14,pad.t+(H-pad.t-pad.b)/2);ctx.rotate(-Math.PI/2);
   ctx.textBaseline='top';ctx.fillText(yLabel,0,0);ctx.restore();
+}
+
+/* ── Intro-Teaser Toggle ──────────────────────────────────────────── */
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
 }
 
 /* ── Theme Toggle ─────────────────────────────────────────────────── */

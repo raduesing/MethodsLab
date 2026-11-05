@@ -33,6 +33,22 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .vtbtn{font-family:'DM Mono',monospace;font-size:.62rem;padding:.1rem .48rem;border:1.5px solid var(--border);
   background:transparent;cursor:pointer;color:var(--ink3);letter-spacing:.04em;border-radius:2px;line-height:1.5}
 .vtbtn.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+
+/* ── Concept Teaser (collapsible) ─────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 #app{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - var(--topbar-h));overflow:hidden}
 #sidebar{overflow-y:scroll;height:100%;background:var(--paper);border-right:1px solid var(--grid);padding:1rem .9rem}
 #sidebar::-webkit-scrollbar{width:5px}
@@ -169,6 +185,35 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · University of Osnabrück</span>
   <button class="tbtn" onclick="toggleHelp()" style="border-color:var(--a1);color:var(--a1)">? Help</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Moderation asks: WHEN/FOR WHOM is the effect of X on Y stronger or weaker? An interaction
+    term X·W makes the effect itself variable.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    A moderation analysis (Hayes/PROCESS Model 1) extends simple regression with an interaction
+    term: <code>Y = b₀+b₁X+b₂W+b₃(X·W)+ε</code>. b₃ indicates how much the effect of X on Y
+    changes when the moderator W increases by one unit — if b₃≠0, W moderates the effect.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Pick a scenario (A–D)</strong> — from no moderation to strong moderation.<br>
+    <strong>2. Simple slopes / spotlight</strong> — read off the X effect at W−1SD, W, and
+    W+1SD.<br>
+    <strong>3. Johnson-Neyman technique</strong> — the entire region of W where the effect is
+    significant, instead of just three points.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    <strong>Mediation Analysis</strong> answers the related but different question: not WHEN,
+    but WHY an effect exists — through which mechanism it operates.
+  </div>
 </div>
 
 <div id="app">
@@ -1578,6 +1623,13 @@ function toggleMod(name){
 function toggleHelp(){
   document.getElementById('help-overlay').classList.toggle('open');
 }
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
+
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme',dark?'light':'dark'); localStorage.setItem('ml-theme',dark?'light':'dark');

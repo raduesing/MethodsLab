@@ -52,6 +52,22 @@ a:hover{text-decoration:underline}
 .tbtn-red:hover{background:var(--a1)!important;color:var(--bg)!important}
 .tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
 #scroll{height:calc(100vh - var(--topbar-h));overflow-y:scroll;margin-top:var(--topbar-h)}
+
+/* ── Concept Teaser (collapsible) ─────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 /* ── Story Banner ──────────────────────────────────────────────── */
 #story{
   background:var(--panel);border-bottom:1px solid var(--border);
@@ -269,6 +285,42 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 </div>
 
 <div id="scroll">
+<!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Students in classes, patients in clinics — when observations are nested, a simple
+    regression violates its independence assumption. Multilevel models correct for this.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    When observations are nested in groups (e.g., students in classes), they are no longer
+    independent — a core assumption of simple regression. Multilevel/mixed models (LMM) model
+    this explicitly: <strong>partial pooling</strong> adaptively shrinks group estimates toward
+    the overall mean (shrinkage), depending on group size and variance decomposition (ICC) — a
+    compromise between no pooling (each group on its own) and complete pooling (ignoring
+    groups).
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Pooling Comparison</strong> — compare complete, no, and partial pooling live on
+    the same data.<br>
+    <strong>2. Shrinkage &amp; ICC</strong> — τ₀, σ, and n_j control how strongly the shrinkage
+    factor λ pulls.<br>
+    <strong>3. Random Slopes</strong> — τ₁ and ρ: slopes can also vary between groups.<br>
+    <strong>4. Simpson's Paradox</strong> — separate within and between effects and experience
+    the sign flip live.<br>
+    <strong>5. Shrinkage Extreme</strong> — 20 groups, with visible true values: partial pooling
+    is, on average, closer to the truth than no pooling.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    Module ④ leads straight into Section 3 (Statistical Paradoxes) — <strong>Simpson's
+    Paradox</strong> has its own dedicated tool for going deeper there.
+  </div>
+</div>
+
 <!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
 <div id="story">
   <span class="story-label">Example</span>
@@ -1569,6 +1621,13 @@ function neueDaten(){
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.ml-modal.open').forEach(m=>m.classList.remove('open'));});
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
+
 function toggleTheme(){
   const ct=document.documentElement.getAttribute('data-theme')||'dark';
   const nt=ct==='dark'?'light':'dark';

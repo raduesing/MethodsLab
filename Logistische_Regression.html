@@ -51,6 +51,22 @@ a:hover{text-decoration:underline}
 .tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
 #scroll{height:calc(100vh - var(--topbar-h));overflow-y:scroll;margin-top:var(--topbar-h)}
 
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
+
 /* ── Story Banner ──────────────────────────────────────────────── */
 #story{
   background:var(--panel);border-bottom:1px solid var(--border);
@@ -354,6 +370,40 @@ input[type=range]::-moz-range-thumb{
 </div>
 
 <div id="scroll">
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Eine binäre Zielgröße (0/1) braucht einen eigenen Link: OLS sagt sonst Wahrscheinlichkeiten
+    unter 0 oder über 1 voraus.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Ist Y binär (z.&nbsp;B. Rückfall ja/nein), verletzt eine gewöhnliche OLS-Regression
+    (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="Das Linear Probability Model (LPM) wendet eine gewöhnliche OLS-Regression direkt auf eine binäre Zielgröße Y ∈ {0,1} an — ohne Link-Funktion, die den Wertebereich auf [0,1] beschränkt."><em>Linear Probability Model</em></a>) systematisch ihren eigenen Wertebereich — sie sagt
+    Wahrscheinlichkeiten unter 0 oder über 1 vorher. Die logistische Regression modelliert
+    stattdessen den <em>Logit</em> von P(Y=1) linear: <code>logit(P) = ln(P/(1−P)) = b₀+b₁X</code>
+    — und transformiert ihn über die S-förmige logistische Funktion zurück auf eine gültige
+    Wahrscheinlichkeit zwischen 0 und 1.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. LPM vs. Logit</strong> — sieh direkt, wo das lineare Wahrscheinlichkeitsmodell
+    versagt.<br>
+    <strong>2. Odds &amp; Logits</strong> — b₁ auf der Logit-Skala interpretieren, dann in Odds
+    Ratios übersetzen.<br>
+    <strong>3. Marginale Effekte</strong> — warum ΔP pro +1X nicht konstant ist wie bei OLS,
+    sondern von X selbst abhängt.<br>
+    <strong>4. Mehrere Prädiktoren</strong> — Alter &amp; Zigaretten/Tag gemeinsam modellieren.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Dieselbe ceteris-paribus-Logik aus <strong>OLS &amp; Multiple Regression</strong> gilt hier
+    genauso — nur auf der Logit- statt der Rohskala.
+  </div>
+</div>
+
 <!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
 <div id="story">
   <span class="story-label">Beispiel</span>
@@ -455,7 +505,7 @@ input[type=range]::-moz-range-thumb{
       <div class="info-box" style="flex:1">
         <div class="info-box-h">Tutorial — Warum nicht OLS?</div>
         <p><strong>Was Sie sehen</strong><br>
-        Jede Person hat entweder Rückfall (Y=1, oben) oder keinen Rückfall (Y=0, unten) — die Punkte sind nur zur besseren Lesbarkeit vertikal „gejittert" (leicht verschoben), tatsächlich gibt es nur diese zwei Werte. Beide Kurven sind an <em>denselben</em> simulierten Daten geschätzt: die orangene Gerade ist ein gewöhnliches OLS-Modell (<em>Linear Probability Model</em>, LPM) — <code>lm(Rückfall ~ Alter)</code>. Die blaue S-Kurve ist die logistische Regression — <code>glm(Rückfall ~ Alter, family = binomial)</code>.</p>
+        Jede Person hat entweder Rückfall (Y=1, oben) oder keinen Rückfall (Y=0, unten) — die Punkte sind nur zur besseren Lesbarkeit vertikal „gejittert" (leicht verschoben), tatsächlich gibt es nur diese zwei Werte. Beide Kurven sind an <em>denselben</em> simulierten Daten geschätzt: die orangene Gerade ist ein gewöhnliches OLS-Modell (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="Das Linear Probability Model (LPM) wendet eine gewöhnliche OLS-Regression direkt auf eine binäre Zielgröße Y ∈ {0,1} an — ohne Link-Funktion, die den Wertebereich auf [0,1] beschränkt."><em>Linear Probability Model</em></a>, LPM) — <code>lm(Rückfall ~ Alter)</code>. Die blaue S-Kurve ist die logistische Regression — <code>glm(Rückfall ~ Alter, family = binomial)</code>.</p>
         <p><strong>Das Problem des LPM</strong><br>
         Eine Gerade kennt keine Grenzen. Schieben Sie den Regler zu einem hohen oder niedrigen Alter — die rot/orange schraffierte Zone markiert, wo das LPM eine <strong>Wahrscheinlichkeit außerhalb von [0,1]</strong> vorhersagt. Ein „P(Rückfall) = 1.14" oder „= −0.08" ist kein gültiger Wert für eine Wahrscheinlichkeit — das Modell ist an dieser Stelle schlicht falsch spezifiziert.</p>
         <p><strong>Die Lösung: S-Kurve</strong><br>
@@ -742,7 +792,7 @@ input[type=range]::-moz-range-thumb{
       <div class="lcard-h"><span class="circ">①</span> Warum nicht OLS?</div>
       <div class="lcard-body">
         Ein binäres Y (0/1) mit gewöhnlicher OLS-Regression zu modellieren
-        (<em>Linear Probability Model</em>) führt zu Vorhersagen außerhalb von [0,1] —
+        (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="Das Linear Probability Model (LPM) wendet eine gewöhnliche OLS-Regression direkt auf eine binäre Zielgröße Y ∈ {0,1} an — ohne Link-Funktion, die den Wertebereich auf [0,1] beschränkt."><em>Linear Probability Model</em></a>) führt zu Vorhersagen außerhalb von [0,1] —
         keine gültigen Wahrscheinlichkeiten. Die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-logistische-regression" target="_blank" rel="noopener" title="Die logistische Regression modelliert die Wahrscheinlichkeit eines binären Outcomes (0/1) als Funktion von Prädiktoren: P(Y=1|X) = σ(β₀ + β₁X₁ + … + βₖXₖ).">logistische Regression</a> löst das über
         eine S-förmige Funktion, die per Konstruktion nie unter 0 oder über 1 liegen kann.
       </div>
@@ -809,7 +859,7 @@ input[type=range]::-moz-range-thumb{
 
       <h3>Wozu logistische Regression?</h3>
       <p>Wenn die abhängige Variable Y <strong>binär</strong> ist (0/1, z.&nbsp;B. Rückfall
-      ja/nein), verletzt eine gewöhnliche OLS-Regression (<em>Linear Probability Model</em>)
+      ja/nein), verletzt eine gewöhnliche OLS-Regression (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="Das Linear Probability Model (LPM) wendet eine gewöhnliche OLS-Regression direkt auf eine binäre Zielgröße Y ∈ {0,1} an — ohne Link-Funktion, die den Wertebereich auf [0,1] beschränkt."><em>Linear Probability Model</em></a>)
       systematisch ihren eigenen Wertebereich: sie sagt Wahrscheinlichkeiten unter 0 oder
       über 1 vorher. Die logistische Regression modelliert stattdessen den <em>Logit</em>
       von P(Y=1) linear:</p>
@@ -1522,6 +1572,13 @@ function draw(){
   else if(ST.activeModule===2) drawMod2();
   else if(ST.activeModule===3) drawMod3();
   else if(ST.activeModule===4) drawMod4();
+}
+
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
 }
 
 function toggleTheme(){

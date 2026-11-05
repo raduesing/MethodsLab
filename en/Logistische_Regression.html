@@ -51,6 +51,22 @@ a:hover{text-decoration:underline}
 .tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
 #scroll{height:calc(100vh - var(--topbar-h));overflow-y:scroll;margin-top:var(--topbar-h)}
 
+/* ── Concept Teaser (collapsible) ─────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
+
 /* ── Story Banner ──────────────────────────────────────────────── */
 #story{
   background:var(--panel);border-bottom:1px solid var(--border);
@@ -354,6 +370,37 @@ input[type=range]::-moz-range-thumb{
 </div>
 
 <div id="scroll">
+<!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    A binary outcome (0/1) needs its own link: OLS would otherwise predict probabilities below
+    0 or above 1.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    If Y is binary (e.g., relapse yes/no), an ordinary OLS regression (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="The Linear Probability Model (LPM) applies an ordinary OLS regression directly to a binary outcome Y &isin; {0,1} — with no link function constraining the range to [0,1]."><em>Linear Probability Model</em></a>) systematically violates its own value range — it predicts probabilities below 0
+    or above 1. Logistic regression instead models the <em>logit</em> of P(Y=1) linearly:
+    <code>logit(P) = ln(P/(1−P)) = b₀+b₁X</code> — and transforms it back through the S-shaped
+    logistic function into a valid probability between 0 and 1.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. LPM vs. Logit</strong> — see directly where the linear probability model fails.<br>
+    <strong>2. Odds &amp; Logits</strong> — interpret b₁ on the logit scale, then translate it
+    into odds ratios.<br>
+    <strong>3. Marginal Effects</strong> — why ΔP per +1X is not constant like in OLS, but
+    depends on X itself.<br>
+    <strong>4. Multiple Predictors</strong> — model age &amp; cigarettes/day together.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    The same ceteris-paribus logic from <strong>OLS &amp; Multiple Regression</strong> applies
+    here too — just on the logit scale instead of the raw one.
+  </div>
+</div>
+
 <!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
 <div id="story">
   <span class="story-label">Example</span>
@@ -455,7 +502,7 @@ input[type=range]::-moz-range-thumb{
       <div class="info-box" style="flex:1">
         <div class="info-box-h">Tutorial — Why not OLS?</div>
         <p><strong>What you see</strong><br>
-        Every person either relapsed (Y=1, top) or did not (Y=0, bottom) — the points are only "jittered" vertically for readability, but in reality there are only these two values. Both curves are fit to <em>the same</em> simulated data: the orange line is an ordinary OLS model (<em>Linear Probability Model</em>, LPM) — <code>lm(Relapse ~ Age)</code>. The blue S-curve is the logistic regression — <code>glm(Relapse ~ Age, family = binomial)</code>.</p>
+        Every person either relapsed (Y=1, top) or did not (Y=0, bottom) — the points are only "jittered" vertically for readability, but in reality there are only these two values. Both curves are fit to <em>the same</em> simulated data: the orange line is an ordinary OLS model (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="The Linear Probability Model (LPM) applies an ordinary OLS regression directly to a binary outcome Y &isin; {0,1} — with no link function constraining the range to [0,1].">Linear Probability Model</a>, LPM) — <code>lm(Relapse ~ Age)</code>. The blue S-curve is the logistic regression — <code>glm(Relapse ~ Age, family = binomial)</code>.</p>
         <p><strong>The LPM's problem</strong><br>
         A straight line knows no bounds. Drag the slider to a high or low age — the red/orange hatched zone marks where the LPM predicts a <strong>probability outside [0,1]</strong>. A "P(Relapse) = 1.14" or "= −0.08" is not a valid value for a probability — the model is simply misspecified at that point.</p>
         <p><strong>The solution: the S-curve</strong><br>
@@ -809,7 +856,7 @@ input[type=range]::-moz-range-thumb{
 
       <h3>Why logistic regression?</h3>
       <p>When the dependent variable Y is <strong>binary</strong> (0/1, e.g. relapse
-      yes/no), ordinary OLS regression (a <em>Linear Probability Model</em>)
+      yes/no), ordinary OLS regression (a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="The Linear Probability Model (LPM) applies an ordinary OLS regression directly to a binary outcome Y &isin; {0,1} — with no link function constraining the range to [0,1].">Linear Probability Model</a>)
       systematically violates its own range: it predicts probabilities below 0 or above
       1. Logistic regression instead models the <em>logit</em> of P(Y=1) linearly:</p>
       <p><code>logit(P) = ln( P / (1−P) ) = b₀ + b₁·X₁ + … + bₖ·Xₖ</code></p>
@@ -1523,6 +1570,13 @@ function draw(){
   else if(ST.activeModule===2) drawMod2();
   else if(ST.activeModule===3) drawMod3();
   else if(ST.activeModule===4) drawMod4();
+}
+
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
 }
 
 function toggleTheme(){

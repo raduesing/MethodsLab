@@ -40,6 +40,22 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .tab-bar-label{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--ink3);
   margin-bottom:.35rem;display:flex;align-items:center;gap:.35rem}
 .tab-bar-label .arrow{color:var(--a2);font-weight:600}
+
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 #tab-bar{display:flex;flex-wrap:nowrap;gap:.5rem;overflow-x:auto;overflow-y:hidden}
 .mod-tab{background:var(--panel);border:1.5px solid var(--border);
   font-family:'DM Mono',monospace;color:var(--ink3);padding:.35rem .7rem;
@@ -186,6 +202,37 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    ANOVA und Regression sind dieselbe Mathematik mit unterschiedlicher Kodierung — dieselben
+    Daten, gleiches F, gleiches p.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Eine ANOVA prüft, ob sich Mittelwerte von mehreren Gruppen unterscheiden, indem sie die
+    Gesamtvarianz in SS_between (zwischen den Gruppen) und SS_within (innerhalb der Gruppen)
+    zerlegt — ihr Verhältnis ergibt die F-Statistik. Im Kern ist das nichts anderes als eine
+    Regression mit einem kategorial (statt numerisch) kodierten Prädiktor.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Einfaktoriell</strong> — ein Faktor, mehrere Gruppen: Varianz zerlegen.<br>
+    <strong>2. Zweifaktoriell</strong> — zwei Faktoren gleichzeitig, inklusive Interaktion.<br>
+    <strong>3. Regressions-Brücke</strong> — dieselben Daten aus ① und ② als Regression mit
+    Dummy- vs. Effekt-Codierung: gleiches F, gleiches p, andere Parametrisierung.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Die Regressions-Brücke zeigt schon: Regression ist die flexiblere Variante, weil sie
+    kategoriale und kontinuierliche Prädiktoren im selben Modell kombinieren kann — genau das
+    tut die ANCOVA. Bei hierarchisch geschachtelten Gruppen (Schüler:innen in Klassen) geht's bei
+    <strong>Multilevel &amp; Mixed Models</strong> weiter.
+  </div>
 </div>
 
 <div id="tab-bar-wrap">
@@ -659,6 +706,13 @@ function showTab(n){
 }
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
+
 function toggleTheme(){
   const d=document.documentElement;
   const dark=d.getAttribute('data-theme')==='dark';
