@@ -138,8 +138,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 <!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    A p-value only says whether a difference is nonzero — an effect size says <em>how big</em>
-    it is, independent of scale and sample size.
+    “Significant” does not mean “large”: an effect size tells you how strong a difference really is.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
 </div>
@@ -147,12 +146,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    The most common effect size for mean comparisons is Cohen's d: the difference between two
-    means, standardized by a spread. d = 0.5 means: the two distributions are, on average, half
-    a standard deviation apart — regardless of whether the measure is test points or height.
-    That makes effects comparable across studies and measures. With repeated measures it's also
-    unclear <em>whose</em> spread should be standardized — which is why there are three
-    conventions (d<sub>z</sub>, d<sub>rm</sub>, d<sub>av</sub>) instead of one.
+    A p-value only tells you whether a difference is probably not pure chance — not whether it is meaningful. Cohen's d measures the difference between two means in standard deviations: d = 0.5 means the groups are half a standard deviation apart — whether in test points or centimeters. This makes studies comparable. With repeated measures (the same people twice) there are several ways to compute it; the tool shows them side by side.
 
     <div class="ib-head ib-head2">How to proceed</div>
     <strong>1. Choose a design</strong> — between (independent groups) or within (repeated

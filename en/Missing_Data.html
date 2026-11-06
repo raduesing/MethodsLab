@@ -170,8 +170,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    Why values are missing determines which handling strategy still gives unbiased estimates —
-    chance, other observed variables, or the missing value itself.
+    Missing values are not all alike — why they are missing decides how you may handle them.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
 </div>
@@ -179,12 +178,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Before computing anything with missing values, you have to clarify: <strong>why</strong>
-    are they missing — does it depend on chance (MCAR), on other observed variables (MAR), or on
-    the missing value itself (MNAR)? That determines which of the three common strategies even
-    gives unbiased estimators: <strong>listwise deletion</strong> (drop incomplete cases),
-    <strong>single imputation</strong> (plug in one estimate, e.g. the mean), or
-    <strong>multiple imputation</strong> (draw several plausible values and pool the results).
+    Surveys have missing answers. Are they missing purely at random (MCAR), does it depend on other recorded traits (MAR), or are they missing because of their own value, e.g. high incomes not being reported (MNAR)? This determines which strategy gives trustworthy results: dropping incomplete cases (<strong>listwise deletion</strong>), filling in a substitute such as the mean (<strong>single imputation</strong>), or drawing several plausible values and combining the results (<strong>multiple imputation</strong>).
 
     <div class="ib-head ib-head2">How to proceed</div>
     <strong>1. Fundamentals</strong> — distinguish MCAR, MAR, and MNAR on the same example

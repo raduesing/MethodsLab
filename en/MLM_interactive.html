@@ -288,8 +288,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 <!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    Students in classes, patients in clinics — when observations are nested, a simple
-    regression violates its independence assumption. Multilevel models correct for this.
+    Students in classes, patients in clinics: if you ignore the groups, you calculate too optimistically. Multilevel models take them into account.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
 </div>
@@ -297,12 +296,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    When observations are nested in groups (e.g., students in classes), they are no longer
-    independent — a core assumption of simple regression. Multilevel/mixed models (LMM) model
-    this explicitly: <strong>partial pooling</strong> adaptively shrinks group estimates toward
-    the overall mean (shrinkage), depending on group size and variance decomposition (ICC) — a
-    compromise between no pooling (each group on its own) and complete pooling (ignoring
-    groups).
+    Students in the same class resemble each other more than students in different classes — the data are not independent, although a simple regression assumes they are. Multilevel models (mixed models) account for the groups explicitly. Their core principle, <strong>partial pooling</strong>, lies between two extremes: treating each group entirely on its own (no pooling) or ignoring groups entirely (complete pooling). Small groups are pulled toward the overall mean (shrinkage), because their values are less reliable.
 
     <div class="ib-head ib-head2">How to proceed</div>
     <strong>1. Pooling Comparison</strong> — compare complete, no, and partial pooling live on

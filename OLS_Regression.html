@@ -530,8 +530,7 @@ input[type=range]::-moz-range-thumb{
 <!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    OLS findet die Gerade, die die Summe der quadrierten Residuen minimiert — und b₁ ist nur
-    dann „der" Effekt von X, wenn alle anderen Prädiktoren konstant gehalten werden.
+    Die Regressionsgerade ist die Gerade, die am besten durch die Punktwolke passt — und jeder Koeffizient gilt nur „bei Konstanthalten der anderen“.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
 </div>
@@ -539,12 +538,7 @@ input[type=range]::-moz-range-thumb{
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    <em>Ordinary Least Squares</em> (OLS) ist das Standardverfahren, um einen linearen Zusammenhang
-    zwischen Prädiktor(en) X und einer stetigen Zielgröße Y zu schätzen — es wählt genau die
-    Gerade, die <code>Σ(yᵢ−ŷᵢ)²</code> minimiert. Bei mehreren Prädiktoren wird jeder Koeffizient
-    zu einem <strong>partiellen</strong> Effekt: „b₁ Einheiten pro +1 X₁, wenn alle anderen
-    Prädiktoren konstant gehalten werden" — nicht derselbe Wert wie im bivariaten Modell ohne
-    Kontrolle.
+    Die Methode der kleinsten Quadrate (OLS) legt eine Gerade so durch die Datenpunkte, dass die quadrierten Abweichungen (Residuen) insgesamt möglichst klein sind. Mit mehreren Einflussgrößen gibt jeder Koeffizient den Effekt einer Variable an, <strong>wenn alle anderen gleich bleiben</strong> — und der kann deshalb anders ausfallen als bei einer einzelnen Variable ohne Kontrolle.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
     <strong>1. Least Squares</strong> — sieh, wie OLS die Residuenquadrate minimiert und warum

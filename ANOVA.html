@@ -207,8 +207,7 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 <!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    ANOVA und Regression sind dieselbe Mathematik mit unterschiedlicher Kodierung — dieselben
-    Daten, gleiches F, gleiches p.
+    Vergleichst du mehr als zwei Gruppen, ist die ANOVA das Standardverfahren — und im Kern nur eine Regression mit der Gruppe als Prädiktor.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
 </div>
@@ -216,10 +215,7 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Eine ANOVA prüft, ob sich Mittelwerte von mehreren Gruppen unterscheiden, indem sie die
-    Gesamtvarianz in SS_between (zwischen den Gruppen) und SS_within (innerhalb der Gruppen)
-    zerlegt — ihr Verhältnis ergibt die F-Statistik. Im Kern ist das nichts anderes als eine
-    Regression mit einem kategorial (statt numerisch) kodierten Prädiktor.
+    Angenommen, du willst wissen, ob drei Lernmethoden zu unterschiedlichen Noten führen. Die ANOVA fragt: Sind die Unterschiede <em>zwischen</em> den Gruppen größer, als man allein durch die ganz normalen Schwankungen <em>innerhalb</em> der Gruppen erwarten würde? Rechnerisch ist das dasselbe wie eine Regression, bei der die Gruppenzugehörigkeit die vorhersagende Variable ist — das Tool zeigt, dass beide Wege exakt dasselbe Ergebnis liefern.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
     <strong>1. Einfaktoriell</strong> — ein Faktor, mehrere Gruppen: Varianz zerlegen.<br>

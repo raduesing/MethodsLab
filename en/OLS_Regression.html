@@ -530,8 +530,7 @@ input[type=range]::-moz-range-thumb{
 <!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    OLS finds the line that minimizes the sum of squared residuals — and b₁ is only "the"
-    effect of X when all other predictors are held constant.
+    The regression line is the line that fits the cloud of points best — and each coefficient only holds “with the others held constant”.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
 </div>
@@ -539,11 +538,7 @@ input[type=range]::-moz-range-thumb{
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    <em>Ordinary Least Squares</em> (OLS) is the standard method for estimating a linear
-    relationship between predictor(s) X and a continuous outcome Y — it picks exactly the line
-    that minimizes <code>Σ(yᵢ−ŷᵢ)²</code>. With multiple predictors, each coefficient becomes a
-    <strong>partial</strong> effect: "b₁ units per +1 X₁, holding all other predictors
-    constant" — not the same value as in the bivariate model without control.
+    Ordinary least squares (OLS) places a line through the data points so that the squared deviations (residuals) are as small as possible overall. With several predictors, each coefficient gives the effect of one variable <strong>when all others stay the same</strong> — so it can differ from the value for a single variable without control.
 
     <div class="ib-head ib-head2">How to proceed</div>
     <strong>1. Least Squares</strong> — see how OLS minimizes the squared residuals and why

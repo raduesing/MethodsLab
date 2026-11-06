@@ -152,6 +152,21 @@ canvas{width:100%;display:block}
 @media(max-width:900px){.metric-grid{grid-template-columns:1fr 1fr}.lcard-grid{grid-template-columns:1fr}}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -161,6 +176,30 @@ canvas{width:100%;display:block}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Wenn du zufällig an die Haltestelle kommst, wartest du meist länger, als der Fahrplan vermuten lässt.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Busse kommen unregelmäßig: mal dicht hintereinander, mal mit großer Lücke. Wer zu einem zufälligen Zeitpunkt ankommt, landet eher in einer langen Lücke — einfach weil sie mehr Zeit einnimmt. Deshalb erlebst du im Schnitt längere Lücken als die durchschnittliche Lücke. Je ungleichmäßiger die Abstände, desto größer der Effekt; bei völlig regelmäßigen Bussen gibt es ihn nicht.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Fahrplan einstellen</strong> — Anzahl Busse und Unregelmäßigkeit der Abstände (Streuung) wählen.<br>
+    <strong>2. Zeitstrahl (①)</strong> — Lücken und zufällige Ankünfte ansehen, zuerst eine Vorhersage abgeben.<br>
+    <strong>3. Selbst ankommen (②)</strong> — mehrfach (oder 200×) ankommen und den kumulierten Schnitt mit dem wahren Erwartungswert vergleichen.<br>
+    <strong>4. Histogramm (③)</strong> — gezählte vs. längen-gewichtete Verteilung; dazu die Konzepte-Karten.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Dieselbe Logik der längenverzerrten Stichprobe steckt im <strong>Friendship Paradox</strong>: Warum haben deine Freunde im Schnitt mehr Freunde als du?
+  </div>
 </div>
 
 <div id="app">
@@ -573,6 +612,12 @@ function update(){
   if(predicted) drawHist();
 }
 
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 

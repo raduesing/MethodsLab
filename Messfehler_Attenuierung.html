@@ -130,8 +130,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    Messfehler verkleinert Korrelationen systematisch — die wahre Korrelation zwischen zwei
-    Konstrukten ist immer größer als die beobachtete.
+    Unzuverlässig gemessene Merkmale hängen scheinbar schwächer zusammen, als sie es wirklich tun.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
 </div>
@@ -139,11 +138,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Die wahre Korrelation zwischen zwei latenten Konstrukten (X*, Y*) ist immer größer als die
-    beobachtete Korrelation zwischen den fehlerbehafteten Messwerten (X, Y):
-    <code>r_obs = ρ_true · √(r_xx · r_yy)</code>. Die Disattenuation kehrt das um
-    (<code>ρ̂ = r_obs / √(r_xx · r_yy)</code>) — setzt aber voraus, dass die Reliabilitäten
-    r_xx und r_yy korrekt bekannt sind, eine starke Annahme.
+    Kein Test misst perfekt. Dieses Messrauschen verwässert Zusammenhänge: Die beobachtete Korrelation fällt immer kleiner aus als die wahre. Wie stark, hängt davon ab, wie zuverlässig (Reliabilität) beide Messungen sind. Man kann das rückgängig rechnen (Disattenuation) — braucht dafür aber die Reliabilitäten genau, und die sind in der Praxis meist nur geschätzt.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
     <strong>1. Grundprinzip</strong> — die Attenuationsformel live am Beispiel

@@ -207,7 +207,7 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 <!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    ANOVA and regression are the same math with different coding — same data, same F, same p.
+    If you compare more than two groups, ANOVA is the standard method — and at its core just a regression with group as the predictor.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
 </div>
@@ -215,10 +215,7 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    An ANOVA tests whether the means of several groups differ, by decomposing total variance
-    into SS_between (between groups) and SS_within (within groups) — their ratio gives the
-    F-statistic. At its core, this is nothing other than a regression with a categorically
-    (instead of numerically) coded predictor.
+    Suppose you want to know whether three study methods lead to different grades. ANOVA asks: are the differences <em>between</em> the groups larger than you would expect from the ordinary fluctuation <em>within</em> the groups alone? Mathematically this is the same as a regression in which group membership is the predictor — the tool shows that both routes give exactly the same result.
 
     <div class="ib-head ib-head2">How to proceed</div>
     <strong>1. One-Way</strong> — one factor, several groups: decompose variance.<br>

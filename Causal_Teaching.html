@@ -169,6 +169,21 @@ canvas{display:block;width:100%}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a4)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -300,6 +315,34 @@ canvas{display:block;width:100%}
 
 <!-- ═══════════════ MAIN ═══════════════ -->
 <div id="main">
+
+<div style="margin:-1.2rem -1.6rem 1rem">
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Sporttreibende sind gesünder — aber liegt das am Sport? Das Tool zeigt, wie man Ursache und Wirkung auch ohne Experiment auseinanderhält.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Wer Sport treibt, hat im Beispiel im Schnitt ~19 Punkte bessere Herzgesundheit. Aber vielleicht haben Sporttreibende auch öfter einen höheren Sozialstatus (SES), und der allein macht schon gesünder. So eine Störgröße heißt <em>Confounder</em>. Das Grundproblem: Von jeder Person sieht man nur eine Version — mit Sport <em>oder</em> ohne, nie beides. Hier lernst du, wie man mit Kausaldiagrammen (DAGs) und Gewichtungs- bzw. Rechenverfahren (IPW, G-Computation) trotzdem den echten Effekt schätzt — solange alle wichtigen Störgrößen gemessen wurden.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. DAG &amp; Struktur</strong> — Confounder entdecken, Mediator verstehen: wer wen kausal beeinflusst.<br>
+    <strong>2. Potential Outcomes</strong> — das fundamentale Problem der Kausalinferenz.<br>
+    <strong>3. Konfundierung</strong> — wie groß ist die Verzerrung des naiven Vergleichs?<br>
+    <strong>4. IPW</strong> — Lösung 1: die Pseudo-Population.<br>
+    <strong>5. G-Computation</strong> — Lösung 2: Outcome-Modell und Standardisierung.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Fehlen gemessene Confounder oder ist Ignorierbarkeit nicht zu rechtfertigen, helfen quasi-experimentelle Designs — zum Beispiel <strong>Regression Discontinuity</strong>, das einen Cutoff als natürliches Experiment nutzt.
+  </div>
+</div>
+
+</div>
 
   <div class="story-box">
     <div class="story-lbl">Beispiel</div>
@@ -566,6 +609,12 @@ function goTo(n){
     if(n===4)drawIPW();
     if(n===5)drawGComp();
   },20);
+}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
 }
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';

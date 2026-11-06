@@ -169,6 +169,21 @@ canvas{display:block;width:100%}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a4)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -300,6 +315,34 @@ canvas{display:block;width:100%}
 
 <!-- ═══════════════ MAIN ═══════════════ -->
 <div id="main">
+
+<div style="margin:-1.2rem -1.6rem 1rem">
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Active people are healthier — but is it the exercise? The tool shows how to separate cause and effect even without an experiment.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    In the example, people who exercise score ~19 points higher on heart health on average. But perhaps they also tend to have higher social status (SES), which makes people healthier by itself. Such a disturbing factor is called a <em>confounder</em>. The basic problem: for each person you only see one version — with exercise <em>or</em> without, never both. Here you learn how causal diagrams (DAGs) and weighting or modeling methods (IPW, G-computation) can still estimate the true effect — as long as all important confounders were measured.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. DAG &amp; structure</strong> — discover confounders, understand mediators: who influences whom causally.<br>
+    <strong>2. Potential outcomes</strong> — the fundamental problem of causal inference.<br>
+    <strong>3. Confounding</strong> — how large is the bias of the naive comparison?<br>
+    <strong>4. IPW</strong> — solution 1: the pseudo-population.<br>
+    <strong>5. G-computation</strong> — solution 2: outcome model and standardization.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    If measured confounders are missing or ignorability cannot be justified, quasi-experimental designs help — for example <strong>Regression Discontinuity</strong>, which uses a cutoff as a natural experiment.
+  </div>
+</div>
+
+</div>
 
   <div class="story-box">
     <div class="story-lbl">Example</div>
@@ -566,6 +609,12 @@ function goTo(n){
     if(n===4)drawIPW();
     if(n===5)drawGComp();
   },20);
+}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
 }
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';

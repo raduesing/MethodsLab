@@ -133,6 +133,21 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -142,6 +157,30 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Hat sich etwas wegen eines Programms verändert — oder wäre es sowieso passiert? Difference-in-Differences vergleicht mit einer Kontrollgruppe.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Eine Schule führt Nachhilfe ein, und die Noten steigen. Aber Schüler werden mit der Zeit ohnehin besser. Deshalb vergleicht man nicht nur vorher mit nachher, sondern auch mit Schulen ohne Programm: Der Unterschied zwischen beiden Veränderungen ist der Programmeffekt. Wichtige Annahme: Ohne das Programm hätten sich beide Gruppen gleich entwickelt (parallele Trends) — das lässt sich nicht direkt prüfen.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Szenario &amp; Koeffizienten</strong> — Zeittrend β₁, Gruppenunterschied β₂ und Effekt β₃ einstellen.<br>
+    <strong>2. DiD-Plot</strong> — Vorher/Nachher mit gestricheltem Kontrafaktual und den beiden naiven Vergleichen ① und ②.<br>
+    <strong>3. 2 × 2-Zellmittelwerte &amp; OLS-Output</strong> — β₃ als Differenz der Differenzen nachrechnen.<br>
+    <strong>4. Konzepte</strong> — Parallel Trends, Antizipation, Spillover.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Hast du nur einen Messzeitpunkt, dafür viele gemessene Kovariaten, gleicht <strong>Propensity Score Matching/Weighting</strong> Treatment- und Kontrollgruppe aneinander an.
+  </div>
 </div>
 
 <!-- Help Overlay -->
@@ -802,6 +841,12 @@ function toggleYLock(){
 }
 
 // ── Theme & Help ────────────────────────────────────────────────────────────────
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme',dark?'light':'dark'); localStorage.setItem('ml-theme',dark?'light':'dark');

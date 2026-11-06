@@ -288,8 +288,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 <!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    Schüler:innen in Klassen, Patient:innen in Kliniken — wenn Beobachtungen genestet sind,
-    verletzt eine einfache Regression ihre Unabhängigkeitsannahme. Multilevel-Modelle korrigieren das.
+    Schüler in Klassen, Patienten in Kliniken: Wer die Gruppen ignoriert, rechnet zu optimistisch. Multilevel-Modelle berücksichtigen sie.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
 </div>
@@ -297,12 +296,7 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Wenn Beobachtungen in Gruppen geschachtelt sind (z.&nbsp;B. Schüler:innen in Klassen), sind
-    sie nicht mehr unabhängig — eine zentrale Annahme der einfachen Regression. Multilevel-/Mixed-
-    Modelle (LMM) modellieren das explizit: <strong>Partial Pooling</strong> zieht
-    Gruppenschätzungen adaptiv in Richtung des Gesamtmittels (Shrinkage), je nach Gruppengröße und
-    Varianzaufteilung (ICC) — ein Kompromiss zwischen No Pooling (jede Gruppe für sich) und
-    Complete Pooling (Gruppen ignorieren).
+    Schüler derselben Klasse ähneln sich mehr als Schüler verschiedener Klassen — die Daten sind nicht unabhängig, obwohl eine einfache Regression das annimmt. Multilevel-Modelle (Mixed Models) berücksichtigen die Gruppen ausdrücklich. Ihr Kernprinzip, <strong>Partial Pooling</strong>, liegt zwischen zwei Extremen: jede Gruppe ganz für sich betrachten (No Pooling) oder Gruppen ganz ignorieren (Complete Pooling). Kleine Gruppen werden dabei zum Gesamtmittel hin gezogen (Shrinkage), weil ihre Werte weniger verlässlich sind.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
     <strong>1. Pooling-Vergleich</strong> — Complete, No und Partial Pooling live an denselben

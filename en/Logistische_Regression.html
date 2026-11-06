@@ -373,8 +373,7 @@ input[type=range]::-moz-range-thumb{
 <!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    A binary outcome (0/1) needs its own link: OLS would otherwise predict probabilities below
-    0 or above 1.
+    If the outcome can only be yes or no, you need a regression that keeps probabilities between 0 and 1.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
 </div>
@@ -382,10 +381,7 @@ input[type=range]::-moz-range-thumb{
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    If Y is binary (e.g., relapse yes/no), an ordinary OLS regression (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="The Linear Probability Model (LPM) applies an ordinary OLS regression directly to a binary outcome Y &isin; {0,1} — with no link function constraining the range to [0,1]."><em>Linear Probability Model</em></a>) systematically violates its own value range — it predicts probabilities below 0
-    or above 1. Logistic regression instead models the <em>logit</em> of P(Y=1) linearly:
-    <code>logit(P) = ln(P/(1−P)) = b₀+b₁X</code> — and transforms it back through the S-shaped
-    logistic function into a valid probability between 0 and 1.
+    If you predict a yes/no outcome (e.g. relapse yes/no) with an ordinary regression line (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="The Linear Probability Model (LPM) applies an ordinary OLS regression directly to a binary outcome Y &isin; {0,1} — with no link function constraining the range to [0,1]."><em>Linear Probability Model</em></a>), you sometimes get probabilities below 0% or above 100% — nonsense. Logistic regression instead uses an S-shaped curve that always stays between 0 and 1. It works on the logit scale (the logarithm of the odds), where the relationship is a straight line again.
 
     <div class="ib-head ib-head2">How to proceed</div>
     <strong>1. LPM vs. Logit</strong> — see directly where the linear probability model fails.<br>

@@ -149,8 +149,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 <!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    Ein p-Wert ist eine bedingte Wahrscheinlichkeit über Daten unter H₀ — keine Aussage
-    darüber, ob H₀ (oder H₁) stimmt.
+    Ein p-Wert sagt nicht, wie wahrscheinlich die Hypothese stimmt — sondern wie überraschend die Daten wären, wenn es keinen Effekt gäbe.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
 </div>
@@ -158,11 +157,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    p = P(Daten, die mindestens so extrem sind wie die beobachteten | H₀ ist wahr). Diese
-    Definition wird hier nicht nur behauptet, sondern durch Simulation erlebbar gemacht: Was
-    passiert, wenn man dieselbe Studie unter H₀ immer wieder wiederholt? Ein durchgehendes
-    Beispiel (Lernprogramm vs. Kontrollgruppe, t(48) = 2.06, p = .045) trägt durch alle
-    Abschnitte.
+    Ein Lernprogramm schneidet im Test etwas besser ab als die Kontrollgruppe (p = .045). Was heißt das? Der p-Wert beantwortet nur: Wie wahrscheinlich wären so extreme Daten, wenn das Programm in Wahrheit nichts bewirkt? Er sagt <em>nicht</em>, wie wahrscheinlich es wirkt. Das Tool macht das per Simulation erlebbar: Du wiederholst dieselbe Studie bei „kein Effekt“ immer wieder und siehst, wie oft solche Ergebnisse vorkommen.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
     <strong>1. Wiederholte Ziehung unter H₀</strong> — ziehe Stichproben aus einer Population

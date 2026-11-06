@@ -157,8 +157,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <!-- ══ CONCEPT TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    Two correct statistical analyses — difference score and ANCOVA — can reach opposite
-    conclusions on the same data.
+    Two perfectly correct analyses of the same data can reach opposite conclusions.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
 </div>
@@ -166,13 +165,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Lord's Paradox (1967) is the observation that the difference-score method (Post − Pre) and
-    ANCOVA (Post ~ Course + Pre) can yield opposite conclusions on identical data — not because
-    of an error, but because the two methods answer different causal questions. The key
-    formula makes the difference visible as pure algebra:
-    <code>δ_ANCOVA = δ_Diff + (1−b_w)·Δ_base</code>. The correction term vanishes only when
-    either b_w = 1 (no regression to the mean) or Δ_base = 0 (no baseline difference, as is
-    usually the case in an RCT).
+    A course is evaluated, and the two groups start at different levels. If you compare the change (post minus pre), the course can look ineffective; if you instead statistically remove the starting level (ANCOVA), it can look effective. Both are computed correctly — the methods just answer different questions. The difference disappears if the groups start equal (as usually in a randomized experiment) or if there is no regression to the mean.
 
     <div class="ib-head ib-head2">How to proceed</div>
     <strong>1. Results of the two analyses</strong> — difference score vs. ANCOVA on the same

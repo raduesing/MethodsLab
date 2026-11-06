@@ -373,8 +373,7 @@ input[type=range]::-moz-range-thumb{
 <!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    Eine binäre Zielgröße (0/1) braucht einen eigenen Link: OLS sagt sonst Wahrscheinlichkeiten
-    unter 0 oder über 1 voraus.
+    Wenn das Ergebnis nur Ja oder Nein sein kann, braucht man eine Regression, die Wahrscheinlichkeiten zwischen 0 und 1 hält.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
 </div>
@@ -382,12 +381,7 @@ input[type=range]::-moz-range-thumb{
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Ist Y binär (z.&nbsp;B. Rückfall ja/nein), verletzt eine gewöhnliche OLS-Regression
-    (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="Das Linear Probability Model (LPM) wendet eine gewöhnliche OLS-Regression direkt auf eine binäre Zielgröße Y ∈ {0,1} an — ohne Link-Funktion, die den Wertebereich auf [0,1] beschränkt."><em>Linear Probability Model</em></a>) systematisch ihren eigenen Wertebereich — sie sagt
-    Wahrscheinlichkeiten unter 0 oder über 1 vorher. Die logistische Regression modelliert
-    stattdessen den <em>Logit</em> von P(Y=1) linear: <code>logit(P) = ln(P/(1−P)) = b₀+b₁X</code>
-    — und transformiert ihn über die S-förmige logistische Funktion zurück auf eine gültige
-    Wahrscheinlichkeit zwischen 0 und 1.
+    Sagt man ein Ja/Nein-Ergebnis (z.&nbsp;B. Rückfall ja/nein) mit einer gewöhnlichen Regressionsgeraden vorher (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="Das Linear Probability Model (LPM) wendet eine gewöhnliche OLS-Regression direkt auf eine binäre Zielgröße Y ∈ {0,1} an — ohne Link-Funktion, die den Wertebereich auf [0,1] beschränkt."><em>Linear Probability Model</em></a>), kommen manchmal Wahrscheinlichkeiten unter 0 % oder über 100 % heraus — unsinnig. Die logistische Regression nutzt stattdessen eine S-förmige Kurve, die immer zwischen 0 und 1 bleibt. Gerechnet wird dafür auf der Logit-Skala (dem Logarithmus der Chancen), auf der der Zusammenhang wieder eine Gerade ist.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
     <strong>1. LPM vs. Logit</strong> — sieh direkt, wo das lineare Wahrscheinlichkeitsmodell

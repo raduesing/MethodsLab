@@ -168,6 +168,21 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a3)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -177,6 +192,30 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Just above and just below an eligibility cutoff, people are nearly identical — a jump in the outcome right there shows the effect of the program.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    Anyone scoring at least 50 on the test enters the training program. People with 49 and 51 points barely differ — only one got the program. If later salary jumps exactly at the cutoff, that is the effect of the training (LATE) — but only for people near the cutoff. This only holds if nobody deliberately pushes their score just over the line. In a “fuzzy RDD”, the cutoff only raises the chance of participation instead of enforcing it.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Choose scenario A–D</strong> — no effect, jump, kink, or jump + kink.<br>
+    <strong>2. Scatterplot, equation, coefficients (①②③)</strong> — read off the jump b₂ at the cutoff and the slope difference b₃.<br>
+    <strong>3. Optional modules</strong> — expand polynomial degree (pitfalls of curve fitting) and fuzzy RDD.<br>
+    <strong>4. Concepts</strong> — bandwidth, polynomials, sharp vs. fuzzy.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    If there is no cutoff but you have measurements before and after an intervention for a treatment and a control group, <strong>Difference-in-Differences</strong> supplies the counterfactual.
+  </div>
 </div>
 
 <div id="app">
@@ -1081,6 +1120,12 @@ function toggleMod(name){
   document.getElementById('hd-'+name).classList.toggle('open',ST[key]);
   document.getElementById('ic-'+name).textContent=ST[key]?'▼':'▶';
   recompute();
+}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
 }
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';

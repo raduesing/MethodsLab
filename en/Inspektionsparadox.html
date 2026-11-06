@@ -152,6 +152,21 @@ canvas{width:100%;display:block}
 @media(max-width:900px){.metric-grid{grid-template-columns:1fr 1fr}.lcard-grid{grid-template-columns:1fr}}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -161,6 +176,30 @@ canvas{width:100%;display:block}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    If you arrive at a stop at a random time, you usually wait longer than the timetable suggests.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    Buses arrive irregularly: sometimes close together, sometimes with a big gap. If you arrive at a random moment, you are more likely to land in a long gap — simply because it takes up more time. So you experience longer gaps than the average gap. The more uneven the spacing, the larger the effect; with perfectly regular buses there is none.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Set the timetable</strong> — choose the number of buses and the irregularity of the gaps (spread).<br>
+    <strong>2. Timeline (①)</strong> — look at the gaps and random arrivals; make a prediction first.<br>
+    <strong>3. Arrive yourself (②)</strong> — arrive repeatedly (or 200×) and compare your cumulative average with the true expectation.<br>
+    <strong>4. Histogram (③)</strong> — counted vs. length-weighted distribution; plus the concept cards.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    The same length-biased sampling logic underlies the <strong>Friendship Paradox</strong>: why do your friends have more friends than you, on average?
+  </div>
 </div>
 
 <div id="app">
@@ -573,6 +612,12 @@ function update(){
   if(predicted) drawHist();
 }
 
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 

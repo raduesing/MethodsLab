@@ -111,6 +111,21 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .warn-box strong{color:var(--a1)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -120,6 +135,30 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Wer sich selbst für eine Maßnahme entscheidet, ist anders als Nicht-Teilnehmer — Propensity Scores machen beide Gruppen vergleichbar.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Erstsemester mit schwächerem Abitur nehmen häufiger an einem Mentoring-Programm teil — ein direkter Vergleich mit den Nicht-Teilnehmern täuscht deshalb. Der <em>Propensity Score</em> gibt für jede Person an, wie wahrscheinlich ihre Teilnahme aufgrund gemessener Merkmale war. Beim Matching sucht man zu jedem Teilnehmer einen Nicht-Teilnehmer mit ähnlichem Score; beim Gewichten (IPW) zählen ähnliche Nicht-Teilnehmer stärker. Ob die Gruppen danach vergleichbar sind, zeigt der Love Plot. Das klappt nur, wenn alle wichtigen Merkmale gemessen wurden.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Simulation</strong> — Stichprobe und Selektion einstellen: Wer wird behandelt?<br>
+    <strong>2. Methode</strong> — Matching oder IPW wählen.<br>
+    <strong>3. Ergebnisse</strong> — Behandelte, Kontrollen und Paare; Balance im Love Plot und Effektschätzer vor/nach Adjustierung vergleichen.<br>
+    <strong>4. Lernkarten</strong> — Annahmen, ATT vs. ATE, Wahl der Methode.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Bei unbeobachteten Confoundern helfen nur Designs, die nicht auf Messung aller Confounder angewiesen sind — etwa <strong>Regression Discontinuity</strong> oder <strong>Difference-in-Differences</strong>.
+  </div>
 </div>
 
 <!-- HELP OVERLAY -->
@@ -384,6 +423,12 @@ function resimulate(){
   runAll();
 }
 function toggleHelp(){ document.getElementById('help-overlay').classList.toggle('open'); }
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
 function toggleTheme(){
   const dark = document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme', dark?'light':'dark'); localStorage.setItem('ml-theme',dark?'light':'dark');

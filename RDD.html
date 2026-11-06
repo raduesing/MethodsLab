@@ -168,6 +168,21 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a3)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -177,6 +192,30 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Knapp über und knapp unter einer Zulassungsgrenze sind Menschen fast gleich — ein Sprung im Ergebnis genau dort zeigt die Wirkung der Maßnahme.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Wer im Test mindestens 50 Punkte erreicht, kommt ins Weiterbildungsprogramm. Menschen mit 49 und 51 Punkten unterscheiden sich kaum — nur der eine bekam das Programm. Springt das spätere Gehalt genau an der Grenze, ist das der Effekt der Weiterbildung (LATE) — allerdings nur für Menschen nahe der Grenze. Das gilt nur, wenn niemand seinen Score gezielt knapp über die Grenze schiebt. Beim „Fuzzy RDD“ erhöht die Grenze nur die Chance auf Teilnahme, statt sie zu erzwingen.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Szenario A–D wählen</strong> — kein Effekt, Sprung, Kink oder Sprung + Kink.<br>
+    <strong>2. Streudiagramm, Gleichung, Koeffizienten (①②③)</strong> — den Sprung b₂ am Cutoff und den Slope-Unterschied b₃ ablesen.<br>
+    <strong>3. Optionale Module</strong> — Polynomgrad (Fallstricke der Kurvenanpassung) und Fuzzy RDD aufklappen.<br>
+    <strong>4. Konzepte</strong> — Bandbreite, Polynome, Sharp vs. Fuzzy.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Gibt es keinen Cutoff, aber Messungen vor und nach einer Intervention in einer Treatment- und einer Kontrollgruppe, liefert <strong>Difference-in-Differences</strong> das Kontrafaktual.
+  </div>
 </div>
 
 <div id="app">
@@ -1081,6 +1120,12 @@ function toggleMod(name){
   document.getElementById('hd-'+name).classList.toggle('open',ST[key]);
   document.getElementById('ic-'+name).textContent=ST[key]?'▼':'▶';
   recompute();
+}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
 }
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';

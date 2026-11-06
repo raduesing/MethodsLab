@@ -157,8 +157,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    Zwei korrekte statistische Analysen — Differenzwert und ANCOVA — können bei denselben
-    Daten zu entgegengesetzten Schlüssen kommen.
+    Zwei völlig korrekte Auswertungen derselben Daten können zu entgegengesetzten Ergebnissen führen.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
 </div>
@@ -166,13 +165,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Lord's Paradox (1967) ist die Beobachtung, dass die Differenzwert-Methode (Post − Prä) und
-    ANCOVA (Post ~ Kurs + Prä) bei identischen Daten gegensätzliche Schlussfolgerungen liefern
-    können — nicht durch einen Fehler, sondern weil beide Methoden verschiedene kausale Fragen
-    beantworten. Die Schlüsselformel macht den Unterschied als reine Algebra sichtbar:
-    <code>δ_ANCOVA = δ_Diff + (1−b_w)·Δ_base</code>. Der Korrekturterm verschwindet nur, wenn
-    entweder b_w = 1 ist (keine Regression zur Mitte) oder Δ_base = 0 ist (kein
-    Ausgangsniveau-Unterschied, wie meist im RCT).
+    Ein Kurs wird getestet, und die beiden Gruppen starten auf unterschiedlichem Niveau. Vergleicht man die Veränderung (Nachher minus Vorher), kann der Kurs wirkungslos aussehen; rechnet man den Ausgangswert stattdessen statistisch heraus (ANCOVA), kann er wirksam aussehen. Beides ist richtig gerechnet — die Methoden beantworten nur unterschiedliche Fragen. Der Unterschied verschwindet, wenn die Gruppen gleich starten (wie meist im Zufallsexperiment) oder wenn es keine Regression zur Mitte gibt.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
     <strong>1. Ergebnisse der zwei Analysen</strong> — Differenzwert vs. ANCOVA am selben

@@ -138,8 +138,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 <!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
 <div class="intro-strip">
   <div>
-    Ein p-Wert sagt nur, ob ein Unterschied von Null verschieden ist — eine Effektgröße sagt,
-    <em>wie groß</em> er ist, unabhängig von Skala und Stichprobengröße.
+    „Signifikant“ heißt nicht „groß“: Eine Effektgröße sagt, wie stark ein Unterschied tatsächlich ist.
   </div>
   <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
 </div>
@@ -147,13 +146,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Die gebräuchlichste Effektgröße für Mittelwertsvergleiche ist Cohen's d: die Differenz
-    zweier Mittelwerte, standardisiert an einer Streuung. d = 0.5 heißt: die beiden
-    Verteilungen liegen im Mittel eine halbe Standardabweichung auseinander — egal ob es um
-    Testpunkte oder Körpergröße geht. Das macht Effekte über Studien und Maße hinweg
-    vergleichbar. Bei Messwiederholung ist zusätzlich unklar, <em>wessen</em> Streuung
-    standardisiert werden soll — daher gibt es dort gleich drei Konventionen (d<sub>z</sub>,
-    d<sub>rm</sub>, d<sub>av</sub>) statt einer.
+    Ein p-Wert verrät nur, ob ein Unterschied wahrscheinlich nicht reiner Zufall ist — nicht, ob er auch bedeutsam ist. Cohen's d misst den Unterschied zweier Mittelwerte in Standardabweichungen: d = 0,5 heißt, die Gruppen liegen eine halbe Standardabweichung auseinander — egal ob in Testpunkten oder Zentimetern. So lassen sich Studien miteinander vergleichen. Bei Messwiederholung (dieselben Personen zweimal) gibt es mehrere Berechnungsarten; das Tool zeigt sie nebeneinander.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
     <strong>1. Design wählen</strong> — Between (unabhängige Gruppen) oder Within

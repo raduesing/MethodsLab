@@ -118,6 +118,21 @@ canvas{width:100%;display:block}
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -127,6 +142,30 @@ canvas{width:100%;display:block}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Ein Ergebnis kann „signifikant“ sein und trotzdem eher für „kein Effekt“ sprechen — wenn die Stichprobe groß genug ist.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Ein p-Wert und ein Bayes-Faktor stellen verschiedene Fragen. Der p-Wert fragt nur: Wie ungewöhnlich wären die Daten, wenn es keinen Effekt gäbe (H₀)? Der Bayes-Faktor vergleicht dagegen direkt „kein Effekt“ mit „es gibt einen Effekt“ und bestraft die zweite Hypothese dafür, dass sie vage ist. Hält man ein Ergebnis gerade so signifikant und vergrößert die Stichprobe, spricht der Bayes-Faktor immer stärker für „kein Effekt“ — obwohl der p-Wert gleich bleibt.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Lindley-Modus &amp; Stichprobengröße</strong> — Ergebnis gerade signifikant halten und n hochdrehen; Effekt, Prior unter H₁ und α lassen sich variieren.<br>
+    <strong>2. Frequentist vs. Bayes (①)</strong> — p-Wert und Bayes-Faktor direkt nebeneinander.<br>
+    <strong>3. Verteilung unter H₀ vs. H₁ (②)</strong> — sehen, warum H₁ mit n immer „vager“ wird.<br>
+    <strong>4. Divergenz mit wachsendem n (③)</strong> und die Konzepte-Karten.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Schon ein einzelner Test kann so in die Irre führen — bei vielen Tests wird es schlimmer: <strong>Data Dredging</strong> zeigt, wie man in reinem Rauschen „signifikante“ Treffer findet.
+  </div>
 </div>
 
 <div id="app">
@@ -564,6 +603,12 @@ function toggleLindley(){
   document.getElementById('s-delta').disabled=ST.lindley;
   document.getElementById('delta-note').textContent=ST.lindley?'Im Lindley-Modus von n bestimmt (deaktiviert).':'Frei einstellbar.';
   update();
+}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
 }
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}

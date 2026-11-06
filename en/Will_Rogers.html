@@ -118,6 +118,21 @@ canvas{width:100%;display:block}
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -127,6 +142,30 @@ canvas{width:100%;display:block}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    If someone moves from group A to group B, both group averages can rise — without any value changing.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    A joke by Will Rogers: when the “Okies” left Oklahoma for California, the average IQ rose in both states. This works when the movers are below the old state's average but above the new state's: leaving lifts one average, arriving lifts the other. The overall average stays the same, because only the assignment changes. In medicine this is called <em>stage migration</em>: better diagnostics assign cases to other disease stages, so each stage looks better — without real progress.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Who can move?</strong> — set the number of willing-to-move Okies (outlined in purple in the plot).<br>
+    <strong>2. Move to California</strong> — “Start wave” or steer by hand from 0 to 100%.<br>
+    <strong>3. Average IQ per state (①) &amp; every person (②)</strong> — both mean lines shift right while the overall mean stands still.<br>
+    <strong>4. Concepts</strong> — why the overall mean is immune and what stage migration means.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    In <strong>Simpson's Paradox</strong>, too, the conclusion depends on how cases are grouped: same data, different grouping, different result.
+  </div>
 </div>
 
 <!-- HELP OVERLAY -->
@@ -459,6 +498,12 @@ document.getElementById('s-occ').addEventListener('input',function(){
 function reroll(){ stopAnim(); seed=(seed*1103515245+12345)>>>0; buildCohort(); setAcc(0); }
 
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 function toggleTheme(){
   const h=document.documentElement,d=h.getAttribute('data-theme')==='dark';
   h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');

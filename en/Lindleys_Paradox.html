@@ -118,6 +118,21 @@ canvas{width:100%;display:block}
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -127,6 +142,30 @@ canvas{width:100%;display:block}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    A result can be “significant” and still favor “no effect” — if the sample is large enough.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    A p-value and a Bayes factor ask different questions. The p-value only asks: how unusual would the data be if there were no effect (H₀)? The Bayes factor instead compares “no effect” directly with “there is an effect” and penalizes the second hypothesis for being vague. If you keep a result just significant and enlarge the sample, the Bayes factor favors “no effect” ever more strongly — although the p-value stays the same.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Lindley mode &amp; sample size</strong> — keep the result just significant and turn n up; effect, prior under H₁, and α can be varied.<br>
+    <strong>2. Frequentist vs. Bayes (①)</strong> — p-value and Bayes factor side by side.<br>
+    <strong>3. Distribution under H₀ vs. H₁ (②)</strong> — see why H₁ becomes ever “vaguer” with n.<br>
+    <strong>4. Divergence with growing n (③)</strong> and the concept cards.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    Even a single test can mislead this way — with many tests it gets worse: <strong>Data Dredging</strong> shows how to find “significant” hits in pure noise.
+  </div>
 </div>
 
 <div id="app">
@@ -564,6 +603,12 @@ function toggleLindley(){
   document.getElementById('s-delta').disabled=ST.lindley;
   document.getElementById('delta-note').textContent=ST.lindley?'Determined by n in Lindley mode (disabled).':'Freely adjustable.';
   update();
+}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
 }
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
