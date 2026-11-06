@@ -116,6 +116,21 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-close:hover{background:var(--ink);color:var(--bg)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -125,6 +140,30 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    A test can be unfair even though a group merely scores lower on average — what matters is whether a single item is harder at the same ability level.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    Group B solves an item less often than group A. Is that a problem? Not necessarily — perhaps the groups really differ in knowledge (this is called <em>impact</em>). It only becomes unfair when people with the <em>same</em> ability have different chances of solving the item, for example because of hard-to-understand language or cultural background knowledge: that is <strong>DIF</strong> (differential item functioning). The tool separates the two: you shift the group ability (impact) or the item difficulty per group (DIF) and see what changes.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Impact vs. DIF</strong> — change group parameters and DIF parameters separately and compare the effect.<br>
+    <strong>2. ICC comparison</strong> — do the curves of the reference and focal group differ?<br>
+    <strong>3. Uniform vs. non-uniform</strong> — are the curves parallel or do they cross?<br>
+    <strong>4. Effect size</strong> — how large is the DIF, and does it justify revising or removing the item?
+
+    <div class="ib-head ib-head2">What's next?</div>
+    At the level of the whole test, <strong>Test Bias &amp; Fairness</strong> asks whether the same test score means the same in both groups.
+  </div>
 </div>
 
 <!-- HELP OVERLAY -->
@@ -718,6 +757,12 @@ function updateAll(){
   updateTable();updateErklaer();
 }
 
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 function toggleTheme(){
   const doc=document.documentElement;
   const dark=doc.getAttribute('data-theme')==='dark';

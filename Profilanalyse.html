@@ -144,6 +144,21 @@ select:focus{outline:1px solid var(--accent)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -153,6 +168,30 @@ select:focus{outline:1px solid var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Zwei Testprofile können sich im Niveau, in der Streuung oder im Muster unterscheiden — eine gewöhnliche Korrelation sieht nur das Muster.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Ein Patient und die Norm zeigen Werte in 7 Untertests. Jedes Profil lässt sich in drei Teile zerlegen: das durchschnittliche Niveau (<strong>Elevation</strong>), die Streuung der Werte um dieses Niveau und die <strong>Form</strong> (welche Tests hoch, welche tief liegen). Liegt ein Patient überall genau einen Punkt unter der Norm, hat er dasselbe Muster auf tieferem Niveau — die einfache Korrelation meldet r ≈ 1 und übersieht das. Das Tool zerlegt den Gesamtunterschied in diese drei Anteile.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Merkmale, Normskala &amp; Profile</strong> — die Subtests, die Skala und die beiden Profile einstellen.<br>
+    <strong>2. Profilabbildung (①)</strong> — beide Profile im Vergleich ansehen.<br>
+    <strong>3. Profilstatistiken (②)</strong> — Elevation, Streuung und Form je Profil.<br>
+    <strong>4. Profilvergleich (③)</strong> — woran unterscheiden sich die Profile: Niveau, Streuung oder Form?
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Wie sicher ein einzelner Subtestwert ist, zeigen die <strong>Diagnostischen Intervalle</strong>.
+  </div>
 </div>
 
 <div id="app">
@@ -433,6 +472,12 @@ function fmtList(a, dec, maxShow=6) {
 }
 
 /* ── Theme ── */
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
 function toggleTheme() {
   const dark = document.documentElement.getAttribute('data-theme') === 'dark';
   document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark'); localStorage.setItem('ml-theme',dark?'light':'dark');

@@ -129,6 +129,21 @@ canvas{width:100%;display:block}
 .help-p{font-family:'DM Mono',monospace;font-size:.79rem;color:var(--ink2);line-height:1.82;margin-bottom:.5rem}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.3rem .7rem;
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -138,6 +153,30 @@ canvas{width:100%;display:block}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Symptomtests sind meist rechtsschief — lineare T-Werte verzerren dann die Einordnung, wo jemand im Vergleich zur Norm steht.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Bei Beschwerdebögen (z. B. BDI, SCL-90) haben die meisten gesunden Menschen niedrige Werte, nur wenige hohe. Trotzdem werden die Rohwerte oft mit einer Formel in T-Werte umgerechnet, die eine Normalverteilung voraussetzt. Dann stimmt die Einordnung nicht: Ein T-Wert von 60 deutet auf einen bestimmten Prozentrang hin, der echte Prozentrang in der schiefen Verteilung ist aber ein anderer. Das Tool vergleicht beides für vier schiefe Verteilungen.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Verteilungstyp &amp; Parameter</strong> — eine rechtsschiefe Verteilung und ihre Form wählen.<br>
+    <strong>2. Dichteverteilung (①)</strong> — echte Verteilung (blau) gegen die implizierte Normalverteilung (orange).<br>
+    <strong>3. Diskrepanztabelle (②)</strong> — wie weit liegen beide Prozentränge auseinander?<br>
+    <strong>4. Prozentrang-Kurven (③)</strong> — beide Normierungen im Vergleich; zusätzlich T-Wert → echter Prozentrang.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Wie sich solche Normwerte über mehrere Untertests hinweg vergleichen lassen, zeigt die <strong>Profilanalyse</strong>.
+  </div>
 </div>
 
 <div id="app">
@@ -1074,6 +1113,12 @@ function toggleAreaT() {
 // THEME / HELP
 // ══════════════════════════════════════════════════════════════════════
 
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
 function toggleTheme() {
   const h = document.documentElement;
   const dark = h.getAttribute('data-theme') === 'dark';

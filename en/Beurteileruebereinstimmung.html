@@ -193,6 +193,21 @@ canvas{width:100%;display:block}
 .sd{font-family:'DM Mono',monospace;font-size:.77rem;color:var(--ink2)}
 .story-q{font-family:'Fraunces',serif;font-size:.88rem;color:var(--ink2);font-style:italic;
   line-height:1.6;border-top:1px solid var(--grid);padding-top:.45rem;margin-top:.1rem}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -206,6 +221,30 @@ canvas{width:100%;display:block}
   </div>
   <button class="tbtn tbtn-red" onclick="showModal()">? Help</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    How much do several raters agree? Upload their ratings and let the appropriate measure be computed.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    Three psychologists rate 80 patient videos. Do they agree, or is each talking about something different? Which measure fits depends on the scale level: for categories (diagnosis yes/no), Cohen's κ is suitable; for gradations (severity 1–4), weighted κ or Krippendorff's α; for measured values, for example, the ICC. The tool takes one CSV file per rater and computes agreement overall, per dimension, and per rated object.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Data</strong> — upload one CSV file per rater (rows = objects, columns = dimensions).<br>
+    <strong>2. Scale level &amp; method</strong> — choose nominal, ordinal, or interval and pick the appropriate measure.<br>
+    <strong>3. Global agreement (①)</strong> — one overall value across all dimensions.<br>
+    <strong>4. By dimension (②) &amp; per stimulus (③)</strong> — where do the raters agree, where not?
+
+    <div class="ib-head ib-head2">What's next?</div>
+    You can try out the variance decomposition behind the ICC values yourself in the <strong>ICC Lab</strong>.
+  </div>
 </div>
 
 <!-- ═══ HELP MODAL ════════════════════════════════════════════════════════════ -->
@@ -776,6 +815,12 @@ function toggleMod(name) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // THEME
 // ═══════════════════════════════════════════════════════════════════════════════
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 function toggleTheme() {
   const dark = document.documentElement.getAttribute('data-theme') === 'dark';
   document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark'); localStorage.setItem('ml-theme',dark?'light':'dark');

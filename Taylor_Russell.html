@@ -113,6 +113,21 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
 .xlink{color:var(--a6);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a6)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--accent)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -122,6 +137,30 @@ table.tr caption{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--in
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Lohnt sich ein Auswahltest? Das hängt von seiner Validität, davon, wie streng man auswählt, und von der Basisrate ab.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Eine Klinik oder Firma wählt Bewerber per Eignungstest aus. Wie viele der Ausgewählten sind später wirklich erfolgreich? Das hängt von drei Dingen ab: wie gut der Test den Erfolg vorhersagt (<strong>Validität</strong>), wie viele Bewerber man nimmt (<strong>Selektionsrate</strong>) und wie viele auch ohne Test erfolgreich wären (<strong>Basisrate</strong>). Die Taylor-Russell-Tafeln zeigen die resultierende Erfolgsquote; das Nomogramm zeigt dasselbe stufenlos.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Szenario &amp; Basisrate</strong> — das Beispiel und die Basisrate der Tafel wählen.<br>
+    <strong>2. Taylor-Russell-Tafel</strong> — Zeilen = Validität, Spalten = Selektionsrate, Zellwert = Erfolgsquote in Prozent.<br>
+    <strong>3. Nomogramm &amp; Zielkreuz</strong> — dieselbe Information als Kurven; per Klick ein Ziel setzen.<br>
+    <strong>4. Konzepte</strong> — wann sich ein Test lohnt.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Ob ein Test für alle Gruppen fair funktioniert, prüft <strong>Test Bias &amp; Fairness</strong>.
+  </div>
 </div>
 
 <div class="help-overlay" id="help-overlay">
@@ -517,6 +556,12 @@ function setPreset(k){
 }
 
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme',dark?'light':'dark'); localStorage.setItem('ml-theme',dark?'light':'dark');

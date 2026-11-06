@@ -324,6 +324,21 @@ input[type=range]::-moz-range-thumb{
   .mod-tab{min-width:0;padding:.5rem .7rem}
   .mod-tab .tab-title{font-size:.85rem}
 }
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -339,6 +354,30 @@ input[type=range]::-moz-range-thumb{
 </div>
 
 <div id="scroll">
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    How do you demonstrate the effect of an intervention in just one person? By measuring repeatedly before, during, and after treatment.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    For a student with disruptive behavior, measurements are taken every lesson. The phase before the intervention (baseline) describes the level and predicts how things would go on without intervention. If the behavior changes clearly differently from the prediction after the intervention starts, that suggests an effect. The designs (AB, ABAB, multiple baseline) make sure the change cannot be explained simply by chance or the mere passage of time.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Baseline</strong> — description and prediction: change the trend and variability of the baseline.<br>
+    <strong>2. AB / ABAB</strong> — reversal designs as causal evidence.<br>
+    <strong>3. Multiple baseline</strong> — staggered replication across cases or behaviors.<br>
+    <strong>4. Analysis</strong> — visual and quantitative.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    Whether the change in the person is reliable and meaningful is judged by <strong>Jacobson-Truax</strong> at the individual level.
+  </div>
+</div>
+
 <!-- ══ STORY BANNER ════════════════════════════════════════════════ -->
 <div id="story">
   <span class="story-label">Example</span>
@@ -1287,6 +1326,12 @@ function draw(){
   else if(ST.activeModule===4) drawMod4();
 }
 
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 function toggleTheme(){
   const h=document.documentElement;
   const isDark=h.getAttribute('data-theme')==='dark';

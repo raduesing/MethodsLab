@@ -158,6 +158,21 @@ select:focus{outline:1px solid var(--accent)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -167,6 +182,30 @@ select:focus{outline:1px solid var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    A single test score is never exact — an interval shows the range in which the true value probably lies.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    A child scores 115 on an IQ test. Is their true IQ also 115? Because of measurement error, not quite certain. The confidence interval shows the range in which the true value probably lies. There are two views: the interval around the observed score (<em>equivalence hypothesis</em>) or around an estimate pulled toward the mean (<em>regression hypothesis</em>), because extreme scores contain more measurement error. The tool shows both intervals side by side.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Scale &amp; input</strong> — set mean, spread, and reliability of the scale as well as the test score.<br>
+    <strong>2. Key figures</strong> — standard error of measurement and estimated true score.<br>
+    <strong>3. Distributions &amp; intervals</strong> — compare both views in the chart.<br>
+    <strong>4. Results table &amp; concepts</strong> — the numbers at a glance.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    Whether a person has <em>really</em> changed between two measurements is answered by <strong>Jacobson-Truax</strong>, using the same measurement error.
+  </div>
 </div>
 
 <div id="app">
@@ -487,6 +526,12 @@ function classifyInterval(zLo,zHi,modelKey){
 }
 
 // ── TOPBAR ──────────────────────────────────────────────────────
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 function toggleTheme(){
   const d=document.documentElement;
   const dark=d.getAttribute('data-theme')==='dark';
