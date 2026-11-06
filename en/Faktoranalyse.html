@@ -158,6 +158,21 @@ canvas{display:block;width:100%}
 .close-btn:hover{background:var(--ink);color:var(--bg)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a4)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -166,6 +181,31 @@ canvas{display:block;width:100%}
   <h1>Exploratory Factor Analysis &mdash; <em>EFA / PAF</em></h1>
   <button class="tbtn help" onclick="openHelp()">❓ Help</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Factor analysis finds hidden commonalities behind many test items — such as “verbal” and “spatial”.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    A cognitive test has 8 subtests. Some are closely related, others hardly at all. Exploratory factor analysis (EFA) checks whether a few shared traits (<strong>factors</strong>) are hiding behind them — here verbal ability and spatial reasoning — without deciding beforehand which item belongs to which factor. The factors are extracted from the relationships among the items and rotated so that each item can be assigned as clearly as possible to one factor.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Items &amp; measurement model (①)</strong> — set the strength of loadings, cross-loading, and factor correlation.<br>
+    <strong>2. Correlation matrix (②)</strong> — which items go together?<br>
+    <strong>3. Factor extraction (③)</strong> — eigenvalues and scree plot: how many factors are needed?<br>
+    <strong>4. Rotation &amp; loadings (④)</strong> — varimax or oblique, until a clear structure appears.<br>
+    <strong>5. Communality &amp; reliability (⑤)</strong> — how much of each item's variance do the factors explain?
+
+    <div class="ib-head ib-head2">What's next?</div>
+    If the structure is already known from theory, you test it with <strong>Confirmatory Factor Analysis</strong> — instead of searching for it first.
+  </div>
 </div>
 
 <div id="app">
@@ -414,6 +454,12 @@ function fixDiacritics(s){
   return s
     .replace(/([^\s<>])̂/g,'<span class="gl-hat">$1</span>')
     .replace(/([^\s<>])̄/g,'<span class="gl-bar">$1</span>');
+}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
 }
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';

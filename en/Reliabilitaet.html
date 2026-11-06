@@ -119,6 +119,21 @@ canvas{width:100%;display:block}
   font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -128,6 +143,30 @@ canvas{width:100%;display:block}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Cronbach's α is not always the right reliability value — ω is often more honest.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    How reliably does a questionnaire measure? α is the best-known answer, but it is only correct if all items relate equally strongly to the trait. If the test also contains sub-topics, α can underestimate reliability — or suggest a unity that does not exist. ω splits the variance of the sum score more precisely: ω<sub>total</sub> counts everything shared, ω<sub>hierarchical</sub> only the part due to the main construct itself. The tool shows the three values side by side and lets you change loadings and sub-topics.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Scenario &amp; items</strong> — set the number of items, loadings on the main construct (general factor), and optional sub-topics (group factors).<br>
+    <strong>2. The three coefficients (①)</strong> — α, ω<sub>total</sub>, and ω<sub>hierarchical</sub> compared.<br>
+    <strong>3. Variance decomposition (②)</strong> — what the sum score is made of.<br>
+    <strong>4. Split-half (③)</strong> — α as the mean of all test splits; plus the concepts.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    Whether a test measures the same thing in different groups at all is what <strong>Measurement Invariance</strong> examines.
+  </div>
 </div>
 
 <div id="app">
@@ -547,6 +586,12 @@ document.getElementById('s-ls').addEventListener('input',function(){
   ST.ls=parseFloat(this.value); document.getElementById('v-ls').textContent=ST.ls.toFixed(2);
   clearPreset(); update();
 });
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 

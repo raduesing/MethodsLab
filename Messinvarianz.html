@@ -162,6 +162,21 @@ table.htab th{color:var(--accent);font-weight:500}
 .glo-link:hover{color:var(--a2)}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
 @media(max-width:900px){.two-col{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr}.lcard-grid{grid-template-columns:1fr}}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -171,6 +186,30 @@ table.htab th{color:var(--accent);font-weight:500}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Misst ein Test in verschiedenen Gruppen dasselbe? Nur dann sind Gruppenunterschiede im Testwert auch echte Unterschiede.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Angenommen, Gruppe B erreicht im Schnitt weniger Punkte als Gruppe A. Ist sie wirklich weniger fähig — oder funktioniert eine Frage in Gruppe B anders, etwa wegen Sprache oder Kultur? <strong>Messinvarianz</strong> heißt: Der Test misst das Merkmal in allen Gruppen auf dieselbe Weise. Fehlt sie, vergleicht man Äpfel mit Birnen. Das Tool lässt dich bei einem Item eine solche Abweichung einbauen und zerlegt die beobachtete Differenz in den echten Anteil und den Anteil, der nur ein Messartefakt ist.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Szenario &amp; wahre Differenz</strong> — die echte Gruppendifferenz und optional eine Abweichung bei einem Item einstellen.<br>
+    <strong>2. Was würdest du schließen? (①)</strong> — erst raten, dann prüfen.<br>
+    <strong>3. Mehrgruppen-CFA (②), Item-Mittelwerte (③)</strong> — welche Invarianzstufen halten?<br>
+    <strong>4. Zerlegung (④) &amp; Gesamtrechnung (⑤)</strong> — wie viel der Differenz ist echt, wie viel Artefakt?
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Wie sich so eine Abweichung bei einzelnen Aufgaben erkennen lässt, zeigt <strong>DIF — Differential Item Functioning</strong>.
+  </div>
 </div>
 
 <div id="app">
@@ -931,6 +970,12 @@ document.getElementById('s-dtau').addEventListener('input',function(){
 document.getElementById('s-dlam').addEventListener('input',function(){
   ST.dLam=parseFloat(this.value); document.getElementById('v-dlam').textContent=ST.dLam.toFixed(2); clearPreset(); update();});
 
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 function toggleWork(){

@@ -135,6 +135,21 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
 .gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
 .gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -144,6 +159,30 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Item response theory asks for each single item: how likely is someone to solve it — depending on ability?
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    Whether a person solves an item depends on their ability, but also on the item: easy or hard, discriminating well or not, easy to guess. IRT describes this with an S-shaped curve per item (ICC). The advantage over classical test theory: ability and item properties sit on the same scale, and measurement precision depends on where someone stands — a test can measure imprecisely for strong test-takers and precisely for weak ones. From a person's answers, their ability can then be estimated.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Choose model &amp; item</strong> — from Rasch/1PL to 4PL; then set the parameters and the ability θ.<br>
+    <strong>2. Item characteristic curve (①)</strong> — probability of solving as a function of ability.<br>
+    <strong>3. Test information (③)</strong> — where on the scale does the test measure precisely?<br>
+    <strong>4. Wright map (④)</strong> — do the item difficulties match the people? Also: estimate ability from answers.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    Items with more than two answer levels, such as Likert scales? <strong>Ordinal IRT</strong> covers that.
+  </div>
 </div>
 
 <!-- HELP OVERLAY -->
@@ -823,6 +862,12 @@ function buildLCards(){
 }
 
 // ── Theme / Help ───────────────────────────────────────────────────────────────
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 function toggleTheme(){
   const doc=document.documentElement;
   const dark=doc.getAttribute('data-theme')==='dark';

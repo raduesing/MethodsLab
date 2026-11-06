@@ -135,6 +135,21 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .gl-hat,.gl-bar{position:relative;display:inline-block;line-height:1}
 .gl-hat::before{content:'^';position:absolute;top:-0.15em;left:0;right:0;text-align:center;font-size:.75em;line-height:1;pointer-events:none}
 .gl-bar::before{content:'\2212';position:absolute;top:-0.1em;left:0;right:0;text-align:center;font-size:.95em;line-height:1;pointer-events:none}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -144,6 +159,30 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Die Item-Response-Theorie fragt für jede einzelne Aufgabe: Wie wahrscheinlich löst jemand sie — je nach Fähigkeit?
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Ob eine Person eine Aufgabe löst, hängt von ihrer Fähigkeit ab, aber auch von der Aufgabe: leicht oder schwer, gut trennend oder nicht, leicht zu erraten. Die IRT beschreibt das mit einer S-förmigen Kurve pro Aufgabe (ICC). Der Vorteil gegenüber der klassischen Testtheorie: Fähigkeit und Aufgabeneigenschaften liegen auf derselben Skala, und die Messgenauigkeit hängt davon ab, wo jemand steht — ein Test kann für Starke ungenau, für Schwache genau messen. Aus den Antworten einer Person lässt sich dann ihre Fähigkeit schätzen.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Modell &amp; Item wählen</strong> — von Rasch/1PL bis 4PL; dann die Parameter und die Fähigkeit θ einstellen.<br>
+    <strong>2. Item-Charakteristik-Kurve (①)</strong> — Lösungswahrscheinlichkeit in Abhängigkeit von der Fähigkeit.<br>
+    <strong>3. Testinformation (③)</strong> — wo auf der Skala misst der Test präzise?<br>
+    <strong>4. Wright Map (④)</strong> — passen die Schwierigkeiten der Aufgaben zu den Personen? Außerdem: Fähigkeit aus Antworten schätzen.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Items mit mehr als zwei Antwortstufen, etwa Likert-Skalen? Das zeigt die <strong>Ordinale IRT</strong>.
+  </div>
 </div>
 
 <!-- HELP OVERLAY -->
@@ -823,6 +862,12 @@ function buildLCards(){
 }
 
 // ── Theme / Help ───────────────────────────────────────────────────────────────
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
 function toggleTheme(){
   const doc=document.documentElement;
   const dark=doc.getAttribute('data-theme')==='dark';

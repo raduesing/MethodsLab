@@ -129,6 +129,21 @@ canvas{width:100%;display:block}
   font-family:'DM Mono',monospace;font-size:.77rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -138,6 +153,30 @@ canvas{width:100%;display:block}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Jede Testpunktzahl besteht aus echtem Können plus Zufallsfehler — die Reliabilität sagt, wie viel davon echt ist.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Wenn du in einem Test 100 Punkte erreichst, ist das nicht ganz dein „wahrer Wert“: An einem anderen Tag hättest du etwas mehr oder weniger bekommen. Die Klassische Testtheorie zerlegt deshalb jede Punktzahl in wahren Wert plus Messfehler. <strong>Reliabilität</strong> ist der Anteil der Unterschiede zwischen Personen, der auf echte Unterschiede zurückgeht und nicht auf Zufall. Daraus ergeben sich der Standardmessfehler und ein Unsicherheitsband um jeden einzelnen Testwert.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Wahrer-Wert-Modell &amp; Stichprobe</strong> — Anteil von wahrem Wert und Fehler einstellen (①).<br>
+    <strong>2. Reliabilität als Korrelation (②)</strong> — zwei Messungen derselben Personen korrelieren genau in Höhe der Reliabilität.<br>
+    <strong>3. Testlänge (③)</strong> — Spearman-Brown: wie viel zuverlässiger wird ein Test, wenn man ihn verlängert?<br>
+    <strong>4. Konfidenzband (④)</strong> — Unsicherheit um einen einzelnen Testwert; dazu die Konzepte.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Wie sieht das Messmodell hinter den Items aus? Das zeigt das Tool <strong>Messmodelle</strong>.
+  </div>
 </div>
 
 <div id="app">
@@ -596,6 +635,12 @@ function setCL(z,lbl){ST.z=z;ST.cl=lbl;
   document.getElementById('ci-cl').textContent=lbl;
   update();}
 function reroll(){seed=Math.floor(Math.random()*1e9);simulate();update();}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+}
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
 

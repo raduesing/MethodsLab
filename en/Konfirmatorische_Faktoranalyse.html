@@ -160,6 +160,21 @@ canvas{width:100%;display:block}
 .help-callout strong{color:var(--ink)}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a4)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -169,6 +184,30 @@ canvas{width:100%;display:block}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Osnabrück University</span>
   <button class="tbtn help" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Here the structure is fixed in advance and you test whether the data fit it — fit indices show how well.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    Exploratory factor analysis searches for a structure; confirmatory factor analysis (CFA) tests one you specify from theory: which items belong to which factor? The tool fits this model to a given population and shows with indices (χ², CFI, TLI, RMSEA, SRMR) how well it fits. With switches you can build in mistakes on purpose — for example force the factors to be uncorrelated or ignore a cross-loading — and see the fit get worse.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Specify the model</strong> — choose the true model and scenario; you only decide whether the factors may correlate and whether the cross-loading is included.<br>
+    <strong>2. Path diagram (②)</strong> — look at the specified model.<br>
+    <strong>3. Fit indices (③)</strong> — χ², CFI, TLI, RMSEA, SRMR: does the model fit?<br>
+    <strong>4. Spot misspecification</strong> — switch on “Orthogonal” or “Ignore” and watch the fit drop; plus the lavaan syntax (④).
+
+    <div class="ib-head ib-head2">What's next?</div>
+    Do the factors influence each other? The <strong>Structural Equation Model</strong> extends this with directed paths between the factors.
+  </div>
 </div>
 
 <div id="app">
@@ -814,6 +853,12 @@ function update(){
   hint.innerHTML = parts.length? parts.join(' ') : 'The specified model matches the population — hence the (nearly) perfect fit above.';
 }
 
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+}
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   document.documentElement.setAttribute('data-theme',dark?'light':'dark'); localStorage.setItem('ml-theme',dark?'light':'dark');

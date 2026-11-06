@@ -135,6 +135,21 @@ table.htab th,table.htab td{border:1px solid var(--grid);padding:.3rem .45rem;te
 table.htab th{color:var(--accent);font-weight:500}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -146,6 +161,30 @@ table.htab th{color:var(--accent);font-weight:500}
   <button class="tbtn" id="btn-mat" onclick="toggleMat()">Matrix: Covariance</button>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Help</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    How similarly do the items of a test measure the same thing? That decides which reliability value is right: α or ω.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">What is this about?</div>
+    Several items are meant to measure the same trait, say anxiety. But do they measure it equally well? In the strictest case (<strong>parallel</strong>), all items are equally good and equally noisy. In the loosest case (<strong>congeneric</strong>), each item may relate to the trait with different strength and have different amounts of noise. This model choice decides which reliability coefficient is correct: with congeneric items, the usual Cronbach's α underestimates reliability, ω does not. The tool is a gentle introduction to confirmatory factor analysis.
+
+    <div class="ib-head ib-head2">How to proceed</div>
+    <strong>1. Load &amp; set the model</strong> — choose the number of items, loadings, and error variances, optionally item means (intercepts).<br>
+    <strong>2. Model class &amp; reliability (①)</strong> — the tool checks whether the model is parallel, tau-equivalent, or congeneric.<br>
+    <strong>3. Path diagram (②) &amp; covariance matrix (③)</strong> — how the loadings show up in the relationships among items.<br>
+    <strong>4. Concepts</strong> — why α comes out too low with unequal loadings.
+
+    <div class="ib-head ib-head2">What's next?</div>
+    Where do the loadings come from with real data? <strong>Factor Analysis</strong> shows that.
+  </div>
 </div>
 
 <div id="app">
@@ -623,6 +662,12 @@ function toggleNu(){
   document.getElementById('nu-card').style.display=showNu?'':'none';
   document.getElementById('means-box').style.display=showNu?'':'none';
   update();
+}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
 }
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}

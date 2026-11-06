@@ -178,6 +178,21 @@ th.blockend-r{border-right:2px solid var(--border)}
 .help-p strong{color:var(--ink)}
 .help-formula{display:block;background:var(--bg);border:1px solid var(--grid);padding:.4rem .7rem;
   font-family:'DM Mono',monospace;font-size:.76rem;color:var(--a2);margin:.35rem 0 .55rem;white-space:pre-wrap;line-height:1.6}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -187,6 +202,29 @@ th.blockend-r{border-right:2px solid var(--border)}
   <span style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap">Dr. R. Düsing · Universität Osnabrück</span>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="theme-btn" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Misst ein Test wirklich das Merkmal — oder nur die Art, wie gemessen wurde? Die MTMM-Matrix trennt Merkmal und Methode.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Drei Merkmale (Depressivität, Ängstlichkeit, Kompetenz) werden jeweils auf drei Arten erfasst: per Selbstbericht, durch Mitschüler und durch Eltern. Das ergibt 9 Messungen und eine 9×9-Korrelationstabelle. Stimmen Selbst- und Fremdbericht beim <em>selben</em> Merkmal überein, spricht das für Gültigkeit (konvergente Validität). Hängen dagegen <em>verschiedene</em> Merkmale im selben Bericht stark zusammen, liegt das oft an der Methode (etwa Antworttendenzen) und nicht am Merkmal. Die Matrix färbt diese Fälle nach Typ ein und prüft die Kriterien von Campbell &amp; Fiske.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. MTMM-Matrix</strong> — Szenario wählen, die vier Zelltypen ansehen und die Kriterien für konvergente und diskriminante Validität prüfen.<br>
+    <strong>2. Als SEM</strong> — dieselben Messungen als Modell mit Trait- und Methodenfaktoren (Pfaddiagramm).<br>
+    <strong>3. Modellfamilie</strong> — vier klassische CFA-Varianten im Überblick.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Die Reliabilitätsdiagonale der Matrix zeigt, wie zuverlässig jede einzelne Messung ist — das vertieft das Tool <strong>Reliabilität: α vs. ω</strong>.
+  </div>
 </div>
 
 <div id="tab-bar-wrap">
@@ -985,6 +1023,12 @@ function showTab(n){
   document.getElementById('main').scrollTop=0;
   if(n===2) drawSEM();
   if(n===3) drawModelFamily();
+}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
 }
 function toggleTheme(){
   const d=document.documentElement;

@@ -135,6 +135,21 @@ table.htab th,table.htab td{border:1px solid var(--grid);padding:.3rem .45rem;te
 table.htab th{color:var(--accent);font-weight:500}
 .glo-link{color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;cursor:pointer}
 .glo-link:hover{color:var(--a2)}
+/* ── Konzept-Teaser (Klapptext) ───────────────────────────────── */
+.intro-strip{display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.5rem 1.2rem;background:var(--panel);border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2)}
+.intro-strip strong{color:var(--ink)}
+.intro-strip .ibtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:.22rem .6rem;
+  border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+  transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
+.intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
+  padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
+  color:var(--ink2);line-height:1.8}
+.intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
+  border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
+.intro-box .ib-head.ib-head2{margin-top:.75rem}
 </style>
 </head>
 <body>
@@ -146,6 +161,30 @@ table.htab th{color:var(--accent);font-weight:500}
   <button class="tbtn" id="btn-mat" onclick="toggleMat()">Matrix: Kovarianz</button>
   <button class="tbtn tbtn-red" onclick="toggleHelp()">? Hilfe</button>
   <button class="tbtn" id="btn-theme" onclick="toggleTheme()">☀ Light</button>
+</div>
+
+<!-- ══ KONZEPT-TEASER ══════════════════════════════════════════════ -->
+<div class="intro-strip">
+  <div>
+    Wie ähnlich messen die Fragen eines Tests dasselbe? Davon hängt ab, welcher Zuverlässigkeitswert stimmt: α oder ω.
+  </div>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+</div>
+
+<div id="intro-detail" style="display:none">
+  <div class="intro-box">
+    <div class="ib-head">Worum geht es hier?</div>
+    Mehrere Fragen sollen dasselbe Merkmal messen, zum Beispiel Ängstlichkeit. Aber messen sie es gleich gut? Im strengsten Fall (<strong>parallel</strong>) sind alle Fragen gleich gut und gleich verrauscht. Im lockersten Fall (<strong>kongenerisch</strong>) darf jede Frage unterschiedlich stark mit dem Merkmal zusammenhängen und unterschiedlich viel Rauschen haben. Diese Modellwahl entscheidet, welcher Zuverlässigkeitskoeffizient korrekt ist: Bei kongenerischen Fragen unterschätzt das übliche Cronbach-α die Zuverlässigkeit, ω nicht. Das Tool ist eine sanfte Einführung in die konfirmatorische Faktoranalyse.
+
+    <div class="ib-head ib-head2">So gehst du vor</div>
+    <strong>1. Modell laden &amp; einstellen</strong> — Anzahl Items, Ladungen und Fehlervarianzen wählen, optional Item-Mittelwerte (Intercepts).<br>
+    <strong>2. Modellklasse &amp; Reliabilität (①)</strong> — das Tool prüft, ob das Modell parallel, tau-äquivalent oder kongenerisch ist.<br>
+    <strong>3. Pfaddiagramm (②) &amp; Kovarianzmatrix (③)</strong> — wie sich die Ladungen in den Zusammenhängen der Items zeigen.<br>
+    <strong>4. Konzepte</strong> — warum α bei ungleichen Ladungen zu niedrig ausfällt.
+
+    <div class="ib-head ib-head2">Und danach?</div>
+    Woher kommen die Ladungen bei echten Daten? Das zeigt die <strong>Faktoranalyse</strong>.
+  </div>
 </div>
 
 <div id="app">
@@ -622,6 +661,12 @@ function toggleNu(){
   document.getElementById('nu-card').style.display=showNu?'':'none';
   document.getElementById('means-box').style.display=showNu?'':'none';
   update();
+}
+let introOpen = false;
+function toggleIntroDetail(){
+  introOpen = !introOpen;
+  document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
+  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
 }
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}
