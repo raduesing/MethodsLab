@@ -296,16 +296,16 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;background:var(--a2);
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Schüler derselben Klasse ähneln sich mehr als Schüler verschiedener Klassen — die Daten sind nicht unabhängig, obwohl eine einfache Regression das annimmt. Multilevel-Modelle (Mixed Models) berücksichtigen die Gruppen ausdrücklich. Ihr Kernprinzip, <strong>Partial Pooling</strong>, liegt zwischen zwei Extremen: jede Gruppe ganz für sich betrachten (No Pooling) oder Gruppen ganz ignorieren (Complete Pooling). Kleine Gruppen werden dabei zum Gesamtmittel hin gezogen (Shrinkage), weil ihre Werte weniger verlässlich sind.
+    Schüler derselben Klasse ähneln sich mehr als Schüler verschiedener Klassen — die Daten sind nicht unabhängig, obwohl eine einfache Regression das annimmt. Multilevel-Modelle (Mixed Models) berücksichtigen die Gruppen ausdrücklich. Ihr Kernprinzip, <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-partial-pooling" target="_blank" rel="noopener" title="Partial Pooling ist die Schätzstrategie in hierarchischen/gemischten Modellen: Gruppenspezifische Parameter werden weder vollständig getrennt (No Pooling) noch vollständig zusammengefasst (Complete Pooling) geschätzt, sondern als aus einer…">Partial Pooling</a></strong>, liegt zwischen zwei Extremen: jede Gruppe ganz für sich betrachten (No Pooling) oder Gruppen ganz ignorieren (Complete Pooling). Kleine Gruppen werden dabei zum Gesamtmittel hin gezogen (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage bezeichnet das Phänomen, dass gruppenspezifische Schätzer in hierarchischen/gemischten Modellen (Partial Pooling) systematisch zum Gesamtmittelwert bzw. zur übergeordneten Verteilung hin „geschrumpft&quot; werden, statt jede Gruppe unabhängig…">Shrinkage</a>), weil ihre Werte weniger verlässlich sind.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
     <strong>1. Pooling-Vergleich</strong> — Complete, No und Partial Pooling live an denselben
     Daten vergleichen.<br>
-    <strong>2. Shrinkage &amp; ICC</strong> — τ₀, σ und n_j regeln, wie stark der Shrinkage-Faktor
+    <strong>2. Shrinkage &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-icc" target="_blank" rel="noopener" title="Der Intraklassen-Korrelationskoeffizient misst, welcher Anteil der Gesamtvarianz eines Outcomes auf Gruppenunterschiede zurückzuführen ist.">ICC</a></strong> — τ₀, σ und n_j regeln, wie stark der Shrinkage-Faktor
     λ zieht.<br>
     <strong>3. Random Slopes</strong> — τ₁ und ρ: auch Steigungen können zwischen Gruppen
     variieren.<br>
-    <strong>4. Simpson-Paradoxon</strong> — Within- und Between-Effekte trennen und den
+    <strong>4. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-simpsons-paradox" target="_blank" rel="noopener" title="Das Simpson-Paradoxon beschreibt die Situation, in der ein statistischer Zusammenhang zwischen zwei Variablen X und Y in den GESAMTDATEN (aggregiert über alle Gruppen) in eine Richtung zeigt, sich aber in JEDER Teilgruppe einer dritten Variablen Z…">Simpson-Paradoxon</a></strong> — Within- und Between-Effekte trennen und den
     Vorzeichen-Flip live erleben.<br>
     <strong>5. Shrinkage Extrem</strong> — 20 Gruppen, sichtbare wahre Werte: Partial Pooling
     liegt im Schnitt näher an der Wahrheit als No Pooling.
