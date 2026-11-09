@@ -205,13 +205,22 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Anyone scoring at least 50 on the test enters the training program. People with 49 and 51 points barely differ — only one got the program. If later salary jumps exactly at the cutoff, that is the effect of the training (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-late" target="_blank" rel="noopener" title="The LATE is the causal effect of a treatment, restricted to the subpopulation of &quot;compliers&quot; — persons whose treatment status changes when the instrument Z switches from 0 to 1.">LATE</a>) — but only for people near the cutoff. This only holds if nobody deliberately pushes their score just over the line. In a “fuzzy <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rdd" target="_blank" rel="noopener" title="The Regression Discontinuity Design (RDD) is a quasi-experiment in which treatment assignment is determined fully or probabilistically by whether a continuous running variable (X) crosses a threshold (cutoff c).">RDD</a>”, the cutoff only raises the chance of participation instead of enforcing it.
+    Whoever reaches at least 50 points in the test gets into the further-training programme. People with 49 and 51 points hardly differ — only one received the programme. If later salary jumps exactly at the cutoff, that is the effect of the training (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-late" target="_blank" rel="noopener" title="The LATE is the causal effect of a treatment, restricted to the subpopulation of &quot;compliers&quot; — persons whose treatment status changes when the instrument Z switches from 0 to 1.">LATE</a>) — but only for people near the cutoff. This holds only if nobody deliberately pushes their score just over the cutoff. In a "fuzzy <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rdd" target="_blank" rel="noopener" title="The Regression Discontinuity Design (RDD) is a quasi-experiment in which treatment assignment is determined fully or probabilistically by whether a continuous running variable (X) crosses a threshold (cutoff c).">RDD</a>" the cutoff only raises the chance of participation instead of enforcing it. The running example in the tool: qualification test score → programme admission at ≥ 50 points → gross salary two years later.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Choose scenario A–D</strong> — no effect, jump, kink, or jump + kink.<br>
-    <strong>2. Scatterplot, equation, coefficients (①②③)</strong> — read off the jump b₂ at the cutoff and the slope difference b₃.<br>
-    <strong>3. Optional modules</strong> — expand polynomial degree (pitfalls of curve fitting) and fuzzy RDD.<br>
+    <strong>1. Choose scenario A–D</strong> — no effect, jump, kink (change of slope) or jump + kink. With the sliders (n, cutoff c, noise σ, b₀ to b₃) you adapt each scenario.<br>
+    <strong>2. Scatterplot, equation, coefficients (①②③)</strong> — read the jump b₂ at the cutoff and the slope difference b₃. b₂ is the effect (LATE).<br>
+    <strong>3. Optional modules</strong> — open the polynomial degree (pitfalls of curve fitting) and fuzzy RDD.<br>
     <strong>4. Concepts</strong> — bandwidth, polynomials, sharp vs. fuzzy.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>The continuity assumption:</strong> without the programme there would be no jump at the cutoff — everything else changes smoothly. Anyone who can deliberately push their score just over the cutoff violates it.<br>
+    <strong>LATE holds only near the cutoff:</strong> the effect says nothing about how the programme works for people far from the cutoff.<br>
+    <strong>Bandwidth and polynomials:</strong> a narrower window reduces bias but increases variance (less data). High polynomial degrees look flexible but can create spurious jumps.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Choose scenario B (jump) and increase the degree in the "polynomial degree" module step by step — watch how the estimate of the jump becomes unstable. Then open the fuzzy module and compare.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     If there is no cutoff but you have measurements before and after an intervention for a treatment and a control group, <strong>Difference-in-Differences</strong> supplies the counterfactual.

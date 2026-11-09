@@ -137,13 +137,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    In every town the share of left-handers is truly the same. Measured values still fluctuate — and the fewer people live there, the more: with 20 residents a few chance cases are enough for a 20% rate, with 20,000 they are not. That is why both the very top and the very bottom of the ranking are almost always small towns. A famous example: the counties with the lowest and the highest kidney-cancer rates are both small and rural.
+    In every municipality the share of left-handers is in truth the same. Measured, it nevertheless fluctuates — and the more strongly, the fewer people live there: with 20 inhabitants a few chance hits are enough for a rate of 20%, with 20,000 they are not. That is why both the very top and the very bottom of the ranking are almost always small municipalities. A famous example: the counties with the lowest and the highest kidney-cancer rates are both small and rural. In the tool you can re-roll the survey as often as you like and see each time who ends up at the very top and the very bottom.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Settings</strong> — choose the true rate p and the number of towns; redraw with “Roll new survey”.<br>
+    <strong>1. Settings</strong> — choose the true rate p and the number of municipalities, draw again with "roll new survey".<br>
     <strong>2. Key figures (①)</strong> — true rate vs. highest and lowest measured rate.<br>
-    <strong>3. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-funnel-plot" target="_blank" rel="noopener" title="A funnel plot plots a measured value (e.g. a rate, an effect estimate) against a measure of precision (usually sample size n or standard error).">Funnel plot</a> (②)</strong> — rate against population: the extremes sit on the left, in the wide funnel.<br>
-    <strong>4. Ranking (③)</strong> — top and flop: who stands out, and how big is the town?
+    <strong>3. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-funnel-plot" target="_blank" rel="noopener" title="A funnel plot plots a measured value (e.g. a rate, an effect estimate) against a measure of precision (usually sample size n or standard error).">Funnel plot</a> (②)</strong> — rate against population: the extremes lie on the left in the wide funnel.<br>
+    <strong>4. Ranking (③)</strong> — top and flop: who stands out, and how large is the municipality?
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>The standard error shrinks with the square root of size:</strong> SE = √(p·(1−p)/n). Small municipalities scatter widely around the true rate, large ones lie almost exactly at p.<br>
+    <strong>The scatter is symmetric:</strong> a small municipality can by chance be very high or very low — that is why top performers <em>and</em> bottom performers are small. This pattern is a giveaway.<br>
+    <strong>The funnel plot exposes pure size effects:</strong> only points outside the ±2-SE funnel are genuine anomalies. As a remedy, values of small units are pulled toward the grand mean (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage refers to the phenomenon that group-level estimates in hierarchical/mixed models (partial pooling) are systematically pulled (&quot;shrunk&quot;) toward the grand mean or the overarching distribution, rather than each group being estimated…">shrinkage</a>).
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Re-roll the survey several times and notice how large the municipalities at the top and bottom of the ranking are. Then increase the number of municipalities and watch how the funnel fills.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     <strong>Regression to the Mean</strong> shows the repeated-measurement version: extreme values of small units move back toward the middle on a new measurement — exactly what shrinkage builds on.

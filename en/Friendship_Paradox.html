@@ -142,13 +142,22 @@ canvas{width:100%;display:block;cursor:pointer}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    This sounds like bad luck, but it is pure arithmetic: popular people appear on very many friend lists, people with few friends on few. So when you look at “someone's friends”, you disproportionately meet the well-connected — which lifts the average. The more unequally friend counts are distributed, the larger the effect; it would only vanish if everyone had the same number of friends.
+    "Your friends have more friends than you do on average." That sounds like bad luck, but it is pure arithmetic: popular people appear on very many friend lists, people with few friends on few. If you look at "the friends of someone", you therefore meet the well-connected disproportionately often — and that raises the average. The more unequally friend counts are distributed, the larger the effect; only if everyone had the same number of friends would it not exist. In the tool you click on people in a network and see whether the claim holds for them.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Your prediction (①)</strong> — guess first: more, equally many, or fewer friends?<br>
-    <strong>2. Click a person (②)</strong> — they and their friends light up; compare their own friend count with their friends' average.<br>
-    <strong>3. Tally over all people (③)</strong> — how often does the claim hold?<br>
-    <strong>4. Network sliders</strong> — vary the number of people and connectivity (inequality) and watch the gap.
+    <strong>1. Your prediction (①)</strong> — guess first: do the friends of a person have more, the same or fewer friends on average?<br>
+    <strong>2. Click on a person (②)</strong> — they and their friends light up; compare their own number of friends with the average of their friends.<br>
+    <strong>3. Tally across all persons (③)</strong> — how often does the claim hold?<br>
+    <strong>4. Network sliders</strong> — vary the number of persons and the connectedness (inequality) and watch the gap.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>The way of counting makes the difference:</strong> if you ask random persons, each has the same chance. If you go through friendships, each person is counted as often as they have friends — the well-connected appear disproportionately often.<br>
+    <strong>The formula:</strong> E[friend] = E[k²]/E[k] = E[k] + Var(k)/E[k] ≥ E[k] — equal only if everyone has the same number of friends. More inequality means a larger gap.<br>
+    <strong>Useful:</strong> random friends of random persons are more central on average — a cheap early-warning or vaccination strategy without knowing the whole network.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Make your prediction and check it on several persons. Then increase the inequality of connectedness and watch the gap grow.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     The same size-biased counting underlies the <strong>Inspection Paradox</strong>: arriving at a random moment, you land disproportionately often in long gaps.

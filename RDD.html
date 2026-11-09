@@ -205,13 +205,22 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Wer im Test mindestens 50 Punkte erreicht, kommt ins Weiterbildungsprogramm. Menschen mit 49 und 51 Punkten unterscheiden sich kaum — nur der eine bekam das Programm. Springt das spätere Gehalt genau an der Grenze, ist das der Effekt der Weiterbildung (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-late" target="_blank" rel="noopener" title="Der LATE ist der kausale Effekt einer Behandlung, eingeschränkt auf die Teilpopulation der &quot;Complier&quot; — Personen, deren Behandlungsstatus sich ändert, wenn das Instrument Z von 0 auf 1 wechselt.">LATE</a>) — allerdings nur für Menschen nahe der Grenze. Das gilt nur, wenn niemand seinen Score gezielt knapp über die Grenze schiebt. Beim „Fuzzy <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rdd" target="_blank" rel="noopener" title="Das Regression Discontinuity Design (RDD) ist ein Quasi-Experiment, bei dem die Treatmentzuweisung vollständig oder probabilistisch durch das Über- oder Unterschreiten eines Schwellenwerts (Cutoff c) einer kontinuierlichen Laufvariable (Running…">RDD</a>“ erhöht die Grenze nur die Chance auf Teilnahme, statt sie zu erzwingen.
+    Wer im Test mindestens 50 Punkte erreicht, kommt ins Weiterbildungsprogramm. Menschen mit 49 und 51 Punkten unterscheiden sich kaum — nur der eine bekam das Programm. Springt das spätere Gehalt genau an der Grenze, ist das der Effekt der Weiterbildung (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-late" target="_blank" rel="noopener" title="Der LATE ist der kausale Effekt einer Behandlung, eingeschränkt auf die Teilpopulation der &quot;Complier&quot; — Personen, deren Behandlungsstatus sich ändert, wenn das Instrument Z von 0 auf 1 wechselt.">LATE</a>) — allerdings nur für Menschen nahe der Grenze. Das gilt nur, wenn niemand seinen Score gezielt knapp über die Grenze schiebt. Beim „Fuzzy <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rdd" target="_blank" rel="noopener" title="Das Regression Discontinuity Design (RDD) ist ein Quasi-Experiment, bei dem die Treatmentzuweisung vollständig oder probabilistisch durch das Über- oder Unterschreiten eines Schwellenwerts (Cutoff c) einer kontinuierlichen Laufvariable (Running…">RDD</a>“ erhöht die Grenze nur die Chance auf Teilnahme, statt sie zu erzwingen. Das durchgehende Beispiel im Tool: Qualifikationstest-Score → Programmzulassung bei ≥ 50 Punkten → Bruttogehalt zwei Jahre später.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Szenario A–D wählen</strong> — kein Effekt, Sprung, Kink oder Sprung + Kink.<br>
-    <strong>2. Streudiagramm, Gleichung, Koeffizienten (①②③)</strong> — den Sprung b₂ am Cutoff und den Slope-Unterschied b₃ ablesen.<br>
+    <strong>1. Szenario A–D wählen</strong> — kein Effekt, Sprung, Kink (Steigungswechsel) oder Sprung + Kink. Mit den Reglern (n, Cutoff c, Rauschen σ, b₀ bis b₃) passt du jedes Szenario an.<br>
+    <strong>2. Streudiagramm, Gleichung, Koeffizienten (①②③)</strong> — den Sprung b₂ am Cutoff und den Steigungsunterschied b₃ ablesen. b₂ ist der Effekt (LATE).<br>
     <strong>3. Optionale Module</strong> — Polynomgrad (Fallstricke der Kurvenanpassung) und Fuzzy RDD aufklappen.<br>
     <strong>4. Konzepte</strong> — Bandbreite, Polynome, Sharp vs. Fuzzy.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Die Kontinuitäts-Annahme:</strong> Ohne das Programm gäbe es keinen Sprung am Cutoff — alles andere ändert sich glatt. Wer seinen Score gezielt knapp über die Grenze schieben kann, verletzt sie.<br>
+    <strong>LATE gilt nur nahe am Cutoff:</strong> Der Effekt sagt nichts darüber, wie das Programm auf Personen weit von der Grenze wirkt.<br>
+    <strong>Bandbreite und Polynome:</strong> Ein schmaleres Fenster reduziert Verzerrung, erhöht aber die Varianz (weniger Daten). Hohe Polynomgrade wirken flexibel, können aber Scheinsprünge erzeugen.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Wähle Szenario B (Sprung) und erhöhe im Modul „Polynomgrad“ den Grad schrittweise — beobachte, wie die Schätzung des Sprungs instabil wird. Klappe dann das Fuzzy-Modul auf und vergleiche.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Gibt es keinen Cutoff, aber Messungen vor und nach einer Intervention in einer Treatment- und einer Kontrollgruppe, liefert <strong>Difference-in-Differences</strong> das Kontrafaktual.

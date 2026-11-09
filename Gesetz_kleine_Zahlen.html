@@ -137,13 +137,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    In jeder Gemeinde ist der Anteil Linkshänder in Wahrheit gleich. Gemessen schwankt er trotzdem — und zwar umso stärker, je weniger Menschen dort leben: Bei 20 Einwohnern reichen wenige Zufallstreffer für eine Quote von 20 %, bei 20.000 nicht. Darum stehen sowohl ganz oben als auch ganz unten in der Rangliste fast immer kleine Gemeinden. Ein berühmtes Beispiel: Die Kreise mit den niedrigsten und den höchsten Nierenkrebsraten sind beide klein und ländlich.
+    In jeder Gemeinde ist der Anteil Linkshänder in Wahrheit gleich. Gemessen schwankt er trotzdem — und zwar umso stärker, je weniger Menschen dort leben: Bei 20 Einwohnern reichen wenige Zufallstreffer für eine Quote von 20 %, bei 20.000 nicht. Darum stehen sowohl ganz oben als auch ganz unten in der Rangliste fast immer kleine Gemeinden. Ein berühmtes Beispiel: Die Kreise mit den niedrigsten und den höchsten Nierenkrebsraten sind beide klein und ländlich. Im Tool kannst du die Erhebung beliebig oft neu würfeln und siehst jedes Mal, wer ganz oben und ganz unten landet.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Einstellungen</strong> — wahre Quote p und Anzahl Gemeinden wählen, per „Neue Erhebung würfeln“ neu ziehen.<br>
+    <strong>1. Einstellungen</strong> — wahre Quote p und Anzahl der Gemeinden wählen, per „Neue Erhebung würfeln“ neu ziehen.<br>
     <strong>2. Kennzahlen (①)</strong> — wahre Quote vs. höchste und niedrigste gemessene Quote.<br>
     <strong>3. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-funnel-plot" target="_blank" rel="noopener" title="Ein Funnel-Plot trägt einen gemessenen Wert (z.B. eine Rate, einen Effektschätzer) gegen ein Präzisionsmaß auf (meist Stichprobengröße n oder Standardfehler).">Funnel-Plot</a> (②)</strong> — Quote gegen Einwohnerzahl: Die Extreme liegen links im breiten Trichter.<br>
-    <strong>4. Rangliste (③)</strong> — Top und Flop: wer ragt heraus, und wie groß ist die Gemeinde?
+    <strong>4. Rangliste (③)</strong> — Top und Flop: Wer ragt heraus, und wie groß ist die Gemeinde?
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Der Standardfehler sinkt mit der Wurzel der Größe:</strong> SE = √(p·(1−p)/n). Kleine Gemeinden streuen weit um die wahre Quote, große liegen fast exakt bei p.<br>
+    <strong>Die Streuung ist symmetrisch:</strong> Eine kleine Gemeinde kann zufällig sehr hoch oder sehr niedrig liegen — deshalb sind Spitzenreiter <em>und</em> Schlusslichter klein. Dieses Muster ist verräterisch.<br>
+    <strong>Der Funnel-Plot entlarvt reine Größeneffekte:</strong> Nur Punkte außerhalb des ±2-SE-Trichters sind echte Auffälligkeiten. Als Gegenmittel zieht man Werte kleiner Einheiten zum Gesamtmittel (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-shrinkage" target="_blank" rel="noopener" title="Shrinkage bezeichnet das Phänomen, dass gruppenspezifische Schätzer in hierarchischen/gemischten Modellen (Partial Pooling) systematisch zum Gesamtmittelwert bzw. zur übergeordneten Verteilung hin „geschrumpft&quot; werden, statt jede Gruppe unabhängig…">Shrinkage</a>).
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Würfle die Erhebung mehrfach neu und achte darauf, wie groß die Gemeinden am oberen und unteren Rand der Rangliste sind. Erhöhe dann die Zahl der Gemeinden und beobachte, wie sich der Trichter füllt.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     <strong>Regression zur Mitte</strong> zeigt die Wiederholungs-Variante: Extreme Werte kleiner Einheiten wandern bei einer neuen Messung zurück zur Mitte — genau darauf beruht Shrinkage.
