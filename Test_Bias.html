@@ -196,13 +196,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Gruppe B schneidet im Test schlechter ab als Gruppe A. Ist der Test verzerrt? Nicht zwingend. <strong>Testverzerrung</strong> (nach Cleary) liegt vor, wenn derselbe Testwert in beiden Gruppen unterschiedlich viel über das Kriterium aussagt, etwa die spätere Leistung. Es kann auch das <strong>Kriterium</strong> selbst verzerrt sein. Oder der Unterschied ist real und führt nur zu ungleichen Auswahlquoten (<strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-adverse-impact" target="_blank" rel="noopener" title="Adverse Impact (AI) liegt vor, wenn eine geschützte oder benachteiligte Gruppe bei einer Auswahlentscheidung deutlich seltener ausgewählt wird als eine Vergleichsgruppe — unabhängig davon, ob der zugrunde liegende Test selbst fair ist (im Sinne von…">Adverse Impact</a></strong>). Das Tool simuliert alle Fälle und zeigt, an welchem Muster man sie erkennt.
+    Gruppe B schneidet im Test schlechter ab als Gruppe A. Ist der Test verzerrt? Nicht zwingend. Testverzerrung (nach Cleary) liegt vor, wenn derselbe Testwert in beiden Gruppen unterschiedlich viel über das Kriterium aussagt, etwa die spätere Leistung. Es kann auch das Kriterium selbst verzerrt sein. Oder der Unterschied ist real und führt nur zu ungleichen Auswahlquoten (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-adverse-impact" target="_blank" rel="noopener" title="Adverse Impact (AI) liegt vor, wenn eine geschützte oder benachteiligte Gruppe bei einer Auswahlentscheidung deutlich seltener ausgewählt wird als eine Vergleichsgruppe — unabhängig davon, ob der zugrunde liegende Test selbst fair ist (im Sinne von…">Adverse Impact</a>). Das Tool simuliert alle Fälle und zeigt, an welchem Muster man sie erkennt. Das Beispiel: ein Auswahltest (Prädiktor) und die Jobleistung (Kriterium) für Referenz- und Fokusgruppe.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
     <strong>1. Szenario wählen</strong> — Kein Bias, Testverzerrung, Kriteriumsverzerrung oder Adverse Impact.<br>
-    <strong>2. Gruppen einstellen</strong> — Mittelwert, Regressionsgerade und Stichprobengröße für Gruppe A (Referenz) und B (Fokus).<br>
+    <strong>2. Gruppen einstellen</strong> — Mittelwert, Regressionsgerade (Achsenabschnitt und Steigung) und Stichprobengröße für Gruppe A (Referenz) und B (Fokus).<br>
     <strong>3. Streudiagramm</strong> — verlaufen die Regressionsgeraden gleich oder verschoben?<br>
     <strong>4. Konzepte</strong> — Intercept- vs. Slope-Bias und die Ursachendiagnose.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Test Bias ≠ Adverse Impact:</strong> Ein fairer Test (identische Regression für beide Gruppen) kann trotzdem Adverse Impact erzeugen, wenn die Gruppen unterschiedliche Prädiktor-Mittelwerte haben.<br>
+    <strong>Intercept- vs. Slope-Unterschied:</strong> Beim Intercept wird eine Gruppe durchgehend über- oder unterprognostiziert (parallel versetzte Geraden), bei der Steigung sagt der Test das Kriterium für eine Gruppe schwächer vorher.<br>
+    <strong>Ursachendiagnose:</strong> Die standardisierten Mittelwertdifferenzen von Prädiktor und Kriterium deuten auf die Quelle — z. B. große Differenz nur im Prädiktor spricht für Testverzerrung. Die Vier-Fünftel-Regel (Quote von B geteilt durch Quote von A unter 0,80) ist ein rechtlicher Hinweis auf Adverse Impact.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Wähle „Adverse Impact“: Die Regressionsgeraden sind gleich, und trotzdem fällt die Quote der Gruppe B niedriger aus. Wechsle dann zu „Testverzerrung“ und beobachte, wie die Geraden auseinanderliegen.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Wird die Verzerrung bei einzelnen Aufgaben vermutet, zeigt <strong>DIF — Differential Item Functioning</strong> sie auf Itemebene.

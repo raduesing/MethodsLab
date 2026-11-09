@@ -196,13 +196,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Group B scores lower on the test than group A. Is the test biased? Not necessarily. <strong>Test bias</strong> (after Cleary) exists when the same test score says something different about the criterion in the two groups, such as later performance. The <strong>criterion</strong> itself may also be biased. Or the difference is real and merely leads to unequal selection rates (<strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-adverse-impact" target="_blank" rel="noopener" title="Adverse Impact (AI) occurs when a protected or disadvantaged group is selected substantially less often in a selection decision than a comparison group — regardless of whether the underlying test is itself fair (in the Cleary sense).">adverse impact</a></strong>). The tool simulates all cases and shows which pattern identifies each.
+    Group B scores lower on the test than group A. Is the test biased? Not necessarily. Test bias (after Cleary) exists when the same test score says different things about the criterion, such as later performance, in the two groups. The criterion itself can also be biased. Or the difference is real and merely leads to unequal selection rates (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-adverse-impact" target="_blank" rel="noopener" title="Adverse Impact (AI) occurs when a protected or disadvantaged group is selected substantially less often in a selection decision than a comparison group — regardless of whether the underlying test is itself fair (in the Cleary sense).">adverse impact</a>). The tool simulates all cases and shows which pattern identifies them. The example: a selection test (predictor) and job performance (criterion) for a reference and a focal group.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Choose a scenario</strong> — no bias, test bias, criterion bias, or adverse impact.<br>
-    <strong>2. Set the groups</strong> — mean, regression line, and sample size for group A (reference) and B (focal).<br>
-    <strong>3. Scatterplot</strong> — are the regression lines identical or shifted?<br>
-    <strong>4. Concepts</strong> — intercept vs. slope bias and the diagnosis of causes.
+    <strong>1. Choose a scenario</strong> — no bias, test bias, criterion bias or adverse impact.<br>
+    <strong>2. Set the groups</strong> — mean, regression line (intercept and slope) and sample size for group A (reference) and B (focal).<br>
+    <strong>3. Scatterplot</strong> — do the regression lines run the same or shifted?<br>
+    <strong>4. Concepts</strong> — intercept vs. slope bias and the cause diagnosis.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Test bias ≠ adverse impact:</strong> a fair test (identical regression for both groups) can still produce adverse impact if the groups have different predictor means.<br>
+    <strong>Intercept vs. slope difference:</strong> with an intercept difference one group is consistently over- or underpredicted (parallel shifted lines), with a slope difference the test predicts the criterion more weakly for one group.<br>
+    <strong>Cause diagnosis:</strong> the standardized mean differences of predictor and criterion point to the source — e.g. a large difference only in the predictor speaks for test bias. The four-fifths rule (rate of B divided by rate of A below 0.80) is a legal indication of adverse impact.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Choose "adverse impact": the regression lines are identical, and yet the rate of group B is lower. Then switch to "test bias" and watch how the lines lie apart.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     If bias is suspected in individual items, <strong>DIF — Differential Item Functioning</strong> shows it at the item level.
