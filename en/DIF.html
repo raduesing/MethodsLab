@@ -153,13 +153,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Group B solves an item less often than group A. Is that a problem? Not necessarily — perhaps the groups really differ in knowledge (this is called <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-impact" target="_blank" rel="noopener" title="In the context of Differential Item Functioning analyses, impact refers to the difference in mean latent ability θ between two groups (μ_reference ≠ μ_focal) — regardless of how individual items function.">impact</a></em>). It only becomes unfair when people with the <em>same</em> ability have different chances of solving the item, for example because of hard-to-understand language or cultural background knowledge: that is <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dif" target="_blank" rel="noopener" title="DIF occurs when persons with the same latent ability θ show systematically different response probabilities on an item — depending on their group membership (e.g. sex, cultural background, language).">DIF</a></strong> (differential item functioning). The tool separates the two: you shift the group ability (impact) or the item difficulty per group (DIF) and see what changes.
+    Group B solves a task less often than group A. Is that a problem? Not necessarily — perhaps the groups really differ in their knowledge (this is called <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-impact" target="_blank" rel="noopener" title="In the context of Differential Item Functioning analyses, impact refers to the difference in mean latent ability θ between two groups (μ_reference ≠ μ_focal) — regardless of how individual items function.">impact</a>). It becomes unfair only when people with the same ability have different chances of solving the task, for example because of hard-to-understand language or cultural background knowledge: that is <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dif" target="_blank" rel="noopener" title="DIF occurs when persons with the same latent ability θ show systematically different response probabilities on an item — depending on their group membership (e.g. sex, cultural background, language).">DIF</a> (differential item functioning). The tool separates the two: you shift the group ability (impact) or the task difficulty per group (DIF) and see what changes.
 
     <div class="ib-head ib-head2">How to proceed</div>
     <strong>1. Impact vs. DIF</strong> — change group parameters and DIF parameters separately and compare the effect.<br>
-    <strong>2. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc-irt" target="_blank" rel="noopener" title="The Item Characteristic Curve (ICC) is the graphical representation of the IRT response function: it shows how the probability of a correct (or higher-category) response increases with rising θ (person ability).">ICC</a> comparison</strong> — do the curves of the reference and focal group differ?<br>
-    <strong>3. Uniform vs. non-uniform</strong> — are the curves parallel or do they cross?<br>
+    <strong>2. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc-irt" target="_blank" rel="noopener" title="The Item Characteristic Curve (ICC) is the graphical representation of the IRT response function: it shows how the probability of a correct (or higher-category) response increases with rising θ (person ability).">ICC</a> comparison</strong> — do the curves of reference and focal group deviate from each other?<br>
+    <strong>3. Uniform vs. non-uniform</strong> — do the curves run in parallel or do they cross?<br>
     <strong>4. Effect size</strong> — how large is the DIF, and does it justify revising or removing the item?
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>DIF is a phenomenon at item level:</strong> it asks whether the item itself is fair — regardless of whether the groups differ in their mean ability.<br>
+    <strong>Impact is not bias:</strong> that one group scores lower on average can be due to a lower ability. An item is unfair only when it works differently at <em>the same ability</em>.<br>
+    <strong>Uniform or non-uniform:</strong> with uniform DIF the curves are shifted in parallel (different difficulty), with non-uniform DIF they cross (different discrimination).
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Shift only the group ability (impact) and leave the DIF at zero: the curves stay the same. Then build in DIF and watch the curves of the two groups separate.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     At the level of the whole test, <strong>Test Bias &amp; Fairness</strong> asks whether the same test score means the same in both groups.

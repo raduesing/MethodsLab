@@ -176,13 +176,22 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Ein Depressionsfragebogen wird mit dem Urteil eines klinischen Interviews verglichen. Je enger beide zusammenhängen (Korrelation r), desto besser sagt der Test das Kriterium vorher; bei r = 0 hat er keinen diagnostischen Nutzen. Legt man auf beiden Achsen Schwellen fest, teilt sich die Punktwolke in vier Felder: richtig erkannt, Fehlalarm, verpasst, richtig ausgeschlossen. Das Tool zeigt, wie Korrelation, Schwellen und Vierfeldertafel zusammenhängen.
+    Ein Depressionsfragebogen wird mit dem Urteil eines klinischen Interviews verglichen. Je enger beide zusammenhängen (Korrelation r), desto besser sagt der Test das Kriterium vorher; bei r = 0 hat er keinen diagnostischen Nutzen. Legt man auf beiden Achsen Schwellen fest, teilt sich die Punktwolke in vier Felder: richtig erkannt, Fehlalarm, verpasst, richtig ausgeschlossen. Das Tool zeigt, wie Korrelation, Schwellen und Vierfeldertafel zusammenhängen. Das Beispiel: ein PHQ-9-Screening gegen eine klinische Diagnose nach strukturiertem Interview.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Stichprobe &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-validitaet" target="_blank" rel="noopener" title="Validität ist das wichtigste Gütekriterium eines Tests.">Validität</a></strong> — die Korrelation r einstellen.<br>
-    <strong>2. Cut-off-Werte</strong> — Schwelle für Test und für Kriterium verschieben.<br>
-    <strong>3. Streudiagramm &amp; Vierfeldertafel</strong> — die vier Felder und die Kennwerte ablesen.<br>
+    <strong>1. Stichprobe &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-validitaet" target="_blank" rel="noopener" title="Validität ist das wichtigste Gütekriterium eines Tests.">Validität</a></strong> — die Korrelation r und die Stichprobengröße einstellen.<br>
+    <strong>2. Cut-off-Werte</strong> — Schwelle für den Test (X) und für das Kriterium (Y) getrennt verschieben.<br>
+    <strong>3. Streudiagramm &amp; Vierfeldertafel</strong> — die vier Felder und die Kennwerte ablesen; optional mit Konfidenzellipse und eingefärbten Quadranten.<br>
     <strong>4. Konzepte</strong> — was r für den diagnostischen Nutzen bedeutet.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>r² ist der Anteil gemeinsamer Varianz:</strong> Bei r = .50 sind es 25 %.<br>
+    <strong>Die Basisrate entscheidet über den praktischen Wert eines positiven Befunds:</strong> Bei seltener Störung ist der PPV niedrig, weil unter den Positiven viele Gesunde sind — selbst bei gutem Test. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-sensitivitaet" target="_blank" rel="noopener" title="Die Sensitivität (auch: True Positive Rate, Recall) gibt an, welcher Anteil der tatsächlich positiven Fälle vom Test korrekt als positiv erkannt wird: Sensitivität = TP / (TP + FN).">Sensitivität</a> und <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-spezifitaet" target="_blank" rel="noopener" title="Die Spezifität (auch: True Negative Rate) gibt an, welcher Anteil der tatsächlich negativen Fälle vom Test korrekt als negativ erkannt wird: Spezifität = TN / (TN + FP).">Spezifität</a> sind dagegen Eigenschaften des Tests und prävalenzunabhängig.<br>
+    <strong>Validität ist notwendig, aber nicht hinreichend:</strong> Erst zusammen mit Basisrate und Cut-off entsteht Nützlichkeit.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Erhöhe r und beobachte, wie sich die Felder der Vierfeldertafel verschieben. Setze dann die Kriteriumsschwelle höher — die Störung wird seltener — und sieh, wie der PPV sinkt, obwohl r gleich bleibt.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Soll ein Test zur Auswahl von Personen genutzt werden, zeigen die <strong>Taylor-Russell-Tafeln</strong>, wie viel er in der Praxis bringt.

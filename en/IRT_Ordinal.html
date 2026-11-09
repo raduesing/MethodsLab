@@ -162,13 +162,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Classical IRT only knows “right” or “wrong”. But many items have several ordered answer levels — Likert scales (“strongly disagree” to “strongly agree”) or partial credit. Ordinal IRT models (PCM, GPCM, GRM) describe for each level how likely it is to be chosen at which level of the trait. Instead of one difficulty, an item has several <strong>thresholds</strong> — the transitions between levels. This yields more information; if the thresholds are not in order, an answer level is practically redundant.
+    Classical IRT knows only "right" or "wrong". But many items have several ordered response levels — Likert scales ("strongly disagree" to "strongly agree") or partial credit. Ordinal IRT models (PCM, GPCM, GRM) describe, for each level, how likely it is to be chosen at which level of the trait. Instead of one difficulty, an item has several thresholds — the transitions between the levels. This provides more information; if the thresholds are not in order, a response level is practically superfluous.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Choose model &amp; item</strong> — PCM, GPCM, or GRM; then set parameters and ability θ.<br>
-    <strong>2. From binary to polytomous (①)</strong> — look at the category response curves.<br>
-    <strong>3. Check thresholds (③)</strong> — “disordered thresholds” as a warning sign.<br>
-    <strong>4. Expected score &amp; item information (④)</strong> — where does the item contribute most to measurement?
+    <strong>1. Choose model &amp; item</strong> — PCM, GPCM or GRM; then set the parameters and the ability θ.<br>
+    <strong>2. From binary to polytomous (①)</strong> — look at the category response curves: which response level is most likely at which ability?<br>
+    <strong>3. Check thresholds (③)</strong> — "disordered thresholds" as a warning sign.<br>
+    <strong>4. Expected score &amp; item information (④)</strong> — where does the item contribute most to the measurement?
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>The models differ in discrimination:</strong> the PCM belongs to the Rasch family (all items with discrimination 1), the GPCM allows different discriminations per item.<br>
+    <strong>A threshold is the point at which two adjacent levels are equally likely:</strong> with ordered thresholds every level becomes the most likely one somewhere.<br>
+    <strong>Disordered thresholds are a warning sign:</strong> then a response level is never the most likely and practically superfluous — a hint to merge categories or revise the item.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Shift the thresholds of an item so that they are no longer in order and watch the warning and the category curves. Then compare PCM and GPCM at different discrimination.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     Do the items work the same in all groups? <strong>DIF — Differential Item Functioning</strong> checks that.

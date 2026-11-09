@@ -176,13 +176,22 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    A depression questionnaire is compared with the judgment of a clinical interview. The more closely the two are related (correlation r), the better the test predicts the criterion; at r = 0 it has no diagnostic value. If you set thresholds on both axes, the cloud of points splits into four fields: correctly detected, false alarm, missed, correctly ruled out. The tool shows how correlation, thresholds, and the four-fold table fit together.
+    A depression questionnaire is compared with the judgement of a clinical interview. The more closely the two are related (correlation r), the better the test predicts the criterion; at r = 0 it has no diagnostic value. If you set thresholds on both axes, the point cloud splits into four fields: correctly detected, false alarm, missed, correctly ruled out. The tool shows how correlation, thresholds and the fourfold table are connected. The example: a PHQ-9 screening against a clinical diagnosis from a structured interview.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Sample &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-validitaet" target="_blank" rel="noopener" title="Validity is a test&#x27;s most important quality criterion.">validity</a></strong> — set the correlation r.<br>
-    <strong>2. Cutoff values</strong> — move the threshold for the test and for the criterion.<br>
-    <strong>3. Scatterplot &amp; four-fold table</strong> — read off the four fields and the indices.<br>
-    <strong>4. Concepts</strong> — what r means for diagnostic value.
+    <strong>1. Sample &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-validitaet" target="_blank" rel="noopener" title="Validity is a test&#x27;s most important quality criterion.">validity</a></strong> — set the correlation r and the sample size.<br>
+    <strong>2. Cut-off values</strong> — move the threshold for the test (X) and for the criterion (Y) separately.<br>
+    <strong>3. Scatterplot &amp; fourfold table</strong> — read the four fields and the indices; optionally with confidence ellipse and coloured quadrants.<br>
+    <strong>4. Concepts</strong> — what r means for diagnostic usefulness.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>r² is the share of shared variance:</strong> at r = .50 that is 25%.<br>
+    <strong>The base rate determines the practical value of a positive finding:</strong> with a rare disorder the PPV is low because many healthy people are among the positives — even with a good test. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-sensitivitaet" target="_blank" rel="noopener" title="Sensitivity (also: True Positive Rate, Recall) indicates what proportion of truly positive cases is correctly identified as positive by the test: Sensitivity = TP / (TP + FN).">Sensitivity</a> and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-spezifitaet" target="_blank" rel="noopener" title="Specificity (also: True Negative Rate) indicates what proportion of truly negative cases is correctly identified as negative by the test: Specificity = TN / (TN + FP).">specificity</a>, in contrast, are properties of the test and independent of <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-praevalenz" target="_blank" rel="noopener" title="Prevalence is the proportion of persons in a population who exhibit a characteristic (e.g. a disease) at a point in time or during a period — a stock measure.">prevalence</a>.<br>
+    <strong>Validity is necessary but not sufficient:</strong> only together with base rate and cut-off does usefulness arise.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Increase r and watch the fields of the fourfold table shift. Then set the criterion threshold higher — the disorder becomes rarer — and see how the PPV drops although r stays the same.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     If a test is used to select people, the <strong>Taylor-Russell Tables</strong> show what it delivers in practice.

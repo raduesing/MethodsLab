@@ -172,13 +172,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Whether a person solves an item depends on their ability, but also on the item: easy or hard, discriminating well or not, easy to guess. IRT describes this with an S-shaped curve per item (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc-irt" target="_blank" rel="noopener" title="The Item Characteristic Curve (ICC) is the graphical representation of the IRT response function: it shows how the probability of a correct (or higher-category) response increases with rising θ (person ability).">ICC</a>). The advantage over <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ktt" target="_blank" rel="noopener" title="Classical Test Theory decomposes every observed test score into a true score and a measurement error: X = τ + ε.">classical test theory</a>: ability and item properties sit on the same scale, and measurement precision depends on where someone stands — a test can measure imprecisely for strong test-takers and precisely for weak ones. From a person's answers, their ability can then be estimated.
+    Whether a person solves a task depends on their ability, but also on the task: easy or hard, discriminating well or not, easy to guess. IRT describes this with an S-shaped curve per task (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc-irt" target="_blank" rel="noopener" title="The Item Characteristic Curve (ICC) is the graphical representation of the IRT response function: it shows how the probability of a correct (or higher-category) response increases with rising θ (person ability).">ICC</a>). The advantage over <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ktt" target="_blank" rel="noopener" title="Classical Test Theory decomposes every observed test score into a true score and a measurement error: X = τ + ε.">classical test theory</a>: ability and task properties lie on the same scale, and the measurement precision depends on where someone stands — a test can measure imprecisely for strong persons and precisely for weak ones. From a person's answers their ability can then be estimated.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Choose model &amp; item</strong> — from Rasch/1PL to 4PL; then set the parameters and the ability θ.<br>
-    <strong>2. Item characteristic curve (①)</strong> — probability of solving as a function of ability.<br>
+    <strong>1. Choose model &amp; item</strong> — from Rasch/1PL to 4PL; then set the item parameters and the ability θ. Each model adds a parameter: difficulty, discrimination, guessing probability, upper limit.<br>
+    <strong>2. Item characteristic curve (①)</strong> — the probability of solving as a function of ability.<br>
     <strong>3. Test information (③)</strong> — where on the scale does the test measure precisely?<br>
-    <strong>4. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-wright-map" target="_blank" rel="noopener" title="The Wright Map (also: Variable Map or Person-Item Map) visualizes persons and items jointly on a common θ-scale.">Wright map</a> (④)</strong> — do the item difficulties match the people? Also: estimate ability from answers.
+    <strong>4. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-wright-map" target="_blank" rel="noopener" title="The Wright Map (also: Variable Map or Person-Item Map) visualizes persons and items jointly on a common θ-scale.">Wright map</a> (④)</strong> — do the difficulties of the tasks match the persons? Also: estimate ability from answers.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Ability and item difficulty lie on the same scale:</strong> this allows direct statements about which items are informative for which persons.<br>
+    <strong>Measurement precision is not a single number:</strong> it depends on where on the ability scale someone stands — a test measures precisely only where its items "lie".<br>
+    <strong>IRT and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis is a latent variable model that explains the covariances among observed indicators through a smaller number of latent factors.">factor analysis</a> are related:</strong> the 2PL model corresponds to a one-factor model for dichotomous data; the discrimination a is a kind of factor loading.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Increase the discrimination and watch the curve become steeper and the information around the difficulty higher. Then set a guessing parameter and see how the lower part of the curve changes.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     Items with more than two answer levels, such as Likert scales? <strong>Ordinal IRT</strong> covers that.

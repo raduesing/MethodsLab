@@ -197,13 +197,22 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Ein Screening-Test soll Kinder mit ADHS erkennen. Die Testwerte betroffener und unauffälliger Kinder überlappen aber. Wo man auch die Schwelle (Cut-off) setzt, entstehen Fehler: Senkt man sie, erkennt man mehr Betroffene (hohe <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-sensitivitaet" target="_blank" rel="noopener" title="Die Sensitivität (auch: True Positive Rate, Recall) gibt an, welcher Anteil der tatsächlich positiven Fälle vom Test korrekt als positiv erkannt wird: Sensitivität = TP / (TP + FN).">Sensitivität</a></strong>), schlägt aber auch bei mehr Gesunden fälschlich Alarm (niedrige <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-spezifitaet" target="_blank" rel="noopener" title="Die Spezifität (auch: True Negative Rate) gibt an, welcher Anteil der tatsächlich negativen Fälle vom Test korrekt als negativ erkannt wird: Spezifität = TN / (TN + FP).">Spezifität</a></strong>) — und umgekehrt. Wie aussagekräftig ein positives Ergebnis wirklich ist, hängt außerdem davon ab, wie häufig die Störung überhaupt vorkommt.
+    Ein Screening-Test soll Kinder mit ADHS erkennen. Die Testwerte betroffener und unauffälliger Kinder überlappen aber. Wo man auch die Schwelle (Cut-off) setzt, entstehen Fehler: Senkt man sie, erkennt man mehr Betroffene (hohe <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-sensitivitaet" target="_blank" rel="noopener" title="Die Sensitivität (auch: True Positive Rate, Recall) gibt an, welcher Anteil der tatsächlich positiven Fälle vom Test korrekt als positiv erkannt wird: Sensitivität = TP / (TP + FN).">Sensitivität</a>), schlägt aber auch bei mehr Gesunden fälschlich Alarm (niedrige <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-spezifitaet" target="_blank" rel="noopener" title="Die Spezifität (auch: True Negative Rate) gibt an, welcher Anteil der tatsächlich negativen Fälle vom Test korrekt als negativ erkannt wird: Spezifität = TN / (TN + FP).">Spezifität</a>) — und umgekehrt. Wie aussagekräftig ein positives Ergebnis wirklich ist, hängt außerdem davon ab, wie häufig die Störung überhaupt vorkommt. Im Tool vergleichst du einen Eltern-Fragebogen mit der klinischen ADHS-Diagnose als Goldstandard.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Verteilungen &amp; Cut-off</strong> — Lage und Streuung beider Gruppen einstellen und die Schwelle verschieben (①).<br>
+    <strong>1. Verteilungen &amp; Cut-off</strong> — Lage, Streuung und Größe beider Gruppen einstellen und die Schwelle verschieben (①).<br>
     <strong>2. Vierfeldertafel &amp; Kennwerte (②)</strong> — richtig erkannt, Fehlalarm, verpasst, richtig ausgeschlossen.<br>
     <strong>3. ROC-Analyse (③)</strong> — alle möglichen Schwellen auf einen Blick.<br>
     <strong>4. Konzepte</strong> — Trade-off, prädiktive Werte und <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-praevalenz" target="_blank" rel="noopener" title="Die Prävalenz ist der Anteil der Personen in einer Population, die zu einem Zeitpunkt oder in einem Zeitraum ein Merkmal (z.B. eine Erkrankung) aufweisen — ein Bestandsmaß.">Prävalenz</a>.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Sensitivität und Spezifität sind Eigenschaften des Tests</strong> — unabhängig von der Häufigkeit der Störung. <strong>PPV und NPV</strong> hängen dagegen stark von der Prävalenz ab und beantworten die Frage für die einzelne Person: Wie verlässlich ist ein positiver oder negativer Befund?<br>
+    <strong>Den einen richtigen Cut-off gibt es nicht:</strong> Er folgt aus dem Ziel — etwa der Youden-Index (beide Fehlerarten gleich gewichtet) oder ein Kosten-Nutzen-Abgleich, wenn eine Fehlerart teurer ist.<br>
+    <strong>Likelihood Ratios</strong> (LR+ und LR−) messen die Trennschärfe unabhängig von der Prävalenz.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Verschiebe den Cut-off und beobachte, wie Sensitivität und Spezifität gegenläufig reagieren. Verändere dann die Gruppengrößen (und damit die Prävalenz) und sieh, wie stark der PPV schwankt, obwohl der Test derselbe bleibt.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Wie sich die Korrelation von Test und Kriterium auf diese Treffer und Fehler auswirkt, zeigt <strong>Diagnostische Validität</strong>.

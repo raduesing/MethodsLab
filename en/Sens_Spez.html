@@ -197,13 +197,22 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    A screening test is meant to identify children with ADHD. But the test scores of affected and unaffected children overlap. Wherever you set the threshold (cutoff), errors arise: lower it and you identify more affected children (high <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-sensitivitaet" target="_blank" rel="noopener" title="Sensitivity (also: True Positive Rate, Recall) indicates what proportion of truly positive cases is correctly identified as positive by the test: Sensitivity = TP / (TP + FN).">sensitivity</a></strong>) but also raise a false alarm for more healthy ones (low <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-spezifitaet" target="_blank" rel="noopener" title="Specificity (also: True Negative Rate) indicates what proportion of truly negative cases is correctly identified as negative by the test: Specificity = TN / (TN + FP).">specificity</a></strong>) — and vice versa. How informative a positive result really is also depends on how common the disorder is in the first place.
+    A screening test is supposed to detect children with ADHD. But the test scores of affected and unaffected children overlap. Wherever you set the threshold (cut-off), errors arise: lowering it detects more affected children (high <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-sensitivitaet" target="_blank" rel="noopener" title="Sensitivity (also: True Positive Rate, Recall) indicates what proportion of truly positive cases is correctly identified as positive by the test: Sensitivity = TP / (TP + FN).">sensitivity</a>) but also raises a false alarm for more healthy ones (low <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-spezifitaet" target="_blank" rel="noopener" title="Specificity (also: True Negative Rate) indicates what proportion of truly negative cases is correctly identified as negative by the test: Specificity = TN / (TN + FP).">specificity</a>) — and vice versa. How informative a positive result really is also depends on how common the disorder is at all. In the tool you compare a parent questionnaire with the clinical ADHD diagnosis as gold standard.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Distributions &amp; cutoff</strong> — set location and spread of both groups and move the threshold (①).<br>
-    <strong>2. Four-fold table &amp; indices (②)</strong> — correctly detected, false alarm, missed, correctly ruled out.<br>
+    <strong>1. Distributions &amp; cut-off</strong> — set location, spread and size of both groups and move the threshold (①).<br>
+    <strong>2. Fourfold table &amp; indices (②)</strong> — correctly detected, false alarm, missed, correctly ruled out.<br>
     <strong>3. ROC analysis (③)</strong> — all possible thresholds at a glance.<br>
-    <strong>4. Concepts</strong> — trade-off, predictive values, and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-praevalenz" target="_blank" rel="noopener" title="Prevalence is the proportion of persons in a population who exhibit a characteristic (e.g. a disease) at a point in time or during a period — a stock measure.">prevalence</a>.
+    <strong>4. Concepts</strong> — trade-off, predictive values and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-praevalenz" target="_blank" rel="noopener" title="Prevalence is the proportion of persons in a population who exhibit a characteristic (e.g. a disease) at a point in time or during a period — a stock measure.">prevalence</a>.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Sensitivity and specificity are properties of the test</strong> — independent of how common the disorder is. <strong>PPV and NPV</strong>, in contrast, depend strongly on prevalence and answer the question for the individual person: how reliable is a positive or negative finding?<br>
+    <strong>There is no single right cut-off:</strong> it follows from the goal — e.g. the Youden index (both error types weighted equally) or a cost-benefit comparison when one error type is more expensive.<br>
+    <strong>Likelihood ratios</strong> (LR+ and LR−) measure discrimination independently of prevalence.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Move the cut-off and watch sensitivity and specificity react in opposite directions. Then change the group sizes (and with them the prevalence) and see how strongly the PPV varies although the test stays the same.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     How the correlation between test and criterion affects these hits and errors is shown by <strong>Diagnostic Validity</strong>.
