@@ -194,14 +194,23 @@ canvas{display:block;width:100%}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    A cognitive test has 8 items (individual tasks or subtests). Some are closely related, others hardly at all. Exploratory <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis is a latent variable model that explains the covariances among observed indicators through a smaller number of latent factors.">factor analysis</a> (EFA) checks whether a few shared traits (<strong>factors</strong>) are hiding behind them — here verbal ability and spatial reasoning — without deciding beforehand which item belongs to which factor. The factors are extracted from the relationships among the items and rotated so that each item can be assigned as clearly as possible to one factor.
+    A cognition test has 8 items (single tasks or subtests). Some are closely related, others hardly. Exploratory <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Factor analysis is a latent variable model that explains the covariances among observed indicators through a smaller number of latent factors.">factor analysis</a> (EFA) examines whether a few common characteristics (factors) lie behind them — here verbal ability and spatial reasoning — without specifying in advance which item belongs to which factor. From the relationships between the items the factors are extracted and rotated so that each item can be assigned as clearly as possible to one factor. In the tool, 300 simulated persons complete eight tests: V1–V4 are verbal, S1–S4 spatial tasks.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Items &amp; measurement model (①)</strong> — set the strength of loadings, cross-loading, and factor correlation.<br>
-    <strong>2. Correlation matrix (②)</strong> — which items go together?<br>
+    <strong>1. Items &amp; measurement model (①)</strong> — set the strength of the primary loading, the cross-loading and the factor correlation. Three scenarios give starting points: orthogonal, oblique and strongly oblique.<br>
+    <strong>2. Correlation matrix (②)</strong> — which items are related?<br>
     <strong>3. Factor extraction (③)</strong> — eigenvalues and scree plot: how many factors are needed?<br>
-    <strong>4. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rotation" target="_blank" rel="noopener" title="Factor rotation transforms an initial factor-loading matrix into a more interpretable solution without changing the model&#x27;s overall fit (total explained variance, communalities) — only the coordinate axes in factor space are rotated.">Rotation</a> &amp; loadings (④)</strong> — varimax or oblique, until a clear structure appears.<br>
+    <strong>4. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rotation" target="_blank" rel="noopener" title="Factor rotation transforms an initial factor-loading matrix into a more interpretable solution without changing the model&#x27;s overall fit (total explained variance, communalities) — only the coordinate axes in factor space are rotated.">Rotation</a> &amp; loadings (④)</strong> — switch between unrotated, varimax or oblique until a clear structure appears.<br>
     <strong>5. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-kommunalitaet" target="_blank" rel="noopener" title="The communality h² of an item (or variable) in factor analysis is the share of its variance explained by the extracted common factors — the complement of uniqueness (h² + u² = 1, for standardized variables).">Communality</a> &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">reliability</a> (⑤)</strong> — how much of each item's variance do the factors explain?
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Orthogonal or oblique?</strong> Varimax forces the factors to be uncorrelated; if they are in truth related, an oblique rotation fits better.<br>
+    <strong>Rotation changes the interpretation, not the explained variance:</strong> the communalities of the items stay the same.<br>
+    <strong>The number of factors is a judgement</strong>, not a computational result: eigenvalues and the scree plot give hints but do not decide alone. The index ωh shows how unidimensional the structure is — it grows with the factor correlation and the cross-loading.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Switch from scenario ① (φ = 0) to ③ (φ = .70) and watch ωh rise from about .37 to .82. Then compare the loading patterns under varimax and oblique.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     If the structure is already known from theory, you test it with <strong>Confirmatory Factor Analysis</strong> — instead of searching for it first.

@@ -170,13 +170,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    A school introduces tutoring, and grades rise. But students improve over time anyway. So you don't just compare before with after, but also with schools without the program: the difference between the two changes is the program effect. Key assumption: without the program, both groups would have developed alike (parallel trends) — this cannot be tested directly.
+    A school introduces tutoring and grades rise. But students improve with time anyway. That is why you compare not only before with after, but also with schools without the programme: the difference between the two changes is the programme effect. Important assumption: without the programme, both groups would have developed in parallel (parallel trends) — this cannot be tested directly. The example in the tool: a school district introduces daily tutoring in some of its schools; the remaining schools are the control group.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Scenario &amp; coefficients</strong> — set the time trend β₁, group difference β₂, and effect β₃.<br>
-    <strong>2. DiD plot</strong> — before/after with the dashed counterfactual and the two naive comparisons ① and ②.<br>
-    <strong>3. 2 × 2 cell means &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS is the standard method for estimating linear regression coefficients: it minimizes the sum of squared residuals RSS = Σ(yᵢ − ŷᵢ)².">OLS</a> output</strong> — recompute β₃ as the difference of differences.<br>
+    <strong>1. Scenario &amp; coefficients</strong> — set the time trend β₁, the group difference β₂ and the effect β₃.<br>
+    <strong>2. DiD plot</strong> — before/after with a dashed counterfactual (how the treatment group would have developed without the programme) and the two naive comparisons ① (post-period cross-section only) and ② (before/after of the treatment group only).<br>
+    <strong>3. 2 × 2 cell means &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS is the standard method for estimating linear regression coefficients: it minimizes the sum of squared residuals RSS = Σ(yᵢ − ŷᵢ)².">OLS</a> output</strong> — recompute β₃ yourself as the difference of differences.<br>
     <strong>4. Concepts</strong> — parallel trends, anticipation, spillover.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Parallel trends cannot be tested directly</strong> — the assumption is counterfactual. It can be made plausible with several pre-periods (event study).<br>
+    <strong>DiD estimates the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-att" target="_blank" rel="noopener" title="The ATT is the average causal effect of a treatment restricted to those who actually received it: ATT = E[Y¹ − Y⁰ | D=1].">ATT</a>, not automatically the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ate" target="_blank" rel="noopener" title="The ATE is the average causal effect of a treatment computed across all units of the target population.">ATE</a>:</strong> the effect holds for exactly the treated units.<br>
+    <strong>Naive comparisons overestimate:</strong> ① counts the group difference β₂, ② the general time trend β₁. In the double difference both cancel out — what remains is β₃.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Change the time trend β₁ and the group difference β₂ and watch how the two naive estimators move while β₃ (the DiD effect) stays unchanged.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     If you have only one measurement point but many measured covariates, <strong>Propensity Score Matching/Weighting</strong> aligns the treatment and control groups.

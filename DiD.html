@@ -170,13 +170,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Eine Schule führt Nachhilfe ein, und die Noten steigen. Aber Schüler werden mit der Zeit ohnehin besser. Deshalb vergleicht man nicht nur vorher mit nachher, sondern auch mit Schulen ohne Programm: Der Unterschied zwischen beiden Veränderungen ist der Programmeffekt. Wichtige Annahme: Ohne das Programm hätten sich beide Gruppen gleich entwickelt (parallele Trends) — das lässt sich nicht direkt prüfen.
+    Eine Schule führt Nachhilfe ein, und die Noten steigen. Aber Schüler werden mit der Zeit ohnehin besser. Deshalb vergleicht man nicht nur vorher mit nachher, sondern auch mit Schulen ohne Programm: Der Unterschied zwischen beiden Veränderungen ist der Programmeffekt. Wichtige Annahme: Ohne das Programm hätten sich beide Gruppen gleich entwickelt (parallele Trends) — das lässt sich nicht direkt prüfen. Das Beispiel im Tool: Ein Schuldistrikt führt tägliches Tutoring in einem Teil seiner Schulen ein; die übrigen Schulen sind die Kontrollgruppe.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
     <strong>1. Szenario &amp; Koeffizienten</strong> — Zeittrend β₁, Gruppenunterschied β₂ und Effekt β₃ einstellen.<br>
-    <strong>2. DiD-Plot</strong> — Vorher/Nachher mit gestricheltem Kontrafaktual und den beiden naiven Vergleichen ① und ②.<br>
-    <strong>3. 2 × 2-Zellmittelwerte &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS ist das Standardverfahren zur Schätzung linearer Regressionskoeffizienten: Es minimiert die Summe der quadrierten Residuen RSS = Σ(yᵢ − ŷᵢ)².">OLS</a>-Output</strong> — β₃ als Differenz der Differenzen nachrechnen.<br>
+    <strong>2. DiD-Plot</strong> — Vorher/Nachher mit gestricheltem Kontrafaktual (so hätte sich die Treatmentgruppe ohne Programm entwickelt) und den beiden naiven Vergleichen ① (nur Nachher-Querschnitt) und ② (nur Vorher-Nachher der Treatmentgruppe).<br>
+    <strong>3. 2 × 2-Zellmittelwerte &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS ist das Standardverfahren zur Schätzung linearer Regressionskoeffizienten: Es minimiert die Summe der quadrierten Residuen RSS = Σ(yᵢ − ŷᵢ)².">OLS</a>-Output</strong> — β₃ als Differenz der Differenzen selbst nachrechnen.<br>
     <strong>4. Konzepte</strong> — Parallel Trends, Antizipation, Spillover.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Parallele Trends sind nicht direkt prüfbar</strong> — die Annahme ist kontrafaktisch. Plausibel machen lässt sie sich über mehrere Vorperioden (Event Study).<br>
+    <strong>DiD schätzt den <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-att" target="_blank" rel="noopener" title="Der ATT misst den durchschnittlichen kausalen Effekt einer Behandlung, eingeschränkt auf jene Personen, die die Behandlung tatsächlich erhalten haben: E[Y¹ − Y⁰ | D = 1].">ATT</a>, nicht automatisch den <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ate" target="_blank" rel="noopener" title="Der ATE ist der durchschnittliche kausale Effekt einer Behandlung, berechnet über alle Einheiten der Zielpopulation.">ATE</a>:</strong> der Effekt gilt für genau die behandelten Einheiten.<br>
+    <strong>Naive Vergleiche überschätzen:</strong> ① zählt den Gruppenunterschied β₂ mit, ② den allgemeinen Zeittrend β₁. In der doppelten Differenz kürzen sich beide heraus — übrig bleibt β₃.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Verändere den Zeittrend β₁ und den Gruppenunterschied β₂ und beobachte, wie sich die beiden naiven Schätzer verschieben, während β₃ (der DiD-Effekt) unverändert bleibt.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Hast du nur einen Messzeitpunkt, dafür viele gemessene Kovariaten, gleicht <strong>Propensity Score Matching/Weighting</strong> Treatment- und Kontrollgruppe aneinander an.

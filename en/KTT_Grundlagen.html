@@ -166,13 +166,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    If you score 100 points on a test, that is not quite your “true value”: on another day you might have gotten a bit more or less. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ktt" target="_blank" rel="noopener" title="Classical Test Theory decomposes every observed test score into a true score and a measurement error: X = τ + ε.">Classical test theory</a> therefore splits every score into a true value plus measurement error. <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">Reliability</a></strong> is the share of the differences between people that reflects real differences rather than chance. From this follow the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="The Standard Error of Measurement (SEM) quantifies the average random deviation of the observed test score X from the true score τ of an individual.">standard error of measurement</a> and an uncertainty band around each individual test score.
+    If you score 100 points on a test, that is not quite your "true value": on another day you would have got slightly more or less. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ktt" target="_blank" rel="noopener" title="Classical Test Theory decomposes every observed test score into a true score and a measurement error: X = τ + ε.">Classical test theory</a> therefore splits every score into true score plus measurement error. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">Reliability</a> is the share of the differences between people that stems from real differences rather than chance. From this follow the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardmessfehler" target="_blank" rel="noopener" title="The Standard Error of Measurement (SEM) quantifies the average random deviation of the observed test score X from the true score τ of an individual.">standard error of measurement</a> and an uncertainty band around each individual test score. The example in the tool: an IQ test with mean 100, a spread of the true scores of 14 and a measurement error of 5 — this gives a reliability of about .89 and a standard error of measurement of 5 points.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. True-score model &amp; sample</strong> — set the share of true value and error (①).<br>
-    <strong>2. Reliability as correlation (②)</strong> — two measurements of the same people correlate exactly at the level of reliability.<br>
-    <strong>3. Test length (③)</strong> — Spearman-Brown: how much more reliable does a test get when you lengthen it?<br>
-    <strong>4. Confidence band (④)</strong> — uncertainty around a single test score; plus the concepts.
+    <strong>1. True-score model &amp; sample (①)</strong> — set the spread of the true scores (σ_T), the spread of the measurement error (σ_E) and the sample size.<br>
+    <strong>2. Reliability as a correlation (②)</strong> — two measurements of the same persons correlate exactly at the level of the reliability.<br>
+    <strong>3. Test length (③)</strong> — Spearman-Brown: how much more reliable does a test become when you lengthen it? With length factor and target reliability.<br>
+    <strong>4. Confidence band (④)</strong> — the uncertainty around a single test score (90, 95 or 99%); plus the concepts.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Reliability is a proportion:</strong> r = .90 means 90% true variance, 10% measurement noise.<br>
+    <strong>The standard error of measurement depends on reliability:</strong> SEM = SD · √(1 − r). The less reliable the test, the wider the band around each single score.<br>
+    <strong>Longer tests are more reliable</strong> — but only if the additional items are of the same kind. Unreliability also attenuates correlations.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Increase the measurement error σ_E and watch the reliability fall and the confidence band widen. Then double the length factor and compare with the target reliability.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     What does the measurement model behind the items look like? The <strong>Measurement Models</strong> tool shows it.

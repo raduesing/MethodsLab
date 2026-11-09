@@ -174,13 +174,22 @@ table.htab th{color:var(--accent);font-weight:500}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Mehrere Fragen sollen dasselbe Merkmal messen, zum Beispiel Ängstlichkeit. Aber messen sie es gleich gut? Im strengsten Fall (<strong>parallel</strong>) sind alle Fragen gleich gut und gleich verrauscht. Im lockersten Fall (<strong>kongenerisch</strong>) darf jede Frage unterschiedlich stark mit dem Merkmal zusammenhängen und unterschiedlich viel Rauschen haben. Diese Modellwahl entscheidet, welcher Zuverlässigkeitskoeffizient korrekt ist: Bei kongenerischen Fragen unterschätzt das übliche Cronbach-α die Zuverlässigkeit, ω nicht. Das Tool ist eine sanfte Einführung in die konfirmatorische <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Die Faktoranalyse ist ein latentes Variablenmodell, das Kovarianzen zwischen beobachteten Indikatoren durch eine kleinere Anzahl latenter Faktoren erklärt.">Faktoranalyse</a>.
+    Mehrere Fragen sollen dasselbe Merkmal messen, zum Beispiel Ängstlichkeit. Aber messen sie es gleich gut? Im strengsten Fall (parallel) sind alle Fragen gleich gut und gleich verrauscht. Im lockersten Fall (kongenerisch) darf jede Frage unterschiedlich stark mit dem Merkmal zusammenhängen und unterschiedlich viel Rauschen haben. Diese Modellwahl entscheidet, welcher Zuverlässigkeitskoeffizient korrekt ist: Bei kongenerischen Fragen unterschätzt das übliche Cronbach-α die Zuverlässigkeit, ω nicht. Das Tool ist eine sanfte Einführung in die konfirmatorische <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-faktoranalyse" target="_blank" rel="noopener" title="Die Faktoranalyse ist ein latentes Variablenmodell, das Kovarianzen zwischen beobachteten Indikatoren durch eine kleinere Anzahl latenter Faktoren erklärt.">Faktoranalyse</a> und knüpft an den 8-Item-Kognitionstest aus der Faktoranalyse an.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Modell laden &amp; einstellen</strong> — Anzahl Items, Ladungen und Fehlervarianzen wählen, optional Item-Mittelwerte (Intercepts).<br>
-    <strong>2. Modellklasse &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a> (①)</strong> — das Tool prüft, ob das Modell parallel, tau-äquivalent oder kongenerisch ist.<br>
+    <strong>1. Modell laden &amp; einstellen</strong> — Beginne mit einem Preset (parallel, tau-äquivalent, kongenerisch), dann Anzahl der Items, Ladungen und Fehlervarianzen frei verändern, optional auch die Item-Mittelwerte (Intercepts).<br>
+    <strong>2. Modellklasse &amp; <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a> (①)</strong> — das Tool prüft automatisch, ob dein Modell parallel, tau-äquivalent oder kongenerisch ist, und zeigt die passenden Koeffizienten.<br>
     <strong>3. Pfaddiagramm (②) &amp; Kovarianzmatrix (③)</strong> — wie sich die Ladungen in den Zusammenhängen der Items zeigen.<br>
-    <strong>4. Konzepte</strong> — warum α bei ungleichen Ladungen zu niedrig ausfällt.
+    <strong>4. Konzepte</strong> — warum α bei ungleichen Ladungen unterschätzt.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Die Modelle sind ineinander verschachtelt:</strong> parallel ⊂ tau-äquivalent ⊂ kongenerisch — jedes lockert eine Annahme (gleiche Ladungen und Fehlervarianzen → nur gleiche Ladungen → alles frei).<br>
+    <strong>Die Ladungen entscheiden zwischen α und ω:</strong> α ist nur bei (annähernd) gleichen Ladungen exakt, sonst unterschätzt es die Reliabilität.<br>
+    <strong>Gleichheit gibt es in der Realität nie exakt</strong> — die Modelle sind Idealisierungen. Die Intercepts verschieben nur die Item-Mittelwerte, nicht die Kovarianzmatrix oder die Reliabilität.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Starte mit dem Preset „kongenerisch“ und ziehe die Ladungen auseinander: Vergleiche α und ω. Gleiche die Ladungen dann Schritt für Schritt an und beobachte, wie die Modellklasse wechselt und α und ω zusammenrücken.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Woher kommen die Ladungen bei echten Daten? Das zeigt die <strong>Faktoranalyse</strong>.
