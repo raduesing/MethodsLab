@@ -155,13 +155,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    A <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="The p-value is the probability, assuming the null hypothesis H₀ is true, of observing a result at least as extreme as the one actually observed: p = P(data at least as extreme as observed | H₀ is true).">p-value</a> and a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-bayes-faktor" target="_blank" rel="noopener" title="The Bayes Factor (BF) quantifies the relative evidence for two models M₁ and M₂: BF₁₂ = p(Data|M₁) / p(Data|M₂).">Bayes factor</a> ask different questions. The p-value only asks: how unusual would the data be if there were no effect (H₀)? The Bayes factor instead compares “no effect” directly with “there is an effect” and penalizes the second hypothesis for being vague. If you keep a result just significant and enlarge the sample, the Bayes factor favors “no effect” ever more strongly — although the p-value stays the same.
+    A <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="The p-value is the probability, assuming the null hypothesis H₀ is true, of observing a result at least as extreme as the one actually observed: p = P(data at least as extreme as observed | H₀ is true).">p-value</a> and a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-bayes-faktor" target="_blank" rel="noopener" title="The Bayes Factor (BF) quantifies the relative evidence for two models M₁ and M₂: BF₁₂ = p(Data|M₁) / p(Data|M₂).">Bayes factor</a> ask different questions. The p-value asks only: how unusual would the data be if there were no effect (H₀)? The Bayes factor instead compares "no effect" directly with "there is an effect" and penalizes the second hypothesis for being vague. If you keep a result just barely significant and increase the sample size, the Bayes factor increasingly favours "no effect" — although the p-value stays the same. The puzzle in the tool: a test on 50,000 people yields p ≈ .05, H₀ is rejected — but the Bayes factor says the data are many times more likely under H₀ than under H₁. Who is right?
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Lindley mode &amp; sample size</strong> — keep the result just significant and turn n up; effect, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-prior" target="_blank" rel="noopener" title="The prior p(θ) is the probability distribution over model parameters θ expressing our knowledge about these parameters before observing the data.">prior</a> under H₁, and α can be varied.<br>
-    <strong>2. Frequentist vs. Bayes (①)</strong> — p-value and Bayes factor side by side.<br>
-    <strong>3. Distribution under H₀ vs. H₁ (②)</strong> — see why H₁ becomes ever “vaguer” with n.<br>
+    <strong>1. Lindley mode &amp; sample size</strong> — switch on "keep result just significant" (the observed effect is set so that p stays exactly equal to α) and increase n. Effect, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-prior" target="_blank" rel="noopener" title="The prior p(θ) is the probability distribution over model parameters θ expressing our knowledge about these parameters before observing the data.">prior</a> under H₁ (τ) and α can be varied.<br>
+    <strong>2. Frequentist vs. Bayes (①)</strong> — p-value and Bayes factor right next to each other.<br>
+    <strong>3. Distribution under H₀ vs. H₁ (②)</strong> — see why H₁ becomes ever "vaguer" with n.<br>
     <strong>4. Divergence with growing n (③)</strong> and the concept cards.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>The Bayes factor flips because of the Occam factor:</strong> it grows with n and penalizes H₁ for spreading its probability over all possible effects.<br>
+    <strong>The Bayes factor depends on the prior width τ</strong> — a well-known point of criticism that you can try out yourself in the tool.<br>
+    <strong>Significant ≠ meaningful:</strong> for p to stay just at .05 at large n, the observed effect must be tiny.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Switch on Lindley mode and push n from 50 to 50,000. Then change the prior width τ and watch how strongly the Bayes factor depends on it.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     Even a single test can mislead this way — with many tests it gets worse: <strong>Data Dredging</strong> shows how to find “significant” hits in pure noise.

@@ -149,13 +149,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Ein Eignungstest wird nur bei den Eingestellten mit dem Berufserfolg verglichen, also bei Personen mit hohem Testergebnis. Weil nun fast alle ähnlich hohe Werte haben, bleibt kaum Spielraum für einen Zusammenhang: Die Korrelation schrumpft, obwohl der Test in der Gesamtheit gut vorhersagt. Die Steigung der Regressionsgeraden bleibt bei direkter Auswahl dagegen erhalten. Mit den Thorndike-Formeln lässt sich die wahre Korrelation zurückrechnen. Umgekehrt bläht ein Design mit nur Extremgruppen die Korrelation künstlich auf.
+    Ein Eignungstest wird nur bei den Eingestellten mit dem Berufserfolg verglichen, also bei Personen mit hohem Testergebnis. Weil nun fast alle ähnlich hohe Werte haben, bleibt kaum Spielraum für einen Zusammenhang: Die Korrelation schrumpft, obwohl der Test in der Gesamtheit gut vorhersagt. Die Steigung der Regressionsgeraden bleibt bei direkter Auswahl dagegen erhalten. Mit den Thorndike-Formeln lässt sich die wahre Korrelation zurückrechnen. Umgekehrt bläht ein Design mit nur Extremgruppen die Korrelation künstlich auf. Das Beispiel im Tool: Ein Unternehmen validiert einen Eignungstest — aber nur anhand der tatsächlich Eingestellten.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Szenario &amp; Selektionsmodus</strong> — Oben (Cutoff), Extremgruppen oder Mitte wählen und den Selektionsanteil einstellen.<br>
-    <strong>2. Population vs. Selektion</strong> — im Streudiagramm vergleichen: r sinkt, die Steigung bleibt praktisch gleich.<br>
-    <strong>3. Thorndike-Kurve &amp; Korrektur</strong> — r(u) ablesen und prüfen, dass die korrigierte Schätzung ρ trifft.<br>
-    <strong>4. Konzepte</strong> — direkte vs. indirekte Selektion (Fall II/III) und der Gegenfall Extremgruppen.
+    <strong>1. Szenario &amp; Selektionsmodus</strong> — Wähle „Oben“ (Cutoff), „Extremgruppen“ oder „Mitte“ und stelle den Selektionsanteil ein.<br>
+    <strong>2. Population vs. Selektion</strong> — Im Streudiagramm vergleichen: Die Korrelation r sinkt, die Steigung bleibt praktisch gleich.<br>
+    <strong>3. Thorndike-Kurve &amp; Korrektur</strong> — r in Abhängigkeit vom Streuungsverhältnis u ablesen und prüfen, dass die korrigierte Schätzung die wahre Korrelation ρ trifft.<br>
+    <strong>4. Konzepte</strong> — direkte vs. indirekte Selektion (Fall II und III) und der Gegenfall Extremgruppen.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Bei direkter Selektion auf X ist nur die Korrelation verzerrt</strong> — die Regressionssteigung bleibt erwartungstreu, weil sich die bedingte Verteilung von Y gegeben X nicht ändert.<br>
+    <strong>Berichte immer das Streuungsverhältnis u</strong> (Streuung in der selektierten Gruppe geteilt durch die in der Gesamtheit).<br>
+    <strong>Extremgruppen-Designs verzerren in die Gegenrichtung:</strong> Die Streuung von X wächst (u &gt; 1) und die Korrelation wird künstlich aufgebläht. Das Tool zeigt nur den Mechanismus unter bivariater <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-normalverteilung" target="_blank" rel="noopener" title="Die Normalverteilung ist die zentrale stetige Wahrscheinlichkeitsverteilung der Statistik, parametrisiert durch Mittelwert μ (Lage) und Standardabweichung σ (Streuung).">Normalverteilung</a> — keine Schätzung aus echten Daten.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Verkleinere im Modus „Oben“ den Selektionsanteil und beobachte, wie r sinkt, während die Steigung gleich bleibt. Wechsle dann zu „Extremgruppen“: Jetzt steigt r.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Wurde die Validität korrigiert, beantworten die <strong>Taylor-Russell-Tafeln</strong> die praktische Folgefrage: Was bringt ein Test mit diesem ρ bei gegebener Selektions- und Grundquote tatsächlich?

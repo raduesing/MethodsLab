@@ -189,13 +189,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Busse kommen unregelmäßig: mal dicht hintereinander, mal mit großer Lücke. Wer zu einem zufälligen Zeitpunkt ankommt, landet eher in einer langen Lücke — einfach weil sie mehr Zeit einnimmt. Deshalb erlebst du im Schnitt längere Lücken als die durchschnittliche Lücke. Je ungleichmäßiger die Abstände, desto größer der Effekt; bei völlig regelmäßigen Bussen gibt es ihn nicht.
+    Busse kommen unregelmäßig: mal dicht hintereinander, mal mit großer Lücke. Wer zu einem zufälligen Zeitpunkt ankommt, landet eher in einer langen Lücke — einfach weil sie mehr Zeit einnimmt. Deshalb erlebst du im Schnitt längere Lücken als die durchschnittliche Lücke. Je ungleichmäßiger die Abstände, desto größer der Effekt; bei völlig regelmäßigen Bussen gibt es ihn nicht. Das Beispiel im Tool: Ein Bus fährt „im Schnitt alle 10 Minuten“ — mal nach 4, mal nach 18. Der Betreiber sagt: mittlere Wartezeit 5 Minuten. Du wartest gefühlt immer länger. Wer hat recht?
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Fahrplan einstellen</strong> — Anzahl Busse und Unregelmäßigkeit der Abstände (Streuung) wählen.<br>
-    <strong>2. Zeitstrahl (①)</strong> — Lücken und zufällige Ankünfte ansehen, zuerst eine Vorhersage abgeben.<br>
+    <strong>1. Fahrplan einstellen</strong> — Anzahl der Busse und Unregelmäßigkeit der Abstände (Streuung CV: 0 = exakter Takt, 1 = völlig zufällig) wählen. Der mittlere Soll-Abstand bleibt bei 10 Minuten.<br>
+    <strong>2. Zeitstrahl (①)</strong> — Lücken und zufällige Ankünfte ansehen. Gib zuerst eine Vorhersage ab: Ist die Lücke, in der du landest, kürzer, etwa gleich lang oder länger als 10 Minuten?<br>
     <strong>3. Selbst ankommen (②)</strong> — mehrfach (oder 200×) ankommen und den kumulierten Schnitt mit dem wahren Erwartungswert vergleichen.<br>
     <strong>4. Histogramm (③)</strong> — gezählte vs. längen-gewichtete Verteilung; dazu die Konzepte-Karten.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Lange Lücken werden häufiger getroffen:</strong> Die Wahrscheinlichkeit, in eine Lücke der Länge L zu fallen, ist L/T — eine 12-Minuten-Lücke wird sechsmal so oft getroffen wie eine 2-Minuten-Lücke.<br>
+    <strong>Die erwartete Wartezeit ist E[L²] / (2·E[L]):</strong> Sie wächst mit der Streuung der Lücken und ist deshalb größer als die Hälfte des mittleren Abstands.<br>
+    <strong>Bei exaktem Takt (CV = 0) gibt es kein Paradox;</strong> bei völlig zufälligen Ankünften (CV = 1) ist der Effekt maximal.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Gib deine Vorhersage ab und prüfe sie. Drehe dann die Streuung von 0 auf 1 und beobachte, wie sich der Unterschied zwischen dem Betreiber-Mittel und deinem erlebten Mittel verändert.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Dieselbe Logik der längenverzerrten Stichprobe steckt im <strong>Friendship Paradox</strong>: Warum haben deine Freunde im Schnitt mehr Freunde als du?

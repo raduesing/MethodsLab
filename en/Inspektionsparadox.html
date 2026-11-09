@@ -189,13 +189,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Buses arrive irregularly: sometimes close together, sometimes with a big gap. If you arrive at a random moment, you are more likely to land in a long gap — simply because it takes up more time. So you experience longer gaps than the average gap. The more uneven the spacing, the larger the effect; with perfectly regular buses there is none.
+    Buses arrive irregularly: sometimes close together, sometimes with a large gap. If you arrive at a random time, you are more likely to land in a long gap — simply because it takes up more time. That is why you experience longer gaps on average than the average gap. The more uneven the intervals, the larger the effect; with perfectly regular buses it does not exist. The example in the tool: a bus runs "every 10 minutes on average" — sometimes after 4, sometimes after 18. The operator says: mean waiting time 5 minutes. You feel you always wait longer. Who is right?
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Set the timetable</strong> — choose the number of buses and the irregularity of the gaps (spread).<br>
-    <strong>2. Timeline (①)</strong> — look at the gaps and random arrivals; make a prediction first.<br>
-    <strong>3. Arrive yourself (②)</strong> — arrive repeatedly (or 200×) and compare your cumulative average with the true expectation.<br>
+    <strong>1. Set the timetable</strong> — choose the number of buses and the irregularity of the intervals (spread CV: 0 = exact clock, 1 = completely random). The mean scheduled interval stays at 10 minutes.<br>
+    <strong>2. Timeline (①)</strong> — look at the gaps and random arrivals. First make a prediction: is the gap you land in shorter, about the same or longer than 10 minutes?<br>
+    <strong>3. Arrive yourself (②)</strong> — arrive several times (or 200×) and compare the cumulative average with the true expected value.<br>
     <strong>4. Histogram (③)</strong> — counted vs. length-weighted distribution; plus the concept cards.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Long gaps are hit more often:</strong> the probability of falling into a gap of length L is L/T — a 12-minute gap is hit six times as often as a 2-minute gap.<br>
+    <strong>The expected waiting time is E[L²] / (2·E[L]):</strong> it grows with the spread of the gaps and is therefore larger than half the mean interval.<br>
+    <strong>With an exact clock (CV = 0) there is no paradox;</strong> with completely random arrivals (CV = 1) the effect is maximal.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Make your prediction and check it. Then turn the spread from 0 to 1 and watch how the difference between the operator's mean and your experienced mean changes.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     The same length-biased sampling logic underlies the <strong>Friendship Paradox</strong>: why do your friends have more friends than you, on average?

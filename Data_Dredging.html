@@ -177,9 +177,18 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:13px;height:13px;b
     Bei jedem einzelnen Test besteht bei α = 5 % eine kleine Chance auf einen Fehlalarm. Testet man 20 Zusammenhänge, ist mit 64 % Wahrscheinlichkeit mindestens ein Fehlalarm dabei. Alle Daten in diesem Tool sind reines Rauschen — trotzdem tauchen „Treffer“ auf. Wer sich danach eine passende Theorie ausdenkt (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-harking" target="_blank" rel="noopener" title="HARKing (Hypothesizing After the Results are Known) bezeichnet die Praxis, nach einem zufällig signifikanten Befund im Nachhinein eine plausibel klingende Theorie zu formulieren und diese so darzustellen, als wäre sie von Anfang an die getestete…">HARKing</a>) oder in einer Regression nur die „signifikanten“ Zufallsvariablen behält, erhält ein beeindruckendes Modell, das bei neuen Daten sofort zusammenbricht.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Daten-Dredging</strong> — Anzahl Tests m, n und α einstellen, Bilanz der Tests (①) und alle Tests (②) ansehen, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-bonferroni" target="_blank" rel="noopener" title="Die Bonferroni-Korrektur kontrolliert die familywise Fehlerrate (die Wahrscheinlichkeit für mindestens einen falsch-positiven Befund über m gleichzeitig durchgeführte Tests) durch Verschärfung des Signifikanzniveaus: statt α wird für jeden…">Bonferroni-Korrektur</a> zuschalten; HARKing (③).<br>
-    <strong>2. Stepwise (Freedman)</strong> — R² im Trainingsset vs. in neuen Daten (①) und was von jedem „gewählten“ Prädiktor bleibt (②).<br>
+    <strong>1. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-data-dredging" target="_blank" rel="noopener" title="Data Dredging (auch p-Hacking oder Fishing Expedition) bezeichnet das ungeplante Durchsuchen eines Datensatzes nach statistisch signifikanten Zusammenhängen, ohne vorab festgelegte Hypothese.">Data Dredging</a></strong> — Stelle die Anzahl der Tests m, die Stichprobengröße n und α ein. Sieh dir die Bilanz der Tests (①) und alle einzelnen Tests (②) an, schalte die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-bonferroni" target="_blank" rel="noopener" title="Die Bonferroni-Korrektur kontrolliert die familywise Fehlerrate (die Wahrscheinlichkeit für mindestens einen falsch-positiven Befund über m gleichzeitig durchgeführte Tests) durch Verschärfung des Signifikanzniveaus: statt α wird für jeden…">Bonferroni-Korrektur</a> zu und beobachte HARKing (③).<br>
+    <strong>2. Stepwise (Freedman)</strong> — das R² im Trainingsset vs. in neuen Daten (①) und was von jedem „gewählten“ Prädiktor übrig bleibt (②).<br>
     <strong>3. Konzepte</strong> — multiple Vergleiche, HARKing und Gegenmittel (Präregistrierung, Korrektur, Replikation).
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Die Fehlalarme summieren sich:</strong> Bei m unabhängigen Tests liegt die Wahrscheinlichkeit für mindestens einen Fehlalarm bei 1 − (1 − α)^m — schon bei m = 14 über 50 %. Bonferroni verschärft dafür die Schwelle auf α/m.<br>
+    <strong>HARKing ist zirkulär:</strong> Die Hypothese entsteht aus genau den Daten, die sie belegen soll.<br>
+    <strong>Stepwise-Auswahl auf Rauschen</strong> liefert „signifikante“ Prädiktoren und ein hohes R², das auf neuen Daten verschwindet (Freedmans Paradox).
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Drehe m hoch und beobachte, wie viele Treffer in reinem Rauschen entstehen — dann schalte die Bonferroni-Korrektur zu. Vergleiche im Stepwise-Modul das R² im Training mit dem in neuen Daten.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Selbst ein einzelner, vorab geplanter Test kann bei großem n in die Irre führen: <strong>Lindley's Paradox</strong> zeigt, warum Signifikanz und Bayes-Evidenz auseinanderlaufen können.

@@ -149,13 +149,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    An aptitude test is compared with job performance only among those hired, i.e. people with high test scores. Because almost everyone now has similarly high scores, there is little room left for a relationship: the correlation shrinks although the test predicts well overall. The slope of the regression line, by contrast, is preserved under direct selection. The Thorndike formulas let you recompute the true correlation. Conversely, a design with only extreme groups artificially inflates the correlation.
+    An aptitude test is compared with job performance only among the people who were hired, i.e. people with high test scores. Because almost all of them now have similarly high values, there is hardly any room for a relationship: the correlation shrinks although the test predicts well in the whole group. The slope of the regression line, in contrast, is preserved under direct selection. With the Thorndike formulas the true correlation can be recalculated. Conversely, a design with only extreme groups artificially inflates the correlation. The example in the tool: a company validates an aptitude test — but only on those actually hired.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Scenario &amp; selection mode</strong> — choose Top (cutoff), Extreme groups, or Middle, and set the selection share.<br>
-    <strong>2. Population vs. selection</strong> — compare in the scatterplot: r drops, the slope stays practically the same.<br>
-    <strong>3. Thorndike curve &amp; correction</strong> — read off r(u) and check that the corrected estimate recovers ρ.<br>
-    <strong>4. Concepts</strong> — direct vs. indirect selection (Case II/III) and the mirror case, extreme groups.
+    <strong>1. Scenario &amp; selection mode</strong> — choose "top" (cutoff), "extreme groups" or "middle" and set the selection share.<br>
+    <strong>2. Population vs. selection</strong> — compare in the scatterplot: the correlation r drops, the slope stays practically the same.<br>
+    <strong>3. Thorndike curve &amp; correction</strong> — read r as a function of the variance ratio u and check that the corrected estimate hits the true correlation ρ.<br>
+    <strong>4. Concepts</strong> — direct vs. indirect selection (case II and III) and the opposite case of extreme groups.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>With direct selection on X only the correlation is distorted</strong> — the regression slope stays unbiased because the conditional distribution of Y given X does not change.<br>
+    <strong>Always report the variance ratio u</strong> (spread in the selected group divided by that in the whole group).<br>
+    <strong>Extreme-group designs distort in the opposite direction:</strong> the spread of X grows (u &gt; 1) and the correlation is artificially inflated. The tool shows only the mechanism under bivariate normality — no estimation from real data.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    In "top" mode, reduce the selection share and watch r fall while the slope stays the same. Then switch to "extreme groups": now r rises.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     Once validity is corrected, the <strong>Taylor-Russell Tables</strong> answer the practical follow-up question: what does a test with this ρ actually deliver, given a selection ratio and a base rate?
