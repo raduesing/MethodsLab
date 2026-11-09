@@ -75,6 +75,7 @@ a:hover{text-decoration:underline}
   border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
   transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
 .intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-strip .ibtn .tarr{display:inline-block;width:1em;text-align:center}
 .intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
   padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
   color:var(--ink2);line-height:1.8}
@@ -532,33 +533,44 @@ input[type=range]::-moz-range-thumb{
   <div>
     Die Regressionsgerade ist die Gerade, die am besten durch die Punktwolke passt — und jeder Koeffizient gilt nur „bei Konstanthalten der anderen“.
   </div>
-  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()" aria-expanded="false">Konzept erklären <span class="tarr">▸</span></button>
 </div>
 
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Je mehr Lernzeit, desto bessere Klausurnote? Die Methode der kleinsten Quadrate (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS ist das Standardverfahren zur Schätzung linearer Regressionskoeffizienten: Es minimiert die Summe der quadrierten Residuen RSS = Σ(yᵢ − ŷᵢ)².">OLS</a>) legt eine Gerade so durch die Punktwolke, dass die quadrierten Abweichungen der Punkte von der Geraden (die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-residuen" target="_blank" rel="noopener" title="Residuen sind die Differenzen zwischen den beobachteten Werten yᵢ und den vom Modell vorhergesagten Werten ŷᵢ: eᵢ = yᵢ − ŷᵢ.">Residuen</a>) insgesamt möglichst klein sind. Mit mehreren Einflussgrößen gibt jeder Koeffizient den Effekt einer Variable an, wenn alle anderen gleich bleiben („ceteris paribus“) — und der kann deshalb anders ausfallen als bei einer einzelnen Variable ohne Kontrolle. Im Tool arbeitest du mit 30 simulierten Studierenden: Lernzeit (X₁), Schlafstunden (X₂) und Klausurnote (Y).
+    Je mehr Lernzeit, desto bessere Klausurnote? Genau das untersuchst du hier an 30 simulierten Studierenden: Lernzeit (X₁, Stunden pro Woche), Schlaf (X₂, Stunden pro Nacht) und Klausurnote (Y, 0–100 Punkte). Eine Regression beschreibt, wie sich Y im Durchschnitt verändert, wenn sich X ändert — als Gerade durch die Punktwolke.
+    <br><br>
+    <b>Welche Gerade?</b> Jede Gerade macht Fehler: Die Abweichung eines Punktes von der Geraden heißt <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-residuen" target="_blank" rel="noopener" title="Residuen sind die Differenzen zwischen den beobachteten Werten yᵢ und den vom Modell vorhergesagten Werten ŷᵢ: eᵢ = yᵢ − ŷᵢ.">Residuum</a>. Die Methode der kleinsten Quadrate (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS ist das Standardverfahren zur Schätzung linearer Regressionskoeffizienten: Es minimiert die Summe der quadrierten Residuen RSS = Σ(yᵢ − ŷᵢ)².">OLS</a>) wählt die Gerade, bei der die Summe der quadrierten Residuen (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-rss" target="_blank" rel="noopener" title="Die RSS ist die Summe der quadrierten Differenzen zwischen beobachteten und vorhergesagten Werten: RSS = Σ(yᵢ − ŷᵢ)².">RSS</a>) am kleinsten ist. Das Minimum lässt sich direkt berechnen — es ist kein Ausprobieren nötig.
+    <br><br>
+    <b>Was sagt dir die Gerade?</b> Die Steigung b₁ gibt an, um wie viele Punkte die erwartete Note pro zusätzlicher Lernstunde steigt; der Achsenabschnitt b₀ ist die erwartete Note bei X = 0. Das <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-standardisierter-koeffizient" target="_blank" rel="noopener" title="Der standardisierte Regressionskoeffizient β entsteht, wenn man vor der Regression alle Variablen z-standardisiert (Mittelwert 0, SD 1), oder äquivalent, indem man den unstandardisierten Koeffizienten b mit dem Verhältnis der Standardabweichungen…">standardisierte β</a> macht Prädiktoren mit verschiedenen Einheiten vergleichbar. Wie gut die Gerade passt, misst <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-r2" target="_blank" rel="noopener" title="Das Bestimmtheitsmaß R² gibt den Anteil der Gesamtvarianz der abhängigen Variable Y an, der durch das Modell erklärt wird: R² = 1 − RSS/TSS, wobei RSS die Residualsumme der Quadrate und TSS die totale Summe der Quadrate ist.">R²</a>: der Anteil der Varianz von Y, den das Modell erklärt (Gesamtstreuung <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-tss" target="_blank" rel="noopener" title="Die TSS ist die Summe der quadrierten Abweichungen aller beobachteten Y-Werte von ihrem Mittelwert: TSS = Σ(yᵢ − ȳ)².">TSS</a> = erklärter Teil + RSS).
+    <br><br>
+    <b>Mehrere Einflussgrößen.</b> Kommt ein zweiter Prädiktor hinzu, wird aus der Geraden eine Ebene. Jeder Koeffizient gilt dann „bei Konstanthalten der anderen“ (<i>ceteris paribus</i>). Hängen Lernzeit und Schlaf zusammen, verändert sich b₁: Das bivariate b₁ enthält den Einfluss des Schlafs noch mit (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Eine Konfundierungsvariable (Confounder) ist eine Variable, die sowohl mit dem Treatment T als auch mit dem Outcome Y assoziiert ist und nicht auf dem kausalen Pfad von T nach Y liegt.">Konfundierung</a>). Ein <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-added-variable-plot" target="_blank" rel="noopener" title="Ein Added Variable Plot (AVP, auch: Partialregressionsplot) visualisiert den partiellen Effekt eines Prädiktors X₁ auf Y in einer multiplen Regression, kontrolliert für andere Prädiktoren X₂: Sowohl Y als auch X₁ werden zunächst auf X₂ regrediert,…">Added Variable Plot</a> macht den bereinigten Effekt sichtbar.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Least Squares</strong> — Ziehe die Gerade selbst an zwei Ankern und versuche, die RSS (die Summe der quadrierten Residuen, orangener Balken) möglichst klein zu bekommen. Ein Klick auf „OLS zeigen“ blendet die mathematisch beste Gerade samt ihrer RSS ein; mit „Residuals“ siehst du die Abweichungen als grüne (Punkt über der Geraden) und rote Striche (darunter).<br>
-    <strong>2. Koeffizienten</strong> — b₀ und b₁ (unstandardisiert, in Einheiten von Y pro Einheit X) und β (standardisiert) an der Lernzeit-Klausurnote-Geschichte verstehen.<br>
-    <strong>3. Modellgüte</strong> — R² als Anteil der erklärten Varianz und die Zerlegung in erklärten Teil und Residual.<br>
-    <strong>4. Multiple Regression</strong> — füge den zweiten Prädiktor (Schlaf) hinzu und beobachte, wie sich b₁ durch die Kontrolle verändert.
+    <strong>1. Least Squares</strong> — Ziehe die Gerade an den beiden Ankern und bringe die RSS (orangener Balken) möglichst klein. Mit „Residuals“ siehst du die Abweichungen (grün: Punkt über der Geraden, rot: darunter), mit „OLS zeigen“ erscheint die beste Gerade samt ihrer RSS. Das Anscombe-Quartett darunter zeigt, warum man Residuen immer ansehen sollte.<br>
+    <strong>2. Koeffizienten</strong> — Lies b₁ als „+1 Stunde Lernzeit → +b₁ Punkte erwartet“ (das Steigungsdreieck zeigt es an drei Stunden), b₀ als erwartete Note bei 0 Stunden und β als einheitenfreie Stärke. Im bivariaten Modell ist β = r.<br>
+    <strong>3. Modellgüte</strong> — Schalte zwischen TSS, SSM und RSS um und sieh, wie sich die Gesamtstreuung zerlegt. Daraus ergeben sich R² = SSM/TSS, das adjustierte R², der Effektstärke-Wert f² (klein ab .02, mittel ab .15, groß ab .35) und r.<br>
+    <strong>4. Multiple Regression</strong> — Gehe die Schritte Bivariat, e(Y|X₂), e(X₁|X₂), AVP und 3D-Ebene durch. Stelle die Korrelation von X₁ und X₂ (r = .00 bis .80) um und vergleiche in der Tabelle das bivariate mit dem partiellen b₁. Δb₁ zeigt, wie viel Konfundierung im bivariaten Wert steckt.
 
     <div class="ib-head ib-head2">Worauf achten?</div>
-    <strong>Einheiten zählen:</strong> Ein unstandardisiertes b hängt von den Einheiten ab (Stunden, Punkte). Das standardisierte β macht Prädiktoren mit verschiedenen Einheiten vergleichbar.<br>
-    <strong>„Bei Konstanthalten der anderen“:</strong> Jeder Koeffizient in der multiplen Regression gilt nur unter dieser Bedingung — er ändert sich, wenn Prädiktoren hinzukommen oder wegfallen.<br>
-    <strong>R² ist kein Kausalitätsbeweis:</strong> Es wächst mit jedem zusätzlichen Prädiktor, auch mit unnützen, und sagt nichts darüber, ob ein Zusammenhang ursächlich ist.
+    <strong>Einheiten zählen:</strong> Ein unstandardisiertes b hängt von den Einheiten ab (Stunden, Punkte). Willst du Prädiktoren vergleichen, nimm β.<br>
+    <strong>„Bei Konstanthalten der anderen“:</strong> Ein Koeffizient der multiplen Regression gilt nur unter dieser Bedingung — er ändert sich, wenn Prädiktoren hinzukommen oder wegfallen.<br>
+    <strong>R² ist kein Kausalitätsbeweis:</strong> Es wächst mit jedem zusätzlichen Prädiktor, auch mit nutzlosen (das adjustierte R² gleicht das aus), und sagt nichts darüber, ob ein Zusammenhang ursächlich ist.<br>
+    <strong>Gleiche Kennwerte, andere Daten:</strong> Koeffizienten und R² können identisch sein, obwohl Ausreißer oder Krümmung vorliegen. Ohne Blick auf Streudiagramm und Residuen bleibt das unbemerkt.<br>
+    <strong>Normalverteilung der Fehler:</strong> Für die OLS-Schätzung selbst ist sie nicht nötig (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-gauss-markov" target="_blank" rel="noopener" title="Das Gauss-Markov-Theorem besagt: Unter fünf klassischen Annahmen (Linearität, exogene/mittelwertfreie Fehler, Homoskedastizität, keine Autokorrelation, keine perfekte Multikollinearität) ist der OLS-Schätzer BLUE — Best Linear Unbiased Estimator.">Gauss-Markov</a>), erst für Tests und Konfidenzintervalle.
 
     <div class="ib-head ib-head2">Zum Ausprobieren</div>
-    Versuche in Schritt 1, die RSS der OLS-Geraden zu unterbieten — es geht nicht, denn OLS findet das exakte Minimum. Vergleiche dann in Schritt 4 den Wert von b₁ vor und nach dem Hinzufügen des zweiten Prädiktors.
-
+    • Versuche in Schritt 1, die RSS der OLS-Geraden zu unterbieten — es gelingt nicht, denn OLS liefert das exakte Minimum.<br>
+    • Öffne in Schritt 1 das Anscombe-Quartett: Vier sehr verschiedene Datensätze haben fast dieselbe Gerade.<br>
+    • Schalte in Schritt 3 zwischen TSS, SSM und RSS und prüfe, dass sich SSM und RSS zu TSS ergänzen.<br>
+    • Setze in Schritt 4 die Korrelation auf r = .00 und dann auf r = .80: Bei r = .00 ist Δb₁ = 0, bei r = .80 ist der Unterschied am größten.
 
     <div class="ib-head ib-head2">Und danach?</div>
     Was „ceteris paribus" geometrisch bedeutet, zeigt <strong>Partialkorrelation</strong> im
     Detail; mit binärer statt stetiger Zielgröße geht's bei <strong>Logistische Regression</strong>
     weiter.
+  
   </div>
 </div>
 
@@ -2495,7 +2507,9 @@ let introOpen = false;
 function toggleIntroDetail(){
   introOpen = !introOpen;
   document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
-  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+  const b = document.getElementById('intro-toggle-btn');
+  b.querySelector('.tarr').textContent = introOpen ? '▾' : '▸';
+  b.setAttribute('aria-expanded', introOpen ? 'true' : 'false');
 }
 
 /* ── Theme Toggle ─────────────────────────────────────────────────── */

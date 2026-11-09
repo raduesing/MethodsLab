@@ -75,6 +75,7 @@ a:hover{text-decoration:underline}
   border:1.5px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
   transition:all .15s;letter-spacing:.03em;white-space:nowrap;flex-shrink:0}
 .intro-strip .ibtn:hover{background:var(--accent);color:var(--paper)}
+.intro-strip .ibtn .tarr{display:inline-block;width:1em;text-align:center}
 .intro-box{background:var(--paper);border-bottom:1px solid var(--accent);
   padding:.85rem 1.2rem;font-family:'DM Mono',monospace;font-size:.75rem;
   color:var(--ink2);line-height:1.8}
@@ -532,33 +533,44 @@ input[type=range]::-moz-range-thumb{
   <div>
     The regression line is the line that fits the cloud of points best — and each coefficient only holds “with the others held constant”.
   </div>
-  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()" aria-expanded="false">Explain concept <span class="tarr">▸</span></button>
 </div>
 
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    The more study time, the better the exam grade? Ordinary least squares (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS is the standard method for estimating linear regression coefficients: it minimizes the sum of squared residuals RSS = Σ(yᵢ − ŷᵢ)².">OLS</a>) places a line through the cloud of points so that the squared deviations of the points from the line (the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-residuen" target="_blank" rel="noopener" title="Residuals are the differences between observed values yᵢ and the model-predicted values ŷᵢ: eᵢ = yᵢ − ŷᵢ.">residuals</a>) are as small as possible overall. With several predictors, each coefficient gives the effect of one variable when all others stay the same ("ceteris paribus") — and it can therefore differ from the coefficient of a single variable without control. In the tool you work with 30 simulated students: study time (X₁), hours of sleep (X₂) and exam grade (Y).
+    The more study time, the better the exam grade? That is exactly what you investigate here with 30 simulated students: study time (X₁, hours per week), sleep (X₂, hours per night) and exam grade (Y, 0–100 points). A regression describes how Y changes on average when X changes — as a line through the point cloud.
+    <br><br>
+    <b>Which line?</b> Every line makes errors: the deviation of a point from the line is called a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-residuen" target="_blank" rel="noopener" title="Residuals are the differences between observed values yᵢ and the model-predicted values ŷᵢ: eᵢ = yᵢ − ŷᵢ.">residual</a>. Ordinary least squares (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS is the standard method for estimating linear regression coefficients: it minimizes the sum of squared residuals RSS = Σ(yᵢ − ŷᵢ)².">OLS</a>) chooses the line for which the sum of squared residuals (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-rss" target="_blank" rel="noopener" title="The RSS is the sum of squared differences between observed and predicted values: RSS = Σ(yᵢ − ŷᵢ)².">RSS</a>) is smallest. The minimum can be computed directly — no trial and error is needed.
+    <br><br>
+    <b>What does the line tell you?</b> The slope b₁ states by how many points the expected grade rises per additional hour of study; the intercept b₀ is the expected grade at X = 0. The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-standardisierter-koeffizient" target="_blank" rel="noopener" title="The standardized regression coefficient β results from z-standardizing all variables before regression (mean 0, SD 1), or equivalently by scaling the unstandardized coefficient b by the ratio of standard deviations: β = b · (SD_X / SD_Y). β…">standardized β</a> makes predictors with different units comparable. How well the line fits is measured by <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-r2" target="_blank" rel="noopener" title="The coefficient of determination R² indicates the proportion of total variance in the dependent variable Y explained by the model: R² = 1 − RSS/TSS, where RSS is the residual sum of squares and TSS is the total sum of squares.">R²</a>: the share of the variance of Y that the model explains (total variation <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-tss" target="_blank" rel="noopener" title="The TSS is the sum of squared deviations of all observed Y values from their mean: TSS = Σ(yᵢ − ȳ)².">TSS</a> = explained part + RSS).
+    <br><br>
+    <b>Several predictors.</b> With a second predictor the line becomes a plane. Each coefficient then holds “with the others held constant” (<i>ceteris paribus</i>). If study time and sleep are related, b₁ changes: the bivariate b₁ still contains the influence of sleep (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Confounding (Latin: confundere = to mix together) arises when a third variable C is a common cause of both the treatment X and the outcome Y: C → X and C → Y. This creates a spurious or distorted association between X and Y in observational data,…">confounding</a>). An <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-added-variable-plot" target="_blank" rel="noopener" title="An Added Variable Plot (AVP, also: partial regression plot) visualizes the partial effect of a predictor X₁ on Y in a multiple regression, controlling for other predictors X₂: both Y and X₁ are first regressed on X₂, and the residuals e(Y|X₂) and…">added variable plot</a> makes the adjusted effect visible.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Least squares</strong> — drag the line yourself by two anchors and try to make the RSS (the sum of squared residuals, orange bar) as small as possible. A click on "show OLS" reveals the mathematically best line together with its RSS; with "residuals" you see the deviations as green (point above the line) and red lines (below).<br>
-    <strong>2. Coefficients</strong> — understand b₀ and b₁ (unstandardized, in units of Y per unit of X) and β (standardized) using the study time and exam grade story.<br>
-    <strong>3. Model fit</strong> — R² as the share of explained variance and the split into explained part and residual.<br>
-    <strong>4. Multiple regression</strong> — add the second predictor (sleep) and watch how b₁ changes through the control.
+    <strong>1. Least Squares</strong> — Drag the line by its two anchors and make the RSS (orange bar) as small as you can. “Residuals” shows the deviations (green: point above the line, red: below), “Show OLS” reveals the best line with its RSS. The Anscombe quartet below shows why you should always look at residuals.<br>
+    <strong>2. Coefficients</strong> — Read b₁ as “+1 hour of study → +b₁ points expected” (the slope triangle shows it for three hours), b₀ as the expected grade at 0 hours and β as a unit-free strength. In the bivariate model β = r.<br>
+    <strong>3. Model fit</strong> — Switch between TSS, SSM and RSS and see how the total variation decomposes. This gives R² = SSM/TSS, adjusted R², the effect-size measure f² (small from .02, medium from .15, large from .35) and r.<br>
+    <strong>4. Multiple regression</strong> — Go through the steps Bivariate, e(Y|X₂), e(X₁|X₂), AVP and 3D Surface. Change the correlation between X₁ and X₂ (r = .00 to .80) and compare the bivariate with the partial b₁ in the table. Δb₁ shows how much confounding is contained in the bivariate value.
 
     <div class="ib-head ib-head2">What to watch for</div>
-    <strong>Units matter:</strong> an unstandardized b depends on the units (hours, points). The standardized β makes predictors with different units comparable.<br>
-    <strong>"Holding the others constant":</strong> each coefficient in multiple regression is valid only under this condition — it changes when predictors are added or dropped.<br>
-    <strong>R² is no proof of causality:</strong> it grows with every additional predictor, even useless ones, and says nothing about whether a relationship is causal.
+    <strong>Units matter:</strong> An unstandardized b depends on the units (hours, points). To compare predictors, use β.<br>
+    <strong>“With the others held constant”:</strong> A coefficient in multiple regression holds only under this condition — it changes when predictors are added or dropped.<br>
+    <strong>R² is not proof of causation:</strong> It grows with every additional predictor, even useless ones (adjusted R² compensates), and says nothing about whether a relationship is causal.<br>
+    <strong>Same statistics, different data:</strong> Coefficients and R² can be identical although there are outliers or curvature. Without a look at the scatterplot and the residuals this goes unnoticed.<br>
+    <strong>Normality of the errors:</strong> It is not needed for the OLS estimation itself (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-gauss-markov" target="_blank" rel="noopener" title="The Gauss-Markov theorem states: under five classical assumptions (linearity, exogenous/zero-mean errors, homoscedasticity, no autocorrelation, no perfect multicollinearity), the OLS estimator is BLUE — Best Linear Unbiased Estimator.">Gauss–Markov</a>), only for tests and confidence intervals.
 
     <div class="ib-head ib-head2">Things to try</div>
-    In step 1, try to beat the RSS of the OLS line — you cannot, because OLS finds the exact minimum. Then, in step 4, compare the value of b₁ before and after adding the second predictor.
-
+    • In step 1, try to beat the RSS of the OLS line — you will not succeed, because OLS gives the exact minimum.<br>
+    • In step 1, open the Anscombe quartet: four very different datasets share almost the same line.<br>
+    • In step 3, switch between TSS, SSM and RSS and check that SSM and RSS add up to TSS.<br>
+    • In step 4, set the correlation to r = .00 and then to r = .80: at r = .00 Δb₁ = 0, at r = .80 the difference is largest.
 
     <div class="ib-head ib-head2">What's next?</div>
     What "ceteris paribus" means geometrically is shown in detail by <strong>Partial &amp;
     Semipartial Correlation</strong>; with a binary instead of continuous outcome, continue with
     <strong>Logistic Regression</strong>.
+  
   </div>
 </div>
 
@@ -2494,7 +2506,9 @@ let introOpen = false;
 function toggleIntroDetail(){
   introOpen = !introOpen;
   document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
-  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+  const b = document.getElementById('intro-toggle-btn');
+  b.querySelector('.tarr').textContent = introOpen ? '▾' : '▸';
+  b.setAttribute('aria-expanded', introOpen ? 'true' : 'false');
 }
 
 function toggleTheme(){
