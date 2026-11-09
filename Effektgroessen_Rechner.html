@@ -150,6 +150,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 .help-close{font-family:'DM Mono',monospace;font-size:.74rem;padding:.3rem .8rem;
   border:1.5px solid var(--a1);background:transparent;cursor:pointer;color:var(--a1);transition:all .15s}
 .help-close:hover{background:var(--a1);color:var(--bg)}
+#intro-toggle-btn .tarr{display:inline-block;width:1em;text-align:center}
 </style>
 </head>
 <body>
@@ -166,7 +167,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
   <div>
     Effektgrößen für deine eigenen Daten exakt berechnen — einfach CSV hochladen statt Regler schieben.
   </div>
-  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären <span class="tarr">▸</span></button>
 </div>
 
 <div id="intro-detail" style="display:none">
@@ -465,7 +466,7 @@ let introOpen = false;
 function toggleIntroDetail(){
   introOpen = !introOpen;
   document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
-  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+  document.getElementById('intro-toggle-btn').querySelector('.tarr').textContent = introOpen ? '▾' : '▸';
 }
 
 function toggleTheme(){

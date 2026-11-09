@@ -177,6 +177,7 @@ table.htab th{color:var(--accent);font-weight:500}
 .intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
   border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
 .intro-box .ib-head.ib-head2{margin-top:.75rem}
+#intro-toggle-btn .tarr{display:inline-block;width:1em;text-align:center}
 </style>
 </head>
 <body>
@@ -193,7 +194,7 @@ table.htab th{color:var(--accent);font-weight:500}
   <div>
     Misst ein Test in verschiedenen Gruppen dasselbe? Nur dann sind Gruppenunterschiede im Testwert auch echte Unterschiede.
   </div>
-  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären <span class="tarr">▸</span></button>
 </div>
 
 <div id="intro-detail" style="display:none">
@@ -983,7 +984,7 @@ let introOpen = false;
 function toggleIntroDetail(){
   introOpen = !introOpen;
   document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
-  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+  document.getElementById('intro-toggle-btn').querySelector('.tarr').textContent = introOpen ? '▾' : '▸';
 }
 function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark';h.setAttribute('data-theme',d?'light':'dark'); localStorage.setItem('ml-theme',d?'light':'dark');document.getElementById('btn-theme').textContent=d?'🌙 Dark':'☀ Light';requestAnimationFrame(update);}
 function toggleHelp(){document.getElementById('help-overlay').classList.toggle('open');}

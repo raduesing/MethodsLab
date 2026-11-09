@@ -129,6 +129,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .help-p strong{color:var(--ink)}
 .help-formula{font-family:'DM Mono',monospace;font-size:.78rem;background:var(--bg);border:1px solid var(--grid);padding:.35rem .7rem;margin:.3rem 0 .55rem;color:var(--a2)}
 .help-sh{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--a1);margin:.9rem 0 .3rem;padding-bottom:.2rem;border-bottom:1px solid var(--grid)}
+#intro-toggle-btn .tarr{display:inline-block;width:1em;text-align:center}
 </style>
 </head>
 <body>
@@ -145,7 +146,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div>
     Mediation asks why: does X act on Y directly — or through an intermediate step M?
   </div>
-  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept <span class="tarr">▸</span></button>
 </div>
 
 <div id="intro-detail" style="display:none">
@@ -828,7 +829,7 @@ let introOpen = false;
 function toggleIntroDetail(){
   introOpen = !introOpen;
   document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
-  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+  document.getElementById('intro-toggle-btn').querySelector('.tarr').textContent = introOpen ? '▾' : '▸';
 }
 
 function toggleTheme(){

@@ -183,6 +183,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
 .intro-box .ib-head{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.4rem;
   border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
 .intro-box .ib-head.ib-head2{margin-top:.75rem}
+#intro-toggle-btn .tarr{display:inline-block;width:1em;text-align:center}
 </style>
 </head>
 <body>
@@ -199,7 +200,7 @@ input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--ac
   <div>
     Just above and just below an eligibility cutoff, people are nearly identical — a jump in the outcome right there shows the effect of the program.
   </div>
-  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept <span class="tarr">▸</span></button>
 </div>
 
 <div id="intro-detail" style="display:none">
@@ -1134,7 +1135,7 @@ let introOpen = false;
 function toggleIntroDetail(){
   introOpen = !introOpen;
   document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
-  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+  document.getElementById('intro-toggle-btn').querySelector('.tarr').textContent = introOpen ? '▾' : '▸';
 }
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';

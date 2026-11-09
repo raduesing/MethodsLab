@@ -136,6 +136,7 @@ canvas{display:block;width:100%}
   line-height:1.85;margin-bottom:.55rem}
 .help-formula{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
   font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+#intro-toggle-btn .tarr{display:inline-block;width:1em;text-align:center}
 </style>
 </head>
 <body>
@@ -152,7 +153,7 @@ canvas{display:block;width:100%}
   <div>
     Two things go together — but perhaps only because a third factor influences both. Partial correlation removes it.
   </div>
-  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept <span class="tarr">▸</span></button>
 </div>
 
 <div id="intro-detail" style="display:none">
@@ -1152,7 +1153,7 @@ let introOpen = false;
 function toggleIntroDetail(){
   introOpen = !introOpen;
   document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
-  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+  document.getElementById('intro-toggle-btn').querySelector('.tarr').textContent = introOpen ? '▾' : '▸';
 }
 
 function toggleTheme(){

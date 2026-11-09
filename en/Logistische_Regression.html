@@ -355,6 +355,7 @@ input[type=range]::-moz-range-thumb{
   .pipe-row{flex-direction:column;align-items:stretch}
   .pipe-arrow{min-width:0}
 }
+#intro-toggle-btn .tarr{display:inline-block;width:1em;text-align:center}
 </style>
 </head>
 <body>
@@ -375,7 +376,7 @@ input[type=range]::-moz-range-thumb{
   <div>
     If the outcome can only be yes or no, you need a regression that keeps probabilities between 0 and 1.
   </div>
-  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept ▸</button>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Explain concept <span class="tarr">▸</span></button>
 </div>
 
 <div id="intro-detail" style="display:none">
@@ -1579,7 +1580,7 @@ let introOpen = false;
 function toggleIntroDetail(){
   introOpen = !introOpen;
   document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
-  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Hide concept ▾' : 'Explain concept ▸';
+  document.getElementById('intro-toggle-btn').querySelector('.tarr').textContent = introOpen ? '▾' : '▸';
 }
 
 function toggleTheme(){

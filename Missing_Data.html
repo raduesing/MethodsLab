@@ -156,6 +156,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   border-bottom:1px solid var(--grid);padding-bottom:.3rem;font-family:'Fraunces',Georgia,serif}
 .intro-box .ib-head.ib-head2{margin-top:.75rem}
 @media(max-width:720px){.lcard-grid{grid-template-columns:1fr}}
+#intro-toggle-btn .tarr{display:inline-block;width:1em;text-align:center}
 </style>
 </head>
 <body>
@@ -172,7 +173,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
   <div>
     Fehlende Werte sind nicht gleich fehlende Werte — warum sie fehlen, entscheidet, wie man damit umgehen darf.
   </div>
-  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären <span class="tarr">▸</span></button>
 </div>
 
 <div id="intro-detail" style="display:none">
@@ -1070,7 +1071,7 @@ let introOpen = false;
 function toggleIntroDetail(){
   introOpen = !introOpen;
   document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
-  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+  document.getElementById('intro-toggle-btn').querySelector('.tarr').textContent = introOpen ? '▾' : '▸';
 }
 
 function toggleTheme(){

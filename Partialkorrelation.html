@@ -136,6 +136,7 @@ canvas{display:block;width:100%}
   line-height:1.85;margin-bottom:.55rem}
 .help-formula{background:var(--bg);border:1px solid var(--grid);padding:.28rem .65rem;
   font-family:'DM Mono',monospace;font-size:.78rem;color:var(--a2);margin:.3rem 0;display:block}
+#intro-toggle-btn .tarr{display:inline-block;width:1em;text-align:center}
 </style>
 </head>
 <body>
@@ -152,7 +153,7 @@ canvas{display:block;width:100%}
   <div>
     Zwei Dinge hängen zusammen — aber vielleicht nur, weil eine dritte Größe beide beeinflusst. Die Partialkorrelation rechnet sie heraus.
   </div>
-  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären ▸</button>
+  <button class="ibtn" id="intro-toggle-btn" onclick="toggleIntroDetail()">Konzept erklären <span class="tarr">▸</span></button>
 </div>
 
 <div id="intro-detail" style="display:none">
@@ -1152,7 +1153,7 @@ let introOpen = false;
 function toggleIntroDetail(){
   introOpen = !introOpen;
   document.getElementById('intro-detail').style.display = introOpen ? 'block' : 'none';
-  document.getElementById('intro-toggle-btn').textContent = introOpen ? 'Konzept ausblenden ▾' : 'Konzept erklären ▸';
+  document.getElementById('intro-toggle-btn').querySelector('.tarr').textContent = introOpen ? '▾' : '▸';
 }
 
 function toggleTheme(){
