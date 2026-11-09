@@ -138,14 +138,21 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Kein Test misst perfekt. Dieses Messrauschen verwässert Zusammenhänge: Die beobachtete Korrelation fällt immer kleiner aus als die wahre. Wie stark, hängt davon ab, wie zuverlässig (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a>) beide Messungen sind. Man kann das rückgängig rechnen (Disattenuation) — braucht dafür aber die Reliabilitäten genau, und die sind in der Praxis meist nur geschätzt.
+    Kein Test misst perfekt. Dieses Messrauschen verwässert Zusammenhänge: Die beobachtete Korrelation fällt immer kleiner aus als die wahre. Wie stark, hängt davon ab, wie zuverlässig (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a>) beide Messungen sind. Man kann das rückgängig rechnen (Disattenuation) — braucht dafür aber die Reliabilitäten genau, und die sind in der Praxis meist nur geschätzt. Das Beispiel im Tool: Intelligenz und Schulleistung. Der IQ-Test hat eine Reliabilität von .85, die Schulnoten .70 — die wahre Korrelation von .60 erscheint in den Daten nur als etwa .46.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Grundprinzip</strong> — die Attenuationsformel live am Beispiel
-    Intelligenz/Schulleistung.<br>
-    <strong>2. Latente vs. beobachtete Werte</strong> — zwei Panels nebeneinander: fehlerfreie
-    Welt vs. reale Messung.<br>
-    <strong>3. Konzepte</strong> — wann Disattenuation funktioniert und wo ihre Grenzen liegen.
+    <strong>1. Grundprinzip</strong> — die Attenuationsformel r_obs = ρ · √(r_xx · r_yy) live am Beispiel Intelligenz/Schulleistung.<br>
+    <strong>2. Latente vs. beobachtete Werte</strong> — zwei Panels nebeneinander: die fehlerfreie Welt (die wahren, latenten Werte) und die reale Messung.<br>
+    <strong>3. Konzepte</strong> — wann die Disattenuation funktioniert und wo ihre Grenzen liegen.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Die Korrektur ist nur so gut wie die Reliabilitäten:</strong> Die Disattenuation setzt voraus, dass r_xx und r_yy korrekt bekannt sind — eine starke Annahme.<br>
+    <strong>Korrigierte Werte über 1,0 sind mathematisch unmöglich</strong> und entstehen aus fehlerhaften Reliabilitätsschätzungen oder aus Stichprobenschwankung — besonders bei kleinem N.<br>
+    <strong>Weitere Verzerrung:</strong> Ist die Stichprobe zusätzlich eingeschränkt (z. B. nur vorselektierte Bewerber), sinkt die beobachtete Korrelation noch stärker (Range Restriction).
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Setze beide Reliabilitäten auf 1,0 — beobachtete und wahre Korrelation stimmen überein. Senke sie dann und beobachte, wie die beobachtete Korrelation schrumpft. Wiederhole die Stichprobe bei kleinem N, bis die korrigierte Korrelation über 1,0 springt.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     <strong>Berkson's Paradox</strong> zeigt eine ganz andere Art von Verzerrung: Hier

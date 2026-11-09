@@ -163,14 +163,21 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Je mehr trainiert wird, desto besser die Leistung — in jeder Altersgruppe. Fasst man alle zusammen, kann es umgekehrt aussehen, etwa wenn die Älteren mehr trainieren, aber insgesamt eine schwächere Grundleistung haben. Das ist kein Rechenfehler: Beide Ergebnisse stimmen und beantworten nur verschiedene Fragen. Ob man nach Gruppen aufteilen oder alles zusammenfassen sollte, hängt davon ab, wie die Variablen ursächlich zusammenhängen: Ist die Gruppe ein Störfaktor (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Eine Konfundierungsvariable (Confounder) ist eine Variable, die sowohl mit dem Treatment T als auch mit dem Outcome Y assoziiert ist und nicht auf dem kausalen Pfad von T nach Y liegt.">Confounder</a>), muss man sie berücksichtigen; liegt sie auf dem Wirkweg (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-mediator" target="_blank" rel="noopener" title="Ein Mediator M ist eine Variable, die auf dem kausalen Pfad zwischen Treatment T und Outcome Y liegt: T → M → Y. Mediation bedeutet, dass ein Teil oder der gesamte Effekt von T auf Y durch die Veränderung von M vermittelt wird.">Mediator</a>), würde man den Effekt dadurch fälschlich wegrechnen.
+    Je mehr trainiert wird, desto besser die Leistung — in jeder Altersgruppe. Fasst man alle zusammen, kann es umgekehrt aussehen, etwa wenn die Älteren mehr trainieren, aber insgesamt eine schwächere Grundleistung haben. Das ist kein Rechenfehler: Beide Ergebnisse stimmen und beantworten nur verschiedene Fragen. Ob man nach Gruppen aufteilen oder alles zusammenfassen sollte, hängt davon ab, wie die Variablen ursächlich zusammenhängen: Ist die Gruppe ein Störfaktor (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-confounder" target="_blank" rel="noopener" title="Eine Konfundierungsvariable (Confounder) ist eine Variable, die sowohl mit dem Treatment T als auch mit dem Outcome Y assoziiert ist und nicht auf dem kausalen Pfad von T nach Y liegt.">Confounder</a>), muss man sie berücksichtigen; liegt sie auf dem Wirkweg (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-mediator" target="_blank" rel="noopener" title="Ein Mediator M ist eine Variable, die auf dem kausalen Pfad zwischen Treatment T und Outcome Y liegt: T → M → Y. Mediation bedeutet, dass ein Teil oder der gesamte Effekt von T auf Y durch die Veränderung von M vermittelt wird.">Mediator</a>), würde man den Effekt dadurch fälschlich wegrechnen. Das Beispiel im Tool: Behandlungsdosis und Genesung — innerhalb jeder Krankheitsschwere-Gruppe hilft mehr Dosis, aber schwerere Gruppen bekommen mehr Dosis und genesen schlechter.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Vorzeichen-Check</strong> — Within-Slope, Zwischen-Trend und Gruppen-Versatz
-    einstellen und beobachten, wann das Vorzeichen kippt.<br>
-    <strong>2. Streudiagramm</strong> — Within vs. Pooled direkt im Plot vergleichen.<br>
-    <strong>3. Konzepte</strong> — drei Szenarien (Umkehr, keine Konfundierung, Verstärkung)
-    und die Entscheidung Confounder vs. Mediator.
+    <strong>1. Vorzeichen-Check</strong> — Within-Slope, Zwischen-Trend und Gruppen-Versatz mit den Reglern einstellen und beobachten, wann das Vorzeichen kippt. Die Szenarien „Umkehr“, „Keine Konfundierung“ und „Verstärkung“ geben Startpunkte.<br>
+    <strong>2. Streudiagramm</strong> — Within-Geraden (je Gruppe) und gepoolte Gerade direkt im Plot vergleichen.<br>
+    <strong>3. Konzepte</strong> — die drei Szenarien und die Entscheidung Confounder vs. Mediator.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Beide Ergebnisse sind richtig</strong> — die gepoolte Gerade mischt zwei Quellen von Zusammenhang: die Variation innerhalb der Gruppen und die Unterschiede zwischen den Gruppen.<br>
+    <strong>Confounder oder Mediator?</strong> Das entscheidet die kausale Struktur, nicht die Statistik: Ein Confounder muss berücksichtigt werden, einen Mediator darf man nicht wegrechnen.<br>
+    <strong>Ökologischer Fehlschluss:</strong> Von Gruppen- auf Individualebene (oder umgekehrt) darf nicht einfach geschlossen werden.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Ziehe den Zwischen-Trend von negativ Richtung null und beobachte, ab welchem Wert die gepoolte Gerade ihr Vorzeichen wechselt. Schau dir dann das Szenario „Verstärkung“ an.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Dieselbe Pooling-Logik, nur konstruktiv eingesetzt, steckt in <strong>Multilevel &amp;

@@ -138,14 +138,21 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    No test measures perfectly. This measurement noise dilutes relationships: the observed correlation is always smaller than the true one. How much depends on how reliable (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">reliability</a>) both measurements are. You can reverse this mathematically (disattenuation) — but you need the reliabilities exactly, and in practice they are usually only estimated.
+    No test measures perfectly. This measurement noise dilutes relationships: the observed correlation always comes out smaller than the true one. How much depends on how reliable both measurements are. You can reverse this by calculation (disattenuation) — but you need the reliabilities exactly, and in practice they are usually only estimated. The example in the tool: intelligence and school performance. The IQ test has a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">reliability</a> of .85, the school grades .70 — the true correlation of .60 shows up in the data only as about .46.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Basic principle</strong> — the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation refers to the systematic underestimation of the true correlation between two constructs due to measurement error in the indicators.">attenuation</a> formula live on the
-    intelligence/school-performance example.<br>
-    <strong>2. Latent vs. observed values</strong> — two panels side by side: an error-free
-    world vs. real measurement.<br>
-    <strong>3. Concepts</strong> — when disattenuation works and where its limits are.
+    <strong>1. Basic principle</strong> — the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation refers to the systematic underestimation of the true correlation between two constructs due to measurement error in the indicators.">attenuation</a> formula r_obs = ρ · √(r_xx · r_yy) live on the intelligence/school performance example.<br>
+    <strong>2. Latent vs. observed scores</strong> — two panels side by side: the error-free world (the true, latent values) and the real measurement.<br>
+    <strong>3. Concepts</strong> — when disattenuation works and where its limits lie.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>The correction is only as good as the reliabilities:</strong> disattenuation requires that r_xx and r_yy are known correctly — a strong assumption.<br>
+    <strong>Corrected values above 1.0 are mathematically impossible</strong> and arise from faulty reliability estimates or from sampling fluctuation — especially at small N.<br>
+    <strong>Further distortion:</strong> if the sample is additionally restricted (e.g. only pre-selected applicants), the observed correlation drops even further (range restriction).
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Set both reliabilities to 1.0 — observed and true correlation coincide. Then lower them and watch the observed correlation shrink. Repeat the sample at small N until the corrected correlation jumps above 1.0.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     <strong>Berkson's Paradox</strong> shows a completely different kind of distortion: here

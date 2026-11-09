@@ -137,15 +137,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    The worst quarter of a test improves on average on the second test, the best quarter gets worse — without any training. The reason: every result consists of real ability plus some chance; anyone extreme usually also had luck or bad luck, and that does not repeat. The less reliable the measurement, the stronger the effect; with perfect measurement there is none. It is often mistaken for a real effect.
+    The worst quarter of a test does better on average on the second test, the best quarter does worse — without any training. The reason: every result consists of true ability plus some chance; whoever is extreme usually also had luck or bad luck, and that does not repeat. The less reliable the measurement, the stronger the effect; with perfect measurement it does not exist. It is often mistaken for a real effect. The example in the tool: a GP practice enrols all patients with high blood pressure in a hypertension programme and measures again four weeks later — without any medication. Where does the improvement come from?
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Pick a scenario</strong> — from perfect <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">reliability</a> to poor measurement.<br>
-    <strong>2. Basic principle</strong> — follow the E[Y|X] formula live on the slider.<br>
-    <strong>3. Scatterplot T1 vs. T2</strong> — high-selected (red) and low-selected (blue)
-    people compared against the Y=X line.<br>
-    <strong>4. Concepts</strong> — why RTM can mimic a real treatment effect, and why only a
-    randomized control group protects against it.
+    <strong>1. Choose a scenario</strong> — from perfect <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">reliability</a> to poor measurement.<br>
+    <strong>2. Basic principle</strong> — follow the formula E[Y|X] = μ + r·(x − μ) live with the slider: the expected second value lies between the first value and the mean.<br>
+    <strong>3. Scatterplot T1 vs. T2</strong> — highly selected (red) and low-selected persons (blue) compared with the line Y = X: red points slip below the line, blue ones above.<br>
+    <strong>4. Concepts</strong> — why the effect can fake a real treatment effect and why only a randomized control group helps against it.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Reliability controls the effect:</strong> (1 − r) · (x − μ) of the distance to the mean disappears — at r = 0.7 that is 30%, at r = 0.4 even 60%.<br>
+    <strong>It works in both directions:</strong> high scorers fall back on average, low scorers rise — the "sophomore slump" in sports is the same phenomenon.<br>
+    <strong>Only a randomized control group separates effect from artifact:</strong> both groups show the same effect; only the difference between them estimates the real effect.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Set the reliability to 1.0 — the effect disappears. Then lower it step by step and watch the red and blue points move ever more strongly toward the middle.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     <strong>Measurement-Error Attenuation</strong> shows the same underlying mechanism —

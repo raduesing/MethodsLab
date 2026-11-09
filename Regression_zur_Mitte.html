@@ -137,15 +137,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Das schlechteste Viertel eines Tests wird beim zweiten Test im Schnitt besser, das beste schlechter — ganz ohne Training. Der Grund: Jedes Ergebnis besteht aus echtem Können und etwas Zufall; wer extrem ist, hatte meist auch Glück oder Pech, und das wiederholt sich nicht. Je unzuverlässiger die Messung, desto stärker der Effekt; bei perfekter Messung gibt es ihn nicht. Er wird oft mit einer echten Wirkung verwechselt.
+    Das schlechteste Viertel eines Tests wird beim zweiten Test im Schnitt besser, das beste schlechter — ganz ohne Training. Der Grund: Jedes Ergebnis besteht aus echtem Können und etwas Zufall; wer extrem ist, hatte meist auch Glück oder Pech, und das wiederholt sich nicht. Je unzuverlässiger die Messung, desto stärker der Effekt; bei perfekter Messung gibt es ihn nicht. Er wird oft mit einer echten Wirkung verwechselt. Das Beispiel im Tool: Eine Hausarztpraxis nimmt alle Patienten mit hohem Blutdruck in ein Hypertonie-Programm auf und misst vier Wochen später erneut — ganz ohne Medikamente. Woher kommt die Verbesserung?
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Szenario wählen</strong> — von perfekter <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a> bis schlechter Messung.<br>
-    <strong>2. Grundprinzip</strong> — die Formel E[Y|X] live am Regler nachvollziehen.<br>
-    <strong>3. Streudiagramm T1 vs. T2</strong> — hochselektierte (rot) und niedrigselektierte
-    (blau) Personen im Vergleich zur Y=X-Linie.<br>
-    <strong>4. Konzepte</strong> — warum RTM eine echte Behandlungswirkung vortäuschen kann und
-    wieso nur randomisierte Kontrollgruppen dagegen helfen.
+    <strong>1. Szenario wählen</strong> — von perfekter <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a> bis zu schlechter Messung.<br>
+    <strong>2. Grundprinzip</strong> — die Formel E[Y|X] = μ + r·(x − μ) live am Regler nachvollziehen: Der erwartete zweite Wert liegt zwischen dem ersten Wert und dem Mittelwert.<br>
+    <strong>3. Streudiagramm T1 vs. T2</strong> — hochselektierte (rot) und niedrigselektierte Personen (blau) im Vergleich zur Linie Y = X: Wer rot ist, rutscht unter die Linie, wer blau ist, darüber.<br>
+    <strong>4. Konzepte</strong> — warum der Effekt eine echte Behandlungswirkung vortäuschen kann und wieso nur eine randomisierte Kontrollgruppe dagegen hilft.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Die Reliabilität steuert den Effekt:</strong> Es verschwinden (1 − r) · (x − μ) des Abstands zum Mittelwert — bei r = 0,7 also 30 %, bei r = 0,4 sogar 60 %.<br>
+    <strong>Er wirkt in beide Richtungen:</strong> Hochscorer fallen im Schnitt zurück, Niedrigscorer steigen — der „Sophomore Slump“ im Sport ist dasselbe Phänomen.<br>
+    <strong>Nur eine randomisierte Kontrollgruppe trennt Wirkung und Artefakt:</strong> Beide Gruppen zeigen denselben Effekt, erst der Unterschied zwischen ihnen schätzt die echte Wirkung.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Setze die Reliabilität auf 1,0 — der Effekt verschwindet. Senke sie dann schrittweise und beobachte, wie die roten und blauen Punkte immer stärker zur Mitte wandern.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     <strong>Messfehler-Attenuation</strong> zeigt dieselbe zugrunde liegende Mechanik —

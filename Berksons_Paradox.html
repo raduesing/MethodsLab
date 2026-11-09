@@ -143,16 +143,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Stell dir eine Uni vor, die nur Bewerber aufnimmt, deren Noten <em>und</em> Testergebnis zusammen hoch genug sind. Unter den Aufgenommenen sieht es dann so aus, als hätten Leute mit guten Noten schlechtere Testergebnisse — obwohl beides in der Gesamtbevölkerung nichts miteinander zu tun hat. Die Auswahl selbst erzeugt den Scheinzusammenhang. Fachlich heißt die Größe, nach der ausgewählt wird, <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-collider" target="_blank" rel="noopener" title="Ein Collider ist ein Knoten in einem DAG, auf den mindestens zwei gerichtete Kanten zeigen: A → C ← B. Im Gegensatz zu Confoundern blockiert ein Collider den Pfad zwischen A und B automatisch — er ist per se kein Problem.">Collider</a></em>: Beide Variablen wirken auf sie ein (X → Z ← Y), und wer nach ihr auswählt, öffnet einen Scheinpfad zwischen X und Y.
+    Stell dir eine Uni vor, die nur Bewerber aufnimmt, deren Noten und Testergebnis zusammen hoch genug sind. Unter den Aufgenommenen sieht es dann so aus, als hätten Leute mit guten Noten schlechtere Testergebnisse — obwohl beides in der Gesamtbevölkerung nichts miteinander zu tun hat. Die Auswahl selbst erzeugt den Scheinzusammenhang. Fachlich heißt die Größe, nach der ausgewählt wird, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-collider" target="_blank" rel="noopener" title="Ein Collider ist ein Knoten in einem DAG, auf den mindestens zwei gerichtete Kanten zeigen: A → C ← B. Im Gegensatz zu Confoundern blockiert ein Collider den Pfad zwischen A und B automatisch — er ist per se kein Problem.">Collider</a>: Beide Variablen wirken auf sie ein (X → Z ← Y), und wer nach ihr auswählt, öffnet einen Scheinpfad zwischen X und Y. Das Beispiel im Tool: Eine Personalabteilung bewertet Talent (X) und Fleiß (Y), die in der Bevölkerung unkorreliert sind; der Berufserfolg Z hängt von beiden ab. Betrachtet man nur die Erfolgreichsten und Erfolglosesten, erscheint plötzlich eine negative Korrelation.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
     <strong>1. Kausale Struktur (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-dag" target="_blank" rel="noopener" title="Ein Directed Acyclic Graph (DAG) ist ein gerichteter Graph ohne Zyklen, der kausale Annahmen über ein System von Variablen explizit und überprüfbar macht.">DAG</a>)</strong> — X → Z ← Y als Collider verstehen.<br>
-    <strong>2. Grundprinzip</strong> — warum Selektion auf die Summe X+Y eine negative
-    Abhängigkeit erzwingt.<br>
-    <strong>3. Gesamtpopulation vs. selektierte Gruppe</strong> — Gesamtpopulation (grau) und
-    selektierte Extremgruppe (rot) im direkten Vergleich.<br>
-    <strong>4. Konzepte</strong> — Selektionsmodi (Top/Bottom/Beide Extreme) und wie stark der
-    Effekt von Rauschen in Z abhängt.
+    <strong>2. Grundprinzip</strong> — warum die Selektion auf die Summe X + Y eine negative Abhängigkeit erzwingt: Alle Ausgewählten liegen nahe an einer Geraden mit Steigung −1.<br>
+    <strong>3. Gesamtpopulation vs. selektierte Gruppe</strong> — Gesamtpopulation (grau) und selektierte Extremgruppe (rot) im direkten Vergleich.<br>
+    <strong>4. Konzepte</strong> — die Selektionsmodi (Top, Bottom, beide Extreme) und wie stark der Effekt vom Rauschen in Z abhängt.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Nach einem Collider auszuwählen oder ihn zu kontrollieren erzeugt Scheinzusammenhänge</strong> — normalerweise blockiert ein Collider den Informationsfluss zwischen X und Y.<br>
+    <strong>Selbst bei positiver Grundkorrelation</strong> kann starke Selektion die Richtung des beobachteten Zusammenhangs umkehren.<br>
+    <strong>Collider Bias ist häufig und schwer zu erkennen:</strong> Klassische Fälle sind Krankenhausstudien (Berksons Original), <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-survivorship-bias" target="_blank" rel="noopener" title="Survivorship Bias (Überlebensverzerrung) entsteht, wenn eine Stichprobe systematisch nur aus den „Überlebenden&quot; eines Selektionsprozesses besteht — den Erfolgreichen, Zurückgekehrten oder noch Existierenden —, während die Fälle, die den Prozess…">Survivorship Bias</a> oder Stichproben, die nur Erfolgreiche erfassen.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Setze die Grundkorrelation ρ_XY auf +0,40 und wähle eine starke einseitige Selektion (z. B. die obersten 10 %): Der Zusammenhang kippt im selektierten Bereich ins Negative, obwohl er in der Bevölkerung positiv ist.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     <strong>Lord's Paradox</strong> zeigt eine verwandte Falle: zwei statistisch korrekte

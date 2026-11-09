@@ -143,16 +143,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Imagine a university that only admits applicants whose grades <em>and</em> test score together are high enough. Among the admitted, it then looks as if people with good grades have worse test results — although in the general population the two are unrelated. The selection itself creates the spurious association. Technically, the quantity you select on is called a <em><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-collider" target="_blank" rel="noopener" title="A collider is a variable C in a DAG that has arrows from two or more other variables pointing into it: A → C ← B. Unlike confounders (which create spurious associations) and mediators (which transmit causal effects), colliders block the path between…">collider</a></em>: both variables influence it (X → Z ← Y), and selecting on it opens a false path between X and Y.
+    Imagine a university that admits only applicants whose grades and test score together are high enough. Among the admitted, it then looks as if people with good grades have worse test results — although in the general population the two have nothing to do with each other. The selection itself creates the spurious relationship. Technically, the quantity used for selection is called a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-collider" target="_blank" rel="noopener" title="A collider is a variable C in a DAG that has arrows from two or more other variables pointing into it: A → C ← B. Unlike confounders (which create spurious associations) and mediators (which transmit causal effects), colliders block the path between…">collider</a>: both variables act on it (X → Z ← Y), and whoever selects on it opens a spurious path between X and Y. The example in the tool: an HR department rates talent (X) and diligence (Y), which are uncorrelated in the population; career success Z depends on both. If you look only at the most and least successful, a negative correlation suddenly appears.
 
     <div class="ib-head ib-head2">How to proceed</div>
     <strong>1. Causal structure (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dag" target="_blank" rel="noopener" title="A Directed Acyclic Graph (DAG) is a directed graph without cycles that makes causal assumptions about a system of variables explicit and testable.">DAG</a>)</strong> — understand X → Z ← Y as a collider.<br>
-    <strong>2. Basic principle</strong> — why selecting on the sum X+Y forces a negative
-    dependency.<br>
-    <strong>3. Full population vs. selected group</strong> — the full population (gray) and
-    the selected extreme group (red) side by side.<br>
-    <strong>4. Concepts</strong> — selection modes (top/bottom/both extremes) and how strongly
-    the effect depends on noise in Z.
+    <strong>2. Basic principle</strong> — why selecting on the sum X + Y forces a negative dependence: all selected persons lie close to a line with slope −1.<br>
+    <strong>3. Total population vs. selected group</strong> — total population (grey) and selected extreme group (red) in direct comparison.<br>
+    <strong>4. Concepts</strong> — the selection modes (top, bottom, both extremes) and how strongly the effect depends on the noise in Z.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Selecting on or controlling for a collider creates spurious relationships</strong> — normally a collider blocks the flow of information between X and Y.<br>
+    <strong>Even with a positive baseline correlation</strong>, strong selection can reverse the direction of the observed relationship.<br>
+    <strong>Collider bias is common and hard to spot:</strong> classic cases are hospital studies (Berkson's original), <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-survivorship-bias" target="_blank" rel="noopener" title="Survivorship bias arises when a sample systematically consists only of the &quot;survivors&quot; of a selection process — the successful, the returned, the still-existing — while the cases that did not survive the process disappear entirely from the data.">survivorship bias</a> or samples that capture only successful people.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Set the baseline correlation ρ_XY to +0.40 and choose a strong one-sided selection (e.g. the top 10%): the relationship flips to negative in the selected range although it is positive in the population.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     <strong>Lord's Paradox</strong> shows a related trap: two statistically correct analysis
