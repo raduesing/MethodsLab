@@ -196,13 +196,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    CFA measures hidden traits (factors). A <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-strukturgleichungsmodell" target="_blank" rel="noopener" title="A structural equation model (SEM) combines a measurement model (confirmatory factor analysis: latent variables measured through several observed indicators) with a structural model (regression relationships among the latent variables themselves).">structural equation model</a> (SEM) goes one step further: it also specifies directed paths between the factors, such as “X influences Y”, optionally as mediation (X→M→Y). The advantage: measurement noise is modeled too. If you instead simply sum the items and correlate the sum scores, the relationship comes out smaller (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation refers to the systematic underestimation of the true correlation between two constructs due to measurement error in the indicators.">attenuation</a>) — the tool puts both routes side by side.
+    CFA measures hidden characteristics (factors). A <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-strukturgleichungsmodell" target="_blank" rel="noopener" title="A structural equation model (SEM) combines a measurement model (confirmatory factor analysis: latent variables measured through several observed indicators) with a structural model (regression relationships among the latent variables themselves).">structural equation model</a> (SEM) goes one step further: it additionally specifies directed paths between the factors, such as "X influences Y", optionally also as mediation (X→M→Y). The advantage: the measurement noise is modelled too. If you instead simply compute sum scores of the items and correlate them, the relationship comes out smaller (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-attenuation" target="_blank" rel="noopener" title="Attenuation refers to the systematic underestimation of the true correlation between two constructs due to measurement error in the indicators.">attenuation</a>) — the tool puts both routes side by side. The example builds on the CFA: X are the verbal items V1–V4, Y the spatial items S1–S4.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. True model &amp; model type</strong> — choose a scenario, 2 or 3 constructs (also as mediation), and set paths and loadings.<br>
+    <strong>1. True model &amp; model type</strong> — choose a scenario (no, moderate or strong path), the model type (simple X→Y or mediation X→M→Y) as well as paths and loadings. For the <em>specified</em> model you decide whether the direct path c′ stays free or is set to 0 (full mediation).<br>
     <strong>2. Path diagram (①)</strong> — look at the specified model.<br>
     <strong>3. Latent vs. manifest (②)</strong> — SEM estimate and sum-score approach side by side: how strongly does measurement error distort?<br>
-    <strong>4. Fit indices (③)</strong> and lavaan syntax (④); plus the learning cards.
+    <strong>4. Fit indices (③) and lavaan syntax (④)</strong>; plus the learning cards.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>The SEM removes the measurement error:</strong> the latent path comes out larger than the correlation of the sum scores — the lower the loadings (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">reliability</a>), the larger the difference.<br>
+    <strong>"Full mediation" is a testable assumption:</strong> it sets c′ = 0. If that is not true in reality, the fit visibly worsens.<br>
+    <strong>Paths are not automatically causal:</strong> whether a path may be read causally is decided by theory or design, not by the model.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Lower the loading λ and watch the sum-score approach underestimate the path ever more strongly while the SEM estimate keeps hitting it. Then switch to mediation and compare "partial" with "full mediation" when a direct path truly exists.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     Several traits, several measurement methods: the <strong>Multitrait-Multimethod Matrix</strong> separates what in a relationship is due to the trait and what is due to the method.

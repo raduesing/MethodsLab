@@ -199,13 +199,22 @@ table.htab th{color:var(--accent);font-weight:500}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Angenommen, Gruppe B erreicht im Schnitt weniger Punkte als Gruppe A. Ist sie wirklich weniger fähig — oder funktioniert eine Frage in Gruppe B anders, etwa wegen Sprache oder Kultur? <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-messinvarianz" target="_blank" rel="noopener" title="Messinvarianz (auch: metrische Äquivalenz) besagt, dass ein psychologisches Konstrukt in verschiedenen Gruppen (z.B. Geschlecht, Kultur, Messzeitpunkt) auf dieselbe Weise gemessen wird.">Messinvarianz</a></strong> heißt: Der Test misst das Merkmal in allen Gruppen auf dieselbe Weise. Fehlt sie, vergleicht man Äpfel mit Birnen. Das Tool lässt dich bei einem Item eine solche Abweichung einbauen und zerlegt die beobachtete Differenz in den echten Anteil und den Anteil, der nur ein Messartefakt ist.
+    Angenommen, Gruppe B erreicht im Schnitt weniger Punkte als Gruppe A. Ist sie wirklich weniger fähig — oder funktioniert eine Frage in Gruppe B anders, etwa wegen Sprache oder Kultur? <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-messinvarianz" target="_blank" rel="noopener" title="Messinvarianz (auch: metrische Äquivalenz) besagt, dass ein psychologisches Konstrukt in verschiedenen Gruppen (z.B. Geschlecht, Kultur, Messzeitpunkt) auf dieselbe Weise gemessen wird.">Messinvarianz</a> heißt: Der Test misst das Merkmal in allen Gruppen auf dieselbe Weise. Fehlt sie, vergleicht man Äpfel mit Birnen. Das Tool lässt dich bei einem Item eine solche Abweichung einbauen und zerlegt die beobachtete Differenz in den echten Anteil und den Anteil, der nur ein Messartefakt ist. Grundlage ist der Verbal-Subtest des Kognitionstests (V1–V4, ein Faktor, Likert 1–5).
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Szenario &amp; wahre Differenz</strong> — die echte Gruppendifferenz und optional eine Abweichung bei einem Item einstellen.<br>
+    <strong>1. Szenario &amp; wahre Differenz</strong> — Stelle die echte Gruppendifferenz Δμ und optional eine Abweichung bei einem Item ein: Δτ (Intercept) verschiebt das Item gleichmäßig, Δλ (Ladung) ändert seine Stärke. Die Szenarien reichen von „Skalar erfüllt“ bis „Maskierte Differenz“.<br>
     <strong>2. Was würdest du schließen? (①)</strong> — erst raten, dann prüfen.<br>
-    <strong>3. Mehrgruppen-CFA (②), Item-Mittelwerte (③)</strong> — welche Invarianzstufen halten?<br>
+    <strong>3. Mehrgruppen-CFA (②), Item-Mittelwerte (③)</strong> — welche Invarianzstufen halten (konfigural, metrisch, skalar)?<br>
     <strong>4. Zerlegung (④) &amp; Gesamtrechnung (⑤)</strong> — wie viel der Differenz ist echt, wie viel Artefakt?
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Ohne Skalarinvarianz sind Mittelwertvergleiche nicht eindeutig interpretierbar:</strong> Ein Teil der beobachteten Differenz kann ein Messartefakt sein.<br>
+    <strong>Uniformer und nicht-uniformer <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-dif" target="_blank" rel="noopener" title="DIF liegt vor, wenn Personen mit gleicher latenter Fähigkeit θ systematisch unterschiedliche Antwortwahrscheinlichkeiten auf ein Item zeigen — abhängig von ihrer Gruppenzugehörigkeit (z.B. Geschlecht, kulturelle Herkunft, Sprache).">DIF</a>:</strong> Ein verschobener Intercept (Δτ) wirkt in allen Merkmalsbereichen gleich, eine veränderte Ladung (Δλ) je nach Ausprägung unterschiedlich.<br>
+    <strong>Artefakte können Differenzen verdecken:</strong> Im Szenario „Maskierte Differenz“ wird eine echte Gruppendifferenz durch Intercept-DIF verdeckt.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Setze die wahre Differenz auf 0 und baue einen Intercept-DIF von 0,8 ein: Die Gruppen scheinen sich zu unterscheiden, obwohl es keinen echten Unterschied gibt. Wähle dann „Maskierte Differenz“ und sieh, wie das Artefakt die echte Differenz überdeckt.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Wie sich so eine Abweichung bei einzelnen Aufgaben erkennen lässt, zeigt <strong>DIF — Differential Item Functioning</strong>.

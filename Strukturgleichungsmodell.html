@@ -196,13 +196,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Die CFA misst verborgene Merkmale (Faktoren). Ein <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-strukturgleichungsmodell" target="_blank" rel="noopener" title="Ein Strukturgleichungsmodell (SEM, Structural Equation Modeling) kombiniert ein Messmodell (konfirmatorische Faktorenanalyse: latente Variablen werden durch mehrere beobachtete Indikatoren gemessen) mit einem Strukturmodell (Regressionsbeziehungen…">Strukturgleichungsmodell</a> (SEM) geht einen Schritt weiter: Es legt zusätzlich gerichtete Pfade zwischen den Faktoren fest, etwa „X beeinflusst Y“, optional auch als Mediation (X→M→Y). Der Vorteil: Das Messrauschen wird mitmodelliert. Rechnet man stattdessen einfach Summenwerte der Items und korreliert sie, fällt der Zusammenhang kleiner aus (Attenuierung) — das Tool stellt beide Wege direkt gegenüber.
+    Die CFA misst verborgene Merkmale (Faktoren). Ein <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-strukturgleichungsmodell" target="_blank" rel="noopener" title="Ein Strukturgleichungsmodell (SEM, Structural Equation Modeling) kombiniert ein Messmodell (konfirmatorische Faktorenanalyse: latente Variablen werden durch mehrere beobachtete Indikatoren gemessen) mit einem Strukturmodell (Regressionsbeziehungen…">Strukturgleichungsmodell</a> (SEM) geht einen Schritt weiter: Es legt zusätzlich gerichtete Pfade zwischen den Faktoren fest, etwa „X beeinflusst Y“, optional auch als Mediation (X→M→Y). Der Vorteil: Das Messrauschen wird mitmodelliert. Rechnet man stattdessen einfach Summenwerte der Items und korreliert sie, fällt der Zusammenhang kleiner aus (Attenuierung) — das Tool stellt beide Wege direkt gegenüber. Das Beispiel knüpft an die CFA an: X sind die verbalen Items V1–V4, Y die räumlichen Items S1–S4.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Wahres Modell &amp; Modellart</strong> — Szenario wählen, 2 oder 3 Konstrukte (auch als Mediation), Pfade und Ladungen einstellen.<br>
+    <strong>1. Wahres Modell &amp; Modellart</strong> — Wähle ein Szenario (kein, moderater oder starker Pfad), die Modellart (einfach X→Y oder Mediation X→M→Y) sowie Pfade und Ladungen. Beim <em>spezifizierten</em> Modell entscheidest du, ob der direkte Pfad c′ frei bleibt oder auf 0 gesetzt wird (volle Mediation).<br>
     <strong>2. Pfaddiagramm (①)</strong> — das spezifizierte Modell ansehen.<br>
-    <strong>3. Latent vs. manifest (②)</strong> — SEM-Schätzung und Summenscore-Ansatz nebeneinander: wie stark verzerrt der Messfehler?<br>
-    <strong>4. Fit-Indices (③)</strong> und lavaan-Syntax (④); dazu die Lernkarten.
+    <strong>3. Latent vs. manifest (②)</strong> — SEM-Schätzung und Summenscore-Ansatz nebeneinander: Wie stark verzerrt der Messfehler?<br>
+    <strong>4. Fit-Indices (③) und lavaan-Syntax (④)</strong>; dazu die Lernkarten.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Das SEM rechnet den Messfehler heraus:</strong> Der latente Pfad fällt größer aus als die Korrelation der Summenscores — je niedriger die Ladungen (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a>), desto größer der Unterschied.<br>
+    <strong>„Volle Mediation“ ist eine testbare Annahme:</strong> Sie setzt c′ = 0. Stimmt das in Wahrheit nicht, verschlechtert sich der Fit sichtbar.<br>
+    <strong>Pfade sind nicht automatisch kausal:</strong> Ob ein Pfad ursächlich zu lesen ist, entscheidet die Theorie bzw. das Design, nicht das Modell.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Senke die Ladung λ und beobachte, wie der Summenscore-Ansatz den Pfad immer stärker unterschätzt, während die SEM-Schätzung ihn weiter trifft. Wechsle dann in die Mediation und vergleiche „Partiell“ mit „Volle Mediation“, wenn in Wahrheit ein direkter Pfad existiert.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Mehrere Merkmale, mehrere Messmethoden: Die <strong>Multitrait-Multimethod-Matrix</strong> trennt, was am Zusammenhang am Merkmal liegt und was an der Methode.

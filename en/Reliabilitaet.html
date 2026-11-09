@@ -156,13 +156,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    How reliably does a questionnaire measure? α is the best-known answer, but it is only correct if all items relate equally strongly to the trait. If the test also contains sub-topics, α can underestimate <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">reliability</a> — or suggest a unity that does not exist. ω splits the variance of the sum score more precisely: ω<sub>total</sub> counts everything shared, ω<sub>hierarchical</sub> only the part due to the main construct itself. The tool shows the three values side by side and lets you change loadings and sub-topics.
+    How reliably does a questionnaire measure? α is the best-known answer, but holds only if all questions are related to the characteristic equally strongly. If the test additionally contains sub-topics, α can underestimate the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliability designates the degree to which a measurement instrument produces consistent results upon repeated application under the same conditions — its measurement precision or dependability.">reliability</a> — or fake a unity that does not exist. ω decomposes the variance of the sum score more precisely: ω<sub>total</sub> counts everything shared, ω<sub>hierarchical</sub> only the part that goes back to the actual main construct. The tool shows the three values side by side and lets you change loadings and sub-topics — as with the 8-item cognition test with two factors but a single α.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Scenario &amp; items</strong> — set the number of items, loadings on the main construct (general factor), and optional sub-topics (group factors).<br>
-    <strong>2. The three coefficients (①)</strong> — α, ω<sub>total</sub>, and ω<sub>hierarchical</sub> compared.<br>
+    <strong>1. Scenario &amp; items</strong> — start with a preset (tau-equivalent, congeneric, multidimensional) and set the number of items, the loadings on the main construct (general factor) and optional sub-topics (group factors); strength 0 means unidimensional.<br>
+    <strong>2. The three coefficients (①)</strong> — α, ω<sub>total</sub> and ω<sub>hierarchical</sub> compared.<br>
     <strong>3. Variance decomposition (②)</strong> — what the sum score is made of.<br>
     <strong>4. Split-half (③)</strong> — α as the mean of all test splits; plus the concepts.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>With unequal loadings α underestimates</strong> the reliability because it weights every item equally.<br>
+    <strong>With multidimensionality α deceives:</strong> α and ω<sub>total</sub> also count the sub-topics as shared variance — only ω<sub>hierarchical</sub> shows how much goes back to the main construct.<br>
+    <strong>For 0/1 items</strong> KR-20 is nothing other than Cronbach's α.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Choose the preset "multidimensional" and increase the strength of the group factors: α and ω<sub>total</sub> stay high, ω<sub>hierarchical</sub> falls — a single value would have faked unity here.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     Whether a test measures the same thing in different groups at all is what <strong>Measurement Invariance</strong> examines.

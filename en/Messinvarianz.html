@@ -199,13 +199,22 @@ table.htab th{color:var(--accent);font-weight:500}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Suppose group B scores lower on average than group A. Are they really less able — or does an item work differently in group B, say because of language or culture? <strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-messinvarianz" target="_blank" rel="noopener" title="Measurement invariance (also: metric equivalence) states that a psychological construct is measured in the same way across different groups (e.g. gender, culture, time point).">Measurement invariance</a></strong> means the test measures the trait in the same way in all groups. Without it, you compare apples with oranges. The tool lets you build such a deviation into one item and splits the observed difference into the real part and the part that is merely a measurement artifact.
+    Suppose group B scores lower on average than group A. Is it really less able — or does a question work differently in group B, for example because of language or culture? <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-messinvarianz" target="_blank" rel="noopener" title="Measurement invariance (also: metric equivalence) states that a psychological construct is measured in the same way across different groups (e.g. gender, culture, time point).">Measurement invariance</a> means: the test measures the characteristic in the same way in all groups. If it is missing, you are comparing apples with oranges. The tool lets you build such a deviation into one item and splits the observed difference into the true part and the part that is merely a measurement artifact. The basis is the verbal subtest of the cognition test (V1–V4, one factor, Likert 1–5).
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Scenario &amp; true difference</strong> — set the real group difference and optionally a deviation in one item.<br>
+    <strong>1. Scenario &amp; true difference</strong> — set the true group difference Δμ and optionally a deviation in one item: Δτ (intercept) shifts the item uniformly, Δλ (loading) changes its strength. The scenarios range from "scalar holds" to "masked difference".<br>
     <strong>2. What would you conclude? (①)</strong> — guess first, then check.<br>
-    <strong>3. Multigroup CFA (②), item means (③)</strong> — which invariance levels hold?<br>
-    <strong>4. Decomposition (④) &amp; full calculation (⑤)</strong> — how much of the difference is real, how much artifact?
+    <strong>3. Multi-group CFA (②), item means (③)</strong> — which levels of invariance hold (configural, metric, scalar)?<br>
+    <strong>4. Decomposition (④) &amp; total calculation (⑤)</strong> — how much of the difference is real, how much artifact?
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Without scalar invariance, mean comparisons cannot be interpreted unambiguously:</strong> part of the observed difference may be a measurement artifact.<br>
+    <strong>Uniform and non-uniform <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-dif" target="_blank" rel="noopener" title="DIF occurs when persons with the same latent ability θ show systematically different response probabilities on an item — depending on their group membership (e.g. sex, cultural background, language).">DIF</a>:</strong> a shifted intercept (Δτ) acts equally across the trait range, a changed loading (Δλ) differently depending on the level.<br>
+    <strong>Artifacts can hide differences:</strong> in the "masked difference" scenario a true group difference is covered by intercept DIF.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Set the true difference to 0 and build in an intercept DIF of 0.8: the groups seem to differ although there is no real difference. Then choose "masked difference" and see how the artifact covers the true difference.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     How to detect such a deviation in individual items is shown by <strong>DIF — Differential Item Functioning</strong>.
