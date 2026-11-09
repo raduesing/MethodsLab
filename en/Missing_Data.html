@@ -178,15 +178,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Surveys have missing answers. Are they missing purely at random (MCAR), does it depend on other recorded traits (MAR), or are they missing because of their own value, e.g. high incomes not being reported (MNAR)? This determines which strategy gives trustworthy results: dropping incomplete cases (<strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-listwise-deletion" target="_blank" rel="noopener" title="Listwise deletion (also: complete case analysis) excludes every observation with at least one missing value on the variables used in the model entirely from the analysis — only the complete cases are used.">listwise deletion</a></strong>), filling in a substitute such as the mean (<strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-single-imputation" target="_blank" rel="noopener" title="Single imputation replaces each missing value with exactly one estimated, plausible value, producing a single complete dataset that is then analyzed as if it were real data.">single imputation</a></strong>), or drawing several plausible values and combining the results (<strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-multiple-imputation" target="_blank" rel="noopener" title="Multiple Imputation (MI) is the standard method for handling missing values under the MAR assumption.">multiple imputation</a></strong>).
+    In surveys, answers go missing. Are they missing purely at random (MCAR), does it depend on other recorded characteristics (MAR), or are they missing precisely because of their own value, e.g. because high incomes are not reported (MNAR)? This determines which strategy gives reliable results: deleting incomplete cases (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-listwise-deletion" target="_blank" rel="noopener" title="Listwise deletion (also: complete case analysis) excludes every observation with at least one missing value on the variables used in the model entirely from the analysis — only the complete cases are used.">listwise deletion</a>), inserting a substitute value such as the mean (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-single-imputation" target="_blank" rel="noopener" title="Single imputation replaces each missing value with exactly one estimated, plausible value, producing a single complete dataset that is then analyzed as if it were real data.">single imputation</a>), or drawing several plausible values and combining the results (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-multiple-imputation" target="_blank" rel="noopener" title="Multiple Imputation (MI) is the standard method for handling missing values under the MAR assumption.">multiple imputation</a>). In the tool you examine a longitudinal study: stress level X and social support Z are fully observed, well-being Y is partly missing. The true effect of X on Y is known — so you see which strategy hits it.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Fundamentals</strong> — distinguish MCAR, MAR, and MNAR on the same example
-    (stress level X, social support Z, partially missing well-being Y).<br>
-    <strong>2. Try it</strong> — pick a mechanism and a strategy on the left.<br>
-    <strong>3. Scatter &amp; density distribution</strong> — see directly how much each strategy
-    distorts the estimated relationship and the Y distribution.<br>
-    <strong>4. Concepts</strong> — when multiple imputation works well and when it doesn't.
+    <strong>1. Basics</strong> — tell MCAR, MAR and MNAR apart in the same example: are values missing randomly, depending on observed variables (X, Z), or on the missing value itself?<br>
+    <strong>2. Try it out</strong> — choose a mechanism and a strategy on the left.<br>
+    <strong>3. Scatter &amp; density</strong> — see directly how strongly each strategy distorts the estimated relationship and the distribution of Y.<br>
+    <strong>4. Concepts</strong> — when multiple imputation works well and when it does not.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Listwise deletion is unbiased only under MCAR.</strong> Under MAR or MNAR the remaining sample is no longer a random sample.<br>
+    <strong>Mean imputation destroys variance and correlations:</strong> many points artificially sit at the same value.<br>
+    <strong>Multiple imputation needs a rich imputation model:</strong> all variables that predict missingness or Y belong in it — also an auxiliary variable like Z that does not appear in the actual analysis. Under MNAR, by contrast, none of the strategies can reliably remove the bias.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Choose MAR and compare listwise deletion with multiple imputation: which strategy hits the true effect of −7.20? Then switch to MNAR and watch what changes.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     Mishandled missingness can distort the very p-value and effect size that

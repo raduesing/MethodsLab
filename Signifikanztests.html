@@ -157,17 +157,22 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Ein Lernprogramm schneidet im Test etwas besser ab als die Kontrollgruppe (p = .045). Was heißt das? Der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="Der p-Wert ist die Wahrscheinlichkeit, unter der Annahme, dass die Nullhypothese H₀ zutrifft, ein Ergebnis zu beobachten, das mindestens so extrem ist wie das tatsächlich beobachtete: p = P(Daten, die mindestens so extrem sind wie die beobachteten |…">p-Wert</a> beantwortet nur: Wie wahrscheinlich wären so extreme Daten, wenn das Programm in Wahrheit nichts bewirkt? Er sagt <em>nicht</em>, wie wahrscheinlich es wirkt. Das Tool macht das per Simulation erlebbar: Du wiederholst dieselbe Studie bei „kein Effekt“ immer wieder und siehst, wie oft solche Ergebnisse vorkommen.
+    Ein Lernprogramm schneidet im Test etwas besser ab als die Kontrollgruppe (p = .045). Was heißt das? Der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="Der p-Wert ist die Wahrscheinlichkeit, unter der Annahme, dass die Nullhypothese H₀ zutrifft, ein Ergebnis zu beobachten, das mindestens so extrem ist wie das tatsächlich beobachtete: p = P(Daten, die mindestens so extrem sind wie die beobachteten |…">p-Wert</a> beantwortet nur: Wie wahrscheinlich wären so extreme Daten, wenn das Programm in Wahrheit nichts bewirkt? Er sagt <em>nicht</em>, wie wahrscheinlich es wirkt. Formal ist p = P(Daten mindestens so extrem wie die beobachteten | H₀ wahr) — eine Wahrscheinlichkeit über Daten, keine über die Hypothese. Das Tool macht das per Simulation erlebbar, an einem durchgehenden Beispiel (Zwei-Gruppen-Vergleich): Du wiederholst dieselbe Studie bei „kein Effekt“ immer wieder und siehst, wie oft solche Ergebnisse vorkommen.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Wiederholte Ziehung unter H₀</strong> — ziehe Stichproben aus einer Population
-    ohne wahren Effekt und sieh, wie der simulierte Anteil „mindestens so extrem" gegen den
-    formal berechneten p-Wert konvergiert.<br>
-    <strong>2. Der p-Wert-Tanz</strong> — jetzt mit echtem, festem Effekt: wie stark streuen
-    p-Werte zwischen Replikationen derselben Population?<br>
-    <strong>3. Mythen vs. Fakten</strong> — fünf klassische Fehlinterpretationen
-    richtiggestellt.<br>
+    <strong>1. Wiederholte Ziehung unter H₀</strong> — Jeder Klick auf „Stichprobe ziehen“ simuliert zwei Gruppen, zwischen denen in Wahrheit kein Unterschied besteht. Der t-Wert wird auf der t-Verteilung markiert; der Anteil „mindestens so extrem wie unser t“ nähert sich mit wachsender Zahl der Ziehungen dem formal berechneten p-Wert.<br>
+    <strong>2. Der p-Wert-Tanz</strong> — Jetzt mit echtem, festem Effekt: Wie stark streuen die p-Werte zwischen Replikationen derselben Population?<br>
+    <strong>3. Mythen vs. Fakten</strong> — fünf klassische Fehlinterpretationen richtiggestellt.<br>
     <strong>4. Konzepte &amp; Einordnung</strong> — der p-Wert im größeren Kontext.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>p ist nicht die Wahrscheinlichkeit, dass H₀ stimmt</strong> — eine der häufigsten Verwechslungen überhaupt.<br>
+    <strong>p-Werte schwanken stark von Replikation zu Replikation</strong>, selbst wenn ein echter Effekt besteht. Der Unterschied zwischen p = .045 und p = .06 ist deshalb kein Unterschied zwischen „wirkt“ und „wirkt nicht“.<br>
+    <strong>p sagt nichts über die Größe oder Bedeutung eines Effekts</strong> — bei großer Stichprobe wird auch ein winziger Effekt signifikant.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Ziehe in Schritt 1 sehr viele Stichproben und beobachte, wie der Anteil extremer Ergebnisse gegen den p-Wert konvergiert. Notiere dann im p-Wert-Tanz die Spanne der p-Werte, die bei einem festen Effekt auftreten.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Ein p-Wert sagt nichts darüber, <em>wie groß</em> ein Effekt ist — das übernimmt

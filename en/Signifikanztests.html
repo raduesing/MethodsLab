@@ -157,16 +157,22 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    A learning program does slightly better on the test than the control group (p = .045). What does that mean? The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="The p-value is the probability, assuming the null hypothesis H₀ is true, of observing a result at least as extreme as the one actually observed: p = P(data at least as extreme as observed | H₀ is true).">p-value</a> only answers: how likely would such extreme data be if the program truly did nothing? It does <em>not</em> say how likely the program works. The tool makes this tangible by simulation: you repeat the same study under “no effect” again and again and see how often such results occur.
+    A learning programme does slightly better in the test than the control group (p = .045). What does that mean? The <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="The p-value is the probability, assuming the null hypothesis H₀ is true, of observing a result at least as extreme as the one actually observed: p = P(data at least as extreme as observed | H₀ is true).">p-value</a> answers only: how likely would such extreme data be if the programme in truth did nothing? It does <em>not</em> say how likely it is that the programme works. Formally, p = P(data at least as extreme as observed | H₀ true) — a probability about data, not about the hypothesis. The tool makes this tangible by simulation, with one running example (a two-group comparison): you repeat the same study under "no effect" again and again and see how often such results occur.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Repeated sampling under H₀</strong> — draw samples from a population with no
-    true effect and watch the simulated share of "at least as extreme" converge toward the
-    formally computed p-value.<br>
-    <strong>2. The p-value dance</strong> — now with a real, fixed effect: how much do p-values
-    scatter across replications of the same population?<br>
-    <strong>3. Myths vs. facts</strong> — five classic misinterpretations corrected.<br>
+    <strong>1. Repeated sampling under H₀</strong> — each click on "draw sample" simulates two groups between which there is truly no difference. The t value is marked on the t distribution; the share "at least as extreme as our t" approaches the formally computed p-value as the number of draws grows.<br>
+    <strong>2. The dance of the p-values</strong> — now with a real, fixed effect: how strongly do p-values scatter between replications of the same population?<br>
+    <strong>3. Myths vs. facts</strong> — five classic misinterpretations set straight.<br>
     <strong>4. Concepts &amp; context</strong> — the p-value in the bigger picture.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>p is not the probability that H₀ is true</strong> — one of the most common mix-ups of all.<br>
+    <strong>p-values fluctuate strongly from replication to replication</strong>, even when a real effect exists. The difference between p = .045 and p = .06 is therefore not a difference between "works" and "does not work".<br>
+    <strong>p says nothing about the size or importance of an effect</strong> — with a large sample even a tiny effect becomes significant.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    In step 1, draw very many samples and watch how the share of extreme results converges to the p-value. Then, in the dance of the p-values, note the range of p-values that occur for a fixed effect.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     A p-value says nothing about <em>how big</em> an effect is — that's what <strong>Effect

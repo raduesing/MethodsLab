@@ -146,17 +146,22 @@ input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--ink)
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    A <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="The p-value is the probability, assuming the null hypothesis H₀ is true, of observing a result at least as extreme as the one actually observed: p = P(data at least as extreme as observed | H₀ is true).">p-value</a> only tells you whether a difference is probably not pure chance — not whether it is meaningful. Cohen's d measures the difference between two means in standard deviations: d = 0.5 means the groups are half a standard deviation apart — whether in test points or centimeters. This makes studies comparable. With repeated measures (the same people twice) there are several ways to compute it; the tool shows them side by side.
+    A <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-p-wert" target="_blank" rel="noopener" title="The p-value is the probability, assuming the null hypothesis H₀ is true, of observing a result at least as extreme as the one actually observed: p = P(data at least as extreme as observed | H₀ is true).">p-value</a> only tells whether a difference is probably not pure chance — not whether it is also meaningful. Cohen's d measures the difference of two means in standard deviations: d = 0.5 means the groups lie half a standard deviation apart — whether in test points or centimetres. That way studies can be compared. The running example: a psychologist investigates whether an 8-week mindfulness training increases well-being — either as a group comparison (training vs. waitlist) or in the same people before and after the training. With repeated measures there are several ways of computing it; the tool shows them side by side.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Choose a design</strong> — between (independent groups) or within (repeated
-    measures), set parameters with sliders.<br>
-    <strong>2. Visualization</strong> — see both population distributions and their overlap on
-    the running example.<br>
-    <strong>3. What do these numbers mean?</strong> — d, conversion to r, η², <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="The Odds Ratio (OR) compares the odds of an event between two groups: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)), where p_A and p_B are the event probabilities in groups A and B. OR = 1 means no difference; OR &gt; 1 means higher odds in group A; OR &lt; 1 means…">odds ratio</a>,
-    Cohen's U₃, and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cles" target="_blank" rel="noopener" title="CLES (Common Language Effect Size; McGraw &amp; Wong, 1992) gives the probability that a randomly drawn person from group A has a higher value than a randomly drawn person from group B: CLES = P(X_A &gt; X_B).">CLES</a>.<br>
-    <strong>4. Concepts &amp; limitations</strong> — small-sample corrections, sign
-    conventions, limits of the small/medium/large classification.
+    <strong>1. Choose the design</strong> — between (independent groups) or within (repeated measures). You set means, standard deviations and n (for within also the pre-post correlation r) with sliders.<br>
+    <strong>2. Visualization</strong> — the two assumed population distributions on the measurement scale and their overlap in the running example.<br>
+    <strong>3. What do these numbers mean?</strong> — d, conversion to r, η², <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="The Odds Ratio (OR) compares the odds of an event between two groups: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)), where p_A and p_B are the event probabilities in groups A and B. OR = 1 means no difference; OR &gt; 1 means higher odds in group A; OR &lt; 1 means…">odds ratio</a>, Cohen's U₃ and <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-cles" target="_blank" rel="noopener" title="CLES (Common Language Effect Size; McGraw &amp; Wong, 1992) gives the probability that a randomly drawn person from group A has a higher value than a randomly drawn person from group B: CLES = P(X_A &gt; X_B).">CLES</a>: the same effect size in different "languages".<br>
+    <strong>4. Concepts &amp; limits</strong> — corrections for small samples, sign conventions and the limits of the small/medium/large classification.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Small/medium/large is only a rough rule of thumb</strong> — whether an effect matters in practice depends on the field and the question.<br>
+    <strong>With repeated measures there are several d variants</strong> that give different numbers. Report which one you used.<br>
+    <strong>With small samples d is biased</strong> (it slightly overestimates the true effect) — there are corrections such as Hedges' g.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    In the within design, change the pre-post correlation and watch how the d variants move apart. Then increase the distance between the means and see how overlap and CLES react.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     For exact computation with your own data (CSV upload, confidence intervals), see the

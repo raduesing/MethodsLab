@@ -172,15 +172,21 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    This calculator computes effect sizes (how strong is a difference?) for two situations: the same people measured twice, or two separate groups. It shows several common ways of calculating them, plus uncertainty ranges (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-konfidenzintervall" target="_blank" rel="noopener" title="A 95% confidence interval is an interval that, when the estimation method is applied repeatedly, contains the true parameter value in 95% of cases — it is a statement about the procedure, not about a specific parameter.">confidence intervals</a>), side by side, so you can see how much the choice of method changes the result. For an introduction with a guided example, see the <strong>Effect Sizes tutorial</strong>.
+    This calculator computes effect sizes (how large is a difference?) for two situations: the same people measured twice (within) or two separate groups (between). It works with your own data and shows several common ways of calculation and uncertainty ranges (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-konfidenzintervall" target="_blank" rel="noopener" title="A 95% confidence interval is an interval that, when the estimation method is applied repeatedly, contains the true parameter value in 95% of cases — it is a statement about the procedure, not about a specific parameter.">confidence intervals</a>) side by side, so you can see how strongly the choice of method influences the result. The example is an 8-week mindfulness training: 40 participants, well-being on average 45.8 before the training and 52.4 afterwards. An introduction with a guided example is in the effect size tutorial.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Upload a CSV</strong> — two numeric columns: pre/post (within) or
-    control/intervention (between).<br>
-    <strong>2. Compare standardizations</strong> — all three d variants at once for within,
-    Student's t vs. Welch's t for between.<br>
-    <strong>3. Visualization &amp; confidence intervals</strong> — group overlap, Bonett,
-    Rosenthal, and exact NCT confidence intervals.
+    <strong>1. Upload a CSV</strong> — two numeric columns: pre/post (within) or control/intervention (between).<br>
+    <strong>2. Compare standardizations</strong> — for within all three d variants (d_z, d_rm, d_av) at once, for between Student's t vs. Welch's t. Plus three small-sample corrections.<br>
+    <strong>3. Visualization &amp; confidence intervals</strong> — the overlap of the groups as well as Bonett, Rosenthal and exact NCT confidence intervals.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Sign convention:</strong> within: d = post − pre, d &gt; 0 means an increase. Between: d = intervention − control, d &gt; 0 means the intervention is higher. That way the same raw data give the same sign in both modes.<br>
+    <strong>d_z, d_rm and d_av are not interchangeable</strong> — they answer slightly different questions. State the variant you used in your report.<br>
+    <strong>The confidence intervals need not be identical:</strong> the three methods differ mainly at small n. State the method used here as well.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Switch between within and between mode and compare how the standardizations and intervals behave on the same raw data.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     An exact effect from your own data is the best basis for planning the sample size of a

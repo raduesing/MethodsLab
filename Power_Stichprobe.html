@@ -166,15 +166,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Eine Studie mit „80 % <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-power" target="_blank" rel="noopener" title="Die Power (Teststärke) eines statistischen Tests ist die Wahrscheinlichkeit, einen tatsächlich vorhandenen Effekt korrekt als signifikant zu erkennen: Power = 1 − β, wobei β die Wahrscheinlichkeit eines Typ-II-Fehlers (fälschliches Nicht-Verwerfen…">Power</a>“ entdeckt einen echten Effekt in 8 von 10 Fällen — aber nur für eine ganz bestimmte Effektgröße. Ist der wahre Effekt kleiner, sinkt die Chance; ist er null, entspricht sie nur noch dem Fehlalarm-Niveau α. Die Power hängt von Effektgröße, Stichprobengröße, Signifikanzniveau und Testrichtung ab. Deshalb ist sie eine Kurve, keine einzelne Zahl.
+    Eine Studie mit „80 % <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-power" target="_blank" rel="noopener" title="Die Power (Teststärke) eines statistischen Tests ist die Wahrscheinlichkeit, einen tatsächlich vorhandenen Effekt korrekt als signifikant zu erkennen: Power = 1 − β, wobei β die Wahrscheinlichkeit eines Typ-II-Fehlers (fälschliches Nicht-Verwerfen…">Power</a>“ entdeckt einen echten Effekt in 8 von 10 Fällen — aber nur für eine ganz bestimmte Effektgröße. Ist der wahre Effekt kleiner, sinkt die Chance; ist er null, entspricht sie nur noch dem Fehlalarm-Niveau α. Die Power hängt von Effektgröße, Stichprobengröße, Signifikanzniveau und Testrichtung ab. Deshalb ist sie eine Kurve, keine einzelne Zahl. Das Beispiel im Tool: Eine klinische Studie zu einem Antidepressivum rechnet mit d = 0,50 aus der Literatur und n = 64 pro Gruppe (80 % Power) — eine Pilotstudie deutet aber nur auf d ≈ 0,30 hin.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Power ist eine Kurve</strong> — nicht ein Wert: sieh, wie sich die Kurve mit n
-    verschiebt.<br>
-    <strong>2. Die Power-Landschaft</strong> — n × d × Power als Heatmap und
-    Sensitivitätskurve.<br>
-    <strong>3. Was, wenn das wahre δ kleiner ist?</strong> — die Konsequenz einer zu optimistisch
-    geschätzten Effektgröße.
+    <strong>Zuerst die Regler links:</strong> Signifikanzniveau α, Testrichtung (zwei- oder einseitig), Design (1 oder 2 Gruppen), n, geplante Effektgröße d und Ziel-Power.<br>
+    <strong>1. Power ist eine Kurve — nicht ein Wert</strong> — sieh, wie sich die Power-Kurve mit n verschiebt, und wie sich H₀- und H₁-Verteilung überlappen.<br>
+    <strong>2. Die Power-Landschaft</strong> — n × d × Power als Heatmap: Wo liegt der Bereich mit ausreichender Power?<br>
+    <strong>3. Was, wenn das wahre δ kleiner ist?</strong> — Sensitivitätsanalyse: die Power bei deinem n für jedes mögliche wahre d.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Power gilt nur für die angenommene Effektgröße.</strong> Wird sie aus Literatur oder Pilotstudie zu optimistisch geschätzt, ist die tatsächliche Power oft deutlich geringer als geplant.<br>
+    <strong>Kleine Effekte brauchen überproportional viele Personen:</strong> Ein halb so großer Effekt erfordert für dieselbe Power etwa viermal so viele.<br>
+    <strong>Bei einem wahren Effekt von null</strong> bleibt als „Power“ nur die Fehlalarmrate α übrig.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Setze d von 0,50 auf 0,30 und beobachte, wie die Power bei n = 64 einbricht. Erhöhe dann n, bis die Ziel-Power wieder erreicht ist, und prüfe in der Heatmap, wie groß der Aufwand wird.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Power und fehlende Daten bestimmen zusammen, wie viele vollständige, auswertbare

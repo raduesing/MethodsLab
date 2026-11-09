@@ -178,15 +178,22 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    In Umfragen fehlen Antworten. Fehlen sie rein zufällig (MCAR), hängt es von anderen erfassten Merkmalen ab (MAR), oder fehlen sie gerade wegen ihres eigenen Werts, etwa weil hohe Einkommen nicht angegeben werden (MNAR)? Davon hängt ab, welche Strategie zuverlässige Ergebnisse liefert: unvollständige Fälle streichen (<strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-listwise-deletion" target="_blank" rel="noopener" title="Listwise Deletion (auch: Complete Case Analysis) schließt jede Beobachtung mit mindestens einem fehlenden Wert auf den im Modell verwendeten Variablen vollständig aus der Analyse aus — gerechnet wird nur mit den vollständigen Fällen.">Listwise Deletion</a></strong>), einen Ersatzwert wie den Mittelwert einsetzen (<strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-single-imputation" target="_blank" rel="noopener" title="Single Imputation ersetzt jeden fehlenden Wert durch genau einen geschätzten, plausiblen Wert und erzeugt so einen einzigen vollständigen Datensatz, der anschließend wie echte Daten analysiert wird.">Single Imputation</a></strong>) oder mehrere plausible Werte ziehen und die Ergebnisse zusammenführen (<strong><a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-multiple-imputation" target="_blank" rel="noopener" title="Multiple Imputation (MI) ist die Standardmethode zur Behandlung fehlender Werte unter der MAR-Annahme.">Multiple Imputation</a></strong>).
+    In Umfragen fehlen Antworten. Fehlen sie rein zufällig (MCAR), hängt es von anderen erfassten Merkmalen ab (MAR), oder fehlen sie gerade wegen ihres eigenen Werts, etwa weil hohe Einkommen nicht angegeben werden (MNAR)? Davon hängt ab, welche Strategie zuverlässige Ergebnisse liefert: unvollständige Fälle streichen (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-listwise-deletion" target="_blank" rel="noopener" title="Listwise Deletion (auch: Complete Case Analysis) schließt jede Beobachtung mit mindestens einem fehlenden Wert auf den im Modell verwendeten Variablen vollständig aus der Analyse aus — gerechnet wird nur mit den vollständigen Fällen.">Listwise Deletion</a>), einen Ersatzwert wie den Mittelwert einsetzen (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-single-imputation" target="_blank" rel="noopener" title="Single Imputation ersetzt jeden fehlenden Wert durch genau einen geschätzten, plausiblen Wert und erzeugt so einen einzigen vollständigen Datensatz, der anschließend wie echte Daten analysiert wird.">Single Imputation</a>) oder mehrere plausible Werte ziehen und die Ergebnisse zusammenführen (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-multiple-imputation" target="_blank" rel="noopener" title="Multiple Imputation (MI) ist die Standardmethode zur Behandlung fehlender Werte unter der MAR-Annahme.">Multiple Imputation</a>). Im Tool untersuchst du eine Längsschnittstudie: Stresslevel X und soziale Unterstützung Z sind vollständig beobachtet, das Wohlbefinden Y fehlt teilweise. Der wahre Effekt von X auf Y ist bekannt — du siehst also, welche Strategie ihn trifft.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Grundlagen</strong> — MCAR, MAR und MNAR am selben Beispiel (Stresslevel X,
-    Soziale Unterstützung Z, teilweise fehlendes Wohlbefinden Y) unterscheiden.<br>
+    <strong>1. Grundlagen</strong> — MCAR, MAR und MNAR am selben Beispiel unterscheiden: Fehlen die Werte zufällig, abhängig von beobachteten Variablen (X, Z) oder vom fehlenden Wert selbst?<br>
     <strong>2. Ausprobieren</strong> — wähle links einen Mechanismus und eine Strategie.<br>
-    <strong>3. Scatter &amp; Dichteverteilung</strong> — sieh direkt, wie stark jede Strategie
-    den geschätzten Zusammenhang und die Y-Verteilung verzerrt.<br>
+    <strong>3. Scatter &amp; Dichteverteilung</strong> — sieh direkt, wie stark jede Strategie den geschätzten Zusammenhang und die Verteilung von Y verzerrt.<br>
     <strong>4. Konzepte</strong> — wann Multiple Imputation gut funktioniert und wann nicht.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Listwise Deletion ist nur bei MCAR unverzerrt.</strong> Bei MAR oder MNAR ist die Reststichprobe keine Zufallsstichprobe mehr.<br>
+    <strong>Mittelwert-Imputation zerstört Varianz und Korrelationen:</strong> Viele Punkte liegen künstlich auf demselben Wert.<br>
+    <strong>Multiple Imputation braucht ein reiches Imputationsmodell:</strong> Alle Variablen, die das Fehlen oder Y vorhersagen, gehören hinein — auch eine Hilfsvariable (Auxiliary-Variable) wie Z, die in der eigentlichen Analyse gar nicht vorkommt. Bei MNAR kann dagegen keine der Strategien die Verzerrung zuverlässig beseitigen.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Wähle MAR und vergleiche Listwise Deletion mit Multiple Imputation: Welche Strategie trifft den wahren Effekt von −7,20? Wechsle dann zu MNAR und beobachte, was sich ändert.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Eine unpassend gehandhabte Missingness kann denselben p-Wert und dieselbe Effektgröße

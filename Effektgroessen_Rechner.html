@@ -172,15 +172,21 @@ body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Dieser Rechner berechnet Effektgrößen (wie stark ist ein Unterschied?) für zwei Situationen: dieselben Personen zweimal gemessen oder zwei getrennte Gruppen. Er zeigt mehrere gängige Berechnungsarten und Unsicherheitsbereiche (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-konfidenzintervall" target="_blank" rel="noopener" title="Ein 95%-Konfidenzintervall ist ein Intervall, das bei wiederholter Anwendung der Schätzmethode in 95% der Fälle den wahren Parameterwert enthält — es ist eine Aussage über das Verfahren, nicht über einen bestimmten Parameter.">Konfidenzintervalle</a>) nebeneinander, damit du siehst, wie stark die Wahl der Methode das Ergebnis beeinflusst. Eine Einführung mit geführtem Beispiel findest du im <strong>Effektgrößen-Tutorial</strong>.
+    Dieser Rechner berechnet Effektgrößen (wie stark ist ein Unterschied?) für zwei Situationen: dieselben Personen zweimal gemessen (Within) oder zwei getrennte Gruppen (Between). Er arbeitet mit deinen eigenen Daten und zeigt mehrere gängige Berechnungsarten und Unsicherheitsbereiche (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-konfidenzintervall" target="_blank" rel="noopener" title="Ein 95%-Konfidenzintervall ist ein Intervall, das bei wiederholter Anwendung der Schätzmethode in 95% der Fälle den wahren Parameterwert enthält — es ist eine Aussage über das Verfahren, nicht über einen bestimmten Parameter.">Konfidenzintervalle</a>) nebeneinander, damit du siehst, wie stark die Wahl der Methode das Ergebnis beeinflusst. Als Beispiel dient ein 8-wöchiges Achtsamkeitstraining: 40 Teilnehmende, Wohlbefinden vor dem Training im Mittel 45,8, danach 52,4. Eine Einführung mit geführtem Beispiel findest du im Effektgrößen-Tutorial.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. CSV hochladen</strong> — zwei numerische Spalten: Prä/Post (Within) oder
-    Kontrolle/Intervention (Between).<br>
-    <strong>2. Standardisierungen vergleichen</strong> — bei Within alle drei d-Varianten
-    gleichzeitig, bei Between Student's t vs. Welch's t.<br>
-    <strong>3. Visualisierung &amp; Konfidenzintervalle</strong> — Überlappung der Gruppen,
-    Bonett-, Rosenthal- und exakte NCT-Konfidenzintervalle.
+    <strong>1. CSV hochladen</strong> — zwei numerische Spalten: Prä/Post (Within) oder Kontrolle/Intervention (Between).<br>
+    <strong>2. Standardisierungen vergleichen</strong> — bei Within alle drei d-Varianten (d_z, d_rm, d_av) gleichzeitig, bei Between Student's t vs. Welch's t. Dazu drei Korrekturen für kleine Stichproben.<br>
+    <strong>3. Visualisierung &amp; Konfidenzintervalle</strong> — die Überlappung der Gruppen sowie Bonett-, Rosenthal- und exakte NCT-Konfidenzintervalle.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Vorzeichen-Konvention:</strong> Within: d = Post − Prä, d &gt; 0 bedeutet Anstieg. Between: d = Intervention − Kontrolle, d &gt; 0 bedeutet, die Intervention liegt höher. So ergeben dieselben Rohdaten in beiden Modi dasselbe Vorzeichen.<br>
+    <strong>d_z, d_rm und d_av sind nicht austauschbar</strong> — sie beantworten leicht verschiedene Fragen. Nenne in deinem Bericht die verwendete Variante.<br>
+    <strong>Die Konfidenzintervalle müssen nicht identisch sein:</strong> Die drei Methoden unterscheiden sich vor allem bei kleinem n. Gib auch hier die verwendete Methode an.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Wechsle zwischen Within- und Between-Modus und vergleiche, wie sich die Standardisierungen und Intervalle bei denselben Rohdaten verhalten.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Ein exakter Effekt aus den eigenen Daten ist die beste Grundlage, um die nötige

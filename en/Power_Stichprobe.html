@@ -166,14 +166,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    A study with “80% <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-power" target="_blank" rel="noopener" title="The power of a statistical test is the probability of correctly detecting a true effect as significant: Power = 1 − β, where β is the probability of a Type II error (failing to reject a false H₀).">power</a>” detects a real effect in 8 out of 10 cases — but only for one specific effect size. If the true effect is smaller, the chance drops; if it is zero, it equals just the false-alarm level α. Power depends on effect size, sample size, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-signifikanz" target="_blank" rel="noopener" title="Statistical significance means: the observed p-value falls below the pre-specified significance level α (usually 0.05) — the result is then called &quot;significant&quot; and H₀ is formally rejected.">significance</a> level, and test direction. That is why it is a curve, not a single number.
+    A study with "80% <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-power" target="_blank" rel="noopener" title="The power of a statistical test is the probability of correctly detecting a true effect as significant: Power = 1 − β, where β is the probability of a Type II error (failing to reject a false H₀).">power</a>" detects a real effect in 8 of 10 cases — but only for one specific effect size. If the true effect is smaller, the chance drops; if it is zero, it only equals the false-alarm level α. Power depends on effect size, sample size, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-signifikanz" target="_blank" rel="noopener" title="Statistical significance means: the observed p-value falls below the pre-specified significance level α (usually 0.05) — the result is then called &quot;significant&quot; and H₀ is formally rejected.">significance</a> level and test direction. That is why it is a curve, not a single number. The example in the tool: a clinical study on an antidepressant plans with d = 0.50 from the literature and n = 64 per group (80% power) — but a pilot study only points to d ≈ 0.30.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Power is a curve</strong> — not a value: see how the curve shifts with n.<br>
-    <strong>2. The power landscape</strong> — n × d × power as a heatmap and sensitivity
-    curve.<br>
-    <strong>3. What if the true δ is smaller?</strong> — the consequence of an overly
-    optimistic effect-size estimate.
+    <strong>First the sliders on the left:</strong> significance level α, test direction (two- or one-sided), design (1 or 2 groups), n, planned effect size d and target power.<br>
+    <strong>1. Power is a curve — not a value</strong> — see how the power curve shifts with n, and how the H₀ and H₁ distributions overlap.<br>
+    <strong>2. The power landscape</strong> — n × d × power as a heatmap: where is the region with sufficient power?<br>
+    <strong>3. What if the true δ is smaller?</strong> — sensitivity analysis: the power at your n for every possible true d.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Power holds only for the assumed effect size.</strong> If it is estimated too optimistically from the literature or a pilot study, the actual power is often much lower than planned.<br>
+    <strong>Small effects need disproportionately many people:</strong> an effect half as large requires roughly four times as many for the same power.<br>
+    <strong>With a true effect of zero</strong> only the false-alarm rate α remains as "power".
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Set d from 0.50 to 0.30 and watch the power at n = 64 collapse. Then increase n until the target power is reached again and check in the heatmap how large the effort becomes.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     Power and missing data together determine how many complete, analyzable observations
