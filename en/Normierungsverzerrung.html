@@ -166,13 +166,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    On symptom questionnaires (e.g. BDI, SCL-90), most healthy people score low and only a few score high. Still, raw scores are often converted into T scores with a formula that assumes a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-normalverteilung" target="_blank" rel="noopener" title="The normal distribution is the central continuous probability distribution in statistics, parameterized by mean μ (location) and standard deviation σ (spread).">normal distribution</a>. Then the classification is off: a T score of 60 suggests a particular <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-prozentrang" target="_blank" rel="noopener" title="The percentile rank (PR) of a test score indicates what percentage of the reference/norm sample obtains an equal or lower score; PR = 50 corresponds to the median.">percentile rank</a>, but the true percentile rank in the skewed distribution is a different one. The tool compares both for four skewed distributions.
+    In symptom questionnaires (e.g. BDI, SCL-90), most healthy people have low scores and only a few have high ones. Nevertheless, raw scores are often converted with a formula into T-scores that assumes a <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-normalverteilung" target="_blank" rel="noopener" title="The normal distribution is the central continuous probability distribution in statistics, parameterized by mean μ (location) and standard deviation σ (spread).">normal distribution</a>. Then the classification is wrong: a T-score of 60 points to a certain <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-prozentrang" target="_blank" rel="noopener" title="The percentile rank (PR) of a test score indicates what percentage of the reference/norm sample obtains an equal or lower score; PR = 50 corresponds to the median.">percentile rank</a>, but the true percentile rank in the skewed distribution is a different one. The tool compares both for five skewed distributions. The example is the SCL-90-R: its authors computed the T-scores correctly via an area transformation — the tool asks the opposite question, how strong the distortion would have been had linear T-scores been used.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Distribution type &amp; parameters</strong> — choose a right-skewed distribution and its shape.<br>
-    <strong>2. Density (①)</strong> — true distribution (blue) against the implied normal distribution (orange).<br>
+    <strong>1. Distribution type &amp; parameters</strong> — choose a right-skewed distribution (gamma, log-normal, exponential, ex-Gaussian or Weibull) and its shape.<br>
+    <strong>2. Density (①)</strong> — the true distribution (blue) against the implied normal distribution (orange).<br>
     <strong>3. Discrepancy table (②)</strong> — how far apart are the two percentile ranks?<br>
-    <strong>4. Percentile-rank curves (③)</strong> — both normings compared; plus T score → true percentile rank.
+    <strong>4. Percentile-rank curves (③)</strong> — both norms compared; in addition a T-score can be translated into the true percentile rank.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Linear T-scores assume a normally distributed norm sample.</strong> For symptom scales with a right-skewed distribution this is not true.<br>
+    <strong>The mean is not in the middle:</strong> with right-skewed distributions more than half of all values lie below the mean — the percentile rank of the mean is greater than 50%.<br>
+    <strong>The largest distortion lies in the middle range</strong> (about T = 45–65), exactly where most decisions are made. The remedy is the area-based norm, which assigns each raw score its true percentile rank.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Increase the skewness (for gamma via the shape parameter α) and watch the two curves diverge. Then translate a linear T-score of 50 into the true percentile rank.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     How such norm scores can be compared across several subtests is shown by <strong>Profile Analysis</strong>.

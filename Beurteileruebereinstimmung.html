@@ -234,13 +234,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Drei Psychologen beurteilen 80 Patientenvideos. Stimmen sie überein, oder redet jeder über etwas anderes? Welches Maß passt, hängt vom Skalenniveau ab: Für Kategorien (Diagnose ja/nein) eignet sich Cohens κ, für Abstufungen (Schweregrad 1–4) gewichtetes κ oder Krippendorffs α, für Messwerte etwa die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="Die ICC nach Shrout &amp; Fleiss (1979) quantifiziert die Reliabilität metrischer Ratings als Varianzanteil: Welcher Teil der Gesamtvarianz geht auf echte Unterschiede zwischen den beurteilten Objekten (σ²_B) zurück statt auf Rater-Bias (σ²_R) oder…">ICC</a>. Das Tool nimmt je Beurteiler eine CSV-Datei und berechnet die Übereinstimmung insgesamt, je Dimension und je beurteiltem Objekt.
+    Drei Psychologen beurteilen 80 Patientenvideos. Stimmen sie überein, oder redet jeder über etwas anderes? Welches Maß passt, hängt vom Skalenniveau ab: Für Kategorien (Diagnose ja/nein) eignet sich Cohens κ, für Abstufungen (Schweregrad 1–4) gewichtetes κ oder Krippendorffs α, für Messwerte etwa die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="Die ICC nach Shrout &amp; Fleiss (1979) quantifiziert die Reliabilität metrischer Ratings als Varianzanteil: Welcher Teil der Gesamtvarianz geht auf echte Unterschiede zwischen den beurteilten Objekten (σ²_B) zurück statt auf Rater-Bias (σ²_R) oder…">ICC</a>. Das Tool nimmt je Beurteiler eine CSV-Datei und berechnet die Übereinstimmung insgesamt, je Dimension und je beurteiltem Objekt — und zeigt, welcher Anteil der Übereinstimmung über den Zufall hinausgeht.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Daten</strong> — pro Beurteiler eine CSV-Datei hochladen (Zeilen = Objekte, Spalten = Dimensionen).<br>
+    <strong>1. Daten</strong> — pro Beurteiler eine CSV-Datei hochladen: Zeilen sind die beurteilten Objekte, Spalten die Dimensionen. Nur Zahlen; eine Kopfzeile ist optional, Komma oder Semikolon als Trennzeichen werden automatisch erkannt.<br>
     <strong>2. Skalenniveau &amp; Methode</strong> — nominal, ordinal oder Intervall wählen und das passende Maß aussuchen.<br>
     <strong>3. Globale Übereinstimmung (①)</strong> — ein Gesamtwert über alle Dimensionen.<br>
     <strong>4. Dimensionsweise (②) &amp; pro Reiz (③)</strong> — wo stimmen die Beurteiler überein, wo nicht?
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Das passende Maß hängt vom Skalenniveau ab:</strong> κ für Kategorien (bei mehr als zwei Beurteilern Fleiss-κ), gewichtetes κ oder Krippendorffs α für Abstufungen, die ICC für Messwerte.<br>
+    <strong>Zufallsübereinstimmung rechnen die Maße heraus:</strong> Reine Prozent-Übereinstimmung enthält auch Treffer, die allein durch Zufall zustande kämen — κ und Krippendorffs α berücksichtigen das.<br>
+    <strong>Schau auch auf die einzelnen Dimensionen und Objekte:</strong> Ein guter Gesamtwert kann einzelne strittige Dimensionen oder Fälle verbergen.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Lade für drei Beurteiler je eine Datei mit zwei Dimensionen hoch und vergleiche den globalen Wert mit den Werten je Dimension. Schau dir dann an, bei welchen Objekten die Beurteiler am stärksten auseinanderliegen.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Die Varianzzerlegung hinter den ICC-Werten lässt sich im <strong>ICC Lab</strong> selbst ausprobieren.

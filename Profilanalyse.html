@@ -181,13 +181,22 @@ select:focus{outline:1px solid var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Ein Patient und die Norm zeigen Werte in 7 Untertests. Jedes Profil lässt sich in drei Teile zerlegen: das durchschnittliche Niveau (<strong>Elevation</strong>), die Streuung der Werte um dieses Niveau und die <strong>Form</strong> (welche Tests hoch, welche tief liegen). Liegt ein Patient überall genau einen Punkt unter der Norm, hat er dasselbe Muster auf tieferem Niveau — die einfache Korrelation meldet r ≈ 1 und übersieht das. Das Tool zerlegt den Gesamtunterschied in diese drei Anteile.
+    Ein Patient und die Norm zeigen Werte in 7 Untertests. Jedes Profil lässt sich in drei Teile zerlegen: das durchschnittliche Niveau (Elevation), die Streuung der Werte um dieses Niveau und die Form (welche Tests hoch, welche tief liegen). Liegt ein Patient überall genau einen Punkt unter der Norm, hat er dasselbe Muster auf tieferem Niveau — die einfache Korrelation meldet r ≈ 1 und übersieht das. Das Tool zerlegt den Gesamtunterschied in diese drei Anteile. Das Beispiel: ein Patient nach neuropsychologischer Untersuchung (Stanine-Profil über 7 Subtests wie Arbeitsgedächtnis oder Verarbeitungsgeschwindigkeit) im Vergleich zur Normstichprobe.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Merkmale, Normskala &amp; Profile</strong> — die Subtests, die Skala und die beiden Profile einstellen.<br>
+    <strong>1. Merkmale, Normskala &amp; Profile</strong> — Anzahl der Subtests, Skala (z. B. Stanine, IQ, T) und die Profile einstellen (zwei oder drei).<br>
     <strong>2. Profilabbildung (①)</strong> — beide Profile im Vergleich ansehen.<br>
     <strong>3. Profilstatistiken (②)</strong> — Elevation, Streuung und Form je Profil.<br>
     <strong>4. Profilvergleich (③)</strong> — woran unterscheiden sich die Profile: Niveau, Streuung oder Form?
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Die einfache Korrelation misst nur die Form:</strong> Zwei Profile mit demselben Muster, aber konstantem Niveauabstand, erhalten r ≈ 1 — obwohl die Person durchgängig schwächer ist.<br>
+    <strong>D² zerlegt den Gesamtunterschied additiv</strong> in einen Niveau-, einen Streuungs- und einen Formanteil — so siehst du nicht nur, <em>ob</em>, sondern <em>woher</em> die Profile abweichen.<br>
+    <strong>Die Maße reagieren unterschiedlich auf das Niveau:</strong> Cattells r<sub>p</sub> sinkt bei Niveauunterschieden, hängt aber von Anzahl und Streuung ab; der doppelt eingetragene ICC reagiert am stärksten auf das Niveau. Welches Maß passt, hängt davon ab, ob das absolute Niveau zählt.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Schiebe Profil A überall um genau einen Punkt unter Profil B: Die Korrelation bleibt bei etwa 1, aber D² zeigt den Niveauanteil. Verändere dann die Form und beobachte, welcher Anteil wächst.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Wie sicher ein einzelner Subtestwert ist, zeigen die <strong>Diagnostischen Intervalle</strong>.

@@ -181,13 +181,22 @@ select:focus{outline:1px solid var(--accent)}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    A patient and the norm show scores on 7 subtests. Each profile can be split into three parts: the average level (<strong>elevation</strong>), the spread of scores around that level, and the <strong>shape</strong> (which tests are high, which are low). If a patient is exactly one point below the norm everywhere, they have the same pattern at a lower level — the simple correlation reports r ≈ 1 and misses this. The tool splits the overall difference into these three parts.
+    A patient and the norm show scores in 7 subtests. Every profile can be split into three parts: the average level (elevation), the spread of the values around this level and the shape (which tests are high, which are low). If a patient is exactly one point below the norm everywhere, they have the same pattern at a lower level — the simple correlation reports r ≈ 1 and overlooks this. The tool splits the total difference into these three components. The example: a patient after a neuropsychological examination (stanine profile over 7 subtests such as working memory or processing speed) compared with the norm sample.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Traits, norm scale &amp; profiles</strong> — set the subtests, the scale, and the two profiles.<br>
-    <strong>2. Profile plot (①)</strong> — look at both profiles side by side.<br>
-    <strong>3. Profile statistics (②)</strong> — elevation, spread, and shape per profile.<br>
-    <strong>4. Profile comparison (③)</strong> — how do the profiles differ: level, spread, or shape?
+    <strong>1. Traits, norm scale &amp; profiles</strong> — set the number of subtests, the scale (e.g. stanine, IQ, T) and the profiles (two or three).<br>
+    <strong>2. Profile plot (①)</strong> — look at both profiles in comparison.<br>
+    <strong>3. Profile statistics (②)</strong> — elevation, spread and shape per profile.<br>
+    <strong>4. Profile comparison (③)</strong> — how do the profiles differ: level, spread or shape?
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>The simple correlation measures only the shape:</strong> two profiles with the same pattern but a constant distance in level get r ≈ 1 — although the person is consistently weaker.<br>
+    <strong>D² splits the total difference additively</strong> into a level, a spread and a shape component — so you see not only <em>whether</em> but <em>where</em> the profiles differ.<br>
+    <strong>The measures react differently to level:</strong> Cattell's r<sub>p</sub> drops with level differences but depends on number and spread; the double-entry ICC reacts most strongly to level. Which measure fits depends on whether the absolute level matters.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Shift profile A exactly one point below profile B everywhere: the correlation stays at about 1, but D² shows the level component. Then change the shape and watch which component grows.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     How certain a single subtest score is, is shown by <strong>Diagnostic Intervals</strong>.

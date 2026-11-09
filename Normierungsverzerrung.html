@@ -166,13 +166,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Bei Beschwerdebögen (z. B. BDI, SCL-90) haben die meisten gesunden Menschen niedrige Werte, nur wenige hohe. Trotzdem werden die Rohwerte oft mit einer Formel in T-Werte umgerechnet, die eine <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-normalverteilung" target="_blank" rel="noopener" title="Die Normalverteilung ist die zentrale stetige Wahrscheinlichkeitsverteilung der Statistik, parametrisiert durch Mittelwert μ (Lage) und Standardabweichung σ (Streuung).">Normalverteilung</a> voraussetzt. Dann stimmt die Einordnung nicht: Ein T-Wert von 60 deutet auf einen bestimmten <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-prozentrang" target="_blank" rel="noopener" title="Der Prozentrang (PR) eines Testwerts gibt an, wie viel Prozent der Bezugs-/Normstichprobe einen gleich hohen oder niedrigeren Wert erzielen; PR = 50 entspricht dem Median.">Prozentrang</a> hin, der echte Prozentrang in der schiefen Verteilung ist aber ein anderer. Das Tool vergleicht beides für vier schiefe Verteilungen.
+    Bei Beschwerdebögen (z. B. BDI, SCL-90) haben die meisten gesunden Menschen niedrige Werte, nur wenige hohe. Trotzdem werden die Rohwerte oft mit einer Formel in T-Werte umgerechnet, die eine <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-normalverteilung" target="_blank" rel="noopener" title="Die Normalverteilung ist die zentrale stetige Wahrscheinlichkeitsverteilung der Statistik, parametrisiert durch Mittelwert μ (Lage) und Standardabweichung σ (Streuung).">Normalverteilung</a> voraussetzt. Dann stimmt die Einordnung nicht: Ein T-Wert von 60 deutet auf einen bestimmten <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-prozentrang" target="_blank" rel="noopener" title="Der Prozentrang (PR) eines Testwerts gibt an, wie viel Prozent der Bezugs-/Normstichprobe einen gleich hohen oder niedrigeren Wert erzielen; PR = 50 entspricht dem Median.">Prozentrang</a> hin, der echte Prozentrang in der schiefen Verteilung ist aber ein anderer. Das Tool vergleicht beides für fünf schiefe Verteilungen. Als Beispiel dient die SCL-90-R: Ihre Autoren haben die T-Werte korrekt über eine Flächentransformation berechnet — das Tool fragt umgekehrt, wie stark die Verzerrung gewesen wäre, hätte man lineare T-Werte verwendet.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Verteilungstyp &amp; Parameter</strong> — eine rechtsschiefe Verteilung und ihre Form wählen.<br>
-    <strong>2. Dichteverteilung (①)</strong> — echte Verteilung (blau) gegen die implizierte Normalverteilung (orange).<br>
+    <strong>1. Verteilungstyp &amp; Parameter</strong> — eine rechtsschiefe Verteilung (Gamma, Log-Normal, Exponential, Ex-Gauss oder Weibull) und ihre Form wählen.<br>
+    <strong>2. Dichteverteilung (①)</strong> — die echte Verteilung (blau) gegen die implizierte Normalverteilung (orange).<br>
     <strong>3. Diskrepanztabelle (②)</strong> — wie weit liegen beide Prozentränge auseinander?<br>
-    <strong>4. Prozentrang-Kurven (③)</strong> — beide Normierungen im Vergleich; zusätzlich T-Wert → echter Prozentrang.
+    <strong>4. Prozentrang-Kurven (③)</strong> — beide Normierungen im Vergleich; zusätzlich lässt sich ein T-Wert in den echten Prozentrang übersetzen.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Lineare T-Werte setzen eine normalverteilte Normstichprobe voraus.</strong> Bei Symptomskalen mit rechtsschiefer Verteilung stimmt das nicht.<br>
+    <strong>Der Mittelwert liegt nicht in der Mitte:</strong> Bei rechtsschiefen Verteilungen liegen mehr als die Hälfte aller Werte unter dem Mittelwert — der Prozentrang des Mittelwerts ist größer als 50 %.<br>
+    <strong>Die größte Verzerrung liegt im mittleren Bereich</strong> (etwa T = 45–65), also genau dort, wo die meisten Entscheidungen fallen. Abhilfe schafft die flächentreue Normierung, die jedem Rohwert seinen echten Prozentrang zuweist.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Erhöhe die Schiefe (bei Gamma über den Shape-Parameter α) und beobachte, wie die beiden Kurven auseinanderlaufen. Übersetze dann einen linearen T-Wert von 50 in den echten Prozentrang.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Wie sich solche Normwerte über mehrere Untertests hinweg vergleichen lassen, zeigt die <strong>Profilanalyse</strong>.

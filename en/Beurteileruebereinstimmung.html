@@ -234,13 +234,22 @@ canvas{width:100%;display:block}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Three psychologists rate 80 patient videos. Do they agree, or is each talking about something different? Which measure fits depends on the scale level: for categories (diagnosis yes/no), Cohen's κ is suitable; for gradations (severity 1–4), weighted κ or Krippendorff's α; for measured values, for example, the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="The ICC per Shrout &amp; Fleiss (1979) quantifies the reliability of metric ratings as a proportion of variance: what fraction of the total variance is due to real differences between the rated objects (σ²_B) rather than rater bias (σ²_R) or random…">ICC</a>. The tool takes one CSV file per rater and computes agreement overall, per dimension, and per rated object.
+    Three psychologists rate 80 patient videos. Do they agree, or is everyone talking about something different? Which measure fits depends on the level of measurement: for categories (diagnosis yes/no) Cohen's κ is suitable, for gradations (severity 1–4) weighted κ or Krippendorff's α, for measurements e.g. the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="The ICC per Shrout &amp; Fleiss (1979) quantifies the reliability of metric ratings as a proportion of variance: what fraction of the total variance is due to real differences between the rated objects (σ²_B) rather than rater bias (σ²_R) or random…">ICC</a>. The tool takes one CSV file per rater and calculates the agreement overall, per dimension and per rated object — and shows which share of the agreement goes beyond chance.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Data</strong> — upload one CSV file per rater (rows = objects, columns = dimensions).<br>
-    <strong>2. Scale level &amp; method</strong> — choose nominal, ordinal, or interval and pick the appropriate measure.<br>
+    <strong>1. Data</strong> — upload one CSV file per rater: rows are the rated objects, columns the dimensions. Numbers only; a header row is optional, comma or semicolon as separator are detected automatically.<br>
+    <strong>2. Level of measurement &amp; method</strong> — choose nominal, ordinal or interval and pick the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-matching" target="_blank" rel="noopener" title="Matching estimates causal effects in observational studies by assigning each treated unit one or more untreated units with the most similar covariate values; the outcome comparison is then made within this balanced sample.">matching</a> measure.<br>
     <strong>3. Global agreement (①)</strong> — one overall value across all dimensions.<br>
-    <strong>4. By dimension (②) &amp; per stimulus (③)</strong> — where do the raters agree, where not?
+    <strong>4. Per dimension (②) &amp; per stimulus (③)</strong> — where do the raters agree, where not?
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>The matching measure depends on the level of measurement:</strong> κ for categories (Fleiss' κ for more than two raters), weighted κ or Krippendorff's α for gradations, the ICC for measurements.<br>
+    <strong>The measures remove chance agreement:</strong> plain percentage agreement also contains hits that would occur by chance alone — κ and Krippendorff's α take that into account.<br>
+    <strong>Also look at the single dimensions and objects:</strong> a good overall value can hide individual contentious dimensions or cases.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    Upload one file with two dimensions for each of three raters and compare the global value with the values per dimension. Then look at the objects on which the raters differ most.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     You can try out the variance decomposition behind the ICC values yourself in the <strong>ICC Lab</strong>.

@@ -217,13 +217,22 @@ canvas{display:block;width:100%;height:auto}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    3 Therapeuten beurteilen 10 Patienten. Die Urteile unterscheiden sich aus drei Gründen: Die Patienten unterscheiden sich wirklich, manche Therapeuten sind systematisch strenger, und es gibt zufällige Fehler. Die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="Die ICC nach Shrout &amp; Fleiss (1979) quantifiziert die Reliabilität metrischer Ratings als Varianzanteil: Welcher Teil der Gesamtvarianz geht auf echte Unterschiede zwischen den beurteilten Objekten (σ²_B) zurück statt auf Rater-Bias (σ²_R) oder…">ICC</a> gibt an, welcher Anteil der Gesamtunterschiede auf die echten Patientenunterschiede entfällt. Wichtig: Je nach Fragestellung zählt die Strenge der Beurteiler als Fehler (<em>Agreement</em>) oder nicht (<em>Consistency</em>). Das Tool lässt dich die drei Quellen der Unterschiede selbst regeln.
+    3 Therapeuten beurteilen 10 Patienten. Die Urteile unterscheiden sich aus drei Gründen: Die Patienten unterscheiden sich wirklich, manche Therapeuten sind systematisch strenger, und es gibt zufällige Fehler. Die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-icc-reliabilitaet" target="_blank" rel="noopener" title="Die ICC nach Shrout &amp; Fleiss (1979) quantifiziert die Reliabilität metrischer Ratings als Varianzanteil: Welcher Teil der Gesamtvarianz geht auf echte Unterschiede zwischen den beurteilten Objekten (σ²_B) zurück statt auf Rater-Bias (σ²_R) oder…">ICC</a> gibt an, welcher Anteil der Gesamtunterschiede auf die echten Patientenunterschiede entfällt. Wichtig: Je nach Fragestellung zählt die Strenge der Beurteiler als Fehler (Agreement) oder nicht (Consistency). Das Tool lässt dich die drei Quellen der Unterschiede selbst regeln — das Beispiel: aufgenommene Therapiesitzungen, die jeder Therapeut auf einer klinischen Skala bewertet.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Varianzkomponenten</strong> — echte Unterschiede, Beurteiler-Strenge und Zufallsfehler einstellen.<br>
-    <strong>2. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-anova" target="_blank" rel="noopener" title="ANOVA (Analysis of Variance) bezeichnet im engeren Sinne die Varianzanalyse zum Vergleich von Gruppenmittelwerten mit nominalen/kategorialen Prädiktoren: Die Gesamtvarianz wird in erklärte Varianz (SS_between) und Residualvarianz (SS_within)…">ANOVA</a>-Quadratsummen</strong> — wie sich die Komponenten in den Rechengrößen zeigen.<br>
+    <strong>1. Varianzkomponenten</strong> — echte Unterschiede (σ²<sub>B</sub>, zwischen den Objekten), Beurteiler-Strenge (σ²<sub>R</sub>) und Zufallsfehler (σ²<sub>E</sub>) einstellen, dazu die Zahl der Rater k und der Objekte n.<br>
+    <strong>2. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-anova" target="_blank" rel="noopener" title="ANOVA (Analysis of Variance) bezeichnet im engeren Sinne die Varianzanalyse zum Vergleich von Gruppenmittelwerten mit nominalen/kategorialen Prädiktoren: Die Gesamtvarianz wird in erklärte Varianz (SS_between) und Residualvarianz (SS_within)…">ANOVA</a>-Quadratsummen</strong> — wie sich die Komponenten in den Rechengrößen (mittlere Quadratsummen) zeigen.<br>
     <strong>3. Varianzanteile &amp; ICC-Werte</strong> — Agreement und Consistency, Einzelrater vs. Mittelung.<br>
     <strong>4. Konzepte</strong> — die drei ICC-Modelle zum Mitnehmen.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Agreement oder Consistency?</strong> Beim Agreement zählt eine systematische Strenge einzelner Beurteiler als Fehler, bei der Consistency nicht — die Frage entscheidet, welche ICC du berichtest.<br>
+    <strong>Einzelrater oder Mittelung:</strong> Mittelst du die Urteile mehrerer Rater, fällt die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-reliabilitaet" target="_blank" rel="noopener" title="Reliabilität bezeichnet den Grad, in dem ein Messinstrument bei wiederholter Anwendung unter gleichen Bedingungen konsistente Ergebnisse liefert — die Messgenauigkeit oder Zuverlässigkeit.">Reliabilität</a> höher aus als bei einem einzelnen Urteil.<br>
+    <strong>Die Slider sind Populationswerte:</strong> Die Daten werden zufällig gezogen, deshalb schwanken die Stichprobenwerte um den wahren Wert.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Setze σ²<sub>R</sub> auf null: Agreement und Consistency stimmen jetzt überein. Drehe σ²<sub>R</sub> dann hoch und beobachte, wie nur das Agreement sinkt.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Wie man die Übereinstimmung mit eigenen Daten und je nach Skalenniveau berechnet, zeigt die <strong>Beurteilerübereinstimmung</strong>.
