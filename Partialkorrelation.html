@@ -158,16 +158,22 @@ canvas{display:block;width:100%}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Eisverkäufe und Sonnenbrände hängen zusammen, aber nur, weil beide mit dem Wetter zusammenhängen. Partial- und Semipartialkorrelation zeigen, wie viel vom Zusammenhang zwischen X₁ und Y übrig bleibt, wenn man eine dritte Variable X₂ kontrolliert. Die Semipartialkorrelation misst, was X₁ über X₂ hinaus <em>einzigartig</em> zu Y beiträgt. Technisch rechnet man X₂ heraus, indem man mit den Resten (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-residuen" target="_blank" rel="noopener" title="Residuen sind die Differenzen zwischen den beobachteten Werten yᵢ und den vom Modell vorhergesagten Werten ŷᵢ: eᵢ = yᵢ − ŷᵢ.">Residuen</a>) weiterarbeitet.
+    Eisverkäufe und Sonnenbrände hängen zusammen, aber nur, weil beide mit dem Wetter zusammenhängen. Partial- und Semipartialkorrelation zeigen, wie viel vom Zusammenhang zwischen X₁ und Y übrig bleibt, wenn man eine dritte Variable X₂ kontrolliert. Die Semipartialkorrelation misst, was X₁ über X₂ hinaus <em>einzigartig</em> zu Y beiträgt. Technisch rechnet man X₂ heraus, indem man mit den Resten (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-residuen" target="_blank" rel="noopener" title="Residuen sind die Differenzen zwischen den beobachteten Werten yᵢ und den vom Modell vorhergesagten Werten ŷᵢ: eᵢ = yᵢ − ŷᵢ.">Residuen</a>) weiterarbeitet. Das Beispiel im Tool: Wie stark korreliert die Lernzeit (X₁) mit der Klausurleistung (Y), wenn man Intelligenzunterschiede (X₂) herausrechnet?
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Szenario wählen</strong> — vier Fälle von unabhängigen Prädiktoren bis zu
-    klassischer und reziproker <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-suppression" target="_blank" rel="noopener" title="Suppression liegt vor, wenn die Aufnahme eines Prädiktors Z in ein Regressionsmodell die Semipartialkorrelation von X mit Y, sr_X = r_Y(X.Z), betragsmäßig VERGRÖSSERT (statt zu verkleinern, wie bei gewöhnlicher Konfundierung), obwohl Z selbst kaum…">Suppression</a>.<br>
-    <strong>2. Streudiagramme</strong> — sieh die schrittweise Residualisierung direkt an den
-    Punktwolken.<br>
-    <strong>3. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ballantine-diagramm" target="_blank" rel="noopener" title="Das Ballantine-Diagramm stellt die Varianz von Y sowie die Varianzen der Prädiktoren X₁, X₂, … als überlappende Kreise dar, wobei die Überlappungsflächen gemeinsam erklärte Varianz (R²-Anteile) repräsentieren.">Ballantine-Diagramm</a></strong> — Varianzüberlappung als Flächen statt als Formel.<br>
-    <strong>4. Statistiken</strong> — Population vs. Stichprobe: wie stabil sind r<sub>semi</sub>
-    und r<sub>partial</sub> bei echten Daten?
+    <strong>1. Szenario wählen</strong> — A: unabhängige Prädiktoren, B: Redundanz (Kollinearität), C: klassische <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-suppression" target="_blank" rel="noopener" title="Suppression liegt vor, wenn die Aufnahme eines Prädiktors Z in ein Regressionsmodell die Semipartialkorrelation von X mit Y, sr_X = r_Y(X.Z), betragsmäßig VERGRÖSSERT (statt zu verkleinern, wie bei gewöhnlicher Konfundierung), obwohl Z selbst kaum…">Suppression</a>, D: reziproke Suppression. Mit den Reglern stellst du die Populationskorrelationen und n selbst ein.<br>
+    <strong>2. Streudiagramme</strong> — Die schrittweise Residualisierung direkt an den Punktwolken: erst X₁ gegen Y roh, dann mit aus X₁ herauspartialisiertem X₂ (Semipartial), dann aus X₁ <em>und</em> Y (Partial). Die Streifen (±1 SD) zeigen, wo tatsächlich Varianz entfernt wurde.<br>
+    <strong>3. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ballantine-diagramm" target="_blank" rel="noopener" title="Das Ballantine-Diagramm stellt die Varianz von Y sowie die Varianzen der Prädiktoren X₁, X₂, … als überlappende Kreise dar, wobei die Überlappungsflächen gemeinsam erklärte Varianz (R²-Anteile) repräsentieren.">Ballantine-Diagramm</a></strong> — Varianzüberlappung als Flächen statt als Formel: Die blaue Zone ist der einzigartige Anteil von X₁ (ΔR²).<br>
+    <strong>4. Statistiken</strong> — Population vs. Stichprobe: Wie stabil sind r_semi und r_partial bei echten Daten?
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Partial vs. Semipartial:</strong> Bei der Semipartialkorrelation wird X₂ nur aus X₁ entfernt (r_semi² = ΔR², der einzigartige Beitrag), bei der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-partialkorrelation" target="_blank" rel="noopener" title="Die Partialkorrelation r_XY.Z misst den linearen Zusammenhang zwischen X und Y, nachdem der lineare Einfluss einer oder mehrerer Kontrollvariablen Z aus BEIDEN Variablen X und Y herausgerechnet wurde.">Partialkorrelation</a> aus X₁ <em>und</em> Y (Anteil der erklärten Restvarianz).<br>
+    <strong>Suppression:</strong> Eine Kontrollvariable kann einen Zusammenhang nicht nur schwächen, sondern verstärken oder sogar sein Vorzeichen drehen.<br>
+    <strong>Kollinearität:</strong> Korrelieren die Prädiktoren stark, sind beide ΔR² klein, obwohl beide bivariat stark mit Y zusammenhängen — sie konkurrieren um dieselbe Varianz.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Erhöhe in Szenario A die Korrelation ρ(X₁, X₂) und beobachte, wie r_semi sinkt, obwohl die bivariate Korrelation gleich bleibt. Wechsle dann zu Szenario C und sieh, wie die Kontrollvariable einen Koeffizienten sogar vergrößert.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Szenario C — klassische Suppression — zeigt schon, wie ein Koeffizient sein Vorzeichen

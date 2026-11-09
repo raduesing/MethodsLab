@@ -158,16 +158,22 @@ canvas{display:block;width:100%}
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Ice-cream sales and sunburns go together, but only because both are related to the weather. Partial and semipartial correlation show how much of the relationship between X₁ and Y remains when you control for a third variable X₂. Semipartial correlation measures what X₁ contributes <em>uniquely</em> to Y beyond X₂. Technically, X₂ is removed by continuing with the leftovers (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-residuen" target="_blank" rel="noopener" title="Residuals are the differences between observed values yᵢ and the model-predicted values ŷᵢ: eᵢ = yᵢ − ŷᵢ.">residuals</a>).
+    Ice-cream sales and sunburns are related, but only because both are related to the weather. Partial and semipartial correlation show how much of the relationship between X₁ and Y remains when a third variable X₂ is controlled. The semipartial correlation measures what X₁ contributes <em>uniquely</em> to Y beyond X₂. Technically, X₂ is removed by continuing with the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-residuen" target="_blank" rel="noopener" title="Residuals are the differences between observed values yᵢ and the model-predicted values ŷᵢ: eᵢ = yᵢ − ŷᵢ.">residuals</a>. The example in the tool: how strongly is study time (X₁) correlated with exam performance (Y) once differences in intelligence (X₂) are removed?
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Pick a scenario</strong> — four cases from independent predictors to classical
-    and reciprocal <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-suppression" target="_blank" rel="noopener" title="Suppression occurs when adding a predictor Z to a regression model INCREASES the magnitude of the semipartial correlation of X with Y, sr_X = r_Y(X.Z) (rather than decreasing it, as ordinary confounding would), even though Z itself correlates little…">suppression</a>.<br>
-    <strong>2. Scatterplots</strong> — see the step-by-step residualization directly in the
-    point clouds.<br>
-    <strong>3. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ballantine-diagramm" target="_blank" rel="noopener" title="The Ballantine diagram depicts the variance of Y and the variances of predictors X₁, X₂, … as overlapping circles, where the overlapping areas represent jointly explained variance (shares of R²).">Ballantine diagram</a></strong> — variance overlap as areas instead of formulas.<br>
-    <strong>4. Statistics</strong> — population vs. sample: how stable are r<sub>semi</sub> and
-    r<sub>partial</sub> with real data?
+    <strong>1. Choose a scenario</strong> — A: independent predictors, B: redundancy (collinearity), C: classical <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-suppression" target="_blank" rel="noopener" title="Suppression occurs when adding a predictor Z to a regression model INCREASES the magnitude of the semipartial correlation of X with Y, sr_X = r_Y(X.Z) (rather than decreasing it, as ordinary confounding would), even though Z itself correlates little…">suppression</a>, D: reciprocal suppression. With the sliders you set the population correlations and n yourself.<br>
+    <strong>2. Scatterplots</strong> — the stepwise residualization right in the point clouds: first X₁ against Y raw, then with X₂ partialled out of X₁ (semipartial), then out of X₁ <em>and</em> Y (partial). The strips (±1 SD) show where variance was actually removed.<br>
+    <strong>3. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ballantine-diagramm" target="_blank" rel="noopener" title="The Ballantine diagram depicts the variance of Y and the variances of predictors X₁, X₂, … as overlapping circles, where the overlapping areas represent jointly explained variance (shares of R²).">Ballantine diagram</a></strong> — variance overlap as areas instead of a formula: the blue zone is the unique share of X₁ (ΔR²).<br>
+    <strong>4. Statistics</strong> — population vs. sample: how stable are r_semi and r_partial with real data?
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Partial vs. semipartial:</strong> in the semipartial correlation X₂ is removed from X₁ only (r_semi² = ΔR², the unique contribution), in the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-partialkorrelation" target="_blank" rel="noopener" title="The partial correlation r_XY.Z measures the linear association between X and Y after the linear influence of one or more control variables Z has been removed from BOTH X and Y. It equals the ordinary correlation between the residuals e(X|Z) and…">partial correlation</a> from X₁ <em>and</em> Y (share of explained residual variance).<br>
+    <strong>Suppression:</strong> a control variable can not only weaken a relationship but strengthen it or even reverse its sign.<br>
+    <strong>Collinearity:</strong> if the predictors correlate strongly, both ΔR² are small even though both are strongly related to Y bivariately — they compete for the same variance.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    In scenario A, increase the correlation ρ(X₁, X₂) and watch r_semi drop although the bivariate correlation stays the same. Then switch to scenario C and see how the control variable even enlarges a coefficient.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     Scenario C — classical suppression — already shows how a coefficient can flip sign once a

@@ -215,13 +215,21 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Suppose you want to know whether three study methods lead to different grades. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-anova" target="_blank" rel="noopener" title="ANOVA (Analysis of Variance) refers, in the narrow sense, to the analysis of variance for comparing group means with nominal/categorical predictors: the total variance is decomposed into explained variance (SS_between) and residual variance…">ANOVA</a> asks: are the differences <em>between</em> the groups larger than you would expect from the ordinary fluctuation <em>within</em> the groups alone? Mathematically this is the same as a regression in which group membership is the predictor — the tool shows that both routes give exactly the same result.
+    Suppose you want to know whether three learning methods lead to different grades. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-anova" target="_blank" rel="noopener" title="ANOVA (Analysis of Variance) refers, in the narrow sense, to the analysis of variance for comparing group means with nominal/categorical predictors: the total variance is decomposed into explained variance (SS_between) and residual variance…">ANOVA</a> asks: are the differences <em>between</em> the groups larger than the ordinary fluctuations <em>within</em> the groups would lead you to expect? This ratio is the F value. Computationally this is the same as a regression in which group membership is the predictor — the tool shows that both routes give exactly the same result. Instead of many single t-tests (which raise the risk of finding "<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-signifikanz" target="_blank" rel="noopener" title="Statistical significance means: the observed p-value falls below the pre-specified significance level α (usually 0.05) — the result is then called &quot;significant&quot; and H₀ is formally rejected.">significance</a>" purely by chance), ANOVA compares all groups together in one single test.
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. One-Way</strong> — one factor, several groups: decompose variance.<br>
-    <strong>2. Two-Way</strong> — two factors at once, including <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-interaktion" target="_blank" rel="noopener" title="An interaction occurs when the effect of a predictor X on Y depends on the level of a second predictor W. In a linear model it is represented by a product term: Y = b₀ + b₁X + b₂W + b₃XW.">interaction</a>.<br>
-    <strong>3. Regression Bridge</strong> — the same data from ① and ② as a regression with
-    dummy vs. effect coding: same F, same p, different parameterization.
+    <strong>1. One-way</strong> — one factor, several groups: the total variation is split into variation between groups and variation within groups; from this come the F value and the effect size (η²).<br>
+    <strong>2. Two-way</strong> — two factors at once: main effects of both factors plus the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-interaktion" target="_blank" rel="noopener" title="An interaction occurs when the effect of a predictor X on Y depends on the level of a second predictor W. In a linear model it is represented by a product term: Y = b₀ + b₁X + b₂W + b₃XW.">interaction</a>, i.e. the question whether the effect of one factor depends on the other.<br>
+    <strong>3. Regression bridge</strong> — the same data from ① and ② as a regression, with dummy vs. effect coding: same F, same p, different parameterization.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>A significant F only says: "at least two groups differ."</strong> Which ones is shown only by follow-up tests (post-hoc tests) — with a correction for the many comparisons.<br>
+    <strong>With an interaction</strong> the main effects are only partly interpretable, because the effect of one factor differs by level of the other.<br>
+    <strong>Dummy vs. effect coding</strong> only changes the meaning of the coefficients (deviation from a reference group vs. from the grand mean), not the model itself.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    In step 3, switch between the two codings and compare F and p — they stay identical, only the coefficients change.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     The regression bridge already shows: regression is the more flexible variant, because it

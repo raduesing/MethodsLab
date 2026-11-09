@@ -538,17 +538,22 @@ input[type=range]::-moz-range-thumb{
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">What is this about?</div>
-    Ordinary least squares (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS is the standard method for estimating linear regression coefficients: it minimizes the sum of squared residuals RSS = Σ(yᵢ − ŷᵢ)².">OLS</a>) places a line through the data points so that the squared deviations (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-residuen" target="_blank" rel="noopener" title="Residuals are the differences between observed values yᵢ and the model-predicted values ŷᵢ: eᵢ = yᵢ − ŷᵢ.">residuals</a>) are as small as possible overall. With several predictors, each coefficient gives the effect of one variable <strong>when all others stay the same</strong> — so it can differ from the value for a single variable without control.
+    The more study time, the better the exam grade? Ordinary least squares (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS is the standard method for estimating linear regression coefficients: it minimizes the sum of squared residuals RSS = Σ(yᵢ − ŷᵢ)².">OLS</a>) places a line through the cloud of points so that the squared deviations of the points from the line (the <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Glossar.html#gl-residuen" target="_blank" rel="noopener" title="Residuals are the differences between observed values yᵢ and the model-predicted values ŷᵢ: eᵢ = yᵢ − ŷᵢ.">residuals</a>) are as small as possible overall. With several predictors, each coefficient gives the effect of one variable when all others stay the same ("ceteris paribus") — and it can therefore differ from the coefficient of a single variable without control. In the tool you work with 30 simulated students: study time (X₁), hours of sleep (X₂) and exam grade (Y).
 
     <div class="ib-head ib-head2">How to proceed</div>
-    <strong>1. Least Squares</strong> — see how OLS minimizes the squared residuals and why
-    this exact line is the best one.<br>
-    <strong>2. Coefficients</strong> — understand b₀/b₁ (unstandardized) and β (standardized)
-    using the study-time/exam-grade story.<br>
-    <strong>3. Model Fit</strong> — R² and the decomposition of variance into explained vs.
-    residual.<br>
-    <strong>4. Multiple Regression</strong> — add a second predictor and observe how b₁ changes
-    through "ceteris paribus" control.
+    <strong>1. Least squares</strong> — drag the line yourself by two anchors and try to make the RSS (the sum of squared residuals, orange bar) as small as possible. A click on "show OLS" reveals the mathematically best line together with its RSS; with "residuals" you see the deviations as green (point above the line) and red lines (below).<br>
+    <strong>2. Coefficients</strong> — understand b₀ and b₁ (unstandardized, in units of Y per unit of X) and β (standardized) using the study time and exam grade story.<br>
+    <strong>3. Model fit</strong> — R² as the share of explained variance and the split into explained part and residual.<br>
+    <strong>4. Multiple regression</strong> — add the second predictor (sleep) and watch how b₁ changes through the control.
+
+    <div class="ib-head ib-head2">What to watch for</div>
+    <strong>Units matter:</strong> an unstandardized b depends on the units (hours, points). The standardized β makes predictors with different units comparable.<br>
+    <strong>"Holding the others constant":</strong> each coefficient in multiple regression is valid only under this condition — it changes when predictors are added or dropped.<br>
+    <strong>R² is no proof of causality:</strong> it grows with every additional predictor, even useless ones, and says nothing about whether a relationship is causal.
+
+    <div class="ib-head ib-head2">Things to try</div>
+    In step 1, try to beat the RSS of the OLS line — you cannot, because OLS finds the exact minimum. Then, in step 4, compare the value of b₁ before and after adding the second predictor.
+
 
     <div class="ib-head ib-head2">What's next?</div>
     What "ceteris paribus" means geometrically is shown in detail by <strong>Partial &amp;

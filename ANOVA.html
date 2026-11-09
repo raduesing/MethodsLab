@@ -215,13 +215,21 @@ input[type=radio]{width:13px;height:13px;cursor:pointer;accent-color:var(--accen
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Angenommen, du willst wissen, ob drei Lernmethoden zu unterschiedlichen Noten führen. Die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-anova" target="_blank" rel="noopener" title="ANOVA (Analysis of Variance) bezeichnet im engeren Sinne die Varianzanalyse zum Vergleich von Gruppenmittelwerten mit nominalen/kategorialen Prädiktoren: Die Gesamtvarianz wird in erklärte Varianz (SS_between) und Residualvarianz (SS_within)…">ANOVA</a> fragt: Sind die Unterschiede <em>zwischen</em> den Gruppen größer, als man allein durch die ganz normalen Schwankungen <em>innerhalb</em> der Gruppen erwarten würde? Rechnerisch ist das dasselbe wie eine Regression, bei der die Gruppenzugehörigkeit die vorhersagende Variable ist — das Tool zeigt, dass beide Wege exakt dasselbe Ergebnis liefern.
+    Angenommen, du willst wissen, ob drei Lernmethoden zu unterschiedlichen Noten führen. Die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-anova" target="_blank" rel="noopener" title="ANOVA (Analysis of Variance) bezeichnet im engeren Sinne die Varianzanalyse zum Vergleich von Gruppenmittelwerten mit nominalen/kategorialen Prädiktoren: Die Gesamtvarianz wird in erklärte Varianz (SS_between) und Residualvarianz (SS_within)…">ANOVA</a> fragt: Sind die Unterschiede zwischen den Gruppen größer, als man allein durch die ganz normalen Schwankungen <em>innerhalb</em> der Gruppen erwarten würde? Dieses Verhältnis ist der F-Wert. Rechnerisch ist das dasselbe wie eine Regression, bei der die Gruppenzugehörigkeit die vorhersagende Variable ist — das Tool zeigt, dass beide Wege exakt dasselbe Ergebnis liefern. Statt vieler einzelner t-Tests (die das Risiko erhöhen, rein zufällig eine „<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-signifikanz" target="_blank" rel="noopener" title="Statistische Signifikanz bedeutet: Der beobachtete p-Wert liegt unter dem vorab festgelegten Signifikanzniveau α (meist 0.05) — das Ergebnis wird dann als „signifikant&quot; bezeichnet und H₀ formal verworfen.">Signifikanz</a>“ zu finden) vergleicht die ANOVA alle Gruppen gemeinsam in einem einzigen Test.
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. Einfaktoriell</strong> — ein Faktor, mehrere Gruppen: Varianz zerlegen.<br>
-    <strong>2. Zweifaktoriell</strong> — zwei Faktoren gleichzeitig, inklusive <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-interaktion" target="_blank" rel="noopener" title="Eine Interaktion liegt vor, wenn der Effekt eines Prädiktors X auf Y von der Ausprägung eines zweiten Prädiktors W abhängt.">Interaktion</a>.<br>
-    <strong>3. Regressions-Brücke</strong> — dieselben Daten aus ① und ② als Regression mit
-    Dummy- vs. Effekt-Codierung: gleiches F, gleiches p, andere Parametrisierung.
+    <strong>1. Einfaktoriell</strong> — ein Faktor, mehrere Gruppen: Die Gesamtstreuung wird in Streuung zwischen den Gruppen und Streuung innerhalb der Gruppen zerlegt; daraus ergeben sich F-Wert und Effektgröße (η²).<br>
+    <strong>2. Zweifaktoriell</strong> — zwei Faktoren gleichzeitig: Haupteffekte beider Faktoren plus die <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-interaktion" target="_blank" rel="noopener" title="Eine Interaktion liegt vor, wenn der Effekt eines Prädiktors X auf Y von der Ausprägung eines zweiten Prädiktors W abhängt.">Interaktion</a>, also die Frage, ob der Effekt des einen Faktors vom anderen abhängt.<br>
+    <strong>3. Regressions-Brücke</strong> — dieselben Daten aus ① und ② als Regression, mit Dummy- vs. Effekt-Codierung: gleiches F, gleiches p, andere Parametrisierung.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>Ein signifikantes F sagt nur: „Mindestens zwei Gruppen unterscheiden sich.“</strong> Welche, zeigen erst Folgetests (Post-hoc-Tests) — mit Korrektur für die vielen Vergleiche.<br>
+    <strong>Bei einer Interaktion</strong> sind die Haupteffekte nur eingeschränkt interpretierbar, weil der Effekt eines Faktors je nach Stufe des anderen verschieden ist.<br>
+    <strong>Dummy- vs. Effekt-Codierung</strong> ändert nur die Bedeutung der Koeffizienten (Abweichung von einer Referenzgruppe bzw. vom Gesamtmittel), nicht das Modell selbst.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Wechsle in Schritt 3 zwischen den beiden Codierungen und vergleiche F und p — sie bleiben identisch, nur die Koeffizienten ändern sich.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Die Regressions-Brücke zeigt schon: Regression ist die flexiblere Variante, weil sie

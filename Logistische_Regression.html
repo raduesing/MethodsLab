@@ -381,16 +381,22 @@ input[type=range]::-moz-range-thumb{
 <div id="intro-detail" style="display:none">
   <div class="intro-box">
     <div class="ib-head">Worum geht es hier?</div>
-    Sagt man ein Ja/Nein-Ergebnis (z.&nbsp;B. Rückfall ja/nein) mit einer gewöhnlichen Regressionsgeraden vorher (<a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="Das Linear Probability Model (LPM) wendet eine gewöhnliche OLS-Regression direkt auf eine binäre Zielgröße Y ∈ {0,1} an — ohne Link-Funktion, die den Wertebereich auf [0,1] beschränkt."><em>Linear Probability Model</em></a>), kommen manchmal Wahrscheinlichkeiten unter 0 % oder über 100 % heraus — unsinnig. Die logistische Regression nutzt stattdessen eine S-förmige Kurve, die immer zwischen 0 und 1 bleibt. Gerechnet wird dafür auf der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-logit" target="_blank" rel="noopener" title="Der Logit ist die Link-Funktion der logistischen Regression: logit(p) = log(p / (1−p)).">Logit</a>-Skala (dem Logarithmus der Chancen), auf der der Zusammenhang wieder eine Gerade ist.
+    Sagt man ein Ja/Nein-Ergebnis (z. B. Rückfall ja/nein) mit einer gewöhnlichen Regressionsgeraden vorher (Linear Probability Model, <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-lpm" target="_blank" rel="noopener" title="Das Linear Probability Model (LPM) wendet eine gewöhnliche OLS-Regression direkt auf eine binäre Zielgröße Y ∈ {0,1} an: P(Y=1|X) = β₀ + β₁X₁ + … + βₖXₖ.">LPM</a>), kommen manchmal Wahrscheinlichkeiten unter 0 % oder über 100 % heraus — unsinnig. Die logistische Regression nutzt stattdessen eine S-förmige Kurve, die immer zwischen 0 und 1 bleibt. Gerechnet wird dafür auf der <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-logit" target="_blank" rel="noopener" title="Der Logit ist die Link-Funktion der logistischen Regression: logit(p) = log(p / (1−p)).">Logit</a>-Skala (dem Logarithmus der Chancen), auf der der Zusammenhang wieder eine Gerade ist. Im Tool geht es um rund 250 Personen in einer Raucherentwöhnung: Wer erleidet innerhalb von 12 Monaten einen Rückfall — abhängig von Alter und Zigaretten pro Tag?
 
     <div class="ib-head ib-head2">So gehst du vor</div>
-    <strong>1. LPM vs. Logit</strong> — sieh direkt, wo das lineare Wahrscheinlichkeitsmodell
-    versagt.<br>
-    <strong>2. Odds &amp; Logits</strong> — b₁ auf der Logit-Skala interpretieren, dann in Odds
-    Ratios übersetzen.<br>
-    <strong>3. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-marginale-effekte" target="_blank" rel="noopener" title="Marginale Effekte beschreiben die Veränderung im vorhergesagten Outcome pro Einheitsveränderung eines Prädiktors, berechnet auf der ursprünglichen Outcome-Skala (nicht der Link-Skala).">Marginale Effekte</a></strong> — warum ΔP pro +1X nicht konstant ist wie bei <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS ist das Standardverfahren zur Schätzung linearer Regressionskoeffizienten: Es minimiert die Summe der quadrierten Residuen RSS = Σ(yᵢ − ŷᵢ)².">OLS</a>,
-    sondern von X selbst abhängt.<br>
-    <strong>4. Mehrere Prädiktoren</strong> — Alter &amp; Zigaretten/Tag gemeinsam modellieren.
+    <strong>1. LPM vs. Logit</strong> — Beide Modelle werden an denselben Daten geschätzt: Die orangene Gerade (LPM) verlässt bei extremen Werten den Bereich 0–1, die blaue S-Kurve nie. Schiebe den Regler für ein neues Alter und vergleiche die beiden Vorhersagen.<br>
+    <strong>2. Odds &amp; Logits</strong> — von der Wahrscheinlichkeit über die Odds zum Logit. b₁ lässt sich nur auf der Logit-Skala als Gerade lesen; exp(b₁) übersetzt ihn in ein <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-odds-ratio" target="_blank" rel="noopener" title="Das Odds Ratio (OR) vergleicht die Chancen (Odds) eines Ereignisses zwischen zwei Gruppen: OR = (p_A/(1−p_A)) / (p_B/(1−p_B)), wobei p_A und p_B die Ereigniswahrscheinlichkeiten in Gruppe A und B sind.">Odds Ratio</a>.<br>
+    <strong>3. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-marginale-effekte" target="_blank" rel="noopener" title="Marginale Effekte beschreiben die Veränderung im vorhergesagten Outcome pro Einheitsveränderung eines Prädiktors, berechnet auf der ursprünglichen Outcome-Skala (nicht der Link-Skala).">Marginale Effekte</a></strong> — Warum die Änderung der Wahrscheinlichkeit pro +1 in X nicht konstant ist wie bei <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/Glossar.html#gl-ols" target="_blank" rel="noopener" title="OLS ist das Standardverfahren zur Schätzung linearer Regressionskoeffizienten: Es minimiert die Summe der quadrierten Residuen RSS = Σ(yᵢ − ŷᵢ)².">OLS</a>, sondern vom Ausgangswert abhängt.<br>
+    <strong>4. Mehrere Prädiktoren</strong> — Alter und Zigaretten/Tag gemeinsam modellieren und interpretieren.
+
+    <div class="ib-head ib-head2">Worauf achten?</div>
+    <strong>b₁ ist kein Wahrscheinlichkeitseffekt:</strong> Er gilt auf der Logit-Skala. „Pro Jahr +x Prozentpunkte“ gibt es bei der logistischen Regression nicht konstant.<br>
+    <strong>Odds Ratio ≠ Risikoverhältnis:</strong> Bei häufigen Ereignissen fällt ein Odds Ratio deutlich extremer aus als das Verhältnis der Wahrscheinlichkeiten.<br>
+    <strong>Ceteris paribus gilt auch hier</strong> — nur eben auf der Logit- statt der Rohskala.
+
+    <div class="ib-head ib-head2">Zum Ausprobieren</div>
+    Schiebe in Schritt 1 das Alter an die Ränder und vergleiche LPM und Logit. Beobachte in Schritt 3, dass derselbe Zuwachs von +1 Jahr am Rand der S-Kurve viel weniger Wahrscheinlichkeit verschiebt als in der Mitte.
+
 
     <div class="ib-head ib-head2">Und danach?</div>
     Dieselbe ceteris-paribus-Logik aus <strong>OLS &amp; Multiple Regression</strong> gilt hier
