@@ -162,7 +162,8 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 
 
     <div class="ib-head ib-head2">What's next?</div>
-    <strong>Lord's Paradox</strong> shows a related trap: two statistically correct analysis
+    <a href="Collider_Bias.html" target="_blank" rel="noopener" style="color:var(--a4);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a4)">Collider Bias in 3D</a> shows the same trap from the point of view of <em>controlling</em>: instead of selecting cases, you partial Z out in a regression. In the 3D cube you see both.<br>
+    <strong>After that:</strong> <strong>Lord's Paradox</strong> shows a related trap: two statistically correct analysis
     methods on the same data can reach opposite conclusions.
   </div>
 </div>
@@ -369,6 +370,10 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
       <div class="lcard">
         <div class="lcard-h">One-sided vs. two-sided — two effects</div>
         <div class="lcard-body"><strong>One-sided selection</strong> (Preset B/D — top only or bottom only) shows the classic Berkson effect: within the group, X + Y ≈ constant → whoever has high X must have lower Y → <strong>negative</strong> spurious correlation. <strong>Two-sided selection</strong> (Preset C — top + bottom together) instead produces a <strong>positive</strong> spurious correlation: the upper group has high means on X and Y, the lower group low means — the between-group effect dominates the within-group Berkson effect. <a class="glo-link" href="https://www.bayes-thinking-lab.uni-osnabrueck.de/en/Referenzen.html#ref-berkson-1946" target="_blank" rel="noopener">Berkson's hospital example (1946)</a> is a one-sided case.</div>
+      </div>
+      <div class="lcard">
+        <div class="lcard-h">Controlling instead of selecting</div>
+        <div class="lcard-body">Berkson's paradox does not arise only through selection. If, in a regression or partial correlation, you <em>control</em> for the collider Z, you also compare only people with similar Z and create the same negative spurious correlation. The tool <a href="Collider_Bias.html" target="_blank" rel="noopener" style="color:var(--a4);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a4)">→ Collider Bias in 3D</a> shows both in the same 3D cube: partialling out (the cloud is flattened) and selecting (yellow threshold), plus the regression slope without and with Z.</div>
       </div>
       <div class="lcard">
         <div class="lcard-h">Consequences for research</div>

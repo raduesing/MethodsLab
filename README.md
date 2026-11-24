@@ -79,6 +79,7 @@ Legend: **✓** finished · **◷** planned
 * **✓ Regression to the Mean** — Blood-pressure example, r-slider, bidirectional selection. Why "bad" extreme values look better the second time.
 * **✓ Measurement-Error Attenuation** — Intelligence & school achievement: disattenuation, learning cards on N-instability and reliability choice.
 * **✓ Berkson's Paradox** — Talent + effort → success: DAG, diagonal selection boundary, collider bias. Negative correlation in selected samples.
+* **✓ Collider Bias in 3D** — Talent + effort → success in a 3D cube: partial out or select on the collider, views from above/front/side, regression without and with the collider.
 * **✓ Lord's Paradox** — ANCOVA vs. change scores: when do the two analyses lead to opposite conclusions? DAG, key formula, lege-artis decision.
 * **✓ Simpson's Paradox** — An aggregate (pooled) trend reverses on disaggregation: within- vs. pooled regression, confounding slider, reversal & amplification scenarios. Cross-link to the multilevel tool.
 * **✓ Range Restriction** — How selection on the predictor X attenuates the correlation (variance restriction). Scatter full vs. restricted, dispersion bars, the Thorndike r(u) relationship, Case-II correction. The slope stays, r shrinks. Cross-linked with Berkson and Taylor-Russell.
