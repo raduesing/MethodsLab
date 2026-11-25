@@ -138,6 +138,27 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 .mini canvas{width:100%;display:block}
 .mini .cap{font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink2);margin-top:.4rem;display:flex;justify-content:space-between}
 .mini .cap b{font-weight:600}
+.arr-t{font-family:'DM Mono',monospace;font-size:.82rem;font-weight:600;color:var(--ink);margin:.1rem 0 .15rem}
+.arr-s{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--ink3);line-height:1.5;min-height:2.1em;margin-bottom:.4rem}
+.mini canvas[id^="ar"]{cursor:crosshair}
+.arr-tbl-wrap{background:var(--panel);border:1px solid var(--grid);padding:.7rem .8rem;margin:.2rem 0 .8rem;overflow-x:auto}
+.arr-tbl-h{font-family:'DM Mono',monospace;font-size:.82rem;font-weight:600;color:var(--ink);margin-bottom:.2rem}
+.arr-tbl-sub{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);line-height:1.65;margin-bottom:.55rem}
+.arr-tbl{width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:.76rem;min-width:620px}
+.arr-tbl th{font-weight:600;font-size:.68rem;color:var(--ink3);text-align:right;padding:.3rem .5rem;border-bottom:1.5px solid var(--border);white-space:nowrap}
+.arr-tbl td{text-align:right;padding:.3rem .5rem;border-bottom:1px solid var(--grid);color:var(--ink2);font-variant-numeric:tabular-nums}
+.arr-tbl th:first-child,.arr-tbl td:first-child{text-align:left}
+.arr-tbl td i{display:inline-block;width:.6rem;height:.6rem;border-radius:50%;margin-right:.45rem;vertical-align:-1px}
+.arr-tbl .sh{color:var(--a1)}
+.arr-tbl td.rs{color:var(--ink);font-weight:600}
+.arr-tbl th.rs{color:var(--ink2)}
+.arr-tbl tr.hv td{background:var(--grid)}
+.arr-tbl tbody tr{cursor:pointer}
+.arr-def{font-family:'DM Mono',monospace;font-size:.73rem;color:var(--ink2);line-height:1.75;margin-top:.7rem;padding-top:.55rem;border-top:1px solid var(--grid)}
+.arr-def p{margin:0 0 .35rem}
+.arr-def b{color:var(--ink)}
+.arr-ctl input[type=range]{accent-color:var(--a1)}
+.arr-ctl .vleg{margin-left:auto}
 
 </style>
 </head>
@@ -199,6 +220,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 <div class="help-h3">Der 3D-Würfel</div><p class="help-p">Ziehe mit der Maus zum Drehen. Die Knöpfe unter dem Würfel springen in feste Blickrichtungen: <em>von oben</em> zeigt X gegen Y (die Ansicht der Auswertung), <em>von vorn</em> X gegen Z und <em>von der Seite</em> Y gegen Z. Die Farbe zeigt den Wert von Z (blau niedrig, orange hoch).</p>
 <div class="help-h3">Die Kennzahlen</div><p class="help-p"><strong style="color:var(--ink)">r(X,Y) · alle Punkte:</strong> Korrelation ohne Konditionierung. <strong style="color:var(--ink)">r(X,Y | Z):</strong> Korrelation der Residuen. <strong style="color:var(--ink)">r(X,Y) · Auswahl:</strong> Korrelation nur in der Auswahl. <strong style="color:var(--ink)">b ohne → mit Z:</strong> Regressionssteigung von Y auf X ohne und mit Z als Kontrollvariable.</p>
 <div class="help-h3">Bedienung</div><p class="help-p"><strong style="color:var(--ink)">Szenarien:</strong> vier Voreinstellungen. <strong style="color:var(--ink)">Konditionierung:</strong> aus, herauspartialisieren oder auf hohes Z selektieren. <strong style="color:var(--ink)">Auswahl:</strong> Anteil der Fälle mit dem höchsten Z. <strong style="color:var(--ink)">β:</strong> wahrer Effekt von X auf Y (Standard 0). <strong style="color:var(--ink)">Rauschen in Z:</strong> wie viel von Z nicht von X und Y abhängt; mehr Rauschen schwächt den Effekt. <strong style="color:var(--ink)">n:</strong> Stichprobengröße.</p>
+<div class="help-h3">Die Pfeil-Darstellung</div><p class="help-p">Der Abschnitt „Herauspartialisieren als Pfeile“ zeigt dieselbe Rechnung als flache X–Y-Ansicht: links die Rohdaten, in der Mitte für jeden Punkt einen Pfeil vom Ausgangswert zum Residuum, rechts das Ergebnis. Der Regler „Herauspartialisieren“ (oder ▶ Abspielen) läuft von 0 % bis 100 %. Wegen der Farbe sieht man, warum die Wolke kippt: Hohes Z (orange) wird nach links unten, niedriges Z (blau) nach rechts oben geschoben. Mit der Maus über einem Punkt siehst du ihn in allen drei Bildern.</p>
 <div class="help-h3">Verwandte Tools</div><p class="help-p"><a href="Berksons_Paradox.html" target="_blank" rel="noopener" style="color:var(--a4);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a4)">Berkson's Paradox</a> (Selektion im 2D-Streudiagramm), <a href="https://www.bayes-thinking-lab.uni-osnabrueck.de/DAG_Logik.html" target="_blank" rel="noopener" style="color:var(--a4);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a4)">Causal Terror ↗</a> (Informationsfluss im DAG, Bayes Thinking Lab) und <a href="Causal_Teaching.html" target="_blank" rel="noopener" style="color:var(--a4);font-weight:500;text-decoration:none;border-bottom:1px solid var(--a4)">Causal Teaching</a> (Kausale Inferenz im Überblick).</p>
   </div>
 </div>
@@ -348,6 +370,32 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
     <strong>Schlussfolgerung:</strong> <span id="ins-text">—</span>
   </div>
 
+  <div class="sec-h">Herauspartialisieren als Pfeile</div>
+  <div style="font-family:'DM Mono',monospace;font-size:.76rem;color:var(--ink2);line-height:1.75;margin-bottom:.7rem">Jeder Pfeil zeigt, wie ein einzelner Punkt beim Herauspartialisieren von Z verschoben wird: vom Ausgangswert (X, Y) zum Residuum (X*, Y*). Die Farbe zeigt Z. <strong style="color:var(--ink)">Warum wird verschoben?</strong> Z enthält einen Teil von X und von Y (Z = X + Y + Rauschen). Wer ein hohes Z hat, hat deshalb im Schnitt auch höhere Werte in X und Y, nicht weil Talent und Fleiß zusammenhängen, sondern weil beide Z nach oben treiben. Um zu fragen, was bei <em>gleichem</em> Z gilt, rechnet man diesen von Z vorhergesagten Anteil ab: Je höher Z, desto weiter wird der Punkt zurückgeschoben (nach links unten), je niedriger Z, desto weiter nach vorn (nach rechts oben). Dadurch dreht sich die Wolke in die fallende Diagonale. Mit dem Regler kannst du die Verschiebung schrittweise ablaufen lassen.</div>
+  <div class="vrow arr-ctl">
+    <span class="vlbl">Herauspartialisieren</span>
+    <input type="range" id="sl-arr" min="0" max="100" step="1" value="100" oninput="onArr(this)" style="width:220px">
+    <span class="slider-val" id="val-arr" style="min-width:3.2rem">100%</span>
+    <button class="vbtn" id="arr-play" onclick="playArr()">▶ Abspielen</button>
+    <span class="vleg">Z niedrig <i></i> Z hoch</span>
+  </div>
+  <div class="minis">
+    <div class="mini"><div class="arr-t">1. Rohdaten</div><div class="arr-s">X und Y ohne Konditionierung</div><canvas id="ar1"></canvas><div class="cap"><span>b = <b id="ar-b1">—</b></span><span>r = <b id="ar-r1">—</b></span></div></div>
+    <div class="mini"><div class="arr-t">2. Z herausrechnen</div><div class="arr-s">Hohes Z zieht nach links unten, niedriges Z nach rechts oben</div><canvas id="ar2"></canvas><div class="cap"><span>b = <b id="ar-b2">—</b></span><span>r = <b id="ar-r2">—</b></span></div></div>
+    <div class="mini"><div class="arr-t">3. Residuen</div><div class="arr-s">X* und Y* bei konstant gehaltenem Z</div><canvas id="ar3"></canvas><div class="cap"><span>b = <b id="ar-b3">—</b></span><span>r = <b id="ar-r3">—</b></span></div></div>
+  </div>
+  <div id="arr-hov" style="font-family:'DM Mono',monospace;font-size:.74rem;color:var(--ink3);margin:.5rem 0 .3rem;line-height:1.7;min-height:1.3em"></div>
+  <div class="arr-tbl-wrap">
+    <div class="arr-tbl-h">Beispiel: fünf Personen entlang von Z</div>
+    <div class="arr-tbl-sub">Die Verschiebung ist b<sub>xz</sub>·Z in X-Richtung und b<sub>yz</sub>·Z in Y-Richtung, also proportional zu Z. Hier gilt b<sub>xz</sub> = <b id="arr-bx">—</b> und b<sub>yz</sub> = <b id="arr-by">—</b> (Regressionssteigung von X bzw. Y auf Z). Die Tabelle zeigt das Ergebnis bei 100 %. Fährst du mit der Maus über eine Zeile, wird die Person in allen drei Bildern markiert. Umgekehrt kommt beim Überfahren eines Punktes seine Zeile dazu.</div>
+    <table class="arr-tbl">
+      <thead><tr><th>Person</th><th style="color:var(--a5)">Z</th><th style="color:var(--a2)">X</th><th style="color:var(--a3)">Y</th><th class="sh">ΔX = −b<sub>xz</sub>·Z</th><th class="sh">ΔY = −b<sub>yz</sub>·Z</th><th class="rs">X* = X + ΔX</th><th class="rs">Y* = Y + ΔY</th></tr></thead>
+      <tbody id="arr-tb"></tbody>
+    </table>
+    <div class="arr-def"><p><b>Δ (Delta) = Verschiebung.</b> ΔX und ΔY sind der Betrag, um den der Punkt beim Herausrechnen von Z verschoben wird. Gemeint ist der Teil von X bzw. Y, den Z „miterklärt“: b<sub>xz</sub>·Z bzw. b<sub>yz</sub>·Z. Das Minus davor heißt: Dieser Teil wird abgezogen. Bei hohem Z ist ΔX negativ (der Punkt wandert nach links), bei niedrigem Z positiv (nach rechts). Das ist die Länge und Richtung des Pfeils im mittleren Bild.</p><p><b>X* und Y* (sprich „X Stern“) = Residuen.</b> Das sind die Werte nach der Verschiebung: X* = X + ΔX, Y* = Y + ΔY. Sie sagen, wie viel Talent bzw. Fleiß eine Person <em>über oder unter dem hat, was ihr Erfolg Z erwarten lässt</em>. Die Pfeilspitze im mittleren Bild und der Punkt im rechten Bild liegen bei (X*, Y*). Die Korrelation r(X*, Y*) ist die Partialkorrelation r(X,Y | Z).</p></div>
+  </div>
+  <div style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--ink3);margin-bottom:.85rem;line-height:1.7">Rot: Regressionsgerade der jeweiligen Ansicht, grau gestrichelt: ohne Z. Aus Gründen der Übersicht sind höchstens 160 Pfeile gezeichnet, Punkte und Kennzahlen nutzen alle Daten. Szenario und Parameter (β, Rauschen, n) in der linken Leiste wirken auch hier.</div>
+
   <div class="learn-section">
     <div class="sec-h">Konzepte</div>
     <div class="lcard-grid">
@@ -394,7 +442,7 @@ input[type=range]::-webkit-slider-thumb:hover{background:var(--accent)}
 </div><!-- /app -->
 
 <script>
-const TX={"dag_note0": "keine direkte Verbindung  (X ⊥ Y)", "view_top_tag": "Blick von oben: X gegen Y", "view_front_tag": "Blick von vorn: X gegen Z", "view_side_tag": "Blick von der Seite: Y gegen Z", "view_iso_tag": "3D-Ansicht", "kw3_sub": "obere {pct} % von Z (n = {n})", "kw3_sub_off": "nur im Modus „Selektieren“", "note_none": "Grau gestrichelt: Regression über alle Punkte. Von oben (X–Y) ist die Wolke rund, in den beiden Ansichten mit Z steigt sie dagegen an.", "note_partial": "Rot: Regression nach dem Herauspartialisieren von Z. X–Z und Y–Z sind flach, weil Z herausgerechnet ist. Grau gestrichelt: Regression ohne Z.", "note_partial_run": "Z wird gerade herausgerechnet …", "note_select": "Nur Fälle mit hohem Z. Rot: Regression in der Auswahl, grau gestrichelt: alle Punkte.", "ex_head": "Eine Personalabteilung betrachtet {n} Bewerbungen.", "ex_pop0": "In der Bevölkerung sind Talent (X) und Fleiß (Y) unkorreliert (β = <span style=\"color:var(--a1);font-weight:600\">{b}</span>).", "ex_popb": "In der Bevölkerung wirkt Talent (X) mit β = <span style=\"color:var(--a1);font-weight:600\">{b}</span> auf Fleiß (Y).", "ex_none": "Ohne Konditionierung beträgt die Steigung von Y auf X b = <span style=\"color:var(--a1);font-weight:600\">{b0}</span> und die Korrelation r = <span style=\"color:var(--a1);font-weight:600\">{r0}</span>. Z (Berufserfolg) bleibt unberücksichtigt, der Collider-Pfad ist geschlossen.", "ex_partial": "Die Auswertung kontrolliert für den Berufserfolg Z. Dann beträgt die Steigung b = <span style=\"color:var(--a1);font-weight:600\">{b1}</span> (statt {b0}) und die Partialkorrelation r(X,Y | Z) = <span style=\"color:var(--a1);font-weight:600\">{rp}</span>.", "ex_select": "Es werden nur die {pct} % mit dem höchsten Berufserfolg Z betrachtet ({ns} Personen). In dieser Auswahl beträgt die Korrelation r = <span style=\"color:var(--a1);font-weight:600\">{rs}</span>.", "ins_none": "Ohne Konditionierung zeigt die Stichprobe (n = {n}) r(X,Y) = {r0} und b = {b0}, nahe am wahren Wert β = {b}. Z bleibt außen vor, der Collider-Pfad ist geschlossen.", "ins_partial0": "Kontrolliert man Z, erscheint r(X,Y | Z) = {rp}, obwohl X und Y in der Bevölkerung unabhängig sind (β = {b}). Die Steigung wechselt von {b0} auf {b1}. Das ist Collider Bias: Durch das Kontrollieren des Colliders entsteht ein Scheinzusammenhang.", "ins_partialb": "Der wahre Effekt ist β = {b}. Ohne Z schätzt man b = {b0}, mit Z als Kontrollvariable dagegen b = {b1}. Das Kontrollieren des Colliders verzerrt die Schätzung um {d}.", "ins_select0": "In der Auswahl (obere {pct} % von Z, n = {ns}) erscheint r = {rs}, obwohl X und Y in der Bevölkerung unabhängig sind (β = {b}). Das ist Berkson's Paradox, derselbe Mechanismus wie beim Herauspartialisieren.", "ins_selectb": "In der Auswahl (obere {pct} % von Z, n = {ns}) erscheint r = {rs}, obwohl in der Bevölkerung β = {b} gilt. Die Selektion auf Z verzerrt den Zusammenhang."};
+const TX={"dag_note0": "keine direkte Verbindung  (X ⊥ Y)", "arr_play": "▶ Abspielen", "arr_stop": "❚❚ Anhalten", "arr_hint": "Fahre mit der Maus über einen Punkt: Er wird in allen drei Bildern markiert.", "arr_hov": "Person {i}: X = {x}, Y = {y}, Z = {z}  →  nach dem Herausrechnen X* = {xr}, Y* = {yr}", "view_top_tag": "Blick von oben: X gegen Y", "view_front_tag": "Blick von vorn: X gegen Z", "view_side_tag": "Blick von der Seite: Y gegen Z", "view_iso_tag": "3D-Ansicht", "kw3_sub": "obere {pct} % von Z (n = {n})", "kw3_sub_off": "nur im Modus „Selektieren“", "note_none": "Grau gestrichelt: Regression über alle Punkte. Von oben (X–Y) ist die Wolke rund, in den beiden Ansichten mit Z steigt sie dagegen an.", "note_partial": "Rot: Regression nach dem Herauspartialisieren von Z. X–Z und Y–Z sind flach, weil Z herausgerechnet ist. Grau gestrichelt: Regression ohne Z.", "note_partial_run": "Z wird gerade herausgerechnet …", "note_select": "Nur Fälle mit hohem Z. Rot: Regression in der Auswahl, grau gestrichelt: alle Punkte.", "ex_head": "Eine Personalabteilung betrachtet {n} Bewerbungen.", "ex_pop0": "In der Bevölkerung sind Talent (X) und Fleiß (Y) unkorreliert (β = <span style=\"color:var(--a1);font-weight:600\">{b}</span>).", "ex_popb": "In der Bevölkerung wirkt Talent (X) mit β = <span style=\"color:var(--a1);font-weight:600\">{b}</span> auf Fleiß (Y).", "ex_none": "Ohne Konditionierung beträgt die Steigung von Y auf X b = <span style=\"color:var(--a1);font-weight:600\">{b0}</span> und die Korrelation r = <span style=\"color:var(--a1);font-weight:600\">{r0}</span>. Z (Berufserfolg) bleibt unberücksichtigt, der Collider-Pfad ist geschlossen.", "ex_partial": "Die Auswertung kontrolliert für den Berufserfolg Z. Dann beträgt die Steigung b = <span style=\"color:var(--a1);font-weight:600\">{b1}</span> (statt {b0}) und die Partialkorrelation r(X,Y | Z) = <span style=\"color:var(--a1);font-weight:600\">{rp}</span>.", "ex_select": "Es werden nur die {pct} % mit dem höchsten Berufserfolg Z betrachtet ({ns} Personen). In dieser Auswahl beträgt die Korrelation r = <span style=\"color:var(--a1);font-weight:600\">{rs}</span>.", "ins_none": "Ohne Konditionierung zeigt die Stichprobe (n = {n}) r(X,Y) = {r0} und b = {b0}, nahe am wahren Wert β = {b}. Z bleibt außen vor, der Collider-Pfad ist geschlossen.", "ins_partial0": "Kontrolliert man Z, erscheint r(X,Y | Z) = {rp}, obwohl X und Y in der Bevölkerung unabhängig sind (β = {b}). Die Steigung wechselt von {b0} auf {b1}. Das ist Collider Bias: Durch das Kontrollieren des Colliders entsteht ein Scheinzusammenhang.", "ins_partialb": "Der wahre Effekt ist β = {b}. Ohne Z schätzt man b = {b0}, mit Z als Kontrollvariable dagegen b = {b1}. Das Kontrollieren des Colliders verzerrt die Schätzung um {d}.", "ins_select0": "In der Auswahl (obere {pct} % von Z, n = {ns}) erscheint r = {rs}, obwohl X und Y in der Bevölkerung unabhängig sind (β = {b}). Das ist Berkson's Paradox, derselbe Mechanismus wie beim Herauspartialisieren.", "ins_selectb": "In der Auswahl (obere {pct} % von Z, n = {ns}) erscheint r = {rs}, obwohl in der Bevölkerung β = {b} gilt. Die Selektion auf Z verzerrt den Zusammenhang."};
 const T_=(k,o)=>{let s=TX[k]||k;if(o)for(const q in o)s=s.split('{'+q+'}').join(o[q]);return s;};
 const ST={n:800,beta:0,noise:0.30,selPct:30,mode:'none',seed:42,d:null};
 
@@ -531,7 +579,120 @@ function updateStats(){
   else ins=T_(noEff?'ins_select0':'ins_selectb',o);
   $('ins-text').textContent=ins;
 }
-function recompute(){genData();updateStats();invalidate();}
+// ── Pfeil-Darstellung: Herauspartialisieren Punkt für Punkt ──
+let arrP=1,arrHover=-1,arrPos=[[],[],[]],arrTimer=null;
+function drawArr(){
+  if(!N)return;
+  let R=0;for(let i=0;i<N;i++)R=Math.max(R,Math.abs(X[i]),Math.abs(Y[i]),Math.abs(Xr[i]),Math.abs(Yr[i]));
+  R=Math.max(0.5,Math.ceil(R*1.08*2)/2);
+  const ink3=css('--ink3'),border=css('--border'),grid=css('--grid'),red=css('--a1');
+  const step=Math.max(1,Math.ceil(N/160));
+  const xp=new Array(N),yp=new Array(N);
+  for(let i=0;i<N;i++){xp[i]=X[i]+arrP*(Xr[i]-X[i]);yp[i]=Y[i]+arrP*(Yr[i]-Y[i]);}
+  const sets=[[X,Y],[xp,yp],[Xr,Yr]];
+  for(let k=0;k<3;k++){
+    const c=$('ar'+(k+1)),dpr=window.devicePixelRatio||1,W=c.offsetWidth;
+    if(!W)continue;
+    const H=Math.round(W*0.92);
+    if(c.width!==Math.round(W*dpr)||c.height!==Math.round(H*dpr)){c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);c.style.height=H+'px';}
+    const g=c.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.fillStyle=css('--panel');g.fillRect(0,0,W,H);
+    const sx=(W/2-22)/R,sy=(H/2-20)/R,px=v=>W/2+v*sx,py=v=>H/2-v*sy;
+    // Gitter und Achsen
+    g.lineWidth=1;g.strokeStyle=grid;g.beginPath();
+    for(let v=-Math.floor(R);v<=R;v++){if(v===0)continue;g.moveTo(px(v),8);g.lineTo(px(v),H-8);g.moveTo(8,py(v));g.lineTo(W-8,py(v));}
+    g.stroke();
+    g.strokeStyle=border;g.beginPath();g.moveTo(W/2,8);g.lineTo(W/2,H-8);g.moveTo(8,H/2);g.lineTo(W-8,H/2);g.stroke();
+    g.font='600 13px DM Mono,monospace';g.textBaseline='alphabetic';
+    g.fillStyle=css('--a2');g.textAlign='right';g.fillText('X',W-8,H/2-6);
+    g.fillStyle=css('--a3');g.textAlign='left';g.fillText('Y',W/2+7,17);
+    const [A,B]=sets[k];
+    // Pfeile (nur Panel 2): vom Ausgangspunkt zur aktuellen Position
+    if(k===1&&arrP>0.005){
+      for(let i=0;i<N;i+=step){
+        const x0=px(X[i]),y0=py(Y[i]),x1=px(A[i]),y1=py(B[i]),dx=x1-x0,dy=y1-y0,L=Math.hypot(dx,dy);
+        if(L<2.5)continue;
+        g.strokeStyle=colOf(i,.92);g.fillStyle=colOf(i,1);g.lineWidth=1.7;g.lineCap='round';
+        const ux=dx/L,uy=dy/L,h=Math.min(10,L*0.5);
+        g.beginPath();g.moveTo(x0,y0);g.lineTo(x1-ux*h*0.6,y1-uy*h*0.6);g.stroke();
+        g.beginPath();g.arc(x0,y0,1.8,0,6.283);g.fillStyle=colOf(i,.45);g.fill();   // Ausgangspunkt
+        g.fillStyle=colOf(i,1);
+        g.beginPath();g.moveTo(x1,y1);g.lineTo(x1-ux*h-uy*h*0.5,y1-uy*h+ux*h*0.5);g.lineTo(x1-ux*h+uy*h*0.5,y1-uy*h-ux*h*0.5);g.closePath();g.fill();
+      }
+    }
+    // Punkte (Panel 2: Zielposition der Pfeile)
+    const r=Math.max(2.2,W/130);
+    arrPos[k]=new Array(N);
+    for(let i=0;i<N;i++){
+      const x=px(A[i]),y=py(B[i]);arrPos[k][i]=[x,y];
+      if(k===1&&i%step!==0&&arrHover!==i){continue;}
+      g.beginPath();g.arc(x,y,r,0,6.283);g.fillStyle=colOf(i,k===1?.85:.75);g.fill();
+    }
+    // Regressionsgeraden: grau gestrichelt = ohne Z, rot = aktuelle Ansicht
+    const b0=slope(X,Y),b=slope(A,B);
+    if(k>0&&isFinite(b0)){g.strokeStyle=ink3+'aa';g.lineWidth=1.5;g.setLineDash([6,4]);g.beginPath();g.moveTo(px(-R),py(-R*b0));g.lineTo(px(R),py(R*b0));g.stroke();g.setLineDash([]);}
+    if(isFinite(b)){g.strokeStyle=red;g.lineWidth=k===0?1.5:2.2;if(k===0)g.setLineDash([6,4]);g.beginPath();g.moveTo(px(-R),py(-R*b));g.lineTo(px(R),py(R*b));g.stroke();g.setLineDash([]);}
+    // Hervorhebung des angefahrenen Punkts
+    if(arrHover>=0&&arrHover<N){
+      const i=arrHover;
+      if(k===1){g.strokeStyle=css('--ink');g.lineWidth=1.8;g.beginPath();g.moveTo(px(X[i]),py(Y[i]));g.lineTo(px(A[i]),py(B[i]));g.stroke();
+        g.beginPath();g.arc(px(X[i]),py(Y[i]),r*1.1,0,6.283);g.strokeStyle=css('--ink');g.lineWidth=1.2;g.stroke();}
+      const q=arrPos[k][i];g.beginPath();g.arc(q[0],q[1],r*2.1,0,6.283);g.strokeStyle=css('--ink');g.lineWidth=2;g.stroke();
+      g.beginPath();g.arc(q[0],q[1],r*1.2,0,6.283);g.fillStyle=colOf(i,1);g.fill();
+    }
+    const rr=pear(A,B);
+    const eb=$('ar-b'+(k+1)),er=$('ar-r'+(k+1));
+    eb.textContent=f2u(b);er.textContent=fS(rr);er.style.color=sgnCol(rr);
+  }
+  const hv=$('arr-hov');
+  if(arrHover>=0&&arrHover<N){const i=arrHover;hv.textContent=T_('arr_hov',{i:i+1,x:f2u(X[i]),y:f2u(Y[i]),z:f2u(Z[i]),xr:f2u(Xr[i]),yr:f2u(Yr[i])});}
+  else hv.textContent=T_('arr_hint');
+  arrTable();
+}
+// Beispieltabelle: fünf Personen entlang von Z (plus die angefahrene Person)
+let arrOrderFor=null,arrOrder=[];
+function arrTable(){
+  if(arrOrderFor!==X){arrOrderFor=X;const o=[...Array(N).keys()].sort((a,b)=>Z[b]-Z[a]);arrOrder=[0.03,0.25,0.5,0.75,0.97].map(q=>o[Math.min(N-1,Math.floor(q*N))]);}
+  const rows=[...arrOrder];if(arrHover>=0&&!rows.includes(arrHover))rows.push(arrHover);
+  $('arr-bx').textContent=f2u(bxz);$('arr-by').textContent=f2u(byz);
+  const key=rows.join(',')+'|'+(dark()?1:0);
+  if(key!==arrTblKey){   // Zeilen nur neu aufbauen, wenn sich die Auswahl ändert (sonst geht der Hover unter der Maus verloren)
+    arrTblKey=key;let h='';
+    for(const i of rows){
+      const dx=-bxz*Z[i],dy=-byz*Z[i];
+      h+='<tr data-i="'+i+'"><td><i style="background:'+colOf(i,1)+'"></i>'+(i+1)+'</td><td>'+f2u(Z[i])+'</td><td>'+f2u(X[i])+'</td><td>'+f2u(Y[i])+'</td><td class="sh">'+fS(dx)+'</td><td class="sh">'+fS(dy)+'</td><td class="rs">'+f2u(Xr[i])+'</td><td class="rs">'+f2u(Yr[i])+'</td></tr>';
+    }
+    $('arr-tb').innerHTML=h;
+  }
+  $('arr-tb').querySelectorAll('tr').forEach(tr=>tr.classList.toggle('hv',+tr.dataset.i===arrHover));
+}
+let arrTblKey=null;
+$('arr-tb').addEventListener('mouseover',e=>{const tr=e.target.closest('tr');if(!tr)return;const i=+tr.dataset.i;if(i!==arrHover){arrHover=i;drawArr();}});
+$('arr-tb').addEventListener('mouseleave',()=>{if(arrHover!==-1){arrHover=-1;drawArr();}});
+function onArr(el){arrP=parseInt(el.value,10)/100;$('val-arr').textContent=el.value+'%';stopArr();drawArr();}
+function stopArr(){if(arrTimer){cancelAnimationFrame(arrTimer);arrTimer=null;}$('arr-play').textContent=T_('arr_play');}
+function playArr(){
+  if(arrTimer){stopArr();return;}
+  const t0=performance.now(),dur=2600;
+  $('arr-play').textContent=T_('arr_stop');
+  const tick=now=>{
+    const u=Math.min(1,(now-t0)/dur),e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+    arrP=e;$('sl-arr').value=Math.round(e*100);$('val-arr').textContent=Math.round(e*100)+'%';drawArr();
+    if(u<1)arrTimer=requestAnimationFrame(tick);else{arrTimer=null;$('arr-play').textContent=T_('arr_play');}
+  };
+  arrTimer=requestAnimationFrame(tick);
+}
+['ar1','ar2','ar3'].forEach((id,k)=>{
+  const c=$(id);
+  c.addEventListener('pointermove',e=>{
+    const r=c.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+    let best=-1,bd=14*14;const P=arrPos[k];
+    for(let i=0;i<P.length;i++){const dx=P[i][0]-mx,dy=P[i][1]-my,d=dx*dx+dy*dy;if(d<bd){bd=d;best=i;}}
+    if(best!==arrHover){arrHover=best;drawArr();}
+  });
+  c.addEventListener('pointerleave',()=>{if(arrHover!==-1){arrHover=-1;drawArr();}});
+});
+window.addEventListener('resize',drawArr);
+function recompute(){genData();arrHover=-1;updateStats();invalidate();drawArr();}
 
 function onSl(key,el){
   const v=parseFloat(el.value);ST[key]=v;
@@ -562,7 +723,7 @@ function setPreset(k){
   $('sl-selPct').value=ST.selPct;$('val-selPct').textContent=ST.selPct+'%';
   document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
   $('pre-'+k).classList.add('active');
-  genData();setMode(p.mode,true);setView(p.view);
+  genData();arrHover=-1;setMode(p.mode,true);setView(p.view);drawArr();
 }
 function newSeed(){ST.seed=Math.floor(Math.random()*999999);recompute();}
 function toggleHelp(){$('help-overlay').classList.toggle('open');}
@@ -577,11 +738,11 @@ function toggleTheme(){
   document.documentElement.setAttribute('data-theme',nt);
   $('theme-btn').textContent=d?'🌙 Dark':'☀ Light';
   try{localStorage.setItem('ml-theme',nt);}catch(e){}
-  invalidate();
+  invalidate();drawArr();
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape')$('help-overlay').classList.remove('open');});
 if(document.documentElement.getAttribute('data-theme')==='light')$('theme-btn').textContent='🌙 Dark';
-genData();updateStats();invalidate();
+genData();updateStats();invalidate();drawArr();
 </script>
 </body>
 </html>
